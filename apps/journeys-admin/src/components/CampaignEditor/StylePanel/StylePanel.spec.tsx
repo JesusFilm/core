@@ -25,7 +25,14 @@ import {
   blockUpdateMock,
   paletteMock
 } from '../styleTesting'
-import { CommandProbe, QueriedEditor, SpyMock, UndoRedo } from '../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SpyMock,
+  UndoRedo,
+  holdRequests,
+  landRequests
+} from '../testing'
 
 import { StylePanel } from './StylePanel'
 
@@ -111,32 +118,32 @@ describe('StylePanel', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
+  afterEach(() => vi.useRealTimers())
+
   describe('Background', () => {
     it('writes a chosen kind as one Command with an optimistic response', async () => {
       const mocks = [
-        {
-          ...blockUpdateMock(hero, {
-            backgroundKind: CampaignBackgroundKind.surface
-          }),
-          delay: 200
-        }
+        blockUpdateMock(hero, {
+          backgroundKind: CampaignBackgroundKind.surface
+        })
       ]
       renderPanel(mocks)
       const none = await screen.findByRole('button', { name: 'None' })
       expect(none).toHaveAttribute('aria-pressed', 'true')
 
-      fireEvent.click(screen.getByRole('button', { name: 'Surface' }))
+      await holdRequests(() =>
+        fireEvent.click(screen.getByRole('button', { name: 'Surface' }))
+      )
 
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
       // The optimistic response flips the selection before the request returns.
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: 'Surface' })).toHaveAttribute(
-          'aria-pressed',
-          'true'
-        )
+      expect(screen.getByRole('button', { name: 'Surface' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
       )
       expect(mocks[0].result).not.toHaveBeenCalled()
-      await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+      await landRequests()
+      expect(mocks[0].result).toHaveBeenCalled()
     })
 
     it('offers the image kind: choosing it without a cover shows the picker and writes nothing yet', async () => {

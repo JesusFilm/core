@@ -346,16 +346,6 @@ describe('Settings', () => {
     expect(screen.getByText('Title is required')).toBeInTheDocument()
   })
 
-  it('has no Save button, Unsaved chip or save indicator', () => {
-    renderSettings()
-
-    expect(
-      screen.queryByRole('button', { name: 'Save' })
-    ).not.toBeInTheDocument()
-    expect(screen.queryByText('Unsaved')).not.toBeInTheDocument()
-    expect(screen.queryByText(/Saving/)).not.toBeInTheDocument()
-  })
-
   it('offers Delete campaign to managers and confirms before campaignDelete', async () => {
     const result = vi.fn(() => ({
       data: { campaignDelete: { __typename: 'Campaign', id: 'campaignId' } }

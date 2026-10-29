@@ -1,6 +1,6 @@
 import { ApolloLink, InMemoryCache } from '@apollo/client'
 import { useApolloClient } from '@apollo/client/react'
-import { MockLink } from '@apollo/client/testing'
+import { MockLink, MockSubscriptionLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -363,4 +363,24 @@ export async function landRequests(): Promise<void> {
     await vi.advanceTimersByTimeAsync(50)
   })
   vi.useRealTimers()
+}
+
+/**
+ * Sends a result down a MockSubscriptionLink, which delivers it on a timer,
+ * and lets the editor take it in along with any request it sets off.
+ */
+export async function emitSubscription(
+  link: MockSubscriptionLink,
+  result: MockSubscriptionLink.Result,
+  complete = false
+): Promise<void> {
+  vi.useFakeTimers()
+  try {
+    link.simulateResult(result, complete)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(50)
+    })
+  } finally {
+    vi.useRealTimers()
+  }
 }

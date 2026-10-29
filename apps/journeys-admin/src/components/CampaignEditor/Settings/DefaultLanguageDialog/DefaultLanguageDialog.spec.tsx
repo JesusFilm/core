@@ -2,7 +2,6 @@ import { ApolloLink, InMemoryCache } from '@apollo/client'
 import { MockLink, MockSubscriptionLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
-  act,
   fireEvent,
   render,
   screen,
@@ -15,7 +14,12 @@ import { ReactElement, useState } from 'react'
 
 import { CAMPAIGN_UPDATE } from '../../../../libs/useCampaignUpdateMutation'
 import { campaign } from '../../data'
-import { getCampaignMock } from '../../testing'
+import {
+  emitSubscription,
+  getCampaignMock,
+  holdRequests,
+  landRequests
+} from '../../testing'
 import {
   TranslationRunProvider,
   useTranslationRun
@@ -78,24 +82,6 @@ function completed(): MockSubscriptionLink.Result {
       }
     }
   }
-}
-
-async function emit(
-  link: MockSubscriptionLink,
-  result: MockSubscriptionLink.Result,
-  complete = false
-): Promise<void> {
-  await act(async () => {
-    link.simulateResult(result, complete)
-    await new Promise((resolve) => setTimeout(resolve, 0))
-  })
-}
-
-/** Lets a swap the provider might have fired reach the link. */
-async function settle(): Promise<void> {
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 20))
-  })
 }
 
 /** The provider's run, and its Cancel, as the rest of the editor sees them. */
@@ -217,7 +203,7 @@ describe('DefaultLanguageDialog', () => {
     ])
     await startSweep()
 
-    await emit(subscriptionLink, completed(), true)
+    await emitSubscription(subscriptionLink, completed(), true)
 
     await waitFor(() => expect(onChanged).toHaveBeenCalled())
     expect(swapped).toHaveBeenCalledTimes(1)
@@ -232,8 +218,11 @@ describe('DefaultLanguageDialog', () => {
     ])
     await startSweep()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel run' }))
-    await settle()
+    // Lets a swap the provider might have fired reach the link.
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel run' }))
+    )
+    await landRequests()
 
     expect(screen.getByTestId('Run')).toHaveTextContent('idle')
     expect(
@@ -251,8 +240,9 @@ describe('DefaultLanguageDialog', () => {
     ])
     await startSweep()
 
-    await emit(subscriptionLink, { error: new Error('Translation failed') })
-    await settle()
+    await emitSubscription(subscriptionLink, {
+      error: new Error('Translation failed')
+    })
 
     expect(screen.getAllByText('Translation failed')).not.toHaveLength(0)
     expect(swapped).not.toHaveBeenCalled()
@@ -266,7 +256,7 @@ describe('DefaultLanguageDialog', () => {
     ])
     await startSweep()
 
-    await emit(subscriptionLink, completed(), true)
+    await emitSubscription(subscriptionLink, completed(), true)
 
     expect(
       await screen.findByText(

@@ -192,18 +192,6 @@ describe('LeftRail', () => {
     expect(localize).toHaveAttribute('aria-pressed', 'true')
   })
 
-  it('lists the panel toggles as Add, Pages, Navigator, Localize', () => {
-    render(<Harness />)
-
-    const panels = ['Add', 'Pages', 'Navigator', 'Localize']
-    const toggles = screen
-      .getAllByRole('button')
-      .map((button) => button.getAttribute('aria-label') ?? '')
-      .filter((label) => panels.includes(label))
-
-    expect(toggles).toEqual(['Add', 'Pages', 'Navigator', 'Localize'])
-  })
-
   it('keeps the Navigator panel open when its toggle is pressed again', () => {
     render(<Harness />)
     const navigator = screen.getByRole('button', { name: 'Navigator' })

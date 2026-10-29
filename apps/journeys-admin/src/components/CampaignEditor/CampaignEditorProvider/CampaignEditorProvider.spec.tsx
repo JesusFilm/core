@@ -1,7 +1,15 @@
 import Button from '@mui/material/Button'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  RenderHookResult,
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
@@ -14,8 +22,9 @@ import { Hotkeys } from '../Hotkeys'
 import { SelectionProbe, StaticEditor, frameBody } from '../testing'
 
 import {
+  CampaignEditorAction,
+  CampaignEditorContextValue,
   CampaignEditorState,
-  reducer,
   resolveSelection,
   useCampaignEditor
 } from './CampaignEditorProvider'
@@ -127,92 +136,106 @@ describe('CampaignEditorProvider', () => {
     })
   })
 
-  describe('reducer', () => {
-    const state: CampaignEditorState = {
-      pageKind: CampaignPageKind.landing,
-      previewLanguageId: '529',
-      selectedBlockId: 'heroId',
-      panel: 'add',
-      inspectorTab: 'style',
-      navigatorExpandRequest: 0
+  describe('editor state', () => {
+    /** The provider's hook over the landing page with the hero selected. */
+    function renderState(): RenderHookResult<
+      CampaignEditorContextValue,
+      unknown
+    > {
+      return renderHook(() => useCampaignEditor(), {
+        wrapper: ({ children }: { children: ReactNode }) => (
+          <StaticEditor initialState={{ selectedBlockId: 'heroId' }}>
+            {children}
+          </StaticEditor>
+        )
+      })
+    }
+
+    function send(
+      result: { current: CampaignEditorContextValue },
+      action: CampaignEditorAction
+    ): void {
+      act(() => result.current.dispatch(action))
     }
 
     it('changes the preview language without touching the selection', () => {
-      expect(
-        reducer(state, {
-          type: 'SetPreviewLanguageAction',
-          previewLanguageId: '496'
-        })
-      ).toEqual({ ...state, previewLanguageId: '496' })
+      const { result } = renderState()
+
+      send(result, {
+        type: 'SetPreviewLanguageAction',
+        previewLanguageId: '496'
+      })
+
+      expect(result.current.state).toMatchObject({
+        previewLanguageId: '496',
+        selectedBlockId: 'heroId'
+      })
     })
 
     it('clears the selection when the page changes', () => {
-      expect(
-        reducer(state, {
-          type: 'SetPageKindAction',
-          pageKind: CampaignPageKind.regionTemplate
-        })
-      ).toEqual({
-        pageKind: CampaignPageKind.regionTemplate,
-        previewLanguageId: '529',
-        selectedBlockId: undefined,
-        panel: 'add',
-        inspectorTab: 'style',
-        navigatorExpandRequest: 0
+      const { result } = renderState()
+
+      send(result, {
+        type: 'SetPageKindAction',
+        pageKind: CampaignPageKind.regionTemplate
       })
+
+      expect(result.current.state.pageKind).toBe(
+        CampaignPageKind.regionTemplate
+      )
+      expect(result.current.state.selectedBlockId).toBeUndefined()
+      expect(result.current.selection.kind).toBe('campaign')
     })
 
     it('counts Navigator expand-all requests', () => {
-      expect(
-        reducer(state, { type: 'ToggleNavigatorExpandAction' })
-          .navigatorExpandRequest
-      ).toBe(1)
+      const { result } = renderState()
+
+      send(result, { type: 'ToggleNavigatorExpandAction' })
+
+      expect(result.current.state.navigatorExpandRequest).toBe(1)
     })
 
     it('focuses a page and a block together for undo', () => {
-      expect(
-        reducer(state, {
-          type: 'SetEditorFocusAction',
-          pageKind: CampaignPageKind.regionTemplate,
-          selectedBlockId: 'regionHeaderId'
-        })
-      ).toMatchObject({
+      const { result } = renderState()
+
+      send(result, {
+        type: 'SetEditorFocusAction',
         pageKind: CampaignPageKind.regionTemplate,
         selectedBlockId: 'regionHeaderId'
       })
-      expect(
-        reducer(state, {
-          type: 'SetEditorFocusAction',
-          selectedBlockId: 'navHomeId'
-        })
-      ).toMatchObject({
-        pageKind: CampaignPageKind.landing,
+      expect(result.current.state).toMatchObject({
+        pageKind: CampaignPageKind.regionTemplate,
+        selectedBlockId: 'regionHeaderId'
+      })
+
+      send(result, {
+        type: 'SetEditorFocusAction',
+        selectedBlockId: 'navHomeId'
+      })
+      expect(result.current.state).toMatchObject({
+        pageKind: CampaignPageKind.regionTemplate,
         selectedBlockId: 'navHomeId'
       })
     })
 
     it('shows a rail panel and keeps it when the same one is named again', () => {
-      const opened = reducer(state, { type: 'SetPanelAction', panel: 'pages' })
-      expect(opened.panel).toBe('pages')
-      expect(
-        reducer(opened, { type: 'SetPanelAction', panel: 'navigator' }).panel
-      ).toBe('navigator')
-      expect(
-        reducer(opened, { type: 'SetPanelAction', panel: 'pages' }).panel
-      ).toBe('pages')
+      const { result } = renderState()
+
+      send(result, { type: 'SetPanelAction', panel: 'pages' })
+      expect(result.current.state.panel).toBe('pages')
+      send(result, { type: 'SetPanelAction', panel: 'pages' })
+      expect(result.current.state.panel).toBe('pages')
+      send(result, { type: 'SetPanelAction', panel: 'navigator' })
+      expect(result.current.state.panel).toBe('navigator')
     })
 
     it('selects a region card on its Settings tab, since a card has no styles of its own', () => {
-      expect(
-        reducer(
-          { ...state, inspectorTab: 'style' },
-          {
-            type: 'SelectRegionAction',
-            hostBlockId: 'landingSwitcherId',
-            regionId: 'eurRegionId'
-          }
-        )
-      ).toMatchObject({
+      const { result } = renderState()
+      expect(result.current.state.inspectorTab).toBe('style')
+
+      act(() => result.current.selectRegion('eurRegionId', 'landingSwitcherId'))
+
+      expect(result.current.state).toMatchObject({
         selectedBlockId: 'landingSwitcherId',
         selectedRegionId: 'eurRegionId',
         inspectorTab: 'settings'
@@ -220,12 +243,17 @@ describe('CampaignEditorProvider', () => {
     })
 
     it('sets the Inspector tab without touching the selection', () => {
-      expect(
-        reducer(state, {
-          type: 'SetInspectorTabAction',
-          inspectorTab: 'settings'
-        })
-      ).toEqual({ ...state, inspectorTab: 'settings' })
+      const { result } = renderState()
+
+      send(result, {
+        type: 'SetInspectorTabAction',
+        inspectorTab: 'settings'
+      })
+
+      expect(result.current.state).toMatchObject({
+        inspectorTab: 'settings',
+        selectedBlockId: 'heroId'
+      })
     })
   })
 

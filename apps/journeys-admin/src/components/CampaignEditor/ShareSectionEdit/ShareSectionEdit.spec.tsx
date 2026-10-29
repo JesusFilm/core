@@ -24,7 +24,13 @@ import { CAMPAIGN_REGION_LANGUAGE_DELETE } from '../../../libs/useCampaignRegion
 import { CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH } from '../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../data'
-import { CommandProbe, QueriedEditor, UndoRedo } from '../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  UndoRedo,
+  holdRequests,
+  landRequests
+} from '../testing'
 
 import { shareLanguageState } from './shareLanguage'
 import { ShareSectionEdit, addLanguageOptions } from './ShareSectionEdit'
@@ -626,8 +632,8 @@ describe('ShareSectionEdit', () => {
       })
     ).toBeInTheDocument()
 
-    fireEvent.click(bin)
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await holdRequests(() => fireEvent.click(bin))
+    await landRequests()
     expect(englishDeleteMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('ShareLanguageRow-529')).toBeInTheDocument()
   })

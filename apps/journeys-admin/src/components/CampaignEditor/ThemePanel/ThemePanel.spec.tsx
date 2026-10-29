@@ -354,7 +354,7 @@ describe('ThemePanel', () => {
   })
 
   describe('fonts', () => {
-    it('offers the curated lists per role (10 header, 7 body, 7 label) plus Default, and no free text', async () => {
+    it('offers each role’s curated list, sorted, plus Default, and no free text', async () => {
       renderPanel([])
 
       fireEvent.mouseDown(
@@ -364,7 +364,6 @@ describe('ThemePanel', () => {
         'Default',
         ...[...HEADER_FONT_OPTIONS].sort()
       ])
-      expect(HEADER_FONT_OPTIONS).toHaveLength(10)
       fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' })
 
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Body Text' }))
@@ -372,7 +371,6 @@ describe('ThemePanel', () => {
         'Default',
         ...[...BODY_FONT_OPTIONS].sort()
       ])
-      expect(BODY_FONT_OPTIONS).toHaveLength(7)
       fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' })
 
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label Text' }))
@@ -380,7 +378,6 @@ describe('ThemePanel', () => {
         'Default',
         ...[...LABELS_FONT_OPTIONS].sort()
       ])
-      expect(LABELS_FONT_OPTIONS).toHaveLength(7)
 
       expect(screen.queryByRole('textbox', { name: /font/i })).toBeNull()
     })

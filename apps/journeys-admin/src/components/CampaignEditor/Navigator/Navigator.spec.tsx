@@ -1,4 +1,3 @@
-import type { DndContextProps } from '@dnd-kit/core'
 import {
   act,
   fireEvent,
@@ -7,53 +6,29 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Profiler, ReactElement } from 'react'
 
 import { GET_CAMPAIGN_STATS } from '@core/journeys/ui/Campaign'
 import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CampaignHoverProvider } from '../CampaignHoverProvider'
 import { Canvas } from '../Canvas'
-import {
-  campaign,
-  campaignWithColumns,
-  campaignWithRegions,
-  eurLine
-} from '../data'
+import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 import { Hotkeys } from '../Hotkeys'
-import { SelectionProbe, StaticEditor, frameBody } from '../testing'
+import {
+  BlocksProbe,
+  QueriedEditor,
+  SelectionProbe,
+  SpyMock,
+  StaticEditor,
+  frameBody
+} from '../testing'
 
 import { Navigator } from './Navigator'
-
-const mocks = vi.hoisted(() => ({
-  addBlockOrder: vi.fn(),
-  addColumnSwap: vi.fn(),
-  reorderRegion: vi.fn(),
-  dnd: { current: undefined as DndContextProps | undefined }
-}))
-
-vi.mock('@dnd-kit/core', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@dnd-kit/core')>()
-  return {
-    ...actual,
-    DndContext: (props: DndContextProps): ReactElement => {
-      mocks.dnd.current = props
-      return <actual.DndContext {...props} />
-    }
-  }
-})
-
-vi.mock('../utils/useCampaignBlockOrderCommand', () => ({
-  useCampaignBlockOrderCommand: () => ({ addBlockOrder: mocks.addBlockOrder })
-}))
-vi.mock('../utils/useCampaignColumnSwapCommand', () => ({
-  useCampaignColumnSwapCommand: () => ({ addColumnSwap: mocks.addColumnSwap })
-}))
-vi.mock('../utils/useCampaignRegionCommand', () => ({
-  useCampaignRegionCommand: () => ({ reorderRegion: mocks.reorderRegion })
-}))
 
 const statsMock = {
   request: { query: GET_CAMPAIGN_STATS, variables: { id: campaign.id } },
@@ -125,26 +100,6 @@ function renderNavigator({
   )
 }
 
-function renderNavigatorForDrop(campaignProp = campaign): void {
-  render(
-    <StaticEditor campaign={campaignProp}>
-      <CampaignHoverProvider>
-        <Navigator />
-      </CampaignHoverProvider>
-    </StaticEditor>
-  )
-}
-
-/** Ends a drag of one row over another as the sensors report it. */
-function drop(activeId: string, overId: string | undefined): void {
-  act(() => {
-    mocks.dnd.current?.onDragEnd?.({
-      active: { id: activeId },
-      collisions: overId == null ? [] : [{ id: overId }]
-    } as unknown as Parameters<NonNullable<DndContextProps['onDragEnd']>>[0])
-  })
-}
-
 function row(id: string): HTMLElement {
   return screen.getByTestId(`NavigatorRow-${id}`)
 }
@@ -153,8 +108,8 @@ function queryRow(id: string): HTMLElement | null {
   return screen.queryByTestId(`NavigatorRow-${id}`)
 }
 
-function content(item: HTMLElement): HTMLElement {
-  return item.querySelector('.MuiTreeItem-content') as HTMLElement
+function content(id: string): HTMLElement {
+  return screen.getByTestId(`NavigatorRowContent-${id}`)
 }
 
 describe('Navigator', () => {
@@ -245,7 +200,7 @@ describe('Navigator', () => {
       ;(body.querySelector('#heroId') as HTMLElement).scrollIntoView =
         scrollIntoView
 
-      fireEvent.click(content(row('heroId')))
+      fireEvent.click(content('heroId'))
 
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
       expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' })
@@ -257,7 +212,7 @@ describe('Navigator', () => {
         initialState: { selectedBlockId: 'eurLineId' }
       })
 
-      fireEvent.click(content(row('landingSwitcherId__afrRegionId')))
+      fireEvent.click(content('landingSwitcherId__afrRegionId'))
 
       expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
       expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
@@ -272,9 +227,7 @@ describe('Navigator', () => {
       renderNavigator()
 
       fireEvent.click(
-        row('landingJourneyListId').querySelector(
-          '.MuiTreeItem-iconContainer'
-        ) as HTMLElement
+        screen.getByTestId('NavigatorRowExpand-landingJourneyListId')
       )
 
       expect(row('landingJourneyListId')).toHaveAttribute(
@@ -419,7 +372,7 @@ describe('Navigator', () => {
 
       expect(row('columnsId')).toHaveAttribute('aria-expanded', 'true')
       expect(row('slotRichTextId')).toBeInTheDocument()
-      expect(content(row('slotRichTextId'))).toHaveAttribute('data-selected')
+      expect(content('slotRichTextId')).toHaveAttribute('data-selected')
     })
 
     it('expands every row on Option+Z and collapses them on the next', () => {
@@ -468,10 +421,10 @@ describe('Navigator', () => {
       const body = await frameBody(baseElement, 'CanvasSection-heroId')
       const hero = body.querySelector('#heroId') as HTMLElement
 
-      fireEvent.mouseEnter(content(row('heroId')))
+      fireEvent.mouseEnter(content('heroId'))
       expect(hero).toHaveAttribute('data-hovered')
 
-      fireEvent.mouseLeave(content(row('heroId')))
+      fireEvent.mouseLeave(content('heroId'))
       expect(hero).not.toHaveAttribute('data-hovered')
     })
 
@@ -496,16 +449,14 @@ describe('Navigator', () => {
         withCanvas: true,
         onCanvasRender
       })
-      const body = await frameBody(baseElement, 'CanvasSection-heroId')
+      // The last render the canvas makes on its own: the analytics stats land.
+      const body = await frameBody(baseElement, 'CampaignAnalyticsList')
       const hero = body.querySelector('#heroId') as HTMLElement
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 50))
-      })
       onCanvasRender.mockClear()
 
       fireEvent.mouseOver(hero)
-      fireEvent.mouseEnter(content(row('footerId')))
-      fireEvent.mouseLeave(content(row('footerId')))
+      fireEvent.mouseEnter(content('footerId'))
+      fireEvent.mouseLeave(content('footerId'))
       fireEvent.mouseOver(
         body.querySelector('#landingSwitcherId') as HTMLElement
       )
@@ -515,114 +466,80 @@ describe('Navigator', () => {
   })
 })
 
-describe('Navigator drop', () => {
+describe('Navigator drag', () => {
+  // jsdom lays nothing out: stack the rows 40 px apart in tree order, so the
+  // keyboard sensor finds the sibling below the dragged row.
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('reorders a section through the block order Command', () => {
-    renderNavigatorForDrop()
-
-    drop('heroId', 'landingJourneyListId')
-
-    expect(mocks.addBlockOrder).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'heroId' }),
-      3,
-      undefined
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      function (this: HTMLElement): DOMRect {
+        const rows = Array.from(
+          document.querySelectorAll('[data-testid^="NavigatorRow-"]')
+        )
+        const owner = this.closest('[data-testid^="NavigatorRow-"]')
+        const top = owner == null ? 0 : rows.indexOf(owner) * 40
+        return {
+          x: 0,
+          y: top,
+          top,
+          left: 0,
+          bottom: top + 32,
+          right: 240,
+          width: 240,
+          height: 32,
+          toJSON: () => ({})
+        }
+      }
     )
   })
 
-  it('reorders a journey card through the block order Command', () => {
-    renderNavigatorForDrop()
+  afterEach(() => vi.restoreAllMocks())
 
-    drop('landingDraftJourneyId', 'landingJourneyId')
-
-    expect(mocks.addBlockOrder).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'landingDraftJourneyId' }),
-      1,
-      undefined
+  it('moves a section down a place with the keyboard as one order Command', async () => {
+    const orderMock: SpyMock = {
+      request: {
+        query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+        variables: { id: 'heroId', parentOrder: 1 }
+      },
+      result: vi.fn(() => ({
+        data: {
+          campaignBlockOrderUpdate: [
+            'landingSwitcherId',
+            'heroId',
+            'carouselId',
+            'landingJourneyListId',
+            'landingAnalyticsId'
+          ].map((id, parentOrder) => ({
+            __typename: campaign.blocks.find((block) => block.id === id)!
+              .__typename,
+            id,
+            parentOrder
+          }))
+        }
+      }))
+    }
+    render(
+      <QueriedEditor mocks={[orderMock]}>
+        <BlocksProbe />
+        <Navigator />
+      </QueriedEditor>
     )
-  })
+    const hero = await screen.findByTestId('NavigatorDragHandle-heroId')
+    act(() => hero.focus())
 
-  it('flips an Extra’s placement and reorders it in one Command when it crosses the divider', () => {
-    renderNavigatorForDrop()
+    await userEvent.keyboard('[Space]')
+    expect(hero).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.keyboard('[ArrowDown]')
+    expect(
+      within(row('landingSwitcherId')).getByTestId('NavigatorDropTarget')
+    ).toHaveAttribute('data-drop-edge', 'after')
+    await userEvent.keyboard('[Space]')
 
-    drop('journeyListNoteId', 'landingJourneyListId__content')
-
-    expect(mocks.addBlockOrder).toHaveBeenCalledTimes(1)
-    expect(mocks.addBlockOrder).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'journeyListNoteId' }),
-      0,
-      'below'
+    expect(screen.getByTestId('Block-heroId')).toHaveTextContent(
+      'CampaignHeroBlock||1|'
     )
-  })
-
-  it('swaps the Column Slots through the swap Command, selecting the section in the slot', () => {
-    renderNavigatorForDrop(campaignWithColumns)
-
-    drop('slotRightId', 'slotLeftId')
-
-    expect(mocks.addColumnSwap).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'slotRightId' }),
-      undefined
+    expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
+      'CampaignRegionSwitcherBlock||0|'
     )
-    drop('slotLeftId', 'slotRightId')
-    expect(mocks.addColumnSwap).toHaveBeenLastCalledWith(
-      expect.objectContaining({ id: 'slotLeftId' }),
-      'slotRichTextId'
-    )
-  })
-
-  it('reorders region cards through the region order Command', () => {
-    renderNavigatorForDrop(campaignWithRegions)
-
-    drop('landingSwitcherId__eurRegionId', 'landingSwitcherId__afrRegionId')
-
-    expect(mocks.reorderRegion).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'eurRegionId' }),
-      1
-    )
-  })
-
-  it('reorders a Region Line through the block order Command', () => {
-    renderNavigatorForDrop({
-      ...campaignWithRegions,
-      blocks: [
-        ...campaignWithRegions.blocks,
-        { ...eurLine, id: 'eurSecondLineId', parentOrder: 1 }
-      ]
-    })
-
-    drop(
-      'landingSwitcherId__eurRegionId__eurSecondLineId',
-      'landingSwitcherId__eurRegionId__eurLineId'
-    )
-
-    expect(mocks.addBlockOrder).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'eurSecondLineId' }),
-      0,
-      undefined
-    )
-  })
-
-  it('does nothing for a drop outside the row’s sibling group', () => {
-    renderNavigatorForDrop()
-
-    drop('heroId', 'landingJourneyId')
-    drop('landingJourneyId', 'journeyListNoteId')
-    drop('heroId', 'headerId')
-
-    expect(mocks.addBlockOrder).not.toHaveBeenCalled()
-    expect(mocks.addColumnSwap).not.toHaveBeenCalled()
-    expect(mocks.reorderRegion).not.toHaveBeenCalled()
-  })
-
-  it('does nothing for a drop on nothing, or on the row itself', () => {
-    renderNavigatorForDrop()
-
-    drop('heroId', undefined)
-    drop('heroId', 'heroId')
-
-    expect(mocks.addBlockOrder).not.toHaveBeenCalled()
+    await waitFor(() => expect(orderMock.result).toHaveBeenCalled())
   })
 })

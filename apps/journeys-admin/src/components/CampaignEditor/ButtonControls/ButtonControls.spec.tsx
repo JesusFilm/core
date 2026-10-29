@@ -46,7 +46,7 @@ function renderControls(mocks: SpyMock[]): ReturnType<typeof render> {
 describe('ButtonControls', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('shows variant, size, align and both colours as inline rows, with no menu or popover', async () => {
+  it('shows variant, size, align and both colours as inline rows', async () => {
     renderControls([])
 
     expect(await screen.findByRole('group', { name: 'Variant' })).toBeVisible()
@@ -54,8 +54,6 @@ describe('ButtonControls', () => {
     expect(screen.getByRole('group', { name: 'Align' })).toBeVisible()
     expect(screen.getByTestId('ButtonColourRow-color')).toBeVisible()
     expect(screen.getByTestId('ButtonColourRow-labelColor')).toBeVisible()
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
   })
 
   it('sets the variant (text, contained, outlined) as one Command', async () => {

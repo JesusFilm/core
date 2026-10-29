@@ -302,10 +302,14 @@ const NavigatorItem = forwardRef<HTMLLIElement, TreeItemProps>(
         data-canvas-hovered={canvasHovered ? '' : undefined}
         slotProps={{
           content: {
+            ...testIdProps(`NavigatorRowContent-${props.itemId}`),
             onMouseEnter: () => rows?.onHover(node ?? undefined),
             onMouseLeave: () => rows?.onHover(undefined)
           },
-          iconContainer: { onClick: handleIconClick }
+          iconContainer: {
+            ...testIdProps(`NavigatorRowExpand-${props.itemId}`),
+            onClick: handleIconClick
+          }
         }}
         sx={{
           '& > .MuiTreeItem-content': { minWidth: 0 },
@@ -329,6 +333,11 @@ const NavigatorItem = forwardRef<HTMLLIElement, TreeItemProps>(
     )
   }
 )
+
+/** A test id for a TreeItem slot, whose props type leaves out data attributes. */
+function testIdProps(testId: string): Record<string, string> {
+  return { 'data-testid': testId }
+}
 
 function unique(ids: string[]): string[] {
   return [...new Set(ids)]

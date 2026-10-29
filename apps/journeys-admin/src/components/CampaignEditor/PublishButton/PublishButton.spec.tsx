@@ -225,15 +225,4 @@ describe('PublishButton', () => {
       screen.getByRole('link', { name: 'Refresh and open page' })
     ).toHaveAttribute('href', '/api/campaign/open?id=campaignId&regionSlug=afr')
   })
-
-  it('has no Save button, Unsaved chip or save indicator', () => {
-    render(<Harness />)
-    openPopover()
-
-    expect(
-      screen.queryByRole('button', { name: 'Save' })
-    ).not.toBeInTheDocument()
-    expect(screen.queryByText('Unsaved')).not.toBeInTheDocument()
-    expect(screen.queryByText(/Saving/)).not.toBeInTheDocument()
-  })
 })

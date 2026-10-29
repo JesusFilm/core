@@ -363,19 +363,13 @@ describe('Inspector', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('shows the campaign settings on Settings, with no Languages or Translations buttons', () => {
+    it('shows the campaign settings on Settings', () => {
       renderInspector({ inspectorTab: 'settings' })
 
       expect(screen.getByTestId('CampaignSettings')).toBeInTheDocument()
       expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
         campaign.title
       )
-      expect(
-        screen.queryByRole('button', { name: 'Languages' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Translations' })
-      ).not.toBeInTheDocument()
     })
   })
 

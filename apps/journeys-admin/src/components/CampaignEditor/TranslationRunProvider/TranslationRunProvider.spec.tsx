@@ -10,7 +10,14 @@ import { CampaignAiTranslateVariables } from '@core/journeys/ui/useCampaignAiTra
 
 import { useCampaignQuery } from '../../../libs/useCampaignQuery'
 import { CAMPAIGN_UPDATE } from '../../../libs/useCampaignUpdateMutation'
-import { SpyMock, campaignCache, getCampaignMock } from '../testing'
+import {
+  SpyMock,
+  campaignCache,
+  emitSubscription,
+  getCampaignMock,
+  holdRequests,
+  landRequests
+} from '../testing'
 
 import { TranslationRunProvider, useTranslationRun } from '.'
 
@@ -45,18 +52,6 @@ function report(
       }
     }
   }
-}
-
-/** Deliver a subscription result; the mock link does so on a timer. */
-async function emit(
-  link: MockSubscriptionLink,
-  result: MockSubscriptionLink.Result,
-  complete = false
-): Promise<void> {
-  await act(async () => {
-    link.simulateResult(result, complete)
-    await new Promise((resolve) => setTimeout(resolve, 0))
-  })
 }
 
 const defaultLanguageChanged = vi.fn()
@@ -157,13 +152,6 @@ const swapMock = {
   result: swapped
 }
 
-/** Lets a swap the provider might have fired reach the link. */
-async function settle(): Promise<void> {
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 20))
-  })
-}
-
 describe('TranslationRunProvider', () => {
   beforeEach(() => vi.clearAllMocks())
 
@@ -180,7 +168,7 @@ describe('TranslationRunProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
     expect(screen.getByTestId('Run')).toHaveTextContent('Français 0 0')
 
-    await emit(link, report(55, 'Translated 2 of 4 parts', 6))
+    await emitSubscription(link, report(55, 'Translated 2 of 4 parts', 6))
     expect(screen.getByTestId('Run')).toHaveTextContent(
       'Français 55 Translated 2 of 4 parts 6'
     )
@@ -192,7 +180,11 @@ describe('TranslationRunProvider', () => {
     renderProvider(link)
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
 
-    await emit(link, report(100, 'Translation completed!', 12, true), true)
+    await emitSubscription(
+      link,
+      report(100, 'Translation completed!', 12, true),
+      true
+    )
 
     expect(
       screen.getByText('Translated 12 strings into Français')
@@ -206,7 +198,7 @@ describe('TranslationRunProvider', () => {
     link.onUnsubscribe(unsubscribed)
     renderProvider(link)
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
-    await emit(link, report(55, 'Translated 2 of 4 parts', 6))
+    await emitSubscription(link, report(55, 'Translated 2 of 4 parts', 6))
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
 
@@ -230,7 +222,7 @@ describe('TranslationRunProvider', () => {
     renderProvider(link)
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
 
-    await emit(link, { error: new Error('Translation failed') })
+    await emitSubscription(link, { error: new Error('Translation failed') })
 
     expect(screen.getByTestId('Error')).toHaveTextContent('Translation failed')
     expect(screen.getAllByText('Translation failed')).toHaveLength(2)
@@ -242,7 +234,7 @@ describe('TranslationRunProvider', () => {
     const link = new MockSubscriptionLink()
     renderProvider(link)
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
-    await emit(link, { error: new Error('Translation failed') })
+    await emitSubscription(link, { error: new Error('Translation failed') })
 
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
 
@@ -257,7 +249,7 @@ describe('TranslationRunProvider', () => {
     link.onUnsubscribe(unsubscribed)
     renderProvider(link)
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
-    await emit(link, report(55, 'Translated 2 of 4 parts', 6))
+    await emitSubscription(link, report(55, 'Translated 2 of 4 parts', 6))
 
     fireEvent.click(screen.getByRole('button', { name: 'Start Spanish' }))
 
@@ -273,12 +265,16 @@ describe('TranslationRunProvider', () => {
     {
       outcome: 'finished',
       end: async (link: MockSubscriptionLink): Promise<void> =>
-        await emit(link, report(100, 'Translation completed!', 12, true), true)
+        await emitSubscription(
+          link,
+          report(100, 'Translation completed!', 12, true),
+          true
+        )
     },
     {
       outcome: 'errored',
       end: async (link: MockSubscriptionLink): Promise<void> =>
-        await emit(link, { error: new Error('Translation failed') })
+        await emitSubscription(link, { error: new Error('Translation failed') })
     },
     {
       outcome: 'cancelled',
@@ -300,7 +296,10 @@ describe('TranslationRunProvider', () => {
     )
     expect(campaignRead.result).toHaveBeenCalledTimes(1)
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
-    await emit(subscriptionLink, report(55, 'Translated 2 of 4 parts', 6))
+    await emitSubscription(
+      subscriptionLink,
+      report(55, 'Translated 2 of 4 parts', 6)
+    )
     expect(campaignRead.result).toHaveBeenCalledTimes(1)
 
     await end(subscriptionLink)
@@ -352,7 +351,7 @@ describe('TranslationRunProvider', () => {
     renderProvider(link)
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
 
-    await emit(
+    await emitSubscription(
       link,
       conflict('A translation of this campaign into 496 is running', {
         code: 'CONFLICT',
@@ -375,7 +374,7 @@ describe('TranslationRunProvider', () => {
     renderProvider(link)
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
 
-    await emit(
+    await emitSubscription(
       link,
       conflict('campaign not found', { code: 'NOT_FOUND', field: 'campaignId' })
     )
@@ -391,10 +390,13 @@ describe('TranslationRunProvider', () => {
       const subscriptionLink = new MockSubscriptionLink()
       renderWithMocks(subscriptionLink, [swapMock, getCampaignMock])
       fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
-      await emit(subscriptionLink, report(55, 'Translated 2 of 4 parts', 6))
+      await emitSubscription(
+        subscriptionLink,
+        report(55, 'Translated 2 of 4 parts', 6)
+      )
       expect(swapped).not.toHaveBeenCalled()
 
-      await emit(
+      await emitSubscription(
         subscriptionLink,
         report(100, 'Translation completed!', 12, true),
         true
@@ -409,8 +411,9 @@ describe('TranslationRunProvider', () => {
       renderWithMocks(subscriptionLink, [swapMock, getCampaignMock])
       fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
 
-      await emit(subscriptionLink, { error: new Error('Translation failed') })
-      await settle()
+      await emitSubscription(subscriptionLink, {
+        error: new Error('Translation failed')
+      })
 
       expect(swapped).not.toHaveBeenCalled()
       expect(defaultLanguageChanged).not.toHaveBeenCalled()
@@ -420,10 +423,16 @@ describe('TranslationRunProvider', () => {
       const subscriptionLink = new MockSubscriptionLink()
       renderWithMocks(subscriptionLink, [swapMock, getCampaignMock])
       fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
-      await emit(subscriptionLink, report(55, 'Translated 2 of 4 parts', 6))
+      await emitSubscription(
+        subscriptionLink,
+        report(55, 'Translated 2 of 4 parts', 6)
+      )
 
-      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-      await settle()
+      // Lets a swap the provider might have fired reach the link.
+      await holdRequests(() =>
+        fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+      )
+      await landRequests()
 
       expect(screen.getByTestId('Run')).toHaveTextContent('idle')
       expect(swapped).not.toHaveBeenCalled()
@@ -440,7 +449,7 @@ describe('TranslationRunProvider', () => {
       ])
       fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
 
-      await emit(
+      await emitSubscription(
         subscriptionLink,
         report(100, 'Translation completed!', 12, true),
         true

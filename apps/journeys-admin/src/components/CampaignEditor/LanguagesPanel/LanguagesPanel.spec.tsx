@@ -17,7 +17,13 @@ import { CAMPAIGN_LANGUAGE_ADD } from '../../../libs/useCampaignLanguageAddMutat
 import { CAMPAIGN_LANGUAGE_REMOVE } from '../../../libs/useCampaignLanguageRemoveMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { CommandProbe, SpyMock, StaticEditor } from '../testing'
+import {
+  CommandProbe,
+  SpyMock,
+  StaticEditor,
+  holdRequests,
+  landRequests
+} from '../testing'
 
 import { LanguagesPanel, languageNames } from './LanguagesPanel'
 
@@ -257,7 +263,9 @@ describe('LanguagesPanel', () => {
     const remove = removeMock('496')
     renderPanel([remove])
 
-    fireEvent.click(screen.getByRole('button', { name: 'Remove Français' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Remove Français' }))
+    )
 
     const dialog = screen.getByTestId('LanguageRemoveDialog')
     expect(dialog).toHaveTextContent('Remove Français?')
@@ -265,7 +273,7 @@ describe('LanguagesPanel', () => {
       'Every translation into Français is deleted.'
     )
     expect(dialog).toHaveTextContent('This cannot be undone.')
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await landRequests()
     expect(remove.result).not.toHaveBeenCalled()
   })
 
