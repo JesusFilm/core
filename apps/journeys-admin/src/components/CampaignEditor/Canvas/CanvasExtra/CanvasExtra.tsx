@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { CampaignTextField } from '../../../../libs/useCampaignBlockTextMutation'
@@ -9,6 +9,7 @@ import { blockLabel } from '../../utils/blockLabel'
 import type { CanvasBlock } from '../canvasBlock'
 import { HOVER_OUTLINE_SX, SELECTED_OUTLINE } from '../hoverOutline'
 import { InlineText } from '../InlineText'
+import { selectableProps } from '../selectable'
 import { SelectionBadge } from '../SelectionBadge'
 
 interface CanvasExtraProps {
@@ -18,7 +19,7 @@ interface CanvasExtraProps {
   focusField?: CampaignTextField
 }
 
-/** A text or button Extra: click to select, edit its one text field in place. */
+/** A text or button Extra: click (or Enter) to select, edit its one text field in place. */
 export function CanvasExtra({
   block,
   selected,
@@ -26,11 +27,7 @@ export function CanvasExtra({
   focusField
 }: CanvasExtraProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    event.stopPropagation()
-    onSelect()
-  }
+  const selectable = selectableProps(onSelect, blockLabel(t, block.__typename))
 
   switch (block.__typename) {
     case 'CampaignTypographyBlock':
@@ -40,7 +37,8 @@ export function CanvasExtra({
           data-testid={`CanvasExtra-${block.id}`}
           data-selected={selected}
           data-hoverable
-          onClick={handleClick}
+          role="button"
+          {...selectable}
           sx={{
             position: 'relative',
             width: '100%',
@@ -75,7 +73,8 @@ export function CanvasExtra({
           data-testid={`CanvasExtra-${block.id}`}
           data-selected={selected}
           data-hoverable
-          onClick={handleClick}
+          role="button"
+          {...selectable}
           sx={{
             position: 'relative',
             display: 'flex',

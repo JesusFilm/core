@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import {
   CampaignCarouselArrows,
@@ -20,6 +20,7 @@ import { campaignStringText } from '../../utils/campaignStringText'
 import type { CanvasBlock } from '../canvasBlock'
 import { EditorNote } from '../EditorNote'
 import { HOVER_OUTLINE_SX, SELECTED_OUTLINE } from '../hoverOutline'
+import { selectableProps } from '../selectable'
 import { SelectionBadge } from '../SelectionBadge'
 
 interface CanvasCarouselProps {
@@ -30,7 +31,8 @@ interface CanvasCarouselProps {
  * A Video Carousel's cards on the editor canvas, as the public page lays
  * them out: the Watch expansion of `videoId` (the Video's first 12 children
  * then "See all on Watch", or the Video itself), or the explicit items. An
- * explicit item's card selects it for the card bar (Edit, ← →, bin); the
+ * explicit item's card selects it for the card bar (Edit, ← →, bin), by
+ * click or by Enter or Space; the
  * expanded cards belong to the section. A dashed placeholder points at Edit
  * while there is nothing to show. From `md` up the row has the same previous /
  * next arrows as the public page; they only scroll, they never edit.
@@ -79,14 +81,20 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
       </Box>
     )
 
-  function handleSelect(event: MouseEvent<HTMLElement>, id: string): void {
-    if (!explicit) return
-    event.stopPropagation()
-    selectBlock(id)
-  }
-
   function renderCard(card: CampaignCarouselCard): ReactElement {
     const selected = explicit && selection.block?.id === card.id
+    // Only an explicit item is its own block; an expanded card belongs to the section.
+    const selectable = explicit
+      ? {
+          role: 'button',
+          ...selectableProps(
+            () => selectBlock(card.id),
+            card.kind === 'video' && card.title != null
+              ? card.title
+              : blockLabel(t, 'CampaignVideoBlock')
+          )
+        }
+      : {}
     return (
       <Box
         key={card.id}
@@ -94,9 +102,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
         data-testid={`CanvasCarouselCard-${card.id}`}
         data-selected={selected}
         data-hoverable={explicit ? '' : undefined}
-        onClick={(event: MouseEvent<HTMLElement>) =>
-          handleSelect(event, card.id)
-        }
+        {...selectable}
         sx={{
           position: 'relative',
           flex: '0 0 auto',

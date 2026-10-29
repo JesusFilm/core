@@ -36,6 +36,7 @@ import {
 } from '../../../../libs/campaignAddress'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../../Canvas/hoverOutline'
+import { selectableProps } from '../../Canvas/selectable'
 import { SelectionBadge } from '../../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../../Pickers/JourneyPicker'
@@ -170,10 +171,11 @@ export function ShareLanguageRow({
       data-testid={`ShareLanguageRow-${regionLanguage.languageId}`}
       data-state={state}
       data-hoverable
-      onClick={(event: MouseEvent<HTMLElement>) => {
-        handleStopPropagation(event)
-        selectBlock(hostBlockId)
-      }}
+      role="button"
+      {...selectableProps(
+        () => selectBlock(hostBlockId),
+        `${shareLanguageLabel(t)}: ${regionLanguageLabel(regionLanguage)}`
+      )}
       sx={{
         position: 'relative',
         cursor: 'pointer',

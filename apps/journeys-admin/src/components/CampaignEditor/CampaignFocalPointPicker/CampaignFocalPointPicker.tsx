@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import {
+  KeyboardEvent,
   ReactElement,
   MouseEvent as ReactMouseEvent,
   useEffect,
@@ -22,13 +23,17 @@ interface CampaignFocalPointPickerProps {
   width?: number | null
   height?: number | null
   value: FocalPoint
-  /** The point the author settled on: on click, or when a drag ends. */
+  /** The point the author settled on: on click, when a drag ends, or per arrow key. */
   onChange: (point: FocalPoint) => void
 }
 
 function clamp(value: number): number {
   return Math.round(Math.min(100, Math.max(0, value)))
 }
+
+/** How far one arrow key moves the dot, in percent; with Shift, ten times as far. */
+const ARROW_STEP = 1
+const SHIFT_ARROW_STEP = 10
 
 /** The pointer's place over the picture as whole percentages. */
 export function focalPointOf(
@@ -45,9 +50,10 @@ export function focalPointOf(
 
 /**
  * The picture at its own ratio under a rule-of-thirds grid with a draggable
- * dot: click to place the dot, drag it to move it. The dot follows the
- * pointer at once; `onChange` fires once per click or drag so the host can
- * write one Command.
+ * dot: click to place the dot, drag it to move it, or focus it and move it
+ * with the arrow keys (Shift for bigger steps). The dot follows the
+ * pointer at once; `onChange` fires once per click, drag or key press so
+ * the host can write one Command.
  */
 export function CampaignFocalPointPicker({
   src,
@@ -94,6 +100,27 @@ export function CampaignFocalPointPicker({
     onChange(next)
   }
 
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
+    const step = event.shiftKey ? SHIFT_ARROW_STEP : ARROW_STEP
+    const moves: Record<string, [number, number]> = {
+      ArrowLeft: [-step, 0],
+      ArrowRight: [step, 0],
+      ArrowUp: [0, -step],
+      ArrowDown: [0, step]
+    }
+    const move = moves[event.key]
+    if (move == null) return
+    event.preventDefault()
+    const next = {
+      focalLeft: clamp(point.focalLeft + move[0]),
+      focalTop: clamp(point.focalTop + move[1])
+    }
+    if (next.focalLeft === point.focalLeft && next.focalTop === point.focalTop)
+      return
+    setPoint(next)
+    onChange(next)
+  }
+
   const aspectRatio =
     width != null && height != null && height > 0
       ? `${width} / ${height}`
@@ -116,8 +143,6 @@ export function CampaignFocalPointPicker({
       >
         <Box
           ref={frameRef}
-          role="img"
-          aria-label={alt ?? t('Focal point')}
           data-testid="FocalPointFrame"
           onClick={handleClick}
           sx={{
@@ -133,7 +158,7 @@ export function CampaignFocalPointPicker({
           <Box
             component="img"
             src={src}
-            alt=""
+            alt={alt ?? t('Focal point')}
             draggable={false}
             sx={{
               display: 'block',
@@ -172,6 +197,16 @@ export function CampaignFocalPointPicker({
           ))}
           <Box
             data-testid="FocalPointDot"
+            role="slider"
+            tabIndex={0}
+            aria-label={t(
+              'Focal point: {{left}}% from the left, {{top}}% from the top',
+              { left: point.focalLeft, top: point.focalTop }
+            )}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={point.focalLeft}
+            onKeyDown={handleKeyDown}
             onMouseDown={(event) => {
               event.preventDefault()
               event.stopPropagation()
@@ -189,7 +224,12 @@ export function CampaignFocalPointPicker({
               border: '2px solid white',
               boxShadow: 3,
               backdropFilter: 'blur(4px)',
-              cursor: dragging ? 'grabbing' : 'grab'
+              cursor: dragging ? 'grabbing' : 'grab',
+              '&:focus-visible': {
+                outline: '2px solid',
+                outlineColor: 'primary.main',
+                outlineOffset: 2
+              }
             }}
           />
         </Box>

@@ -10,6 +10,7 @@ import type { CanvasBlock } from '../canvasBlock'
 import { CanvasDragHandle } from '../CanvasDragHandle'
 import { EditorNote } from '../EditorNote'
 import { ADMIN_PRIMARY, HOVER_OUTLINE_SX } from '../hoverOutline'
+import { selectableProps } from '../selectable'
 import { SelectionBadge } from '../SelectionBadge'
 
 interface CanvasColumnSlotProps {
@@ -61,11 +62,6 @@ export function CanvasColumnSlot({
   )
   const dropTarget = isOver && active != null && active.id !== slot.id
 
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    event.stopPropagation()
-    selectBlock(section?.id ?? slot.id)
-  }
-
   function handlePlaceholderClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
     selectBlock(slot.id)
@@ -83,7 +79,10 @@ export function CanvasColumnSlot({
       data-testid={`CanvasColumnSlot-${slot.id}`}
       data-selected={slotSelected}
       data-hoverable
-      onClick={handleClick}
+      {...selectableProps(
+        () => selectBlock(section?.id ?? slot.id),
+        blockLabel(t, slot.__typename)
+      )}
       sx={{
         position: 'relative',
         minHeight: 96,

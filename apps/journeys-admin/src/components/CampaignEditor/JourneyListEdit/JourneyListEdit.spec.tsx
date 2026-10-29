@@ -329,6 +329,25 @@ describe('JourneyListEdit', () => {
     await waitFor(() => expect(titleUpdateMock.result).toHaveBeenCalled())
   })
 
+  it.each(['Enter', ' '])(
+    'selects a card, a button, on %j and edits its title',
+    async (key) => {
+      await renderList()
+      const card = screen.getByTestId('JourneyCard-landingJourneyId')
+      expect(card).toHaveAttribute('role', 'button')
+      expect(card).toHaveAttribute('tabindex', '0')
+
+      fireEvent.keyDown(card, { key })
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingJourneyId'
+      )
+      expect(
+        screen.getByRole('textbox', { name: 'Journey title' })
+      ).toHaveValue('The outreach story')
+    }
+  )
+
   it('caps the title at 200 characters and the description at 1000', async () => {
     await renderList('landingJourneyId')
 
