@@ -356,7 +356,7 @@ A visitor-facing text field of a Campaign. Its default-language value sits on th
 _Avoid_: localised string, i18n key, label
 
 **Campaign String**:
-One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Distinct from the editor's own chrome, which is admin i18n.
+One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Each string names the sections that show it; the wording, keys and hosts live in one registry in `libs/journeys/ui` that the seed, the renderer and the editor read. Distinct from the editor's own chrome, which is admin i18n.
 _Avoid_: UI string, i18n string, interface key
 
 **Machine Translation**:
