@@ -17,6 +17,7 @@ import {
 } from '../CampaignEditorProvider'
 import { blockIcon } from '../utils/blockIcon'
 import { blockLabel } from '../utils/blockLabel'
+import { regionDisplayName } from '../utils/regionDisplayName'
 
 import { SELECTION_KINDS } from './selectionKinds'
 
@@ -26,10 +27,19 @@ export const INSPECTOR_WIDTH = 328
 /** The padding, in theme spacing units, between the Inspector's edge and its header and body. */
 const INSPECTOR_PADDING = 4
 
-/** The Inspector's title: the region's name for a region card, else the block's type, else the campaign. */
-function inspectorLabel(t: TFunction, selection: CampaignSelection): string {
+/** The Inspector's title: the region's name in the Preview Language for a region card, else the block's type, else the campaign. */
+function inspectorLabel(
+  t: TFunction,
+  selection: CampaignSelection,
+  previewLanguageId: string,
+  defaultLanguageId: string
+): string {
   if (selection.kind === 'region' && selection.region != null)
-    return selection.region.name
+    return regionDisplayName(
+      selection.region,
+      previewLanguageId,
+      defaultLanguageId
+    )
   if (selection.block != null) return blockLabel(t, selection.block.__typename)
   return t('Campaign')
 }
@@ -57,7 +67,7 @@ export function Inspector({
   const {
     campaign,
     selection,
-    state: { inspectorTab },
+    state: { inspectorTab, previewLanguageId },
     dispatch,
     selectBlock
   } = useCampaignEditor()
@@ -67,7 +77,12 @@ export function Inspector({
     settings: SettingsBody,
     actions: Actions
   } = SELECTION_KINDS[selection.kind]
-  const label = inspectorLabel(t, selection)
+  const label = inspectorLabel(
+    t,
+    selection,
+    previewLanguageId,
+    campaign.defaultLanguageId
+  )
   const inheritsFrom =
     (selection.kind === 'text' || selection.kind === 'button') &&
     selection.host != null

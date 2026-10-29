@@ -31,7 +31,7 @@ interface CanvasCarouselProps {
  * them out: the Watch expansion of `videoId` (the Video's first 12 children
  * then "See all on Watch", or the Video itself), or the explicit items. An
  * explicit item's card selects it for the card bar (Edit, ← →, bin); the
- * expanded cards belong to the section. A dashed placeholder points at Edit
+ * expanded cards belong to the section. A dashed placeholder points at Settings
  * while there is nothing to show. From `md` up the row has the same previous /
  * next arrows as the public page; they only scroll, they never edit.
  */
@@ -75,7 +75,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
           color: 'var(--campaign-band-muted)'
         }}
       >
-        <EditorNote>{t('Add videos from Edit')}</EditorNote>
+        <EditorNote>{t('Add videos in Settings')}</EditorNote>
       </Box>
     )
 

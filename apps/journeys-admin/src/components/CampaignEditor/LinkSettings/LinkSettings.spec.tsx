@@ -12,7 +12,10 @@ import {
 } from '../../../libs/useCampaignBlockActionMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { campaignWithRegions as campaign } from '../data'
+import {
+  campaignWithRegions as campaign,
+  campaignWithFrenchRegionName
+} from '../data'
 import {
   BlocksProbe,
   CommandProbe,
@@ -45,10 +48,14 @@ function withHeroButtonAction(action: CampaignButtonAction | null): Campaign {
 
 function renderStatic(
   campaignProp: Campaign,
-  blockId = 'heroButtonId'
+  blockId = 'heroButtonId',
+  previewLanguageId?: string
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor campaignProp={campaignProp}>
+    <StaticEditor
+      campaignProp={campaignProp}
+      initialState={previewLanguageId == null ? {} : { previewLanguageId }}
+    >
       <SettingsFor blockId={blockId} />
     </StaticEditor>
   )
@@ -230,6 +237,15 @@ describe('LinkSettings', () => {
       expect(current()).toHaveTextContent('Europe')
     })
 
+    it('reads the region name in the Preview Language', () => {
+      renderStatic(
+        campaignWithFrenchRegionName,
+        'switcherEuropeButtonId',
+        '496'
+      )
+      expect(current()).toHaveTextContent('L’Europe')
+    })
+
     it.each([
       ['regionId null (the region was deleted)', null],
       ['a region the campaign no longer has', 'ghostRegionId']
@@ -247,6 +263,14 @@ describe('LinkSettings', () => {
   })
 
   describe('kinds', () => {
+    it('lists the regions in the Preview Language, by the default name where there is no translation', () => {
+      renderStatic(campaignWithFrenchRegionName, 'heroButtonId', '496')
+
+      fireEvent.click(screen.getByRole('button', { name: 'Region' }))
+
+      expect(listItems()).toEqual(['L’Europe', 'Africa'])
+    })
+
     it('counts the web address against its cap', () => {
       renderStatic(campaign)
 

@@ -8,8 +8,8 @@ import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateS
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
-import { languageNames } from '../../LanguagesPanel'
 import { useTranslationRun } from '../../TranslationRunProvider'
+import { languageNames } from '../../utils/languageNames'
 import {
   missingCountOf,
   useCampaignDefaultLanguageSwap

@@ -31,6 +31,7 @@ import { CampaignEditorState } from '../CampaignEditorProvider'
 import {
   campaign,
   campaignWithColumns,
+  campaignWithFrenchRegionName,
   campaignWithRegions,
   withEmptyTranslations
 } from '../data'
@@ -1010,6 +1011,23 @@ describe('Inspector', () => {
       selectedRegionId: 'eurRegionId',
       selectedBlockId: 'landingSwitcherId'
     }
+
+    it.each([
+      ['the French name', 'eurRegionId', 'L’Europe'],
+      ['the default name without a French one', 'afrRegionId', 'Africa']
+    ])(
+      'names the region in the Preview Language in the header: %s',
+      (_label, selectedRegionId, name) => {
+        renderInspector(
+          { ...regionState, selectedRegionId, previewLanguageId: '496' },
+          campaignWithFrenchRegionName
+        )
+
+        expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
+          name
+        )
+      }
+    )
 
     it('says it is styled by its section, naming the region in the header', () => {
       renderInspector(regionState, campaignWithRegions)

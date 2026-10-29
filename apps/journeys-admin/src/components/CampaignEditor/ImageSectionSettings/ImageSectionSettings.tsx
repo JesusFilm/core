@@ -12,6 +12,7 @@ import { CommandError } from '../CommandError'
 import { FocalPointControl } from '../FocalPointControl'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { ReplaceableMedia } from '../ReplaceableMedia'
+import { characterCount } from '../utils/characterCount'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useTranslatedField } from '../utils/useTranslatedField'
 
@@ -114,7 +115,7 @@ export function ImageSectionSettings({
                 )}
               </Box>
               <Box component="span" sx={{ display: 'block' }}>
-                {`${textLength(alt.value)} / ${alt.max}`}
+                {characterCount(t, textLength(alt.value), alt.max)}
               </Box>
             </>
           )

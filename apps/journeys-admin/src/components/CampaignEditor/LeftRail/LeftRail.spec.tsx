@@ -154,6 +154,16 @@ describe('LeftRail', () => {
       expect(screen.getByTestId('CampaignLeftRail')).toBeInTheDocument()
     })
 
+    it('shows the run’s progress in the Localize tooltip', async () => {
+      render(<RunningHarness />)
+
+      fireEvent.mouseOver(screen.getByRole('button', { name: 'Localize' }))
+
+      expect(
+        await screen.findByRole('tooltip', { name: 'Localize: 40%' })
+      ).toBeInTheDocument()
+    })
+
     it('goes back to the campaigns list on Leave', () => {
       render(<RunningHarness />)
       clickBack()
@@ -202,6 +212,16 @@ describe('LeftRail', () => {
       .filter((label) => panels.includes(label))
 
     expect(toggles).toEqual(['Add', 'Pages', 'Navigator', 'Localize'])
+  })
+
+  it('names each toggle’s shortcut in its tooltip', async () => {
+    render(<Harness />)
+
+    fireEvent.mouseOver(screen.getByRole('button', { name: 'Pages' }))
+
+    expect(
+      await screen.findByRole('tooltip', { name: 'Pages (P)' })
+    ).toBeInTheDocument()
   })
 
   it('keeps the Navigator panel open when its toggle is pressed again', () => {

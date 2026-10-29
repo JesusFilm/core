@@ -14,8 +14,8 @@ import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import { CampaignStringKey } from '../../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { languageNames } from '../../LanguagesPanel'
 import { campaignStringText } from '../../utils/campaignStringText'
+import { languageNames } from '../../utils/languageNames'
 import type { CanvasBlock } from '../canvasBlock'
 
 interface CanvasHeaderProps {

@@ -17,6 +17,7 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { characterCount } from '../utils/characterCount'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
 
 /** Where the page shows a Campaign String, as the field's label. */
@@ -83,7 +84,8 @@ function WordingField({ string }: WordingFieldProps): ReactElement {
       onBlur={handleBlur}
       error={error != null}
       helperText={
-        error ?? `${textLength(value)} / ${TRANSLATED_FIELDS.string.value}`
+        error ??
+        characterCount(t, textLength(value), TRANSLATED_FIELDS.string.value)
       }
       slotProps={{
         htmlInput: {

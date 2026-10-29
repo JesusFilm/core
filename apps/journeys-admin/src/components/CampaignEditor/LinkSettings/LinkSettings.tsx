@@ -30,7 +30,9 @@ import {
 } from '../../../libs/useCampaignBlockActionMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { blockLabel } from '../utils/blockLabel'
+import { characterCount } from '../utils/characterCount'
 import { isHttpsUrl } from '../utils/isHttpsUrl'
+import { regionDisplayName } from '../utils/regionDisplayName'
 import { pageSections } from '../utils/sectionTypes'
 import { useCampaignActionCommand } from '../utils/useCampaignActionCommand'
 import { useCommittedField } from '../utils/useCommittedField'
@@ -59,11 +61,12 @@ interface LinkLabel {
   missing: boolean
 }
 
-/** What the link reads for an action: the address, the section, the region, or what is missing. */
+/** What the link reads for an action: the address, the section, the region (in the Preview Language), or what is missing. */
 export function linkLabel(
   t: TFunction,
   action: CampaignButtonAction | null,
-  campaign: Pick<Campaign, 'blocks' | 'regions'>
+  campaign: Pick<Campaign, 'blocks' | 'regions' | 'defaultLanguageId'>,
+  previewLanguageId: string
 ): LinkLabel {
   switch (action?.__typename) {
     case 'CampaignLinkAction':
@@ -83,7 +86,14 @@ export function linkLabel(
               (candidate) => candidate.id === action.regionId
             )
       if (region == null) return { label: t('Missing region'), missing: true }
-      return { label: region.name, missing: false }
+      return {
+        label: regionDisplayName(
+          region,
+          previewLanguageId,
+          campaign.defaultLanguageId
+        ),
+        missing: false
+      }
     }
     default:
       return { label: t('No link'), missing: false }
@@ -105,7 +115,7 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
-    state: { pageKind }
+    state: { pageKind, previewLanguageId }
   } = useCampaignEditor()
   const { addAction } = useCampaignActionCommand()
   const action = block.action
@@ -126,7 +136,7 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
   }, [action?.__typename, savedUrl])
 
   const kind = pickedKind ?? kindOf(action)
-  const { label, missing } = linkLabel(t, action, campaign)
+  const { label, missing } = linkLabel(t, action, campaign, previewLanguageId)
   // A chrome button shows on every page; it scrolls within the page on the canvas.
   const pageId =
     block.pageId ?? campaign.pages.find((page) => page.kind === pageKind)?.id
@@ -249,7 +259,8 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
             onKeyDown={handleUrlKeyDown}
             error={urlError != null}
             helperText={
-              urlError ?? `${urlLength(url.value)} / ${LINK_URL_MAX_LENGTH}`
+              urlError ??
+              characterCount(t, urlLength(url.value), LINK_URL_MAX_LENGTH)
             }
             slotProps={{
               formHelperText: urlError != null ? { role: 'alert' } : undefined
@@ -295,7 +306,13 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
                 }
                 onClick={() => handlePickRegion(region.id)}
               >
-                <ListItemText primary={region.name} />
+                <ListItemText
+                  primary={regionDisplayName(
+                    region,
+                    previewLanguageId,
+                    campaign.defaultLanguageId
+                  )}
+                />
               </ListItemButton>
             ))}
           </List>

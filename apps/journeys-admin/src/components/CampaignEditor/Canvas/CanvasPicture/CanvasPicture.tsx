@@ -16,7 +16,7 @@ interface CanvasPictureProps {
   block: CanvasBlock
 }
 
-/** An Image section's picture, cropped to its focal point; a placeholder pointing at Edit while it has none. */
+/** An Image section's picture, cropped to its focal point; a placeholder pointing at Settings while it has none. */
 export function CanvasPicture({ block }: CanvasPictureProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const picture =
@@ -39,7 +39,7 @@ export function CanvasPicture({ block }: CanvasPictureProps): ReactElement {
           color: 'var(--campaign-band-muted)'
         }}
       >
-        <EditorNote>{t('Add a picture from Edit')}</EditorNote>
+        <EditorNote>{t('Add a picture in Settings')}</EditorNote>
       </Box>
     )
 

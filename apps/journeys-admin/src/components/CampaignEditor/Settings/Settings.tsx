@@ -29,8 +29,9 @@ import {
   useCampaignDeleteMutation
 } from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
-import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
+import { characterCount } from '../utils/characterCount'
+import { languageNames } from '../utils/languageNames'
 import { useCommittedField } from '../utils/useCommittedField'
 
 import { CampaignDomain } from './CampaignDomain'
@@ -186,7 +187,11 @@ export function Settings({
         error={title.error != null}
         helperText={
           title.error ??
-          `${textLength(title.value)} / ${TRANSLATED_FIELDS.campaign.title}`
+          characterCount(
+            t,
+            textLength(title.value),
+            TRANSLATED_FIELDS.campaign.title
+          )
         }
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Title') } }}
@@ -212,7 +217,7 @@ export function Settings({
                 })}
               </Box>
               <Box component="span" sx={{ display: 'block' }}>
-                {`${textLength(slug.value)} / ${SLUG_MAX_LENGTH}`}
+                {characterCount(t, textLength(slug.value), SLUG_MAX_LENGTH)}
               </Box>
             </>
           )

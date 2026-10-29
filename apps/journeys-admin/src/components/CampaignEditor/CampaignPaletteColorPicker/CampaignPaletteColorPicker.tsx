@@ -289,7 +289,10 @@ export function CampaignPaletteColorPicker({
           helperText={error}
           fullWidth
           slotProps={{
-            htmlInput: { 'aria-label': `${label} ${t('hex')}`, maxLength: 7 }
+            htmlInput: {
+              'aria-label': t('{{label}} hex', { label }),
+              maxLength: 7
+            }
           }}
         />
         {onClear != null && (

@@ -7,6 +7,7 @@ import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 
 import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
+import { characterCount } from '../utils/characterCount'
 import { useTranslatedField } from '../utils/useTranslatedField'
 
 interface CardTextFieldProps {
@@ -23,6 +24,7 @@ function CardTextField({
   label,
   multiline = false
 }: CardTextFieldProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const text = useTranslatedField({ block, field })
   const length = textLength(text.value)
 
@@ -34,7 +36,7 @@ function CardTextField({
       onBlur={text.onBlur}
       placeholder={text.translating ? text.fallback : undefined}
       error={text.error != null || length > text.max}
-      helperText={text.error ?? `${length} / ${text.max}`}
+      helperText={text.error ?? characterCount(t, length, text.max)}
       slotProps={{
         formHelperText: text.error != null ? { role: 'alert' } : undefined
       }}

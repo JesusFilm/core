@@ -13,6 +13,7 @@ import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyBlock as CampaignJourneyBlock } from '../../../../__generated__/GetCampaign'
 import { JourneyCardSnapshotRefreshDialog } from '../JourneyCardSnapshotRefreshDialog'
+import { characterCount } from '../utils/characterCount'
 import { useCampaignJourneyBlockSnapshotRefreshCommand } from '../utils/useCampaignJourneyBlockSnapshotRefreshCommand'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
 
@@ -30,6 +31,7 @@ function SnapshotField({
   label,
   multiline = false
 }: SnapshotFieldProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const max = TRANSLATED_FIELDS.block.CampaignJourneyBlock[field]
   const { value, fallback, error, handleChange, handleFocus, handleBlur } =
     useCampaignTextCommand({ block, field })
@@ -43,7 +45,7 @@ function SnapshotField({
       onFocus={handleFocus}
       onBlur={handleBlur}
       error={error != null}
-      helperText={error ?? `${textLength(value)} / ${max}`}
+      helperText={error ?? characterCount(t, textLength(value), max)}
       slotProps={{
         htmlInput: { maxLength: max },
         formHelperText: error != null ? { role: 'alert' } : undefined

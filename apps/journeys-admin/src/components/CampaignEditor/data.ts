@@ -27,6 +27,7 @@ import {
   CampaignPageKind,
   CampaignStatus,
   CampaignStringKey,
+  CampaignTextSource,
   JourneyStatus,
   UserTeamRole
 } from '../../../__generated__/globalTypes'
@@ -276,6 +277,25 @@ export const campaignWithRegions: Campaign = {
   ...campaign,
   blocks: [...campaign.blocks, eurLine],
   regions: [eurRegion, afrRegion]
+}
+
+/** `campaignWithRegions` with Europe named "L’Europe" in French (`496`); Africa has no French name. */
+export const campaignWithFrenchRegionName: Campaign = {
+  ...campaignWithRegions,
+  regions: [
+    {
+      ...eurRegion,
+      nameTranslations: [
+        {
+          __typename: 'TranslatedValue',
+          languageId: '496',
+          value: 'L’Europe',
+          source: CampaignTextSource.human
+        }
+      ]
+    },
+    afrRegion
+  ]
 }
 
 export const publishedCampaign: Campaign = {

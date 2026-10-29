@@ -18,6 +18,7 @@ import {
 import { rowKey, targetId } from '../../../../libs/useCampaignTranslationsQuery'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { blockLabel } from '../../utils/blockLabel'
+import { characterCount } from '../../utils/characterCount'
 import { useCampaignTranslationWrite } from '../../utils/useCampaignTranslationWrite'
 import { useCommittedField } from '../../utils/useCommittedField'
 import { rowTranslations, targetInput } from '../translationRows'
@@ -84,7 +85,10 @@ export function useRowLabel(): (row: TranslationRowData) => string {
   }
 
   return (row) =>
-    `${targetLabel(row.target.typename)} · ${fieldLabel(row.field)}`
+    t('{{first}} · {{second}}', {
+      first: targetLabel(row.target.typename),
+      second: fieldLabel(row.field)
+    })
 }
 
 /**
@@ -190,7 +194,8 @@ export function TranslationRow({
         onBlur={draft.onBlur}
         error={draft.error != null || textLength(draft.value) > row.maxLength}
         helperText={
-          draft.error ?? `${textLength(draft.value)} / ${row.maxLength}`
+          draft.error ??
+          characterCount(t, textLength(draft.value), row.maxLength)
         }
         slotProps={{
           htmlInput: {

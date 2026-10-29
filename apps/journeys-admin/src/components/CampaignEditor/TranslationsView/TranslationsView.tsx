@@ -21,9 +21,9 @@ import {
   useCampaignTranslationsQuery
 } from '../../../libs/useCampaignTranslationsQuery'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { TranslationRunProgress } from '../TranslationRunProgress'
 import { useTranslationRun } from '../TranslationRunProvider'
+import { languageNames } from '../utils/languageNames'
 import { regionCardId } from '../utils/regionCardId'
 
 import { TranslationRow } from './TranslationRow'
@@ -284,7 +284,12 @@ export function TranslationsView({
           const { autonym, localName } = languageNames(language)
           return (
             <MenuItem key={language.id} value={language.languageId}>
-              {localName == null ? autonym : `${autonym} · ${localName}`}
+              {localName == null
+                ? autonym
+                : t('{{first}} · {{second}}', {
+                    first: autonym,
+                    second: localName
+                  })}
             </MenuItem>
           )
         })}
