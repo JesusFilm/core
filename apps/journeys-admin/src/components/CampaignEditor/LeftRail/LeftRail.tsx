@@ -53,17 +53,28 @@ function PanelToggle({
   icon,
   progress
 }: PanelToggleProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { panel: openPanel },
     dispatch
   } = useCampaignEditor()
   const open = openPanel === panel
   const running = progress != null
-  const tooltip = shortcut == null ? label : `${label} (${shortcut})`
+  const tooltip =
+    shortcut == null
+      ? label
+      : t('{{label}} ({{shortcut}})', { label, shortcut })
 
   return (
     <Tooltip
-      title={running ? `${label}: ${Math.round(progress)}%` : tooltip}
+      title={
+        running
+          ? t('{{label}}: {{percent}}%', {
+              label,
+              percent: Math.round(progress)
+            })
+          : tooltip
+      }
       placement="right"
       arrow
     >

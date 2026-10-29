@@ -33,7 +33,7 @@ interface CanvasMediaProps {
 /**
  * A Media Slot as the editor previews it: an image, a video's poster with
  * its title (and "<n> videos" for a Watch video with children), or a dashed
- * placeholder pointing at Edit when the slot is empty.
+ * placeholder pointing at Settings when the slot is empty.
  */
 export function CanvasMedia({
   media,
@@ -141,7 +141,7 @@ export function CanvasMedia({
         color: 'var(--campaign-band-muted)'
       }}
     >
-      <EditorNote>{t('Add media from Edit')}</EditorNote>
+      <EditorNote>{t('Add media in Settings')}</EditorNote>
     </Box>
   )
 }

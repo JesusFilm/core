@@ -85,10 +85,12 @@ describe('CanvasCarousel', () => {
     expect(scrollBy).toHaveBeenCalledWith({ left: 600, behavior: 'smooth' })
   })
 
-  it('shows no arrows on the placeholder while there is nothing to show', () => {
+  it('shows no arrows on the placeholder, which points at Settings, while there is nothing to show', () => {
     renderCarousel(campaign)
 
-    expect(screen.getByTestId('CanvasCarouselPlaceholder')).toBeInTheDocument()
+    expect(screen.getByTestId('CanvasCarouselPlaceholder')).toHaveTextContent(
+      'Add videos in Settings'
+    )
     expect(
       screen.queryByRole('button', { name: 'Next videos' })
     ).not.toBeInTheDocument()

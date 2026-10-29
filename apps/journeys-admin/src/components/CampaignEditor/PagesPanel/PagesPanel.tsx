@@ -9,7 +9,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
 import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
@@ -18,8 +18,9 @@ import {
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
-import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { LeftPanelBody } from '../LeftPanel'
+import { languageNames } from '../utils/languageNames'
+import { regionDisplayName } from '../utils/regionDisplayName'
 import { regionIdOfPageValue, regionPageValue } from '../utils/regionPageValue'
 
 /** The page list's selected value: the landing page, or the Region Page rendered for one region. */
@@ -33,14 +34,15 @@ export function pageSelectValue(
     : regionPageValue(regionId)
 }
 
-/** The page list entry for a region: its name, with " · not listed" for an orphan. */
+/** The page list entry for a region: its name in the Preview Language, with " · not listed" for an orphan. */
 export function regionPageLabel(
   t: TFunction,
-  region: Pick<CampaignRegion, 'name' | 'listed'>
+  region: Pick<CampaignRegion, 'name' | 'nameTranslations' | 'listed'>,
+  previewLanguageId: string,
+  defaultLanguageId: string
 ): string {
-  return region.listed
-    ? region.name
-    : t('{{name}} · not listed', { name: region.name })
+  const name = regionDisplayName(region, previewLanguageId, defaultLanguageId)
+  return region.listed ? name : t('{{name}} · not listed', { name })
 }
 
 /**
@@ -59,6 +61,10 @@ export function PagesPanel(): ReactElement {
     dispatch
   } = useCampaignEditor()
   const regions = sortedRegions(campaign.regions)
+  const languages = useMemo(
+    () => [...campaign.languages].sort((a, b) => a.order - b.order),
+    [campaign.languages]
+  )
   const selectedPage = pageSelectValue(pageKind, currentRegion?.id)
 
   function handlePageClick(value: string): void {
@@ -124,7 +130,14 @@ export function PagesPanel(): ReactElement {
               aria-current={selectedPage === value ? 'page' : undefined}
               onClick={() => handlePageClick(value)}
             >
-              <ListItemText primary={regionPageLabel(t, region)} />
+              <ListItemText
+                primary={regionPageLabel(
+                  t,
+                  region,
+                  previewLanguageId,
+                  campaign.defaultLanguageId
+                )}
+              />
               {regionNeedsJourney(region) && (
                 <Chip
                   size="small"
@@ -150,7 +163,7 @@ export function PagesPanel(): ReactElement {
           inputProps={{ 'aria-label': t('Preview language') }}
           data-testid="CampaignLanguageSelect"
         >
-          {campaign.languages.map((language) => (
+          {languages.map((language) => (
             <MenuItem key={language.id} value={language.languageId}>
               {languageNames(language).autonym}
             </MenuItem>

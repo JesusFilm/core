@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { KeyboardEvent, ReactElement, useState } from 'react'
@@ -18,6 +19,7 @@ import { useCampaignRegionCountryAddMutation } from '../../../libs/useCampaignRe
 import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
 import { SLUG_MAX_LENGTH, shapeSlug } from '../Settings'
+import { characterCount } from '../utils/characterCount'
 import { useCommittedField } from '../utils/useCommittedField'
 import { useTranslatedField } from '../utils/useTranslatedField'
 
@@ -178,7 +180,9 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
         onKeyDown={handleKeyDown}
         placeholder={name.translating ? name.fallback : undefined}
         error={name.error != null}
-        helperText={name.error ?? `${textLength(name.value)} / ${name.max}`}
+        helperText={
+          name.error ?? characterCount(t, textLength(name.value), name.max)
+        }
         required={!name.translating}
         fullWidth
         slotProps={{
@@ -201,7 +205,7 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
                 )}
               </Box>
               <Box component="span" sx={{ display: 'block' }}>
-                {`${textLength(slug.value)} / ${SLUG_MAX_LENGTH}`}
+                {characterCount(t, textLength(slug.value), SLUG_MAX_LENGTH)}
               </Box>
             </>
           )
@@ -241,7 +245,7 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
             void handleAddCountry(country)
           }}
           renderOption={(props, country) => (
-            <li {...props} key={country.id}>
+            <Box component="li" {...props} key={country.id}>
               <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                 {country.flagPngSrc != null && (
                   <Avatar
@@ -250,9 +254,11 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
                     sx={{ width: 20, height: 20 }}
                   />
                 )}
-                <span>{countryName(country)}</span>
+                <Typography component="span" variant="inherit">
+                  {countryName(country)}
+                </Typography>
               </Stack>
-            </li>
+            </Box>
           )}
           renderInput={(params) => (
             <TextField

@@ -1,6 +1,6 @@
 import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../../__generated__/GetCampaign'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { languageNames } from '../LanguagesPanel'
+import { languageNames } from '../utils/languageNames'
 
 /** The editor label of a Share Language: autonym plus local name when they differ. */
 export function regionLanguageLabel(

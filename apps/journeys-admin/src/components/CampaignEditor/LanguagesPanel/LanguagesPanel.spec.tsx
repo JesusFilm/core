@@ -17,8 +17,9 @@ import { CAMPAIGN_LANGUAGE_REMOVE } from '../../../libs/useCampaignLanguageRemov
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
 import { CommandProbe, StaticEditor } from '../testing'
+import { languageNames } from '../utils/languageNames'
 
-import { LanguagesPanel, languageNames } from './LanguagesPanel'
+import { LanguagesPanel } from './LanguagesPanel'
 
 const SPANISH = '21028'
 const MANUAL_ONLY = '9999999'

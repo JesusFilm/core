@@ -9,7 +9,10 @@ import {
   CampaignChildPlacement,
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
-import { textFieldValue } from '../../../libs/useCampaignBlockTextMutation'
+import {
+  blockTranslations,
+  textFieldValue
+} from '../../../libs/useCampaignBlockTextMutation'
 import {
   CampaignSelection,
   regionLines,
@@ -18,6 +21,8 @@ import {
 } from '../CampaignEditorProvider'
 import { pageBlocks } from '../utils/pageBlocks'
 import { regionCardId } from '../utils/regionCardId'
+import { regionDisplayName } from '../utils/regionDisplayName'
+import { previewFieldText } from '../utils/useTranslatedField/readPreviewField'
 
 /** What a row is called: a block's typename, a region card, or the divider between a section's above and below Extras. */
 export type NavigatorNodeType =
@@ -76,6 +81,14 @@ interface BuildNavigatorTreeParams {
   pageKind: CampaignPageKind
   /** The region the Region Page is rendered for; its own card is left out of the switcher. */
   currentRegionId?: string
+  /** The language the rows' text is read in; the default language when absent. */
+  previewLanguageId?: string
+}
+
+/** What a row's text is read in: the Preview Language, falling back to the default text. */
+interface NavigatorLanguages {
+  previewLanguageId: string
+  defaultLanguageId: string
 }
 
 const SECONDARY_TEXT_FIELDS = [
@@ -86,11 +99,22 @@ const SECONDARY_TEXT_FIELDS = [
   'intro'
 ] as const
 
-/** The block's own title text: its first non-empty title-like field. */
-export function secondaryTextOf(block: CampaignBlock): string | undefined {
+/**
+ * The block's own title text in the Preview Language: its first non-empty
+ * title-like field, the default text where a field is not translated.
+ */
+export function secondaryTextOf(
+  block: CampaignBlock,
+  { previewLanguageId, defaultLanguageId }: NavigatorLanguages
+): string | undefined {
   for (const field of SECONDARY_TEXT_FIELDS) {
-    const value = textFieldValue(block, field)
-    if (value != null && value.trim() !== '') return value.trim()
+    const value = previewFieldText({
+      field: textFieldValue(block, field),
+      translations: blockTranslations(block, field),
+      previewLanguageId,
+      defaultLanguageId
+    }).trim()
+    if (value !== '') return value
   }
   return undefined
 }
@@ -189,19 +213,22 @@ function blockNode(
   block: CampaignTreeBlock<CampaignBlock>,
   parent: CampaignBlock | undefined,
   campaign: BuildNavigatorTreeParams['campaign'],
-  currentRegionId: string | undefined
+  currentRegionId: string | undefined,
+  languages: NavigatorLanguages
 ): NavigatorNode {
   const children = shownChildren(block, campaign.defaultLanguageId).map(
-    (child) => blockNode(child, block, campaign, currentRegionId)
+    (child) => blockNode(child, block, campaign, currentRegionId, languages)
   )
   if (block.__typename === 'CampaignRegionSwitcherBlock')
-    children.push(...regionNodes(campaign, block.id, currentRegionId))
+    children.push(
+      ...regionNodes(campaign, block.id, currentRegionId, languages)
+    )
   return {
     id: block.id,
     domId: block.id,
     type: block.__typename,
     blockId: block.id,
-    secondaryText: secondaryTextOf(block),
+    secondaryText: secondaryTextOf(block, languages),
     placement: placementOf(block, parent),
     needsJourney: false,
     unlisted: false,
@@ -217,7 +244,8 @@ function blockNode(
 function regionNodes(
   campaign: BuildNavigatorTreeParams['campaign'],
   hostBlockId: string,
-  currentRegionId: string | undefined
+  currentRegionId: string | undefined,
+  languages: NavigatorLanguages
 ): NavigatorNode[] {
   return sortedRegions(campaign.regions)
     .filter((region) => region.id !== currentRegionId)
@@ -229,7 +257,11 @@ function regionNodes(
         type: 'Region' as const,
         regionId: region.id,
         hostBlockId,
-        secondaryText: region.name,
+        secondaryText: regionDisplayName(
+          region,
+          languages.previewLanguageId,
+          languages.defaultLanguageId
+        ),
         needsJourney: regionNeedsJourney(region),
         unlisted: !region.listed,
         children: inGroup(
@@ -241,7 +273,7 @@ function regionNodes(
               type: line.__typename,
               blockId: line.id,
               regionLine: true as const,
-              secondaryText: secondaryTextOf(line),
+              secondaryText: secondaryTextOf(line, languages),
               needsJourney: false,
               unlisted: false,
               children: []
@@ -263,12 +295,17 @@ function regionNodes(
 export function buildNavigatorTree({
   campaign,
   pageKind,
-  currentRegionId
+  currentRegionId,
+  previewLanguageId = campaign.defaultLanguageId
 }: BuildNavigatorTreeParams): NavigatorNode[] {
+  const languages: NavigatorLanguages = {
+    previewLanguageId,
+    defaultLanguageId: campaign.defaultLanguageId
+  }
   const { header, sections, footer } = pageBlocks(campaign, pageKind)
   const sectionNodes = inGroup(
     sections.map((section) =>
-      blockNode(section, undefined, campaign, currentRegionId)
+      blockNode(section, undefined, campaign, currentRegionId, languages)
     ),
     'root:sections',
     'block'
@@ -276,7 +313,7 @@ export function buildNavigatorTree({
   const chromeNode = (block: (typeof sections)[number] | undefined) =>
     block == null
       ? []
-      : [blockNode(block, undefined, campaign, currentRegionId)]
+      : [blockNode(block, undefined, campaign, currentRegionId, languages)]
   return [...chromeNode(header), ...sectionNodes, ...chromeNode(footer)]
 }
 

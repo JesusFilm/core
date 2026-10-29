@@ -1,4 +1,5 @@
 import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -26,30 +27,11 @@ import { useCampaignLanguageRemoveMutation } from '../../../libs/useCampaignLang
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { TranslationRunProgress } from '../TranslationRunProgress'
 import { useTranslationRun } from '../TranslationRunProvider'
+import { languageNames } from '../utils/languageNames'
 import { messageOf } from '../utils/messageOf'
 
 interface LanguagesPanelProps {
   campaign: Campaign
-}
-
-/** Autonym first, the English name beside it when it differs. */
-export function languageNames(
-  language: Pick<CampaignLanguage, 'languageId' | 'language'>
-): {
-  autonym: string
-  localName?: string
-} {
-  const names = language.language.name
-  const autonym =
-    names.find((name) => name.primary)?.value ??
-    names[0]?.value ??
-    language.languageId
-  const localName = names.find((name) => !name.primary)?.value
-  return {
-    autonym,
-    localName:
-      localName != null && localName !== autonym ? localName : undefined
-  }
 }
 
 /**
@@ -188,7 +170,7 @@ export function LanguagesPanel({
                     <Tooltip
                       title={t('The default language cannot be removed')}
                     >
-                      <span>{removeButton}</span>
+                      <Box component="span">{removeButton}</Box>
                     </Tooltip>
                   ) : (
                     removeButton
@@ -205,7 +187,13 @@ export function LanguagesPanel({
                   manualOnly ? t('Manual only') : undefined
                 ]
                   .filter((part) => part != null)
-                  .join(' · ')}
+                  .reduce<string | undefined>(
+                    (first, second) =>
+                      first == null
+                        ? second
+                        : t('{{first}} · {{second}}', { first, second }),
+                    undefined
+                  )}
               />
             </ListItem>
           )

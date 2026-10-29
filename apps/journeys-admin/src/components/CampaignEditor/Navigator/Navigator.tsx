@@ -354,16 +354,17 @@ export function Navigator(): ReactElement {
     selectBlock,
     selectRegion,
     frameDocumentRef,
-    state: { pageKind, navigatorExpandRequest }
+    state: { pageKind, navigatorExpandRequest, previewLanguageId }
   } = useCampaignEditor()
   const tree = useMemo(
     () =>
       buildNavigatorTree({
         campaign,
         pageKind,
-        currentRegionId: currentRegion?.id
+        currentRegionId: currentRegion?.id,
+        previewLanguageId
       }),
-    [campaign, pageKind, currentRegion?.id]
+    [campaign, pageKind, currentRegion?.id, previewLanguageId]
   )
   const selectedId = selectedNodeId(tree, selection)
   const [openedIds, setOpenedIds] = useState<string[]>([])
