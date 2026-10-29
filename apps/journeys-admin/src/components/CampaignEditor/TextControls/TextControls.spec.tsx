@@ -6,13 +6,17 @@ import {
   within
 } from '@testing-library/react'
 
-import { CAMPAIGN_TYPOGRAPHY_BLOCK_UPDATE_STYLE } from '../../../libs/useCampaignTypographyBlockUpdateMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
 import { nextPalette } from '../PaletteColorPicker'
-import { StyleMock, WithBlock, blockOf, paletteMock } from '../styleTesting'
+import {
+  StyleMock,
+  WithBlock,
+  blockOf,
+  blockUpdateMock,
+  paletteMock
+} from '../styleTesting'
 import { CommandProbe, QueriedEditor } from '../testing'
-import { textStyleRow } from '../utils/useCampaignExtraStyleCommand'
 
 import { TEXT_SIZES, TextControls } from './TextControls'
 
@@ -22,20 +26,7 @@ function textMock(
   input: Record<string, unknown>,
   current: Partial<typeof note> = {}
 ): StyleMock {
-  return {
-    request: {
-      query: CAMPAIGN_TYPOGRAPHY_BLOCK_UPDATE_STYLE,
-      variables: { id: note.id, input }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignTypographyBlockUpdate: textStyleRow(
-          { ...note, ...current },
-          input
-        )
-      }
-    }))
-  }
+  return blockUpdateMock(note, input, current)
 }
 
 function renderControls(mocks: StyleMock[]): ReturnType<typeof render> {

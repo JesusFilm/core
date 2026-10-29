@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { isCampaignStyledBlock } from '../../../libs/useCampaignSectionStyleMutation'
+import { isCampaignStyledBlock } from '../../../libs/useCampaignBlockUpdateMutation'
 import { blockLabel } from '../blockLabel'
 import { ButtonControls } from '../ButtonControls'
 import { useCampaignEditor } from '../CampaignEditorProvider'

@@ -6,11 +6,11 @@ import { imageSectionBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignTextSource } from '../../../../__generated__/globalTypes'
-import { CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA } from '../../../libs/useCampaignImageBlockUpdateMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaignWithColumns, withEmptyTranslations } from '../data'
+import { blockUpdateMock } from '../styleTesting'
 import { CommandProbe, QueriedEditor } from '../testing'
 
 import { ImageSectionEdit } from './ImageSectionEdit'
@@ -95,24 +95,7 @@ function renderEdit(
 
 describe('ImageSectionEdit', () => {
   it('reads and writes the default alt text through campaignImageBlockUpdate in the default language', async () => {
-    const update = {
-      request: {
-        query: CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA,
-        variables: { id: 'imageId', input: { alt: 'Readers' } }
-      },
-      result: vi.fn(() => ({
-        data: {
-          campaignImageBlockUpdate: {
-            __typename: 'CampaignImageBlock',
-            id: 'imageId',
-            src: image.src,
-            alt: 'Readers',
-            width: image.width,
-            height: image.height
-          }
-        }
-      }))
-    }
+    const update = blockUpdateMock(image, { alt: 'Readers' })
     const translation = translationMock('Readers')
     renderEdit([update as never, translation])
 

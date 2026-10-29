@@ -8,16 +8,11 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
-import { GetCampaign_campaign_blocks_CampaignFeaturedMediaBlock as CampaignFeaturedMediaBlock } from '../../../../__generated__/GetCampaign'
 import {
   CampaignFeaturedMediaLayout,
   CampaignMediaSide
 } from '../../../../__generated__/globalTypes'
-import {
-  CampaignFeaturedMediaInput,
-  useCampaignFeaturedMediaBlockUpdateMutation
-} from '../../../libs/useCampaignFeaturedMediaBlockUpdateMutation'
-import { CampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
+import { CampaignMediaOwner } from '../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
 import { FocalPointControl } from '../FocalPointControl'
@@ -40,9 +35,8 @@ export function MediaSectionEdit({
 }: MediaSectionEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addMediaPick, clearMedia, addStyle, error } =
+  const { addMediaPick, clearMedia, addFields, error } =
     useCampaignMediaCommand()
-  const writeFeaturedMedia = useCampaignFeaturedMediaBlockUpdateMutation()
   const [replacing, setReplacing] = useState(false)
   const media =
     block.mediaBlockId == null
@@ -62,23 +56,13 @@ export function MediaSectionEdit({
   function handleMediaSide(mediaSide: CampaignMediaSide | null): void {
     if (block.__typename !== 'CampaignFeaturedMediaBlock') return
     if (mediaSide == null || mediaSide === block.mediaSide) return
-    addStyle<CampaignFeaturedMediaBlock, CampaignFeaturedMediaInput>({
-      block,
-      input: { mediaSide },
-      previous: { mediaSide: block.mediaSide },
-      run: writeFeaturedMedia
-    })
+    addFields(block, { mediaSide })
   }
 
   function handleLayout(layout: CampaignFeaturedMediaLayout | null): void {
     if (block.__typename !== 'CampaignFeaturedMediaBlock') return
     if (layout == null || layout === block.layout) return
-    addStyle<CampaignFeaturedMediaBlock, CampaignFeaturedMediaInput>({
-      block,
-      input: { layout },
-      previous: { layout: block.layout },
-      run: writeFeaturedMedia
-    })
+    addFields(block, { layout })
   }
 
   return (

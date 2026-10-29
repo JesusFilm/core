@@ -4,29 +4,15 @@ import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks_CampaignHeroBlock as HeroBlock
 } from '../../../../__generated__/GetCampaign'
-import { CAMPAIGN_HERO_BLOCK_UPDATE_MIN_HEIGHT } from '../../../libs/useCampaignHeroBlockMinHeightMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
+import { blockOf, blockUpdateMock } from '../styleTesting'
 import { CommandProbe, StaticEditor } from '../testing'
 
 import { HeroSettings } from './HeroSettings'
 
 function minHeightMock(minHeight: number | null): Record<string, unknown> {
-  return {
-    request: {
-      query: CAMPAIGN_HERO_BLOCK_UPDATE_MIN_HEIGHT,
-      variables: { id: 'heroId', input: { minHeight } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignHeroBlockUpdate: {
-          __typename: 'CampaignHeroBlock',
-          id: 'heroId',
-          minHeight
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), { minHeight })
 }
 
 function renderSettings(

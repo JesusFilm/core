@@ -6,14 +6,11 @@ import {
   CampaignImageSlot,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
+import { CampaignMediaOwner } from '../../../../libs/useCampaignBlockUpdateMutation'
 import {
   CAMPAIGN_IMAGE_BLOCK_CREATE,
   newOwnedImageBlock
 } from '../../../../libs/useCampaignImageBlockCreateMutation'
-import {
-  CAMPAIGN_HERO_BLOCK_UPDATE_MEDIA,
-  CampaignMediaOwner
-} from '../../../../libs/useCampaignMediaSlotMutation'
 import {
   CAMPAIGN_VIDEO_BLOCK_CREATE,
   CampaignVideoPick,
@@ -22,7 +19,7 @@ import {
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { blockOf } from '../../styleTesting'
+import { blockOf, blockUpdateMock } from '../../styleTesting'
 import { CommandProbe, QueriedEditor } from '../../testing'
 
 import { useCampaignMediaCommand } from './useCampaignMediaCommand'
@@ -93,21 +90,7 @@ function imageCreateMock(id: string) {
 }
 
 function heroMediaMock(mediaBlockId: string | null) {
-  return {
-    request: {
-      query: CAMPAIGN_HERO_BLOCK_UPDATE_MEDIA,
-      variables: { id: 'heroId', input: { mediaBlockId } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignHeroBlockUpdate: {
-          __typename: 'CampaignHeroBlock',
-          id: 'heroId',
-          mediaBlockId
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(hero, { mediaBlockId })
 }
 
 /** Picks into the hero's Media Slot and shows what the slot holds as the cache has it. */

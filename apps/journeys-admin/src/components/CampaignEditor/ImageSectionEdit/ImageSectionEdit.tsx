@@ -10,15 +10,11 @@ import { ReactElement, useEffect, useState } from 'react'
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignTextField } from '../../../../__generated__/globalTypes'
 import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
-import { useCampaignImageBlockUpdateMutation } from '../../../libs/useCampaignImageBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { textLength } from '../Canvas/InlineText'
 import { FocalPointControl } from '../FocalPointControl'
 import { ImagePicker } from '../Pickers/ImagePicker'
-import {
-  previousOf,
-  useCampaignStyleCommand
-} from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useCampaignTranslationCommand } from '../utils/useCampaignTranslationCommand'
 
 /** PRD §15: alt text is at most 500 characters. */
@@ -44,8 +40,7 @@ export function ImageSectionEdit({
     campaign,
     state: { previewLanguageId }
   } = useCampaignEditor()
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeMedia = useCampaignImageBlockUpdateMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
   const {
     addTranslation,
     error: translationError,
@@ -67,12 +62,7 @@ export function ImageSectionEdit({
   }, [previewLanguageId, clearTranslationError])
 
   function write(input: { src?: string | null; alt?: string | null }): void {
-    addStyle({
-      block,
-      input,
-      previous: previousOf(block, input),
-      run: writeMedia
-    })
+    addFields(block, input)
   }
 
   function handlePick(src: string): void {

@@ -1,18 +1,13 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
-import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
-import {
-  CampaignJourneyBlockUpdateText,
-  CampaignJourneyBlockUpdateTextVariables
-} from '../../../../../__generated__/CampaignJourneyBlockUpdateText'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { IdType } from '../../../../../__generated__/globalTypes'
-import { CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT } from '../../../../libs/useCampaignBlockTextMutation'
+import { useCampaignBlockUpdateMutation } from '../../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignJourneyBlockSnapshotRefreshMutation } from '../../../../libs/useCampaignJourneyBlockSnapshotRefreshMutation'
 import { useCampaignJourneyByLinkLazyQuery } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
@@ -103,10 +98,7 @@ export function useJourneyCardSnapshotRefreshCommand(): {
   } = useCampaignEditor()
   const [lookup] = useCampaignJourneyByLinkLazyQuery()
   const [refresh] = useCampaignJourneyBlockSnapshotRefreshMutation()
-  const [update] = useMutation<
-    CampaignJourneyBlockUpdateText,
-    CampaignJourneyBlockUpdateTextVariables
-  >(CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT)
+  const { update } = useCampaignBlockUpdateMutation()
   const [pending, setPending] = useState<{
     card: JourneyCardBlock
     journey: SnapshotText
@@ -135,24 +127,20 @@ export function useJourneyCardSnapshotRefreshCommand(): {
         pageKind: cardPageKind,
         selectedBlockId: card.id
       })
-      const optimistic = {
-        __typename: 'CampaignJourneyBlock' as const,
-        id: card.id,
-        ...text,
-        snapshotEdited
-      }
       const request =
         mode === 'refresh'
           ? refresh({
               variables: { id: card.id },
               optimisticResponse: {
-                campaignJourneyBlockSnapshotRefresh: optimistic
+                campaignJourneyBlockSnapshotRefresh: {
+                  __typename: 'CampaignJourneyBlock',
+                  id: card.id,
+                  ...text,
+                  snapshotEdited
+                }
               }
             })
-          : update({
-              variables: { id: card.id, input: { ...text, snapshotEdited } },
-              optimisticResponse: { campaignJourneyBlockUpdate: optimistic }
-            })
+          : update(card, { ...text, snapshotEdited })
       void request.catch((error: unknown) =>
         notify(error, t('Could not refresh from journey'))
       )

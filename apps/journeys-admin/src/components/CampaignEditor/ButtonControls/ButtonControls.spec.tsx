@@ -6,13 +6,17 @@ import {
   within
 } from '@testing-library/react'
 
-import { CAMPAIGN_BUTTON_BLOCK_UPDATE_STYLE } from '../../../libs/useCampaignButtonBlockUpdateMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
 import { nextPalette } from '../PaletteColorPicker'
-import { StyleMock, WithBlock, blockOf, paletteMock } from '../styleTesting'
+import {
+  StyleMock,
+  WithBlock,
+  blockOf,
+  blockUpdateMock,
+  paletteMock
+} from '../styleTesting'
 import { CommandProbe, QueriedEditor } from '../testing'
-import { buttonStyleRow } from '../utils/useCampaignExtraStyleCommand'
 
 import { ButtonControls } from './ButtonControls'
 
@@ -22,20 +26,7 @@ function buttonMock(
   input: Record<string, unknown>,
   current: Partial<typeof button> = {}
 ): StyleMock {
-  return {
-    request: {
-      query: CAMPAIGN_BUTTON_BLOCK_UPDATE_STYLE,
-      variables: { id: button.id, input }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignButtonBlockUpdate: buttonStyleRow(
-          { ...button, ...current },
-          input
-        )
-      }
-    }))
-  }
+  return blockUpdateMock(button, input, current)
 }
 
 function renderControls(mocks: StyleMock[]): ReturnType<typeof render> {

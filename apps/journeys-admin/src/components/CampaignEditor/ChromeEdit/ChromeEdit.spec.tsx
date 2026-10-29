@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { CampaignImageSlot } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../libs/useCampaignBlockRestoreMutation'
-import { CAMPAIGN_HEADER_BLOCK_UPDATE_LOGO } from '../../../libs/useCampaignHeaderLogoMutation'
 import {
   CAMPAIGN_IMAGE_BLOCK_CREATE,
   newOwnedImageBlock
@@ -13,7 +12,7 @@ import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../libs/useCloudflareUplo
 import { useImageUpload } from '../../../libs/useImageUpload'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
-import { WithBlock, blockOf } from '../styleTesting'
+import { WithBlock, blockOf, blockUpdateMock } from '../styleTesting'
 import { CommandProbe, QueriedEditor } from '../testing'
 
 import { ChromeEdit } from './ChromeEdit'
@@ -75,21 +74,7 @@ const imageCreateMock = {
 }
 
 function logoMock(logoBlockId: string | null) {
-  return {
-    request: {
-      query: CAMPAIGN_HEADER_BLOCK_UPDATE_LOGO,
-      variables: { id: 'headerId', input: { logoBlockId } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignHeaderBlockUpdate: {
-          __typename: 'CampaignHeaderBlock',
-          id: 'headerId',
-          logoBlockId
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(header, { logoBlockId })
 }
 
 function HeaderEdit(): ReactElement {

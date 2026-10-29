@@ -11,12 +11,12 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { IdType, JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT } from '../../../../libs/useCampaignBlockTextMutation'
 import { CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH } from '../../../../libs/useCampaignJourneyBlockSnapshotRefreshMutation'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
+import { blockUpdateMock } from '../../styleTesting'
 import { CommandProbe, QueriedEditor, SelectionProbe } from '../../testing'
 
 import {
@@ -86,55 +86,17 @@ const refreshMock = {
   }))
 }
 
-const restoreMock = {
-  request: {
-    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
-    variables: {
-      id: CARD_ID,
-      input: {
-        title: card.title,
-        description: card.description,
-        snapshotEdited: true
-      }
-    }
-  },
-  result: vi.fn(() => ({
-    data: {
-      campaignJourneyBlockUpdate: {
-        __typename: 'CampaignJourneyBlock',
-        id: CARD_ID,
-        title: card.title,
-        description: card.description,
-        snapshotEdited: true
-      }
-    }
-  }))
-}
+const restoreMock = blockUpdateMock(card, {
+  title: card.title,
+  description: card.description,
+  snapshotEdited: true
+})
 
-const restoreUneditedMock = {
-  request: {
-    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
-    variables: {
-      id: CARD_ID,
-      input: {
-        title: card.title,
-        description: card.description,
-        snapshotEdited: false
-      }
-    }
-  },
-  result: vi.fn(() => ({
-    data: {
-      campaignJourneyBlockUpdate: {
-        __typename: 'CampaignJourneyBlock',
-        id: CARD_ID,
-        title: card.title,
-        description: card.description,
-        snapshotEdited: false
-      }
-    }
-  }))
-}
+const restoreUneditedMock = blockUpdateMock(card, {
+  title: card.title,
+  description: card.description,
+  snapshotEdited: false
+})
 
 function Harness(): ReactElement {
   const { campaign: current } = useCampaignEditor()
