@@ -68,9 +68,6 @@ The per-Service, per-Environment secret handle: Terraform reads it from SSM and 
 **Bastion**:
 The SSH jump host (`bastion.central.jesusfilm.org`) for reaching internal resources (the Core Database, Redis); access is an IP allowlist of named individuals.
 
-**Platform Cluster** (retired):
-The EKS cluster (`jfp-eks-<env>`) that ran ops tooling and Plausible Analytics until Plausible moved to ECS (plan `docs/plans/2026-10-14-002-feat-plausible-on-ecs-graviton-plan.md`). Deleted in 2026-10 (plan `docs/plans/2026-10-28-001-feat-eks-platform-cluster-teardown-plan.md`). ECS is the only runtime now; "the cluster" means the ECS cluster.
-
 ### Terminology traps
 
 **`api-journeys-modern`**:
