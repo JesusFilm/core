@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
@@ -6,10 +7,13 @@ import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode } from 'react'
+import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 
+import { Dialog } from '@core/shared/ui/Dialog'
 import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import File5Icon from '@core/shared/ui/icons/File5'
@@ -27,6 +31,8 @@ import { useTranslationRun } from '../TranslationRunProvider'
 
 /** The Left Rail's width. */
 export const LEFT_RAIL_WIDTH = 56
+
+const CAMPAIGNS_HREF = '/?type=campaigns'
 
 interface LeftRailProps {
   view: CanvasView
@@ -99,11 +105,25 @@ function PanelToggle({
  * open, docked beside the rail), and at the bottom undo, redo, the Desktop /
  * Phone view and the Publish button.
  * Undo and redo run the one Command history; the view toggle is never a
- * Command.
+ * Command. While a machine-translation run is in flight the back button asks
+ * before leaving, since leaving stops the run.
  */
 export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const { run } = useTranslationRun()
+  const [leaveOpen, setLeaveOpen] = useState(false)
+
+  function handleBackClick(event: MouseEvent): void {
+    if (run == null) return
+    event.preventDefault()
+    setLeaveOpen(true)
+  }
+
+  function handleLeave(): void {
+    setLeaveOpen(false)
+    void router.push(CAMPAIGNS_HREF)
+  }
 
   function handleViewChange(
     _event: unknown,
@@ -133,7 +153,8 @@ export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
         <Tooltip title={t('Back to campaigns')} placement="right" arrow>
           <IconButton
             component={NextLink}
-            href="/?type=campaigns"
+            href={CAMPAIGNS_HREF}
+            onClick={handleBackClick}
             aria-label={t('Back to campaigns')}
           >
             <ArrowLeftIcon />
@@ -184,6 +205,24 @@ export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
         </ToggleButtonGroup>
         <PublishButton />
       </Stack>
+      <Dialog
+        open={leaveOpen}
+        onClose={() => setLeaveOpen(false)}
+        dialogTitle={{ title: t('Leave the editor?'), closeButton: true }}
+        dialogActionChildren={
+          <>
+            <Button onClick={() => setLeaveOpen(false)}>{t('Stay')}</Button>
+            <Button onClick={handleLeave}>{t('Leave')}</Button>
+          </>
+        }
+        testId="CampaignLeaveDialog"
+      >
+        <Typography>
+          {t('The translation into {{language}} stops.', {
+            language: run?.languageName ?? ''
+          })}
+        </Typography>
+      </Dialog>
     </Stack>
   )
 }

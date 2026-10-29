@@ -1,3 +1,4 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { useApolloClient } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -17,6 +18,12 @@ import {
   useCampaignAiTranslateSubscription
 } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
+import { messageOf } from '../utils/messageOf'
+import {
+  missingCountOf,
+  useCampaignDefaultLanguageSwap
+} from '../utils/useCampaignDefaultLanguageSwap'
+
 /** A machine-translation run in flight: what it translates and how far it has got. */
 export interface TranslationRun extends CampaignAiTranslateVariables {
   /** The language's autonym, for the messages about the run. */
@@ -29,13 +36,24 @@ export interface TranslationRun extends CampaignAiTranslateVariables {
   translatedCount: number
 }
 
+export interface TranslationRunOptions {
+  /** Once the run completes, and only then, make its language the default. */
+  thenSwapDefaultLanguage: true
+  /** The swap went through: the campaign was read again with every text moved. */
+  onDefaultLanguageChanged?: () => void
+}
+
 export interface TranslationRunContextValue {
   /** The run in flight; one at a time. */
   run?: TranslationRun
   /** Why the last run failed, until the next one starts. */
   error?: string
   /** Start a run; ignored while one is in flight. */
-  start: (variables: CampaignAiTranslateVariables, languageName: string) => void
+  start: (
+    variables: CampaignAiTranslateVariables,
+    languageName: string,
+    options?: TranslationRunOptions
+  ) => void
   /** Stop the run, keeping every string already written. */
   cancel: () => void
 }
@@ -56,6 +74,19 @@ export function useTranslationRun(): TranslationRunContextValue {
 interface RunTarget {
   variables: CampaignAiTranslateVariables
   languageName: string
+  options?: TranslationRunOptions
+}
+
+/** The API's refusal of a second run for the same campaign and language. */
+function isRunConflict(error: unknown): boolean {
+  return (
+    CombinedGraphQLErrors.is(error) &&
+    error.errors.some(
+      (graphQLError) =>
+        graphQLError.extensions?.code === 'CONFLICT' &&
+        graphQLError.extensions?.field === 'languageId'
+    )
+  )
 }
 
 /**
@@ -64,7 +95,9 @@ interface RunTarget {
  * switching page. Anything in the editor reads its progress and can start or
  * Cancel it; ending it, by finishing or cancelling, says so in a snackbar.
  * Cancel unsubscribes: the strings the server already wrote stay, and the
- * campaign and the Translations rows are read again to show them.
+ * campaign and the Translations rows are read again to show them. A run
+ * started with `thenSwapDefaultLanguage` makes its language the default once
+ * it completes; an error or Cancel leaves the default alone.
  */
 export function TranslationRunProvider({
   children
@@ -74,6 +107,7 @@ export function TranslationRunProvider({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const client = useApolloClient()
+  const swapDefaultLanguage = useCampaignDefaultLanguageSwap()
   const [target, setTarget] = useState<RunTarget>()
   const [error, setError] = useState<string>()
   const translatedCountRef = useRef(0)
@@ -84,6 +118,29 @@ export function TranslationRunProvider({
     void client.refetchQueries({ include: ['GetCampaign'] })
   }, [client])
 
+  /** The swap a completed run asked for; on success it has read the campaign again itself. */
+  const swapAfterRun = useCallback(
+    async ({ variables, languageName, options }: RunTarget): Promise<void> => {
+      try {
+        await swapDefaultLanguage(variables.campaignId, variables.languageId)
+        options?.onDefaultLanguageChanged?.()
+      } catch (swapError) {
+        const count = missingCountOf(swapError)
+        enqueueSnackbar(
+          count == null
+            ? messageOf(swapError)
+            : t(
+                '{{count}} texts still have no translation in {{language}}, so it cannot become the default.',
+                { count, language: languageName }
+              ),
+          { variant: 'error' }
+        )
+        refreshTranslations()
+      }
+    },
+    [swapDefaultLanguage, enqueueSnackbar, t, refreshTranslations]
+  )
+
   const { data } = useCampaignAiTranslateSubscription({
     variables: target?.variables,
     onData: ({ data: result }) => {
@@ -92,9 +149,15 @@ export function TranslationRunProvider({
         translatedCountRef.current
     },
     onError: (runError) => {
-      setError(runError.message)
+      const message = isRunConflict(runError)
+        ? t(
+            '{{language}} is already being translated. Try again when it has finished.',
+            { language: target?.languageName ?? '' }
+          )
+        : runError.message
+      setError(message)
       setTarget(undefined)
-      enqueueSnackbar(runError.message, { variant: 'error' })
+      enqueueSnackbar(message, { variant: 'error' })
       refreshTranslations()
     },
     onComplete: () => {
@@ -107,16 +170,24 @@ export function TranslationRunProvider({
         }),
         { variant: 'success' }
       )
+      if (target.options?.thenSwapDefaultLanguage === true) {
+        void swapAfterRun(target)
+        return
+      }
       refreshTranslations()
     }
   })
 
   const start = useCallback(
-    (variables: CampaignAiTranslateVariables, languageName: string): void => {
+    (
+      variables: CampaignAiTranslateVariables,
+      languageName: string,
+      options?: TranslationRunOptions
+    ): void => {
       if (target != null) return
       translatedCountRef.current = 0
       setError(undefined)
-      setTarget({ variables, languageName })
+      setTarget({ variables, languageName, options })
     },
     [target]
   )
