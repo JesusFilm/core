@@ -8,12 +8,18 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionLanguageWithAcl } from '../../../../test/campaignRegionFactory'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 /** The linked journey as the public read serves it, after its author reworded it. */
 const JOURNEY = {
@@ -41,9 +47,11 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
   `)
 
   let fixture: CampaignFixture
+  let writes: CampaignWriteCall[]
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     fixture = campaignFactory().withRegion('EUR').build()
     prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
       campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529', {
@@ -103,9 +111,14 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
         }
       })
     )
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 'campaignId' } })
-    )
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { shareLanguage: 'eurRegionId-529' },
+        jobs: [],
+        touched: true
+      }
+    ])
   })
 
   it('refreshes a journey whose stats the caller cannot see: only linking checks journey access', async () => {
@@ -167,23 +180,21 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
     expect(prismaMock.journey.findFirst).not.toHaveBeenCalled()
   })
 
-  it('takes the row lock, then re-reads the linked journey before it writes', async () => {
+  it('declares the row, then re-reads the linked journey in the write before it writes', async () => {
     await refresh()
 
     const order = (mock: unknown): number =>
       vi.mocked(mock as () => void).mock.invocationCallOrder[0]
-    const lock = prismaMock.$queryRaw.mock.calls[0]
-    expect((lock[0] as unknown as string[]).join('?')).toContain('FOR UPDATE')
-    expect(lock[1]).toBe('eurRegionId-529')
-    expect(order(prismaMock.$queryRaw)).toBeLessThan(
-      order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
-    )
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { shareLanguage: 'eurRegionId-529' }
+    ])
     expect(
       prismaMock.campaignRegionLanguage.findUniqueOrThrow
     ).toHaveBeenCalledWith({
       where: { id: 'eurRegionId-529' },
       select: { journeyId: true }
     })
+    // Not lock order: the journey as re-read decides whether the update runs.
     expect(
       order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
     ).toBeLessThan(order(prismaMock.campaignRegionLanguage.update))

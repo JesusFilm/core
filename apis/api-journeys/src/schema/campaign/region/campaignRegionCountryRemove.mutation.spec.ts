@@ -5,13 +5,18 @@ import {
 } from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
-import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 describe('campaignRegionCountryRemove', () => {
   const REMOVE = graphql(`
@@ -30,8 +35,11 @@ describe('campaignRegionCountryRemove', () => {
     order: 0
   }
 
+  let writes: CampaignWriteCall[]
+
   beforeEach(() => {
     setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     const fixture = campaignFactory().withRegion('EUR').build()
     prismaMock.campaignRegionCountry.findUnique.mockResolvedValue(row)
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
@@ -65,19 +73,19 @@ describe('campaignRegionCountryRemove', () => {
       where: { id: 'eurCountry-DE' },
       data: { order: 0 }
     })
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-      where: { id: 'campaignId' },
-      data: { updatedAt: expect.any(Date) }
-    })
   })
 
-  it('takes the structure lock before it deletes and renumbers the chips', async () => {
+  it('deletes and renumbers the chips in one touching write that declares the structure lock', async () => {
     await remove()
 
-    expectStructureLockFirst()
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignRegionCountry.delete.mock.invocationCallOrder[0]
-    )
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { structure: true },
+        jobs: [],
+        touched: true
+      }
+    ])
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -92,6 +100,7 @@ describe('campaignRegionCountryRemove', () => {
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegionCountry.delete).not.toHaveBeenCalled()
+    expect(writes).toEqual([])
   })
 
   it('throws NOT_FOUND for an unknown row', async () => {
