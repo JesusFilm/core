@@ -43,7 +43,6 @@ function HostJourneysPage({
         campaign={campaign}
         pageKind={CampaignPageKind.landing}
         worldMap={worldMap}
-        basePath=""
       />
     )
 

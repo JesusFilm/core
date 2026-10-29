@@ -7,7 +7,6 @@ import { ReactElement, ReactNode, useMemo } from 'react'
 import {
   CampaignPage,
   CampaignSeo,
-  campaignBasePath,
   campaignFontsHref,
   createCampaignTheme
 } from '@core/journeys/ui/Campaign'
@@ -28,11 +27,6 @@ interface CampaignPageWrapperProps {
   pageKind: CampaignPageKind
   region?: CampaignRegion | null
   worldMap?: WorldMapShapes | null
-  /**
-   * Where region links point: the root-domain `/campaign/<slug>` path by
-   * default, `''` on a Campaign Domain where regions sit at `/<slug>`.
-   */
-  basePath?: string
   children?: ReactNode
 }
 
@@ -50,7 +44,6 @@ export function CampaignPageWrapper({
   pageKind,
   region = null,
   worldMap = null,
-  basePath = campaignBasePath(campaign.slug),
   children
 }: CampaignPageWrapperProps): ReactElement {
   const rtl = getLocaleRTL(campaign.language.bcp47 ?? '')
@@ -82,7 +75,6 @@ export function CampaignPageWrapper({
           campaign={campaign}
           pageKind={pageKind}
           region={region}
-          basePath={basePath}
           worldMap={worldMap}
         />
         {children}

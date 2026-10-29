@@ -1,4 +1,4 @@
-import { campaignPageHref } from '../CampaignProvider'
+import { campaignRegionHref } from '../CampaignProvider'
 import type { CampaignContextValue } from '../CampaignProvider'
 import type { CampaignBlockOf } from '../types'
 
@@ -30,7 +30,7 @@ function isHttpsUrl(url: string): boolean {
  */
 export function resolveCampaignAction(
   action: CampaignBlockOf<'CampaignButtonBlock'>['action'],
-  context: Pick<CampaignContextValue, 'campaign' | 'basePath' | 'pageBlockIds'>
+  context: Pick<CampaignContextValue, 'campaign' | 'pageBlockIds'>
 ): ResolvedCampaignAction | null {
   if (action == null) return null
   switch (action.__typename) {
@@ -46,12 +46,7 @@ export function resolveCampaignAction(
         (candidate) => candidate.id === action.regionId
       )
       if (region == null) return null
-      return {
-        href: campaignPageHref(
-          `${context.basePath}/${region.slug}`,
-          context.campaign
-        )
-      }
+      return { href: campaignRegionHref(context.campaign, region.slug) }
     }
     default:
       return null

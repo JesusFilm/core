@@ -134,7 +134,6 @@ function HostSlugPage({
         pageKind={CampaignPageKind.regionTemplate}
         region={region}
         worldMap={worldMap}
-        basePath=""
       />
     )
 

@@ -4,10 +4,8 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo } from 'react'
 
 import { useCampaign } from '../CampaignProvider'
-import {
-  CAMPAIGN_LANGUAGE_COOKIE,
-  CAMPAIGN_LANGUAGE_PARAM
-} from '../libs/resolvePageLanguage'
+import { withPageLanguage } from '../libs/campaignAddress'
+import { CAMPAIGN_LANGUAGE_COOKIE } from '../libs/resolvePageLanguage'
 import type { CampaignPublic } from '../types'
 
 type CampaignLanguage = CampaignPublic['languages'][number]
@@ -32,7 +30,9 @@ export function writeCampaignLanguageCookie(bcp47: string): void {
 /** The current page with the `lang` param set to `bcp47`, other params and the hash kept. */
 export function campaignLanguageUrl(href: string, bcp47: string): string {
   const url = new URL(href)
-  url.searchParams.set(CAMPAIGN_LANGUAGE_PARAM, bcp47)
+  new URLSearchParams(withPageLanguage('', bcp47)).forEach((value, key) =>
+    url.searchParams.set(key, value)
+  )
   return url.toString()
 }
 

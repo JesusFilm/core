@@ -26,10 +26,13 @@ vi.mock('next-seo', () => ({
 }))
 
 const ROOT = {
-  origin: 'https://your.nextstep.is',
-  basePath: '/campaign/outreach-2026'
+  address: { slug: 'outreach-2026', domainName: null },
+  rootOrigin: 'https://your.nextstep.is'
 }
-const CAMPAIGN_ROOT = { origin: 'https://outreach.example.org', basePath: '' }
+const CAMPAIGN_ROOT = {
+  address: { slug: 'outreach-2026', domainName: 'outreach.example.org' },
+  rootOrigin: 'https://your.nextstep.is'
+}
 
 const landingPoster = {
   __typename: 'CampaignVideoBlock',
@@ -479,6 +482,20 @@ describe('CampaignSeo', () => {
     expect(seoCalls[0].canonical).toBe('https://outreach.example.org/eur')
   })
 
+  it('canonicalises to the root-domain form when the first domain name is empty', () => {
+    render(
+      <CampaignSeo
+        campaign={{ ...campaignPublic, customDomainNames: [''] }}
+        pageKind={CampaignPageKind.regionTemplate}
+        region={eurRegion}
+        rootDomain="your.nextstep.is"
+      />
+    )
+    expect(seoCalls[0].canonical).toBe(
+      'https://your.nextstep.is/campaign/outreach-2026/eur'
+    )
+  })
+
   // Captured from `main` before the pages moved onto the Campaign Address
   // module, and unchanged by it: a campaign with two languages and a region,
   // on the root domain and on a Campaign Domain.
@@ -596,5 +613,14 @@ describe('campaignPreferredLocation', () => {
         rootDomain
       })
     ).toEqual(CAMPAIGN_ROOT)
+  })
+
+  it('treats an empty domain name as no Campaign Domain', () => {
+    expect(
+      campaignPreferredLocation({
+        campaign: { ...campaignPublic, customDomainNames: [''] },
+        rootDomain
+      })
+    ).toEqual(ROOT)
   })
 })
