@@ -366,9 +366,14 @@ describe('typename predicates and validators', () => {
       })
     })
 
-    it.each(['CampaignHeaderBlock', 'CampaignFooterBlock'])(
-      'accepts the chrome block %s as a parent',
-      async (typename) => {
+    it.each<[string, CampaignTypename]>([
+      ['CampaignHeaderBlock', 'CampaignButtonBlock'],
+      ['CampaignHeaderBlock', 'CampaignTypographyBlock'],
+      ['CampaignFooterBlock', 'CampaignButtonBlock'],
+      ['CampaignFooterBlock', 'CampaignTypographyBlock']
+    ])(
+      'accepts the chrome block %s as a parent of a %s',
+      async (typename, childTypename) => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue({
           ...hero,
           id: 'chromeId',
@@ -377,7 +382,7 @@ describe('typename predicates and validators', () => {
         })
 
         await expect(
-          validateParentBlock('chromeId', 'campaignId', 'CampaignButtonBlock')
+          validateParentBlock('chromeId', 'campaignId', childTypename)
         ).resolves.toMatchObject({ typename })
       }
     )
