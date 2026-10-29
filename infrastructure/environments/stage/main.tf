@@ -237,12 +237,9 @@ module "plausible" {
   host_names       = ["analytics.stage.central.jesusfilm.org", "plausible.stage.central.jesusfilm.org"]
 }
 
-# The stage Plausible hostname, moved from the EKS ingress NLB to the public
-# ALB. external-dns created this record but no longer manages it: each pass it
-# finds no hosted zone for the name and skips it, and the zone holds no
-# ownership TXT records. allow_overwrite lets Terraform take the record as it
-# is. Rollback is the NLB name again (modules/plausible/README.md, "Stage
-# cutover").
+# The stage Plausible hostname, a CNAME to the stage public ALB. The record
+# predates this configuration, so allow_overwrite lets Terraform take it as it
+# is.
 resource "aws_route53_record" "plausible_analytics" {
   zone_id         = module.route53_stage_central_jesusfilm_org.zone_id
   name            = "analytics"

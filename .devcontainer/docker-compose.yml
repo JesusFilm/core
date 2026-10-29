@@ -78,7 +78,6 @@ services:
     # exactly as they are on a host checkout (see docker-compose.services.yml).
     network_mode: service:db
     environment:
-      KUBECONFIG: /workspaces/core/.kube/config
       PGHOST: localhost
       PGPASSWORD: postgres
       PGUSER: postgres

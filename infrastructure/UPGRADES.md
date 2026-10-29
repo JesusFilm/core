@@ -1,19 +1,13 @@
 # Staged infrastructure version upgrades
 
-The rollout targeted EKS **1.36** and Aurora PostgreSQL **17.11** in staging
-and production. The EKS clusters have since been deleted (see "EKS rollout"
-below); the Aurora phases and their approval variables remain.
+The rollout took Aurora PostgreSQL to **17.11** in staging and production
+through the phases of `upgrade_phase` (`upgrades.tf`): `prepare`,
+`stage-aurora`, `complete`.
 
 **Current state (2026-10-20): the rollout is complete; the committed default is
-`complete`.** Both
-environments have finished the EKS rollout. Staging completed `prepare`,
-`stage-addons` and every minor through 1.36. Production completed `prod-prepare`,
-`prod-addons` and every minor through 1.36 on 2026-10-18. In both, the control
-plane, workers, kube-proxy, VPC CNI and CoreDNS are on their 1.36 versions, and
-production's EBS CSI driver is the Argo-managed 1.53.0. Staging completed
-`stage-aurora` on 2026-10-19: its Aurora cluster is on 17.11, still on
-I/O-Optimized storage. Production completed `complete` on 2026-10-20: its
-Aurora cluster is on 17.11, on standard storage.
+`complete`.** Staging completed `stage-aurora` on 2026-10-19: its Aurora
+cluster is on 17.11, still on I/O-Optimized storage. Production completed
+`complete` on 2026-10-20: its Aurora cluster is on 17.11, on standard storage.
 
 A live Aurora precondition rejects a major change unless that environment's
 explicit approval variable is true.
@@ -21,10 +15,8 @@ explicit approval variable is true.
 Use the existing Atlantis project and state. Resolve another PR's project lock
 through its owner; never unlock or apply another PR's plan. **The current
 `automerge: true` configuration merges a PR after its first successful apply and
-deletes its branch.** This PR delivers the staging EKS upgrade to 1.36 and the
-approved staging I/O-Optimized storage switch; each subsequent phase needs its
-own reviewed PR that advances the committed `upgrade_phase`
-default to that phase. Retain the successfully applied phase as the default so
+deletes its branch.** Each phase needs its own reviewed PR that advances the
+committed `upgrade_phase` default to that phase. Retain the successfully applied phase as the default so
 future autoplan does not request a downgrade or a later upgrade. Never commit a
 future phase before its predecessors have completed and passed their health checks.
 
@@ -41,17 +33,6 @@ observed. Targeted plans do not prove that the rest of the root is reconciled.
 After all phases, review the complete root plan and resolve unrelated drift
 separately before declaring reconciliation complete. Deletion protection remains
 a separate protection change; this PR preserves its current setting.
-
-## EKS rollout
-
-Done and gone. Both clusters reached 1.36 (staging on 2026-10-17, production
-on 2026-10-18) through the phases `prepare`, `stage-addons`, `stage-1.33` to
-`stage-1.36`, `prod-prepare`, `prod-addons` and `prod-1.33` to `prod-1.36`,
-and were then deleted once Plausible, their last workload, had moved to ECS
-(`docs/plans/2026-10-28-001-feat-eks-platform-cluster-teardown-plan.md`). The
-procedure, the `modules/aws/eks` module with its live preconditions, and the
-add-on adoption are in the git history before that removal. `upgrade_phase`
-now carries only the Aurora phases.
 
 ## Aurora rollout
 
@@ -171,7 +152,7 @@ atlantis plan -d infrastructure -- -var=upgrade_phase=complete -var=allow_prod_a
 ```
 
 Never approve both environments' major changes in one plan. The guard compares
-each target against that cluster's live engine, independently of EKS state. An
+each target against that cluster's live engine. An
 ordinary plan after a successful major upgrade needs no approval flag because
 its desired and live major versions match. Do not leave approval enabled in
 committed defaults or persistent Atlantis variables.
