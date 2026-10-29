@@ -1,7 +1,8 @@
-import type {
+import {
   YoutubeVideo,
-  YoutubeVideosData
-} from '../../components/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromYouTube/VideoFromYouTube'
+  YoutubeVideosData,
+  fetchYouTube
+} from '../fetchYouTube'
 
 /**
  * Read one YouTube video (snippet and duration) from the YouTube Data API,
@@ -13,20 +14,9 @@ import type {
 export async function fetchYouTubeVideo(
   id: string
 ): Promise<YoutubeVideo | undefined> {
-  const videosQuery = new URLSearchParams({
+  const videosData = await fetchYouTube<Partial<YoutubeVideosData>>('videos', {
     part: 'snippet,contentDetails',
-    key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
     id
-  }).toString()
-  const response = await fetch(
-    `https://www.googleapis.com/youtube/v3/videos?${videosQuery}`
-  )
-  const videosData: Partial<YoutubeVideosData> & {
-    error?: { message?: string }
-  } = await response.json()
-  if (!response.ok)
-    throw new Error(
-      videosData.error?.message ?? `YouTube request failed (${response.status})`
-    )
+  })
   return videosData.items?.[0] as YoutubeVideo | undefined
 }

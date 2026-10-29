@@ -8,7 +8,7 @@ import {
   CampaignJourneyBlockCreateVariables
 } from '../../../__generated__/CampaignJourneyBlockCreate'
 import { campaignBlockCreateUpdate } from '../campaignBlockCache'
-import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery'
 
 export const CAMPAIGN_JOURNEY_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}

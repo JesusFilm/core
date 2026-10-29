@@ -20,7 +20,7 @@ import { fetchYouTubeVideo } from '../../../../../../../../libs/fetchYouTubeVide
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
-import type { YoutubeVideo } from '../VideoFromYouTube'
+import type { YoutubeVideo } from '../../../../../../../../libs/fetchYouTube'
 
 import 'video.js/dist/video-js.css'
 

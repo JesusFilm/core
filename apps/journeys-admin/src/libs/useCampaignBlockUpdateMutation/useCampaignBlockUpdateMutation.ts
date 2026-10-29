@@ -97,7 +97,7 @@ import {
   CampaignTextField,
   campaignTextInputKey
 } from '../useCampaignBlockTextMutation'
-import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery'
 
 /**
  * One document per typename with an update mutation, each returning the

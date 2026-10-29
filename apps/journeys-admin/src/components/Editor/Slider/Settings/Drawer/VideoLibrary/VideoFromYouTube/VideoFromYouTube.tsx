@@ -10,6 +10,7 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
+import { YoutubeVideosData } from '../../../../../../../libs/fetchYouTube'
 import { parseISO8601Duration } from '../../../../../../../libs/parseISO8601Duration'
 import { VideoList } from '../VideoList'
 import { VideoListProps } from '../VideoList/VideoList'
@@ -17,36 +18,6 @@ import { VideoSearch } from '../VideoSearch'
 
 interface VideoFromYouTubeProps {
   onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
-}
-
-export interface YoutubeVideo {
-  kind: 'youtube#video'
-  id: string
-  snippet: {
-    title: string
-    description: string
-    thumbnails: { default: { url: string }; high: { url: string } }
-  }
-  contentDetails: {
-    duration: string
-  }
-}
-
-export interface YoutubePlaylist {
-  kind: 'youtube#playlistItem'
-  snippet: {
-    title: string
-    description: string
-    thumbnails: { default: { url: string }; high: { url: string } }
-  }
-  contentDetails: {
-    videoId: string
-  }
-}
-
-export interface YoutubeVideosData {
-  items: Array<YoutubeVideo | YoutubePlaylist>
-  nextPageToken?: string
 }
 
 interface Data {

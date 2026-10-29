@@ -4,19 +4,9 @@ import {
   CampaignSectionTypename,
   useCampaignSectionCreateMutation
 } from '../../../../libs/useCampaignSectionCreateMutation'
-import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { SectionInsert, useCampaignEditor } from '../../CampaignEditorProvider'
 import { newColumnSlots, newSectionBlock } from '../../sectionTypes'
 import { useCampaignBlockCreateCommand } from '../useCampaignBlockCreateCommand'
-
-/**
- * Where a new section goes: a page and a position among its sections, or a
- * Column Slot, whose one section is always at position 0.
- */
-export interface SectionInsert {
-  pageId: string
-  parentOrder: number
-  parentBlockId?: string
-}
 
 /**
  * The create Command of a new section at an insert point: a Columns section

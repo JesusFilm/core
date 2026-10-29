@@ -1,6 +1,9 @@
 import { delay, http } from 'msw'
 
-import { YoutubePlaylist, YoutubeVideo } from './VideoFromYouTube'
+import {
+  YoutubePlaylist,
+  YoutubeVideo
+} from '../../../../../../../libs/fetchYouTube'
 
 const playlistItem1: YoutubePlaylist = {
   kind: 'youtube#playlistItem',

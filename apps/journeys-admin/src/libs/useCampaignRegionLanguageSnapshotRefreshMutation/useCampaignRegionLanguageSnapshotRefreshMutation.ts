@@ -5,7 +5,7 @@ import {
   CampaignRegionLanguageSnapshotRefresh,
   CampaignRegionLanguageSnapshotRefreshVariables
 } from '../../../__generated__/CampaignRegionLanguageSnapshotRefresh'
-import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../useCampaignQuery'
 
 export const CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH = gql`
   ${CAMPAIGN_REGION_LANGUAGE_FIELDS}

@@ -16,11 +16,7 @@ import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
-import File5Icon from '@core/shared/ui/icons/File5'
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
-import Layers4Icon from '@core/shared/ui/icons/Layers4'
-import Plus2Icon from '@core/shared/ui/icons/Plus2'
-import TranslateIcon from '@core/shared/ui/icons/Translate'
 
 import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
@@ -28,6 +24,8 @@ import { CampaignPanel, useCampaignEditor } from '../CampaignEditorProvider'
 import type { CanvasView } from '../Canvas'
 import { PublishButton } from '../PublishButton'
 import { useTranslationRun } from '../TranslationRunProvider'
+
+import { PANELS } from './panels'
 
 /** The Left Rail's width. */
 export const LEFT_RAIL_WIDTH = 56
@@ -160,30 +158,16 @@ export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
             <ArrowLeftIcon />
           </IconButton>
         </Tooltip>
-        <PanelToggle
-          panel="add"
-          label={t('Add')}
-          shortcut="A"
-          icon={<Plus2Icon />}
-        />
-        <PanelToggle
-          panel="pages"
-          label={t('Pages')}
-          shortcut="P"
-          icon={<File5Icon />}
-        />
-        <PanelToggle
-          panel="navigator"
-          label={t('Navigator')}
-          shortcut="Z"
-          icon={<Layers4Icon />}
-        />
-        <PanelToggle
-          panel="localize"
-          label={t('Localize')}
-          icon={<TranslateIcon />}
-          progress={run?.progress}
-        />
+        {PANELS.map(({ panel, label, shortcut, icon }) => (
+          <PanelToggle
+            key={panel}
+            panel={panel}
+            label={label(t)}
+            shortcut={shortcut}
+            icon={icon}
+            progress={panel === 'localize' ? run?.progress : undefined}
+          />
+        ))}
       </Stack>
       <Stack spacing={1} sx={{ alignItems: 'center' }}>
         <CommandUndoItem variant="icon-button" />

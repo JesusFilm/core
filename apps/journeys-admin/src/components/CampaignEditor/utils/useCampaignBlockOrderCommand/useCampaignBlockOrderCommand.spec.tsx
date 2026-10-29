@@ -9,12 +9,10 @@ import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { Inspector } from '../../Inspector'
 import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
+import { currentSiblings } from '../currentSiblings'
+import { reorderedSiblings } from '../reorderedSiblings'
 
-import {
-  currentSiblings,
-  reorderedSiblings,
-  useCampaignBlockOrderCommand
-} from './useCampaignBlockOrderCommand'
+import { useCampaignBlockOrderCommand } from './useCampaignBlockOrderCommand'
 
 const hero = campaign.blocks.find((block) => block.id === 'heroId')!
 const switcher = campaign.blocks.find(

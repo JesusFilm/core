@@ -1,4 +1,3 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import Alert from '@mui/material/Alert'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
@@ -27,6 +26,7 @@ import { useCampaignLanguageRemoveMutation } from '../../../libs/useCampaignLang
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { TranslationRunProgress } from '../TranslationRunProgress'
 import { useTranslationRun } from '../TranslationRunProvider'
+import { messageOf } from '../utils/messageOf'
 
 interface LanguagesPanelProps {
   campaign: Campaign
@@ -48,12 +48,6 @@ export function languageNames(language: CampaignLanguage): {
     localName:
       localName != null && localName !== autonym ? localName : undefined
   }
-}
-
-function messageOf(error: unknown): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : String(error)
 }
 
 /**

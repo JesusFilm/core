@@ -1,4 +1,3 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -17,6 +16,7 @@ import {
 import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../../__generated__/GetCampaignJourneyByLink'
 import { IdType } from '../../../../../__generated__/globalTypes'
 import { useCampaignJourneyByLinkLazyQuery } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
+import { messageOf } from '../../utils/messageOf'
 
 /** How a pasted journey link addresses the journey: an admin link by id, a public URL by slug. */
 export type JourneyLink = { id: string } | { slug: string }
@@ -42,12 +42,6 @@ export function parseJourneyLink(value: string): JourneyLink | null {
   if (first === 'journeys' && second != null) return { id: second }
   if (first === 'embed' && second != null) return { slug: second }
   return { slug: first }
-}
-
-function messageOf(error: unknown, fallback: string): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : fallback
 }
 
 interface JourneyPasteFieldProps {

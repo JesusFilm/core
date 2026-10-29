@@ -18,7 +18,7 @@ import {
   campaignBlockCreateUpdate,
   campaignBlockSlotWrite
 } from '../campaignBlockCache'
-import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery'
 
 export type CampaignImageBlock = GetCampaign_campaign_blocks_CampaignImageBlock
 

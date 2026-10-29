@@ -25,11 +25,12 @@ import { isInColumnSlot } from '../sectionTypes'
 export type CampaignPanel = 'pages' | 'navigator' | 'add' | 'localize'
 
 /**
- * An insert point the canvas chose for the Add Panel: a page and a position
- * among its sections, or a Column Slot, whose one section is at position 0.
- * It lasts while the Add panel stays open and the selection stays put.
+ * Where a new section goes: a page and a position among its sections, or a
+ * Column Slot, whose one section is always at position 0. Also the insert
+ * point the canvas chose for the Add Panel, which lasts while the Add panel
+ * stays open and the selection stays put.
  */
-export interface CampaignAddPreset {
+export interface SectionInsert {
   pageId: string
   parentOrder: number
   parentBlockId?: string
@@ -58,7 +59,7 @@ export interface CampaignEditorState {
   /** The Inspector tab; a view choice, never a Command. */
   inspectorTab: CampaignInspectorTab
   /** The insert point the canvas "+" or an empty slot preset; a view choice, never a Command. */
-  addPreset?: CampaignAddPreset
+  addPreset?: SectionInsert
   /** Bumped by Option+Z so the Navigator expands or collapses its whole tree. */
   navigatorExpandRequest: number
 }
@@ -103,7 +104,7 @@ interface SetPanelAction {
 /** Open the Add panel at an insert point the canvas chose. */
 interface OpenAddPanelAction {
   type: 'OpenAddPanelAction'
-  preset: CampaignAddPreset
+  preset: SectionInsert
 }
 interface SetInspectorTabAction {
   type: 'SetInspectorTabAction'
@@ -463,12 +464,9 @@ export function CampaignEditorProvider({
       selection.kind === 'text' ||
       selection.kind === 'button' ||
       selection.kind === 'card' ||
-      selection.kind === 'journey'
+      selection.kind === 'journey' ||
+      selection.kind === 'slot'
     ) {
-      selectBlock(selection.host?.id)
-      return
-    }
-    if (selection.kind === 'slot') {
       selectBlock(selection.host?.id)
       return
     }

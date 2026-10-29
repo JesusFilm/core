@@ -25,7 +25,7 @@ import {
   withEmptyTranslations
 } from '../../components/CampaignEditor/data'
 import { campaignCache } from '../../components/CampaignEditor/testing'
-import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery'
 
 import {
   CAMPAIGN_BLOCK_UPDATE_DOCUMENTS,
