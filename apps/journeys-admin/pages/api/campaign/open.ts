@@ -2,7 +2,10 @@ import { gql } from '@apollo/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getApiRequestTokens } from 'next-firebase-auth-edge'
 
-import { campaignPagePaths } from '@core/journeys/ui/Campaign'
+import {
+  campaignPagePaths,
+  pageLanguageTag
+} from '@core/journeys/ui/Campaign/libs/campaignAddress'
 
 import {
   GetCampaignPagePaths_campaign as Campaign,
@@ -105,10 +108,14 @@ async function revalidatePaths(
   }
 }
 
-/** The `_lang/<tag>` tags of the campaign's Page Languages, lowercased as the proxy does. */
+/**
+ * The `_lang/<tag>` tags of the campaign's Page Languages, as the proxy
+ * reads `?lang=` (`pageLanguageTag`). A language whose tag the proxy never
+ * routes has no page of its own, so it is skipped.
+ */
 function languageTags(campaign: Campaign): string[] {
   const tags = campaign.languages
-    .map(({ language }) => language.bcp47?.toLowerCase())
+    .map(({ language }) => pageLanguageTag(language.bcp47))
     .filter((tag): tag is string => tag != null)
   return [...new Set(tags)]
 }
@@ -118,9 +125,8 @@ function languageTags(campaign: Campaign): string[] {
  * journey Preview (`pages/api/preview.ts`): as the signed-in user, read the
  * campaign, ask the journeys app at `JOURNEYS_URL` to rebuild every page it
  * is served from (`campaignPagePaths`), wait for the edge caches, then send
- * the browser to the public address — the Campaign Domain's root when the
- * campaign has one, else the root-domain `/campaign/<slug>`, with
- * `regionSlug` appended when it names one of the campaign's regions. A draft
+ * the browser to the public address (`campaignPublicAddress`) — the
+ * region's page when `regionSlug` names one of the campaign's regions. A draft
  * serves nothing, so it is opened without a rebuild.
  *
  * A rebuild that fails is logged and the page still opens. When the campaign
@@ -213,9 +219,8 @@ export default async function handler(
     await sleep(300)
   }
 
-  const address = campaignPublicAddress(campaign)
   const region = campaign.regions.find(
     (candidate) => candidate.slug === regionSlug
   )
-  res.redirect(307, region == null ? address : `${address}/${region.slug}`)
+  res.redirect(307, campaignPublicAddress(campaign, region?.slug))
 }

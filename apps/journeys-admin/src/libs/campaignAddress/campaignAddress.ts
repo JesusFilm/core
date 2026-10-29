@@ -1,4 +1,8 @@
 import { previewEmbedUrl } from '@core/journeys/ui/Campaign'
+import {
+  campaignAbsoluteAddress,
+  campaignDomainName as domainNameOf
+} from '@core/journeys/ui/Campaign/libs/campaignAddress'
 
 import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../__generated__/GetCampaign'
 
@@ -13,7 +17,10 @@ const JOURNEYS_URL =
  * not found.
  */
 export function campaignPermanentAddress(slug: string): string {
-  return `${JOURNEYS_URL}/campaign/${slug}`
+  return campaignAbsoluteAddress(
+    { slug, domainName: null },
+    { rootOrigin: JOURNEYS_URL }
+  )
 }
 
 /** What a campaign's public address is read from. */
@@ -30,19 +37,28 @@ export interface CampaignAddressFields {
 export function campaignDomainName(
   customDomains: CampaignAddressFields['customDomains']
 ): string | null {
-  const name = customDomains[0]?.name
-  if (name == null || name === '') return null
-  return name
+  return domainNameOf(customDomains.map(({ name }) => name))
 }
 
 /**
- * The address the public page is served at right now: the Campaign Domain's
- * root when the campaign has one, else the root-domain address.
+ * The address the public page is served at right now, or the page of the
+ * region `regionSlug` names: on the Campaign Domain when the campaign has
+ * one, else on the root domain. A Campaign Domain's landing page is shown
+ * and opened as its bare origin, without the module's trailing `/`.
  */
-export function campaignPublicAddress(campaign: CampaignAddressFields): string {
-  const domainName = campaignDomainName(campaign.customDomains)
-  if (domainName == null) return campaignPermanentAddress(campaign.slug)
-  return `https://${domainName}`
+export function campaignPublicAddress(
+  campaign: CampaignAddressFields,
+  regionSlug?: string | null
+): string {
+  const address = campaignAbsoluteAddress(
+    {
+      slug: campaign.slug,
+      domainName: campaignDomainName(campaign.customDomains)
+    },
+    { rootOrigin: JOURNEYS_URL },
+    regionSlug
+  )
+  return address.endsWith('/') ? address.slice(0, -1) : address
 }
 
 /** The preview frame's address for a linked journey: the root-domain embed route, kept a preview. */
