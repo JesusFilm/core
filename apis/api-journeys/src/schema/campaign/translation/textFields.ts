@@ -31,24 +31,6 @@ export const CAMPAIGN_STRING_TEXT_FIELDS: CampaignTextFieldCaps =
 export const CAMPAIGN_TITLE_TEXT_FIELDS: CampaignTextFieldCaps =
   TRANSLATED_FIELDS.campaign
 
-/** The text fields a CampaignBlock row can carry (region `name` and string `value` live on other tables). */
-export type CampaignBlockTextColumn = Exclude<
-  CampaignTextFieldName,
-  'name' | 'value'
->
-
-/**
- * Every text column a CampaignBlock row may carry, each paired with its
- * `<field>Translations` sibling.
- */
-export const CAMPAIGN_BLOCK_TEXT_COLUMNS = Array.from(
-  new Set(
-    Object.values(CAMPAIGN_BLOCK_TEXT_FIELDS).flatMap(
-      (fields) => Object.keys(fields) as CampaignBlockTextColumn[]
-    )
-  )
-).map((field) => [field, translationsColumn(field)] as const)
-
 export function translationsColumn<F extends CampaignTextFieldName>(
   field: F
 ): `${F}Translations` {

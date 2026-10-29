@@ -1,7 +1,6 @@
 import { TEXT_CAPS } from '../validation'
 
 import {
-  CAMPAIGN_BLOCK_TEXT_COLUMNS,
   CAMPAIGN_BLOCK_TEXT_FIELDS,
   CAMPAIGN_REGION_TEXT_FIELDS,
   CAMPAIGN_STRING_TEXT_FIELDS,
@@ -72,20 +71,8 @@ describe('CampaignTextField', () => {
     expect([...used].sort()).toEqual([...CAMPAIGN_TEXT_FIELD_VALUES].sort())
   })
 
-  it('derives the block text columns the public read resolves, each with its translations sibling', () => {
-    expect(CAMPAIGN_BLOCK_TEXT_COLUMNS).toEqual(
-      expect.arrayContaining([
-        ['eyebrow', 'eyebrowTranslations'],
-        ['title', 'titleTranslations'],
-        ['description', 'descriptionTranslations'],
-        ['bullets', 'bulletsTranslations'],
-        ['content', 'contentTranslations'],
-        ['intro', 'introTranslations'],
-        ['label', 'labelTranslations'],
-        ['alt', 'altTranslations']
-      ])
-    )
-    expect(CAMPAIGN_BLOCK_TEXT_COLUMNS).toHaveLength(8)
+  it('names the translations sibling of a column', () => {
+    expect(translationsColumn('title')).toBe('titleTranslations')
     expect(translationsColumn('name')).toBe('nameTranslations')
   })
 })

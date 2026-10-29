@@ -11,7 +11,7 @@ builder.mutationField('campaignVideoCarouselBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: CampaignVideoCarouselBlock,
     nullable: false,
-    description: `Add a video carousel section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. It starts with no video and no items.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`eyebrow\` / \`title\`): over ${TEXT_CAPS.eyebrow} / ${TEXT_CAPS.title} characters.`,
+    description: `Add a video carousel section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. It starts with no video and no items.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`eyebrow\` / \`title\` / \`description\`): over ${TEXT_CAPS.eyebrow} / ${TEXT_CAPS.title} / ${TEXT_CAPS.description} characters.`,
     args: {
       input: t.arg({
         type: CampaignVideoCarouselBlockCreateInput,

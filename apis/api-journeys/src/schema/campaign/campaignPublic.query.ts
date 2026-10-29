@@ -24,7 +24,11 @@ import {
 } from './journeyLives'
 import { resolveText } from './resolveText'
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './slug'
-import { CAMPAIGN_BLOCK_TEXT_COLUMNS } from './translation/textFields'
+import { forEachTextTarget } from './translation/forEachTextTarget'
+import {
+  type CampaignTextFieldName,
+  translationsColumn
+} from './translation/textFields'
 
 const INCLUDE_CAMPAIGN_PUBLIC = {
   languages: { orderBy: { order: 'asc' } },
@@ -59,23 +63,31 @@ type CampaignPublicRow = Prisma.CampaignGetPayload<{
 type CampaignPublicRegionLanguageRow =
   CampaignPublicRow['regions'][number]['languages'][number]
 
-/** Resolve every text column of a block to `languageId` and drop its translations. */
-function resolveBlockText(
-  block: CampaignPublicBlock,
-  languageId: string,
-  defaultLanguageId: string
-): CampaignPublicBlock {
-  const resolved: CampaignPublicBlock = { ...block }
-  for (const [field, translations] of CAMPAIGN_BLOCK_TEXT_COLUMNS) {
-    if (block[field] == null && block[translations] == null) continue
-    resolved[field] = resolveText(
-      block[field],
-      block[translations],
-      languageId,
-      defaultLanguageId
-    )
-    resolved[translations] = null
-  }
+/**
+ * Every text target of the campaign, keyed by its row, with each of its
+ * Translated Fields resolved to `languageId` and that field's translations
+ * dropped. A field that is null with no translations stays null.
+ */
+function resolveCampaignText(
+  campaign: CampaignPublicRow,
+  languageId: string
+): Map<object, Record<string, unknown>> {
+  const resolved = new Map<object, Record<string, unknown>>()
+  forEachTextTarget(campaign, ({ record, fields }) => {
+    const row: Record<string, unknown> = { ...record }
+    for (const field of Object.keys(fields) as CampaignTextFieldName[]) {
+      const translations = translationsColumn(field)
+      if (row[field] == null && row[translations] == null) continue
+      row[field] = resolveText(
+        row[field] as string | null,
+        row[translations],
+        languageId,
+        campaign.defaultLanguageId
+      )
+      row[translations] = null
+    }
+    resolved.set(record, row)
+  })
   return resolved
 }
 
@@ -126,6 +138,10 @@ export function toCampaignPublic(
       ? requestedLanguageId
       : campaign.defaultLanguageId
 
+  const resolved = resolveCampaignText(campaign, languageId)
+  const text = <R extends object>(record: R): R =>
+    (resolved.get(record) as R | undefined) ?? record
+
   const visibleBlocks = campaign.blocks.filter(
     (block) =>
       block.typename !== 'CampaignJourneyBlock' ||
@@ -133,10 +149,7 @@ export function toCampaignPublic(
         isJourneyVisible(journeyLives.get(block.journeyId)?.status ?? null))
   )
   const blocks = visibleBlocks.map((block) =>
-    withJourneyLive(
-      resolveBlockText(block, languageId, campaign.defaultLanguageId),
-      journeyLives
-    )
+    withJourneyLive(text(block), journeyLives)
   )
   const chrome = blocks.filter(
     (block) => block.pageId == null && block.regionId == null
@@ -153,12 +166,7 @@ export function toCampaignPublic(
     (region) => ({
       id: region.id,
       slug: region.slug,
-      name: resolveText(
-        region.name,
-        region.nameTranslations,
-        languageId,
-        campaign.defaultLanguageId
-      ),
+      name: text(region).name,
       listed: region.listed,
       order: region.order,
       countries: region.countries,
@@ -173,25 +181,14 @@ export function toCampaignPublic(
     id: campaign.id,
     teamId: campaign.teamId,
     slug: campaign.slug,
-    title: resolveText(
-      campaign.title,
-      campaign.titleTranslations,
-      languageId,
-      campaign.defaultLanguageId
-    ),
+    title: text(campaign).title,
     defaultLanguageId: campaign.defaultLanguageId,
     languageId,
     publishedAt: campaign.publishedAt,
     languages: campaign.languages,
     theme,
     strings: campaign.strings.map((string) => ({
-      ...string,
-      value: resolveText(
-        string.value,
-        string.valueTranslations,
-        languageId,
-        campaign.defaultLanguageId
-      ),
+      ...text(string),
       valueTranslations: {}
     })),
     regions,

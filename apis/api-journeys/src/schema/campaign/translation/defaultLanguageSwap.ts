@@ -7,11 +7,8 @@ import { Prisma } from '@core/prisma/journeys/client'
 import { badUserInput, conflict } from '../errors'
 import { TranslationsJson } from '../translatedValue'
 
+import { forEachTextTarget } from './forEachTextTarget'
 import {
-  CAMPAIGN_BLOCK_TEXT_FIELDS,
-  CAMPAIGN_REGION_TEXT_FIELDS,
-  CAMPAIGN_STRING_TEXT_FIELDS,
-  CAMPAIGN_TITLE_TEXT_FIELDS,
   CampaignTextFieldCaps,
   CampaignTextFieldName,
   translationsColumn
@@ -20,6 +17,7 @@ import {
   INCLUDE_TRANSLATIONS_CAMPAIGN,
   campaignTranslationRows
 } from './translationRows'
+import { TRANSLATION_TARGETS, TranslationTargetKind } from './translationTarget'
 
 type SwappedColumns = Record<string, string | TranslationsJson>
 
@@ -104,26 +102,24 @@ export async function swapDefaultLanguage(
       { count }
     )
 
-  const swap = (
-    record: Record<string, unknown>,
-    caps: CampaignTextFieldCaps
-  ): SwappedColumns | null =>
-    swapTargetColumns(record, caps, oldDefaultLanguageId, newDefaultLanguageId)
-
-  for (const block of campaign.blocks) {
-    const data = swap(block, CAMPAIGN_BLOCK_TEXT_FIELDS[block.typename] ?? {})
-    if (data != null)
-      await tx.campaignBlock.update({ where: { id: block.id }, data })
-  }
-  for (const region of campaign.regions) {
-    const data = swap(region, CAMPAIGN_REGION_TEXT_FIELDS)
-    if (data != null)
-      await tx.campaignRegion.update({ where: { id: region.id }, data })
-  }
-  for (const string of campaign.strings) {
-    const data = swap(string, CAMPAIGN_STRING_TEXT_FIELDS)
-    if (data != null)
-      await tx.campaignString.update({ where: { id: string.id }, data })
-  }
-  return swap(campaign, CAMPAIGN_TITLE_TEXT_FIELDS) ?? {}
+  let campaignColumns: SwappedColumns = {}
+  const writes: Array<{
+    kind: Exclude<TranslationTargetKind, 'campaign'>
+    id: string
+    data: SwappedColumns
+  }> = []
+  forEachTextTarget(campaign, (target) => {
+    const data = swapTargetColumns(
+      target.record,
+      target.fields,
+      oldDefaultLanguageId,
+      newDefaultLanguageId
+    )
+    if (data == null) return
+    if (target.kind === 'campaign') campaignColumns = data
+    else writes.push({ kind: target.kind, id: target.record.id, data })
+  })
+  for (const { kind, id, data } of writes)
+    await TRANSLATION_TARGETS[kind].update(tx, id, data)
+  return campaignColumns
 }
