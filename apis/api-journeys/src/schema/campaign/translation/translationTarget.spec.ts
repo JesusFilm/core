@@ -13,25 +13,15 @@ import {
 } from './translationTarget'
 
 const MODELS = {
-  block: { delegate: 'campaignBlock', table: '"CampaignBlock"' },
-  region: { delegate: 'campaignRegion', table: '"CampaignRegion"' },
-  string: { delegate: 'campaignString', table: '"CampaignString"' },
-  campaign: { delegate: 'campaign', table: '"Campaign"' }
+  block: { delegate: 'campaignBlock' },
+  region: { delegate: 'campaignRegion' },
+  string: { delegate: 'campaignString' },
+  campaign: { delegate: 'campaign' }
 } as const
 
 const KINDS = Object.keys(MODELS) as TranslationTargetKind[]
 
 describe('TRANSLATION_TARGETS', () => {
-  it.each(KINDS)('%s locks its rows by id, in id order', async (kind) => {
-    await TRANSLATION_TARGETS[kind].lock(prismaMock, ['b', 'a'])
-
-    const [sql, ...values] = prismaMock.$queryRaw.mock.calls[0]
-    const statement = (sql as unknown as string[]).join('?')
-    expect(statement).toContain(`FROM ${MODELS[kind].table} `)
-    expect(statement).toContain('ORDER BY id FOR UPDATE')
-    expect(values).toEqual([['b', 'a']])
-  })
-
   it.each(KINDS)('%s writes translations to its own model', async (kind) => {
     const data = { titleTranslations: { fr: { value: 'x', source: 'human' } } }
     await TRANSLATION_TARGETS[kind].update(prismaMock, 'id', data as never)

@@ -48,7 +48,9 @@ builder.mutationField('campaignImageBlockCreate', (t) =>
       const data = await validateImageInput(input)
       return await createWithClientIds(
         { id: [id] },
-        async (tx) =>
+        owner.campaignId,
+        { structure: true },
+        async ({ tx }) =>
           await createOwnedImageBlock(tx, owner, slot, { id, ...data })
       )
     }

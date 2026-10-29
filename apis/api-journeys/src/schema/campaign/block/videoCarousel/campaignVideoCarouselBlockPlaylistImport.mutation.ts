@@ -1,10 +1,8 @@
 import sortBy from 'lodash/sortBy'
 import { v4 as uuidv4 } from 'uuid'
 
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
-import { lockCampaignStructure, touchCampaign } from '../../campaignWrite'
+import { campaignWrite } from '../../campaignWrite'
 import { badUserInput, notFound } from '../../errors'
 import { BLOCK_CAP_ERROR } from '../../validation'
 import { CampaignVideoBlock } from '../campaignVideoBlock'
@@ -47,37 +45,39 @@ builder.mutationField('campaignVideoCarouselBlockPlaylistImport', (t) =>
       const videos = await fetchYouTubePlaylistVideos(playlistId)
       if (videos.length === 0)
         throw badUserInput('That playlist has no public videos', 'url')
-      return await prisma.$transaction(async (tx) => {
-        await lockCampaignStructure(tx, carousel.campaignId)
-        await assertParentStillLive(tx, carousel.id, () =>
-          notFound('block not found')
-        )
-        await assertCampaignBlockRoom(tx, carousel.campaignId, videos.length)
-        const siblings = await getSiblings(
-          { ...carousel, parentBlockId: carousel.id },
-          tx
-        )
-        const created = await tx.campaignBlock.createManyAndReturn({
-          data: videos.map((video, index) => ({
-            id: uuidv4(),
-            typename: 'CampaignVideoBlock',
-            campaignId: carousel.campaignId,
-            pageId: carousel.pageId,
-            regionId: carousel.regionId,
-            parentBlockId: carousel.id,
-            parentOrder: siblings.length + index,
-            source: 'youTube' as const,
-            videoId: video.videoId,
-            videoVariantLanguageId: null,
-            title: video.title,
-            description: video.description,
-            image: video.image,
-            duration: video.duration
-          }))
-        })
-        await touchCampaign(tx, carousel.campaignId)
-        return sortBy(created, 'parentOrder')
-      })
+      return await campaignWrite(
+        carousel.campaignId,
+        { structure: true },
+        async ({ tx }) => {
+          await assertParentStillLive(tx, carousel.id, () =>
+            notFound('block not found')
+          )
+          await assertCampaignBlockRoom(tx, carousel.campaignId, videos.length)
+          const siblings = await getSiblings(
+            { ...carousel, parentBlockId: carousel.id },
+            tx
+          )
+          const created = await tx.campaignBlock.createManyAndReturn({
+            data: videos.map((video, index) => ({
+              id: uuidv4(),
+              typename: 'CampaignVideoBlock',
+              campaignId: carousel.campaignId,
+              pageId: carousel.pageId,
+              regionId: carousel.regionId,
+              parentBlockId: carousel.id,
+              parentOrder: siblings.length + index,
+              source: 'youTube' as const,
+              videoId: video.videoId,
+              videoVariantLanguageId: null,
+              title: video.title,
+              description: video.description,
+              image: video.image,
+              duration: video.duration
+            }))
+          })
+          return sortBy(created, 'parentOrder')
+        }
+      )
     }
   })
 )
