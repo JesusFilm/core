@@ -1,5 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
+import { plainPagePath } from '@core/journeys/ui/Campaign/libs/campaignAddress'
+
 import {
   LanguageFallbackProps,
   withLanguageFallback
@@ -23,7 +25,9 @@ export const getStaticProps: GetStaticProps<
       hostname: context.params?.hostname?.toString() ?? '',
       language: context.params?.lang?.toString(),
       locale: context.locale
-    })) ?? { redirect: { destination: '/', permanent: false } }
+    })) ?? {
+      redirect: { destination: plainPagePath('', []), permanent: false }
+    }
   )
 
 export const getStaticPaths: GetStaticPaths = async () => {

@@ -7,6 +7,10 @@ import type {
   CampaignRegion,
   WorldMapShapes
 } from '@core/journeys/ui/Campaign'
+import {
+  campaignBasePath,
+  plainPagePath
+} from '@core/journeys/ui/Campaign/libs/campaignAddress'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
@@ -148,7 +152,10 @@ export async function getCampaignStaticProps({
   if (regionSlug != null && region == null) return await notFound(locale)
   if (language != null && result.language.source !== 'param')
     return unknownLanguage(
-      `/campaign/${slug}${regionSlug != null ? `/${regionSlug}` : ''}`
+      plainPagePath(
+        campaignBasePath({ slug, domainName: null }),
+        regionSlug == null ? [] : [regionSlug]
+      )
     )
   return await campaignProps(result.campaign, region, locale)
 }
@@ -186,7 +193,7 @@ export async function getHostCampaignStaticProps({
   }
   if (result == null) return null
   if (language != null && result.language.source !== 'param')
-    return unknownLanguage(`/${segment ?? ''}`)
+    return unknownLanguage(plainPagePath('', segment == null ? [] : [segment]))
   const region =
     segment == null ? null : matchRegionSlug(segment, result.campaign.regions)
   return await campaignProps(result.campaign, region, locale)
