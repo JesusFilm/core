@@ -3,6 +3,10 @@ import { useApolloClient } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
+import {
+  PAGE_SECTION_TYPENAMES,
+  type PageSectionTypename
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
 import {
@@ -12,27 +16,14 @@ import {
 import { CAMPAIGN_IMAGE_BLOCK_CREATE } from '../useCampaignImageBlockCreateMutation'
 import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
-/** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
-export const CAMPAIGN_SECTION_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignRegionSwitcherBlock',
-  'CampaignVideoCarouselBlock',
-  'CampaignJourneyListBlock',
-  'CampaignAnalyticsBlock',
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock',
-  'CampaignRichTextBlock',
-  'CampaignColumnsBlock',
-  'CampaignImageBlock',
-  'CampaignFeaturedMediaBlock'
-] as const
+/** The section typenames "+Add section" offers: the Campaign Block grammar's page sections, in menu order. */
+export const ADDABLE_SECTION_TYPENAMES = PAGE_SECTION_TYPENAMES
 
-export type CampaignSectionTypename =
-  (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
+export type AddableSectionTypename = PageSectionTypename
 
-export type CampaignSectionBlock = Extract<
+export type AddableSectionBlock = Extract<
   CampaignBlock,
-  { __typename: CampaignSectionTypename }
+  { __typename: AddableSectionTypename }
 >
 
 /** The fields every section create input shares; the body starts empty. */
@@ -192,7 +183,7 @@ interface SectionCreateOperation {
 
 /** One create document per section typename, all taking the same `$input` shape. */
 export const SECTION_CREATE_OPERATIONS: Record<
-  CampaignSectionTypename,
+  AddableSectionTypename,
   SectionCreateOperation
 > = {
   CampaignHeroBlock: {
@@ -244,7 +235,7 @@ export const SECTION_CREATE_OPERATIONS: Record<
 type SectionCreateResult = Record<string, CampaignBlock | null | undefined>
 
 export type CampaignSectionCreate = (
-  block: CampaignSectionBlock,
+  block: AddableSectionBlock,
   input: CampaignSectionCreateInput,
   /** A Columns section's two slot rows, written to the cache with it. */
   slots?: CampaignBlock[]

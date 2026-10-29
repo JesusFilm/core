@@ -1,17 +1,18 @@
 import {
+  REGION_ONLY_TYPENAMES,
+  SLOT_DISALLOWED_TYPENAMES
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
+
+import {
   CampaignChildPlacement,
   CampaignPageKind
 } from '../../../../../__generated__/globalTypes'
 import {
-  CAMPAIGN_SECTION_TYPENAMES,
-  CampaignSectionTypename
+  ADDABLE_SECTION_TYPENAMES,
+  AddableSectionTypename
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { resolveSelection } from '../../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../../data'
-import {
-  REGION_ONLY_TYPENAMES,
-  SLOT_DISALLOWED_TYPENAMES
-} from '../../sectionTypes'
 
 import { AddTargets, addTargets } from './addTargets'
 
@@ -42,7 +43,7 @@ function targetsFor(
 
 function hasType(
   targets: AddTargets,
-  typenames: readonly CampaignSectionTypename[]
+  typenames: readonly AddableSectionTypename[]
 ): boolean {
   return typenames.some((typename) =>
     targets.section?.typenames.includes(typename)
@@ -74,7 +75,7 @@ describe('addTargets', () => {
     })
 
     expect(targets.section?.insert.pageId).toBe('regionPageId')
-    expect(targets.section?.typenames).toEqual([...CAMPAIGN_SECTION_TYPENAMES])
+    expect(targets.section?.typenames).toEqual([...ADDABLE_SECTION_TYPENAMES])
   })
 
   it('adds a section below the selected section and an Extra into it, either side of its text', () => {

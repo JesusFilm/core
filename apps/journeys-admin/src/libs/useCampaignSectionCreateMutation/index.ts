@@ -8,14 +8,14 @@ export {
   CAMPAIGN_REGION_SHARE_BLOCK_CREATE,
   CAMPAIGN_REGION_SWITCHER_BLOCK_CREATE,
   CAMPAIGN_RICH_TEXT_BLOCK_CREATE,
-  CAMPAIGN_SECTION_TYPENAMES,
+  ADDABLE_SECTION_TYPENAMES,
   CAMPAIGN_VIDEO_CAROUSEL_BLOCK_CREATE,
   SECTION_CREATE_OPERATIONS,
   useCampaignSectionCreateMutation
 } from './useCampaignSectionCreateMutation'
 export type {
-  CampaignSectionBlock,
+  AddableSectionBlock,
   CampaignSectionCreate,
   CampaignSectionCreateInput,
-  CampaignSectionTypename
+  AddableSectionTypename
 } from './useCampaignSectionCreateMutation'

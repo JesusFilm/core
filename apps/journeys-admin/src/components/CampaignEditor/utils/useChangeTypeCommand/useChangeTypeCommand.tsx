@@ -7,7 +7,7 @@ import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import {
-  CampaignSectionTypename,
+  AddableSectionTypename,
   useCampaignSectionCreateMutation
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
@@ -41,7 +41,7 @@ interface ChangeTypeParameters {
 export function useChangeTypeCommand(): {
   addChangeType: (
     section: CampaignBlock,
-    typename: CampaignSectionTypename
+    typename: AddableSectionTypename
   ) => void
 } {
   const { add } = useCommand()
@@ -94,7 +94,7 @@ export function useChangeTypeCommand(): {
 
   function addChangeType(
     section: CampaignBlock,
-    typename: CampaignSectionTypename
+    typename: AddableSectionTypename
   ): void {
     if (section.parentBlockId == null || section.pageId == null) return
     const next = newSectionBlock(typename, {
