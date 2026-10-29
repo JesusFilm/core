@@ -10,7 +10,6 @@ import { campaignImageSource } from '@core/journeys/ui/Campaign'
 
 import { GetCampaign_campaign_blocks_CampaignHeaderBlock as CampaignHeaderBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignImageSlot } from '../../../../__generated__/globalTypes'
-import { useCampaignHeaderLogoMutation } from '../../../libs/useCampaignHeaderLogoMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
@@ -28,8 +27,7 @@ interface ChromeEditProps {
 export function ChromeEdit({ block }: ChromeEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addOwnedImage, addStyle, error } = useCampaignOwnedImageCommand()
-  const writeLogo = useCampaignHeaderLogoMutation()
+  const { addOwnedImage, addFields, error } = useCampaignOwnedImageCommand()
   const [replacing, setReplacing] = useState(false)
   const logoBlock = campaign.blocks.find(
     (candidate) => candidate.id === block.logoBlockId
@@ -45,19 +43,12 @@ export function ChromeEdit({ block }: ChromeEditProps): ReactElement {
       slot: CampaignImageSlot.logo,
       src,
       input: (imageId) => ({ logoBlockId: imageId }),
-      previous: { logoBlockId: block.logoBlockId },
-      imageIdOf: (fields) => fields.logoBlockId,
-      write: writeLogo
+      imageIdOf: (fields) => fields.logoBlockId
     })
   }
 
   function handleClear(): void {
-    addStyle({
-      block,
-      input: { logoBlockId: null },
-      previous: { logoBlockId: block.logoBlockId },
-      run: writeLogo
-    })
+    addFields(block, { logoBlockId: null })
   }
 
   return (

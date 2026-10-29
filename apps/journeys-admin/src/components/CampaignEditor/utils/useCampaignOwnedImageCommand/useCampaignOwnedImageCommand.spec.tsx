@@ -12,14 +12,20 @@ import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
+import { blockOf, blockUpdateMock } from '../../styleTesting'
 import { QueriedEditor } from '../../testing'
 
 import { useCampaignOwnedImageCommand } from './useCampaignOwnedImageCommand'
 
 vi.mock('uuid', () => ({ v4: () => 'newCoverId' }))
 
-interface CoverFields {
-  coverBlockId: string | null
+const hero = {
+  ...blockOf<'CampaignHeroBlock'>('heroId'),
+  coverBlockId: 'oldCoverId'
+}
+const campaignWithCover = {
+  ...campaign,
+  blocks: campaign.blocks.map((block) => (block.id === hero.id ? hero : block))
 }
 
 const createInput = {
@@ -44,26 +50,31 @@ const restoreOldCoverMock = {
   result: vi.fn(() => ({ data: { campaignBlockRestore: [] } }))
 }
 
-const write = vi.fn(async () => undefined)
+const pointAtNewMock = {
+  ...blockUpdateMock(hero, { coverBlockId: 'newCoverId' }),
+  maxUsageCount: 2
+}
+const pointAtOldMock = {
+  ...blockUpdateMock(hero, { coverBlockId: 'oldCoverId' }),
+  maxUsageCount: 2
+}
 
 function Probe(): ReactElement {
   const { campaign } = useCampaignEditor()
   const { addOwnedImage, error } = useCampaignOwnedImageCommand()
-  const hero = campaign.blocks.find((block) => block.id === 'heroId')
-  if (hero == null) throw new Error('fixture')
+  const owner = campaign.blocks.find((block) => block.id === 'heroId')
+  if (owner?.__typename !== 'CampaignHeroBlock') throw new Error('fixture')
   return (
     <>
       <span data-testid="Error">{error ?? ''}</span>
       <button
         onClick={() =>
-          addOwnedImage<typeof hero, CoverFields>({
-            owner: hero,
+          addOwnedImage({
+            owner,
             slot: CampaignImageSlot.cover,
             src: 'https://imagedelivery.net/cover/public',
             input: (imageId) => ({ coverBlockId: imageId }),
-            previous: { coverBlockId: 'oldCoverId' },
-            imageIdOf: (fields) => fields.coverBlockId,
-            write
+            imageIdOf: (fields) => fields.coverBlockId
           })
         }
       >
@@ -79,7 +90,7 @@ const createdMock = {
     data: {
       campaignImageBlockCreate: newOwnedImageBlock(
         'newCoverId',
-        campaign.blocks.find((block) => block.id === 'heroId')!,
+        hero,
         createInput.input.src
       )
     }
@@ -91,35 +102,31 @@ describe('useCampaignOwnedImageCommand', () => {
 
   it('undoes a pick with the owner write alone, never campaignBlockRestore, and redoes it without a second create', async () => {
     render(
-      <QueriedEditor mocks={[createdMock, restoreOldCoverMock]}>
+      <QueriedEditor
+        campaignData={campaignWithCover}
+        mocks={[
+          createdMock,
+          restoreOldCoverMock,
+          pointAtNewMock,
+          pointAtOldMock
+        ]}
+      >
         <CommandUndoItem variant="button" />
         <CommandRedoItem variant="button" />
         <Probe />
       </QueriedEditor>
     )
     fireEvent.click(await screen.findByRole('button', { name: 'Pick cover' }))
-    await waitFor(() => expect(write).toHaveBeenCalledTimes(1))
-    expect(write).toHaveBeenLastCalledWith(
-      expect.objectContaining({ id: 'heroId' }),
-      { coverBlockId: 'newCoverId' }
-    )
+    await waitFor(() => expect(pointAtNewMock.result).toHaveBeenCalledTimes(1))
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
-    await waitFor(() => expect(write).toHaveBeenCalledTimes(2))
-    expect(write).toHaveBeenLastCalledWith(
-      expect.objectContaining({ id: 'heroId' }),
-      { coverBlockId: 'oldCoverId' }
-    )
+    await waitFor(() => expect(pointAtOldMock.result).toHaveBeenCalledTimes(1))
     expect(restoreOldCoverMock.result).not.toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
 
-    await waitFor(() => expect(write).toHaveBeenCalledTimes(3))
-    expect(write).toHaveBeenLastCalledWith(
-      expect.objectContaining({ id: 'heroId' }),
-      { coverBlockId: 'newCoverId' }
-    )
+    await waitFor(() => expect(pointAtNewMock.result).toHaveBeenCalledTimes(2))
     expect(createdMock.result).toHaveBeenCalledTimes(1)
     expect(restoreOldCoverMock.result).not.toHaveBeenCalled()
   })
@@ -127,7 +134,14 @@ describe('useCampaignOwnedImageCommand', () => {
   it('restores nothing and writes no cover on undo after a refused create, and retries the create on redo', async () => {
     render(
       <QueriedEditor
-        mocks={[createRefusedMock, createdMock, restoreOldCoverMock]}
+        campaignData={campaignWithCover}
+        mocks={[
+          createRefusedMock,
+          createdMock,
+          restoreOldCoverMock,
+          pointAtNewMock,
+          pointAtOldMock
+        ]}
       >
         <CommandUndoItem variant="button" />
         <CommandRedoItem variant="button" />
@@ -140,23 +154,16 @@ describe('useCampaignOwnedImageCommand', () => {
         'Image address is not allowed'
       )
     )
-    expect(write).not.toHaveBeenCalled()
+    expect(pointAtNewMock.result).not.toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
-    await waitFor(() => expect(write).toHaveBeenCalledTimes(1))
-    expect(write).toHaveBeenLastCalledWith(
-      expect.objectContaining({ id: 'heroId' }),
-      { coverBlockId: 'oldCoverId' }
-    )
+    await waitFor(() => expect(pointAtOldMock.result).toHaveBeenCalledTimes(1))
     expect(restoreOldCoverMock.result).not.toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
 
-    await waitFor(() => expect(write).toHaveBeenCalledTimes(2))
-    expect(write).toHaveBeenLastCalledWith(
-      expect.objectContaining({ id: 'heroId' }),
-      { coverBlockId: 'newCoverId' }
-    )
+    await waitFor(() => expect(pointAtNewMock.result).toHaveBeenCalledTimes(1))
+    expect(createdMock.result).toHaveBeenCalledTimes(1)
   })
 })

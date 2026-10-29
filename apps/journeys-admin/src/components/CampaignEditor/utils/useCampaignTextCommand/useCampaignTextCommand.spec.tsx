@@ -22,14 +22,13 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { DebounceLink } from '../../../../libs/apolloClient/DebounceLink'
 import {
-  CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
-  CAMPAIGN_REGION_HEADER_BLOCK_UPDATE_TEXT,
   CampaignTextBlock,
   CampaignTextField,
   blockTranslations,
   isCampaignTextBlock,
   translationValue
 } from '../../../../libs/useCampaignBlockTextMutation'
+import { CAMPAIGN_HERO_BLOCK_UPDATE } from '../../../../libs/useCampaignBlockUpdateMutation'
 import { CAMPAIGN_STRING_UPDATE } from '../../../../libs/useCampaignStringUpdateMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
 import {
@@ -48,6 +47,7 @@ import {
   campaignWithColumns,
   withEmptyTranslations
 } from '../../data'
+import { blockOf, blockUpdateMock } from '../../styleTesting'
 import {
   CommandProbe,
   QueriedEditor,
@@ -111,24 +111,7 @@ interface Mock {
 }
 
 function heroMock(title: string): Mock {
-  return {
-    request: {
-      query: CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
-      variables: { id: 'heroId', input: { title } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignHeroBlockUpdate: {
-          __typename: 'CampaignHeroBlock',
-          id: 'heroId',
-          eyebrow: 'Outreach 2026',
-          title,
-          description:
-            'Pick your region to find a journey in your language, ready to share.'
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), { title })
 }
 
 const HERO_TITLE = gql`
@@ -247,7 +230,7 @@ describe('useCampaignTextCommand', () => {
       {
         ...heroMock('Hello'),
         request: {
-          query: CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
+          query: CAMPAIGN_HERO_BLOCK_UPDATE,
           variables: { id: 'heroId', input: { title: 'Hello ' } }
         }
       }
@@ -318,21 +301,10 @@ describe('useCampaignTextCommand', () => {
         ? regionHeader.intro
         : ''
     function introMock(value: string | null): Mock {
-      return {
-        request: {
-          query: CAMPAIGN_REGION_HEADER_BLOCK_UPDATE_TEXT,
-          variables: { id: 'regionHeaderId', input: { intro: value } }
-        },
-        result: vi.fn(() => ({
-          data: {
-            campaignRegionHeaderBlockUpdate: {
-              __typename: 'CampaignRegionHeaderBlock',
-              id: 'regionHeaderId',
-              intro: value
-            }
-          }
-        }))
-      }
+      return blockUpdateMock(
+        blockOf<'CampaignRegionHeaderBlock'>('regionHeaderId'),
+        { intro: value }
+      )
     }
     const mocks = [introMock('Hello'), introMock(intro)]
     renderField(mocks, {

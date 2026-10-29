@@ -6,13 +6,14 @@ import {
   GetCampaign_campaign_theme as CampaignTheme
 } from '../../../__generated__/GetCampaign'
 import { CampaignThemeUpdateInput } from '../../../__generated__/globalTypes'
-import { CAMPAIGN_PALETTE_UPDATE } from '../../libs/useCampaignPaletteUpdateMutation'
 import {
-  CampaignSectionStyleInput,
-  CampaignStyledBlock,
-  SECTION_STYLE_OPERATIONS,
-  campaignSectionStyleRow
-} from '../../libs/useCampaignSectionStyleMutation'
+  CAMPAIGN_BLOCK_UPDATE_DOCUMENTS,
+  CampaignBlockUpdateInput,
+  CampaignUpdatableBlock,
+  campaignBlockUpdateOperation,
+  campaignBlockUpdateRow
+} from '../../libs/useCampaignBlockUpdateMutation'
+import { CAMPAIGN_PALETTE_UPDATE } from '../../libs/useCampaignPaletteUpdateMutation'
 import { CAMPAIGN_THEME_UPDATE } from '../../libs/useCampaignThemeUpdateMutation'
 
 import { useCampaignEditor } from './CampaignEditorProvider'
@@ -26,18 +27,26 @@ export type StyleMock = {
   maxUsageCount?: number
 }
 
-/** A mock for one section style write: the block's row with `input` applied. */
-export function sectionStyleMock(
-  block: CampaignStyledBlock,
-  input: CampaignSectionStyleInput,
-  current: CampaignSectionStyleInput = {}
+/**
+ * A mock for one block update through `useCampaignBlockUpdateMutation`:
+ * the block's typename's document, answered with the block's full row
+ * (its fields as `current` overrides them) with `input` applied.
+ */
+export function blockUpdateMock<B extends CampaignUpdatableBlock>(
+  block: B,
+  input: CampaignBlockUpdateInput<B['__typename']>,
+  current: Partial<B> = {}
 ): StyleMock {
-  const { document, operation } = SECTION_STYLE_OPERATIONS[block.__typename]
+  const row: B = { ...block, ...current }
   return {
-    request: { query: document, variables: { id: block.id, input } },
+    request: {
+      query: CAMPAIGN_BLOCK_UPDATE_DOCUMENTS[block.__typename],
+      variables: { id: block.id, input }
+    },
     result: vi.fn(() => ({
       data: {
-        [operation]: campaignSectionStyleRow({ ...block, ...current }, input)
+        [campaignBlockUpdateOperation(block.__typename)]:
+          campaignBlockUpdateRow(row, input) ?? row
       }
     }))
   }

@@ -25,7 +25,7 @@ import { parseISO8601Duration } from '../../../../libs/parseISO8601Duration'
 import type { CampaignVideoPick } from '../../../../libs/useCampaignVideoBlockCreateMutation'
 import { useCampaignWatchVideoQuery } from '../../../../libs/useCampaignWatchVideoQuery'
 import { AddByFile } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/AddByFile'
-import { messageOf } from '../../utils/useCampaignStyleCommand'
+import { messageOf } from '../../utils/messageOf'
 import { ImagePicker } from '../ImagePicker'
 import { MuxUploads } from '../MuxUploads'
 

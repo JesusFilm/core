@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { resolveBand } from '@core/journeys/ui/Campaign'
 
-import { isCampaignStyledBlock } from '../../../../libs/useCampaignSectionStyleMutation'
+import { isCampaignStyledBlock } from '../../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 
 type ResolvedBand = ReturnType<typeof resolveBand>

@@ -3,15 +3,94 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignFeaturedMediaBlockUpdateInput, CampaignMediaSide, CampaignFeaturedMediaLayout } from "./globalTypes";
+import { CampaignFeaturedMediaBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignFeaturedMediaBlockUpdate
 // ====================================================
 
+export interface CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate_bulletsTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate {
   __typename: "CampaignFeaturedMediaBlock";
   id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  description: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
   /**
    * Which side the media sits on at `md` and up.
    */
@@ -24,6 +103,10 @@ export interface CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpda
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
+  eyebrowTranslations: CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate_eyebrowTranslations[];
+  titleTranslations: CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate_titleTranslations[];
+  descriptionTranslations: CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate_descriptionTranslations[];
+  bulletsTranslations: CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpdate_bulletsTranslations[];
 }
 
 export interface CampaignFeaturedMediaBlockUpdate {
@@ -51,4 +134,5 @@ export interface CampaignFeaturedMediaBlockUpdate {
 export interface CampaignFeaturedMediaBlockUpdateVariables {
   id: string;
   input: CampaignFeaturedMediaBlockUpdateInput;
+  languageId?: string | null;
 }

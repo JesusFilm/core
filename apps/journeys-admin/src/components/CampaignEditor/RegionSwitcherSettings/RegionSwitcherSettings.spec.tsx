@@ -4,10 +4,10 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
-import { CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_VARIANT } from '../../../libs/useCampaignRegionSwitcherBlockVariantMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
+import { blockUpdateMock } from '../styleTesting'
 import {
   CommandProbe,
   QueriedEditor,
@@ -25,25 +25,9 @@ function variantMock(
   variant: CampaignSwitcherVariant,
   errors?: GraphQLError[]
 ) {
-  return {
-    request: {
-      query: CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_VARIANT,
-      variables: { id: 'landingSwitcherId', input: { variant } }
-    },
-    result: vi.fn(() =>
-      errors != null
-        ? { errors }
-        : {
-            data: {
-              campaignRegionSwitcherBlockUpdate: {
-                __typename: 'CampaignRegionSwitcherBlock',
-                id: 'landingSwitcherId',
-                switcherVariant: variant
-              }
-            }
-          }
-    )
-  }
+  const mock = blockUpdateMock(switcher, { variant })
+  if (errors != null) mock.result = vi.fn(() => ({ errors }))
+  return mock
 }
 
 /** The settings over the block as the cache holds it, so a saved value flows back in. */

@@ -22,21 +22,22 @@ import {
   CampaignImageSlot
 } from '../../../../__generated__/globalTypes'
 import {
-  CampaignSectionStyleInput,
+  CampaignBlockUpdateInput,
   CampaignStyledBlock,
+  CampaignStyledTypename,
   SECTION_OVERRIDE_FIELDS,
-  SectionOverrideField,
-  useCampaignSectionStyleMutation
-} from '../../../libs/useCampaignSectionStyleMutation'
+  SectionOverrideField
+} from '../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
 import { FocalPointControl } from '../FocalPointControl'
 import { PaletteColorPicker } from '../PaletteColorPicker'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
-import { previousOf } from '../utils/useCampaignStyleCommand'
 
 type StyleTab = 'background' | 'colours'
+
+type SectionStyleInput = CampaignBlockUpdateInput<CampaignStyledTypename>
 
 /** The six Section Background kinds, in the Background tab's order. */
 export const BACKGROUND_KINDS = [
@@ -72,8 +73,7 @@ interface StylePanelProps {
 export function StylePanel({ block }: StylePanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addOwnedImage, addStyle, error } = useCampaignOwnedImageCommand()
-  const writeStyle = useCampaignSectionStyleMutation()
+  const { addOwnedImage, addFields, error } = useCampaignOwnedImageCommand()
   const [tab, setTab] = useState<StyleTab>('background')
   /** The author chose Image but the section has no cover yet: the picker shows, no Command until a picture is kept. */
   const [choosingCover, setChoosingCover] = useState(false)
@@ -87,18 +87,6 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
   const cover = campaignImageSource(
     coverBlock?.__typename === 'CampaignImageBlock' ? coverBlock : null
   )
-
-  function addSectionStyle(
-    target: CampaignStyledBlock,
-    input: CampaignSectionStyleInput
-  ): void {
-    addStyle({
-      block: target,
-      input,
-      previous: previousOf(target, input),
-      run: writeStyle
-    })
-  }
 
   const kindLabels: Record<(typeof BACKGROUND_KINDS)[number], string> = {
     none: t('None'),
@@ -139,13 +127,13 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
       setChoosingCover(true)
       return
     }
-    addSectionStyle(block, { backgroundKind: kind })
+    addFields(block, { backgroundKind: kind })
   }
 
   /** A kept picture: the cover is created and the kind and overlay written as one Command. */
   function handleCoverPick(src: string): void {
     setChoosingCover(false)
-    const input = (imageId: string): CampaignSectionStyleInput => ({
+    const input = (imageId: string): SectionStyleInput => ({
       backgroundKind: CampaignBackgroundKind.image,
       coverBlockId: imageId,
       backgroundOverlay:
@@ -156,9 +144,7 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
       slot: CampaignImageSlot.cover,
       src,
       input,
-      previous: previousOf(block, input('')),
-      imageIdOf: (fields) => fields.coverBlockId,
-      write: writeStyle
+      imageIdOf: (fields) => fields.coverBlockId
     })
   }
 
@@ -168,7 +154,7 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
   ): void {
     if (overlay == null || overlay === (block.backgroundOverlay ?? 'medium'))
       return
-    addSectionStyle(block, { backgroundOverlay: overlay })
+    addFields(block, { backgroundOverlay: overlay })
   }
 
   const showingImage =
@@ -222,9 +208,7 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
               label={t('Custom colour')}
               value={block.backgroundColor}
               fallback={campaign.theme.backgroundColor}
-              onCommit={(hex) =>
-                addSectionStyle(block, { backgroundColor: hex })
-              }
+              onCommit={(hex) => addFields(block, { backgroundColor: hex })}
               testId="StyleBackgroundColor"
             />
           )}
@@ -301,8 +285,8 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
             }))}
             rowTestId="StyleOverride"
             pickerTestId="StyleOverrideColor"
-            onCommit={(field, hex) => addSectionStyle(block, { [field]: hex })}
-            onReset={(field) => addSectionStyle(block, { [field]: null })}
+            onCommit={(field, hex) => addFields(block, { [field]: hex })}
+            onReset={(field) => addFields(block, { [field]: null })}
           />
         </Stack>
       )}

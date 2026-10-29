@@ -24,8 +24,8 @@ import {
   StyleMock,
   WithBlock,
   blockOf,
-  paletteMock,
-  sectionStyleMock
+  blockUpdateMock,
+  paletteMock
 } from '../styleTesting'
 import { CommandProbe, QueriedEditor } from '../testing'
 
@@ -117,7 +117,7 @@ describe('StylePanel', () => {
     it('writes a chosen kind as one Command with an optimistic response', async () => {
       const mocks = [
         {
-          ...sectionStyleMock(hero, {
+          ...blockUpdateMock(hero, {
             backgroundKind: CampaignBackgroundKind.surface
           }),
           delay: 200
@@ -171,8 +171,8 @@ describe('StylePanel', () => {
       const mocks = [
         uploadByUrlMock,
         coverCreateMock,
-        sectionStyleMock(hero, imageInput),
-        sectionStyleMock(
+        blockUpdateMock(hero, imageInput),
+        blockUpdateMock(
           hero,
           {
             backgroundKind: hero.backgroundKind,
@@ -181,7 +181,7 @@ describe('StylePanel', () => {
           },
           imageInput
         ),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundOverlay: CampaignBackgroundOverlay.heavy },
           imageInput
@@ -236,21 +236,21 @@ describe('StylePanel', () => {
 
     it('commits the custom colour on picker blur, and undo restores the previous colour and kind', async () => {
       const mocks = [
-        sectionStyleMock(hero, {
+        blockUpdateMock(hero, {
           backgroundKind: CampaignBackgroundKind.custom
         }),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundColor: '#123456' },
           { backgroundKind: CampaignBackgroundKind.custom }
         ),
         paletteMock(nextPalette(campaign.palette, '#123456')),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundColor: null },
           { backgroundKind: CampaignBackgroundKind.custom }
         ),
-        sectionStyleMock(hero, { backgroundKind: hero.backgroundKind })
+        blockUpdateMock(hero, { backgroundKind: hero.backgroundKind })
       ]
       renderPanel(mocks)
 
@@ -284,16 +284,16 @@ describe('StylePanel', () => {
   describe('Custom colour pick', () => {
     it('commits a palette pick at once as one Command, and undo reverses that one pick', async () => {
       const mocks = [
-        sectionStyleMock(hero, {
+        blockUpdateMock(hero, {
           backgroundKind: CampaignBackgroundKind.custom
         }),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundColor: '#F2B544' },
           { backgroundKind: CampaignBackgroundKind.custom }
         ),
         paletteMock(nextPalette(campaign.palette, '#F2B544')),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundColor: null },
           { backgroundKind: CampaignBackgroundKind.custom }
@@ -319,9 +319,9 @@ describe('StylePanel', () => {
   describe('Colours', () => {
     it('writes each override as one Command and clears it with null', async () => {
       const mocks = [
-        sectionStyleMock(hero, { textColor: '#ABCDEF' }),
+        blockUpdateMock(hero, { textColor: '#ABCDEF' }),
         paletteMock(nextPalette(campaign.palette, '#ABCDEF')),
-        sectionStyleMock(hero, { textColor: null }, { textColor: '#ABCDEF' })
+        blockUpdateMock(hero, { textColor: null }, { textColor: '#ABCDEF' })
       ]
       renderPanel(mocks)
       fireEvent.click(await screen.findByRole('tab', { name: 'Colours' }))
@@ -398,7 +398,7 @@ describe('StylePanel', () => {
 
     it('shows the API’s message verbatim when it refuses a value', async () => {
       const failing: StyleMock = {
-        ...sectionStyleMock(hero, { headingColor: '#AABBCC' }),
+        ...blockUpdateMock(hero, { headingColor: '#AABBCC' }),
         result: vi.fn(() => ({
           errors: [{ message: 'headingColor is not allowed on this band' }]
         }))

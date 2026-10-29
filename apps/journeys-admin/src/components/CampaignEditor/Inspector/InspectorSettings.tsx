@@ -13,7 +13,7 @@ import {
   GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
-import { isCampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
+import { isCampaignMediaOwner } from '../../../libs/useCampaignBlockUpdateMutation'
 import { AnalyticsSettings } from '../AnalyticsSettings'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CarouselCardEdit } from '../CarouselCardEdit'

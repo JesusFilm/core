@@ -1,5 +1,5 @@
-import { ApolloLink, gql } from '@apollo/client'
-import { useApolloClient } from '@apollo/client/react'
+import { ApolloClient, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
@@ -8,15 +8,13 @@ import {
   CampaignImageBlockCreate,
   CampaignImageBlockCreateVariables
 } from '../../../__generated__/CampaignImageBlockCreate'
-import {
-  GetCampaign_campaign_blocks as CampaignBlock,
-  GetCampaign_campaign_blocks_CampaignImageBlock
-} from '../../../__generated__/GetCampaign'
+import { GetCampaign_campaign_blocks_CampaignImageBlock } from '../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
   CampaignImageSlot
 } from '../../../__generated__/globalTypes'
 import {
+  CampaignBlockOwnerRef,
   campaignBlockCreateUpdate,
   campaignBlockSlotWrite
 } from '../campaignBlockCache'
@@ -38,19 +36,13 @@ export const CAMPAIGN_IMAGE_BLOCK_CREATE = gql`
   }
 `
 
-/** The columns of a block that owns an image: the section or chrome block the image copies its scoping from. */
-export type CampaignImageOwner = Pick<
-  CampaignBlock,
-  '__typename' | 'id' | 'campaignId' | 'pageId' | 'regionId'
->
-
 /**
  * An owned image as its create returns it before the server has measured it:
  * `parentOrder: null`, the owner's scoping, the given src and no size yet.
  */
 export function newOwnedImageBlock(
   id: string,
-  owner: CampaignImageOwner,
+  owner: CampaignBlockOwnerRef,
   src: string
 ): CampaignImageBlock {
   return {
@@ -83,14 +75,14 @@ export function newOwnedImageBlock(
 
 export interface CreateOwnedImageOptions {
   id: string
-  owner: CampaignImageOwner
+  owner: CampaignBlockOwnerRef
   slot: CampaignImageSlot
   src: string
 }
 
 export type CreateOwnedImage = (
   options: CreateOwnedImageOptions
-) => Promise<ApolloLink.Result<CampaignImageBlockCreate>>
+) => Promise<ApolloClient.MutateResult<CampaignImageBlockCreate>>
 
 /**
  * Create an owned image (a section's cover, the header logo or a Media
@@ -103,14 +95,13 @@ export type CreateOwnedImage = (
 export function useCampaignImageBlockCreateMutation(
   campaignId: string
 ): CreateOwnedImage {
-  const client = useApolloClient()
+  const [createImage] = useMutation<
+    CampaignImageBlockCreate,
+    CampaignImageBlockCreateVariables
+  >(CAMPAIGN_IMAGE_BLOCK_CREATE)
   return useCallback(
     async ({ id, owner, slot, src }) =>
-      await client.mutate<
-        CampaignImageBlockCreate,
-        CampaignImageBlockCreateVariables
-      >({
-        mutation: CAMPAIGN_IMAGE_BLOCK_CREATE,
+      await createImage({
         variables: {
           input: { id, campaignId, parentBlockId: owner.id, slot, src }
         },
@@ -124,6 +115,6 @@ export function useCampaignImageBlockCreateMutation(
             campaignBlockSlotWrite(cache, owner, 'mediaBlockId', image.id)
         }
       }),
-    [client, campaignId]
+    [createImage, campaignId]
   )
 }

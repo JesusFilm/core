@@ -6,11 +6,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
-import {
-  CampaignImageMediaInput,
-  useCampaignImageBlockUpdateMutation
-} from '../../../libs/useCampaignImageBlockUpdateMutation'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 import { FocalPoint, FocalPointPicker } from './FocalPointPicker'
 
@@ -40,8 +36,7 @@ export function FocalPointControl({
   image
 }: FocalPointControlProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeMedia = useCampaignImageBlockUpdateMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
   const scale = image.scale ?? IMAGE_SCALE_MIN
   const [zoom, setZoom] = useState(scale)
 
@@ -62,24 +57,14 @@ export function FocalPointControl({
       point.focalTop === value.focalTop
     )
       return
-    addStyle<CampaignImageBlock, CampaignImageMediaInput>({
-      block: image,
-      input: point,
-      previous: value,
-      run: writeMedia
-    })
+    addFields(image, point)
   }
 
   function handleZoomCommit(_event: unknown, next: number | number[]): void {
     const percent = Array.isArray(next) ? next[0] : next
     const nextScale = percent === IMAGE_SCALE_MIN ? null : percent
     if (nextScale === (image.scale ?? null)) return
-    addStyle<CampaignImageBlock, CampaignImageMediaInput>({
-      block: image,
-      input: { scale: nextScale },
-      previous: { scale: image.scale ?? null },
-      run: writeMedia
-    })
+    addFields(image, { scale: nextScale })
   }
 
   return (

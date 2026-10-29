@@ -8,11 +8,7 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyListBlock as CampaignJourneyListBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignJourneyListDisplay } from '../../../../__generated__/globalTypes'
-import {
-  CampaignJourneyListDisplayInput,
-  useCampaignJourneyListBlockDisplayMutation
-} from '../../../libs/useCampaignJourneyListBlockDisplayMutation'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 interface JourneyListSettingsProps {
   block: CampaignJourneyListBlock
@@ -27,17 +23,11 @@ export function JourneyListSettings({
   block
 }: JourneyListSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeDisplay = useCampaignJourneyListBlockDisplayMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
 
   function handleChange(display: CampaignJourneyListDisplay | null): void {
     if (display == null || display === block.display) return
-    addStyle<CampaignJourneyListBlock, CampaignJourneyListDisplayInput>({
-      block,
-      input: { display },
-      previous: { display: block.display },
-      run: writeDisplay
-    })
+    addFields(block, { display })
   }
 
   return (

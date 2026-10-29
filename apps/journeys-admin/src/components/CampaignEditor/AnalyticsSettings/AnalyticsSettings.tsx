@@ -7,11 +7,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignAnalyticsBlock as CampaignAnalyticsBlock } from '../../../../__generated__/GetCampaign'
-import {
-  CampaignAnalyticsShowMapInput,
-  useCampaignAnalyticsBlockShowMapMutation
-} from '../../../libs/useCampaignAnalyticsBlockShowMapMutation'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 interface AnalyticsSettingsProps {
   /** The Analytics section this editor edits. */
@@ -28,16 +24,10 @@ export function AnalyticsSettings({
   block
 }: AnalyticsSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeShowMap = useCampaignAnalyticsBlockShowMapMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
 
   function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    addStyle<CampaignAnalyticsBlock, CampaignAnalyticsShowMapInput>({
-      block,
-      input: { showMap: event.target.checked },
-      previous: { showMap: block.showMap },
-      run: writeShowMap
-    })
+    addFields(block, { showMap: event.target.checked })
   }
 
   return (

@@ -3,9 +3,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { imageSectionBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
-import { CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA } from '../../../libs/useCampaignImageBlockUpdateMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithColumns, withEmptyTranslations } from '../data'
+import { blockUpdateMock } from '../styleTesting'
 import { CommandProbe, StaticEditor } from '../testing'
 
 import { FocalPointControl } from './FocalPointControl'
@@ -19,51 +19,11 @@ function focalMock(
   focalLeft: number,
   focalTop: number
 ): Record<string, unknown> {
-  return {
-    request: {
-      query: CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA,
-      variables: { id: 'imageId', input: { focalLeft, focalTop } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignImageBlockUpdate: {
-          __typename: 'CampaignImageBlock',
-          id: 'imageId',
-          src: image.src,
-          alt: image.alt,
-          width: image.width,
-          height: image.height,
-          focalLeft,
-          focalTop,
-          scale: null
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(image, { focalLeft, focalTop })
 }
 
 function zoomMock(scale: number | null): Record<string, unknown> {
-  return {
-    request: {
-      query: CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA,
-      variables: { id: 'imageId', input: { scale } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignImageBlockUpdate: {
-          __typename: 'CampaignImageBlock',
-          id: 'imageId',
-          src: image.src,
-          alt: image.alt,
-          width: image.width,
-          height: image.height,
-          focalLeft: 50,
-          focalTop: 50,
-          scale
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(image, { scale })
 }
 
 function renderControl(mocks: Array<Record<string, unknown>>): void {

@@ -5,11 +5,11 @@ import {
   CampaignFeaturedMediaLayout,
   CampaignMediaSide
 } from '../../../../__generated__/globalTypes'
-import { CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE } from '../../../libs/useCampaignFeaturedMediaBlockUpdateMutation'
-import type { CampaignFeaturedMediaInput } from '../../../libs/useCampaignFeaturedMediaBlockUpdateMutation'
+import type { CampaignBlockUpdateInput } from '../../../libs/useCampaignBlockUpdateMutation'
 import { newOwnedImageBlock } from '../../../libs/useCampaignImageBlockCreateMutation'
 import { campaign } from '../data'
 import { newSectionBlock } from '../sectionTypes'
+import { blockUpdateMock } from '../styleTesting'
 import { CommandProbe, StaticEditor } from '../testing'
 
 import { MediaSectionEdit } from './MediaSectionEdit'
@@ -27,27 +27,10 @@ const featured = {
 } as CampaignFeaturedMediaBlock
 const featuredImage = newOwnedImageBlock('featuredImageId', featured, SRC)
 
-function updateMock(input: CampaignFeaturedMediaInput) {
-  return {
-    request: {
-      query: CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE,
-      variables: { id: 'featuredId', input }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignFeaturedMediaBlockUpdate: {
-          __typename: 'CampaignFeaturedMediaBlock',
-          id: 'featuredId',
-          mediaSide: input.mediaSide ?? featured.mediaSide,
-          layout: input.layout ?? featured.layout,
-          mediaBlockId:
-            input.mediaBlockId !== undefined
-              ? input.mediaBlockId
-              : featured.mediaBlockId
-        }
-      }
-    }))
-  }
+function updateMock(
+  input: CampaignBlockUpdateInput<'CampaignFeaturedMediaBlock'>
+) {
+  return blockUpdateMock(featured, input)
 }
 
 function renderEdit(
