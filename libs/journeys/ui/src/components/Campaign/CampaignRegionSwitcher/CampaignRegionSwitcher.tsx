@@ -205,7 +205,7 @@ function CampaignRegionCard({
   const track = useCampaignPlausible()
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
-    track('campaignRegionClick', { region: region.slug }, event)
+    track('campaignRegionClick', { targetRegion: region }, event)
   }
 
   return (

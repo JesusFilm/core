@@ -11,8 +11,10 @@ export type {
   CampaignPlausibleProps
 } from './campaignPlausibleSite'
 export {
+  campaignEventProps,
   campaignPlausibleProps,
-  journeySlug,
-  useCampaignPlausible
-} from './useCampaignPlausible'
+  journeySlug
+} from './campaignPlausibleProps'
+export type { CampaignEventInputs } from './campaignPlausibleProps'
+export { useCampaignPlausible } from './useCampaignPlausible'
 export type { CampaignPlausibleTrack } from './useCampaignPlausible'

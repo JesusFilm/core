@@ -6,7 +6,6 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
-import { usePlausible } from 'next-plausible'
 
 import {
   CampaignPageKind,
@@ -107,8 +106,7 @@ function shareTree(
 
 function renderShare(
   regionProp: CampaignRegion | null = region,
-  campaign: CampaignPublic = campaignPublic,
-  reportEvents?: boolean
+  campaign: CampaignPublic = campaignPublic
 ) {
   return render(
     <ThemeProvider theme={theme}>
@@ -116,8 +114,7 @@ function renderShare(
         value={{
           campaign,
           pageKind: CampaignPageKind.regionTemplate,
-          region: regionProp,
-          reportEvents
+          region: regionProp
         }}
       >
         <CampaignRegionShare block={shareTree()} />
@@ -132,7 +129,12 @@ function styleText(): string {
     .join('')
 }
 
-vi.mock('next-plausible', () => ({ usePlausible: vi.fn() }))
+const { track } = vi.hoisted(() => ({ track: vi.fn() }))
+
+vi.mock('../../../libs/campaignPlausible', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../libs/campaignPlausible')>()),
+  useCampaignPlausible: () => track
+}))
 
 describe('CampaignRegionShare', () => {
   beforeAll(() => {
@@ -441,8 +443,6 @@ describe('CampaignRegionShare', () => {
 })
 
 describe('CampaignRegionShare events', () => {
-  const plausible = vi.fn()
-
   beforeAll(() => {
     Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
       value: vi.fn(),
@@ -452,22 +452,21 @@ describe('CampaignRegionShare events', () => {
   })
 
   beforeEach(() => {
-    vi.mocked(usePlausible).mockReturnValue(plausible)
-    plausible.mockClear()
+    track.mockClear()
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText: vi.fn().mockResolvedValue(undefined) },
       configurable: true
     })
   })
 
-  const pageProps = { campaign_id: 'campaignId', region: 'eur', language: 'en' }
+  const english = expect.objectContaining({ id: 'eur-en' })
 
-  it('sends campaignShareLinkCopy once the Share Link is copied', async () => {
-    renderShare(region, campaignPublic, true)
+  it('sends campaignShareLinkCopy with the Share Language once the Share Link is copied', async () => {
+    renderShare(region, campaignPublic)
     fireEvent.click(screen.getByTestId('CampaignRegionShareCopy'))
     await waitFor(() =>
-      expect(plausible).toHaveBeenCalledWith('campaignShareLinkCopy', {
-        props: { ...pageProps, shareLanguage: 'en' }
+      expect(track).toHaveBeenCalledWith('campaignShareLinkCopy', {
+        shareLanguage: english
       })
     )
   })
@@ -477,62 +476,39 @@ describe('CampaignRegionShare events', () => {
       value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
       configurable: true
     })
-    renderShare(region, campaignPublic, true)
+    renderShare(region, campaignPublic)
     fireEvent.click(screen.getByTestId('CampaignRegionShareCopy'))
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalled()
     )
-    expect(plausible).not.toHaveBeenCalled()
+    expect(track).not.toHaveBeenCalled()
   })
 
-  it('sends campaignQrDownload when the QR code is downloaded', () => {
+  it('sends campaignQrDownload with the Share Language when the QR code is downloaded', () => {
     vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue(
       'data:image/png;base64,QR'
     )
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
       () => undefined
     )
-    renderShare(region, campaignPublic, true)
-    fireEvent.click(screen.getByTestId('CampaignRegionShareDownload'))
-    expect(plausible).toHaveBeenCalledWith('campaignQrDownload', {
-      props: { ...pageProps, shareLanguage: 'en' }
-    })
-  })
-
-  it("sends campaignJourneyClick with the linked journey's slug when the Share Link is opened", () => {
-    renderShare(region, campaignPublic, true)
-    fireEvent.click(screen.getByRole('link', { name: 'Open' }))
-    expect(plausible).toHaveBeenCalledWith('campaignJourneyClick', {
-      props: {
-        ...pageProps,
-        journey: 'eur-en',
-        source: 'share',
-        shareLanguage: 'en'
-      }
-    })
-  })
-
-  it('leaves the journey out of campaignJourneyClick when the language has no journey address', () => {
-    const withoutJourneyUrl: CampaignRegion = {
-      ...region,
-      languages: [
-        { ...language('eur-en', '529', 0, 'English'), journeyUrl: null }
-      ]
-    }
-    renderShare(withoutJourneyUrl, campaignPublic, true)
-    fireEvent.click(screen.getByRole('link', { name: 'Open' }))
-    expect(plausible).toHaveBeenCalledWith('campaignJourneyClick', {
-      props: { ...pageProps, source: 'share', shareLanguage: 'en' }
-    })
-  })
-
-  it('sends nothing from the editor canvas', async () => {
     renderShare(region, campaignPublic)
-    fireEvent.click(screen.getByTestId('CampaignRegionShareCopy'))
+    fireEvent.click(screen.getByTestId('CampaignRegionShareDownload'))
+    expect(track).toHaveBeenCalledWith('campaignQrDownload', {
+      shareLanguage: english
+    })
+  })
+
+  it("sends campaignJourneyClick with the Share Language's journey address when the Share Link is opened", () => {
+    renderShare(region, campaignPublic)
     fireEvent.click(screen.getByRole('link', { name: 'Open' }))
-    await waitFor(() =>
-      expect(navigator.clipboard.writeText).toHaveBeenCalled()
+    expect(track).toHaveBeenCalledWith(
+      'campaignJourneyClick',
+      {
+        source: 'share',
+        journeyUrl: 'https://your.nextstep.is/eur-en',
+        shareLanguage: english
+      },
+      expect.anything()
     )
-    expect(plausible).not.toHaveBeenCalled()
   })
 })

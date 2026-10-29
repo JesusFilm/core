@@ -1,6 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { usePlausible } from 'next-plausible'
 
 import {
   CampaignPageKind,
@@ -54,7 +53,6 @@ interface RenderOptions {
   campaign?: CampaignPublic
   region?: CampaignRegion | null
   pageKind?: CampaignPageKind
-  reportEvents?: boolean
 }
 
 function renderSwitcher(
@@ -62,20 +60,24 @@ function renderSwitcher(
   {
     campaign = campaignPublic,
     region = null,
-    pageKind = CampaignPageKind.landing,
-    reportEvents
+    pageKind = CampaignPageKind.landing
   }: RenderOptions = {}
 ) {
   return render(
     <ThemeProvider theme={theme}>
-      <CampaignProvider value={{ campaign, pageKind, region, reportEvents }}>
+      <CampaignProvider value={{ campaign, pageKind, region }}>
         <CampaignRegionSwitcher block={block} />
       </CampaignProvider>
     </ThemeProvider>
   )
 }
 
-vi.mock('next-plausible', () => ({ usePlausible: vi.fn() }))
+const { track } = vi.hoisted(() => ({ track: vi.fn() }))
+
+vi.mock('../../../libs/campaignPlausible', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../libs/campaignPlausible')>()),
+  useCampaignPlausible: () => track
+}))
 
 describe('CampaignRegionSwitcher', () => {
   const withLac: CampaignPublic = {
@@ -263,30 +265,17 @@ describe('CampaignRegionSwitcher', () => {
 })
 
 describe('CampaignRegionSwitcher events', () => {
-  const plausible = vi.fn()
-
   beforeEach(() => {
-    vi.mocked(usePlausible).mockReturnValue(plausible)
-    plausible.mockClear()
-    vi.stubGlobal('location', { ...window.location, assign: vi.fn() })
+    track.mockClear()
   })
 
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
-
-  it('sends campaignRegionClick with the target region on the public page', () => {
-    renderSwitcher(switcherTree(), { reportEvents: true })
-    fireEvent.click(screen.getByTestId('CampaignRegionCard-afrRegionId'))
-    expect(plausible).toHaveBeenCalledWith('campaignRegionClick', {
-      props: { campaign_id: 'campaignId', language: 'en', region: 'afr' },
-      callback: expect.any(Function)
-    })
-  })
-
-  it('sends nothing from the editor canvas', () => {
+  it('sends campaignRegionClick with the region clicked', () => {
     renderSwitcher(switcherTree())
     fireEvent.click(screen.getByTestId('CampaignRegionCard-afrRegionId'))
-    expect(plausible).not.toHaveBeenCalled()
+    expect(track).toHaveBeenCalledWith(
+      'campaignRegionClick',
+      { targetRegion: expect.objectContaining({ slug: 'afr' }) },
+      expect.anything()
+    )
   })
 })

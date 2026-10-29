@@ -67,14 +67,18 @@ export const campaignPlausibleSite = {
       /** The journey's slug: the last path segment of its public address; left out when there is none. */
       journey: optional(),
       source: required<'card' | 'share'>(),
+      /** The Share Language's BCP 47 tag, here and on every share event; left out without one. */
       shareLanguage: optional()
     },
-    /** A Region Switcher card clicked; `region` is the target region's slug. */
-    campaignRegionClick: { region: required() },
+    /**
+     * A Region Switcher card clicked: `targetRegion` is the region clicked,
+     * apart from the page's own `region`, the one the visitor is on.
+     */
+    campaignRegionClick: { targetRegion: required() },
     /** Download QR in the Share section. */
-    campaignQrDownload: { shareLanguage: required() },
+    campaignQrDownload: { shareLanguage: optional() },
     /** Copy link in the Share section. */
-    campaignShareLinkCopy: { shareLanguage: required() }
+    campaignShareLinkCopy: { shareLanguage: optional() }
   }
 } as const satisfies {
   siteId: (campaignId: string) => string

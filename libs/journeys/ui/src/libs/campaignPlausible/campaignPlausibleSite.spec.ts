@@ -29,7 +29,8 @@ describe('campaignPlausibleSite', () => {
       'language',
       'journey',
       'source',
-      'shareLanguage'
+      'shareLanguage',
+      'targetRegion'
     ])
   })
 })
