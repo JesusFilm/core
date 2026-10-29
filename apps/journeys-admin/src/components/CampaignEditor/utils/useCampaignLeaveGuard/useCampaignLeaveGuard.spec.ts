@@ -36,4 +36,25 @@ describe('useCampaignLeaveGuard', () => {
     unmount()
     expect(leavePrevented()).toBe(false)
   })
+
+  it('reads a function reason as the page unloads, asking only while it returns true', () => {
+    let pending = false
+    renderHook(() => useCampaignLeaveGuard([false, () => pending]))
+
+    expect(leavePrevented()).toBe(false)
+
+    pending = true
+    expect(leavePrevented()).toBe(true)
+
+    pending = false
+    expect(leavePrevented()).toBe(false)
+  })
+
+  it('stops reading a function reason once unmounted', () => {
+    const { unmount } = renderHook(() => useCampaignLeaveGuard([() => true]))
+    expect(leavePrevented()).toBe(true)
+
+    unmount()
+    expect(leavePrevented()).toBe(false)
+  })
 })

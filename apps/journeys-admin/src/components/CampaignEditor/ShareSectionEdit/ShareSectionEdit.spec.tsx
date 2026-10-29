@@ -1037,6 +1037,19 @@ describe('ShareSectionEdit', () => {
     click.mockRestore()
   })
 
+  it('says the link could not be copied when the clipboard refuses it', async () => {
+    vi.mocked(navigator.clipboard.writeText).mockRejectedValue(
+      new Error('Write permission denied')
+    )
+    renderShare()
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(within(english).getByTestId('ShareLanguageCopy'))
+
+    expect(await screen.findByText("Couldn't copy link")).toBeInTheDocument()
+    expect(screen.queryByText('Link copied')).not.toBeInTheDocument()
+  })
+
   it('marks an Unlinked Language hidden in the selector preview and disables its copy and download', async () => {
     renderShare()
 

@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
+import { useSnackbar } from 'notistack'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import {
@@ -88,6 +89,7 @@ export function ShareLanguageRow({
   onCopied
 }: ShareLanguageRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const {
     state: { previewLanguageId },
     selectBlock
@@ -124,7 +126,16 @@ export function ShareLanguageRow({
 
   async function handleCopy(): Promise<void> {
     if (shortLink == null) return
-    await navigator.clipboard.writeText(shortLink)
+    try {
+      await navigator.clipboard.writeText(shortLink)
+    } catch {
+      // A denied clipboard (no permission, insecure context).
+      enqueueSnackbar(t("Couldn't copy link"), {
+        variant: 'error',
+        preventDuplicate: true
+      })
+      return
+    }
     onCopied(shortLink)
   }
 

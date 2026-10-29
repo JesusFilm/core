@@ -25,7 +25,7 @@ import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../libs/useCampaignJourneyBy
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { blockOf, blockUpdateMock } from '../styleTesting'
-import { QueriedEditor, SelectionProbe } from '../testing'
+import { BlocksProbe, QueriedEditor, SelectionProbe } from '../testing'
 
 import { JourneyListEdit } from './JourneyListEdit'
 
@@ -172,6 +172,7 @@ async function renderList(
       <QueriedEditor initialState={{ selectedBlockId }} mocks={mocks}>
         <CommandUndoItem variant="button" />
         <SelectionProbe />
+        <BlocksProbe />
         <ListHarness display={display} />
       </QueriedEditor>
     </SnackbarProvider>
@@ -397,6 +398,23 @@ describe('JourneyListEdit', () => {
       expect(screen.queryByTestId('JourneyCard-newJourneyItemId')).toBeNull()
     )
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+  })
+
+  it('numbers the optimistic card after every ordered child of the list, its Extras included', async () => {
+    await renderList('landingJourneyListId', [resolveMock, createMock])
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'or paste a link' }),
+      `${ADMIN_LINK}{enter}`
+    )
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Use this journey' })
+    )
+
+    // The note above the cards and the two cards: the API answers 3.
+    expect(
+      await screen.findByTestId('Block-newJourneyItemId')
+    ).toHaveTextContent('CampaignJourneyBlock|landingJourneyListId|3|')
+    expect(createMock.result).not.toHaveBeenCalled()
   })
 
   it('leaves nothing to undo when the add is refused, and keeps the list selected', async () => {

@@ -39,13 +39,16 @@ export interface SectionTarget {
 
 /**
  * The section an Extra is added to, and which side of the section's text it
- * sits on. A new Extra beside a selected Extra repeats its placement; added
- * to a section it takes the author's choice, `placement` being the default.
+ * sits on. A new Extra beside a selected Extra repeats its placement and goes
+ * right after it; added to a section it takes the author's choice,
+ * `placement` being the default, and goes last.
  */
 export interface ExtraTarget {
   host: CampaignBlock
   placement: CampaignChildPlacement
   inheritsPlacement: boolean
+  /** The selected Extra the new one goes right after. */
+  after?: CampaignBlock
   /** The Extra types the host renders, in Add Panel order. */
   typenames: ExtraTypename[]
 }
@@ -74,7 +77,7 @@ interface AddTargetsInput {
  * below the section, and an Extra added to it. An empty Column Slot → a
  * section into it, filtered to what fits in a column; a section already in a
  * slot has no section sibling to add. An Extra → another Extra on the same
- * host and placement. A region card → a new Region Line. Region-page-only
+ * host and placement, right after it. A region card → a new Region Line. Region-page-only
  * section types are offered on the Region Page only. A preset insert point
  * (the canvas "+", an empty slot's placeholder) wins over all of this and
  * offers sections only, at that point.
@@ -183,12 +186,17 @@ export function addTargets({
       if (host == null) return {}
       const placement =
         block != null && 'placement' in block ? block.placement : null
+      const after =
+        block?.parentBlockId === host.id && block.parentOrder != null
+          ? block
+          : undefined
       return {
         extra: {
           host,
           placement: placement ?? CampaignChildPlacement.below,
           inheritsPlacement: true,
-          typenames: extraTypenamesFor(host)
+          typenames: extraTypenamesFor(host),
+          ...(after != null ? { after } : {})
         }
       }
     }

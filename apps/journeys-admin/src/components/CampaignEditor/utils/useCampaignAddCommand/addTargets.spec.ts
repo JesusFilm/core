@@ -169,7 +169,8 @@ describe('addTargets', () => {
     expect(targets.extra).toMatchObject({
       host: { id: 'heroId' },
       placement: CampaignChildPlacement.above,
-      inheritsPlacement: true
+      inheritsPlacement: true,
+      after: { id: 'heroButtonId' }
     })
   })
 

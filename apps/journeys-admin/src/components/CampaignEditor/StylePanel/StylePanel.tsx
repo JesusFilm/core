@@ -121,7 +121,12 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
   ): void {
     if (kind == null) return
     if (kind !== CampaignBackgroundKind.image) setChoosingCover(false)
-    if (kind === block.backgroundKind && !choosingCover) return
+    // The kind the section already has only closes the cover picker: a
+    // write would be an empty undo step.
+    if (kind === block.backgroundKind) {
+      setChoosingCover(false)
+      return
+    }
     if (kind === CampaignBackgroundKind.image && cover == null) {
       setChoosingCover(true)
       return

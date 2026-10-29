@@ -77,7 +77,7 @@ function renderEditor(
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }

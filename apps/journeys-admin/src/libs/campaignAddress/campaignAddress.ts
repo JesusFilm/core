@@ -57,3 +57,18 @@ export function campaignShareLink(
   if (qrCode == null) return undefined
   return `https://${qrCode.shortLink.domain.hostname}/${qrCode.shortLink.pathname}`
 }
+
+/**
+ * The editor's open-page route: `/api/campaign/open` rebuilds the campaign's
+ * public pages, then redirects to the landing page, or to a region's page
+ * when `regionSlug` is given.
+ */
+export function campaignOpenPageHref(
+  campaignId: string,
+  regionSlug?: string
+): string {
+  return `/api/campaign/open?${new URLSearchParams({
+    id: campaignId,
+    ...(regionSlug != null ? { regionSlug } : {})
+  }).toString()}`
+}

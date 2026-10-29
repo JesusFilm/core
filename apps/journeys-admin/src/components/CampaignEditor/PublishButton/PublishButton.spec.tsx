@@ -180,19 +180,39 @@ describe('PublishButton', () => {
     expect(screen.getByRole('button', { name: 'Unpublish' })).toBeEnabled()
   })
 
-  it('opens the campaign through the refresh route in a new tab', () => {
+  it('disables Refresh and open page on a draft, with a caption that the page goes live on publish', () => {
     render(<Harness />)
+    openPopover()
+
+    expect(
+      screen.queryByRole('link', { name: 'Refresh and open page' })
+    ).not.toBeInTheDocument()
+    const button = screen.getByRole('button', { name: 'Refresh and open page' })
+    expect(button).toBeDisabled()
+    expect(button).toHaveAccessibleDescription(
+      'The page goes live when you publish.'
+    )
+  })
+
+  it('opens the campaign through the refresh route in a new tab', () => {
+    render(<Harness campaignProp={publishedCampaign} />)
     openPopover()
 
     const link = screen.getByRole('link', { name: 'Refresh and open page' })
     expect(link).toHaveAttribute('href', '/api/campaign/open?id=campaignId')
     expect(link).toHaveAttribute('target', '_blank')
+    expect(
+      screen.queryByText('The page goes live when you publish.')
+    ).not.toBeInTheDocument()
   })
 
   it('opens the rendered region’s page through the refresh route on a Region Page', () => {
     render(
       <Harness
-        campaignProp={campaignWithRegions}
+        campaignProp={{
+          ...campaignWithRegions,
+          status: CampaignStatus.published
+        }}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'afrRegionId'

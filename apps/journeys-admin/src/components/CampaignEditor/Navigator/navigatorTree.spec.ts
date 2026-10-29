@@ -101,6 +101,29 @@ describe('buildNavigatorTree', () => {
     ])
   })
 
+  it('lists the Header’s and Footer’s Extras in one run, with no divider and no placement', () => {
+    const tree = buildNavigatorTree({
+      campaign,
+      pageKind: CampaignPageKind.landing
+    })
+
+    for (const [hostId, extraIds] of [
+      ['headerId', ['navHomeId', 'navResourcesId']],
+      ['footerId', ['footerCopyrightId', 'footerTermsId', 'footerPrivacyId']]
+    ] as const) {
+      const rows = find(tree, hostId)?.children ?? []
+      expect(rows.map((node) => node.id)).toEqual(extraIds)
+      for (const row of rows) {
+        expect(row.type).not.toBe('SectionContent')
+        expect(row.placement).toBeUndefined()
+        expect(row.reorder).toEqual({
+          group: `${hostId}:children`,
+          kind: 'block'
+        })
+      }
+    }
+  })
+
   it('leaves out the divider when a section has no Extras', () => {
     const tree = buildNavigatorTree({
       campaign,

@@ -24,6 +24,7 @@ import { MutationQueueLink } from './MutationQueueLink'
 
 const ssrMode = typeof window === 'undefined'
 let apolloClient: ApolloClient
+let browserDebounceLink: DebounceLink | undefined
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
@@ -184,6 +185,7 @@ export function createApolloClient(token?: string): ApolloClient {
 
   const mutationQueueLink = new MutationQueueLink()
   const debounceLink = new DebounceLink(DEFAULT_DEBOUNCE_TIMEOUT)
+  if (!ssrMode) browserDebounceLink = debounceLink
 
   // Split link: use SSE for subscriptions, HTTP for queries/mutations
   const splitLink = ApolloLink.split(
@@ -215,6 +217,14 @@ export function createApolloClient(token?: string): ApolloClient {
       enabled: true
     }
   })
+}
+
+/**
+ * Whether the browser client holds a debounced write (a text edit inside its
+ * debounce) that has not been sent yet: a reload now would drop it.
+ */
+export function hasPendingDebouncedWrites(): boolean {
+  return browserDebounceLink?.hasPending() ?? false
 }
 
 interface InitializeApolloOptions {

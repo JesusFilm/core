@@ -81,6 +81,21 @@ describe('DebounceLink', () => {
     await expect(second).resolves.toEqual({ data: { save: { value: 'b' } } })
   })
 
+  it('reports a pending request until it is forwarded', async () => {
+    const downstream = createRecordingLink()
+    const debounceLink = new DebounceLink(500)
+    const link = ApolloLink.from([debounceLink, downstream.link])
+    expect(debounceLink.hasPending()).toBe(false)
+
+    const saved = execute(link, 'a', { debounceKey: 'field' })
+
+    expect(debounceLink.hasPending()).toBe(true)
+    await vi.advanceTimersByTimeAsync(500)
+    expect(downstream.forwarded()).toEqual(['a'])
+    expect(debounceLink.hasPending()).toBe(false)
+    await saved
+  })
+
   it('debounces each key independently', async () => {
     const downstream = createRecordingLink()
     const link = ApolloLink.from([new DebounceLink(500), downstream.link])

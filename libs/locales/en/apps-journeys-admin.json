@@ -1755,5 +1755,11 @@
   "Stay": "Stay",
   "Leave": "Leave",
   "The translation into {{language}} stops.": "The translation into {{language}} stops.",
-  "Alt text must be at most {{max}} characters": "Alt text must be at most {{max}} characters"
+  "Alt text must be at most {{max}} characters": "Alt text must be at most {{max}} characters",
+  "You don't have access to this campaign": "You don't have access to this campaign",
+  "Ask a manager of its team to add you.": "Ask a manager of its team to add you.",
+  "The page goes live when you publish.": "The page goes live when you publish.",
+  "We couldn't check your role.": "We couldn't check your role.",
+  "Retry": "Retry",
+  "Open page": "Open page"
 }

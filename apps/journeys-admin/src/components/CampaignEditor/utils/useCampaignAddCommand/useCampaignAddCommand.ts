@@ -2,12 +2,16 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../../__generated__/globalTypes'
+import { campaignBlockInsertUpdate } from '../../../../libs/campaignBlockCache'
+import { useCampaignBlockOrderUpdateMutation } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
 import { useCampaignButtonBlockCreateMutation } from '../../../../libs/useCampaignButtonBlockCreateMutation'
 import { CampaignSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignTypographyBlockCreateMutation } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
 import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
+import { reorderedSiblings } from '../reorderedSiblings'
 import { useCampaignBlockCreateCommand } from '../useCampaignBlockCreateCommand'
 import { useCampaignSectionAdd } from '../useCampaignSectionAdd'
+import { useCommandFailure } from '../useCommandFailure'
 
 import { AddTargets, ExtraTypename, addTargets } from './addTargets'
 
@@ -30,6 +34,12 @@ interface CampaignAddCommand {
  * the insertion rule of `addTargets` for the current selection. Each add is
  * the same create Command a menu used to dispatch. Shared by the Add Panel
  * and the canvas "+", whose preset insert point it follows.
+ *
+ * An Extra added after a selected Extra is still one Command: the create
+ * lands it last (the API has no position on create), so it shows at once
+ * right after the selected Extra with the later siblings shifted, and once
+ * the create lands the order mutation moves it there on the server. Undo
+ * and redo are the create Command's soft delete and restore.
  */
 export function useCampaignAddCommand(): CampaignAddCommand {
   const {
@@ -43,6 +53,8 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     campaign.id
   )
   const [buttonCreate] = useCampaignButtonBlockCreateMutation(campaign.id)
+  const [orderUpdate] = useCampaignBlockOrderUpdateMutation()
+  const reportFailure = useCommandFailure()
   const targets = addTargets({
     selection,
     campaign,
@@ -60,7 +72,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     chosenPlacement?: CampaignChildPlacement
   ): void {
     if (targets.extra == null) return
-    const { host, inheritsPlacement } = targets.extra
+    const { host, inheritsPlacement, after } = targets.extra
     const placement =
       inheritsPlacement || chosenPlacement == null
         ? targets.extra.placement
@@ -70,13 +82,15 @@ export function useCampaignAddCommand(): CampaignAddCommand {
       (candidate) =>
         candidate.parentBlockId === host.id && candidate.parentOrder != null
     )
+    const parentOrder =
+      after?.parentOrder != null ? after.parentOrder + 1 : siblings.length
     const base = {
       id,
       campaignId: campaign.id,
       pageId: host.pageId,
       regionId: host.regionId,
       parentBlockId: host.id,
-      parentOrder: siblings.length,
+      parentOrder,
       placement
     }
     const input = {
@@ -85,6 +99,23 @@ export function useCampaignAddCommand(): CampaignAddCommand {
       parentBlockId: host.id,
       placement
     }
+
+    /** Moves the landed block (last among its siblings) right after `after`. */
+    async function moveAfter(block: CampaignBlock): Promise<void> {
+      if (after == null) return
+      const rows = reorderedSiblings(
+        [...campaign.blocks, block],
+        block,
+        parentOrder
+      )
+      // The block exists either way: a refused move leaves it last, and only
+      // the move is reported.
+      await orderUpdate({
+        variables: { id: block.id, parentOrder },
+        optimisticResponse: { campaignBlockOrderUpdate: rows }
+      }).catch((error: unknown) => reportFailure(error))
+    }
+
     if (typename === 'CampaignTypographyBlock') {
       const block: CampaignBlock = {
         __typename: 'CampaignTypographyBlock',
@@ -97,11 +128,25 @@ export function useCampaignAddCommand(): CampaignAddCommand {
       }
       addBlock({
         block,
-        execute() {
-          return typographyCreate({
+        async execute() {
+          const result = await typographyCreate({
             variables: { input },
-            optimisticResponse: { campaignTypographyBlockCreate: block }
+            optimisticResponse: { campaignTypographyBlockCreate: block },
+            // After an Extra: shown at its position at once, the later
+            // siblings shifted.
+            ...(after != null
+              ? {
+                  update: (cache, { data }) =>
+                    campaignBlockInsertUpdate(
+                      cache,
+                      campaign.id,
+                      data?.campaignTypographyBlockCreate
+                    )
+                }
+              : {})
           })
+          await moveAfter(block)
+          return result
         }
       })
       return
@@ -120,11 +165,23 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     }
     addBlock({
       block,
-      execute() {
-        return buttonCreate({
+      async execute() {
+        const result = await buttonCreate({
           variables: { input: { ...input, label: NEW_BUTTON_LABEL } },
-          optimisticResponse: { campaignButtonBlockCreate: block }
+          optimisticResponse: { campaignButtonBlockCreate: block },
+          ...(after != null
+            ? {
+                update: (cache, { data }) =>
+                  campaignBlockInsertUpdate(
+                    cache,
+                    campaign.id,
+                    data?.campaignButtonBlockCreate
+                  )
+              }
+            : {})
         })
+        await moveAfter(block)
+        return result
       }
     })
   }

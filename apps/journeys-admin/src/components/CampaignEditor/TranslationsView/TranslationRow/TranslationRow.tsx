@@ -22,14 +22,6 @@ import { useCampaignTranslationWrite } from '../../utils/useCampaignTranslationW
 import { useCommittedField } from '../../utils/useCommittedField'
 import { rowTranslations, targetInput } from '../translationRows'
 
-const MULTILINE_FIELDS: CampaignTextField[] = [
-  CampaignTextField.description,
-  CampaignTextField.bullets,
-  CampaignTextField.content,
-  CampaignTextField.intro,
-  CampaignTextField.description
-]
-
 interface TranslationRowProps {
   row: TranslationRowData
   languageId: string
@@ -184,7 +176,9 @@ export function TranslationRow({
       <TextField
         size="small"
         fullWidth
-        multiline={MULTILINE_FIELDS.includes(row.field)}
+        // Every field: the canvas takes a line break in any text, so a
+        // translation can mirror it.
+        multiline
         value={draft.value}
         onChange={(event) => draft.onChange(event.target.value)}
         onBlur={draft.onBlur}

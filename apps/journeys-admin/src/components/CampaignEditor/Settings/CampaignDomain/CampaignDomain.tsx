@@ -22,6 +22,8 @@ import {
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
 import { CampaignStatus } from '../../../../../__generated__/globalTypes'
 import { DELETE_CUSTOM_DOMAIN } from '../../../Team/CustomDomainDialog/DomainNameForm/DomainNameForm'
+import { CampaignRole } from '../../utils/campaignRole'
+import { ManagerRoleNotice, managerControlIcon } from '../ManagerRoleNotice'
 
 import { CampaignDomainDns } from './CampaignDomainDns'
 
@@ -43,8 +45,14 @@ type PendingChange = 'connect' | 'disconnect'
 
 interface CampaignDomainProps {
   campaign: Pick<Campaign, 'id' | 'teamId' | 'status' | 'customDomains'>
-  /** Adding, checking and removing the domain registers it with Vercel: managers only. */
-  isManager: boolean
+  /**
+   * Adding, checking and removing the domain registers it with Vercel:
+   * managers only. While the role is pending or could not be read, the
+   * manager's controls show disabled.
+   */
+  role: CampaignRole
+  /** Asks for the role again after it could not be read. */
+  onRoleRetry?: () => void
 }
 
 /**
@@ -55,7 +63,8 @@ interface CampaignDomainProps {
  */
 export function CampaignDomain({
   campaign,
-  isManager
+  role,
+  onRoleRetry
 }: CampaignDomainProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -72,6 +81,8 @@ export function CampaignDomain({
   >(DELETE_CUSTOM_DOMAIN)
 
   const domain = campaign.customDomains[0]
+  const isManager = role === 'manager'
+  const managerControls = role !== 'member'
   const published = campaign.status === CampaignStatus.published
   const trimmedName = name.trim().toLowerCase()
 
@@ -236,7 +247,7 @@ export function CampaignDomain({
             hiddenLabel
             variant="filled"
             helperText={
-              isManager
+              managerControls
                 ? undefined
                 : t('Only team managers can change the domain')
             }
@@ -245,17 +256,18 @@ export function CampaignDomain({
               htmlInput: { 'aria-label': t('Domain Name') }
             }}
           />
-          {isManager && (
+          {managerControls && (
             <Button
               onClick={handleDisconnect}
-              disabled={deleting}
+              disabled={deleting || !isManager}
+              startIcon={managerControlIcon(role)}
               sx={{ height: 55, flexShrink: 0 }}
             >
               {t('Disconnect')}
             </Button>
           )}
         </Stack>
-      ) : isManager ? (
+      ) : managerControls ? (
         <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
           <TextField
             value={name}
@@ -271,12 +283,13 @@ export function CampaignDomain({
             placeholder="campaign.example.org"
             error={error != null}
             helperText={error ?? ' '}
-            disabled={creating}
+            disabled={creating || !isManager}
             slotProps={{ htmlInput: { 'aria-label': t('Domain Name') } }}
           />
           <Button
             onClick={handleConnect}
-            disabled={creating || trimmedName === ''}
+            disabled={creating || trimmedName === '' || !isManager}
+            startIcon={managerControlIcon(role)}
             sx={{ height: 55, flexShrink: 0 }}
           >
             {t('Connect')}
@@ -287,6 +300,7 @@ export function CampaignDomain({
           {t('No domain. Only team managers can add one.')}
         </Typography>
       )}
+      <ManagerRoleNotice role={role} onRetry={onRoleRetry} />
       {domain != null && isManager && (
         <CampaignDomainDns customDomain={domain} />
       )}

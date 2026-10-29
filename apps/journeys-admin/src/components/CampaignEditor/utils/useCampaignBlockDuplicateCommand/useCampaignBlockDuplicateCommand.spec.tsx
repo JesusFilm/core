@@ -96,7 +96,7 @@ function renderEditor(
       <CommandRedoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }
@@ -113,7 +113,7 @@ function renderWithPendingText(
     >
       <PendingTextSave block={pendingBlock} />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }

@@ -131,7 +131,7 @@ function renderEditor(
       <CommandUndoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector role="member" />
       {children}
     </QueriedEditor>
   )

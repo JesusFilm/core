@@ -1,6 +1,7 @@
 import { useApolloClient } from '@apollo/client/react'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
@@ -29,6 +30,13 @@ vi.mock('../CampaignEditor', () => ({
 const request = { query: GET_CAMPAIGN, variables: { id: campaign.id } }
 const campaignResult = { request, result: { data: { campaign } } }
 const campaignError = { request, error: new Error('Bad gateway') }
+
+function campaignRefused(code: string, message: string): unknown {
+  return {
+    request,
+    result: { errors: [new GraphQLError(message, { extensions: { code } })] }
+  }
+}
 
 /** Refetches GetCampaign as the editor does after a translation run. */
 function RefetchCampaign(): ReactElement {
@@ -88,6 +96,42 @@ describe('CampaignEditorPage', () => {
       campaign.title
     )
     expect(screen.queryByText('Campaign not found')).not.toBeInTheDocument()
+  })
+
+  it('says the user has no access to a campaign of a team they are not in, offering only the way back', async () => {
+    renderPage([
+      campaignRefused('FORBIDDEN', 'user is not allowed to view campaign')
+    ])
+
+    expect(
+      await screen.findByText("You don't have access to this campaign")
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Ask a manager of its team to add you.')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('user is not allowed to view campaign')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Campaign not found')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Back to campaigns' })
+    ).toHaveAttribute('href', '/?type=campaigns')
+    expect(
+      screen.queryByRole('button', { name: 'Try again' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('keeps the not-found screen for a campaign that does not resolve', async () => {
+    renderPage([campaignRefused('NOT_FOUND', 'campaign not found')])
+
+    expect(await screen.findByText('Campaign not found')).toBeInTheDocument()
+    expect(screen.getByText('campaign not found')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Try again' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText("You don't have access to this campaign")
+    ).not.toBeInTheDocument()
   })
 
   it('keeps the editor mounted and raises one snackbar when a refetch fails', async () => {

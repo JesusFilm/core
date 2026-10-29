@@ -70,6 +70,13 @@ export class DebounceLink extends ApolloLink {
     })
   }
 
+  /** Whether any debounce key holds a request that has not been forwarded yet. */
+  public hasPending(): boolean {
+    return Object.values(this.debounceInfo).some(
+      (info) => info.queuedObservers.length > 0
+    )
+  }
+
   /**
    * Sets up the metadata for a `debounceKey`. It is torn down again once the
    * key has no queued observers and no running subscriptions.
