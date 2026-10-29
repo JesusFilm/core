@@ -18,3 +18,7 @@ _Avoid_: experiment, toggle config
 
 **Storybook Config Kit**:
 The shared story-configuration helpers (`libs/storybook`, imported as `@core/shared/ui/storybook` — the single most-imported module) that give every project's stories consistent decorators and theme wrapping.
+
+**Font Catalogue**:
+The curated Google Fonts (`src/libs/fontFamilies/`): the `FontFamily` names with the header, body and label option lists drawn from them. The journeys Theme Builder and the campaign Theme panel offer only these, and the Journeys API's `assertFontFamily` rejects any Campaign Theme font not in `FONT_FAMILIES`, so the list is also the API's font-name rule.
+_Avoid_: font list (bare), Google Fonts (the source, not the curated set)

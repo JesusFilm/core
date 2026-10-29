@@ -430,7 +430,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `url`): "That link isn't a YouTube playlist", "playlist cannot be found on YouTube" for a playlist unknown to YouTube, or the playlist has no public videos.
+  - BAD_USER_INPUT (field: `url`): "That link isn't a YouTube playlist", "playlist cannot be found on YouTube" for a playlist unknown to YouTube, "That playlist has no videos" for a playlist with no entries, or "That playlist has no public videos" when every entry is private or deleted.
   - INTERNAL_SERVER_ERROR: the YouTube request failed, timed out or answered with no usable body.
   - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   """
@@ -1100,7 +1100,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignDelete(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
+  Move a `draft` Campaign to `published`, stamping `publishedAt` with the time of this publish (it means "last published"; unpublish keeps it). Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
   
   Auth: campaign Update — any member or manager of the campaign’s team, the same as editing.
   
@@ -1110,7 +1110,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignPublish(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Move a `published` Campaign back to `draft`. `publishedAt` is kept: it means "first went live", not "currently live". Idempotent: an already-draft campaign is a no-op. Queues on-demand revalidation so the public pages stop serving within the publish bound; the linked journeys and their QR codes keep working at their own addresses.
+  Move a `published` Campaign back to `draft`. `publishedAt` is kept: it means "last published", not "currently live". Idempotent: an already-draft campaign is a no-op. Queues on-demand revalidation so the public pages stop serving within the publish bound; the linked journeys and their QR codes keep working at their own addresses.
   
   Auth: campaign Update — any member or manager of the campaign’s team, the same as editing.
   
@@ -1690,7 +1690,7 @@ type Campaign @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   palette: [String!]!
   """
-  First publish; never cleared by unpublish. Means "first went live", not "currently live".
+  Last published; kept after unpublish. Stamped on every move from `draft` to `published`, so it means "last went live", not "currently live".
   """
   publishedAt: DateTimeISO
   createdAt: DateTimeISO!
@@ -2346,7 +2346,7 @@ type CampaignPagePublic @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-The narrowed read of a published Campaign served to anonymous visitors by `campaignPublic`. Every Translated Field arrives resolved to the requested language (translation lists are empty); blocks come as flat lists per page plus the chrome. Nothing here leads to the team, its members or linked-journey internals; the admin `Campaign` type keeps the full shape behind campaign Read.
+The narrowed read of a published Campaign served to anonymous visitors by `campaignPublic`. Every Translated Field arrives resolved to the requested language (translation lists are empty); blocks come as flat lists per page plus the chrome. Only the opaque team id is exposed, for Plausible: the team itself, its members and linked-journey internals are not reachable; the admin `Campaign` type keeps the full shape behind campaign Read.
 """
 type CampaignPublic @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!

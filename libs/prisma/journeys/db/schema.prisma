@@ -1005,7 +1005,7 @@ model Campaign {
   defaultLanguageId String
   /// The eight most recently used picker colours, newest first, `#RRGGBB` uppercase.
   palette           String[]
-  /// Stamped on the first publish only; never cleared by unpublish.
+  /// Last published; kept after unpublish. Stamped on every draft → published move.
   publishedAt       DateTime?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
