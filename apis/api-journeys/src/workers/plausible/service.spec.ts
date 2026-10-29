@@ -3,6 +3,11 @@ import { Job } from 'bullmq'
 import { Logger } from 'pino'
 import { vi } from 'vitest'
 
+import {
+  campaignAllowedProps,
+  campaignGoals
+} from '@core/journeys/ui/campaignPlausible/campaignPlausibleSite'
+
 import { prismaMock } from '../../../test/prismaMock'
 
 import { service } from './service'
@@ -293,21 +298,9 @@ describe('plausible worker service', () => {
           variables: {
             input: {
               domain: 'api-journeys-campaign-campaign-id',
-              goals: [
-                'campaignJourneyClick',
-                'campaignRegionClick',
-                'campaignQrDownload',
-                'campaignShareLinkCopy',
-                'Outbound Link: Click'
-              ],
+              goals: campaignGoals,
               disableSharedLinks: false,
-              allowedEventProps: [
-                'region',
-                'language',
-                'shareLanguage',
-                'journey',
-                'source'
-              ]
+              allowedEventProps: campaignAllowedProps
             },
             includeSharedLinks: true
           }

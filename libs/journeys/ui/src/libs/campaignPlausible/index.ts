@@ -1,8 +1,15 @@
-export { campaignSiteId } from './campaignPlausible'
+export {
+  campaignAllowedProps,
+  campaignGoals,
+  campaignPlausibleSite,
+  campaignSiteId,
+  teamSiteId
+} from './campaignPlausibleSite'
 export type {
+  CampaignPlausibleEventName,
   CampaignPlausibleEvents,
   CampaignPlausibleProps
-} from './campaignPlausible'
+} from './campaignPlausibleSite'
 export {
   campaignPlausibleProps,
   journeySlug,

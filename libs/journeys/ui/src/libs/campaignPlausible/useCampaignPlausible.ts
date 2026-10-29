@@ -10,7 +10,7 @@ import type {
 import type {
   CampaignPlausibleEvents,
   CampaignPlausibleProps
-} from './campaignPlausible'
+} from './campaignPlausibleSite'
 
 /**
  * The props every view and event of a campaign page carries: the campaign, the

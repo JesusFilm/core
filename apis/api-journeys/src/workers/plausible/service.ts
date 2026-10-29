@@ -9,10 +9,13 @@ import { Job } from 'bullmq'
 import chunk from 'lodash/chunk'
 import { Logger } from 'pino'
 
-import type {
-  CampaignPlausibleEvents,
-  CampaignPlausibleProps
-} from '@core/journeys/ui/campaignPlausible'
+// The React-free site definition, not the `campaignPlausible` barrel, which
+// also exports the hook.
+import {
+  campaignAllowedProps,
+  campaignGoals,
+  campaignSiteId
+} from '@core/journeys/ui/campaignPlausible/campaignPlausibleSite'
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 import { prisma } from '@core/prisma/journeys/client'
 
@@ -135,29 +138,6 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'custom3Capture'
 ]
 
-// A Campaign's own site counts the campaign events, plus the outbound clicks
-// the public page's script reports (`trackOutboundLinks`).
-export const campaignGoals: Array<
-  keyof CampaignPlausibleEvents | 'Outbound Link: Click'
-> = [
-  'campaignJourneyClick',
-  'campaignRegionClick',
-  'campaignQrDownload',
-  'campaignShareLinkCopy',
-  'Outbound Link: Click'
-]
-
-type CampaignEventProp = {
-  [Event in keyof CampaignPlausibleEvents]: keyof CampaignPlausibleEvents[Event]
-}[keyof CampaignPlausibleEvents]
-
-// The props a Campaign's own dashboard breaks down by. Plausible stores every
-// prop sent but shows only the ones the site allows. `campaign_id` is left
-// out: on the campaign's own site it has one value.
-export const campaignProps: Array<
-  Exclude<keyof CampaignPlausibleProps, 'campaign_id'> | CampaignEventProp
-> = ['region', 'language', 'shareLanguage', 'journey', 'source']
-
 const httpLink = new HttpLink({
   uri: env.GATEWAY_URL,
   fetch,
@@ -185,10 +165,6 @@ function teamSiteId(teamId: string): string {
 
 function templateSiteId(templateId: string): string {
   return `api-journeys-template-${templateId}`
-}
-
-function campaignSiteId(campaignId: string): string {
-  return `api-journeys-campaign-${campaignId}`
 }
 
 interface CreateSiteOptions {
@@ -330,7 +306,7 @@ async function createCampaignSite(
 ): Promise<void> {
   const site = await createSite(campaignSiteId(campaignId), {
     goals: campaignGoals,
-    allowedEventProps: campaignProps
+    allowedEventProps: campaignAllowedProps
   })
   if (site == null || site.__typename !== 'MutationSiteCreateSuccess')
     throw new Error('failed to create campaign site in Plausible')
@@ -419,8 +395,9 @@ async function createSites(logger?: Logger): Promise<void> {
   }
 
   // Every campaign, not just those without a site: `siteCreate` returns an
-  // existing site and adds any of `campaignProps` it lacks, so a prop added
-  // later reaches older sites on the next start.
+  // existing site and adds any of `campaignAllowedProps` it lacks, so a prop
+  // added later reaches older sites on the next start. Goals do not: an
+  // existing site keeps the goals it was created with.
   logger?.info('creating campaign sites...')
   const campaignIds = (
     await prisma.campaign.findMany({ select: { id: true } })
