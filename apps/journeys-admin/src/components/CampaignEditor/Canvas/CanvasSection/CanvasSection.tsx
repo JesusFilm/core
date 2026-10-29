@@ -314,7 +314,7 @@ export function CanvasSection({
         }
       : chrome === 'footer'
         ? {
-            minHeight: footerEmpty ? 24 : undefined,
+            minHeight: footerEmpty ? 16 : undefined,
             py: footerEmpty ? 0 : { xs: 4, md: 5 },
             borderTop: '1px solid var(--campaign-band-border)',
             // Pinned to the frame's bottom edge on a short page, as on the public page.

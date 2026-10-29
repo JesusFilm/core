@@ -45,7 +45,7 @@ export function CanvasFooter({
       }}
     >
       {lines.length > 0 && (
-        <Stack spacing={1.5} data-testid="CanvasFooterLines">
+        <Stack spacing={0.5} data-testid="CanvasFooterLines">
           {lines.map(renderExtra)}
         </Stack>
       )}

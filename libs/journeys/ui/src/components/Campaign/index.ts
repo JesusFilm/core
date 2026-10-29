@@ -88,7 +88,10 @@ export {
   useCampaignSection,
   useCampaignSlot
 } from './CampaignSectionBand'
-export { CampaignSectionHeading } from './CampaignSectionHeading'
+export {
+  CAMPAIGN_LEDE_SX,
+  CampaignSectionHeading
+} from './CampaignSectionHeading'
 export {
   CampaignSeo,
   campaignPreferredLocation,
