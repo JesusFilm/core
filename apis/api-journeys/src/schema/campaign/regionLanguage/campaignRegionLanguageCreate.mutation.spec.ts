@@ -8,7 +8,10 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
-import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { fetchLanguage } from '../gatewayClient'
@@ -17,6 +20,8 @@ import { REGION_SHARE_LANGUAGES_MAX } from '../validation'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 vi.mock('../gatewayClient', () => ({
   fetchLanguage: vi.fn()
@@ -44,9 +49,11 @@ describe('campaignRegionLanguageCreate', () => {
   `)
 
   let fixture: CampaignFixture
+  let writes: CampaignWriteCall[]
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     fixture = campaignFactory().withRegion('EUR').build()
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
       campaignRegionWithAcl(fixture, 'eurRegionId')
@@ -101,10 +108,14 @@ describe('campaignRegionLanguageCreate', () => {
       })
     )
     expect(prismaMock.qrCode.create).not.toHaveBeenCalled()
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-      where: { id: 'campaignId' },
-      data: { updatedAt: expect.any(Date) }
-    })
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { structure: true },
+        jobs: [],
+        touched: true
+      }
+    ])
   })
 
   it('rejects a language api-languages does not know (BAD_USER_INPUT, field languageId)', async () => {
@@ -146,16 +157,15 @@ describe('campaignRegionLanguageCreate', () => {
         .mockResolvedValueOnce(shareRows(languageIds))
     }
 
-    it('takes the structure lock before it re-reads the share languages, and appends after them', async () => {
+    it('re-reads the share languages under the structure lock, and appends after them', async () => {
       committedRows(['529', '21028'])
 
       const result = await create()
 
       expect(result.data.campaignRegionLanguageCreate.order).toBe(2)
-      expectStructureLockFirst()
-      expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-        prismaMock.campaignRegionLanguage.findMany.mock.invocationCallOrder[1]
-      )
+      expect(writes.map(({ declaration }) => declaration)).toEqual([
+        { structure: true }
+      ])
       expect(prismaMock.campaignRegionLanguage.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: { regionId: 'eurRegionId', languageId: FRENCH, order: 2 }
