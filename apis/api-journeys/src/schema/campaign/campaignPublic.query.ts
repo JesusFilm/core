@@ -1,3 +1,4 @@
+import { isCampaignLanguage } from '@core/journeys/ui/Campaign/libs/translatedField'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
@@ -121,9 +122,7 @@ export function toCampaignPublic(
 
   const languageId =
     requestedLanguageId != null &&
-    campaign.languages.some(
-      (language) => language.languageId === requestedLanguageId
-    )
+    isCampaignLanguage(campaign, requestedLanguageId)
       ? requestedLanguageId
       : campaign.defaultLanguageId
 

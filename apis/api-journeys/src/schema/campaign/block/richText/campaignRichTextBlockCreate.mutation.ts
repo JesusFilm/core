@@ -17,7 +17,7 @@ builder.mutationField('campaignRichTextBlockCreate', (t) =>
     },
     resolve: async (_parent, { input }, context) =>
       await createSection(input, 'CampaignRichTextBlock', context.user, () =>
-        validateSectionText(input, ['title', 'content'])
+        validateSectionText('CampaignRichTextBlock', input)
       )
   })
 )

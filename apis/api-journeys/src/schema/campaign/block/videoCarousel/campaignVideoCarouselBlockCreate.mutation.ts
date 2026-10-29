@@ -23,7 +23,7 @@ builder.mutationField('campaignVideoCarouselBlockCreate', (t) =>
         input,
         'CampaignVideoCarouselBlock',
         context.user,
-        () => validateSectionText(input, ['eyebrow', 'title'])
+        () => validateSectionText('CampaignVideoCarouselBlock', input)
       )
   })
 )

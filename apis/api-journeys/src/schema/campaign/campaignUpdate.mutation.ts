@@ -1,3 +1,4 @@
+import { isCampaignLanguage } from '@core/journeys/ui/Campaign/libs/translatedField'
 import { Prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
@@ -65,9 +66,7 @@ builder.mutationField('campaignUpdate', (t) =>
         defaultLanguageId === undefined ? null : String(defaultLanguageId)
       if (
         newDefaultLanguageId != null &&
-        !campaign.languages.some(
-          (language) => language.languageId === newDefaultLanguageId
-        )
+        !isCampaignLanguage(campaign, newDefaultLanguageId)
       )
         throw badUserInput(
           'defaultLanguageId must be one of the campaign languages',

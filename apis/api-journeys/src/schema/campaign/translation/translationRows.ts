@@ -1,4 +1,9 @@
 import {
+  entrySource,
+  isTranslated,
+  isUncertain
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+import {
   CampaignBlock,
   CampaignRegion,
   CampaignString,
@@ -68,12 +73,11 @@ function entryOf(
   uncertain: boolean
 } | null {
   const entry = parseTranslations(translations)[languageId]
-  if (entry == null || typeof entry.value !== 'string' || entry.value === '')
-    return null
+  if (!isTranslated(entry)) return null
   return {
     value: entry.value,
-    source: entry.source,
-    uncertain: entry.source === 'machine' && entry.uncertain === true
+    source: entrySource(entry),
+    uncertain: isUncertain(entry)
   }
 }
 

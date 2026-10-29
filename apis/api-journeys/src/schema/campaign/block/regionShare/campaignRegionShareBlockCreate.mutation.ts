@@ -20,7 +20,7 @@ builder.mutationField('campaignRegionShareBlockCreate', (t) =>
     },
     resolve: async (_parent, { input }, context) =>
       await createSection(input, 'CampaignRegionShareBlock', context.user, () =>
-        validateSectionText(input, ['title', 'intro'])
+        validateSectionText('CampaignRegionShareBlock', input)
       )
   })
 )

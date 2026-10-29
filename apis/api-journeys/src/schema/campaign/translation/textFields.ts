@@ -1,93 +1,35 @@
-import { TEXT_CAPS } from '../validation'
+import {
+  TRANSLATED_FIELDS,
+  TRANSLATED_FIELD_NAMES,
+  type TranslatedFieldCaps,
+  type TranslatedFieldName
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 
 /**
  * Every translatable text column across the campaign types (GLOSSARY.md:
- * Translated Field), the values of the `CampaignTextField` enum: the single
- * source of truth for `campaignTranslationSet`, the public read's text
- * resolution, the Translations view, the machine-translation sweep and the
- * default-language swap. A field's cap depends on the target that carries it (`title` is 100
- * on the campaign, 150 on a section, 200 on a video or journey card), so the
- * maps below pair each target with its fields and caps.
+ * Translated Field), the values of the `CampaignTextField` enum. The field
+ * declaration of every target, with its caps, lives in the shared
+ * `translatedField` module (`TRANSLATED_FIELDS`) so the editor reads the same
+ * one; these names re-export it for this API's importers.
  */
-export const CAMPAIGN_TEXT_FIELD_VALUES = [
-  'eyebrow',
-  'title',
-  'bullets',
-  'content',
-  'intro',
-  'label',
-  'alt',
-  'description',
-  'name',
-  'value'
-] as const
+export const CAMPAIGN_TEXT_FIELD_VALUES = TRANSLATED_FIELD_NAMES
 
-export type CampaignTextFieldName = (typeof CAMPAIGN_TEXT_FIELD_VALUES)[number]
+export type CampaignTextFieldName = TranslatedFieldName
 
-export type CampaignTextFieldCaps = Partial<
-  Record<CampaignTextFieldName, number>
->
-
-const SECTION_HEADING: CampaignTextFieldCaps = {
-  eyebrow: TEXT_CAPS.eyebrow,
-  title: TEXT_CAPS.title
-}
+export type CampaignTextFieldCaps = TranslatedFieldCaps
 
 /** The translatable columns of every Campaign Block typename, with the cap each takes. */
 export const CAMPAIGN_BLOCK_TEXT_FIELDS: Record<string, CampaignTextFieldCaps> =
-  {
-    CampaignHeroBlock: {
-      ...SECTION_HEADING,
-      description: TEXT_CAPS.description
-    },
-    CampaignFeaturedMediaBlock: {
-      ...SECTION_HEADING,
-      description: TEXT_CAPS.description,
-      bullets: TEXT_CAPS.bullets
-    },
-    CampaignRichTextBlock: {
-      title: TEXT_CAPS.title,
-      content: TEXT_CAPS.richTextContent
-    },
-    CampaignRegionSwitcherBlock: { title: TEXT_CAPS.title },
-    CampaignRegionHeaderBlock: { intro: TEXT_CAPS.intro },
-    CampaignRegionShareBlock: {
-      title: TEXT_CAPS.title,
-      intro: TEXT_CAPS.intro
-    },
-    CampaignJourneyListBlock: {
-      ...SECTION_HEADING,
-      description: TEXT_CAPS.description
-    },
-    CampaignVideoCarouselBlock: {
-      ...SECTION_HEADING,
-      description: TEXT_CAPS.description
-    },
-    CampaignAnalyticsBlock: SECTION_HEADING,
-    CampaignTypographyBlock: { content: TEXT_CAPS.typographyContent },
-    CampaignButtonBlock: { label: TEXT_CAPS.buttonLabel },
-    CampaignImageBlock: { alt: TEXT_CAPS.imageAlt },
-    CampaignVideoBlock: {
-      title: TEXT_CAPS.videoTitle,
-      description: TEXT_CAPS.videoDescription
-    },
-    CampaignJourneyBlock: {
-      title: TEXT_CAPS.journeyTitle,
-      description: TEXT_CAPS.journeyDescription
-    }
-  }
+  TRANSLATED_FIELDS.block
 
-export const CAMPAIGN_REGION_TEXT_FIELDS: CampaignTextFieldCaps = {
-  name: TEXT_CAPS.regionName
-}
+export const CAMPAIGN_REGION_TEXT_FIELDS: CampaignTextFieldCaps =
+  TRANSLATED_FIELDS.region
 
-export const CAMPAIGN_STRING_TEXT_FIELDS: CampaignTextFieldCaps = {
-  value: TEXT_CAPS.stringValue
-}
+export const CAMPAIGN_STRING_TEXT_FIELDS: CampaignTextFieldCaps =
+  TRANSLATED_FIELDS.string
 
-export const CAMPAIGN_TITLE_TEXT_FIELDS: CampaignTextFieldCaps = {
-  title: TEXT_CAPS.campaignTitle
-}
+export const CAMPAIGN_TITLE_TEXT_FIELDS: CampaignTextFieldCaps =
+  TRANSLATED_FIELDS.campaign
 
 /** The text fields a CampaignBlock row can carry (region `name` and string `value` live on other tables). */
 export type CampaignBlockTextColumn = Exclude<
@@ -97,7 +39,7 @@ export type CampaignBlockTextColumn = Exclude<
 
 /**
  * Every text column a CampaignBlock row may carry, each paired with its
- * `<field>Translations` sibling: what the public read resolves per block.
+ * `<field>Translations` sibling.
  */
 export const CAMPAIGN_BLOCK_TEXT_COLUMNS = Array.from(
   new Set(

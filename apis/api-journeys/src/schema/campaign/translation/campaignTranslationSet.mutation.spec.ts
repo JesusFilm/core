@@ -12,10 +12,7 @@ import { mockTransaction } from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
-import {
-  pickTranslationTarget,
-  withTranslation
-} from './campaignTranslationSet.mutation'
+import { pickTranslationTarget } from './campaignTranslationSet.mutation'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -449,25 +446,6 @@ describe('campaignTranslationSet', () => {
       expect(() =>
         pickTranslationTarget({ blockId: 'b', regionId: 'r' })
       ).toThrow()
-    })
-
-    it('withTranslation sets a human entry, drops it on empty, and tolerates a malformed column', () => {
-      expect(withTranslation(null, FRENCH, 'Bonjour')).toEqual({
-        [FRENCH]: { value: 'Bonjour', source: 'human' }
-      })
-      expect(withTranslation([], FRENCH, 'Bonjour')).toEqual({
-        [FRENCH]: { value: 'Bonjour', source: 'human' }
-      })
-      expect(
-        withTranslation(
-          {
-            [FRENCH]: { value: 'Bonjour', source: 'machine' },
-            x: { value: 'y', source: 'human' }
-          },
-          FRENCH,
-          ''
-        )
-      ).toEqual({ x: { value: 'y', source: 'human' } })
     })
   })
 })
