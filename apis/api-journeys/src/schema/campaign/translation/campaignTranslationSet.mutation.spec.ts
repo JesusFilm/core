@@ -8,6 +8,7 @@ import {
   mockUser
 } from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
+import { mockTransaction } from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
@@ -65,9 +66,7 @@ describe('campaignTranslationSet', () => {
       userId: mockUser.id,
       roles: []
     })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     const heroWithSpanish = {
       ...hero,
       titleTranslations: {
