@@ -285,6 +285,19 @@ describe('RegionSettings', () => {
       expect(renameMock.result).not.toHaveBeenCalled()
     })
 
+    it('drops an uncommitted name when the Preview Language changes', () => {
+      renderSettings(translated, '496')
+
+      const name = screen.getByRole('textbox', { name: 'Name' })
+      fireEvent.change(name, { target: { value: 'Europe de l’Ouest' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+
+      expect(name).toHaveValue('Europe')
+      expect(name).not.toHaveAttribute('placeholder')
+      expect(translateNameMock.result).not.toHaveBeenCalled()
+      expect(renameMock.result).not.toHaveBeenCalled()
+    })
+
     it('clears the translation when the name is emptied, instead of asking for a name', async () => {
       renderSettings(
         {

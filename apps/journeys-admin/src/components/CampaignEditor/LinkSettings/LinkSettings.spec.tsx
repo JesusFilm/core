@@ -259,6 +259,17 @@ describe('LinkSettings', () => {
       expect(screen.getByText('12 / 2048')).toBeInTheDocument()
     })
 
+    it('counts an address in UTF-16 units, as the API caps it', () => {
+      renderStatic(campaign)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Web address' }))
+      fireEvent.change(screen.getByRole('textbox', { name: 'Web address' }), {
+        target: { value: ' https://a.co/😀 ' }
+      })
+
+      expect(screen.getByText('15 / 2048')).toBeInTheDocument()
+    })
+
     it('offers a web address, the sections on this page by title or type, and the regions', () => {
       renderStatic(campaign)
 

@@ -3,10 +3,11 @@ import { GraphQLError } from 'graphql'
 
 import { GetCampaign_campaign_blocks_CampaignHeroBlock as CampaignHeroBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignTextBlock } from '../../../../libs/useCampaignBlockTextMutation'
+import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
 import { CampaignEditorState } from '../../CampaignEditorProvider'
 import { campaign, campaignStrings } from '../../data'
 import { blockUpdateMock } from '../../styleTesting'
-import { StaticEditor } from '../../testing'
+import { PreviewLanguageSwitch, StaticEditor } from '../../testing'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
 
 import { InlineText, inlineTextCap, inlineTextTestId } from './InlineText'
@@ -19,6 +20,34 @@ function heroMock(title: string, errors?: GraphQLError[]) {
   const mock = blockUpdateMock(hero, { title })
   if (errors != null) mock.result = vi.fn(() => ({ errors }))
   return mock
+}
+
+function heroTranslationMock(value: string) {
+  return {
+    request: {
+      query: CAMPAIGN_TRANSLATION_SET,
+      variables: {
+        input: {
+          target: { blockId: 'heroId' },
+          field: 'title',
+          languageId: '496',
+          value
+        }
+      }
+    },
+    result: vi.fn(() => ({
+      data: {
+        campaignTranslationSet: [
+          {
+            __typename: 'TranslatedValue',
+            languageId: '496',
+            value,
+            source: 'human'
+          }
+        ]
+      }
+    }))
+  }
 }
 
 function renderText(
@@ -244,6 +273,66 @@ describe('InlineText', () => {
       expect(input).toHaveAttribute(
         'placeholder',
         'Share the story of Outreach'
+      )
+    })
+
+    it('writes a translation, not the block update, while translating', async () => {
+      const translation = heroTranslationMock('Bonjour')
+      const update = heroMock('Bonjour')
+      renderText(
+        { target: { block: translated, field: 'title' } },
+        [translation, update],
+        { previewLanguageId: '496' }
+      )
+
+      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+        target: { value: 'Bonjour' }
+      })
+
+      await waitFor(() => expect(translation.result).toHaveBeenCalled())
+      expect(update.result).not.toHaveBeenCalled()
+    })
+
+    it('writes the block update, not a translation, in the default language', async () => {
+      const translation = heroTranslationMock('Hello')
+      const update = heroMock('Hello')
+      renderText({ target: { block: translated, field: 'title' } }, [
+        translation,
+        update
+      ])
+
+      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+        target: { value: 'Hello' }
+      })
+
+      await waitFor(() => expect(update.result).toHaveBeenCalled())
+      expect(translation.result).not.toHaveBeenCalled()
+    })
+
+    it('drops what was typed in one language when the Preview Language changes', async () => {
+      const translation = heroTranslationMock('Brouillon')
+      render(
+        <StaticEditor
+          mocks={[translation as never]}
+          initialState={{ previewLanguageId: '496' }}
+        >
+          <PreviewLanguageSwitch languageIds={['529', '496']} />
+          <InlineText
+            target={{ block: translated, field: 'title' }}
+            placeholder="Title"
+            editing
+            variant="h1"
+          />
+        </StaticEditor>
+      )
+      const input = screen.getByRole('textbox', { name: 'Title' })
+      fireEvent.change(input, { target: { value: 'Brouillon' } })
+      await waitFor(() => expect(translation.result).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+
+      await waitFor(() =>
+        expect(input).toHaveValue('Share the story of Outreach')
       )
     })
   })
