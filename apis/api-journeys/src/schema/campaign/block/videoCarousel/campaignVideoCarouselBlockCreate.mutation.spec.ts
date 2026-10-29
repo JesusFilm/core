@@ -11,6 +11,7 @@ import {
 } from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
+import { TEXT_CAPS } from '../../validation'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -28,6 +29,7 @@ describe('campaignVideoCarouselBlockCreate', () => {
         parentOrder
         eyebrow
         title
+        description
         videoId
       }
     }
@@ -81,6 +83,7 @@ describe('campaignVideoCarouselBlockCreate', () => {
           parentOrder: 5,
           eyebrow: null,
           title: null,
+          description: null,
           videoId: null
         }
       }
@@ -108,6 +111,27 @@ describe('campaignVideoCarouselBlockCreate', () => {
     expect(result.errors[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'eyebrow'
+    })
+    expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+  })
+
+  it('saves a description, trimmed', async () => {
+    await create({ description: '  Watch the series  ' })
+
+    expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ description: 'Watch the series' }),
+      include: { action: true }
+    })
+  })
+
+  it(`caps description at ${TEXT_CAPS.description} characters (BAD_USER_INPUT, description)`, async () => {
+    const result = await create({
+      description: 'x'.repeat(TEXT_CAPS.description + 1)
+    })
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'description'
     })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })

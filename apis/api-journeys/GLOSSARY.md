@@ -352,7 +352,7 @@ The language a visitor reads a Campaign in: one of the Campaign's own languages,
 _Avoid_: locale (that is the admin chrome's word), display language, UI language
 
 **Translated Field**:
-A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty.
+A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty. A length is counted in Unicode code points after trimming. An empty entry (or one whose value is not text) counts as missing everywhere, and an entry that does not say the machine wrote it counts as a person's. These rules, with each target's fields and caps, live in one shared module in `libs/journeys/ui` (`translatedField`) that the API and the editor both read.
 _Avoid_: localised string, i18n key, label
 
 **Campaign String**:

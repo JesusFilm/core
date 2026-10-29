@@ -1,5 +1,6 @@
 import { type MockedFunction, vi } from 'vitest'
 
+import { withHumanTranslation } from '@core/journeys/ui/Campaign/libs/translatedField'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import {
@@ -23,6 +24,9 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 >
 
 const FRENCH = '496'
+const SPANISH_TITLE = {
+  '21028': { value: 'Comparte la historia', source: 'machine' as const }
+}
 
 describe('campaignTranslationSet', () => {
   const CAMPAIGN_TRANSLATION_SET = graphql(`
@@ -66,9 +70,7 @@ describe('campaignTranslationSet', () => {
     mockTransaction(prismaMock)
     const heroWithSpanish = {
       ...hero,
-      titleTranslations: {
-        '21028': { value: 'Comparte la historia', source: 'machine' }
-      },
+      titleTranslations: SPANISH_TITLE,
       campaign: fixture
     }
     prismaMock.campaignBlock.findFirst.mockResolvedValue(heroWithSpanish)
@@ -113,13 +115,11 @@ describe('campaignTranslationSet', () => {
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'heroId' },
       data: {
-        titleTranslations: {
-          '21028': { value: 'Comparte la historia', source: 'machine' },
-          [FRENCH]: {
-            value: "Partagez l'histoire de Campagne",
-            source: 'human'
-          }
-        }
+        titleTranslations: withHumanTranslation(
+          SPANISH_TITLE,
+          FRENCH,
+          "Partagez l'histoire de Campagne"
+        )
       }
     })
     expect(prismaMock.campaign.update).toHaveBeenCalledWith(
@@ -128,11 +128,12 @@ describe('campaignTranslationSet', () => {
   })
 
   it('merges into the translations read under the row lock, not the earlier read', async () => {
+    const lockedTitle = {
+      ...SPANISH_TITLE,
+      '529': { value: 'Share the story', source: 'human' }
+    }
     prismaMock.campaignBlock.findUnique.mockResolvedValue({
-      titleTranslations: {
-        '21028': { value: 'Comparte la historia', source: 'machine' },
-        '529': { value: 'Share the story', source: 'human' }
-      }
+      titleTranslations: lockedTitle
     } as any)
 
     await set({
@@ -149,11 +150,7 @@ describe('campaignTranslationSet', () => {
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'heroId' },
       data: {
-        titleTranslations: {
-          '21028': { value: 'Comparte la historia', source: 'machine' },
-          '529': { value: 'Share the story', source: 'human' },
-          [FRENCH]: { value: 'Partagez', source: 'human' }
-        }
+        titleTranslations: withHumanTranslation(lockedTitle, FRENCH, 'Partagez')
       }
     })
   })
