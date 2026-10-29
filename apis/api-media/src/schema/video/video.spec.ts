@@ -3211,6 +3211,89 @@ describe('video', () => {
         )
       })
 
+      it('should only reconcile children that were added or removed', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          childIds: ['kept', 'removed']
+        } as any)
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'kept' },
+          { id: 'removed' },
+          { id: 'added' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.collection,
+          childIds: ['added', 'kept'],
+          children: [{ id: 'added' }, { id: 'kept' }]
+        } as unknown as Video)
+        prismaMock.videoVariant.findMany.mockResolvedValue([])
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              childIds: ['added', 'kept']
+            }
+          }
+        })
+
+        expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: {
+              videoId: { in: ['removed', 'added'] },
+              published: true
+            }
+          })
+        )
+      })
+
+      it('should not reconcile any child when childIds are only reordered', async () => {
+        mockedRequestVideoVariantReconciliation.mockClear()
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          childIds: ['child1', 'child2']
+        } as any)
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'child1' },
+          { id: 'child2' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.collection,
+          childIds: ['child2', 'child1'],
+          children: [{ id: 'child2' }, { id: 'child1' }]
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              childIds: ['child2', 'child1']
+            }
+          }
+        })
+
+        expect(prismaMock.videoVariant.findMany).not.toHaveBeenCalled()
+        expect(mockedRequestVideoVariantReconciliation).not.toHaveBeenCalled()
+      })
+
       it('should set publishedAt when updating from unpublished to published', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
