@@ -159,7 +159,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
 
     const result = await refresh()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'Journey not found or not published',
       extensions: { code: 'BAD_USER_INPUT', field: 'url' }
     })
@@ -173,7 +173,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
 
     const result = await refresh()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'No journey is linked',
       extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
     })
@@ -207,7 +207,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
 
     const result = await refresh()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'No journey is linked',
       extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
     })
@@ -221,7 +221,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
 
     const result = await refresh()
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'journeyId'
     })
@@ -233,7 +233,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
 
     const result = await refresh('missing')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('is FORBIDDEN for a caller outside the team', async () => {
@@ -248,7 +248,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
 
     const result = await refresh()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
   })
 })

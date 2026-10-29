@@ -223,7 +223,7 @@ describe('campaignTranslationSet', () => {
       field: 'title',
       value: 'x'.repeat(151)
     })
-    expect(blockTitle.errors[0]).toMatchObject({
+    expect(blockTitle.errors?.[0]).toMatchObject({
       message: 'title must be at most 150 characters',
       extensions: { code: 'BAD_USER_INPUT', field: 'title' }
     })
@@ -233,7 +233,7 @@ describe('campaignTranslationSet', () => {
       field: 'title',
       value: 'x'.repeat(101)
     })
-    expect(campaignTitle.errors[0]).toMatchObject({
+    expect(campaignTitle.errors?.[0]).toMatchObject({
       message: 'title must be at most 100 characters',
       extensions: { code: 'BAD_USER_INPUT', field: 'title' }
     })
@@ -243,7 +243,7 @@ describe('campaignTranslationSet', () => {
       field: 'value',
       value: 'x'.repeat(201)
     })
-    expect(stringValue.errors[0].extensions).toMatchObject({
+    expect(stringValue.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'value'
     })
@@ -259,7 +259,7 @@ describe('campaignTranslationSet', () => {
       value: 'Hello'
     })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'field'
     })
@@ -273,7 +273,7 @@ describe('campaignTranslationSet', () => {
       languageId: '529',
       value: 'Hello'
     })
-    expect(defaultLanguage.errors[0].extensions).toMatchObject({
+    expect(defaultLanguage.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'languageId'
     })
@@ -284,7 +284,7 @@ describe('campaignTranslationSet', () => {
       languageId: '21028',
       value: 'Hola'
     })
-    expect(unknown.errors[0].extensions).toMatchObject({
+    expect(unknown.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'languageId'
     })
@@ -310,7 +310,7 @@ describe('campaignTranslationSet', () => {
         value: 'Partagez'
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'languageId'
       })
@@ -337,7 +337,7 @@ describe('campaignTranslationSet', () => {
         value: 'Partagez'
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'languageId'
       })
@@ -348,7 +348,7 @@ describe('campaignTranslationSet', () => {
 
   it('requires exactly one target id (BAD_USER_INPUT, field target)', async () => {
     const none = await set({ target: {}, field: 'title', value: 'x' })
-    expect(none.errors[0].extensions).toMatchObject({
+    expect(none.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'target'
     })
@@ -358,7 +358,7 @@ describe('campaignTranslationSet', () => {
       field: 'title',
       value: 'x'
     })
-    expect(two.errors[0].extensions).toMatchObject({
+    expect(two.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'target'
     })
@@ -374,7 +374,7 @@ describe('campaignTranslationSet', () => {
       value: 'x'
     })
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'block not found',
       extensions: expect.objectContaining({ code: 'NOT_FOUND' })
     })
@@ -410,7 +410,7 @@ describe('campaignTranslationSet', () => {
         value: 'x'
       })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: `${kind} not found`,
         extensions: expect.objectContaining({ code: 'NOT_FOUND' })
       })
@@ -432,7 +432,7 @@ describe('campaignTranslationSet', () => {
       value: 'x'
     })
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'user is not allowed to update campaign',
       extensions: expect.objectContaining({ code: 'FORBIDDEN' })
     })

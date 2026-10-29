@@ -111,7 +111,7 @@ describe('campaignRegionOrderUpdate', () => {
   it('rejects a negative order (BAD_USER_INPUT, field order)', async () => {
     const result = await move(-1)
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'order'
     })
@@ -128,7 +128,7 @@ describe('campaignRegionOrderUpdate', () => {
 
     const result = await move(1)
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 
   it('throws NOT_FOUND for an unknown region', async () => {
@@ -136,6 +136,6 @@ describe('campaignRegionOrderUpdate', () => {
 
     const result = await move(1, 'missing')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

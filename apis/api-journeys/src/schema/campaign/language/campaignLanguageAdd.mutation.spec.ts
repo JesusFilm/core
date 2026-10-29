@@ -153,7 +153,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId is already a language of this campaign',
       extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
     })
@@ -174,7 +174,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: `a campaign has at most ${CAMPAIGN_LANGUAGES_MAX} languages`,
       extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
     })
@@ -254,7 +254,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add('nope')
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId must be an existing language',
       extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
     })
@@ -268,7 +268,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId is already a language of this campaign',
       extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
     })
@@ -283,7 +283,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'user is not allowed to update campaign',
       extensions: expect.objectContaining({ code: 'FORBIDDEN' })
     })
@@ -295,7 +295,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'campaign not found',
       extensions: expect.objectContaining({ code: 'NOT_FOUND' })
     })

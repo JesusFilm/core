@@ -258,7 +258,7 @@ describe('campaignRegionLanguageUpdate', () => {
         url: 'https://your.nextstep.is/draft-journey'
       })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'Journey not found or not published',
         extensions: { code: 'BAD_USER_INPUT', field: 'url' }
       })
@@ -269,7 +269,7 @@ describe('campaignRegionLanguageUpdate', () => {
     it('rejects something that is not a journey link (BAD_USER_INPUT, field url)', async () => {
       const result = await update({ url: 'not a link' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'url'
       })
@@ -517,7 +517,7 @@ describe('campaignRegionLanguageUpdate', () => {
           url: 'https://admin.nextstep.is/journeys/journeyId'
         })
 
-        expect(result.errors[0].message).toBe('gateway down')
+        expect(result.errors?.[0].message).toBe('gateway down')
         expect(deleteShortLink).not.toHaveBeenCalled()
       })
 
@@ -658,7 +658,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
         const result = await update(input)
 
-        expect(result.errors[0]).toMatchObject({
+        expect(result.errors?.[0]).toMatchObject({
           message: 'You can only link a journey whose stats you can see',
           extensions: { code: 'FORBIDDEN', field }
         })
@@ -684,7 +684,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
       const result = await update({ journeyId: 'journeyId' })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'You can only link a journey whose stats you can see',
         extensions: { code: 'FORBIDDEN', field: 'journeyId' }
       })
@@ -702,7 +702,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
       const result = await update({ journeyId: 'journeyId' })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'You can only link a journey whose stats you can see',
         extensions: { code: 'FORBIDDEN', field: 'journeyId' }
       })
@@ -718,7 +718,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
       const result = await update({ journeyId: 'journeyId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'FORBIDDEN',
         field: 'journeyId'
       })
@@ -752,7 +752,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
       const result = await update({ journeyId: 'journeyId' })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'Journey not found or not published',
         extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
       })
@@ -779,7 +779,7 @@ describe('campaignRegionLanguageUpdate', () => {
     )
 
     const tooLong = await update({ title: 'x'.repeat(201) })
-    expect(tooLong.errors[0].extensions).toMatchObject({
+    expect(tooLong.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
@@ -819,10 +819,10 @@ describe('campaignRegionLanguageUpdate', () => {
       url: 'https://admin.nextstep.is/journeys/journeyId'
     })
 
-    expect(result.errors[0].message).toBe(
+    expect(result.errors?.[0].message).toBe(
       'user is not allowed to update share language'
     )
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(createShortLink).not.toHaveBeenCalled()
   })
 
@@ -831,6 +831,6 @@ describe('campaignRegionLanguageUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

@@ -277,7 +277,7 @@ describe('campaignDelete', () => {
       variables: { id: 'campaignId' }
     })
 
-    expect(result.errors[0].message).toBe('delete failed')
+    expect(result.errors?.[0].message).toBe('delete failed')
     expect(mockQueueAdd).not.toHaveBeenCalled()
     expect(writes[0].jobs).toEqual([])
   })

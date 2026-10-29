@@ -238,7 +238,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'block not found',
       extensions: { code: 'NOT_FOUND' }
     })
@@ -295,7 +295,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
       'https://www.youtube.com/watch?v=jQaN9DvFTbw'
     )
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: "That link isn't a YouTube playlist",
       extensions: { code: 'BAD_USER_INPUT', field: 'url' }
     })
@@ -309,7 +309,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: `a campaign has at most ${CAMPAIGN_BLOCKS_MAX} blocks`,
       extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' }
     })
@@ -334,7 +334,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'url'
     })
@@ -348,7 +348,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'playlist cannot be found on YouTube',
       extensions: { code: 'BAD_USER_INPUT', field: 'url' }
     })
@@ -362,7 +362,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'YouTube API request failed: quotaExceeded',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
     })
@@ -389,7 +389,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message:
         'YouTube API request failed: The operation was aborted due to timeout',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
@@ -402,7 +402,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'YouTube API request failed: status 503',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
     })
@@ -414,7 +414,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'YouTube API request failed: the response is not JSON',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
     })
@@ -428,7 +428,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 
@@ -442,7 +442,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
   })
