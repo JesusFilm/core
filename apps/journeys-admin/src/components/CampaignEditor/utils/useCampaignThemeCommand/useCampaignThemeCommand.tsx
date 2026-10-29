@@ -1,14 +1,12 @@
-import { useSnackbar } from 'notistack'
 import { useRef } from 'react'
-
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { CampaignThemeUpdate_campaignThemeUpdate as CampaignThemeRow } from '../../../../../__generated__/CampaignThemeUpdate'
 import { GetCampaign_campaign_theme as CampaignTheme } from '../../../../../__generated__/GetCampaign'
 import { CampaignThemeUpdateInput } from '../../../../../__generated__/globalTypes'
 import { useCampaignThemeUpdateMutation } from '../../../../libs/useCampaignThemeUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { messageOf } from '../messageOf'
+import { useCampaignCommand } from '../useCampaignCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 export interface CampaignThemeCommand {
   /** Write any Campaign Theme columns as one Command: a colour, a font, a radius, the mode, or a whole preset. */
@@ -63,42 +61,37 @@ function previousTheme(
  * optimistic response: execute writes the given columns, undo writes the
  * values the theme had back through the same mutation, redo writes the
  * change again. A failed save raises the API's message, verbatim, in the
- * editor's error snackbar, which outlives the panel so an undo or redo from
- * the top bar after the drawer closes still reports its failure. A preset is the mode and the eight colours in one input, so
- * one undo restores all nine. The optimistic row is built from the theme as
+ * editor's error snackbar (`useCommandFailure`), which outlives the panel so
+ * an undo or redo from the top bar after the drawer closes still reports its
+ * failure. A preset is the mode and the eight colours in one input, so one
+ * undo restores all nine. The optimistic row is built from the theme as
  * the cache holds it when the Command runs, so an undo never resurrects
  * columns changed since.
  */
 export function useCampaignThemeCommand(): CampaignThemeCommand {
-  const { add } = useCommand()
+  const { addCampaignCommand } = useCampaignCommand()
   const { campaign } = useCampaignEditor()
   const [themeUpdate] = useCampaignThemeUpdateMutation()
   const themeRef = useRef(campaign.theme)
   themeRef.current = campaign.theme
-  const { enqueueSnackbar } = useSnackbar()
+  const reportFailure = useCommandFailure()
 
-  function addTheme(input: CampaignThemeUpdateInput): void {
-    add<CampaignThemeUpdateInput>({
-      parameters: {
-        execute: input,
-        undo: previousTheme(campaign.theme, input),
-        redo: input
-      },
-      execute(next) {
-        const current = themeRef.current
-        void themeUpdate({
-          variables: { id: current.id, input: next },
-          optimisticResponse: {
-            campaignThemeUpdate: campaignThemeRow(current, next)
-          }
-        }).catch((mutationError: unknown) => {
-          enqueueSnackbar(messageOf(mutationError), {
-            variant: 'error',
-            preventDuplicate: true
-          })
-        })
+  async function write(input: CampaignThemeUpdateInput): Promise<unknown> {
+    const current = themeRef.current
+    return await themeUpdate({
+      variables: { id: current.id, input },
+      optimisticResponse: {
+        campaignThemeUpdate: campaignThemeRow(current, input)
       }
     })
+  }
+
+  function addTheme(input: CampaignThemeUpdateInput): void {
+    const previous = previousTheme(campaign.theme, input)
+    addCampaignCommand({
+      execute: async () => await write(input),
+      undo: async () => await write(previous)
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   return { addTheme }

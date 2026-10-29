@@ -15,6 +15,7 @@ import {
 } from '../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 import { LEFT_PANEL_WIDTH } from '../LeftPanel'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 import { AddPanel } from '.'
 
@@ -36,12 +37,14 @@ function AddPanelStory({
             campaign={campaignProp}
             initialState={initialState}
           >
-            <Paper
-              square
-              sx={{ width: LEFT_PANEL_WIDTH, height: 640, overflow: 'auto' }}
-            >
-              <AddPanel />
-            </Paper>
+            <CampaignCommandProvider>
+              <Paper
+                square
+                sx={{ width: LEFT_PANEL_WIDTH, height: 640, overflow: 'auto' }}
+              >
+                <AddPanel />
+              </Paper>
+            </CampaignCommandProvider>
           </CampaignEditorProvider>
         </CommandProvider>
       </SnackbarProvider>

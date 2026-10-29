@@ -15,10 +15,8 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { sortedRegions, useCampaignEditor } from '../CampaignEditorProvider'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
 import { pageSections } from '../sectionTypes'
-import {
-  siblingsOf,
-  useCampaignBlockDeleteCommand
-} from '../utils/useCampaignBlockDeleteCommand'
+import { siblingsOf } from '../utils/siblingsOf'
+import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCommand'
 import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'

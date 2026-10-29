@@ -132,6 +132,7 @@ async function renderHarness(
       <QueriedEditor
         mocks={[journeyResponse, ...extraMocks]}
         campaignProp={campaignProp}
+        initialState={{ selectedBlockId: CARD_ID }}
       >
         <CommandUndoItem variant="button" />
         <CommandProbe />

@@ -1,90 +1,44 @@
-import sortBy from 'lodash/sortBy'
-
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
-import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
+import { siblingRows, siblingsOf } from '../siblingsOf'
+import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
+import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
-
-/** A block's live, ordered siblings, excluding itself. */
-export function siblingsOf(
-  blocks: CampaignBlock[],
-  block: CampaignBlock
-): CampaignBlock[] {
-  return sortBy(
-    blocks.filter(
-      (candidate) =>
-        candidate.id !== block.id &&
-        candidate.parentOrder != null &&
-        candidate.parentBlockId === block.parentBlockId &&
-        candidate.pageId === block.pageId &&
-        candidate.regionId === block.regionId
-    ),
-    'parentOrder'
-  )
-}
 
 /**
  * Deleting a block is one Command with no confirmation: execute selects the
- * host and soft-deletes the block, showing the renumbered siblings at once;
- * undo focuses the page it was on and restores it through
- * `campaignBlockRestore`, with the block and its siblings as the optimistic
- * response so it reappears in place.
+ * host and soft-deletes the block, showing the renumbered siblings at once,
+ * after sending the text edits of its whole subtree still waiting on their
+ * debounce; undo selects the block on the page it was on and restores it
+ * through `campaignBlockRestore`, with the block and its siblings as the
+ * optimistic response so it reappears in place.
  */
 export function useCampaignBlockDeleteCommand(): {
   addBlockDelete: (block: CampaignBlock) => void
 } {
-  const { add } = useCommand()
-  const {
-    campaign,
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
-  const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
-  const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const { addCampaignCommand } = useCampaignCommand()
+  const { campaign } = useCampaignEditor()
+  const { softDelete, restore } = useCampaignBlockSoftDelete()
   const reportFailure = useCommandFailure()
 
   function addBlockDelete(block: CampaignBlock): void {
-    const blockPageKind = pageKindOf(block) ?? pageKind
     const siblingsBefore = siblingsOf(campaign.blocks, block)
-    const siblingsAfter = siblingsBefore.map((sibling, parentOrder) => ({
-      __typename: sibling.__typename,
-      id: sibling.id,
-      parentOrder
-    }))
+    const siblingsAfter = siblingRows(siblingsBefore)
+    const selectHost = {
+      selectedBlockId: block.parentBlockId ?? undefined,
+      selectedRegionId: undefined
+    }
 
-    add({
-      parameters: { execute: {}, undo: {} },
-      execute() {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          pageKind: blockPageKind,
-          selectedBlockId: block.parentBlockId ?? undefined
-        })
-        void blockDelete({
-          variables: { id: block.id },
-          optimisticResponse: { campaignBlockDelete: siblingsAfter },
-          context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
-        }).catch(reportFailure)
+    addCampaignCommand({
+      flush: block,
+      focus: {
+        execute: selectHost,
+        undo: { selectedBlockId: block.id, selectedRegionId: undefined },
+        redo: selectHost
       },
-      undo() {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          pageKind: blockPageKind,
-          selectedBlockId: block.id
-        })
-        void blockRestore({
-          variables: { id: block.id },
-          optimisticResponse: {
-            campaignBlockRestore: [block, ...siblingsBefore]
-          }
-        }).catch(reportFailure)
-      }
-    })
+      execute: async (step) => await softDelete(block, siblingsAfter, step),
+      undo: async () => await restore(block, [block, ...siblingsBefore])
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   return { addBlockDelete }

@@ -22,6 +22,7 @@ import {
 } from '../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 import { TranslationRunContext } from '../TranslationRunProvider'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 import { Inspector } from '.'
 
@@ -44,13 +45,15 @@ function InspectorStory({
           campaign={campaignProp}
           initialState={initialState}
         >
-          <TranslationRunContext.Provider
-            value={{ start: () => undefined, cancel: () => undefined }}
-          >
-            <Box sx={{ display: 'flex', height: 720 }}>
-              <Inspector isManager={isManager} />
-            </Box>
-          </TranslationRunContext.Provider>
+          <CampaignCommandProvider>
+            <TranslationRunContext.Provider
+              value={{ start: () => undefined, cancel: () => undefined }}
+            >
+              <Box sx={{ display: 'flex', height: 720 }}>
+                <Inspector isManager={isManager} />
+              </Box>
+            </TranslationRunContext.Provider>
+          </CampaignCommandProvider>
         </CampaignEditorProvider>
       </CommandProvider>
     </MockedProvider>

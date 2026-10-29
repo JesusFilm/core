@@ -12,12 +12,15 @@ import { CAMPAIGN_REGION_DELETE } from '../../../libs/useCampaignRegionDeleteMut
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import { CanvasBanner } from '../CanvasBanner'
-import { campaignWithRegions } from '../data'
+import { campaignWithRegions, eurLine } from '../data'
 import {
   CommandProbe,
+  PendingTextSave,
   QueriedEditor,
   RegionsProbe,
-  SelectionProbe
+  SelectionProbe,
+  campaignCache,
+  debounceSpyLink
 } from '../testing'
 
 const deleteMock = {
@@ -146,6 +149,46 @@ describe('OrphanPageBar', () => {
     )
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
     expect(screen.getByTestId('PageKind')).toHaveTextContent('landing')
+  })
+
+  it('sends a Region Line text edit still waiting on its debounce before the delete', async () => {
+    const afrLine = { ...eurLine, id: 'afrLineId', regionId: 'afrRegionId' }
+    const campaignWithAfrLine = {
+      ...campaignWithRegions,
+      blocks: [...campaignWithRegions.blocks, afrLine]
+    }
+    const requests: string[] = []
+    render(
+      <SnackbarProvider>
+        <QueriedEditor
+          link={debounceSpyLink(requests, [deleteMock], campaignWithAfrLine)}
+          cache={campaignCache()}
+          campaignProp={campaignWithAfrLine}
+          initialState={{
+            pageKind: CampaignPageKind.regionTemplate,
+            regionId: 'afrRegionId'
+          }}
+        >
+          <PendingTextSave block={afrLine} />
+          <CanvasBanner />
+        </QueriedEditor>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('OrphanPageDelete')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Queue text save' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete region' }))
+    fireEvent.click(
+      within(screen.getByTestId('RegionDeleteDialog')).getByRole('button', {
+        name: 'Delete'
+      })
+    )
+
+    await waitFor(() =>
+      expect(requests).toEqual(['PendingTextSave', 'CampaignRegionDelete'])
+    )
   })
 
   it('does not delete when the confirmation is cancelled', async () => {

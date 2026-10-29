@@ -1,16 +1,14 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { IdType } from '../../../../../__generated__/globalTypes'
 import { useCampaignBlockUpdateMutation } from '../../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignJourneyBlockSnapshotRefreshMutation } from '../../../../libs/useCampaignJourneyBlockSnapshotRefreshMutation'
 import { useCampaignJourneyByLinkLazyQuery } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
-import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { useCampaignCommand } from '../useCampaignCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 import { JourneyCardSnapshotRefreshDialog } from './JourneyCardSnapshotRefreshDialog'
 
@@ -60,18 +58,6 @@ export function matchesJourney(
   )
 }
 
-interface RefreshParameters {
-  mode: 'refresh' | 'restore'
-  text: SnapshotText
-  snapshotEdited: boolean
-}
-
-function messageOf(error: unknown, fallback: string): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : fallback
-}
-
 /**
  * "Refresh from journey" on a journey-list item. It re-reads the journey's
  * title and description and replaces the card's with them, asking first only
@@ -82,7 +68,9 @@ function messageOf(error: unknown, fallback: string): string {
  * execute writes the journey's text through
  * `campaignJourneyBlockSnapshotRefresh` (default language only, translations
  * kept, edited flag cleared) and undo writes the text and flag the card had
- * back through `campaignJourneyBlockUpdate`.
+ * back through `campaignJourneyBlockUpdate`. A refusal shows in the
+ * editor's error snackbar: the API's message, else "Could not refresh from
+ * journey".
  */
 export function useJourneyCardSnapshotRefreshCommand(): {
   refreshSnapshot: (card: JourneyCardBlock) => Promise<void>
@@ -90,12 +78,8 @@ export function useJourneyCardSnapshotRefreshCommand(): {
 } {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { add } = useCommand()
-  const {
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
+  const { addCampaignCommand } = useCampaignCommand()
+  const reportFailure = useCommandFailure()
   const [lookup] = useCampaignJourneyByLinkLazyQuery()
   const [refresh] = useCampaignJourneyBlockSnapshotRefreshMutation()
   const { update } = useCampaignBlockUpdateMutation()
@@ -104,59 +88,32 @@ export function useJourneyCardSnapshotRefreshCommand(): {
     journey: SnapshotText
   } | null>(null)
 
-  function notify(error: unknown, fallback: string): void {
-    enqueueSnackbar(messageOf(error, fallback), {
-      variant: 'error',
-      preventDuplicate: true
-    })
-  }
-
   function addRefreshCommand(
     card: JourneyCardBlock,
     journey: SnapshotText
   ): void {
-    const cardPageKind = pageKindOf(card) ?? pageKind
     const before: SnapshotText = {
       title: card.title,
       description: card.description
     }
-
-    function run({ mode, text, snapshotEdited }: RefreshParameters): void {
-      dispatch({
-        type: 'SetEditorFocusAction',
-        pageKind: cardPageKind,
-        selectedBlockId: card.id
-      })
-      const request =
-        mode === 'refresh'
-          ? refresh({
-              variables: { id: card.id },
-              optimisticResponse: {
-                campaignJourneyBlockSnapshotRefresh: {
-                  __typename: 'CampaignJourneyBlock',
-                  id: card.id,
-                  ...text,
-                  snapshotEdited
-                }
-              }
-            })
-          : update(card, { ...text, snapshotEdited })
-      void request.catch((error: unknown) =>
-        notify(error, t('Could not refresh from journey'))
-      )
-    }
-
-    add<RefreshParameters>({
-      parameters: {
-        execute: { mode: 'refresh', text: journey, snapshotEdited: false },
-        undo: {
-          mode: 'restore',
-          text: before,
-          snapshotEdited: card.snapshotEdited
-        }
-      },
-      execute: run
-    })
+    addCampaignCommand({
+      execute: async () =>
+        await refresh({
+          variables: { id: card.id },
+          optimisticResponse: {
+            campaignJourneyBlockSnapshotRefresh: {
+              __typename: 'CampaignJourneyBlock',
+              id: card.id,
+              ...journey,
+              snapshotEdited: false
+            }
+          }
+        }),
+      undo: async () =>
+        await update(card, { ...before, snapshotEdited: card.snapshotEdited })
+    }).catch((error: unknown) =>
+      reportFailure(error, t('Could not refresh from journey'))
+    )
   }
 
   /**
@@ -179,7 +136,7 @@ export function useJourneyCardSnapshotRefreshCommand(): {
         }
       }
     }).catch((error: unknown) =>
-      notify(error, t('Could not refresh from journey'))
+      reportFailure(error, t('Could not refresh from journey'))
     )
   }
 
@@ -190,7 +147,7 @@ export function useJourneyCardSnapshotRefreshCommand(): {
         variables: { id: card.journeyId, idType: IdType.databaseId }
       })
       if (error != null || data?.journey == null) {
-        notify(error, t('Journey not found or not published'))
+        reportFailure(error, t('Journey not found or not published'))
         return
       }
       const journey = snapshotOf(data.journey)
@@ -205,7 +162,7 @@ export function useJourneyCardSnapshotRefreshCommand(): {
       }
       addRefreshCommand(card, journey)
     } catch (error) {
-      notify(error, t('Journey not found or not published'))
+      reportFailure(error, t('Journey not found or not published'))
     }
   }
 

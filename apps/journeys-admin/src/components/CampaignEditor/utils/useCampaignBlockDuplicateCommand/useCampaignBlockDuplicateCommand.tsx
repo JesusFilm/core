@@ -1,15 +1,13 @@
 import sortBy from 'lodash/sortBy'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
-import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { useCampaignBlockDuplicateMutation } from '../../../../libs/useCampaignBlockDuplicateMutation'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { siblingsOf } from '../useCampaignBlockDeleteCommand'
-import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
+import { siblingRows, siblingsOf } from '../siblingsOf'
+import { SLOT_COLUMNS, subtreeOf } from '../subtreeOf'
+import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
+import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
 export interface CampaignBlockIdMap {
@@ -23,35 +21,6 @@ export interface CampaignDuplicate {
   idMap: CampaignBlockIdMap[]
   /** The original's siblings with the copy inserted after it, renumbered. */
   siblingsAfter: CampaignBlock[]
-}
-
-const SLOT_COLUMNS = ['coverBlockId', 'mediaBlockId', 'logoBlockId'] as const
-
-/** A block and everything it owns, parents first, from the cached list. */
-export function subtreeOf(
-  blocks: CampaignBlock[],
-  rootId: string
-): CampaignBlock[] {
-  const byId = new Map(blocks.map((block) => [block.id, block]))
-  const result: CampaignBlock[] = []
-  const seen = new Set<string>()
-  const queue = [rootId]
-  while (queue.length > 0) {
-    const id = queue.shift() as string
-    if (seen.has(id)) continue
-    const row = byId.get(id)
-    if (row == null) continue
-    seen.add(id)
-    result.push(row)
-    const columns = row as unknown as Record<string, unknown>
-    for (const column of SLOT_COLUMNS) {
-      const owned = columns[column]
-      if (typeof owned === 'string') queue.push(owned)
-    }
-    for (const child of blocks)
-      if (child.parentBlockId === id) queue.push(child.id)
-  }
-  return result
 }
 
 /**
@@ -109,96 +78,50 @@ export function duplicateBlocks(
  * Duplicating a block is one Command: execute selects the copy and runs the
  * duplicate with the whole copied subtree shown at once; undo reselects the
  * original and soft-deletes the copy's root (its descendants fall out of the
- * tree with it); redo restores the root, which brings them back. A text edit
- * still waiting on its debounce is sent first, so the copy is never made from
- * the stale text. When the duplicate is refused the copy never existed, so
- * undo has nothing to delete and redo runs the duplicate again instead of
- * restoring it.
+ * tree with it); redo restores the root, which brings them back. The text
+ * edits of the whole subtree still waiting on their debounce are sent first,
+ * so the copy is never made from stale text. When the duplicate is refused
+ * the copy never existed, so undo has nothing to delete and redo runs the
+ * duplicate again instead of restoring it.
  */
 export function useCampaignBlockDuplicateCommand(): {
   addBlockDuplicate: (block: CampaignBlock) => void
 } {
-  const { add } = useCommand()
-  const {
-    campaign,
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
+  const { addCampaignCommand } = useCampaignCommand()
+  const { campaign } = useCampaignEditor()
   const [duplicate] = useCampaignBlockDuplicateMutation(campaign.id)
-  const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
-  const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const { softDelete, restore } = useCampaignBlockSoftDelete()
   const reportFailure = useCommandFailure()
 
   function addBlockDuplicate(block: CampaignBlock): void {
     if (block.parentOrder == null) return
-    const blockPageKind = pageKindOf(block) ?? pageKind
     const { copies, idMap, siblingsAfter } = duplicateBlocks(
       campaign.blocks,
       block
     )
     const copy = copies[0]
     const subtreeAfter = [...siblingsAfter, ...copies.slice(1)]
-    const siblingsBefore = sortBy(
-      [...siblingsOf(campaign.blocks, block), block],
-      'parentOrder'
-    ).map((sibling) => ({
-      __typename: sibling.__typename,
-      id: sibling.id,
-      parentOrder: sibling.parentOrder
-    }))
+    const siblingsBefore = siblingRows(
+      sortBy([...siblingsOf(campaign.blocks, block), block], 'parentOrder')
+    )
+    const selectCopy = { selectedBlockId: copy.id, selectedRegionId: undefined }
 
-    function focus(selectedBlockId: string): void {
-      dispatch({
-        type: 'SetEditorFocusAction',
-        pageKind: blockPageKind,
-        selectedBlockId
-      })
-    }
-
-    let landed = true
-
-    function create(): void {
-      void duplicate({
-        variables: { id: block.id, idMap },
-        optimisticResponse: { campaignBlockDuplicate: subtreeAfter },
-        context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
-      })
-        .then(() => {
-          landed = true
-        })
-        .catch((error: unknown) => {
-          landed = false
-          reportFailure(error)
-        })
-    }
-
-    add({
-      parameters: { execute: {}, undo: {} },
-      execute() {
-        focus(copy.id)
-        create()
+    addCampaignCommand({
+      flush: block,
+      focus: {
+        execute: selectCopy,
+        undo: { selectedBlockId: block.id, selectedRegionId: undefined },
+        redo: selectCopy
       },
-      undo() {
-        focus(block.id)
-        if (!landed) return
-        void blockDelete({
-          variables: { id: copy.id },
-          optimisticResponse: { campaignBlockDelete: siblingsBefore }
-        }).catch(reportFailure)
-      },
-      redo() {
-        focus(copy.id)
-        if (!landed) {
-          create()
-          return
-        }
-        void blockRestore({
-          variables: { id: copy.id },
-          optimisticResponse: { campaignBlockRestore: subtreeAfter }
-        }).catch(reportFailure)
-      }
-    })
+      execute: async ({ flushContext }) =>
+        await duplicate({
+          variables: { id: block.id, idMap },
+          optimisticResponse: { campaignBlockDuplicate: subtreeAfter },
+          context: flushContext
+        }),
+      undo: async () => await softDelete(copy, siblingsBefore),
+      redo: async () => await restore(copy, subtreeAfter)
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   return { addBlockDuplicate }

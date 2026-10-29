@@ -199,13 +199,13 @@ describe('useCampaignRegionCommand', () => {
       ])
     })
 
-    it('treats a region with lines, countries or an edited name or slug as no longer empty', () => {
+    it('treats a region with lines, countries, another Share Language or an edited name or slug as no longer empty', () => {
       const afr = campaignWithRegions.regions.find(
         (region) => region.id === 'afrRegionId'
       )
       if (afr == null) throw new Error('fixture needs afrRegionId')
-      const born = { name: afr.name, slug: afr.slug }
-      const renamed = (patch: { name?: string; slug?: string }) => ({
+      const born = { name: afr.name, slug: afr.slug, languages: afr.languages }
+      const renamed = (patch: Partial<typeof afr>) => ({
         ...campaignWithRegions,
         regions: campaignWithRegions.regions.map((region) =>
           region.id === 'afrRegionId' ? { ...region, ...patch } : region
@@ -223,6 +223,37 @@ describe('useCampaignRegionCommand', () => {
       expect(isEmptyRegion(renamed({ slug: 'eur' }), 'afrRegionId', born)).toBe(
         false
       )
+      // An unlinked Share Language added since can hold a QR code.
+      const french = {
+        ...afr.languages[0],
+        id: 'afrRegionId-496',
+        languageId: '496'
+      }
+      expect(
+        isEmptyRegion(
+          renamed({ languages: [...afr.languages, french] }),
+          'afrRegionId',
+          born
+        )
+      ).toBe(false)
+      expect(
+        isEmptyRegion(
+          renamed({
+            languages: [{ ...afr.languages[0], qrCodeId: 'qrCodeId' }]
+          }),
+          'afrRegionId',
+          born
+        )
+      ).toBe(false)
+      expect(
+        isEmptyRegion(
+          renamed({
+            languages: [{ ...afr.languages[0], journeyId: 'journeyId' }]
+          }),
+          'afrRegionId',
+          born
+        )
+      ).toBe(false)
     })
   })
 })

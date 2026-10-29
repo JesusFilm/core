@@ -16,6 +16,7 @@ import type { CanvasView } from '../Canvas'
 import { campaign, publishedCampaign } from '../data'
 import { TranslationRunContext } from '../TranslationRunProvider'
 import type { TranslationRun } from '../TranslationRunProvider'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 import { LeftRail } from '.'
 
@@ -41,17 +42,19 @@ function LeftRailStory({
             campaign={campaignProp}
             initialState={initialState}
           >
-            <TranslationRunContext.Provider
-              value={{
-                run,
-                start: () => undefined,
-                cancel: () => undefined
-              }}
-            >
-              <Box sx={{ display: 'flex', height: 560 }}>
-                <LeftRail view={view} onViewChange={setView} />
-              </Box>
-            </TranslationRunContext.Provider>
+            <CampaignCommandProvider>
+              <TranslationRunContext.Provider
+                value={{
+                  run,
+                  start: () => undefined,
+                  cancel: () => undefined
+                }}
+              >
+                <Box sx={{ display: 'flex', height: 560 }}>
+                  <LeftRail view={view} onViewChange={setView} />
+                </Box>
+              </TranslationRunContext.Provider>
+            </CampaignCommandProvider>
           </CampaignEditorProvider>
         </CommandProvider>
       </SnackbarProvider>

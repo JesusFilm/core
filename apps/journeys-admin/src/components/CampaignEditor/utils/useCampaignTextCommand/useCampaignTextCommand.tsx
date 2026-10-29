@@ -4,10 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign_strings as CampaignString } from '../../../../../__generated__/GetCampaign'
-import {
-  CampaignPageKind,
-  CampaignTextField as CampaignTextFieldEnum
-} from '../../../../../__generated__/globalTypes'
+import { CampaignTextField as CampaignTextFieldEnum } from '../../../../../__generated__/globalTypes'
 import {
   CampaignTextBlock,
   CampaignTextField,
@@ -20,6 +17,7 @@ import { useCampaignBlockUpdateMutation } from '../../../../libs/useCampaignBloc
 import { useCampaignStringUpdateMutation } from '../../../../libs/useCampaignStringUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
+import { textDebounceKey, useCampaignCommand } from '../useCampaignCommand'
 import { useCampaignTranslationWrite } from '../useCampaignTranslationWrite'
 
 /** One inline-editable text: a text field of a campaign block, or a Campaign String. */
@@ -40,36 +38,6 @@ export interface CampaignTextCommand {
   handleChange: (next: string) => void
   handleFocus: () => void
   handleBlur: () => void
-}
-
-interface TextCommandParameters {
-  value: string
-  /** The campaign language the edit was made in; null for the default language. */
-  languageId: string | null
-  context: Record<string, unknown>
-  pageKind: CampaignPageKind | undefined
-  focus: boolean
-}
-
-/**
- * The debounce key that groups one field's keystrokes into one request; a
- * translation edit is keyed by its language too.
- */
-export function textDebounceKey(
-  target: { __typename: string; id: string },
-  field: string,
-  languageId?: string | null
-): string {
-  const base = `${textDebounceKeyPrefix(target)}${field}`
-  return languageId == null ? base : `${base}:${languageId}`
-}
-
-/** The prefix shared by the debounce keys of every field of one block. */
-export function textDebounceKeyPrefix(target: {
-  __typename: string
-  id: string
-}): string {
-  return `${target.__typename}:${target.id}:`
 }
 
 interface ResolvedTarget {
@@ -114,17 +82,22 @@ function resolveTarget(target: CampaignTextTarget): ResolvedTarget {
  * language every edit writes a human translation for that language through
  * `campaignTranslationSet`. Each write is debounced by the Apollo link under
  * one key per field (and language) and shown optimistically; undo writes the
- * value the field had when it took focus back through the same mutation,
- * after focusing the page, block and preview language the edit was made in.
+ * value the field had when it took focus back through the same mutation.
+ * The keystrokes are plain debounced saves, not Command steps, and a refused
+ * one shows in `error`; the Campaign Command module returns undo and redo
+ * to the page, block and Preview Language the edit was made in, runs them in
+ * the editor's order and reports their refusals in the snackbar. While a
+ * typed write is pending (in its debounce or in flight) the field keeps the
+ * typed text whatever the cache says, so a `GetCampaign` refetch answered
+ * with older text cannot overwrite it; once the write answers, the cache
+ * holds the typed text again.
  */
 export function useCampaignTextCommand(
   target: CampaignTextTarget
 ): CampaignTextCommand {
   const {
     campaign,
-    state: { pageKind, previewLanguageId },
-    dispatch,
-    pageKindOf
+    state: { previewLanguageId }
   } = useCampaignEditor()
   const resolved = resolveTarget(target)
   const translating = previewLanguageId !== campaign.defaultLanguageId
@@ -137,8 +110,14 @@ export function useCampaignTextCommand(
     id: uuidv4(),
     value: committed
   }))
+  // Typed writes not yet answered: in their debounce or in flight.
+  const pendingWrites = useRef(new Set<symbol>())
+  // A cache change arrived while a typed write was pending; the field
+  // catches up once the last one answers.
+  const skippedCacheChange = useRef(false)
+  const [resyncRequest, setResyncRequest] = useState(0)
+  const { addCampaignCommand } = useCampaignCommand()
   const {
-    add,
     state: { undo }
   } = useCommand()
   const { update } = useCampaignBlockUpdateMutation()
@@ -158,10 +137,17 @@ export function useCampaignTextCommand(
   }, [undo?.id])
 
   useEffect(() => {
+    // A cache change while a typed write is pending is older than the typed
+    // text (a refetch that overtook the save), so the typed text wins.
+    if (pendingWrites.current.size > 0) {
+      skippedCacheChange.current = true
+      return
+    }
+    skippedCacheChange.current = false
     // The API trims what it stores, so a save that only trimmed what was
     // typed must not rewrite the field while the user is still typing.
     setValue((typed) => (typed.trim() === committed ? typed : committed))
-  }, [committed])
+  }, [committed, resyncRequest])
 
   useEffect(() => {
     setCommandInput({ id: uuidv4(), value: committed })
@@ -226,61 +212,33 @@ export function useCampaignTextCommand(
   function handleChange(next: string): void {
     setValue(next)
     setError(undefined)
-    const block = target.block
-    const blockPageKind =
-      block == null ? undefined : (pageKindOf(block) ?? pageKind)
     const languageId = translating ? previewLanguageId : null
-    add<TextCommandParameters>({
-      id: commandInput.id,
-      parameters: {
-        execute: {
-          value: next,
-          languageId,
-          context: {},
-          pageKind: blockPageKind,
-          focus: false
-        },
-        undo: {
-          value: commandInput.value,
-          languageId,
-          context: { debounceTimeout: 1 },
-          pageKind: blockPageKind,
-          focus: true
-        },
-        redo: {
-          value: next,
-          languageId,
-          context: { debounceTimeout: 1 },
-          pageKind: blockPageKind,
-          focus: true
-        }
-      },
-      execute({
-        value: nextValue,
-        languageId: targetLanguageId,
-        context,
-        pageKind: targetPageKind,
-        focus
-      }) {
-        if (focus) {
-          appliedValue.current = nextValue
-          if (block != null)
-            dispatch({
-              type: 'SetEditorFocusAction',
-              pageKind: targetPageKind,
-              selectedBlockId: block.id
-            })
-          dispatch({
-            type: 'SetPreviewLanguageAction',
-            previewLanguageId: targetLanguageId ?? campaign.defaultLanguageId
-          })
-        }
-        void write(nextValue, targetLanguageId, context).catch(
-          (mutationError: unknown) => {
-            setError(messageOf(mutationError))
-          }
-        )
+    const pending = Symbol('pending write')
+    pendingWrites.current.add(pending)
+    void write(next, languageId, {})
+      .catch((mutationError: unknown) => setError(messageOf(mutationError)))
+      .finally(() => {
+        pendingWrites.current.delete(pending)
+        // Answered: the cache holds the saved text, or the rolled-back one.
+        if (pendingWrites.current.size === 0 && skippedCacheChange.current)
+          setResyncRequest((request) => request + 1)
+      })
+
+    function writeBack(replayValue: string): () => Promise<unknown> {
+      return async () => {
+        appliedValue.current = replayValue
+        // Same debounce key: this write replaces any keystroke still pending.
+        pendingWrites.current.clear()
+        return await write(replayValue, languageId, { debounceTimeout: 1 })
       }
+    }
+
+    void addCampaignCommand({
+      id: commandInput.id,
+      // The keystroke was sent above, on its debounce: it is not a step.
+      execute: async () => undefined,
+      undo: writeBack(commandInput.value),
+      redo: writeBack(next)
     })
   }
 

@@ -1,13 +1,10 @@
 import { useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_regions as CampaignRegion
 } from '../../../../../__generated__/GetCampaign'
-import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { useCampaignRegionCreateMutation } from '../../../../libs/useCampaignRegionCreateMutation'
 import { useCampaignRegionDeleteMutation } from '../../../../libs/useCampaignRegionDeleteMutation'
 import { useCampaignRegionOrderUpdateMutation } from '../../../../libs/useCampaignRegionOrderUpdateMutation'
@@ -17,6 +14,7 @@ import {
   sortedRegions,
   useCampaignEditor
 } from '../../CampaignEditorProvider'
+import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
 /** The name a new region is born with (PRD §3); campaign content, not UI copy. */
@@ -77,24 +75,35 @@ export function newRegion(campaign: Campaign, id: string): CampaignRegion {
   }
 }
 
+/** What a region is created with: its name, slug and default-language Share Language. */
+export type BornRegion = Pick<CampaignRegion, 'name' | 'slug' | 'languages'>
+
 /**
  * A just-created region is still empty while it has no lines, no countries,
- * no linked journey and still the name and slug it was born with, so undoing
- * its creation may delete it. Renaming or re-slugging is not a Command, so it
- * would be lost.
+ * still the name and slug it was born with, and no Share Language but the
+ * one it was born with, unlinked and without a QR code, so undoing its
+ * creation may delete it. Any other Share Language, linked or not, makes it
+ * non-empty: an unlinked one can hold a QR code, which the delete removes.
+ * Renaming or re-slugging is not a Command, so it would be lost.
  */
 export function isEmptyRegion(
   campaign: Campaign,
   regionId: string,
-  born: Pick<CampaignRegion, 'name' | 'slug'>
+  born: BornRegion
 ): boolean {
   const region = campaign.regions.find((candidate) => candidate.id === regionId)
   if (region == null) return false
+  const bornLanguageIds = new Set(born.languages.map((language) => language.id))
   return (
     region.name === born.name &&
     region.slug === born.slug &&
     region.countries.length === 0 &&
-    region.languages.every((language) => language.journeyId == null) &&
+    region.languages.every(
+      (language) =>
+        bornLanguageIds.has(language.id) &&
+        language.journeyId == null &&
+        language.qrCodeId == null
+    ) &&
     regionLines(campaign.blocks, regionId).length === 0
   )
 }
@@ -122,22 +131,6 @@ export function reorderedRegions(
   }))
 }
 
-interface Focus {
-  pageKind: CampaignPageKind
-  regionId?: string
-  selectedBlockId?: string
-  selectedRegionId?: string
-}
-
-interface ListedParameters {
-  listed: boolean
-}
-
-interface OrderParameters {
-  order: number
-  rows: OrderRows
-}
-
 interface AddRegionOptions {
   /** The switcher the + Add was pressed in, so the new card is selected inside it. */
   hostBlockId?: string
@@ -147,19 +140,20 @@ interface AddRegionOptions {
  * The region Commands. Adding a region runs `campaignRegionCreate` and
  * selects the new card; its undo deletes the region while it is still empty
  * (unlisting first, since only an orphan can be deleted) and leaves it alone
- * once the author has put lines or countries on it or renamed it; redo
- * recreates the same row, unless undo left the region in place. List/unlist is a one-field Command with no confirmation, and reorder
- * writes the new order with every region renumbered at once; undo reverses
- * each through the same mutation. Delete is not a Command: see
- * `OrphanPageBar`.
+ * once the author has put lines, countries or another Share Language on it,
+ * linked a journey or renamed it; redo recreates the same row, unless undo
+ * left the region in place. List/unlist is a one-field Command with no
+ * confirmation, and reorder writes the new order with every region
+ * renumbered at once; undo reverses each through the same mutation. Delete
+ * is not a Command: see `OrphanPageBar`.
  */
 export function useCampaignRegionCommand(): {
   addRegion: (options?: AddRegionOptions) => void
   setListed: (region: CampaignRegion, listed: boolean) => void
   reorderRegion: (region: CampaignRegion, order: number) => void
 } {
-  const { add } = useCommand()
-  const { campaign, state, dispatch } = useCampaignEditor()
+  const { addCampaignCommand } = useCampaignCommand()
+  const { campaign } = useCampaignEditor()
   const campaignRef = useRef(campaign)
   campaignRef.current = campaign
   const [regionCreate] = useCampaignRegionCreateMutation(campaign.id)
@@ -168,122 +162,88 @@ export function useCampaignRegionCommand(): {
   const [orderUpdate] = useCampaignRegionOrderUpdateMutation()
   const reportFailure = useCommandFailure()
 
-  function currentFocus(): Focus {
-    return {
-      pageKind: state.pageKind,
-      regionId: state.regionId,
-      selectedBlockId: state.selectedBlockId,
-      selectedRegionId: state.selectedRegionId
-    }
-  }
-
-  function focus(target: Focus): void {
-    dispatch({ type: 'SetEditorFocusAction', ...target })
-  }
-
   function addRegion({ hostBlockId }: AddRegionOptions = {}): void {
     const id = uuidv4()
     const region = newRegion(campaign, id)
-    const before = currentFocus()
-    let born: Pick<CampaignRegion, 'name' | 'slug'> = region
-    const after: Focus = {
-      pageKind: state.pageKind,
-      regionId: state.regionId,
-      selectedBlockId: hostBlockId,
-      selectedRegionId: id
-    }
+    let born: BornRegion = region
+    const selectRegion = { selectedBlockId: hostBlockId, selectedRegionId: id }
 
-    function create(): void {
-      void regionCreate({
+    async function create(): Promise<void> {
+      const result = await regionCreate({
         variables: { campaignId: campaign.id, id },
         optimisticResponse: { campaignRegionCreate: region }
       })
-        .then((result) => {
-          if (result.data?.campaignRegionCreate != null)
-            born = result.data.campaignRegionCreate
-        })
-        .catch(reportFailure)
+      if (result.data?.campaignRegionCreate != null)
+        born = result.data.campaignRegionCreate
     }
 
-    add({
-      parameters: { execute: {}, undo: {} },
-      execute() {
-        focus(after)
-        create()
-      },
-      undo() {
-        focus(before)
+    addCampaignCommand({
+      focus: { execute: selectRegion, redo: selectRegion },
+      execute: create,
+      async undo() {
         if (!isEmptyRegion(campaignRef.current, id, born)) return
-        void regionUpdate({
+        await regionUpdate({
           variables: { id, input: { listed: false } },
           optimisticResponse: {
             campaignRegionUpdate: { ...region, listed: false }
           }
         })
-          .then(
-            async () =>
-              await regionDelete({
-                variables: { id },
-                optimisticResponse: {
-                  campaignRegionDelete: { __typename: 'CampaignRegion', id }
-                }
-              })
-          )
-          .catch(reportFailure)
+        await regionDelete({
+          variables: { id },
+          optimisticResponse: {
+            campaignRegionDelete: { __typename: 'CampaignRegion', id }
+          }
+        })
       },
-      redo() {
-        focus(after)
+      async redo() {
         const stillThere = campaignRef.current.regions.some(
           (candidate) => candidate.id === id
         )
-        if (!stillThere) create()
+        if (!stillThere) await create()
       }
-    })
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   function setListed(region: CampaignRegion, listed: boolean): void {
-    const target = currentFocus()
-    add<ListedParameters>({
-      parameters: { execute: { listed }, undo: { listed: region.listed } },
-      execute({ listed: next }) {
-        focus(target)
-        void regionUpdate({
-          variables: { id: region.id, input: { listed: next } },
-          optimisticResponse: {
-            campaignRegionUpdate: {
-              __typename: 'CampaignRegion',
-              id: region.id,
-              name: region.name,
-              slug: region.slug,
-              listed: next
-            }
+    async function write(next: boolean): Promise<unknown> {
+      return await regionUpdate({
+        variables: { id: region.id, input: { listed: next } },
+        optimisticResponse: {
+          campaignRegionUpdate: {
+            __typename: 'CampaignRegion',
+            id: region.id,
+            name: region.name,
+            slug: region.slug,
+            listed: next
           }
-        }).catch(reportFailure)
-      }
-    })
+        }
+      })
+    }
+
+    addCampaignCommand({
+      execute: async () => await write(listed),
+      undo: async () => await write(region.listed)
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   function reorderRegion(region: CampaignRegion, order: number): void {
-    const target = currentFocus()
-    add<OrderParameters>({
-      parameters: {
-        execute: {
-          order,
-          rows: reorderedRegions(campaign.regions, region, order)
-        },
-        undo: {
-          order: region.order,
-          rows: reorderedRegions(campaign.regions, region, region.order)
+    async function write(next: number): Promise<unknown> {
+      return await orderUpdate({
+        variables: { id: region.id, order: next },
+        optimisticResponse: {
+          campaignRegionOrderUpdate: reorderedRegions(
+            campaign.regions,
+            region,
+            next
+          )
         }
-      },
-      execute({ order: next, rows }) {
-        focus(target)
-        void orderUpdate({
-          variables: { id: region.id, order: next },
-          optimisticResponse: { campaignRegionOrderUpdate: rows }
-        }).catch(reportFailure)
-      }
-    })
+      })
+    }
+
+    addCampaignCommand({
+      execute: async () => await write(order),
+      undo: async () => await write(region.order)
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   return { addRegion, setListed, reorderRegion }

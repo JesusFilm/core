@@ -1,25 +1,15 @@
 import { useState } from 'react'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
 import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../../../__generated__/GetCampaign'
-import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { useCampaignRegionLanguageSnapshotRefreshMutation } from '../../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
-import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
 interface SnapshotParameters {
   title: string | null
   description: string | null
   snapshotEdited: boolean
-}
-
-interface Focus {
-  pageKind: CampaignPageKind
-  regionId?: string
-  selectedBlockId?: string
-  selectedRegionId?: string
 }
 
 export interface SnapshotRefreshCommand {
@@ -36,81 +26,51 @@ export interface SnapshotRefreshCommand {
  * snapshot title and description through `campaignRegionLanguageSnapshotRefresh`,
  * shown optimistically from the journey the editor already holds, which
  * clears the row's edited flag; undo writes the previous title, description
- * and edited flag back through `campaignRegionLanguageUpdate`. Both focus the
- * page the request was made on first. A snapshot the author edited by hand
+ * and edited flag back through `campaignRegionLanguageUpdate`. The Campaign
+ * Command module focuses the page the request was made on before each
+ * replay. A snapshot the author edited by hand
  * (the row's `snapshotEdited`; a journey renamed since linking does not count)
  * asks first, so the Command is only added once the author has confirmed.
  */
 export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
-  const { add } = useCommand()
-  const { state, dispatch } = useCampaignEditor()
+  const { addCampaignCommand } = useCampaignCommand()
   const [snapshotRefresh] = useCampaignRegionLanguageSnapshotRefreshMutation()
   const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
   const [pending, setPending] = useState<CampaignRegionLanguage>()
   const reportFailure = useCommandFailure()
 
-  function currentFocus(): Focus {
-    return {
-      pageKind: state.pageKind,
-      regionId: state.regionId,
-      selectedBlockId: state.selectedBlockId,
-      selectedRegionId: state.selectedRegionId
-    }
-  }
-
-  function focus(target: Focus): void {
-    dispatch({ type: 'SetEditorFocusAction', ...target })
-  }
-
   function refresh(regionLanguage: CampaignRegionLanguage): void {
     const journey = regionLanguage.journey
     if (journey == null) return
-    const target = currentFocus()
-    add<SnapshotParameters>({
-      parameters: {
-        execute: {
-          title: journey.title,
-          description: journey.description,
-          snapshotEdited: false
-        },
-        undo: {
-          title: regionLanguage.title,
-          description: regionLanguage.description,
-          snapshotEdited: regionLanguage.snapshotEdited
-        }
-      },
-      execute({ title, description, snapshotEdited }) {
-        focus(target)
-        void snapshotRefresh({
+    const refreshed: SnapshotParameters = {
+      title: journey.title,
+      description: journey.description,
+      snapshotEdited: false
+    }
+    const previous: SnapshotParameters = {
+      title: regionLanguage.title,
+      description: regionLanguage.description,
+      snapshotEdited: regionLanguage.snapshotEdited
+    }
+    addCampaignCommand({
+      execute: async () =>
+        await snapshotRefresh({
           variables: { id: regionLanguage.id },
           optimisticResponse: {
             campaignRegionLanguageSnapshotRefresh: {
               ...regionLanguage,
-              title,
-              description,
-              snapshotEdited
+              ...refreshed
             }
           }
-        }).catch(reportFailure)
-      },
-      undo({ title, description, snapshotEdited }) {
-        focus(target)
-        void languageUpdate({
-          variables: {
-            id: regionLanguage.id,
-            input: { title, description, snapshotEdited }
-          },
+        }),
+      undo: async () =>
+        await languageUpdate({
+          variables: { id: regionLanguage.id, input: previous },
           optimisticResponse: {
-            campaignRegionLanguageUpdate: {
-              ...regionLanguage,
-              title,
-              description,
-              snapshotEdited
-            }
+            campaignRegionLanguageUpdate: { ...regionLanguage, ...previous }
           }
-        }).catch(reportFailure)
-      }
-    })
+        })
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   function requestRefresh(regionLanguage: CampaignRegionLanguage): void {

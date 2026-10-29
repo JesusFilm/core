@@ -52,7 +52,11 @@ function renderSettings(
   if (block?.__typename !== 'CampaignAnalyticsBlock')
     throw new Error('the fixture has no analytics block')
   return render(
-    <StaticEditor campaignProp={campaignProp} mocks={mocks}>
+    <StaticEditor
+      campaignProp={campaignProp}
+      initialState={{ selectedBlockId: block.id }}
+      mocks={mocks}
+    >
       <CommandUndoItem variant="button" />
       <CommandProbe />
       <SelectionProbe />

@@ -131,7 +131,7 @@ describe('useCampaignOwnedImageCommand', () => {
     expect(restoreOldCoverMock.result).not.toHaveBeenCalled()
   })
 
-  it('restores nothing and writes no cover on undo after a refused create, and retries the create on redo', async () => {
+  it('sends nothing on undo after a refused create, and retries the create on redo', async () => {
     render(
       <QueriedEditor
         campaignData={campaignWithCover}
@@ -157,13 +157,11 @@ describe('useCampaignOwnedImageCommand', () => {
     expect(pointAtNewMock.result).not.toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-
-    await waitFor(() => expect(pointAtOldMock.result).toHaveBeenCalledTimes(1))
-    expect(restoreOldCoverMock.result).not.toHaveBeenCalled()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Redo' }))
 
     await waitFor(() => expect(pointAtNewMock.result).toHaveBeenCalledTimes(1))
     expect(createdMock.result).toHaveBeenCalledTimes(1)
+    expect(pointAtOldMock.result).not.toHaveBeenCalled()
+    expect(restoreOldCoverMock.result).not.toHaveBeenCalled()
   })
 })

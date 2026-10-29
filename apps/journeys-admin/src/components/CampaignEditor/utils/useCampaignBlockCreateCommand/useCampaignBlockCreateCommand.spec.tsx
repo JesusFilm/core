@@ -230,6 +230,43 @@ describe('useCampaignBlockCreateCommand', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('waits for a create in flight before undoing it: a refused create shows one snackbar and sends no delete', async () => {
+    renderEditor([
+      { ...textCreateMock, delay: 100, result: refusal },
+      deleteMock
+    ])
+    await addExtra('Text', 'Above text')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+    await waitFor(() =>
+      expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
+    )
+    expect(deleteMock.result).not.toHaveBeenCalled()
+    expect(screen.getAllByText('The request was refused')).toHaveLength(1)
+  })
+
+  it('waits for a create in flight before undoing it: once the create lands, undo deletes the block', async () => {
+    renderEditor([{ ...textCreateMock, delay: 100 }, deleteMock])
+    await addExtra('Text', 'Above text')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(deleteMock.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(textCreateMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
+    )
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+    expect(textCreateMock.result.mock.invocationCallOrder[0]).toBeLessThan(
+      deleteMock.result.mock.invocationCallOrder[0]
+    )
+  })
+
   it('raises the API message when the undo delete is refused', async () => {
     renderEditor([textCreateMock, { ...deleteMock, result: refusal }])
     await addExtra('Text', 'Above text')
