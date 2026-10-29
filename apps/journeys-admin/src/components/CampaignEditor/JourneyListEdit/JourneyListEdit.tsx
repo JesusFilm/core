@@ -211,7 +211,10 @@ export function JourneyListEdit({
       pageId: list?.pageId ?? null,
       regionId: list?.regionId ?? null,
       parentBlockId: block.id,
-      parentOrder: cards.length,
+      // The API numbers every ordered child of the list in one sequence,
+      // Extras above and below the cards included: the card lands last.
+      parentOrder: block.children.filter((child) => child.parentOrder != null)
+        .length,
       title: journey.title,
       description: journey.description,
       titleTranslations: [],

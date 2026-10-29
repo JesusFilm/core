@@ -162,6 +162,22 @@ describe('StylePanel', () => {
       expect(screen.queryByRole('group', { name: 'Overlay' })).toBeNull()
     })
 
+    it('closes the cover picker with no Command when the kind the section already has is picked', async () => {
+      renderPanel([])
+      await screen.findByRole('button', { name: 'None' })
+      fireEvent.click(screen.getByRole('button', { name: 'Image' }))
+      expect(screen.getByTestId('StyleCoverPicker')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'None' }))
+
+      expect(screen.queryByTestId('StyleCoverPicker')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'None' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    })
+
     it('sets the cover and overlay as one Command when a picture is kept; undo restores the previous kind', async () => {
       const imageInput = {
         backgroundKind: CampaignBackgroundKind.image,

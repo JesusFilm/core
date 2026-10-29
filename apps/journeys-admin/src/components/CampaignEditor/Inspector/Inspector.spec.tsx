@@ -23,16 +23,19 @@ import {
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../libs/useCampaignBlockDuplicateMutation'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
+import { CAMPAIGN_BLOCK_RESTORE } from '../../../libs/useCampaignBlockRestoreMutation'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import {
   CAMPAIGN_HERO_BLOCK_CREATE,
   CAMPAIGN_RICH_TEXT_BLOCK_CREATE
 } from '../../../libs/useCampaignSectionCreateMutation'
+import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import {
   campaign,
   campaignWithColumns,
   campaignWithRegions,
+  eurLine,
   withEmptyTranslations
 } from '../data'
 import { Hotkeys } from '../Hotkeys'
@@ -688,6 +691,53 @@ describe('Inspector', () => {
 
       fireEvent.keyDown(document.body, { key: 'Escape' })
       expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+    })
+
+    it('selects a deleted Region Line’s region card, and undo selects the line again', async () => {
+      const lineDeleteMock = {
+        request: {
+          query: CAMPAIGN_BLOCK_DELETE,
+          variables: { id: 'eurLineId' }
+        },
+        result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
+      }
+      const lineRestoreMock = {
+        request: {
+          query: CAMPAIGN_BLOCK_RESTORE,
+          variables: { id: 'eurLineId' }
+        },
+        result: vi.fn(() => ({ data: { campaignBlockRestore: [eurLine] } }))
+      }
+      render(
+        <StaticEditor
+          initialState={{ selectedBlockId: 'eurLineId' }}
+          campaignProp={campaignWithRegions}
+          mocks={[lineDeleteMock, lineRestoreMock]}
+        >
+          <CommandUndoItem variant="button" />
+          <SelectionProbe />
+          <Inspector isManager={false} />
+        </StaticEditor>
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+      await waitFor(() => expect(lineDeleteMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingSwitcherId'
+      )
+      expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+        'eurRegionId'
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+      await waitFor(() => expect(lineRestoreMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('text')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'eurLineId'
+      )
     })
   })
 

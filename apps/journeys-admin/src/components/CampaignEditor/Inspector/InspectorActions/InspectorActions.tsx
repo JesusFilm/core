@@ -99,7 +99,16 @@ function DeleteButton({ label, confirm }: DeleteButtonProps): ReactElement {
 
   function handleDelete(): void {
     if (selection.block == null) return
-    addBlockDelete(selection.block)
+    // A Region Line has no parent block: the delete selects its region card,
+    // as Escape does from a line.
+    const regionCard =
+      selection.region != null && selection.regionHost != null
+        ? {
+            selectedBlockId: selection.regionHost.id,
+            selectedRegionId: selection.region.id
+          }
+        : undefined
+    addBlockDelete(selection.block, regionCard)
   }
 
   function handleClick(): void {
