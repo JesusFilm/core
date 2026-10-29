@@ -138,9 +138,7 @@ async function takeLocks(
   declaration: CampaignWriteDeclaration
 ): Promise<void> {
   const targets = declaration.targets ?? []
-  if (
-    targets.some(({ kind, id }) => kind === 'campaign' && id !== campaignId)
-  )
+  if (targets.some(({ kind, id }) => kind === 'campaign' && id !== campaignId))
     throw new Error('a campaign target must be the campaign being written')
 
   if (declaration.structure === true) await lockStructure(tx, campaignId)
@@ -247,34 +245,3 @@ export async function campaignWrite<T>(
   }
   return result
 }
-
-/** The lock helpers the callers still take by hand until they move onto `campaignWrite`. */
-export async function lockCampaign(
-  tx: Prisma.TransactionClient,
-  campaignId: string
-): Promise<void> {
-  await lockCampaignRow(tx, campaignId)
-}
-
-export async function lockCampaignStructure(
-  tx: Prisma.TransactionClient,
-  campaignId: string
-): Promise<void> {
-  await lockStructure(tx, campaignId)
-}
-
-export async function lockCampaignTextRows(
-  tx: Prisma.TransactionClient,
-  campaignId: string
-): Promise<void> {
-  for (const kind of ROW_KINDS) await lockAllRows(tx, kind, campaignId)
-}
-
-export async function lockCampaignLanguageRows(
-  tx: Prisma.TransactionClient,
-  campaignId: string
-): Promise<void> {
-  await lockLanguageRows(tx, campaignId)
-}
-
-export { touchCampaign }

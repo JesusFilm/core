@@ -1,5 +1,3 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { enqueueShortLinkDeletes } from '../../workers/shortlinkDelete/queue'
 import { builder } from '../builder'
 import { deleteVercelDomain } from '../customDomain/service'
@@ -7,6 +5,7 @@ import { logger } from '../logger'
 
 import { authorizeCampaign } from './authorizeCampaign'
 import { CampaignRef } from './campaign'
+import { campaignWrite } from './campaignWrite'
 import { deleteQrCodes, findRegionQrCodes } from './regionLanguage/service'
 import {
   enqueueCampaignRevalidation,
@@ -36,29 +35,35 @@ builder.mutationField('campaignDelete', (t) =>
           ? await listCampaignPagePaths(campaign)
           : []
 
-      let shortLinkIds: string[] = []
-      const deleted = await prisma.$transaction(async (tx) => {
-        shortLinkIds = await deleteQrCodes(
-          tx,
-          await findRegionQrCodes(tx, { region: { campaignId: id } })
-        )
-        return await tx.campaign.delete({ ...query, where: { id } })
-      })
-      await enqueueShortLinkDeletes(shortLinkIds)
-      await enqueueCampaignRevalidation(pagePaths)
-      // The database cascade deleted the Campaign Domain row; its Vercel
-      // registration goes after the commit, as short links do.
-      await Promise.all(
-        campaign.customDomains.map(async ({ name }) => {
-          await deleteVercelDomain(name).catch((error: unknown) => {
-            logger.error(
-              { error, campaignId: id, name },
-              'Failed to delete campaign domain from Vercel'
+      // The body deletes the Campaign, so there is no row left to touch.
+      return await campaignWrite(
+        id,
+        { touch: false },
+        async ({ tx, afterCommit }) => {
+          const shortLinkIds = await deleteQrCodes(
+            tx,
+            await findRegionQrCodes(tx, { region: { campaignId: id } })
+          )
+          const deleted = await tx.campaign.delete({ ...query, where: { id } })
+          afterCommit(async () => await enqueueShortLinkDeletes(shortLinkIds))
+          afterCommit(async () => await enqueueCampaignRevalidation(pagePaths))
+          // The database cascade deleted the Campaign Domain row; its Vercel
+          // registration goes after the commit, as short links do.
+          afterCommit(async () => {
+            await Promise.all(
+              campaign.customDomains.map(async ({ name }) => {
+                await deleteVercelDomain(name).catch((error: unknown) => {
+                  logger.error(
+                    { error, campaignId: id, name },
+                    'Failed to delete campaign domain from Vercel'
+                  )
+                })
+              })
             )
           })
-        })
+          return deleted
+        }
       )
-      return deleted
     }
   })
 )
