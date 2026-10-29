@@ -49,8 +49,6 @@ interface JourneyPasteFieldProps {
   label?: string
   autoFocus?: boolean
   disabled?: boolean
-  /** The secondary form, under the journey picker: no standing helper text, only an error. */
-  compact?: boolean
 }
 
 /**
@@ -58,14 +56,14 @@ interface JourneyPasteFieldProps {
  * The shape is checked client-side; the journey is resolved through the
  * public journey query (routing filter skipped, published only, any team)
  * and shown before it is kept; the server re-resolves on link and its
- * message, on failure, is shown verbatim under the field (PRD §5, §15).
+ * message, on failure, is shown verbatim under the field. It sits under the
+ * journey picker, so it has no standing helper text, only an error.
  */
 export function JourneyPasteField({
   onLink,
   label,
   autoFocus = false,
-  disabled = false,
-  compact = false
+  disabled = false
 }: JourneyPasteFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [value, setValue] = useState('')
@@ -155,12 +153,7 @@ export function JourneyPasteField({
         }}
         onKeyDown={handleKeyDown}
         error={error != null}
-        helperText={
-          error ??
-          (compact
-            ? undefined
-            : t('Paste the journey’s admin link or its public address.'))
-        }
+        helperText={error}
         inputRef={inputRef}
         disabled={disabled || linking}
         fullWidth

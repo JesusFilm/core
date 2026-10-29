@@ -24,7 +24,7 @@ import { SELECTION_KINDS } from './selectionKinds'
 export const INSPECTOR_WIDTH = 328
 
 /** The padding, in theme spacing units, between the Inspector's edge and its header and body. */
-export const INSPECTOR_PADDING = 4
+const INSPECTOR_PADDING = 4
 
 /** The Inspector's title: the region's name for a region card, else the block's type, else the campaign. */
 function inspectorLabel(t: TFunction, selection: CampaignSelection): string {

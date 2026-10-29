@@ -39,7 +39,7 @@ type StyleTab = 'background' | 'colours'
 type SectionStyleInput = CampaignBlockUpdateInput<CampaignStyledTypename>
 
 /** The six Section Background kinds, in the Background tab's order. */
-export const BACKGROUND_KINDS = [
+const BACKGROUND_KINDS = [
   CampaignBackgroundKind.none,
   CampaignBackgroundKind.surface,
   CampaignBackgroundKind.contrast,

@@ -11,6 +11,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import {
   CampaignTranslatedValue,
+  blockColumn,
   editorTextField,
   translatedBlockFields
 } from '../../../libs/useCampaignBlockTextMutation'
@@ -147,8 +148,8 @@ export function campaignTextSignature(
       block.parentOrder,
       block.pageId,
       block.regionId,
-      translatedBlockFields(block.__typename).map(
-        (field) => (block as unknown as Record<string, unknown>)[field]
+      translatedBlockFields(block.__typename).map((field) =>
+        blockColumn(block, field)
       )
     ]),
     campaign.strings.map((string) => [string.id, string.key, string.value]),

@@ -45,11 +45,7 @@ import {
 import { CanvasSection } from './CanvasSection'
 import { FrameTheme } from './FrameTheme'
 
-export {
-  CANVAS_GUTTER,
-  MIN_STAGE_WIDTH,
-  PHONE_FRAME_WIDTH
-} from './canvasScale'
+export { CANVAS_GUTTER, MIN_STAGE_WIDTH } from './canvasScale'
 
 /** The frame's corner radius in theme radius units (`borderRadius: 3`). */
 const FRAME_RADIUS = 3
@@ -162,8 +158,12 @@ function dropTargetOf(
   return { overId: String(collision.id), edge: dropEdgeFor(pointerY, rect) }
 }
 
+interface FrameDocumentProps {
+  document: Document
+}
+
 /** Publishes the frame's document to the editor provider while the frame is mounted. */
-function FrameDocument({ document }: { document: Document }): ReactElement {
+function FrameDocument({ document }: FrameDocumentProps): ReactElement {
   const { frameDocumentRef } = useCampaignEditor()
   useEffect(() => {
     frameDocumentRef.current = document
@@ -277,6 +277,15 @@ export function Canvas({
       activationConstraint: { delay: 150, tolerance: 5 }
     })
   )
+
+  /** A click on the empty frame returns to the campaign. */
+  function handlePageClick(): void {
+    selectBlock(undefined)
+  }
+
+  function handleDragCancel(): void {
+    setDropTarget(undefined)
+  }
 
   function handleDragMove(event: DragMoveEvent): void {
     const active = slotDataOf(event.active.data)
@@ -401,7 +410,7 @@ export function Canvas({
                     <Hotkeys document={document} />
                     <Box
                       data-testid="CampaignCanvasPage"
-                      onClick={() => selectBlock(undefined)}
+                      onClick={handlePageClick}
                       sx={{
                         height: '100%',
                         overflowY: 'auto',
@@ -418,7 +427,7 @@ export function Canvas({
                         collisionDetection={collisionDetection}
                         onDragMove={handleDragMove}
                         onDragEnd={handleDragEnd}
-                        onDragCancel={() => setDropTarget(undefined)}
+                        onDragCancel={handleDragCancel}
                       >
                         {header != null && <CanvasSection block={header} />}
                         {pageId != null && (

@@ -268,11 +268,7 @@ export function JourneyListEdit({
       {active || adding ? (
         <Stack spacing={1.5} sx={{ maxWidth: 720 }}>
           <JourneyPicker label={t('Add a journey')} onLink={handleAdd} />
-          <JourneyPasteField
-            label={t('or paste a link')}
-            compact
-            onLink={handleAdd}
-          />
+          <JourneyPasteField label={t('or paste a link')} onLink={handleAdd} />
         </Stack>
       ) : (
         cards.length === 0 && (

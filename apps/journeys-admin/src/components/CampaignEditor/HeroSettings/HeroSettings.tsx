@@ -8,7 +8,7 @@ import { SliderRow } from '../SliderRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 /** The slider moves in steps of five percent of the viewport height. */
-export const HERO_MIN_HEIGHT_STEP = 5
+const HERO_MIN_HEIGHT_STEP = 5
 
 interface HeroSettingsProps {
   /** The hero this editor edits. */

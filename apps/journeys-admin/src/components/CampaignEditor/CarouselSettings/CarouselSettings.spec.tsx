@@ -4,7 +4,6 @@ import { ReactElement } from 'react'
 import { SWRConfig } from 'swr'
 
 import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import {
   GetCampaign_campaign_blocks_CampaignVideoCarouselBlock as CarouselBlock,
@@ -31,19 +30,16 @@ vi.mock(
   '../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/AddByFile',
   () => ({
     AddByFile: ({
-      onChange
+      onChange,
+      uploadKey
     }: {
       onChange: (id: string) => void
-    }): ReactElement => {
-      const {
-        state: { selectedBlock }
-      } = useEditor()
-      return (
-        <button type="button" onClick={() => onChange('muxVideoId')}>
-          {`Upload under ${selectedBlock?.id ?? ''}`}
-        </button>
-      )
-    }
+      uploadKey?: string
+    }): ReactElement => (
+      <button type="button" onClick={() => onChange('muxVideoId')}>
+        {`Upload under ${uploadKey ?? ''}`}
+      </button>
+    )
   })
 )
 

@@ -87,6 +87,11 @@ export function ImagePicker({
 
   const handleUrlKeyDown = onEnterKey(handlePreview)
 
+  function handleCancel(): void {
+    setCandidate(undefined)
+    setError(undefined)
+  }
+
   async function handleKeep(): Promise<void> {
     if (candidate == null) return
     if (!candidate.pasted) {
@@ -189,14 +194,7 @@ export function ImagePicker({
             >
               {pickLabel ?? t('Use image')}
             </Button>
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => {
-                setCandidate(undefined)
-                setError(undefined)
-              }}
-            >
+            <Button variant="text" size="small" onClick={handleCancel}>
               {t('Cancel')}
             </Button>
           </Stack>

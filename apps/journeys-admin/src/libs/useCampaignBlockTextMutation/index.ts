@@ -1,10 +1,12 @@
 export {
   CAMPAIGN_TEXT_FIELDS,
-  campaignTextInputKey,
+  blockColumn,
   blockTranslations,
+  campaignTextInputKey,
   editorTextField,
   isCampaignTextBlock,
   primaryTextField,
+  textFieldValue,
   translatedBlockFields,
   translationValue,
   withTranslationValue

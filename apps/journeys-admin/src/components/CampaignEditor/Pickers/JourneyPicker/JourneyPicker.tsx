@@ -1,4 +1,6 @@
-import Autocomplete from '@mui/material/Autocomplete'
+import Autocomplete, {
+  AutocompleteInputChangeReason
+} from '@mui/material/Autocomplete'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -73,6 +75,27 @@ export function JourneyPicker({
     }
   }
 
+  function handleInputChange(
+    _event: unknown,
+    value: string,
+    reason: AutocompleteInputChangeReason
+  ): void {
+    if (reason === 'reset') return
+    setInputValue(value)
+    if (linkError != null) setLinkError(undefined)
+  }
+
+  function handleOpen(): void {
+    if (!called || loadError != null) void load()
+  }
+
+  function handleChange(
+    _event: unknown,
+    journey: AccessibleJourney | null
+  ): void {
+    void handlePick(journey)
+  }
+
   function statusLabel(status: JourneyStatus): string {
     return status === JourneyStatus.archived ? t('Archived') : t('Published')
   }
@@ -94,17 +117,9 @@ export function JourneyPicker({
         loading={loading}
         disabled={disabled}
         inputValue={inputValue}
-        onInputChange={(_event, value, reason) => {
-          if (reason === 'reset') return
-          setInputValue(value)
-          if (linkError != null) setLinkError(undefined)
-        }}
-        onOpen={() => {
-          if (!called || loadError != null) void load()
-        }}
-        onChange={(_event, journey) => {
-          void handlePick(journey)
-        }}
+        onInputChange={handleInputChange}
+        onOpen={handleOpen}
+        onChange={handleChange}
         getOptionLabel={(option) => option.title}
         isOptionEqualToValue={(option, value) => option.id === value.id}
         loadingText={t('Loading journeys…')}

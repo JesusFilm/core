@@ -9,6 +9,7 @@ import {
   CampaignChildPlacement,
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
+import { textFieldValue } from '../../../libs/useCampaignBlockTextMutation'
 import {
   CampaignSelection,
   regionLines,
@@ -87,10 +88,9 @@ const SECONDARY_TEXT_FIELDS = [
 
 /** The block's own title text: its first non-empty title-like field. */
 export function secondaryTextOf(block: CampaignBlock): string | undefined {
-  const fields = block as unknown as Record<string, unknown>
   for (const field of SECONDARY_TEXT_FIELDS) {
-    const value = fields[field]
-    if (typeof value === 'string' && value.trim() !== '') return value.trim()
+    const value = textFieldValue(block, field)
+    if (value != null && value.trim() !== '') return value.trim()
   }
   return undefined
 }

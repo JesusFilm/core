@@ -127,7 +127,7 @@ export function CampaignPaletteColorPicker({
 
   // A drag on the colour area commits once, when the pointer lifts anywhere
   // (react-colorful tracks the drag on the document), not on every pause.
-  function startDragging(): void {
+  function handlePointerDown(): void {
     if (stopListeningRef.current != null) return
     function handlePointerEnd(): void {
       stopListeningRef.current?.()
@@ -258,7 +258,7 @@ export function CampaignPaletteColorPicker({
       aria-label={label}
       onBlur={handleBlur}
     >
-      <Box onPointerDown={startDragging}>
+      <Box onPointerDown={handlePointerDown}>
         <HexColorPicker
           color={draft}
           onChange={handlePickerChange}

@@ -4,7 +4,8 @@ import { ReactElement } from 'react'
 
 import {
   CampaignTextBlock,
-  CampaignTextField
+  CampaignTextField,
+  textFieldValue
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineText } from '../InlineText'
 
@@ -52,7 +53,7 @@ export function SectionText({
   showEmpty = false
 }: SectionTextProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const value = (block as unknown as Record<string, string | null>)[field]
+  const value = textFieldValue(block, field)
   if (!editing && !showEmpty && (value == null || value.trim() === ''))
     return null
   const styles = {

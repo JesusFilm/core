@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useRef } from 'react'
@@ -52,6 +53,20 @@ export function addLanguageOptions(
 function fieldMessageOf(error: unknown): string | undefined {
   if (!CombinedGraphQLErrors.is(error)) return undefined
   return error.errors[0]?.message
+}
+
+/** The Share Selector preview chip's label: the language, and why it is hidden while it is. */
+function selectorPreviewLabel(
+  t: TFunction,
+  regionLanguage: CampaignRegionLanguage
+): string {
+  const language = regionLanguageLabel(regionLanguage)
+  const state = shareLanguageState(regionLanguage)
+  if (state === 'unlinked')
+    return t('{{language}} · hidden until a journey is linked', { language })
+  if (state === 'unpublished')
+    return t('{{language}} · hidden while unpublished', { language })
+  return language
 }
 
 /**
@@ -208,17 +223,7 @@ export function ShareSectionEdit({
                 variant={state === 'live' ? 'filled' : 'outlined'}
                 data-testid={`ShareSelectorPreview-${regionLanguage.languageId}`}
                 data-state={state}
-                label={
-                  state === 'unlinked'
-                    ? t('{{language}} · hidden until a journey is linked', {
-                        language: regionLanguageLabel(regionLanguage)
-                      })
-                    : state === 'unpublished'
-                      ? t('{{language}} · hidden while unpublished', {
-                          language: regionLanguageLabel(regionLanguage)
-                        })
-                      : regionLanguageLabel(regionLanguage)
-                }
+                label={selectorPreviewLabel(t, regionLanguage)}
               />
             )
           })}

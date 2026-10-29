@@ -445,7 +445,6 @@ export function ShareLanguageRow({
               />
               <JourneyPasteField
                 label={t('or paste a link')}
-                compact
                 onLink={handleLink}
               />
             </Stack>

@@ -118,6 +118,12 @@ export function LanguagesPanel({
     setRemoveOpen(false)
   }
 
+  /** Remove asks first: every translation into the language goes with it. */
+  function handleRemoveClick(language: CampaignLanguage): void {
+    setRemoveTarget(language)
+    setRemoveOpen(true)
+  }
+
   const removeTargetName =
     removeTarget != null ? languageNames(removeTarget).autonym : ''
 
@@ -153,10 +159,7 @@ export function LanguagesPanel({
               edge="end"
               aria-label={t('Remove {{language}}', { language: autonym })}
               disabled={isDefault || removing}
-              onClick={() => {
-                setRemoveTarget(language)
-                setRemoveOpen(true)
-              }}
+              onClick={() => handleRemoveClick(language)}
             >
               <Trash2Icon />
             </IconButton>

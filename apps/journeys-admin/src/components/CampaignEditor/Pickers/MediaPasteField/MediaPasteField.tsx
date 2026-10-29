@@ -11,7 +11,6 @@ import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useState } from 'react'
 import useSWR from 'swr'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
@@ -213,13 +212,12 @@ function useResolution(
   }
 }
 
-function PreviewCard({
-  video,
-  testId
-}: {
+interface PreviewCardProps {
   video: ResolvedVideo
   testId: string
-}): ReactElement {
+}
+
+function PreviewCard({ video, testId }: PreviewCardProps): ReactElement {
   return (
     <Stack
       direction="row"
@@ -331,15 +329,6 @@ export function MediaPasteField({
     onPick({ source: VideoBlockSource.mux, videoId })
   }
 
-  /** AddByFile keys its upload task by the journey editor's selected block; here that is the slot's section. */
-  const uploadTarget = {
-    __typename: 'VideoBlock',
-    id: uploadKey,
-    parentBlockId: null,
-    parentOrder: null,
-    children: []
-  } as unknown as TreeBlock
-
   return (
     <Stack spacing={3} data-testid={testId}>
       <Tabs
@@ -430,8 +419,8 @@ export function MediaPasteField({
       )}
       {tab === 'upload' && (
         <>
-          <EditorProvider initialState={{ selectedBlock: uploadTarget }}>
-            <AddByFile onChange={handleUploadComplete} />
+          <EditorProvider>
+            <AddByFile uploadKey={uploadKey} onChange={handleUploadComplete} />
           </EditorProvider>
           <MuxUploads teamId={teamId} onPick={handleUploadComplete} />
         </>

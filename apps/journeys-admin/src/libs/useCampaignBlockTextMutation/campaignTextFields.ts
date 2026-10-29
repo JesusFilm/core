@@ -98,15 +98,34 @@ export interface CampaignTranslatedValue {
   source: CampaignTextSource
 }
 
+/**
+ * A block's column by a name only known at run time (a Translated Field, a
+ * slot reference); undefined when the block has no such column.
+ */
+export function blockColumn(block: object, column: string): unknown {
+  const value: unknown = Reflect.get(block, column)
+  return value
+}
+
+/** A text field's default-language value on a block; null when unset or absent. */
+export function textFieldValue(block: object, field: string): string | null {
+  const value = blockColumn(block, field)
+  return typeof value === 'string' ? value : null
+}
+
+function isTranslatedValueList(
+  value: unknown
+): value is CampaignTranslatedValue[] {
+  return Array.isArray(value)
+}
+
 /** The `<field>Translations` list a block carries beside `field`. */
 export function blockTranslations(
-  block: CampaignTextBlock,
-  field: CampaignTextField
+  block: object,
+  field: string
 ): CampaignTranslatedValue[] {
-  const list = (block as unknown as Record<string, unknown>)[
-    `${field}Translations`
-  ]
-  return Array.isArray(list) ? (list as CampaignTranslatedValue[]) : []
+  const list = blockColumn(block, `${field}Translations`)
+  return isTranslatedValueList(list) ? list : []
 }
 
 /** The stored translation of a field in one language, or empty when it is not translated there. */

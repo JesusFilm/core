@@ -57,13 +57,29 @@ export function OrphanPageBar({ region }: OrphanPageBarProps): ReactElement {
     }
   }
 
+  function handleList(): void {
+    setListed(region, true)
+  }
+
+  function handleDeleteOpen(): void {
+    setDeleteOpen(true)
+  }
+
+  function handleDeleteClose(): void {
+    setDeleteOpen(false)
+  }
+
+  function handleDeleteSubmit(): void {
+    void handleDelete()
+  }
+
   return (
     <>
       <Button
         variant="outlined"
         color="secondary"
         startIcon={<EyeOpenIcon />}
-        onClick={() => setListed(region, true)}
+        onClick={handleList}
         data-testid="OrphanPageList"
       >
         {t('List on switcher')}
@@ -72,22 +88,20 @@ export function OrphanPageBar({ region }: OrphanPageBarProps): ReactElement {
         variant="outlined"
         color="error"
         startIcon={<Trash2Icon />}
-        onClick={() => setDeleteOpen(true)}
+        onClick={handleDeleteOpen}
         data-testid="OrphanPageDelete"
       >
         {t('Delete region')}
       </Button>
       <Dialog
         open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
+        onClose={handleDeleteClose}
         dialogTitle={{
           title: t('Delete {{name}}?', { name: region.name }),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: () => {
-            void handleDelete()
-          },
+          onSubmit: handleDeleteSubmit,
           submitLabel: t('Delete'),
           closeLabel: t('Cancel')
         }}

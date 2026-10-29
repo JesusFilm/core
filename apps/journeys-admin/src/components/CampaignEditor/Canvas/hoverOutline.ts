@@ -22,7 +22,7 @@ export const HOVER_OUTLINE_SX = {
       outlineOffset: -1
     },
   // A badge sitting on the top edge meets a square corner, not a gap under a rounded one.
-  '&:has(> [data-testid="SelectionBadge"][data-placement="above"])': {
+  '&:has(> [data-placement="above"])': {
     borderTopLeftRadius: 0
   }
 } as const

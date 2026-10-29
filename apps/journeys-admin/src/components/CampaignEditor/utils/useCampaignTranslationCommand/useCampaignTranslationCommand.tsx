@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignTextField } from '../../../../../__generated__/globalTypes'
-import { CampaignTranslatedValue } from '../../../../libs/useCampaignBlockTextMutation'
+import { blockTranslations } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
 import { useCampaignCommand } from '../useCampaignCommand'
@@ -57,9 +57,6 @@ export function useCampaignTranslationCommand(): CampaignTranslationCommand {
       const current =
         blocksRef.current.find((candidate) => candidate.id === block.id) ??
         block
-      const list = (current as unknown as Record<string, unknown>)[
-        `${field}Translations`
-      ]
       return await writeTranslation({
         campaignId: campaign.id,
         row: current,
@@ -67,9 +64,7 @@ export function useCampaignTranslationCommand(): CampaignTranslationCommand {
         field,
         languageId,
         value: nextValue,
-        translations: Array.isArray(list)
-          ? (list as CampaignTranslatedValue[])
-          : []
+        translations: blockTranslations(current, field)
       })
     }
 

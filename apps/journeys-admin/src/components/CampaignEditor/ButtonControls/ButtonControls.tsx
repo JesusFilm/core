@@ -17,13 +17,13 @@ import { StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useCampaignHostBand } from '../utils/useCampaignHostBand'
 
-export const BUTTON_VARIANTS = [
+const BUTTON_VARIANTS = [
   ButtonVariant.contained,
   ButtonVariant.outlined,
   ButtonVariant.text
 ] as const
 
-export const BUTTON_SIZES = [
+const BUTTON_SIZES = [
   ButtonSize.small,
   ButtonSize.medium,
   ButtonSize.large
