@@ -275,9 +275,12 @@ export function RadioOptionImage({
     })
   }
 
+  // undoBlock defaults to the current block; pass the pre-preview block when
+  // the cache already holds previewed values.
   function updateImageBlock(
     input: ImageBlockUpdateInput,
-    shouldFocus = true
+    shouldFocus = true,
+    undoBlock?: ImageBlock
   ): void {
     if (journey == null || imageBlock == null) return
 
@@ -320,7 +323,7 @@ export function RadioOptionImage({
     add({
       parameters: {
         execute: block,
-        undo: imageBlock
+        undo: undoBlock ?? imageBlock
       },
       execute: (block) => update(block, shouldFocus),
       undo: (block) => update(block, true),
