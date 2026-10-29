@@ -16,6 +16,7 @@ import {
   CampaignPageKind,
   CampaignStatus
 } from '../../../../__generated__/globalTypes'
+import { campaignOpenPageHref } from '../../../libs/campaignAddress'
 import { useCampaignPublishMutation } from '../../../libs/useCampaignPublishMutation'
 import { useCampaignUnpublishMutation } from '../../../libs/useCampaignUnpublishMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
@@ -29,7 +30,8 @@ import { UnpublishDialog } from './UnpublishDialog'
  * or Unpublish (confirming, and stating that the linked journeys and their
  * QR codes keep working) and Refresh and open page, which goes through
  * `/api/campaign/open` so the campaign's public pages are rebuilt before the
- * page it stands on opens, like journey Preview. Publish and unpublish are
+ * page it stands on opens, like journey Preview. A draft has no public page,
+ * so until it is published that button is disabled, with a caption saying so. Publish and unpublish are
  * explicit actions, never Commands; nothing here replaces Save.
  */
 export function PublishButton(): ReactElement {
@@ -52,10 +54,7 @@ export function PublishButton(): ReactElement {
       ? currentRegion.slug
       : undefined
   // `regionSlug` keeps the current region's page.
-  const openPageHref = `/api/campaign/open?${new URLSearchParams({
-    id: campaign.id,
-    ...(regionSlug != null ? { regionSlug } : {})
-  }).toString()}`
+  const openPageHref = campaignOpenPageHref(campaign.id, regionSlug)
 
   function showError(error: unknown, fallback: string): void {
     enqueueSnackbar(error instanceof Error ? error.message : fallback, {
@@ -153,16 +152,31 @@ export function PublishButton(): ReactElement {
               {t('Publish')}
             </Button>
           )}
-          <Button
-            variant="outlined"
-            color="secondary"
-            startIcon={<LinkExternalIcon />}
-            href={openPageHref}
-            target="_blank"
-            rel="noopener"
-          >
-            {t('Refresh and open page')}
-          </Button>
+          <Stack spacing={1}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              startIcon={<LinkExternalIcon />}
+              {...(published
+                ? { href: openPageHref, target: '_blank', rel: 'noopener' }
+                : {})}
+              disabled={!published}
+              aria-describedby={
+                published ? undefined : 'PublishOpenPageDraftCaption'
+              }
+            >
+              {t('Refresh and open page')}
+            </Button>
+            {!published && (
+              <Typography
+                id="PublishOpenPageDraftCaption"
+                variant="caption"
+                color="text.secondary"
+              >
+                {t('The page goes live when you publish.')}
+              </Typography>
+            )}
+          </Stack>
         </Stack>
       </Popover>
       <UnpublishDialog

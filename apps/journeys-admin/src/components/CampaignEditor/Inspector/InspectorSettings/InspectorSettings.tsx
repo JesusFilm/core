@@ -7,12 +7,17 @@ import { ReactElement } from 'react'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../../__generated__/GetCampaign'
-import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  CampaignStatus
+} from '../../../../../__generated__/globalTypes'
+import { campaignOpenPageHref } from '../../../../libs/campaignAddress'
 import { AnalyticsSettings } from '../../AnalyticsSettings'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { CarouselCardSettings } from '../../CarouselCardSettings'
@@ -178,17 +183,20 @@ export function JourneyCardSettingsBody(): ReactElement {
 
 /**
  * A region card: Edit page (the editor switches to that region's page, where
- * its journeys are linked and previewed), list / unlist, and the region's
- * settings.
+ * its journeys are linked and previewed), Open page (the region's public page,
+ * through the same refresh route as Publish; disabled while the campaign is a
+ * draft), list / unlist, and the region's settings.
  */
 export function RegionCardSettings(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
+    campaign,
     selection: { region },
     dispatch
   } = useCampaignEditor()
   const { setListed } = useCampaignRegionCommand()
   if (region == null) return <></>
+  const published = campaign.status === CampaignStatus.published
 
   function handleEditPage(): void {
     if (region == null) return
@@ -206,23 +214,52 @@ export function RegionCardSettings(): ReactElement {
 
   return (
     <Stack spacing={5}>
-      <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
-        <Button
-          variant="outlined"
-          color="secondary"
-          startIcon={<Edit2Icon />}
-          onClick={handleEditPage}
-        >
-          {t('Edit page')}
-        </Button>
-        <Button
-          variant="outlined"
-          color="secondary"
-          startIcon={region.listed ? <EyeClosedIcon /> : <EyeOpenIcon />}
-          onClick={handleListedToggle}
-        >
-          {region.listed ? t('Unlist') : t('List on switcher')}
-        </Button>
+      <Stack spacing={1}>
+        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            startIcon={<Edit2Icon />}
+            onClick={handleEditPage}
+          >
+            {t('Edit page')}
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            startIcon={<LinkExternalIcon />}
+            {...(published
+              ? {
+                  href: campaignOpenPageHref(campaign.id, region.slug),
+                  target: '_blank',
+                  rel: 'noopener'
+                }
+              : {})}
+            disabled={!published}
+            aria-describedby={
+              published ? undefined : 'RegionOpenPageDraftCaption'
+            }
+          >
+            {t('Open page')}
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            startIcon={region.listed ? <EyeClosedIcon /> : <EyeOpenIcon />}
+            onClick={handleListedToggle}
+          >
+            {region.listed ? t('Unlist') : t('List on switcher')}
+          </Button>
+        </Stack>
+        {!published && (
+          <Typography
+            id="RegionOpenPageDraftCaption"
+            variant="caption"
+            color="text.secondary"
+          >
+            {t('The page goes live when you publish.')}
+          </Typography>
+        )}
       </Stack>
       <RegionSettings key={region.id} region={region} />
     </Stack>

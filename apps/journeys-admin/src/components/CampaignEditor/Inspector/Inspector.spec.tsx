@@ -17,6 +17,7 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import {
   CampaignColumnsRatio,
+  CampaignStatus,
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
@@ -1064,14 +1065,46 @@ describe('Inspector', () => {
       )
 
       expect(screen.getByTestId('RegionSettings')).toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: 'Refresh and open page' })
-      ).toBeNull()
       expect(screen.getByRole('button', { name: 'Unlist' })).toBeEnabled()
 
       fireEvent.click(screen.getByRole('button', { name: 'Edit page' }))
 
       expect(screen.getByTestId('PageKind')).toHaveTextContent('regionTemplate')
+    })
+
+    it('disables Open page on a draft, with a caption that the page goes live on publish', () => {
+      renderInspector(
+        { ...regionState, inspectorTab: 'settings' },
+        campaignWithRegions,
+        [countriesMock]
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Open page' })
+      ).not.toBeInTheDocument()
+      const button = screen.getByRole('button', { name: 'Open page' })
+      expect(button).toBeDisabled()
+      expect(button).toHaveAccessibleDescription(
+        'The page goes live when you publish.'
+      )
+    })
+
+    it('opens the region’s public page through the refresh route once published', () => {
+      renderInspector(
+        { ...regionState, inspectorTab: 'settings' },
+        { ...campaignWithRegions, status: CampaignStatus.published },
+        [countriesMock]
+      )
+
+      const link = screen.getByRole('link', { name: 'Open page' })
+      expect(link).toHaveAttribute(
+        'href',
+        '/api/campaign/open?id=campaignId&regionSlug=eur'
+      )
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(
+        screen.queryByText('The page goes live when you publish.')
+      ).not.toBeInTheDocument()
     })
   })
 
