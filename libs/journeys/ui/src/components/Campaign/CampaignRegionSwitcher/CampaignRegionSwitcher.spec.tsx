@@ -279,7 +279,7 @@ describe('CampaignRegionSwitcher events', () => {
     renderSwitcher(switcherTree(), { reportEvents: true })
     fireEvent.click(screen.getByTestId('CampaignRegionCard-afrRegionId'))
     expect(plausible).toHaveBeenCalledWith('campaignRegionClick', {
-      props: { campaignId: 'campaignId', language: 'en', region: 'afr' },
+      props: { campaign_id: 'campaignId', language: 'en', region: 'afr' },
       callback: expect.any(Function)
     })
   })

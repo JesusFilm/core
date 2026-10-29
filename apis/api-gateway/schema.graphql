@@ -7087,6 +7087,10 @@ input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   domain: String!
   goals: [String!]
   disableSharedLinks: Boolean
+  """
+  Custom properties the dashboard shows; Plausible hides any not listed. Called again for a site the caller owns, missing ones are added and none removed.
+  """
+  allowedEventProps: [String!]
 }
 
 input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS_MODERN)  {

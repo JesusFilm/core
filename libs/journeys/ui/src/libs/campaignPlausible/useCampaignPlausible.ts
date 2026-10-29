@@ -22,7 +22,7 @@ export function campaignPlausibleProps(
   region: Pick<CampaignRegion, 'slug'> | null
 ): CampaignPlausibleProps {
   return {
-    campaignId: campaign.id,
+    campaign_id: campaign.id,
     ...(region != null ? { region: region.slug } : {}),
     ...(campaign.language.bcp47 != null
       ? { language: campaign.language.bcp47 }

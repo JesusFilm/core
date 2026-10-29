@@ -53,7 +53,7 @@ describe('CampaignPageWrapper', () => {
       />
     )
     expect(plausibleProps().pageviewProps).toEqual({
-      campaignId: 'campaignId',
+      campaign_id: 'campaignId',
       language: 'en'
     })
   })
@@ -67,7 +67,7 @@ describe('CampaignPageWrapper', () => {
       />
     )
     expect(plausibleProps().pageviewProps).toEqual({
-      campaignId: 'campaignId',
+      campaign_id: 'campaignId',
       region: 'eur',
       language: 'en'
     })

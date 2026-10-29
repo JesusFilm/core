@@ -460,7 +460,7 @@ describe('CampaignRegionShare events', () => {
     })
   })
 
-  const pageProps = { campaignId: 'campaignId', region: 'eur', language: 'en' }
+  const pageProps = { campaign_id: 'campaignId', region: 'eur', language: 'en' }
 
   it('sends campaignShareLinkCopy once the Share Link is copied', async () => {
     renderShare(region, campaignPublic, true)
