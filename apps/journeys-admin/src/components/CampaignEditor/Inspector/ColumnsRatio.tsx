@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -7,6 +6,7 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignColumnsBlock as ColumnsBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignColumnsRatio } from '../../../../__generated__/globalTypes'
+import { CommandError } from '../CommandError'
 import { StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
@@ -45,11 +45,7 @@ export function ColumnsRatio({ block }: ColumnsRatioProps): ReactElement {
 
   return (
     <Stack spacing={4} data-testid="ColumnsRatio">
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <StyleRow label={t('Ratio')}>
         <ToggleButtonGroup
           exclusive

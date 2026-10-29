@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -33,7 +34,7 @@ export function pageSelectValue(
 
 /** The page list entry for a region: its name, with " · not listed" for an orphan. */
 export function regionPageLabel(
-  t: (key: string, options?: Record<string, unknown>) => string,
+  t: TFunction,
   region: Pick<CampaignRegion, 'name' | 'listed'>
 ): string {
   return region.listed

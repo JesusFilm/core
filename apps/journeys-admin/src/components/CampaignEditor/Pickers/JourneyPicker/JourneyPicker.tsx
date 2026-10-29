@@ -9,6 +9,7 @@ import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import { GetCampaignAccessibleJourneys_journeys as AccessibleJourney } from '../../../../../__generated__/GetCampaignAccessibleJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { useCampaignAccessibleJourneysLazyQuery } from '../../../../libs/useCampaignAccessibleJourneysLazyQuery'
+import { focusWithoutScroll } from '../../utils/focusWithoutScroll'
 import { messageOf } from '../../utils/messageOf'
 
 /**
@@ -54,11 +55,8 @@ export function JourneyPicker({
   const rootRef = useRef<HTMLDivElement>(null)
   const fieldLabel = label ?? t('Search your journeys')
 
-  // Without scrolling: the field sits in the scaled canvas frame, and a plain
-  // focus() would scroll the editor page that holds it.
   useEffect(() => {
-    if (autoFocus)
-      rootRef.current?.querySelector('input')?.focus({ preventScroll: true })
+    if (autoFocus) focusWithoutScroll(rootRef.current?.querySelector('input'))
   }, [autoFocus])
 
   async function handlePick(journey: AccessibleJourney | null): Promise<void> {

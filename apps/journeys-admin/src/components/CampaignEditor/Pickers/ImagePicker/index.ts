@@ -1,1 +1,1 @@
-export { ImagePicker, isHttpsUrl } from './ImagePicker'
+export { ImagePicker } from './ImagePicker'

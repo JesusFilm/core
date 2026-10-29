@@ -57,6 +57,7 @@ import { shareLanguageLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
+import { languageNames } from '../LanguagesPanel'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
 import { useShareLanguageLinkCommand } from '../utils/useShareLanguageLinkCommand'
@@ -95,11 +96,8 @@ export function campaignStringText(
 export function regionLanguageLabel(
   regionLanguage: Pick<CampaignRegionLanguage, 'languageId' | 'language'>
 ): string {
-  const names = regionLanguage.language.name
-  const autonym = names.find((name) => name.primary)?.value
-  const local = names.find((name) => !name.primary)?.value
-  if (autonym == null) return local ?? regionLanguage.languageId
-  return local != null && local !== autonym ? `${autonym} (${local})` : autonym
+  const { autonym, localName } = languageNames(regionLanguage)
+  return localName != null ? `${autonym} (${localName})` : autonym
 }
 
 /**

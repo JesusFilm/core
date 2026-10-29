@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -9,6 +8,7 @@ import { ReactElement } from 'react'
 import { GetCampaign_campaign_blocks_CampaignVideoCarouselBlock as CampaignVideoCarouselBlock } from '../../../../__generated__/GetCampaign'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { CommandError } from '../CommandError'
 import {
   CampaignMediaPick,
   MediaPasteField,
@@ -70,11 +70,7 @@ export function CarouselEdit({ block }: CarouselEditProps): ReactElement {
       data-testid="CampaignCarouselEdit"
       data-block-id={block.id}
     >
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <Stack spacing={2}>
         <Typography variant="subtitle2">{t('Videos')}</Typography>
         {block.videoId != null ? (

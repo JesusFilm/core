@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -7,6 +6,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useState } from 'react'
 import useSWR from 'swr'
@@ -25,7 +25,9 @@ import { parseISO8601Duration } from '../../../../libs/parseISO8601Duration'
 import type { CampaignVideoPick } from '../../../../libs/useCampaignVideoBlockCreateMutation'
 import { useCampaignWatchVideoQuery } from '../../../../libs/useCampaignWatchVideoQuery'
 import { AddByFile } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/AddByFile'
+import { CommandError } from '../../CommandError'
 import { messageOf } from '../../utils/messageOf'
+import { onEnterKey } from '../../utils/onEnterKey'
 import { ImagePicker } from '../ImagePicker'
 import { MuxUploads } from '../MuxUploads'
 
@@ -46,12 +48,7 @@ const PLAYLIST_IMPORT_LIMIT = 12
 
 type Candidate = ParsedMediaUrl | ParsedPlaylistUrl
 
-export type Translate = (
-  key: string,
-  options?: Record<string, unknown>
-) => string
-
-export function videoLabelName(t: Translate, label: VideoLabel): string {
+export function videoLabelName(t: TFunction, label: VideoLabel): string {
   switch (label) {
     case VideoLabel.behindTheScenes:
       return t('Behind the scenes')
@@ -107,7 +104,7 @@ interface Resolution {
  */
 function useResolution(
   candidate: Candidate | undefined,
-  t: Translate
+  t: TFunction
 ): Resolution {
   const watch = useCampaignWatchVideoQuery(
     candidate?.source === VideoBlockSource.internal
@@ -309,6 +306,8 @@ export function MediaPasteField({
     setCandidate(parsed)
   }
 
+  const handleUrlKeyDown = onEnterKey(handlePreview)
+
   function handleKeep(): void {
     if (candidate == null || resolution.video == null) return
     if (candidate.source === 'youTubePlaylist') {
@@ -363,12 +362,7 @@ export function MediaPasteField({
               }
               value={url}
               onChange={handleUrlChange}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault()
-                  handlePreview()
-                }
-              }}
+              onKeyDown={handleUrlKeyDown}
               error={!urlValid}
               helperText={
                 urlValid
@@ -403,11 +397,7 @@ export function MediaPasteField({
                   <CircularProgress size={24} />
                 </Box>
               )}
-              {resolution.error != null && (
-                <Alert severity="error" role="alert">
-                  {resolution.error}
-                </Alert>
-              )}
+              <CommandError error={resolution.error} />
               {resolution.video != null && (
                 <PreviewCard video={resolution.video} testId={testId} />
               )}

@@ -1,8 +1,4 @@
-import {
-  carouselCards,
-  isExtra,
-  transformCampaignBlocks
-} from '@core/journeys/ui/Campaign'
+import { carouselCards, isExtra } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 
 import {
@@ -19,6 +15,7 @@ import {
   regionNeedsJourney,
   sortedRegions
 } from '../CampaignEditorProvider'
+import { pageBlocks } from '../utils/pageBlocks'
 
 /** What a row is called: a block's typename, a region card, or the divider between a section's above and below Extras. */
 export type NavigatorNodeType =
@@ -260,21 +257,7 @@ export function buildNavigatorTree({
   pageKind,
   currentRegionId
 }: BuildNavigatorTreeParams): NavigatorNode[] {
-  const pageId = campaign.pages.find((page) => page.kind === pageKind)?.id
-  const sections = transformCampaignBlocks(
-    campaign.blocks.filter((block) => block.pageId === pageId)
-  )
-  const chrome = transformCampaignBlocks(
-    campaign.blocks.filter(
-      (block) => block.pageId == null && block.regionId == null
-    )
-  )
-  const header = chrome.find(
-    (block) => block.__typename === 'CampaignHeaderBlock'
-  )
-  const footer = chrome.find(
-    (block) => block.__typename === 'CampaignFooterBlock'
-  )
+  const { header, sections, footer } = pageBlocks(campaign, pageKind)
   const sectionNodes = inGroup(
     sections.map((section) =>
       blockNode(section, undefined, campaign, currentRegionId)
@@ -282,7 +265,7 @@ export function buildNavigatorTree({
     'root:sections',
     'block'
   )
-  const chromeNode = (block: (typeof chrome)[number] | undefined) =>
+  const chromeNode = (block: (typeof sections)[number] | undefined) =>
     block == null
       ? []
       : [blockNode(block, undefined, campaign, currentRegionId)]

@@ -22,11 +22,11 @@ import {
 
 import {
   COMMIT_DEBOUNCE_MS,
+  CampaignPaletteColorPicker,
   PALETTE_SIZE,
-  PaletteColorPicker,
   nextPalette,
   normalizeHex
-} from './PaletteColorPicker'
+} from './CampaignPaletteColorPicker'
 
 const eight = [
   '#111111',
@@ -75,7 +75,7 @@ function renderPicker(
   const rendered = render(
     <QueriedEditor cache={cache} mocks={options.mocks ?? []}>
       <CommandProbe />
-      <PaletteColorPicker
+      <CampaignPaletteColorPicker
         label="Heading"
         value={options.value ?? null}
         fallback="#000000"
@@ -283,7 +283,7 @@ describe('PaletteColorPicker', () => {
   it('drops a pick still settling when the committed colour changes elsewhere', async () => {
     const onCommit = vi.fn<(hex: string) => void>()
     const picker = (value: string | null): ReactElement => (
-      <PaletteColorPicker
+      <CampaignPaletteColorPicker
         label="Heading"
         value={value}
         fallback="#000000"
@@ -353,7 +353,7 @@ describe('PaletteColorPicker', () => {
     const picker = (
       <>
         <CommandProbe />
-        <PaletteColorPicker
+        <CampaignPaletteColorPicker
           label="Heading"
           value={null}
           fallback="#000000"

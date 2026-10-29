@@ -5,8 +5,8 @@ import Chip from '@mui/material/Chip'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import {
   MouseEvent,
@@ -33,9 +33,7 @@ import {
 } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
-import DragIcon from '@core/shared/ui/icons/Drag'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import {
@@ -57,6 +55,7 @@ import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { blockLabel } from '../../blockLabel'
 import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
+import { languageNames } from '../../LanguagesPanel'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { campaignStringText } from '../../ShareSectionEdit/ShareSectionEdit'
@@ -65,9 +64,14 @@ import { regionLineColor } from '../../utils/regionLineColor'
 import { previewFieldText } from '../../utils/useTranslatedField/readPreviewField'
 import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
+import { CanvasDragHandle } from '../CanvasDragHandle'
 import { CanvasMedia } from '../CanvasMedia'
 import { EditorNote } from '../EditorNote'
-import { HOVER_OUTLINE_SX } from '../hoverOutline'
+import {
+  ADMIN_PRIMARY,
+  HOVER_OUTLINE_SX,
+  SELECTED_OUTLINE
+} from '../hoverOutline'
 import { InlineText } from '../InlineText'
 import { SelectionBadge } from '../SelectionBadge'
 
@@ -81,13 +85,6 @@ interface CanvasSectionProps {
   dropEdge?: 'before' | 'after'
   /** The section sits in a Column Slot: no page container, no section rhythm. */
   inSlot?: boolean
-}
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
-
-const SELECTED_OUTLINE = {
-  outline: `2px solid ${adminPrimary.main}`,
-  outlineOffset: -2
 }
 
 function isAbove(child: CanvasBlock): boolean {
@@ -241,7 +238,7 @@ interface SectionTextProps {
 }
 
 function sectionFieldPlaceholder(
-  t: (key: string) => string,
+  t: TFunction,
   field: CampaignTextField
 ): string {
   switch (field) {
@@ -640,12 +637,7 @@ export function CanvasSection({
     (language) => language.languageId === previewLanguageId
   )
   const previewLanguageLabel =
-    previewLanguage == null
-      ? ''
-      : (previewLanguage.language.name.find((name) => name.primary)?.value ??
-        previewLanguage.language.name[0]?.value ??
-        previewLanguage.language.bcp47 ??
-        previewLanguage.languageId)
+    previewLanguage == null ? '' : languageNames(previewLanguage).autonym
 
   /** Only buttons are nav: the public header drops any other child. */
   const navButtons = extras.filter(
@@ -907,31 +899,16 @@ export function CanvasSection({
         placement={inSlot ? 'above' : 'inside'}
       />
       {draggable && (
-        <Box
-          ref={setActivatorNodeRef}
-          {...listeners}
-          {...attributes}
-          aria-label={t('Drag section')}
-          data-testid={`CanvasSectionDragHandle-${block.id}`}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: 8,
-            transform: 'translateY(-50%)',
-            display: 'flex',
-            p: 0.5,
-            borderRadius: 1,
-            bgcolor: 'background.paper',
-            color: adminPrimary.main,
-            boxShadow: 1,
-            cursor: isDragging ? 'grabbing' : 'grab',
-            touchAction: 'none',
-            opacity: sectionSelected ? 1 : 0,
-            'section:hover > &, &:focus-visible': { opacity: 1 }
-          }}
-        >
-          <DragIcon fontSize="small" />
-        </Box>
+        <CanvasDragHandle
+          activatorRef={setActivatorNodeRef}
+          listeners={listeners}
+          attributes={attributes}
+          label={t('Drag section')}
+          testId={`CanvasSectionDragHandle-${block.id}`}
+          dragging={isDragging}
+          visible={sectionSelected}
+          position={{ top: '50%', left: 8, transform: 'translateY(-50%)' }}
+        />
       )}
       {cover != null && (
         <>
@@ -980,7 +957,7 @@ export function CanvasSection({
             left: 0,
             right: 0,
             height: 3,
-            bgcolor: adminPrimary.main,
+            bgcolor: ADMIN_PRIMARY.main,
             top: dropEdge === 'before' ? 0 : 'auto',
             bottom: dropEdge === 'after' ? 0 : 'auto',
             pointerEvents: 'none',

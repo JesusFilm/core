@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -14,7 +13,6 @@ import {
   journeyCardFrameSx,
   journeyCardImageSx
 } from '@core/journeys/ui/Campaign'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../__generated__/GetCampaignJourneyByLink'
@@ -27,20 +25,13 @@ import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaign
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { EditorNote } from '../Canvas/EditorNote'
-import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
+import { HOVER_OUTLINE_SX, SELECTED_OUTLINE } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
 import { campaignStringText } from '../ShareSectionEdit/ShareSectionEdit'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
-
-const SELECTED_OUTLINE = {
-  outline: `2px solid ${adminPrimary.main}`,
-  outlineOffset: -2
-}
 
 type JourneyCardBlock = Extract<
   CampaignBlock,

@@ -1,10 +1,10 @@
-import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
+import { TFunction } from 'i18next'
 
-type Translate = (key: string) => string
+import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
 
 /** The breadcrumb name of a block by typename. */
 export function blockLabel(
-  t: Translate,
+  t: TFunction,
   typename: CampaignBlock['__typename']
 ): string {
   switch (typename) {
@@ -48,16 +48,16 @@ export function blockLabel(
 }
 
 /** The name of a region card on the canvas and in the Navigator. */
-export function regionCardLabel(t: Translate): string {
+export function regionCardLabel(t: TFunction): string {
   return t('Region card')
 }
 
 /** The name of a Region Line, the text a region card carries. */
-export function regionLineLabel(t: Translate): string {
+export function regionLineLabel(t: TFunction): string {
   return t('Region Line')
 }
 
 /** The name of one Share Language row of a Region Share section. */
-export function shareLanguageLabel(t: Translate): string {
+export function shareLanguageLabel(t: TFunction): string {
   return t('Share language')
 }

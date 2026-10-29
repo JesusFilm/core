@@ -16,7 +16,9 @@ import {
 import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../../__generated__/GetCampaignJourneyByLink'
 import { IdType } from '../../../../../__generated__/globalTypes'
 import { useCampaignJourneyByLinkLazyQuery } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
+import { focusWithoutScroll } from '../../utils/focusWithoutScroll'
 import { messageOf } from '../../utils/messageOf'
+import { parseUrl } from '../../utils/parseUrl'
 
 /** How a pasted journey link addresses the journey: an admin link by id, a public URL by slug. */
 export type JourneyLink = { id: string } | { slug: string }
@@ -28,12 +30,8 @@ export type JourneyLink = { id: string } | { slug: string }
  * whether the journey exists and is published is the server's call.
  */
 export function parseJourneyLink(value: string): JourneyLink | null {
-  let url: URL
-  try {
-    url = new URL(value.trim())
-  } catch {
-    return null
-  }
+  const url = parseUrl(value)
+  if (url == null) return null
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
   const [first, second] = url.pathname
     .split('/')
@@ -78,10 +76,8 @@ export function JourneyPasteField({
   const [resolve, { loading: resolving }] = useCampaignJourneyByLinkLazyQuery()
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Without scrolling: the field sits in the scaled canvas frame, and a plain
-  // focus() would scroll the editor page that holds it.
   useEffect(() => {
-    if (autoFocus) inputRef.current?.focus({ preventScroll: true })
+    if (autoFocus) focusWithoutScroll(inputRef.current)
   }, [autoFocus])
 
   async function handleResolve(raw: string): Promise<void> {

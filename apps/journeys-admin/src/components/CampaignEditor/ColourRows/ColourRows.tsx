@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
-import { PaletteColorPicker } from '../PaletteColorPicker'
+import { CampaignPaletteColorPicker } from '../CampaignPaletteColorPicker'
 import { ValueIndicator } from '../ValueIndicator'
 
 export interface ColourRow<K extends string = string> {
@@ -78,7 +78,7 @@ export function ColourRows<K extends string>({
           </ListItemButton>
         ))}
       </List>
-      <PaletteColorPicker
+      <CampaignPaletteColorPicker
         key={selected.key}
         label={selected.label}
         value={selected.value}

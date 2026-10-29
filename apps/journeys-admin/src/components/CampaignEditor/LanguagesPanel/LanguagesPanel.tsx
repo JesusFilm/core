@@ -33,7 +33,9 @@ interface LanguagesPanelProps {
 }
 
 /** Autonym first, the English name beside it when it differs. */
-export function languageNames(language: CampaignLanguage): {
+export function languageNames(
+  language: Pick<CampaignLanguage, 'languageId' | 'language'>
+): {
   autonym: string
   localName?: string
 } {

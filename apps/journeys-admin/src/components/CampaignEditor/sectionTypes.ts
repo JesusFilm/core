@@ -255,11 +255,12 @@ export function isInColumnSlot(
   )
 }
 
-/** The ordered sections of one page: top-level blocks with that `pageId`. */
+/** The ordered sections of one page: top-level blocks with that `pageId`; none without a page. */
 export function pageSections(
   blocks: CampaignBlock[],
   pageId: string | null | undefined
 ): CampaignBlock[] {
+  if (pageId == null) return []
   return blocks
     .filter(
       (block) =>

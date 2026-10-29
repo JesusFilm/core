@@ -62,7 +62,7 @@ export function nextPalette(palette: readonly string[], hex: string): string[] {
   return [used, ...rest].slice(0, PALETTE_SIZE)
 }
 
-interface PaletteColorPickerProps {
+interface CampaignPaletteColorPickerProps {
   /** The committed colour, or null when the field inherits. */
   value: string | null
   /** What the field shows when it inherits: the picker starts from it. */
@@ -88,7 +88,7 @@ interface PaletteColorPickerProps {
  * is saved through `campaignUpdate` at the same moment, outside undo. The
  * only pre-validation is the pure hex rule.
  */
-export function PaletteColorPicker({
+export function CampaignPaletteColorPicker({
   value,
   fallback = '#000000',
   label,
@@ -96,7 +96,7 @@ export function PaletteColorPicker({
   onClear,
   clearLabel,
   testId = 'PaletteColorPicker'
-}: PaletteColorPickerProps): ReactElement {
+}: CampaignPaletteColorPickerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const [paletteUpdate] = useCampaignPaletteUpdateMutation()

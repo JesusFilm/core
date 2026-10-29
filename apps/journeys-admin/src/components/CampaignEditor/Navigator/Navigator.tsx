@@ -37,10 +37,7 @@ import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import { blockLabel, regionCardLabel, regionLineLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { LeftPanelBody } from '../LeftPanel'
-import { slotSection } from '../sectionTypes'
-import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
-import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
-import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
+import { useCampaignReorder } from '../utils/useCampaignReorder'
 
 import { useCanvasHovered } from './NavigatorHover'
 import {
@@ -383,9 +380,7 @@ export function Navigator(): ReactElement {
       coordinateGetter: navigatorKeyboardCoordinates
     })
   )
-  const { addBlockOrder } = useCampaignBlockOrderCommand()
-  const { addColumnSwap } = useColumnSwapCommand()
-  const { reorderRegion } = useCampaignRegionCommand()
+  const dispatchReorder = useCampaignReorder()
   const hoveredElement = useRef<Element | null>(null)
   const seenExpandRequest = useRef(navigatorExpandRequest)
 
@@ -474,10 +469,7 @@ export function Navigator(): ReactElement {
       overId: String(overId)
     })
     if (plan == null) return
-    if (plan.kind === 'region') reorderRegion(plan.region, plan.order)
-    else if (plan.kind === 'swap')
-      addColumnSwap(plan.slot, slotSection(campaign.blocks, plan.slot.id)?.id)
-    else addBlockOrder(plan.block, plan.parentOrder, plan.placement)
+    dispatchReorder(plan)
   }
 
   function handleItemClick(_event: MouseEvent, itemId: string): void {

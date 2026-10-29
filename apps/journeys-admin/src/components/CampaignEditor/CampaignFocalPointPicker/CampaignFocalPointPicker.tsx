@@ -16,7 +16,7 @@ export interface FocalPoint {
   focalTop: number
 }
 
-interface FocalPointPickerProps {
+interface CampaignFocalPointPickerProps {
   src: string
   alt?: string | null
   width?: number | null
@@ -49,14 +49,14 @@ export function focalPointOf(
  * pointer at once; `onChange` fires once per click or drag so the host can
  * write one Command.
  */
-export function FocalPointPicker({
+export function CampaignFocalPointPicker({
   src,
   alt,
   width,
   height,
   value,
   onChange
-}: FocalPointPickerProps): ReactElement {
+}: CampaignFocalPointPickerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const frameRef = useRef<HTMLDivElement>(null)
   const [point, setPoint] = useState(value)

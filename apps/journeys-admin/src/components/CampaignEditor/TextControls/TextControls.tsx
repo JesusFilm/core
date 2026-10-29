@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
@@ -8,6 +7,7 @@ import { GetCampaign_campaign_blocks_CampaignTypographyBlock as TypographyBlock 
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
+import { CommandError } from '../CommandError'
 import { AlignRow, StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useHostBand } from '../utils/useHostBand'
@@ -76,11 +76,7 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
 
   return (
     <Stack spacing={4} data-testid="TextControls">
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <StyleRow label={t('Size')}>
         <TextField
           select

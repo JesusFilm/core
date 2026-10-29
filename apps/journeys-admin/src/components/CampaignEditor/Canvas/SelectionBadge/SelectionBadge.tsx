@@ -1,12 +1,8 @@
 import Box from '@mui/material/Box'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
-
 import { useCanvasHovered } from '../../Navigator/NavigatorHover'
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
+import { ADMIN_PRIMARY } from '../hoverOutline'
 
 /**
  * Where the badge sits on its block's top-left corner: `above` the block's
@@ -73,13 +69,13 @@ export function SelectionBadge({
         borderRadius: placement === 'above' ? '4px 4px 0 0' : '0 0 4px 0',
         ...(selected
           ? {
-              backgroundColor: adminPrimary.main,
-              color: adminPrimary.contrastText
+              backgroundColor: ADMIN_PRIMARY.main,
+              color: ADMIN_PRIMARY.contrastText
             }
           : {
-              backgroundColor: adminPrimary.contrastText,
-              color: adminPrimary.main,
-              boxShadow: `inset 0 0 0 1px ${adminPrimary.main}`
+              backgroundColor: ADMIN_PRIMARY.contrastText,
+              color: ADMIN_PRIMARY.main,
+              boxShadow: `inset 0 0 0 1px ${ADMIN_PRIMARY.main}`
             })
       }}
     >

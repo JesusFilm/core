@@ -1,13 +1,10 @@
 import {
   ClientRect,
-  CollisionDetection,
   DndContext,
   DragEndEvent,
   DragMoveEvent,
   MouseSensor,
   TouchSensor,
-  closestCenter,
-  pointerWithin,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
@@ -24,10 +21,7 @@ import {
   useState
 } from 'react'
 
-import {
-  createCampaignTheme,
-  transformCampaignBlocks
-} from '@core/journeys/ui/Campaign'
+import { createCampaignTheme } from '@core/journeys/ui/Campaign'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
@@ -37,10 +31,9 @@ import { FontLoader } from '../../Editor/FontLoader'
 import { sortedRegions, useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
 import { CanvasHoverReporter } from '../Navigator/NavigatorHover'
-import { slotSection } from '../sectionTypes'
-import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
-import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
-import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
+import { pageBlocks } from '../utils/pageBlocks'
+import { scopedCollisionDetection } from '../utils/scopedCollisionDetection'
+import { useCampaignReorder } from '../utils/useCampaignReorder'
 
 import { CanvasInsertPoint } from './CanvasInsertPoint'
 import {
@@ -130,19 +123,16 @@ export function regionDropOrder(
  * with the other slot of its own Columns section; a region card only with
  * the other region cards.
  */
-const collisionDetection: CollisionDetection = (args) => {
+const collisionDetection = scopedCollisionDetection((args) => {
   const active = slotDataOf(args.active?.data)
-  const droppableContainers = args.droppableContainers.filter((container) => {
+  return args.droppableContainers.filter((container) => {
     const candidate = slotDataOf(container.data)
     if (active.regionId != null) return candidate.regionId != null
     if (candidate.regionId != null) return false
     if (active.slot !== true) return candidate.slot !== true
     return candidate.slot === true && candidate.columnsId === active.columnsId
   })
-  const scoped = { ...args, droppableContainers }
-  const within = pointerWithin(scoped)
-  return within.length > 0 ? within : closestCenter(scoped)
-}
+})
 
 function pointerYOf(event: DragMoveEvent | DragEndEvent): number | undefined {
   const activator = event.activatorEvent as Partial<MouseEvent> &
@@ -247,33 +237,11 @@ export function Canvas({
     selectBlock,
     state: { previewLanguageId }
   } = useCampaignEditor()
-  const { addBlockOrder } = useCampaignBlockOrderCommand()
-  const { addColumnSwap } = useColumnSwapCommand()
-  const { reorderRegion } = useCampaignRegionCommand()
+  const dispatchReorder = useCampaignReorder()
   const [dropTarget, setDropTarget] = useState<DropTarget>()
-  const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
-  const pageId = page?.id
-  const sections = useMemo(
-    () =>
-      transformCampaignBlocks(
-        campaign.blocks.filter((block) => block.pageId === pageId)
-      ),
-    [campaign.blocks, pageId]
-  )
-  const chrome = useMemo(
-    () =>
-      transformCampaignBlocks(
-        campaign.blocks.filter(
-          (block) => block.pageId == null && block.regionId == null
-        )
-      ),
-    [campaign.blocks]
-  )
-  const header = chrome.find(
-    (block) => block.__typename === 'CampaignHeaderBlock'
-  )
-  const footer = chrome.find(
-    (block) => block.__typename === 'CampaignFooterBlock'
+  const { pageId, header, sections, footer } = useMemo(
+    () => pageBlocks(campaign, pageKind),
+    [campaign, pageKind]
   )
   const language = campaign.languages.find(
     (candidate) => candidate.languageId === previewLanguageId
@@ -331,7 +299,7 @@ export function Canvas({
     )
     const region = regions.find((candidate) => candidate.id === activeRegionId)
     if (order == null || region == null) return
-    reorderRegion(region, order)
+    dispatchReorder({ kind: 'region', region, order })
   }
 
   /** A slot dropped on the other slot of its Columns section swaps the two. */
@@ -342,7 +310,7 @@ export function Canvas({
       (candidate) => candidate.id === String(event.active.id)
     )
     if (slot == null) return
-    addColumnSwap(slot, slotSection(campaign.blocks, slot.id)?.id)
+    dispatchReorder({ kind: 'swap', slot })
   }
 
   function handleDragEnd(event: DragEndEvent): void {
@@ -365,7 +333,7 @@ export function Canvas({
     )
     const block = campaign.blocks.find((candidate) => candidate.id === activeId)
     if (parentOrder == null || block == null) return
-    addBlockOrder(block, parentOrder)
+    dispatchReorder({ kind: 'block', block, parentOrder })
   }
 
   return (

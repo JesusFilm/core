@@ -1,18 +1,17 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { CommandError } from '../CommandError'
 import { FocalPointControl } from '../FocalPointControl'
 import { ImagePicker } from '../Pickers/ImagePicker'
+import { ReplaceableMedia } from '../ReplaceableMedia'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useTranslatedField } from '../utils/useTranslatedField'
 
@@ -34,7 +33,6 @@ export function ImageSectionEdit({
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addFields, error } = useCampaignBlockFieldsCommand()
-  const [replacing, setReplacing] = useState(false)
   const alt = useTranslatedField(
     { block, field: 'alt' },
     { tooLongMessage: altTooLongMessage }
@@ -49,8 +47,11 @@ export function ImageSectionEdit({
   }
 
   function handlePick(src: string): void {
-    setReplacing(false)
     write({ src })
+  }
+
+  function handleRemove(): void {
+    write({ src: null })
   }
 
   // Over the cap shows as it is typed; the API's refusal once committed.
@@ -64,57 +65,39 @@ export function ImageSectionEdit({
       data-testid="CampaignImageSectionEdit"
       data-block-id={block.id}
     >
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
-      <Stack spacing={2}>
-        <Typography variant="subtitle2">{t('Picture')}</Typography>
-        {block.src != null && (
-          <Box
-            component="img"
-            src={block.src}
-            alt={alt.value}
-            data-testid="CampaignImageSectionEditPicture"
-            sx={{
-              width: '100%',
-              maxHeight: 160,
-              objectFit: 'contain',
-              borderRadius: 1,
-              bgcolor: 'action.hover'
-            }}
-          />
-        )}
-        {block.src != null && <FocalPointControl image={block} />}
-        {block.src != null && (
-          <Stack direction="row" spacing={2}>
-            {!replacing && (
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => setReplacing(true)}
-              >
-                {t('Replace image')}
-              </Button>
-            )}
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => write({ src: null })}
-            >
-              {t('Remove image')}
-            </Button>
-          </Stack>
-        )}
-        {(block.src == null || replacing) && (
+      <CommandError error={error} />
+      <ReplaceableMedia
+        label={t('Picture')}
+        preview={
+          block.src == null ? undefined : (
+            <Box
+              component="img"
+              src={block.src}
+              alt={alt.value}
+              data-testid="CampaignImageSectionEditPicture"
+              sx={{
+                width: '100%',
+                maxHeight: 160,
+                objectFit: 'contain',
+                borderRadius: 1,
+                bgcolor: 'action.hover'
+              }}
+            />
+          )
+        }
+        details={<FocalPointControl image={block} />}
+        replaceLabel={t('Replace image')}
+        removeLabel={t('Remove image')}
+        onRemove={handleRemove}
+        onPick={handlePick}
+        renderPicker={(onPick) => (
           <ImagePicker
             teamId={campaign.teamId}
-            onPick={handlePick}
+            onPick={onPick}
             testId="CampaignSectionImagePicker"
           />
         )}
-      </Stack>
+      />
       <TextField
         label={t('Alt text')}
         value={alt.value}

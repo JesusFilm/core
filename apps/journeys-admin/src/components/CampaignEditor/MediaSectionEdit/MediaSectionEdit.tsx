@@ -1,12 +1,10 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import {
   CampaignFeaturedMediaLayout,
@@ -15,8 +13,10 @@ import {
 import { CampaignMediaOwner } from '../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
+import { CommandError } from '../CommandError'
 import { FocalPointControl } from '../FocalPointControl'
 import { CampaignMediaPick, MediaPasteField } from '../Pickers/MediaPasteField'
+import { ReplaceableMedia } from '../ReplaceableMedia'
 import { useCampaignMediaCommand } from '../utils/useCampaignMediaCommand'
 
 interface MediaSectionEditProps {
@@ -37,19 +37,16 @@ export function MediaSectionEdit({
   const { campaign } = useCampaignEditor()
   const { addMediaPick, clearMedia, addFields, error } =
     useCampaignMediaCommand()
-  const [replacing, setReplacing] = useState(false)
   const media =
     block.mediaBlockId == null
       ? undefined
       : campaign.blocks.find((candidate) => candidate.id === block.mediaBlockId)
 
   function handlePick(pick: CampaignMediaPick): void {
-    setReplacing(false)
     addMediaPick(block, pick)
   }
 
   function handleClear(): void {
-    setReplacing(false)
     clearMedia(block)
   }
 
@@ -71,57 +68,42 @@ export function MediaSectionEdit({
       data-testid="CampaignMediaSectionEdit"
       data-block-id={block.id}
     >
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
-      <Stack spacing={2}>
-        <Typography variant="subtitle2">{t('Media')}</Typography>
-        {media != null ? (
-          <Box data-testid="CampaignMediaSectionEditMedia">
-            <CanvasMedia
-              media={media}
-              stacked={
-                block.__typename === 'CampaignFeaturedMediaBlock' &&
-                block.layout === CampaignFeaturedMediaLayout.stacked
-              }
-            />
-          </Box>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            {t(
-              'No media: paste a Watch or YouTube link, upload a video or pick an image.'
-            )}
-          </Typography>
+      <CommandError error={error} />
+      <ReplaceableMedia
+        label={t('Media')}
+        preview={
+          media == null ? undefined : (
+            <Box data-testid="CampaignMediaSectionEditMedia">
+              <CanvasMedia
+                media={media}
+                stacked={
+                  block.__typename === 'CampaignFeaturedMediaBlock' &&
+                  block.layout === CampaignFeaturedMediaLayout.stacked
+                }
+              />
+            </Box>
+          )
+        }
+        emptyNote={t(
+          'No media: paste a Watch or YouTube link, upload a video or pick an image.'
         )}
-        {media?.__typename === 'CampaignImageBlock' && (
-          <FocalPointControl image={media} />
-        )}
-        {media != null && (
-          <Stack direction="row" spacing={2}>
-            {!replacing && (
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => setReplacing(true)}
-              >
-                {t('Replace media')}
-              </Button>
-            )}
-            <Button variant="text" size="small" onClick={handleClear}>
-              {t('Clear media')}
-            </Button>
-          </Stack>
-        )}
-        {(media == null || replacing) && (
+        details={
+          media?.__typename === 'CampaignImageBlock' ? (
+            <FocalPointControl image={media} />
+          ) : undefined
+        }
+        replaceLabel={t('Replace media')}
+        removeLabel={t('Clear media')}
+        onRemove={handleClear}
+        onPick={handlePick}
+        renderPicker={(onPick) => (
           <MediaPasteField
             teamId={campaign.teamId}
             uploadKey={block.id}
-            onPick={handlePick}
+            onPick={onPick}
           />
         )}
-      </Stack>
+      />
       {block.__typename === 'CampaignFeaturedMediaBlock' && (
         <Stack spacing={2}>
           <Typography variant="subtitle2">{t('Layout')}</Typography>

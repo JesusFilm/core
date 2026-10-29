@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -14,16 +13,10 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import { useCloudflareUploadByUrlMutation } from '../../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import { MediaLibrary } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary'
+import { CommandError } from '../../CommandError'
+import { isHttpsUrl } from '../../utils/isHttpsUrl'
 import { messageOf } from '../../utils/messageOf'
-
-/** The editor's pure URL rule for a pasted image: an absolute https address. The server checks the rest. */
-export function isHttpsUrl(value: string): boolean {
-  try {
-    return new URL(value.trim()).protocol === 'https:'
-  } catch {
-    return false
-  }
-}
+import { onEnterKey } from '../../utils/onEnterKey'
 
 interface Candidate {
   /** The address shown in the preview. */
@@ -92,6 +85,8 @@ export function ImagePicker({
     setCandidate({ src: url.trim(), pasted: true })
   }
 
+  const handleUrlKeyDown = onEnterKey(handlePreview)
+
   async function handleKeep(): Promise<void> {
     if (candidate == null) return
     if (!candidate.pasted) {
@@ -151,12 +146,7 @@ export function ImagePicker({
           label={t('Image URL')}
           value={url}
           onChange={handleUrlChange}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault()
-              handlePreview()
-            }
-          }}
+          onKeyDown={handleUrlKeyDown}
           error={!urlValid}
           helperText={urlValid ? undefined : t('Enter an https:// image link')}
           size="small"
@@ -212,11 +202,7 @@ export function ImagePicker({
           </Stack>
         </Stack>
       )}
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <Divider />
       <MediaLibrary
         title={t('Your uploads')}

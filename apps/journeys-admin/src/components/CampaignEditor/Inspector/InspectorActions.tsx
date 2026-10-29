@@ -3,8 +3,6 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
-import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -12,6 +10,7 @@ import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
+import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { sortedRegions, useCampaignEditor } from '../CampaignEditorProvider'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
 import { pageSections } from '../sectionTypes'
@@ -91,18 +90,20 @@ export function InspectorActions(): ReactElement | null {
     addBlockOrder(selectedSection, selectedSection.parentOrder + step)
   }
 
-  /** ← / →: the card takes its neighbour item's position, one order Command. */
-  function handleCardMove(step: -1 | 1): void {
-    const neighbour = cardItems[cardIndex + step]
-    if (selectedCard == null || neighbour?.parentOrder == null) return
-    addBlockOrder(selectedCard, neighbour.parentOrder)
-  }
-
-  /** ← → move a card among the list's cards, past any Extras between them. */
-  function handleMoveJourneyCard(step: -1 | 1): void {
-    const target = journeyCardSiblings[journeyCardIndex + step]
-    if (selectedJourneyCard == null || target?.parentOrder == null) return
-    addBlockOrder(selectedJourneyCard, target.parentOrder)
+  /**
+   * ← / →: a carousel card takes its neighbour item's position, a journey
+   * card its neighbour card's (past any Extras between them); one order
+   * Command.
+   */
+  function handleMoveSideways(
+    card: CampaignBlock | undefined,
+    cards: CampaignBlock[],
+    index: number,
+    step: -1 | 1
+  ): void {
+    const neighbour = cards[index + step]
+    if (card == null || neighbour?.parentOrder == null) return
+    addBlockOrder(card, neighbour.parentOrder)
   }
 
   function handleMoveRegion(step: -1 | 1): void {
@@ -147,6 +148,28 @@ export function InspectorActions(): ReactElement | null {
       <ChevronDownIcon />
     </IconButton>
   )
+  const moveSideways = (
+    index: number,
+    count: number,
+    onMove: (step: -1 | 1) => void
+  ): ReactElement => (
+    <>
+      <IconButton
+        aria-label={t('Move left')}
+        disabled={index <= 0}
+        onClick={() => onMove(-1)}
+      >
+        <ChevronLeftIcon />
+      </IconButton>
+      <IconButton
+        aria-label={t('Move right')}
+        disabled={index < 0 || index >= count - 1}
+        onClick={() => onMove(1)}
+      >
+        <ChevronRightIcon />
+      </IconButton>
+    </>
+  )
   const deleteButton = (label: string, confirm: boolean): ReactElement => (
     <IconButton
       aria-label={label}
@@ -176,43 +199,26 @@ export function InspectorActions(): ReactElement | null {
       case 'card':
         return (
           <>
-            <IconButton
-              aria-label={t('Move left')}
-              disabled={cardIndex <= 0}
-              onClick={() => handleCardMove(-1)}
-            >
-              <ArrowLeftIcon />
-            </IconButton>
-            <IconButton
-              aria-label={t('Move right')}
-              disabled={cardIndex < 0 || cardIndex >= cardItems.length - 1}
-              onClick={() => handleCardMove(1)}
-            >
-              <ArrowRightIcon />
-            </IconButton>
+            {moveSideways(cardIndex, cardItems.length, (step) =>
+              handleMoveSideways(selectedCard, cardItems, cardIndex, step)
+            )}
             {deleteButton(t('Delete'), false)}
           </>
         )
       case 'journey':
         return (
           <>
-            <IconButton
-              aria-label={t('Move left')}
-              disabled={journeyCardIndex <= 0}
-              onClick={() => handleMoveJourneyCard(-1)}
-            >
-              <ChevronLeftIcon />
-            </IconButton>
-            <IconButton
-              aria-label={t('Move right')}
-              disabled={
-                journeyCardIndex < 0 ||
-                journeyCardIndex >= journeyCardSiblings.length - 1
-              }
-              onClick={() => handleMoveJourneyCard(1)}
-            >
-              <ChevronRightIcon />
-            </IconButton>
+            {moveSideways(
+              journeyCardIndex,
+              journeyCardSiblings.length,
+              (step) =>
+                handleMoveSideways(
+                  selectedJourneyCard,
+                  journeyCardSiblings,
+                  journeyCardIndex,
+                  step
+                )
+            )}
             {deleteButton(t('Delete'), false)}
           </>
         )

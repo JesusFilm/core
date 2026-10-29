@@ -1,20 +1,16 @@
-import {
-  CollisionDetection,
-  DroppableContainer,
-  closestCenter,
-  pointerWithin
-} from '@dnd-kit/core'
+import { DroppableContainer } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import sortBy from 'lodash/sortBy'
 
 import {
   GetCampaign_campaign as Campaign,
-  GetCampaign_campaign_blocks as CampaignBlock,
-  GetCampaign_campaign_regions as CampaignRegion
+  GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
 import { sortedRegions } from '../CampaignEditorProvider'
+import { scopedCollisionDetection } from '../utils/scopedCollisionDetection'
 import { siblingsOf } from '../utils/siblingsOf'
+import type { CampaignReorder } from '../utils/useCampaignReorder'
 
 import { NavigatorNode, flattenNavigatorTree } from './navigatorTree'
 
@@ -44,28 +40,9 @@ export function droppablesInGroupOf(
 }
 
 /** The row under the pointer, else the nearest centre, among the dragged row's siblings only. */
-export const navigatorCollisionDetection: CollisionDetection = (args) => {
-  const scoped = {
-    ...args,
-    droppableContainers: droppablesInGroupOf(
-      args.active,
-      args.droppableContainers
-    )
-  }
-  const within = pointerWithin(scoped)
-  return within.length > 0 ? within : closestCenter(scoped)
-}
-
-export type NavigatorReorderPlan =
-  | {
-      kind: 'block'
-      block: CampaignBlock
-      parentOrder: number
-      /** Set only when an Extra crosses the divider. */
-      placement?: CampaignChildPlacement
-    }
-  | { kind: 'swap'; slot: CampaignBlock }
-  | { kind: 'region'; region: CampaignRegion; order: number }
+export const navigatorCollisionDetection = scopedCollisionDetection((args) =>
+  droppablesInGroupOf(args.active, args.droppableContainers)
+)
 
 interface PlanReorderParams {
   campaign: Pick<Campaign, 'blocks' | 'regions'>
@@ -86,7 +63,7 @@ function planBlockMove(
   blocks: CampaignBlock[],
   active: CampaignBlock,
   target: CampaignBlock
-): NavigatorReorderPlan | undefined {
+): CampaignReorder | undefined {
   const all = sortBy([...siblingsOf(blocks, active), active], 'parentOrder')
   const parentOrder = all.findIndex((block) => block.id === target.id)
   if (parentOrder < 0 || parentOrder === all.indexOf(active)) return undefined
@@ -105,7 +82,7 @@ function planExtraMove(
   group: NavigatorNode[],
   active: NavigatorNode,
   over: NavigatorNode
-): NavigatorReorderPlan | undefined {
+): CampaignReorder | undefined {
   const block = blockOf(blocks, active)
   if (block == null || !('placement' in block)) return undefined
   const ids = group.map((node) => node.id)
@@ -158,7 +135,7 @@ export function planReorder({
   tree,
   activeId,
   overId
-}: PlanReorderParams): NavigatorReorderPlan | undefined {
+}: PlanReorderParams): CampaignReorder | undefined {
   if (activeId === overId) return undefined
   const all = flattenNavigatorTree(tree)
   const active = all.find((node) => node.id === activeId)

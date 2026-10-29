@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -12,6 +11,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
+import { CommandError } from '../CommandError'
 import { AlignRow, StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useHostBand } from '../utils/useHostBand'
@@ -71,11 +71,7 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
 
   return (
     <Stack spacing={4} data-testid="ButtonControls">
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <StyleRow label={t('Variant')}>
         <ToggleButtonGroup
           exclusive

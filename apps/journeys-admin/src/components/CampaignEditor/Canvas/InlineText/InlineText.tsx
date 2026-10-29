@@ -18,6 +18,7 @@ import {
 
 import { campaignTextInputKey } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineEditInput } from '../../../Editor/Slider/Content/Canvas/InlineEditWrapper/InlineEditInput'
+import { focusWithoutScroll } from '../../utils/focusWithoutScroll'
 import { useCampaignTextCommand } from '../../utils/useCampaignTextCommand'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
 
@@ -98,14 +99,11 @@ export function InlineText({
   const testId = inlineTextTestId(target)
   const showingFallback = value === '' && fallback !== ''
 
-  // Focus without scrolling: a plain focus() (and the autoFocus attribute)
-  // scrolls every ancestor to centre the input, including the editor page that
-  // holds the scaled frame.
   useEffect(() => {
     const wanted = autoFocus || focusOnEdit.current
     focusOnEdit.current = false
     if (!editing || !wanted) return
-    inputRef.current?.focus({ preventScroll: true })
+    focusWithoutScroll(inputRef.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing])
 

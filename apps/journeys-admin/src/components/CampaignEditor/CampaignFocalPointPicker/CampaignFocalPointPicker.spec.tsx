@@ -1,12 +1,15 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import { FocalPointPicker, focalPointOf } from './FocalPointPicker'
+import {
+  CampaignFocalPointPicker,
+  focalPointOf
+} from './CampaignFocalPointPicker'
 
 const rect = { left: 0, top: 0, width: 200, height: 100 } as DOMRect
 
 function renderPicker(onChange = vi.fn()): ReturnType<typeof vi.fn> {
   render(
-    <FocalPointPicker
+    <CampaignFocalPointPicker
       src="https://imagedelivery.net/accountHash/cover/public"
       alt="Cover"
       width={1600}

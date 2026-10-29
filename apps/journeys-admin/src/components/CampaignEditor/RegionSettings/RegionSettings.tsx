@@ -17,11 +17,9 @@ import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQue
 import { useCampaignRegionCountryAddMutation } from '../../../libs/useCampaignRegionCountryAddMutation'
 import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
-import { shapeSlug } from '../Settings'
+import { SLUG_MAX_LENGTH, shapeSlug } from '../Settings'
 import { useCommittedField } from '../utils/useCommittedField'
 import { useTranslatedField } from '../utils/useTranslatedField'
-
-const SLUG_MAX_LENGTH = 200
 
 interface RegionSettingsProps {
   region: CampaignRegion

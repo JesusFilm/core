@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -8,6 +7,7 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
+import { CommandError } from '../CommandError'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 interface RegionSwitcherSettingsProps {
@@ -36,11 +36,7 @@ export function RegionSwitcherSettings({
       data-testid="RegionSwitcherSettings"
       data-block-id={block.id}
     >
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <Typography variant="subtitle2">{t('Variant')}</Typography>
       <ToggleButtonGroup
         value={block.switcherVariant}

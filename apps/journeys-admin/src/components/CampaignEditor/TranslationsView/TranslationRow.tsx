@@ -79,16 +79,6 @@ export function useRowLabel(): (row: TranslationRow) => string {
         return t('Interface phrase')
       case 'CampaignRegion':
         return t('Region')
-      case 'CampaignFeaturedMediaBlock':
-        return t('Featured media')
-      case 'CampaignRichTextBlock':
-        return t('Rich text')
-      case 'CampaignImageBlock':
-        return t('Image')
-      case 'CampaignVideoBlock':
-        return t('Video')
-      case 'CampaignJourneyBlock':
-        return t('Journey')
       default:
         return blockLabel(t, typename as Parameters<typeof blockLabel>[1])
     }

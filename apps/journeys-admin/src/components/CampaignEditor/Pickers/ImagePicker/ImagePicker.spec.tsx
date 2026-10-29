@@ -5,8 +5,9 @@ import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../../libs/useCloudflareU
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import type { UseImageUploadOptions } from '../../../../libs/useImageUpload'
 import { GET_MY_CLOUDFLARE_IMAGES } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary/MediaLibrary'
+import { isHttpsUrl } from '../../utils/isHttpsUrl'
 
-import { ImagePicker, isHttpsUrl } from './ImagePicker'
+import { ImagePicker } from './ImagePicker'
 
 vi.mock('../../../../libs/useImageUpload', () => ({
   useImageUpload: vi.fn()
