@@ -648,7 +648,7 @@ describe('CampaignPage events', () => {
     expect(plausible).toHaveBeenCalledWith(
       'campaignRegionClick',
       expect.objectContaining({
-        props: { campaignId: 'campaignId', language: 'en', region: 'afr' }
+        props: { campaign_id: 'campaignId', language: 'en', region: 'afr' }
       })
     )
   })

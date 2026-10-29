@@ -46,7 +46,7 @@ interface CampaignPageWrapperProps {
  * address form), and Plausible page views on the Campaign's own site (the one
  * its Campaign Report shows) and its team's site, through the same
  * `/plausible` proxy journeys use. Page views are automatic (page path as
- * rendered) and tagged with `campaignId`, the Region Page's `region` slug and
+ * rendered) and tagged with `campaign_id`, the Region Page's `region` slug and
  * the Page Language's `language` tag; the campaign events (`campaign*`) carry
  * the same props. Nothing is reported from the admin canvas, which renders no
  * `CampaignPage`. The page is static, so a visitor whose cookie or browser

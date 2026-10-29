@@ -300,7 +300,14 @@ describe('plausible worker service', () => {
                 'campaignShareLinkCopy',
                 'Outbound Link: Click'
               ],
-              disableSharedLinks: false
+              disableSharedLinks: false,
+              allowedEventProps: [
+                'region',
+                'language',
+                'shareLanguage',
+                'journey',
+                'source'
+              ]
             },
             includeSharedLinks: true
           }
@@ -498,7 +505,7 @@ describe('plausible worker service', () => {
       )
     })
 
-    it('creates campaign sites for campaigns without plausible tokens', async () => {
+    it('creates or refreshes the site of every campaign, with or without a token', async () => {
       vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValue({
         data: {
           siteCreate: {
@@ -522,7 +529,6 @@ describe('plausible worker service', () => {
       await service(createSitesJob, logger)
 
       expect(prismaMock.campaign.findMany).toHaveBeenCalledWith({
-        where: { plausibleToken: null },
         select: { id: true }
       })
       expect(prismaMock.campaign.updateMany).toHaveBeenCalledTimes(2)

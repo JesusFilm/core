@@ -327,7 +327,7 @@ describe('CampaignJourneyList events', () => {
     fireEvent.click(screen.getByTestId('CampaignJourneyCardOpen'))
     expect(plausible).toHaveBeenCalledWith('campaignJourneyClick', {
       props: {
-        campaignId: 'campaignId',
+        campaign_id: 'campaignId',
         language: 'en',
         journey: 'first',
         source: 'card'

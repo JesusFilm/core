@@ -52,7 +52,7 @@ describe('useCampaignPlausible', () => {
     result.current('campaignQrDownload', { shareLanguage: 'fr' })
     expect(plausible).toHaveBeenCalledWith('campaignQrDownload', {
       props: {
-        campaignId: 'campaignId',
+        campaign_id: 'campaignId',
         region: 'eur',
         language: 'en',
         shareLanguage: 'fr'
@@ -66,7 +66,7 @@ describe('useCampaignPlausible', () => {
     })
     result.current('campaignRegionClick', { region: 'afr' })
     expect(plausible).toHaveBeenCalledWith('campaignRegionClick', {
-      props: { campaignId: 'campaignId', language: 'en', region: 'afr' }
+      props: { campaign_id: 'campaignId', language: 'en', region: 'afr' }
     })
   })
 
@@ -173,7 +173,7 @@ describe('campaignPlausibleProps', () => {
         },
         null
       )
-    ).toEqual({ campaignId: 'campaignId' })
+    ).toEqual({ campaign_id: 'campaignId' })
   })
 })
 
