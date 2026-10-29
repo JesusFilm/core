@@ -530,7 +530,7 @@ describe('TranslationsView', () => {
     expect(write.result).not.toHaveBeenCalled()
   })
 
-  it("shows the API's message verbatim and restores the text when a write is refused", async () => {
+  it("shows the API's message verbatim on the refused text when a write is refused", async () => {
     const write = setMock(
       heroTitle,
       FRENCH,
@@ -547,7 +547,7 @@ describe('TranslationsView', () => {
     expect(
       await screen.findByText('title must be at most 150 characters')
     ).toBeInTheDocument()
-    expect(field).toHaveValue("Partagez l'histoire de Campagne")
+    expect(field).toHaveValue('x'.repeat(10))
   })
 
   it('reads another language when it is picked', async () => {

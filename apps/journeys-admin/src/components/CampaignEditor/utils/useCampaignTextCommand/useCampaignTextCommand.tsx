@@ -4,21 +4,14 @@ import { v4 as uuidv4 } from 'uuid'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign_strings as CampaignString } from '../../../../../__generated__/GetCampaign'
-import { CampaignTextField as CampaignTextFieldEnum } from '../../../../../__generated__/globalTypes'
 import {
   CampaignTextBlock,
-  CampaignTextField,
-  CampaignTranslatedValue,
-  blockTranslations,
-  campaignTextInputKey,
-  translationValue
+  CampaignTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
-import { useCampaignBlockUpdateMutation } from '../../../../libs/useCampaignBlockUpdateMutation'
-import { useCampaignStringUpdateMutation } from '../../../../libs/useCampaignStringUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
 import { textDebounceKey, useCampaignCommand } from '../useCampaignCommand'
-import { useCampaignTranslationWrite } from '../useCampaignTranslationWrite'
+import { useTranslatedFieldWrite } from '../useTranslatedField'
 
 /** One inline-editable text: a text field of a campaign block, or a Campaign String. */
 export type CampaignTextTarget =
@@ -40,47 +33,15 @@ export interface CampaignTextCommand {
   handleBlur: () => void
 }
 
-interface ResolvedTarget {
-  __typename: string
-  id: string
-  field: CampaignTextField | 'value'
-  defaultValue: string
-  translations: CampaignTranslatedValue[]
-  translationTarget: { blockId: string } | { stringId: string }
-}
-
-function resolveTarget(target: CampaignTextTarget): ResolvedTarget {
-  if (target.string != null) {
-    const { string } = target
-    return {
-      __typename: 'CampaignString',
-      id: string.id,
-      field: 'value',
-      defaultValue: string.value,
-      translations: string.valueTranslations,
-      translationTarget: { stringId: string.id }
-    }
-  }
-  const { block, field } = target
-  return {
-    __typename: block.__typename,
-    id: block.id,
-    field,
-    defaultValue:
-      (block as unknown as Record<string, string | null>)[field] ?? '',
-    translations: blockTranslations(block, field),
-    translationTarget: { blockId: block.id }
-  }
-}
-
 /**
  * Typing into one text is one Command: every change while the field is
  * focused carries the same stable id, so CommandProvider keeps only the
- * latest, and the id resets on blur or undo. In the default language a block
- * field writes through the block's typed update mutation and a Campaign
- * String through `campaignStringUpdate`; while previewing another campaign
- * language every edit writes a human translation for that language through
- * `campaignTranslationSet`. Each write is debounced by the Apollo link under
+ * latest, and the id resets on blur, undo or a change of Preview Language.
+ * Each edit is written through the writer `useTranslatedFieldWrite` picks: in
+ * the default language a block field through the block's typed update
+ * mutation and a Campaign String through `campaignStringUpdate`; while
+ * previewing another campaign language a human translation for that language
+ * through `campaignTranslationSet`. Each write is debounced by the Apollo link under
  * one key per field (and language) and shown optimistically; undo writes the
  * value the field had when it took focus back through the same mutation.
  * The keystrokes are plain debounced saves, not Command steps, and a refused
@@ -96,14 +57,18 @@ export function useCampaignTextCommand(
   target: CampaignTextTarget
 ): CampaignTextCommand {
   const {
-    campaign,
     state: { previewLanguageId }
   } = useCampaignEditor()
-  const resolved = resolveTarget(target)
-  const translating = previewLanguageId !== campaign.defaultLanguageId
-  const committed = translating
-    ? translationValue(resolved.translations, previewLanguageId)
-    : resolved.defaultValue
+  const {
+    value: committed,
+    fallback,
+    translating,
+    write: writeField
+  } = useTranslatedFieldWrite(
+    target.string != null
+      ? { string: target.string }
+      : { block: target.block, field: target.field }
+  )
   const [value, setValue] = useState(committed)
   const [error, setError] = useState<string>()
   const [commandInput, setCommandInput] = useState(() => ({
@@ -120,9 +85,6 @@ export function useCampaignTextCommand(
   const {
     state: { undo }
   } = useCommand()
-  const { update } = useCampaignBlockUpdateMutation()
-  const [stringUpdate] = useCampaignStringUpdateMutation()
-  const writeTranslation = useCampaignTranslationWrite()
 
   // The value an undo or redo of this field just wrote: the cache has not
   // caught up when the effect below runs, so it is the field's new baseline.
@@ -163,50 +125,11 @@ export function useCampaignTextCommand(
     languageId: string | null,
     context: Record<string, unknown>
   ): Promise<unknown> {
-    const requestContext = {
-      debounceKey: textDebounceKey(resolved, resolved.field, languageId),
-      ...context
-    }
-    if (languageId != null) {
-      const apiField =
-        resolved.field === 'value'
-          ? resolved.field
-          : campaignTextInputKey(resolved.field)
-      return await writeTranslation({
-        campaignId: campaign.id,
-        row: resolved,
-        target: resolved.translationTarget,
-        field: CampaignTextFieldEnum[apiField as CampaignTextFieldEnum],
-        languageId,
-        value: nextValue,
-        translations: resolved.translations,
-        context: requestContext
-      })
-    }
-    if (target.string != null) {
-      const { string } = target
-      return await stringUpdate({
-        variables: {
-          campaignId: campaign.id,
-          key: string.key,
-          value: nextValue
-        },
-        optimisticResponse: {
-          campaignStringUpdate: {
-            __typename: 'CampaignString',
-            id: string.id,
-            key: string.key,
-            value: nextValue
-          }
-        },
-        context: requestContext
-      })
-    }
-    return await update(
-      target.block,
-      { [campaignTextInputKey(target.field)]: nextValue },
-      { context: requestContext }
-    )
+    const debounceKey =
+      target.string != null
+        ? textDebounceKey(target.string, 'value', languageId)
+        : textDebounceKey(target.block, target.field, languageId)
+    return await writeField(nextValue, { debounceKey, ...context })
   }
 
   function handleChange(next: string): void {
@@ -244,7 +167,7 @@ export function useCampaignTextCommand(
 
   return {
     value,
-    fallback: translating ? resolved.defaultValue : '',
+    fallback: translating ? fallback : '',
     error,
     handleChange,
     handleFocus: resetCommandInput,

@@ -2,6 +2,7 @@ export {
   CAMPAIGN_TEXT_FIELDS,
   campaignTextInputKey,
   blockTranslations,
+  editorTextField,
   isCampaignTextBlock,
   primaryTextField,
   translatedBlockFields,

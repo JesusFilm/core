@@ -50,7 +50,6 @@ import {
   campaignShareLink,
   journeyPreviewAddress
 } from '../../../libs/campaignAddress'
-import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignRegionLanguageCreateMutation } from '../../../libs/useCampaignRegionLanguageCreateMutation'
 import { useCampaignRegionLanguageDeleteMutation } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
@@ -62,6 +61,7 @@ import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
 import { useShareLanguageLinkCommand } from '../utils/useShareLanguageLinkCommand'
 import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
+import { previewFieldText } from '../utils/useTranslatedField/readPreviewField'
 
 interface ShareSectionEditProps {
   /** The Share section this editor sits in. */
@@ -70,8 +70,9 @@ interface ShareSectionEditProps {
 
 /**
  * A Campaign String as the visitor reads it in the previewed language: its
- * translation there, else its default-language wording, else `fallback`
- * (what the public page shows for a row the campaign lacks or left blank).
+ * translation there, else its default-language wording (`readTranslatedField`,
+ * as the API's `resolveText` answers), else `fallback` (what the public
+ * page shows for a row the campaign lacks or left blank).
  */
 export function campaignStringText(
   campaign: Pick<Campaign, 'strings' | 'defaultLanguageId'>,
@@ -81,12 +82,13 @@ export function campaignStringText(
 ): string {
   const string = campaign.strings.find((candidate) => candidate.key === key)
   if (string == null) return fallback
-  const translated =
-    previewLanguageId === campaign.defaultLanguageId
-      ? ''
-      : translationValue(string.valueTranslations, previewLanguageId)
-  if (translated.trim() !== '') return translated
-  return string.value.trim() === '' ? fallback : string.value
+  const text = previewFieldText({
+    field: string.value,
+    translations: string.valueTranslations,
+    previewLanguageId,
+    defaultLanguageId: campaign.defaultLanguageId
+  })
+  return text === '' ? fallback : text
 }
 
 /** The editor label of a Share Language: autonym plus local name when they differ. */

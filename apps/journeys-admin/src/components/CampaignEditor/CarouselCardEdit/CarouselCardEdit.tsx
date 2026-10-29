@@ -1,25 +1,50 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 
-import {
-  TRANSLATED_FIELDS,
-  textLength
-} from '@core/journeys/ui/Campaign/libs/translatedField'
+import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 
-import { CampaignTextField } from '../../../../__generated__/globalTypes'
-import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
-import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
-import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
-import { useCampaignTranslationCommand } from '../utils/useCampaignTranslationCommand'
+import { useTranslatedField } from '../utils/useTranslatedField'
 
-const CAPS = TRANSLATED_FIELDS.block.CampaignVideoBlock
+interface CardTextFieldProps {
+  block: CampaignVideoBlock
+  field: 'title' | 'description'
+  label: string
+  multiline?: boolean
+}
 
-type VideoTextField = 'title' | 'description'
+/** One of the card's overrides, committed on blur in the Preview Language. */
+function CardTextField({
+  block,
+  field,
+  label,
+  multiline = false
+}: CardTextFieldProps): ReactElement {
+  const text = useTranslatedField({ block, field })
+  const length = textLength(text.value)
+
+  return (
+    <TextField
+      label={label}
+      value={text.value}
+      onChange={(event) => text.onChange(event.target.value)}
+      onBlur={text.onBlur}
+      placeholder={text.translating ? text.fallback : undefined}
+      error={text.error != null || length > text.max}
+      helperText={text.error ?? `${length} / ${text.max}`}
+      slotProps={{
+        formHelperText: text.error != null ? { role: 'alert' } : undefined
+      }}
+      size="small"
+      multiline={multiline}
+      minRows={multiline ? 3 : undefined}
+      fullWidth
+    />
+  )
+}
 
 interface CarouselCardEditProps {
   block: CampaignVideoBlock
@@ -30,62 +55,13 @@ interface CarouselCardEditProps {
  * description overrides. Each field is written when it loses focus, as one
  * Command; an empty field falls back to the video's own text. While
  * previewing a non-default language each field is that language's
- * translation, written through `campaignTranslationSet` instead.
+ * translation, written through `campaignTranslationSet` instead
+ * (`useTranslatedField`).
  */
 export function CarouselCardEdit({
   block
 }: CarouselCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addFields, error } = useCampaignBlockFieldsCommand()
-  const {
-    campaign,
-    state: { previewLanguageId }
-  } = useCampaignEditor()
-  const {
-    addTranslation,
-    error: translationError,
-    clearError: clearTranslationError
-  } = useCampaignTranslationCommand()
-  const translating = previewLanguageId !== campaign.defaultLanguageId
-  const committed = translating
-    ? {
-        title: translationValue(block.titleTranslations, previewLanguageId),
-        description: translationValue(
-          block.descriptionTranslations,
-          previewLanguageId
-        )
-      }
-    : { title: block.title ?? '', description: block.description ?? '' }
-  const [values, setValues] = useState(committed)
-
-  const { title: committedTitle, description: committedDescription } = committed
-
-  useEffect(() => {
-    setValues({ title: committedTitle, description: committedDescription })
-  }, [committedTitle, committedDescription, previewLanguageId])
-
-  useEffect(() => {
-    clearTranslationError()
-  }, [previewLanguageId, clearTranslationError])
-
-  function handleBlur(field: VideoTextField): void {
-    const value = values[field].trim()
-    if (textLength(value) > CAPS[field]) return
-    if (translating) {
-      if (value === committed[field]) return
-      addTranslation({
-        block,
-        field: CampaignTextField[field],
-        languageId: previewLanguageId,
-        value,
-        previous: committed[field]
-      })
-      return
-    }
-    const next = value === '' ? null : value
-    if (next === (block[field] ?? null)) return
-    addFields(block, { [field]: next })
-  }
 
   return (
     <Stack
@@ -93,42 +69,13 @@ export function CarouselCardEdit({
       data-testid="CampaignCarouselCardEdit"
       data-block-id={block.id}
     >
-      {(error ?? translationError) != null && (
-        <Alert severity="error" role="alert">
-          {error ?? translationError}
-        </Alert>
-      )}
       <CanvasMedia media={block} />
-      <TextField
-        label={t('Title')}
-        value={values.title}
-        onChange={(event) =>
-          setValues((current) => ({ ...current, title: event.target.value }))
-        }
-        onBlur={() => handleBlur('title')}
-        placeholder={translating ? (block.title ?? '') : undefined}
-        error={textLength(values.title) > CAPS.title}
-        helperText={`${textLength(values.title)} / ${CAPS.title}`}
-        size="small"
-        fullWidth
-      />
-      <TextField
+      <CardTextField block={block} field="title" label={t('Title')} />
+      <CardTextField
+        block={block}
+        field="description"
         label={t('Description')}
-        value={values.description}
-        onChange={(event) =>
-          setValues((current) => ({
-            ...current,
-            description: event.target.value
-          }))
-        }
-        onBlur={() => handleBlur('description')}
-        placeholder={translating ? (block.description ?? '') : undefined}
-        error={textLength(values.description) > CAPS.description}
-        helperText={`${textLength(values.description)} / ${CAPS.description}`}
-        size="small"
         multiline
-        minRows={3}
-        fullWidth
       />
     </Stack>
   )

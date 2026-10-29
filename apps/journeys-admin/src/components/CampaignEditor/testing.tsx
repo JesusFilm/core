@@ -69,6 +69,31 @@ export function CommandProbe(): ReactElement {
   )
 }
 
+/** Buttons that set the Preview Language, as the Pages Panel's language choice does, labelled `Preview <languageId>`. */
+export function PreviewLanguageSwitch({
+  languageIds
+}: {
+  languageIds: string[]
+}): ReactElement {
+  const { dispatch } = useCampaignEditor()
+  return (
+    <>
+      {languageIds.map((languageId) => (
+        <button
+          key={languageId}
+          aria-label={`Preview ${languageId}`}
+          onClick={() =>
+            dispatch({
+              type: 'SetPreviewLanguageAction',
+              previewLanguageId: languageId
+            })
+          }
+        />
+      ))}
+    </>
+  )
+}
+
 /** Lists the campaign's regions the provider sees, one line per region, in order. */
 export function RegionsProbe(): ReactElement {
   const { campaign: current } = useCampaignEditor()

@@ -30,6 +30,7 @@ import {
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { useCampaignActionCommand } from '../utils/useCampaignActionCommand'
+import { useCommittedField } from '../utils/useCommittedField'
 
 type LinkKind = 'link' | 'scroll' | 'region'
 type Translate = (key: string) => string
@@ -135,11 +136,17 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
   const action = block.action
   const savedUrl = action?.__typename === 'CampaignLinkAction' ? action.url : ''
   const [pickedKind, setPickedKind] = useState<LinkKind>()
-  const [url, setUrl] = useState(savedUrl)
   const [error, setError] = useState<string>()
+  const url = useCommittedField({
+    committed: savedUrl,
+    validate: (value) =>
+      isHttpsUrl(value)
+        ? undefined
+        : t('Enter an address starting with https://'),
+    save: handleSaveLink
+  })
 
   useEffect(() => {
-    setUrl(savedUrl)
     setPickedKind(undefined)
   }, [action?.__typename, savedUrl])
 
@@ -150,8 +157,13 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
     block.pageId ?? campaign.pages.find((page) => page.kind === pageKind)?.id
   const sections = pageSections(campaign.blocks, pageId)
   const regions = sortBy(campaign.regions, 'order')
+  const urlError = url.error ?? error
 
-  function commit(next: CampaignButtonAction | null): void {
+  /** Write the action; a refusal keeps the kind and `typedUrl` the author was on. */
+  function commit(
+    next: CampaignButtonAction | null,
+    typedUrl = url.value
+  ): void {
     setError(undefined)
     addAction({
       block,
@@ -161,32 +173,29 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
         // The rollback puts the old action back, which would otherwise take
         // the kind picker, and what the author typed in it, with it.
         setPickedKind(kind)
-        setUrl(url)
+        url.onChange(typedUrl)
         setError(message)
       }
     })
   }
 
-  function handleSaveLink(): void {
-    const trimmed = url.trim()
-    if (!isHttpsUrl(trimmed)) {
-      setError(t('Enter an address starting with https://'))
-      return
-    }
-    if (action?.__typename === 'CampaignLinkAction' && action.url === trimmed)
-      return
-    commit({
-      __typename: 'CampaignLinkAction',
-      parentBlockId: block.id,
-      url: trimmed,
-      target: action?.__typename === 'CampaignLinkAction' ? action.target : null
-    })
+  function handleSaveLink(trimmed: string): void {
+    commit(
+      {
+        __typename: 'CampaignLinkAction',
+        parentBlockId: block.id,
+        url: trimmed,
+        target:
+          action?.__typename === 'CampaignLinkAction' ? action.target : null
+      },
+      trimmed
+    )
   }
 
   function handleUrlKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
     if (event.key !== 'Enter') return
     event.preventDefault()
-    handleSaveLink()
+    url.onBlur()
   }
 
   function handlePickSection(blockId: string): void {
@@ -257,19 +266,21 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
             fullWidth
             label={t('Web address')}
             placeholder="https://"
-            value={url}
+            value={url.value}
             onChange={(event) => {
-              setUrl(event.target.value)
+              url.onChange(event.target.value)
               setError(undefined)
             }}
             onKeyDown={handleUrlKeyDown}
-            error={error != null}
-            helperText={error ?? `${urlLength(url)} / ${LINK_URL_MAX_LENGTH}`}
+            error={urlError != null}
+            helperText={
+              urlError ?? `${urlLength(url.value)} / ${LINK_URL_MAX_LENGTH}`
+            }
             slotProps={{
-              formHelperText: error != null ? { role: 'alert' } : undefined
+              formHelperText: urlError != null ? { role: 'alert' } : undefined
             }}
           />
-          <Button variant="contained" onClick={handleSaveLink}>
+          <Button variant="contained" onClick={url.onBlur}>
             {t('Save')}
           </Button>
         </Stack>

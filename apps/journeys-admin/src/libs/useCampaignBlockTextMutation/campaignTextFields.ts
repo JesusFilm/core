@@ -2,6 +2,7 @@ import {
   TRANSLATED_FIELDS,
   type TranslatedBlockField,
   type TranslatedBlockTypename,
+  isTranslated,
   translatedFieldsOf
 } from '@core/journeys/ui/Campaign/libs/translatedField'
 
@@ -30,7 +31,7 @@ type EditorTextField<T> = T extends TranslatedBlockTypename
  * read as `richTextContent` because the public fragment aliases it away from
  * the Typography block's `content`.
  */
-function editorTextField(typename: string, field: string): string {
+export function editorTextField(typename: string, field: string): string {
   return typename === 'CampaignRichTextBlock' && field === 'content'
     ? 'richTextContent'
     : field
@@ -63,8 +64,8 @@ export const CAMPAIGN_TEXT_FIELDS = Object.fromEntries<readonly string[]>(
 /** Every inline-editable default-language text column of a campaign block. */
 export type CampaignTextField = EditorTextField<InlineTextTypename>
 
-/** The API input key a text field is written under (see `editorTextField`). */
-export function campaignTextInputKey(field: CampaignTextField): string {
+/** The API input key a block's text field is written under (see `editorTextField`). */
+export function campaignTextInputKey(field: string): string {
   return field === 'richTextContent' ? 'content' : field
 }
 
@@ -108,15 +109,15 @@ export function blockTranslations(
   return Array.isArray(list) ? (list as CampaignTranslatedValue[]) : []
 }
 
-/** The stored translation of a field in one language, or empty when there is none. */
+/** The stored translation of a field in one language, or empty when it is not translated there. */
 export function translationValue(
   translations: readonly CampaignTranslatedValue[],
   languageId: string
 ): string {
-  return (
-    translations.find((translation) => translation.languageId === languageId)
-      ?.value ?? ''
+  const entry = translations.find(
+    (translation) => translation.languageId === languageId
   )
+  return isTranslated(entry) ? entry.value : ''
 }
 
 /**
@@ -132,14 +133,11 @@ export function withTranslationValue(
   const others = translations.filter(
     (translation) => translation.languageId !== languageId
   )
-  if (value === '') return others
-  return [
-    ...others,
-    {
-      __typename: 'TranslatedValue',
-      languageId,
-      value,
-      source: CampaignTextSource.human
-    }
-  ]
+  const entry: CampaignTranslatedValue = {
+    __typename: 'TranslatedValue',
+    languageId,
+    value,
+    source: CampaignTextSource.human
+  }
+  return isTranslated(entry) ? [...others, entry] : others
 }

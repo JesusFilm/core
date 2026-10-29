@@ -1,33 +1,27 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
-import {
-  CampaignTranslationsVariables,
-  CampaignTranslations_campaignTranslations as TranslationRow
-} from '../../../../__generated__/CampaignTranslations'
+import { CampaignTranslations_campaignTranslations as TranslationRow } from '../../../../__generated__/CampaignTranslations'
 import {
   CampaignTextField,
   CampaignTextSource
 } from '../../../../__generated__/globalTypes'
-import { useCampaignTranslationSetMutation } from '../../../libs/useCampaignTranslationSetMutation'
-import {
-  rowKey,
-  targetId,
-  writeCachedTranslation
-} from '../../../libs/useCampaignTranslationsQuery'
+import { rowKey, targetId } from '../../../libs/useCampaignTranslationsQuery'
 import { blockLabel } from '../blockLabel'
+import { useCampaignEditor } from '../CampaignEditorProvider'
+import { useCampaignTranslationWrite } from '../utils/useCampaignTranslationWrite'
+import { useCommittedField } from '../utils/useCommittedField'
 
-import { targetInput } from './translationRows'
+import { rowTranslations, targetInput } from './translationRows'
 
 const MULTILINE_FIELDS: CampaignTextField[] = [
   CampaignTextField.description,
@@ -42,18 +36,10 @@ interface TranslationRowProps {
   languageId: string
   /** The language's bcp47 code, so the field reads in its own direction. */
   bcp47: string
-  /** The variables of the query that lists the rows, so a write can update it in place. */
-  queryVariables: CampaignTranslationsVariables
   /** The editor's selection is where this text lives: the line is marked. */
   selected?: boolean
   /** Show the text's place on the canvas. */
   onReveal?: () => void
-}
-
-function messageOf(error: unknown): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : String(error)
 }
 
 /** What a row is: the section or element the text sits in, then the field. */
@@ -116,9 +102,10 @@ export function useRowLabel(): (row: TranslationRow) => string {
  * One line of the Translations view: what the text is, the default-language
  * wording it translates, and an editable field holding the translation.
  * Leaving the field writes a human translation through
- * `campaignTranslationSet` (an emptied field clears it), shown at once, and
- * updates this list and the editor's own copy of the text so the row flips to
- * Edited without a refetch. Laid out as a small "where it is from" line with
+ * `useCampaignTranslationWrite` (an emptied field clears it), shown at once
+ * merged into the field's other languages, and updates this list and the
+ * editor's own copy of the text so the row flips to Edited without a
+ * refetch. Laid out as a small "where it is from" line with
  * the target button always at the right edge, the default-language text
  * large, the status on its own line, then the field. The target button
  * selects the text's place on the canvas, and the line is marked while that
@@ -128,73 +115,28 @@ export function TranslationRowItem({
   row,
   languageId,
   bcp47,
-  queryVariables,
   selected = false,
   onReveal
 }: TranslationRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const rowLabel = useRowLabel()
-  const [translationSet] = useCampaignTranslationSetMutation()
-  const [draft, setDraft] = useState(row.value ?? '')
-  const [error, setError] = useState<string>()
+  const { campaign } = useCampaignEditor()
+  const writeTranslation = useCampaignTranslationWrite()
   const key = rowKey(row)
-
-  useEffect(() => {
-    setDraft(row.value ?? '')
-  }, [row.value, languageId])
-
-  async function handleBlur(): Promise<void> {
-    const value = draft.trim()
-    if (value === (row.value ?? '')) {
-      setDraft(row.value ?? '')
-      return
-    }
-    setError(undefined)
-    const column = `${row.field}Translations`
-    const optimistic =
-      value === ''
-        ? []
-        : [
-            {
-              __typename: 'TranslatedValue' as const,
-              languageId,
-              value,
-              source: CampaignTextSource.human
-            }
-          ]
-    try {
-      await translationSet({
-        variables: {
-          input: {
-            target: targetInput(row.target),
-            field: row.field,
-            languageId,
-            value
-          }
-        },
-        optimisticResponse: { campaignTranslationSet: optimistic },
-        update(cache, { data }) {
-          if (data == null) return
-          cache.modify({
-            id: cache.identify({
-              __typename: row.target.typename,
-              id: targetId(row.target)
-            }),
-            fields: { [column]: () => data.campaignTranslationSet }
-          })
-          writeCachedTranslation(
-            cache,
-            queryVariables,
-            key,
-            data.campaignTranslationSet
-          )
-        }
-      })
-    } catch (writeError) {
-      setError(messageOf(writeError))
-      setDraft(row.value ?? '')
-    }
-  }
+  const draft = useCommittedField({
+    committed: row.value ?? '',
+    save: async (value) =>
+      await writeTranslation({
+        campaignId: campaign.id,
+        row: { __typename: row.target.typename, id: targetId(row.target) },
+        target: targetInput(row.target),
+        field: row.field,
+        languageId,
+        value,
+        translations: rowTranslations(campaign, row)
+      }),
+    resetKey: languageId
+  })
 
   const statusLabel = row.needsReview
     ? t('Needs review')
@@ -254,11 +196,13 @@ export function TranslationRowItem({
         size="small"
         fullWidth
         multiline={MULTILINE_FIELDS.includes(row.field)}
-        value={draft}
-        onChange={(event) => setDraft(event.target.value)}
-        onBlur={handleBlur}
-        error={error != null || textLength(draft) > row.maxLength}
-        helperText={error ?? `${textLength(draft)} / ${row.maxLength}`}
+        value={draft.value}
+        onChange={(event) => draft.onChange(event.target.value)}
+        onBlur={draft.onBlur}
+        error={draft.error != null || textLength(draft.value) > row.maxLength}
+        helperText={
+          draft.error ?? `${textLength(draft.value)} / ${row.maxLength}`
+        }
         slotProps={{
           htmlInput: {
             'aria-label': rowLabel(row),
