@@ -97,7 +97,7 @@ describe('campaignRichTextBlockUpdate', () => {
 
       const result = await update({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -117,7 +117,7 @@ describe('campaignRichTextBlockUpdate', () => {
 
     const result = await update({ content: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -135,7 +135,7 @@ describe('campaignRichTextBlockUpdate', () => {
 
     const result = await update({ content: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 

@@ -112,7 +112,7 @@ describe('campaignBlockRestore', () => {
 
       const result = await restore('slotHeroId')
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })
@@ -187,7 +187,7 @@ describe('campaignBlockRestore', () => {
 
       const result = await restore('oldOwnedId')
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'an owned block comes back through its slot',
         extensions: { code: 'CONFLICT', field: 'id' }
       })
@@ -201,7 +201,7 @@ describe('campaignBlockRestore', () => {
 
     const result = await restore('gone')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -215,7 +215,7 @@ describe('campaignBlockRestore', () => {
 
     const result = await restore('footerTermsId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

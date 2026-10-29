@@ -369,6 +369,18 @@ describe('campaign', () => {
   })
 })
 
+/** A type reference as `TYPE_FIELDS` selects it, `ofType` three deep. */
+interface TypeRef {
+  kind?: string
+  name?: string
+  ofType?: TypeRef | null
+}
+
+/** The `__type` response `TYPE_FIELDS` reads. */
+interface TypeFieldsResult {
+  data: { __type: { fields: Array<{ name: string; type: TypeRef }> } }
+}
+
 describe('translation lists', () => {
   const publicClient = getClient()
 
@@ -398,19 +410,19 @@ describe('translation lists', () => {
     const result = (await publicClient({
       document: TYPE_FIELDS,
       variables: { name }
-    })) as any
-    return result.data.__type.fields.map((field: any) => field.name)
+    })) as TypeFieldsResult
+    return result.data.__type.fields.map((field) => field.name)
   }
 
   it('exposes <field>Translations: [TranslatedValue!]! on every admin type that carries a Translated Field', async () => {
     const result = (await publicClient({
       document: TYPE_FIELDS,
       variables: { name: 'Campaign' }
-    })) as any
+    })) as TypeFieldsResult
     const titleTranslations = result.data.__type.fields.find(
-      (field: any) => field.name === 'titleTranslations'
+      (field) => field.name === 'titleTranslations'
     )
-    expect(titleTranslations.type).toEqual({
+    expect(titleTranslations?.type).toEqual({
       kind: 'NON_NULL',
       ofType: {
         kind: 'LIST',

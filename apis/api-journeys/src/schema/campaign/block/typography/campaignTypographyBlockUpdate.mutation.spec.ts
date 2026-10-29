@@ -79,7 +79,7 @@ describe('campaignTypographyBlockUpdate', () => {
   it('caps content at 2000 characters (BAD_USER_INPUT, content)', async () => {
     const result = await update({ content: 'x'.repeat(2001) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'content'
     })
@@ -148,7 +148,7 @@ describe('campaignTypographyBlockUpdate', () => {
   it('rejects a colour that is not hex (BAD_USER_INPUT, color)', async () => {
     const result = await update({ color: 'red' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'color'
     })
@@ -157,7 +157,7 @@ describe('campaignTypographyBlockUpdate', () => {
   it('rejects placement null instead of reading it as the default (BAD_USER_INPUT, placement)', async () => {
     const result = await update({ placement: null })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'placement'
     })
@@ -178,7 +178,7 @@ describe('campaignTypographyBlockUpdate', () => {
 
     const result = await update({ placement: 'above' }, 'lineId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'placement'
     })
@@ -192,7 +192,7 @@ describe('campaignTypographyBlockUpdate', () => {
 
     const result = await update({ content: 'x' }, 'heroButtonId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -205,7 +205,7 @@ describe('campaignTypographyBlockUpdate', () => {
 
     const result = await update({ content: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

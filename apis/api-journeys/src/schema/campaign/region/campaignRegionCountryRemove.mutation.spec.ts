@@ -98,7 +98,7 @@ describe('campaignRegionCountryRemove', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegionCountry.delete).not.toHaveBeenCalled()
     expect(writes).toEqual([])
   })
@@ -108,6 +108,6 @@ describe('campaignRegionCountryRemove', () => {
 
     const result = await remove('missing')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

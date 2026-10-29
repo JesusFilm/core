@@ -168,7 +168,7 @@ describe('campaignRegionCreate', () => {
 
     const result = await create()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: `a campaign has at most ${CAMPAIGN_REGIONS_MAX} regions`,
       extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' }
     })
@@ -190,7 +190,7 @@ describe('campaignRegionCreate', () => {
     async (id) => {
       const result = await create(id)
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'id must be a UUID',
         extensions: { code: 'BAD_USER_INPUT', field: 'id' }
       })
@@ -228,7 +228,7 @@ describe('campaignRegionCreate', () => {
 
       const result = await create(CLIENT_ID)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })
@@ -242,11 +242,11 @@ describe('campaignRegionCreate', () => {
       const withoutId = await create()
       const withId = await create(CLIENT_ID)
 
-      expect(withoutId.errors[0].extensions).toMatchObject({
+      expect(withoutId.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'slug'
       })
-      expect(withId.errors[0].extensions).toMatchObject({
+      expect(withId.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'slug'
       })
@@ -260,7 +260,7 @@ describe('campaignRegionCreate', () => {
 
       const result = await create(CLIENT_ID)
 
-      expect(result.errors[0].extensions).toEqual({})
+      expect(result.errors?.[0].extensions).toEqual({})
       expect(prismaMock.campaignRegion.findUnique).not.toHaveBeenCalled()
     })
   })
@@ -272,7 +272,7 @@ describe('campaignRegionCreate', () => {
 
     const result = await create()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegion.create).not.toHaveBeenCalled()
     expect(writes).toEqual([])
   })
@@ -282,6 +282,6 @@ describe('campaignRegionCreate', () => {
 
     const result = await create()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

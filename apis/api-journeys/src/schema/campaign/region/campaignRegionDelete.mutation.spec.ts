@@ -143,7 +143,7 @@ describe('campaignRegionDelete', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'regionId'
     })
@@ -171,7 +171,7 @@ describe('campaignRegionDelete', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'regionId'
     })
@@ -186,7 +186,7 @@ describe('campaignRegionDelete', () => {
 
     const result = await remove('regionPageId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
     expect(prismaMock.campaignPage.delete).not.toHaveBeenCalled()
   })
@@ -202,7 +202,7 @@ describe('campaignRegionDelete', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
   })
 

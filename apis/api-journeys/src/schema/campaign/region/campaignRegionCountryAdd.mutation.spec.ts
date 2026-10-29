@@ -115,7 +115,7 @@ describe('campaignRegionCountryAdd', () => {
 
     const result = await add('XX')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'countryId'
     })
@@ -125,7 +125,7 @@ describe('campaignRegionCountryAdd', () => {
   it('rejects the same country twice (BAD_USER_INPUT, field countryId)', async () => {
     const result = await add('DE')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'countryId'
     })
@@ -140,7 +140,7 @@ describe('campaignRegionCountryAdd', () => {
 
     const result = await add('FR')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'countryId'
     })
@@ -177,7 +177,7 @@ describe('campaignRegionCountryAdd', () => {
 
       const result = await add('FR')
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'countryId'
       })
@@ -189,7 +189,7 @@ describe('campaignRegionCountryAdd', () => {
 
       const result = await add('FR')
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'countryId'
       })
@@ -207,7 +207,7 @@ describe('campaignRegionCountryAdd', () => {
 
     const result = await add('FR')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 
   it('throws NOT_FOUND for an unknown region', async () => {
@@ -215,6 +215,6 @@ describe('campaignRegionCountryAdd', () => {
 
     const result = await add('FR')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

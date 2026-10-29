@@ -123,7 +123,7 @@ describe('campaignRegionLanguageCreate', () => {
 
     const result = await create('999999')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'languageId'
     })
@@ -133,7 +133,7 @@ describe('campaignRegionLanguageCreate', () => {
   it('rejects the same language twice on a region (BAD_USER_INPUT, field languageId)', async () => {
     const result = await create('529')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'languageId'
     })
@@ -178,7 +178,7 @@ describe('campaignRegionLanguageCreate', () => {
 
       const result = await create()
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: `languageId ${FRENCH} is already a share language of this region`,
         extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
       })
@@ -194,7 +194,7 @@ describe('campaignRegionLanguageCreate', () => {
 
       const result = await create()
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: `a region has at most ${REGION_SHARE_LANGUAGES_MAX} share languages`,
         extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
       })
@@ -226,7 +226,7 @@ describe('campaignRegionLanguageCreate', () => {
 
     const result = await create()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegionLanguage.create).not.toHaveBeenCalled()
   })
 
@@ -235,6 +235,6 @@ describe('campaignRegionLanguageCreate', () => {
 
     const result = await create()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

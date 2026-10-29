@@ -168,7 +168,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ title: '   ' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
@@ -182,7 +182,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ title: 'x'.repeat(101) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
@@ -203,7 +203,7 @@ describe('campaignUpdate', () => {
 
       const result = await update({ slug })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slug'
       })
@@ -219,7 +219,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ slug: 'taken' })
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'slug already in use',
       extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
     })
@@ -238,7 +238,7 @@ describe('campaignUpdate', () => {
 
       const result = await update({ slug: 'raced' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slug'
       })
@@ -307,7 +307,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ palette: ['#AABBCC', 'red'] })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'palette'
     })
@@ -422,7 +422,7 @@ describe('campaignUpdate', () => {
 
       const result = await setDefault(SPANISH)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'defaultLanguageId'
       })
@@ -445,7 +445,7 @@ describe('campaignUpdate', () => {
       const result = await setDefault(FRENCH)
 
       expect(missing).toBeGreaterThan(0)
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'defaultLanguageId',
         count: missing
@@ -466,7 +466,7 @@ describe('campaignUpdate', () => {
 
       const result = await setDefault(FRENCH)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'defaultLanguageId',
         count: 1
@@ -670,7 +670,7 @@ describe('campaignUpdate', () => {
         }
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'title'
       })
@@ -692,7 +692,7 @@ describe('campaignUpdate', () => {
 
       const result = await setDefault(FRENCH)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'defaultLanguageId'
       })
@@ -731,7 +731,7 @@ describe('campaignUpdate', () => {
 
       const result = await setDefault(FRENCH)
 
-      expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+      expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
   })

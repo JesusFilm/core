@@ -2198,7 +2198,9 @@ describe('the slot contract (cover, logo and media)', () => {
       await swapSlot(prismaMock, owner, 'coverBlockId', 'newId', deletedAt)
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([
         {
           where: { id: 'heldCoverId' },
@@ -2218,7 +2220,9 @@ describe('the slot contract (cover, logo and media)', () => {
       )
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([{ where: { id: 'newId' }, data: { deletedAt: null } }])
     })
 
@@ -2226,7 +2230,9 @@ describe('the slot contract (cover, logo and media)', () => {
       await swapSlot(prismaMock, owner, 'logoBlockId', null, deletedAt)
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([{ where: { id: 'heldLogoId' }, data: { deletedAt } }])
     })
 
@@ -2240,7 +2246,9 @@ describe('the slot contract (cover, logo and media)', () => {
       )
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([{ where: { id: 'heldMediaId' }, data: { deletedAt: null } }])
     })
   })
@@ -2263,7 +2271,9 @@ describe('the slot contract (cover, logo and media)', () => {
         await updateBlock(ownerRef, { [column]: 'newId' })
 
         expect(
-          prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+          vi
+            .mocked(prismaMock.campaignBlock.update)
+            .mock.calls.map(([call]) => call)
         ).toEqual([
           {
             where: { id: held[column] },
@@ -2286,7 +2296,9 @@ describe('the slot contract (cover, logo and media)', () => {
 
         expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledTimes(1)
         expect(
-          prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+          vi
+            .mocked(prismaMock.campaignBlock.update)
+            .mock.calls.map(([call]) => call)
         ).toEqual([
           {
             where: { id: held[column] },
@@ -2338,8 +2350,9 @@ describe('the slot contract (cover, logo and media)', () => {
         mediaBlockId: 'newMediaId'
       })
 
-      const stamped = prismaMock.campaignBlock.update.mock.calls
-        .map(([call]: any) => call)
+      const stamped = vi
+        .mocked(prismaMock.campaignBlock.update)
+        .mock.calls.map(([call]) => call)
         .filter((call) => call.data.deletedAt instanceof Date)
       expect(stamped.map((call) => call.where.id)).toEqual([
         'heldCoverId',

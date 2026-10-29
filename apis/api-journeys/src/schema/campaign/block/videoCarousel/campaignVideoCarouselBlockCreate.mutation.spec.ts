@@ -105,7 +105,7 @@ describe('campaignVideoCarouselBlockCreate', () => {
   it('caps eyebrow at 80 characters (BAD_USER_INPUT, eyebrow)', async () => {
     const result = await create({ eyebrow: 'x'.repeat(81) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'eyebrow'
     })
@@ -117,7 +117,7 @@ describe('campaignVideoCarouselBlockCreate', () => {
 
     const result = await create({ pageId: 'missing' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'pageId'
     })
@@ -131,7 +131,7 @@ describe('campaignVideoCarouselBlockCreate', () => {
 
     const result = await create({})
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 })

@@ -121,7 +121,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
       prismaMock.campaignBlock.update.mockClear()
       const result = await update({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -143,7 +143,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
   it('refuses a null mediaSide, which is never null (BAD_USER_INPUT, mediaSide)', async () => {
     const result = await update({ mediaSide: null })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'mediaSide'
     })
@@ -188,7 +188,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
   it('refuses a null layout, which is never null (BAD_USER_INPUT, layout)', async () => {
     const result = await update({ layout: null })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'layout'
     })
@@ -198,7 +198,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
   it('rejects an unknown layout at the schema (the enum) before the resolver', async () => {
     const result = await update({ layout: 'diagonal' })
 
-    expect(result.errors[0].message).toContain(
+    expect(result.errors?.[0].message).toContain(
       'Value "diagonal" does not exist in "CampaignFeaturedMediaLayout" enum'
     )
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
@@ -237,7 +237,9 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
       })
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([
         {
           where: { id: 'currentMediaId' },
@@ -262,7 +264,9 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
         expect.objectContaining({ select: { id: true, typename: true } })
       )
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([
         {
           where: { id: 'currentMediaId' },
@@ -285,7 +289,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
           typename: 'CampaignButtonBlock'
         } as never)
       const extra = await update({ mediaBlockId: 'buttonId' })
-      expect(extra.errors[0].extensions).toMatchObject({
+      expect(extra.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'mediaBlockId'
       })
@@ -295,7 +299,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
         .mockResolvedValueOnce(featuredMedia)
         .mockResolvedValueOnce(null)
       const elsewhere = await update({ mediaBlockId: 'otherSectionMediaId' })
-      expect(elsewhere.errors[0].extensions).toMatchObject({
+      expect(elsewhere.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'mediaBlockId'
       })
@@ -325,7 +329,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
 
     const result = await update({ coverBlockId: 'notAnImageId' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'coverBlockId'
     })
@@ -339,7 +343,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
 
     const result = await update({ title: 'x' }, 'heroId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -354,7 +358,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

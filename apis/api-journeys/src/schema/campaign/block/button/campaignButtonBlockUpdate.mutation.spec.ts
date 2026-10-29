@@ -77,7 +77,7 @@ describe('campaignButtonBlockUpdate', () => {
   it('caps the label at 60 characters (BAD_USER_INPUT, label)', async () => {
     const result = await update({ label: 'x'.repeat(61) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'label'
     })
@@ -138,7 +138,7 @@ describe('campaignButtonBlockUpdate', () => {
       expect(cleared.data.campaignButtonBlockUpdate[field]).toBeNull()
 
       const bad = await update({ [field]: 'green' })
-      expect(bad.errors[0].extensions).toMatchObject({
+      expect(bad.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -148,7 +148,7 @@ describe('campaignButtonBlockUpdate', () => {
   it('rejects placement null instead of reading it as the default (BAD_USER_INPUT, placement)', async () => {
     const result = await update({ placement: null })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'placement'
     })
@@ -169,7 +169,7 @@ describe('campaignButtonBlockUpdate', () => {
 
     const result = await update({ placement: 'above' }, 'lineId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'placement'
     })
@@ -183,7 +183,7 @@ describe('campaignButtonBlockUpdate', () => {
 
     const result = await update({ label: 'x' }, 'footerCopyrightId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -196,6 +196,6 @@ describe('campaignButtonBlockUpdate', () => {
 
     const result = await update({ label: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 })

@@ -80,7 +80,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
 
       const result = await update({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -101,7 +101,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -115,7 +115,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -211,7 +211,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
       })
 
       for (const result of [withUrl, withVideoId])
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'BAD_USER_INPUT',
           field: 'videoVariantLanguageId'
         })
@@ -226,7 +226,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
       const misshapen = await update({ url: 'https://example.com/film' })
 
       for (const result of [unresolved, misshapen])
-        expect(result.errors[0]).toMatchObject({
+        expect(result.errors?.[0]).toMatchObject({
           message: "That link isn't a Watch video",
           extensions: { code: 'BAD_USER_INPUT', field: 'url' }
         })
@@ -236,7 +236,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
     it('refuses url together with videoId (BAD_USER_INPUT, url)', async () => {
       const result = await update({ url: WATCH_URL, videoId: 'watchVideoId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'url'
       })
@@ -266,7 +266,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
 
       const result = await update({ videoId: 'missingId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'videoId'
       })
@@ -302,7 +302,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
     it('refuses videoVariantLanguageId on its own (BAD_USER_INPUT, videoVariantLanguageId)', async () => {
       const result = await update({ videoVariantLanguageId: '529' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'videoVariantLanguageId'
       })
