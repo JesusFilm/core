@@ -1015,6 +1015,9 @@ model Campaign {
   palette           String[]
   /// Stamped on the first publish only; never cleared by unpublish.
   publishedAt       DateTime?
+  /// The shared-link slug of the Campaign's own Plausible site
+  /// (`api-journeys-campaign-<id>`); null until the plausible worker creates it.
+  plausibleToken    String?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   team              Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)

@@ -73,7 +73,7 @@ The Campaign Editor's rendering of the open Campaign Page at a fixed Desktop or 
 _Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
 
 **Left Rail**:
-The narrow column of icon buttons beside the Campaign Canvas: back to the **Team Campaigns** tab, the panel toggles **Add**, **Pages**, **Navigator** and **Localize** in that order, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is always open (Add on first open), docked beside the rail rather than over the canvas. A toggle or shortcut opens its panel in place of the open one; a second click or shortcut on the open panel changes nothing, and Escape only steps the selection up, never the panel.
+The narrow column of icon buttons beside the Campaign Canvas: back to the **Team Campaigns** tab, the panel toggles **Add**, **Pages**, **Navigator** and **Localize** in that order, a link to the **Campaign Report**, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is always open (Add on first open), docked beside the rail rather than over the canvas. A toggle or shortcut opens its panel in place of the open one; a second click or shortcut on the open panel changes nothing, and Escape only steps the selection up, never the panel.
 _Avoid_: toolbar, sidebar, top bar
 
 **Inspector**:
@@ -196,9 +196,17 @@ _Avoid_: dashboard (ambiguous between the Power BI and Plausible surfaces)
 The embedded business-intelligence dashboard behind Journeys Analytics, in four variants: multiple/single journey × full/summary detail.
 _Avoid_: report (unqualified)
 
-**Plausible Embed Dashboard**:
-The other embedded analytics surface: a single journey's Plausible dashboard iframe, authorized by the journey's `plausibleToken`. Event-level stats, distinct backend from Power BI.
+**Plausible Embed Frame**:
+The other embedded analytics surface: a Plausible site's own dashboard in an iframe, through its shared link and authorized by its `plausibleToken`, restyled for the admin. Event-level stats, distinct backend from Power BI. The **Plausible Embed Dashboard** and the **Campaign Report** each show one.
 _Avoid_: conflating with the Power BI Report
+
+**Plausible Embed Dashboard**:
+A single journey's Plausible Embed Frame, on that journey's reports page.
+_Avoid_: using it for the generic frame or for the Campaign Report
+
+**Campaign Report**:
+A Campaign's site traffic at `/campaigns/<id>/reports`: the **Plausible Embed Frame** of the Campaign's own Plausible site, so Plausible's default reports (visitors, page views, bounce rate, pages, sources, countries, devices), the `region` and `language` properties and the four `campaign*` goals, with nothing built on top. Opened from the Left Rail's Report button and each Team Campaigns card, behind `campaignBuilder`, for anyone with campaign Read; until the Campaign's site exists it says the report is being set up. Private, unlike the public Analytics section.
+_Avoid_: analytics, campaign analytics (the public Analytics section and its **Campaign Stats** already use that word), campaign stats
 
 **Visitor Timeline**:
 The per-Visitor interaction history shown on a visitor card, built from upstream Events and labeled in admin terms: **Chat Started** (a ChatOpenEvent), **Submitted Text** (a text response), **Poll Answers** and **Multiselect Answers** (question submissions).

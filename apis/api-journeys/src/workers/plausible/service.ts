@@ -9,6 +9,7 @@ import { Job } from 'bullmq'
 import chunk from 'lodash/chunk'
 import { Logger } from 'pino'
 
+import type { CampaignPlausibleEvents } from '@core/journeys/ui/campaignPlausible'
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 import { prisma } from '@core/prisma/journeys/client'
 
@@ -33,11 +34,17 @@ interface PlausibleCreateTemplateSiteJob {
   templateId: string
 }
 
+interface PlausibleCreateCampaignSiteJob {
+  __typename: 'plausibleCreateCampaignSite'
+  campaignId: string
+}
+
 type PlausibleJob =
   | PlausibleCreateSitesJob
   | PlausibleCreateTeamSiteJob
   | PlausibleCreateJourneySiteJob
   | PlausibleCreateTemplateSiteJob
+  | PlausibleCreateCampaignSiteJob
 
 type MutationSiteCreateSuccess = {
   __typename: 'MutationSiteCreateSuccess'
@@ -125,6 +132,18 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'custom3Capture'
 ]
 
+// A Campaign's own site counts the campaign events, plus the outbound clicks
+// the public page's script reports (`trackOutboundLinks`).
+export const campaignGoals: Array<
+  keyof CampaignPlausibleEvents | 'Outbound Link: Click'
+> = [
+  'campaignJourneyClick',
+  'campaignRegionClick',
+  'campaignQrDownload',
+  'campaignShareLinkCopy',
+  'Outbound Link: Click'
+]
+
 const httpLink = new HttpLink({
   uri: env.GATEWAY_URL,
   fetch,
@@ -154,9 +173,23 @@ function templateSiteId(templateId: string): string {
   return `api-journeys-template-${templateId}`
 }
 
+function campaignSiteId(campaignId: string): string {
+  return `api-journeys-campaign-${campaignId}`
+}
+
+interface CreateSiteOptions {
+  /** Create no shared link (template sites have no embeddable dashboard). */
+  disableSharedLinks?: boolean
+  /** The site's goals; journey, team and template sites get the journey goals. */
+  goals?: string[]
+}
+
 async function createSite(
   domain: string,
-  disableSharedLinks = false
+  {
+    disableSharedLinks = false,
+    goals: siteGoals = goals as string[]
+  }: CreateSiteOptions = {}
 ): Promise<MutationSiteCreateResult | undefined> {
   const { data } = await client.mutate<{
     siteCreate: MutationSiteCreateResult
@@ -165,7 +198,7 @@ async function createSite(
     variables: {
       input: {
         domain,
-        goals: goals as string[],
+        goals: siteGoals,
         disableSharedLinks
       },
       includeSharedLinks: !disableSharedLinks
@@ -249,7 +282,9 @@ async function createTemplateSite(
     return
   }
 
-  const site = await createSite(templateSiteId(templateId), true)
+  const site = await createSite(templateSiteId(templateId), {
+    disableSharedLinks: true
+  })
   if (site == null || site.__typename !== 'MutationSiteCreateSuccess') {
     logger?.warn({ templateId }, 'failed to create template site in Plausible')
     return
@@ -262,6 +297,42 @@ async function createTemplateSite(
     }
   })
   logger?.info({ templateId }, 'template site created in Plausible')
+}
+
+/**
+ * Create a Campaign's own site and store its shared-link token. Throws when
+ * Plausible gives no site or no shared link, so the queued job fails and BullMQ
+ * retries it (`campaignCreate` queues it with bounded attempts); the startup
+ * backfill catches per campaign instead. A campaign deleted before the token is
+ * stored is not a failure.
+ */
+async function createCampaignSite(
+  { campaignId }: PlausibleCreateCampaignSiteJob,
+  logger?: Logger
+): Promise<void> {
+  const site = await createSite(campaignSiteId(campaignId), {
+    goals: campaignGoals
+  })
+  if (site == null || site.__typename !== 'MutationSiteCreateSuccess')
+    throw new Error('failed to create campaign site in Plausible')
+
+  const slug = site.data.sharedLinks?.[0]?.slug
+  if (slug == null)
+    throw new Error('missing plausible slug in campaign site sharedLinks')
+
+  // Campaigns are hard-deleted, so the row may be gone by the time the job runs.
+  const { count } = await prisma.campaign.updateMany({
+    where: { id: campaignId },
+    data: { plausibleToken: slug }
+  })
+  if (count === 0) {
+    logger?.warn(
+      { campaignId },
+      'campaign deleted before its Plausible site was stored'
+    )
+    return
+  }
+  logger?.info({ campaignId }, 'campaign site created in Plausible')
 }
 
 async function createSites(logger?: Logger): Promise<void> {
@@ -327,6 +398,34 @@ async function createSites(logger?: Logger): Promise<void> {
       )
     )
   }
+
+  logger?.info('creating campaign sites...')
+  const campaignIds = (
+    await prisma.campaign.findMany({
+      where: { plausibleToken: null },
+      select: { id: true }
+    })
+  ).map(({ id }) => id)
+
+  for (const ids of chunk(campaignIds, BATCH_SIZE)) {
+    await Promise.all(
+      ids.map(async (campaignId) => {
+        // One campaign's failure must not abort the rest of the backfill;
+        // it is retried by the next one.
+        try {
+          await createCampaignSite(
+            { __typename: 'plausibleCreateCampaignSite', campaignId },
+            logger
+          )
+        } catch (error) {
+          logger?.warn(
+            { campaignId, error },
+            'failed to create campaign site in Plausible'
+          )
+        }
+      })
+    )
+  }
 }
 
 export async function service(
@@ -345,6 +444,9 @@ export async function service(
       break
     case 'plausibleCreateTemplateSite':
       await createTemplateSite(job.data, logger)
+      break
+    case 'plausibleCreateCampaignSite':
+      await createCampaignSite(job.data, logger)
       break
     default:
       logger?.warn({ job: job.data }, 'unknown plausible job type')

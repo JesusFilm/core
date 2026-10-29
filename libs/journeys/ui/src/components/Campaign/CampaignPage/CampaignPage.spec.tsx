@@ -1,6 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import { ThemeProvider } from '@mui/material/styles'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 
 import {
   CampaignColumnsRatio,
@@ -74,6 +81,8 @@ function styleText(): string {
     .map((node) => node.textContent ?? '')
     .join('')
 }
+
+vi.mock('next-plausible', () => ({ usePlausible: vi.fn() }))
 
 describe('CampaignPage', () => {
   it('renders the landing page: the seeded sections in order between the chrome', () => {
@@ -617,5 +626,30 @@ describe('CampaignPage page language', () => {
     expect(
       screen.getByTestId('CampaignRegionCard-eurRegionId')
     ).toHaveAttribute('href', '/campaign/outreach-2026/eur?lang=ar')
+  })
+})
+
+describe('CampaignPage events', () => {
+  const plausible = vi.fn()
+
+  beforeEach(() => {
+    vi.mocked(usePlausible).mockReturnValue(plausible)
+    plausible.mockClear()
+    vi.stubGlobal('location', { ...window.location, assign: vi.fn() })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('reports campaign events, being the public page', () => {
+    renderPage(campaignPublic)
+    fireEvent.click(screen.getByTestId('CampaignRegionCard-afrRegionId'))
+    expect(plausible).toHaveBeenCalledWith(
+      'campaignRegionClick',
+      expect.objectContaining({
+        props: { campaignId: 'campaignId', language: 'en', region: 'afr' }
+      })
+    )
   })
 })

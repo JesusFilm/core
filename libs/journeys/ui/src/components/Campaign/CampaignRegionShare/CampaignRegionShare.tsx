@@ -19,6 +19,10 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import {
+  journeySlug,
+  useCampaignPlausible
+} from '../../../libs/campaignPlausible'
 import { QrCodeCanvas, downloadQrCodePng } from '../../QrCodeCanvas'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
@@ -152,6 +156,7 @@ export function CampaignRegionShare({
 }: CampaignRegionShareProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { campaign, region, string } = useCampaign()
+  const track = useCampaignPlausible()
   const [selectedId, setSelectedId] = useState<string>()
   const [copied, setCopied] = useState(false)
   const languages = region == null ? [] : shareLanguages(region)
@@ -172,6 +177,8 @@ export function CampaignRegionShare({
   const openLabel = hasText(strings.open) ? strings.open : t('Open')
   const copiedLabel = hasText(strings.copied) ? strings.copied : t('Copied')
   const shortLink = selected?.shortLinkUrl ?? undefined
+  const shareLanguage =
+    selected == null ? '' : (selected.language.bcp47 ?? selected.languageId)
 
   function handleChange(event: SelectChangeEvent<string>): void {
     setSelectedId(event.target.value)
@@ -182,6 +189,7 @@ export function CampaignRegionShare({
     try {
       await navigator.clipboard.writeText(shortLink)
       setCopied(true)
+      track('campaignShareLinkCopy', { shareLanguage })
     } catch {
       setCopied(false)
     }
@@ -191,6 +199,21 @@ export function CampaignRegionShare({
     event.preventDefault()
     if (shortLink == null || region == null || selected == null) return
     downloadQrCodePng(shortLink, qrCodeFileName(campaign, region, selected))
+    track('campaignQrDownload', { shareLanguage })
+  }
+
+  function handleOpen(event: MouseEvent<HTMLElement>): void {
+    if (shortLink == null) return
+    const journeyUrl = selected?.journeyUrl
+    track(
+      'campaignJourneyClick',
+      {
+        ...(journeyUrl != null ? { journey: journeySlug(journeyUrl) } : {}),
+        source: 'share',
+        shareLanguage
+      },
+      event
+    )
   }
 
   return (
@@ -354,6 +377,7 @@ export function CampaignRegionShare({
                         href={shortLink}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={handleOpen}
                         aria-label={openLabel}
                         size="small"
                         sx={{ color: 'var(--campaign-band-accent)' }}

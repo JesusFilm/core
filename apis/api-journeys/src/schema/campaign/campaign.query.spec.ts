@@ -266,6 +266,33 @@ describe('campaign', () => {
     })
   })
 
+  it("returns the Campaign's Plausible token behind campaign Read", async () => {
+    const fixture = {
+      ...campaignFactory().build(),
+      plausibleToken: 'sharedLinkSlug'
+    }
+    prismaMock.campaign.findUnique.mockResolvedValue(fixture)
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(fixture)
+
+    const result = await authClient({
+      document: graphql(`
+        query CampaignPlausibleToken($id: ID!) {
+          campaign(id: $id) {
+            id
+            plausibleToken
+          }
+        }
+      `),
+      variables: { id: 'campaignId' }
+    })
+
+    expect(result.errors).toBeUndefined()
+    expect(result.data.campaign).toEqual({
+      id: 'campaignId',
+      plausibleToken: 'sharedLinkSlug'
+    })
+  })
+
   it('reads the live journey of every journey card in one query', async () => {
     const fixture = campaignFactory().build()
     const card = (id: string, journeyId: string): any => ({
@@ -440,6 +467,11 @@ describe('translation lists', () => {
       'source',
       'value'
     ])
+  })
+
+  it('keeps the Plausible token off the CampaignPublic projection', async () => {
+    expect(await fieldNames('Campaign')).toContain('plausibleToken')
+    expect(await fieldNames('CampaignPublic')).not.toContain('plausibleToken')
   })
 
   it('omits every translation list from the CampaignPublic projection', async () => {

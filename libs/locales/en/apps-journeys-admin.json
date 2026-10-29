@@ -1773,5 +1773,8 @@
   "The campaign moves back to its your.nextstep.is address.": "The campaign moves back to its your.nextstep.is address.",
   "Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.": "Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.",
   "Copy value": "Copy value",
-  "This domain is already in use. Remove it where it's connected, then add it here.": "This domain is already in use. Remove it where it's connected, then add it here."
+  "This domain is already in use. Remove it where it's connected, then add it here.": "This domain is already in use. Remove it where it's connected, then add it here.",
+  "The report is being set up. Check back in a few minutes.": "The report is being set up. Check back in a few minutes.",
+  "Report": "Report",
+  "Campaign Report": "Campaign Report"
 }

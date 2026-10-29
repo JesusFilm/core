@@ -52,6 +52,10 @@ The body of the Analytics section, shared by the public page and the editor canv
 **World Map**:
 The Analytics Panel's optional map: the selected tab's Region Countries are shaded by visitors and the view zooms to them with the whole atlas kept in view (letterboxed). Countries join the map by country code, never by name, so any the map lacks stay in the ranked list only.
 
+**Campaign events**:
+What a Campaign Public Page sends to Plausible besides its automatic page views: `campaignJourneyClick` (a journey card's Open, or the Share section's open-link, told apart by `source`), `campaignRegionClick` (a Region Switcher card; `region` is the target), `campaignQrDownload` and `campaignShareLinkCopy`. Every view and event carries `campaignId`, the Region Page's `region` slug (none on the landing page) and the Page Language's `language` tag; share events add `shareLanguage`. Only the public page reports (`reportEvents`, set by Campaign Page), never the editor canvas, and a same-tab link waits up to a second for the event before it navigates.
+_Avoid_: journey events, Event Mutations (the journey playback events; campaign names always carry the `campaign` prefix)
+
 **Campaign image**:
 Every campaign image (cover, logo, Image section, poster, journey card) renders as a plain `<img>` through `campaignImageSource`, never `NextImage`. The same components paint the public page and the editor canvas; the sources are author-supplied URLs (uploaded to Cloudflare, a Watch banner, a YouTube or Mux poster) that are already delivered at a sized variant, and `next/image` would only admit the hosts in the viewer's `remotePatterns` and fail the rest.
 

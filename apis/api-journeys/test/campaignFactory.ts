@@ -593,6 +593,7 @@ export function campaignFactory(
     defaultLanguageId,
     palette: LIGHT_PALETTE,
     publishedAt: null,
+    plausibleToken: null,
     createdAt,
     updatedAt: createdAt,
     team: {

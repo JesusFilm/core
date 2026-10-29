@@ -55,7 +55,7 @@ describe('PlausibleEmbedDashboard', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getByTestId('PlausibleEmbedDashboard')).toBeInTheDocument()
+    expect(screen.getByTestId('PlausibleEmbedFrame')).toBeInTheDocument()
   })
 
   it('should show loading message', () => {
