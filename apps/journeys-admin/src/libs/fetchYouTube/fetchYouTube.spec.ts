@@ -49,6 +49,20 @@ describe('fetchYouTube', () => {
     )
   })
 
+  it('throws a status message when the edge answers with HTML', async () => {
+    mswServer.use(
+      http.get(youTubeVideos, () =>
+        HttpResponse.html('<html><body>Too Many Requests</body></html>', {
+          status: 429
+        })
+      )
+    )
+
+    await expect(fetchYouTube('videos', { id: 'abc' })).rejects.toThrow(
+      'YouTube request failed (429)'
+    )
+  })
+
   it('throws a status message when a refusal carries no payload message', async () => {
     mswServer.use(
       http.get(youTubePlaylists, () => HttpResponse.json({}, { status: 500 }))

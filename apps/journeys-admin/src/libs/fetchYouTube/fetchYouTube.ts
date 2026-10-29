@@ -38,9 +38,11 @@ interface YouTubeErrorData {
 
 /**
  * Read one YouTube Data API resource (`videos`, `playlists`) with the given
- * query parameters and the app's key. The API answers a refused request (a
- * bad key, an exhausted quota) with an error payload, which throws the API's
- * message, or a status message when the payload carries none.
+ * query parameters and the app's key. The status is checked before the body
+ * is read: the API answers a refused request (a bad key, an exhausted quota)
+ * with a JSON error payload, which throws the API's message, but Google's
+ * edge can answer a 429 or 5xx with HTML, so a body that is not JSON (or
+ * carries no message) throws "YouTube request failed (<status>)".
  */
 export async function fetchYouTube<Data>(
   resource: 'videos' | 'playlists',
@@ -53,10 +55,13 @@ export async function fetchYouTube<Data>(
   const response = await fetch(
     `https://www.googleapis.com/youtube/v3/${resource}?${query}`
   )
-  const data: Data & YouTubeErrorData = await response.json()
-  if (!response.ok)
+  if (!response.ok) {
+    const errorData: YouTubeErrorData | undefined = await response
+      .json()
+      .catch(() => undefined)
     throw new Error(
-      data.error?.message ?? `YouTube request failed (${response.status})`
+      errorData?.error?.message ?? `YouTube request failed (${response.status})`
     )
-  return data
+  }
+  return (await response.json()) as Data
 }
