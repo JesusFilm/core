@@ -272,7 +272,7 @@ describe('CampaignEditorProvider', () => {
   it('steps up from a column child and from a slot to the Columns section', async () => {
     render(
       <StaticEditor
-        campaignProp={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{ selectedBlockId: 'slotRichTextId' }}
       >
         <Hotkeys />
@@ -295,7 +295,7 @@ describe('CampaignEditorProvider', () => {
   it('steps up from a slot to the Columns section on Escape', async () => {
     render(
       <StaticEditor
-        campaignProp={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{ selectedBlockId: 'slotRightId' }}
       >
         <Hotkeys />
@@ -385,7 +385,7 @@ describe('CampaignEditorProvider', () => {
     rerender(
       <StaticEditor
         initialState={{ previewLanguageId: '496' }}
-        campaignProp={withoutFrench}
+        campaign={withoutFrench}
       >
         <PreviewProbe />
       </StaticEditor>

@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -29,7 +30,6 @@ import {
   CAMPAIGN_HERO_BLOCK_CREATE,
   CAMPAIGN_RICH_TEXT_BLOCK_CREATE
 } from '../../../libs/useCampaignSectionCreateMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import {
   campaign,
@@ -45,7 +45,8 @@ import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
-  StaticEditor
+  StaticEditor,
+  UndoRedo
 } from '../testing'
 import { newSectionBlock } from '../utils/sectionTypes'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
@@ -241,12 +242,12 @@ const richTextInSlotMock = {
 function renderInspector(
   initialState?: Partial<CampaignEditorState>,
   campaignProp = campaign,
-  extraMocks: Array<Record<string, unknown>> = []
+  extraMocks: MockLink.MockedResponse[] = []
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor
       initialState={initialState}
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       mocks={[
         ...extraMocks,
         noteDeleteMock,
@@ -711,10 +712,10 @@ describe('Inspector', () => {
       render(
         <StaticEditor
           initialState={{ selectedBlockId: 'eurLineId' }}
-          campaignProp={campaignWithRegions}
+          campaign={campaignWithRegions}
           mocks={[lineDeleteMock, lineRestoreMock]}
         >
-          <CommandUndoItem variant="button" />
+          <UndoRedo />
           <SelectionProbe />
           <Inspector role="member" />
         </StaticEditor>
@@ -1232,7 +1233,7 @@ describe('Inspector', () => {
     ): ReturnType<typeof render> {
       return render(
         <StaticEditor
-          campaignProp={carouselCampaign}
+          campaign={carouselCampaign}
           initialState={{ selectedBlockId, inspectorTab }}
           mocks={[moveRightMock, moveLeftMock, cardDeleteMock]}
         >
@@ -1350,7 +1351,7 @@ describe('Inspector', () => {
             selectedBlockId: 'slotRightId',
             inspectorTab: 'settings'
           }}
-          campaignProp={campaignWithColumns}
+          campaign={campaignWithColumns}
           mocks={[richTextInSlotMock]}
         >
           <SelectionProbe />

@@ -8,11 +8,9 @@ import {
 } from '../../../../../__generated__/GetCampaign'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../../data'
-import { CommandProbe, QueriedEditor } from '../../testing'
+import { CommandProbe, QueriedEditor, SpyMock, UndoRedo } from '../../testing'
 import { messageOf } from '../messageOf'
 
 import { useCampaignRegionLanguageLinkCommand } from './useCampaignRegionLanguageLinkCommand'
@@ -45,17 +43,11 @@ const editedCampaign: Campaign = {
   )
 }
 
-interface UpdateMock {
-  delay?: number
-  request: Record<string, unknown>
-  result: ReturnType<typeof vi.fn>
-}
-
 function updateMock(
   id: string,
   input: Record<string, unknown>,
   row: CampaignRegionLanguage
-): UpdateMock {
+): SpyMock {
   return {
     request: {
       query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
@@ -65,7 +57,7 @@ function updateMock(
   }
 }
 
-function refusedMock(id: string, input: Record<string, unknown>): UpdateMock {
+function refusedMock(id: string, input: Record<string, unknown>): SpyMock {
   return {
     request: {
       query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
@@ -175,13 +167,12 @@ function Harness(): ReactElement {
 }
 
 function renderHarness(
-  mocks: UpdateMock[],
+  mocks: SpyMock[],
   campaignProp: Campaign = campaignWithRegions
 ): ReturnType<typeof render> {
   return render(
-    <QueriedEditor campaignProp={campaignProp} mocks={mocks as never}>
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+    <QueriedEditor campaign={campaignProp} mocks={mocks}>
+      <UndoRedo />
       <CommandProbe />
       <Harness />
     </QueriedEditor>

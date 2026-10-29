@@ -17,17 +17,15 @@ import {
   newOwnedImageBlock
 } from '../../../libs/useCampaignImageBlockCreateMutation'
 import { CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL } from '../../../libs/useCloudflareTeamUploadByUrlMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
 import {
-  StyleMock,
   WithBlock,
   blockOf,
   blockUpdateMock,
   paletteMock
 } from '../styleTesting'
-import { CommandProbe, QueriedEditor } from '../testing'
+import { CommandProbe, QueriedEditor, SpyMock, UndoRedo } from '../testing'
 
 import { StylePanel } from './StylePanel'
 
@@ -88,10 +86,10 @@ const coverCreateMock = {
   }))
 }
 
-function renderPanel(mocks: StyleMock[]): ReturnType<typeof render> {
+function renderPanel(mocks: SpyMock[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor mocks={mocks} initialState={{ selectedBlockId: 'heroId' }}>
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <WithBlock blockId="heroId" typename="CampaignHeroBlock">
         {(block) => <StylePanel block={block} />}
@@ -413,7 +411,7 @@ describe('StylePanel', () => {
     })
 
     it('shows the API’s message verbatim when it refuses a value', async () => {
-      const failing: StyleMock = {
+      const failing: SpyMock = {
         ...blockUpdateMock(hero, { headingColor: '#AABBCC' }),
         result: vi.fn(() => ({
           errors: [{ message: 'headingColor is not allowed on this band' }]

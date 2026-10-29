@@ -23,10 +23,8 @@ import { CAMPAIGN_REGION_LANGUAGE_CREATE } from '../../../libs/useCampaignRegion
 import { CAMPAIGN_REGION_LANGUAGE_DELETE } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH } from '../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
-import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../data'
-import { CommandProbe, QueriedEditor } from '../testing'
+import { CommandProbe, QueriedEditor, UndoRedo } from '../testing'
 
 import { shareLanguageState } from './shareLanguage'
 import { ShareSectionEdit, addLanguageOptions } from './ShareSectionEdit'
@@ -399,7 +397,7 @@ function renderShare(
   return render(
     <SnackbarProvider>
       <QueriedEditor
-        campaignProp={campaignProp}
+        campaign={campaignProp}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
@@ -426,8 +424,7 @@ function renderShare(
           refreshMock
         ]}
       >
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
+        <UndoRedo />
         <CommandProbe />
         <ShareSectionEdit block={{ id: 'regionShareId' }} />
       </QueriedEditor>
@@ -1112,7 +1109,7 @@ describe('ShareSectionEdit', () => {
     render(
       <SnackbarProvider>
         <QueriedEditor
-          campaignProp={campaignWithRegions}
+          campaign={campaignWithRegions}
           initialState={{ pageKind: CampaignPageKind.landing }}
           mocks={[languagesMock]}
         >

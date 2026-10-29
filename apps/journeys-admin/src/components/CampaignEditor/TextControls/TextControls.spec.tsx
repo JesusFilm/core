@@ -6,17 +6,16 @@ import {
   within
 } from '@testing-library/react'
 
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { TypographyAlign } from '../../../../__generated__/globalTypes'
 import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
 import {
-  StyleMock,
   WithBlock,
   blockOf,
   blockUpdateMock,
   paletteMock
 } from '../styleTesting'
-import { CommandProbe, QueriedEditor } from '../testing'
+import { CommandProbe, QueriedEditor, SpyMock, UndoRedo } from '../testing'
 
 import { TEXT_SIZES, TextControls } from './TextControls'
 
@@ -25,17 +24,17 @@ const note = blockOf<'CampaignTypographyBlock'>('journeyListNoteId')
 function textMock(
   input: Record<string, unknown>,
   current: Partial<typeof note> = {}
-): StyleMock {
+): SpyMock {
   return blockUpdateMock(note, input, current)
 }
 
-function renderControls(mocks: StyleMock[]): ReturnType<typeof render> {
+function renderControls(mocks: SpyMock[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       mocks={mocks}
       initialState={{ selectedBlockId: 'journeyListNoteId' }}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <WithBlock blockId="journeyListNoteId" typename="CampaignTypographyBlock">
         {(block) => <TextControls block={block} />}
@@ -93,7 +92,7 @@ describe('TextControls', () => {
   it('sets align left, center or right, and Reset follows the section again', async () => {
     const mocks = [
       textMock({ align: 'center' }),
-      textMock({ align: null }, { align: 'center' as never })
+      textMock({ align: null }, { align: TypographyAlign.center })
     ]
     renderControls(mocks)
 

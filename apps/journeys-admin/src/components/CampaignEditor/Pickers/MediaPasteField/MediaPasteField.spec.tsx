@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { http } from 'msw'
@@ -129,12 +130,12 @@ const getPlaylist = http.get(
 let uploadOptions: UseImageUploadOptions | undefined
 
 function renderField(
-  mocks: Array<Record<string, unknown>> = [],
+  mocks: MockLink.MockedResponse[] = [],
   onPickPlaylist?: (url: string) => void
 ): ReturnType<typeof vi.fn> {
   const onPick = vi.fn()
   render(
-    <MockedProvider mocks={mocks as never}>
+    <MockedProvider mocks={mocks}>
       <SWRConfig value={{ provider: () => new Map() }}>
         <MediaPasteField
           teamId="teamId"

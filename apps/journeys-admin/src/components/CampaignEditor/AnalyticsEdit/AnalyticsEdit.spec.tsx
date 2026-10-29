@@ -39,7 +39,7 @@ function renderEdit(showMap = true): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       mocks={[statsMock]}
-      campaignProp={{
+      campaign={{
         ...campaign,
         blocks: campaign.blocks.map((block) =>
           block.id === 'landingAnalyticsId' &&

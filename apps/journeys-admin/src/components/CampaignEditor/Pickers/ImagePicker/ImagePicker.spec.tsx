@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
@@ -38,10 +39,10 @@ const open = vi.fn()
 
 function renderPicker(
   onPick = vi.fn(),
-  mocks: Array<Record<string, unknown>> = [uploadByUrlMock]
+  mocks: MockLink.MockedResponse[] = [uploadByUrlMock]
 ): { onPick: ReturnType<typeof vi.fn> } {
   render(
-    <MockedProvider mocks={mocks as never}>
+    <MockedProvider mocks={mocks}>
       <ImagePicker teamId="teamId" onPick={onPick} />
     </MockedProvider>
   )

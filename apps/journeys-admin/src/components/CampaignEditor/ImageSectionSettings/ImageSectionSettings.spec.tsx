@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
@@ -7,11 +8,15 @@ import { imageSectionBlock } from '@core/journeys/ui/Campaign/testData'
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignTextSource } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaignWithColumns, withEmptyTranslations } from '../data'
 import { blockUpdateMock } from '../styleTesting'
-import { CommandProbe, PreviewLanguageSwitch, QueriedEditor } from '../testing'
+import {
+  CommandProbe,
+  PreviewLanguageSwitch,
+  QueriedEditor,
+  UndoRedo
+} from '../testing'
 
 import { ImageSectionSettings } from './ImageSectionSettings'
 
@@ -77,16 +82,16 @@ function translationMock(value: string, errors?: GraphQLError[]) {
 }
 
 function renderEdit(
-  mocks: Array<ReturnType<typeof translationMock>>,
+  mocks: MockLink.MockedResponse[],
   previewLanguageId = '529'
 ): void {
   render(
     <QueriedEditor
-      campaignProp={campaignWithImage}
+      campaign={campaignWithImage}
       initialState={{ previewLanguageId }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <PreviewLanguageSwitch languageIds={['529', '496']} />
       <CachedImageEdit />
@@ -98,7 +103,7 @@ describe('ImageSectionSettings', () => {
   it('reads and writes the default alt text through campaignImageBlockUpdate in the default language', async () => {
     const update = blockUpdateMock(image, { alt: 'Readers' })
     const translation = translationMock('Readers')
-    renderEdit([update as never, translation])
+    renderEdit([update, translation])
 
     const alt = await screen.findByRole('textbox', { name: 'Alt text' })
     expect(alt).toHaveValue('A family reading together')

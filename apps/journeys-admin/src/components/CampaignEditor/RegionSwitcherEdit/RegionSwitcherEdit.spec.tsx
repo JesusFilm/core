@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -72,12 +73,12 @@ const refusal = { errors: [{ message: 'The request was refused' }] }
 function renderSwitcher(
   campaignProp = campaign,
   initialState?: Partial<CampaignEditorState>,
-  mocks: Array<Record<string, unknown>> = [createMock, unlistMock, deleteMock],
+  mocks: MockLink.MockedResponse[] = [createMock, unlistMock, deleteMock],
   switcherVariant?: CampaignSwitcherVariant
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       initialState={initialState}
       mocks={mocks}
     >

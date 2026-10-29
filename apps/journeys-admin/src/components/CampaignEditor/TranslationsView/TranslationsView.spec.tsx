@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   act,
   fireEvent,
@@ -28,7 +29,12 @@ import {
   useCampaignEditor
 } from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { QueriedEditor, SelectionProbe, StaticEditor } from '../testing'
+import {
+  QueriedEditor,
+  SelectionProbe,
+  SpyMock,
+  StaticEditor
+} from '../testing'
 
 import { TranslationsView } from './TranslationsView'
 
@@ -123,7 +129,7 @@ const rows = [europe, regionIntro, heroEyebrow, heroTitle, copyLink]
 function listMock(
   languageId: string,
   result: Row[] = rows
-): Record<string, unknown> {
+): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_TRANSLATIONS,
@@ -142,7 +148,7 @@ function setMock(
   languageId: string,
   value: string,
   response: Array<{ languageId: string; value: string }> | string
-): Record<string, unknown> {
+): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_TRANSLATION_SET,
@@ -184,7 +190,7 @@ function SelectBlockButton({ id }: { id: string }): ReactElement {
 }
 
 function renderView(
-  mocks: Array<Record<string, unknown>>,
+  mocks: MockLink.MockedResponse[],
   campaignProp = campaign,
   viewProps: Partial<ComponentProps<typeof TranslationsView>> = {},
   initialState?: Partial<CampaignEditorState>
@@ -192,7 +198,7 @@ function renderView(
   return render(
     <StaticEditor
       mocks={mocks}
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       initialState={initialState}
     >
       <SelectionProbe />
@@ -328,7 +334,7 @@ describe('TranslationsView', () => {
       )
     }
     rerender(
-      <StaticEditor mocks={mocks} campaignProp={changed}>
+      <StaticEditor mocks={mocks} campaign={changed}>
         <SelectionProbe />
         <SelectBlockButton id="regionHeaderId" />
         <TranslationsView campaign={changed} initialLanguageId={FRENCH} />
@@ -370,7 +376,7 @@ describe('TranslationsView', () => {
       )
     }
     rerender(
-      <StaticEditor mocks={mocks} campaignProp={translated}>
+      <StaticEditor mocks={mocks} campaign={translated}>
         <SelectionProbe />
         <SelectBlockButton id="regionHeaderId" />
         <TranslationsView campaign={translated} initialLanguageId={FRENCH} />
@@ -583,10 +589,7 @@ describe('TranslationsView', () => {
     }
 
     render(
-      <QueriedEditor
-        campaignProp={translated}
-        mocks={[listMock(FRENCH), write]}
-      >
+      <QueriedEditor campaign={translated} mocks={[listMock(FRENCH), write]}>
         <HeroTitleTranslations />
         <CachedView />
       </QueriedEditor>
@@ -718,7 +721,7 @@ describe('TranslationsView', () => {
     function sweepMock(
       languageId: string,
       outcome: 'complete' | 'error' = 'complete'
-    ): Record<string, unknown> & { result: ReturnType<typeof vi.fn> } {
+    ): SpyMock {
       return {
         request: {
           query: CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION,

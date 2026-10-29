@@ -6,20 +6,13 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
-import { CommandProvider } from '@core/journeys/ui/CommandProvider'
-
 import { GetCampaign_campaign as Campaign } from '../../../__generated__/GetCampaign'
 import { hasPendingDebouncedWrites } from '../../libs/apolloClient'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
-import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
 import { AddPanel } from './AddPanel'
-import {
-  CampaignEditorProvider,
-  CampaignPanel,
-  useCampaignEditor
-} from './CampaignEditorProvider'
-import { CampaignHoverProvider } from './CampaignHoverProvider'
+import { CampaignPanel, useCampaignEditor } from './CampaignEditorProvider'
+import { CampaignEditorProviders } from './CampaignEditorProviders'
 import { CANVAS_GUTTER, Canvas, MIN_STAGE_WIDTH } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { CanvasBanner } from './CanvasBanner'
@@ -31,12 +24,8 @@ import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
 import { Navigator } from './Navigator'
 import { PagesPanel } from './PagesPanel'
-import {
-  TranslationRunProvider,
-  useTranslationRun
-} from './TranslationRunProvider'
+import { useTranslationRun } from './TranslationRunProvider'
 import { CampaignRole, campaignRoleOf } from './utils/campaignRole'
-import { CampaignCommandProvider } from './utils/useCampaignCommand'
 import { useCampaignLeaveGuard } from './utils/useCampaignLeaveGuard'
 
 /**
@@ -195,12 +184,9 @@ function CampaignEditorViewport({
 }
 
 /**
- * The full-screen campaign editor: one CommandProvider spanning both pages
- * so the Command history survives switching page, the selection reducer,
- * the Campaign Command module with its one queue of Command steps, the Mux
- * upload queue (so a Media Slot upload outlives the selection), the
- * machine-translation run (so it outlives the Localize panel), the
- * Left Rail with its panels, the canvas with its banner and the Inspector.
+ * The full-screen campaign editor: the editor's providers (see
+ * {@link CampaignEditorProviders}), the Left Rail with its panels, the canvas
+ * with its banner and the Inspector.
  * The providers stay mounted below the minimum width, which swaps only the
  * shell for a message. First open after create shows the landing page,
  * nothing selected, Desktop view, the default language as the Preview
@@ -248,22 +234,12 @@ export function CampaignEditor({
   })
 
   return (
-    <CommandProvider>
-      <CampaignEditorProvider campaign={campaign}>
-        <CampaignCommandProvider>
-          <MuxVideoUploadProvider>
-            <TranslationRunProvider>
-              <CampaignHoverProvider>
-                <CampaignEditorViewport
-                  campaign={campaign}
-                  role={role}
-                  onRoleRetry={handleLoadUser}
-                />
-              </CampaignHoverProvider>
-            </TranslationRunProvider>
-          </MuxVideoUploadProvider>
-        </CampaignCommandProvider>
-      </CampaignEditorProvider>
-    </CommandProvider>
+    <CampaignEditorProviders campaign={campaign}>
+      <CampaignEditorViewport
+        campaign={campaign}
+        role={role}
+        onRoleRetry={handleLoadUser}
+      />
+    </CampaignEditorProviders>
   )
 }

@@ -1,9 +1,9 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyListBlock as CampaignJourneyListBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignJourneyListDisplay } from '../../../../__generated__/globalTypes'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
 import { blockUpdateMock } from '../styleTesting'
@@ -11,7 +11,8 @@ import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
-  StaticEditor
+  StaticEditor,
+  UndoRedo
 } from '../testing'
 
 import { JourneyListSettings } from './JourneyListSettings'
@@ -34,13 +35,13 @@ function CachedSettings(): ReactElement | null {
   return <JourneyListSettings block={block} />
 }
 
-function renderSettings(mocks: Array<Record<string, unknown>> = []): void {
+function renderSettings(mocks: MockLink.MockedResponse[] = []): void {
   render(
     <StaticEditor
       initialState={{ selectedBlockId: 'landingJourneyListId' }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <JourneyListSettings block={list} />

@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
@@ -95,12 +96,12 @@ function CachedAltField(): ReactElement | null {
 }
 
 function renderField(
-  mocks: Array<Record<string, unknown>>,
+  mocks: MockLink.MockedResponse[],
   previewLanguageId: string
 ): void {
   render(
     <QueriedEditor
-      campaignProp={campaignWithImage}
+      campaign={campaignWithImage}
       initialState={{ previewLanguageId }}
       mocks={mocks}
     >

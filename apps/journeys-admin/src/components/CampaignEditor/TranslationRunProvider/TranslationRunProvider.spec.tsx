@@ -101,13 +101,13 @@ function renderProvider(link: ApolloLink): ReturnType<typeof render> {
 /** The run's subscription on `subscriptionLink`; every other operation on `mocks`. */
 function renderWithMocks(
   subscriptionLink: MockSubscriptionLink,
-  mocks: Array<Record<string, unknown>>
+  mocks: MockLink.MockedResponse[]
 ): ReturnType<typeof render> {
   const link = ApolloLink.split(
     (operation) =>
       operation.operationName === 'CampaignAiTranslateSubscription',
     subscriptionLink,
-    new MockLink(mocks as never)
+    new MockLink(mocks)
   )
   return renderProvider(link)
 }

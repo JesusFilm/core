@@ -1,4 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
@@ -65,7 +66,7 @@ interface RenderOptions {
   campaign?: Campaign
   role?: CampaignRole
   onRoleRetry?: () => void
-  mocks?: Array<Record<string, unknown>>
+  mocks?: MockLink.MockedResponse[]
   onDefaultLanguageChanged?: () => void
   cache?: InMemoryCache
   /** A background machine-translation run in flight. */
@@ -82,7 +83,7 @@ function renderSettings({
   run
 }: RenderOptions = {}): void {
   render(
-    <MockedProvider mocks={mocks as never} cache={cache}>
+    <MockedProvider mocks={mocks} cache={cache}>
       <SnackbarProvider>
         <CommandProvider>
           <CommandCount />
@@ -495,14 +496,14 @@ describe('Settings', () => {
     }
 
     function updateMock(
-      result: Record<string, unknown>
-    ): Record<string, unknown> {
+      response: Omit<MockLink.MockedResponse, 'request'>
+    ): MockLink.MockedResponse {
       return {
         request: {
           query: CAMPAIGN_UPDATE,
           variables: { id: 'campaignId', input: { defaultLanguageId: FRENCH } }
         },
-        ...result
+        ...response
       }
     }
 

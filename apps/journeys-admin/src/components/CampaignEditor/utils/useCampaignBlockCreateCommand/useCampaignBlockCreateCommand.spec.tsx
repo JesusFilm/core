@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MockLink } from '@apollo/client/testing'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
@@ -6,8 +7,6 @@ import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestore
 import { CAMPAIGN_BUTTON_BLOCK_CREATE } from '../../../../libs/useCampaignButtonBlockCreateMutation'
 import { CAMPAIGN_ANALYTICS_BLOCK_CREATE } from '../../../../libs/useCampaignSectionCreateMutation'
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { AddPanel } from '../../AddPanel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { Canvas } from '../../Canvas'
@@ -16,7 +15,10 @@ import {
   BlocksProbe,
   QueriedEditor,
   SelectionProbe,
-  frameBody
+  UndoRedo,
+  frameBody,
+  holdRequests,
+  landRequests
 } from '../../testing'
 
 vi.mock('uuid', () => ({ v4: () => 'newId' }))
@@ -88,13 +90,11 @@ const buttonCreateMock = {
 }
 
 const deleteMock = {
-  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'newId' } },
   result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
 }
 
 const restoreTextMock = {
-  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id: 'newId' } },
   result: vi.fn(() => ({ data: { campaignBlockRestore: [newText] } }))
 }
@@ -110,7 +110,7 @@ function PageCanvas(): ReactElement {
 const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderEditor(
-  mocks: Array<Record<string, unknown>> = [
+  mocks: MockLink.MockedResponse[] = [
     textCreateMock,
     buttonCreateMock,
     deleteMock,
@@ -119,8 +119,7 @@ function renderEditor(
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor initialState={{ selectedBlockId: 'heroId' }} mocks={mocks}>
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <SelectionProbe />
       <BlocksProbe />
       <PageCanvas />
@@ -139,6 +138,8 @@ async function addExtra(
 
 describe('useCampaignBlockCreateCommand', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  afterEach(() => vi.useRealTimers())
 
   it('adds an empty text Extra with the chosen placement, following the section, and selects it', async () => {
     const { baseElement } = renderEditor()
@@ -177,26 +178,28 @@ describe('useCampaignBlockCreateCommand', () => {
     await addExtra('Text', 'Above text')
     await waitFor(() => expect(textCreateMock.result).toHaveBeenCalled())
 
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    )
 
     // Optimistic: the Extra is gone before the delete request returns.
     expect(deleteMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
-    await waitFor(() =>
-      expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
-    )
-    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+    expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
+    await landRequests()
+    expect(deleteMock.result).toHaveBeenCalled()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    )
 
     expect(restoreTextMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
-    await waitFor(() =>
-      expect(screen.getByTestId('Block-newId')).toHaveTextContent(
-        'CampaignTypographyBlock|heroId|1|above|""||null|'
-      )
+    expect(screen.getByTestId('Block-newId')).toHaveTextContent(
+      'CampaignTypographyBlock|heroId|1|above|""||null|'
     )
-    await waitFor(() => expect(restoreTextMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(restoreTextMock.result).toHaveBeenCalled()
   })
 
   it('raises the API message in the error snackbar when a create is refused', async () => {
@@ -231,13 +234,14 @@ describe('useCampaignBlockCreateCommand', () => {
   })
 
   it('waits for a create in flight before undoing it: a refused create shows one snackbar and sends no delete', async () => {
-    renderEditor([
-      { ...textCreateMock, delay: 100, result: refusal },
-      deleteMock
-    ])
-    await addExtra('Text', 'Above text')
+    renderEditor([{ ...textCreateMock, result: refusal }, deleteMock])
+    fireEvent.click(await screen.findByRole('button', { name: 'Above text' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Text' }))
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await landRequests()
 
     expect(
       await screen.findByText('The request was refused')
@@ -251,13 +255,19 @@ describe('useCampaignBlockCreateCommand', () => {
   })
 
   it('waits for a create in flight before undoing it: once the create lands, undo deletes the block', async () => {
-    renderEditor([{ ...textCreateMock, delay: 100 }, deleteMock])
-    await addExtra('Text', 'Above text')
+    renderEditor([textCreateMock, deleteMock])
+    fireEvent.click(await screen.findByRole('button', { name: 'Above text' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Text' }))
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await act(async () => undefined)
 
+    expect(textCreateMock.result).not.toHaveBeenCalled()
     expect(deleteMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(textCreateMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(textCreateMock.result).toHaveBeenCalled()
     await waitFor(() =>
       expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
     )
@@ -338,7 +348,6 @@ describe('useCampaignBlockCreateCommand', () => {
     }
 
     const sectionDeleteMock = {
-      delay: 1000,
       request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'newId' } },
       result: vi.fn(() => ({
         data: {
@@ -364,7 +373,7 @@ describe('useCampaignBlockCreateCommand', () => {
           initialState={{ selectedBlockId: 'heroId' }}
           mocks={[sectionCreateMock, sectionDeleteMock]}
         >
-          <CommandUndoItem variant="button" />
+          <UndoRedo />
           <SelectionProbe />
           <BlocksProbe />
           <AddPanel />
@@ -409,17 +418,18 @@ describe('useCampaignBlockCreateCommand', () => {
       )
       await waitFor(() => expect(sectionCreateMock.result).toHaveBeenCalled())
 
-      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await holdRequests(() =>
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      )
 
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
-      await waitFor(() =>
-        expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
-      )
+      expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
       expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
         'CampaignRegionSwitcherBlock||1|'
       )
       expect(sectionDeleteMock.result).not.toHaveBeenCalled()
-      await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
+      await landRequests()
+      expect(sectionDeleteMock.result).toHaveBeenCalled()
     })
   })
 })

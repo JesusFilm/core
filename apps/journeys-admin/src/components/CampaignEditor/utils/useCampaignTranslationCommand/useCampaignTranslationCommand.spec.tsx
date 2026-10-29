@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement, useState } from 'react'
@@ -11,11 +12,15 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { translationValue } from '../../../../libs/useCampaignBlockTextMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign, withEmptyTranslations } from '../../data'
-import { CommandProbe, QueriedEditor, SelectionProbe } from '../../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SelectionProbe,
+  SpyMock,
+  UndoRedo
+} from '../../testing'
 
 import { useCampaignTranslationCommand } from './useCampaignTranslationCommand'
 
@@ -43,10 +48,7 @@ const imageCampaign: Campaign = {
   ]
 }
 
-function translationSetMock(value: string): {
-  request: Record<string, unknown>
-  result: ReturnType<typeof vi.fn>
-} {
+function translationSetMock(value: string): SpyMock {
   return {
     request: {
       query: CAMPAIGN_TRANSLATION_SET,
@@ -74,10 +76,7 @@ function translationSetMock(value: string): {
   }
 }
 
-function refusedMock(value: string): {
-  request: Record<string, unknown>
-  result: ReturnType<typeof vi.fn>
-} {
+function refusedMock(value: string): SpyMock {
   return {
     request: translationSetMock(value).request,
     result: vi.fn(() => ({
@@ -150,17 +149,16 @@ function PreviewLanguageControl(): ReactElement {
 }
 
 function renderHarness(
-  mocks: Array<Record<string, unknown>>,
+  mocks: MockLink.MockedResponse[],
   panel: ReactElement = <Harness />
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignProp={imageCampaign}
+      campaign={imageCampaign}
       initialState={{ previewLanguageId: '496', selectedBlockId: IMAGE_ID }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <PreviewLanguageControl />

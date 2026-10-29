@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
@@ -12,12 +13,10 @@ import {
   CampaignVideoPick,
   newOwnedVideoBlock
 } from '../../../../libs/useCampaignVideoBlockCreateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { blockOf, blockUpdateMock } from '../../styleTesting'
-import { BlocksProbe, QueriedEditor } from '../../testing'
+import { BlocksProbe, QueriedEditor, UndoRedo } from '../../testing'
 
 import { useCampaignCarouselCommand } from './useCampaignCarouselCommand'
 
@@ -122,13 +121,12 @@ function RemovableHarness(): ReactElement {
 }
 
 function renderHarness(
-  mocks: Array<Record<string, unknown>>,
+  mocks: MockLink.MockedResponse[],
   campaignData?: Campaign
 ): ReturnType<typeof render> {
   return render(
-    <QueriedEditor mocks={mocks} campaignData={campaignData}>
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+    <QueriedEditor mocks={mocks} campaign={campaignData}>
+      <UndoRedo />
       <BlocksProbe />
       <CarouselHarness />
     </QueriedEditor>
@@ -211,7 +209,7 @@ describe('useCampaignCarouselCommand', () => {
             { ...deleteMock, result: refusal }
           ]}
         >
-          <CommandUndoItem variant="button" />
+          <UndoRedo />
           <BlocksProbe />
           <RemovableHarness />
         </QueriedEditor>

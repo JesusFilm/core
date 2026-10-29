@@ -97,7 +97,7 @@ function renderNavigator({
 }: RenderNavigatorProps = {}): ReturnType<typeof render> {
   return render(
     <StaticEditor
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       initialState={initialState}
       mocks={[statsMock, statsMock, statsMock]}
     >
@@ -127,7 +127,7 @@ function renderNavigator({
 
 function renderNavigatorForDrop(campaignProp = campaign): void {
   render(
-    <StaticEditor campaignProp={campaignProp}>
+    <StaticEditor campaign={campaignProp}>
       <CampaignHoverProvider>
         <Navigator />
       </CampaignHoverProvider>

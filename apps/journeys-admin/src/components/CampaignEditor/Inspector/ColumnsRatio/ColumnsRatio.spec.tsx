@@ -5,11 +5,10 @@ import { columnsGridTemplate } from '@core/journeys/ui/Campaign'
 
 import { GetCampaign_campaign_blocks_CampaignColumnsBlock as ColumnsBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignColumnsRatio } from '../../../../../__generated__/globalTypes'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaignWithColumns } from '../../data'
-import { StyleMock, WithBlock, blockUpdateMock } from '../../styleTesting'
-import { CommandProbe, QueriedEditor } from '../../testing'
+import { WithBlock, blockUpdateMock } from '../../styleTesting'
+import { CommandProbe, QueriedEditor, SpyMock, UndoRedo } from '../../testing'
 
 import { ColumnsRatio } from './ColumnsRatio'
 
@@ -17,7 +16,7 @@ const columns = campaignWithColumns.blocks.find(
   (block) => block.id === 'columnsId'
 ) as ColumnsBlock
 
-function ratioMock(ratio: CampaignColumnsRatio): StyleMock {
+function ratioMock(ratio: CampaignColumnsRatio): SpyMock {
   return blockUpdateMock(columns, { ratio })
 }
 
@@ -33,14 +32,14 @@ function GridProbe(): ReactElement | null {
   )
 }
 
-function renderRatio(mocks: StyleMock[]): ReturnType<typeof render> {
+function renderRatio(mocks: SpyMock[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       mocks={mocks}
-      campaignProp={campaignWithColumns}
+      campaign={campaignWithColumns}
       initialState={{ selectedBlockId: 'columnsId' }}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <GridProbe />
       <WithBlock blockId="columnsId" typename="CampaignColumnsBlock">
@@ -59,7 +58,7 @@ describe('ColumnsRatio', () => {
     const equal = await screen.findByRole('button', { name: 'Equal' })
     expect(
       screen.getAllByRole('button').map((button) => button.textContent)
-    ).toEqual(['Undo', 'Equal', 'Wide left', 'Wide right'])
+    ).toEqual(['Undo', 'Redo', 'Equal', 'Wide left', 'Wide right'])
     expect(equal).toHaveAttribute('aria-pressed', 'true')
   })
 
@@ -106,7 +105,7 @@ describe('ColumnsRatio', () => {
   })
 
   it('shows the API message verbatim when the save fails', async () => {
-    const failing: StyleMock = {
+    const failing: SpyMock = {
       ...ratioMock(CampaignColumnsRatio.wideRight),
       result: vi.fn(() => ({
         errors: [{ message: 'ratio: not equal, wideLeft or wideRight' }]

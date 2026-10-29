@@ -291,7 +291,7 @@ describe('PaletteColorPicker', () => {
       />
     )
     const { rerender } = render(
-      <StaticEditor campaignProp={{ ...campaign, palette: eight }}>
+      <StaticEditor campaign={{ ...campaign, palette: eight }}>
         {picker('#808080')}
       </StaticEditor>
     )
@@ -300,7 +300,7 @@ describe('PaletteColorPicker', () => {
     fireEvent.focus(input)
     fireEvent.change(input, { target: { value: '#123456' } })
     rerender(
-      <StaticEditor campaignProp={{ ...campaign, palette: eight }}>
+      <StaticEditor campaign={{ ...campaign, palette: eight }}>
         {picker(null)}
       </StaticEditor>
     )
@@ -362,7 +362,7 @@ describe('PaletteColorPicker', () => {
       </>
     )
     const { rerender } = render(
-      <StaticEditor campaignProp={light}>{picker}</StaticEditor>
+      <StaticEditor campaign={light}>{picker}</StaticEditor>
     )
     expect(slots()).toEqual(eight)
 
@@ -376,7 +376,7 @@ describe('PaletteColorPicker', () => {
         backgroundColor: '#101010'
       }
     }
-    rerender(<StaticEditor campaignProp={dark}>{picker}</StaticEditor>)
+    rerender(<StaticEditor campaign={dark}>{picker}</StaticEditor>)
 
     expect(slots()).toEqual(eight)
   })

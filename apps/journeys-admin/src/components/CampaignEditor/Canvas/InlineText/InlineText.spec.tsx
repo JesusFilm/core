@@ -313,7 +313,7 @@ describe('InlineText', () => {
       const translation = heroTranslationMock('Brouillon')
       render(
         <StaticEditor
-          mocks={[translation as never]}
+          mocks={[translation]}
           initialState={{ previewLanguageId: '496' }}
         >
           <PreviewLanguageSwitch languageIds={['529', '496']} />

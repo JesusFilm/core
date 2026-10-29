@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
@@ -83,7 +84,7 @@ function Controls(): ReactElement {
 const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderCommands(
-  mocks: Array<Record<string, unknown>> = [
+  mocks: MockLink.MockedResponse[] = [
     unlistMock,
     listMock,
     moveDownMock,
@@ -91,7 +92,7 @@ function renderCommands(
   ]
 ): ReturnType<typeof render> {
   return render(
-    <QueriedEditor campaignProp={campaignWithRegions} mocks={mocks}>
+    <QueriedEditor campaign={campaignWithRegions} mocks={mocks}>
       <Hotkeys />
       <CommandProbe />
       <RegionsProbe />

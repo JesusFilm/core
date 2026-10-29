@@ -54,10 +54,7 @@ function CanvasStory({
 }: CanvasStoryProps): ReactElement {
   return (
     <SnackbarProvider>
-      <QueriedEditor
-        campaignData={campaignData}
-        initialState={{ selectedBlockId }}
-      >
+      <QueriedEditor campaign={campaignData} initialState={{ selectedBlockId }}>
         <Canvas
           campaign={campaignData}
           pageKind={CampaignPageKind.landing}

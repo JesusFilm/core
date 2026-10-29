@@ -137,7 +137,7 @@ describe('LocalizePanel', () => {
     }
     render(
       <StaticEditor
-        campaignProp={{
+        campaign={{
           ...campaign,
           languages: [...campaign.languages, spanish]
         }}
@@ -234,7 +234,7 @@ describe('LocalizePanel machine translation run', () => {
         translationsMock,
         translationsMock,
         translationsMock
-      ] as never)
+      ])
     )
     render(<PanelHarness link={link} />)
     return subscriptionLink

@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -16,7 +17,7 @@ import { CAMPAIGN_LANGUAGE_ADD } from '../../../libs/useCampaignLanguageAddMutat
 import { CAMPAIGN_LANGUAGE_REMOVE } from '../../../libs/useCampaignLanguageRemoveMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { CommandProbe, StaticEditor } from '../testing'
+import { CommandProbe, SpyMock, StaticEditor } from '../testing'
 
 import { LanguagesPanel, languageNames } from './LanguagesPanel'
 
@@ -129,11 +130,7 @@ function removeMock(languageId: string, error?: string) {
   }
 }
 
-function sweepMock(languageId: string): {
-  request: Record<string, unknown>
-  delay: number
-  result: ReturnType<typeof vi.fn>
-} {
+function sweepMock(languageId: string): SpyMock {
   return {
     request: {
       query: CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION,
@@ -166,11 +163,11 @@ function PreviewLanguageProbe(): ReactElement {
 }
 
 function renderPanel(
-  mocks: Array<Record<string, unknown>>,
+  mocks: MockLink.MockedResponse[],
   campaignProp: Campaign = campaign
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor mocks={[languagesMock, ...mocks]} campaignProp={campaignProp}>
+    <StaticEditor mocks={[languagesMock, ...mocks]} campaign={campaignProp}>
       <CommandProbe />
       <PreviewLanguageProbe />
       <LanguagesPanel campaign={campaignProp} />

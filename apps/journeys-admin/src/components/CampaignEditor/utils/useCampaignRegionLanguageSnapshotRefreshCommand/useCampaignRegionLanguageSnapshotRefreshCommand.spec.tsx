@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
@@ -85,11 +86,11 @@ const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderHook(
   english: CampaignRegionLanguage,
-  mocks: Array<Record<string, unknown>> = [refreshMock, undoMock]
+  mocks: MockLink.MockedResponse[] = [refreshMock, undoMock]
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignProp={{
+      campaign={{
         ...campaignWithRegions,
         regions: campaignWithRegions.regions.map((region) =>
           region.id === 'eurRegionId'

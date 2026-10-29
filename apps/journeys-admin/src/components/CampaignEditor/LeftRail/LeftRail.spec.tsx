@@ -66,7 +66,7 @@ function Harness(): ReactElement {
   const [view, setView] = useState<CanvasView>('desktop')
   return (
     <SnackbarProvider>
-      <StaticEditor campaignProp={campaign}>
+      <StaticEditor campaign={campaign}>
         <AddCommandButton />
         <CommandProbe />
         <PanelProbe />
@@ -81,7 +81,7 @@ function Harness(): ReactElement {
 function RunningHarness(): ReactElement {
   return (
     <SnackbarProvider>
-      <StaticEditor campaignProp={campaign}>
+      <StaticEditor campaign={campaign}>
         <TranslationRunContext.Provider
           value={{ run, start: vi.fn(), cancel: vi.fn() }}
         >

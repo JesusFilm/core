@@ -31,7 +31,7 @@ function renderEditor(
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor
-      campaignProp={campaignWithRegions}
+      campaign={campaignWithRegions}
       initialState={initialState}
       mocks={[languagesMock]}
     >

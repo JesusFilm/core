@@ -89,11 +89,11 @@ const translationsMock = {
 }
 
 function renderEditor(
-  mocks: Array<Record<string, unknown>> = [],
+  mocks: MockLink.MockedResponse[] = [],
   campaignProp = campaign
 ): ReturnType<typeof render> {
   return render(
-    <MockedProvider mocks={[currentUserMock, ...mocks] as never}>
+    <MockedProvider mocks={[currentUserMock, ...mocks]}>
       <SnackbarProvider>
         <CampaignEditor campaign={campaignProp} />
       </SnackbarProvider>
@@ -119,7 +119,7 @@ function renderEditorAs(
     }
   }
   render(
-    <MockedProvider mocks={[meMock] as never}>
+    <MockedProvider mocks={[meMock]}>
       <SnackbarProvider>
         <CampaignEditor campaign={campaignProp} />
       </SnackbarProvider>
@@ -174,7 +174,7 @@ function runReport(
  * every other operation on `mocks`; `rerender` renders it again, as a
  * resize does.
  */
-function renderEditorWithRun(mocks: Array<Record<string, unknown>>): {
+function renderEditorWithRun(mocks: MockLink.MockedResponse[]): {
   subscriptionLink: MockSubscriptionLink
   rerender: () => void
 } {
@@ -183,7 +183,7 @@ function renderEditorWithRun(mocks: Array<Record<string, unknown>>): {
     (operation) =>
       operation.operationName === 'CampaignAiTranslateSubscription',
     subscriptionLink,
-    new MockLink([currentUserMock, ...mocks] as never)
+    new MockLink([currentUserMock, ...mocks])
   )
   const cache = campaignCache()
   const tree = (): ReactElement => (
@@ -702,7 +702,7 @@ describe('CampaignEditor', () => {
 
   it('shows the manager controls disabled with a spinner while GetCurrentUser is loading', async () => {
     render(
-      <MockedProvider mocks={[{ ...currentUserMock, delay: 60_000 }] as never}>
+      <MockedProvider mocks={[{ ...currentUserMock, delay: 60_000 }]}>
         <SnackbarProvider>
           <CampaignEditor campaign={campaign} />
         </SnackbarProvider>
@@ -726,15 +726,13 @@ describe('CampaignEditor', () => {
     const managerAnswer = vi.fn(() => currentUserMock.result)
     render(
       <MockedProvider
-        mocks={
-          [
-            {
-              request: { query: GET_CURRENT_USER },
-              error: new Error('Network error')
-            },
-            { request: { query: GET_CURRENT_USER }, result: managerAnswer }
-          ] as never
-        }
+        mocks={[
+          {
+            request: { query: GET_CURRENT_USER },
+            error: new Error('Network error')
+          },
+          { request: { query: GET_CURRENT_USER }, result: managerAnswer }
+        ]}
       >
         <SnackbarProvider>
           <CampaignEditor campaign={campaign} />

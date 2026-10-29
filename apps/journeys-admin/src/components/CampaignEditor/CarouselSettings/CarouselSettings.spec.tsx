@@ -316,7 +316,7 @@ function renderEdit(block: CarouselBlock = carousel): void {
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
       <StaticEditor
-        campaignProp={{
+        campaign={{
           ...campaign,
           blocks: campaign.blocks.map((candidate) =>
             candidate.id === block.id ? block : candidate

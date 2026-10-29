@@ -1,10 +1,10 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
 import { blockUpdateMock } from '../styleTesting'
@@ -12,7 +12,8 @@ import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
-  StaticEditor
+  StaticEditor,
+  UndoRedo
 } from '../testing'
 
 import { RegionSwitcherSettings } from './RegionSwitcherSettings'
@@ -40,13 +41,13 @@ function CachedSettings(): ReactElement | null {
   return <RegionSwitcherSettings block={block} />
 }
 
-function renderSettings(mocks: Array<Record<string, unknown>> = []): void {
+function renderSettings(mocks: MockLink.MockedResponse[] = []): void {
   render(
     <StaticEditor
       initialState={{ selectedBlockId: 'landingSwitcherId' }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <RegionSwitcherSettings block={switcher} />

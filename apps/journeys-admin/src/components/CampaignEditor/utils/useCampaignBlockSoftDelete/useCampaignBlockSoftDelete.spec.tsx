@@ -9,7 +9,9 @@ import {
   PendingTextSave,
   QueriedEditor,
   campaignCache,
-  debounceSpyLink
+  debounceSpyLink,
+  holdRequests,
+  landRequests
 } from '../../testing'
 import { siblingRows, siblingsOf } from '../siblingsOf'
 import { campaignFlushContext } from '../useCampaignCommand'
@@ -23,13 +25,11 @@ const siblingsBefore = siblingsOf(campaign.blocks, footerTerms)
 const siblingsAfter = siblingRows(siblingsBefore)
 
 const deleteMock = {
-  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'footerTermsId' } },
   result: vi.fn(() => ({ data: { campaignBlockDelete: siblingsAfter } }))
 }
 
 const restoreMock = {
-  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_RESTORE,
     variables: { id: 'footerTermsId' }
@@ -66,6 +66,8 @@ function Harness(): ReactElement {
 describe('useCampaignBlockSoftDelete', () => {
   beforeEach(() => vi.clearAllMocks())
 
+  afterEach(() => vi.useRealTimers())
+
   it('soft-deletes a block, showing the renumbered siblings at once, and restores it in place', async () => {
     render(
       <QueriedEditor mocks={[deleteMock, restoreMock]}>
@@ -75,36 +77,36 @@ describe('useCampaignBlockSoftDelete', () => {
     )
     expect(await screen.findByTestId('Block-footerTermsId')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
-
-    await waitFor(() =>
-      expect(
-        screen.queryByTestId('Block-footerTermsId')
-      ).not.toBeInTheDocument()
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
     )
+
+    expect(screen.queryByTestId('Block-footerTermsId')).not.toBeInTheDocument()
     expect(screen.getByTestId('Block-footerPrivacyId')).toHaveTextContent(
       'CampaignButtonBlock|footerId|1|'
     )
     expect(deleteMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(deleteMock.result).toHaveBeenCalled()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Restore' }))
-
-    await waitFor(() =>
-      expect(screen.getByTestId('Block-footerTermsId')).toBeInTheDocument()
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Restore' }))
     )
+
+    expect(screen.getByTestId('Block-footerTermsId')).toBeInTheDocument()
     expect(screen.getByTestId('Block-footerPrivacyId')).toHaveTextContent(
       'CampaignButtonBlock|footerId|2|'
     )
     expect(restoreMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(restoreMock.result).toHaveBeenCalled()
   })
 
   it('sends the block’s text edits still waiting on their debounce before the delete, given a step’s context', async () => {
     const requests: string[] = []
     render(
       <QueriedEditor
-        link={debounceSpyLink(requests, [{ ...deleteMock, delay: 0 }])}
+        link={debounceSpyLink(requests, [deleteMock])}
         cache={campaignCache()}
       >
         <PendingTextSave block={footerTerms} />

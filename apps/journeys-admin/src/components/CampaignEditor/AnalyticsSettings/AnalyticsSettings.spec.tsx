@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
@@ -5,14 +6,18 @@ import {
   GetCampaign_campaign_blocks_CampaignAnalyticsBlock as AnalyticsBlock,
   GetCampaign_campaign as Campaign
 } from '../../../../__generated__/GetCampaign'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
 import { blockOf, blockUpdateMock } from '../styleTesting'
-import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
+import {
+  CommandProbe,
+  SelectionProbe,
+  StaticEditor,
+  UndoRedo
+} from '../testing'
 
 import { AnalyticsSettings } from './AnalyticsSettings'
 
-function showMapMock(showMap: boolean): Record<string, unknown> {
+function showMapMock(showMap: boolean): MockLink.MockedResponse {
   return blockUpdateMock(
     blockOf<'CampaignAnalyticsBlock'>('landingAnalyticsId'),
     { showMap }
@@ -35,7 +40,7 @@ function RemovablePanel({ block }: { block: AnalyticsBlock }): ReactElement {
 
 function renderSettings(
   showMap = true,
-  mocks: Array<Record<string, unknown>> = [turnOffMock, turnOnMock]
+  mocks: MockLink.MockedResponse[] = [turnOffMock, turnOnMock]
 ): ReturnType<typeof render> {
   const campaignProp: Campaign = {
     ...campaign,
@@ -53,11 +58,11 @@ function renderSettings(
     throw new Error('the fixture has no analytics block')
   return render(
     <StaticEditor
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       initialState={{ selectedBlockId: block.id }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <RemovablePanel block={block} />

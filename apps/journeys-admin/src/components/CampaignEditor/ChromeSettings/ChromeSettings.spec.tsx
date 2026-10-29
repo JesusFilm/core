@@ -10,10 +10,9 @@ import {
 } from '../../../libs/useCampaignImageBlockCreateMutation'
 import { CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL } from '../../../libs/useCloudflareTeamUploadByUrlMutation'
 import { useImageUpload } from '../../../libs/useImageUpload'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
 import { WithBlock, blockOf, blockUpdateMock } from '../styleTesting'
-import { CommandProbe, QueriedEditor } from '../testing'
+import { CommandProbe, QueriedEditor, UndoRedo } from '../testing'
 
 import { ChromeSettings } from './ChromeSettings'
 
@@ -89,7 +88,7 @@ function HeaderEdit(): ReactElement {
       ]}
       initialState={{ selectedBlockId: 'headerId' }}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <WithBlock blockId="headerId" typename="CampaignHeaderBlock">
         {(block) => <ChromeSettings block={block} />}
@@ -212,7 +211,7 @@ describe('ChromeSettings replace', () => {
     const undoLogo = logoMock('oldLogoId')
     render(
       <QueriedEditor
-        campaignProp={campaignWithLogo}
+        campaign={campaignWithLogo}
         mocks={[
           uploadByUrlMock,
           imageCreateMock,
@@ -222,7 +221,7 @@ describe('ChromeSettings replace', () => {
         ]}
         initialState={{ selectedBlockId: 'headerId' }}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <CommandProbe />
         <WithBlock blockId="headerId" typename="CampaignHeaderBlock">
           {(block) => <ChromeSettings block={block} />}

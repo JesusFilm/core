@@ -50,7 +50,7 @@ function missingTexts(count: number): Record<string, unknown> {
 
 function swapMock(
   result: () => Record<string, unknown>
-): Record<string, unknown> {
+): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_UPDATE,
@@ -130,7 +130,7 @@ function Harness({ onChanged }: { onChanged: () => void }): ReactElement {
   )
 }
 
-function renderDialog(mocks: Array<Record<string, unknown>>): {
+function renderDialog(mocks: MockLink.MockedResponse[]): {
   subscriptionLink: MockSubscriptionLink
   onChanged: ReturnType<typeof vi.fn>
 } {
@@ -140,7 +140,7 @@ function renderDialog(mocks: Array<Record<string, unknown>>): {
     (operation) =>
       operation.operationName === 'CampaignAiTranslateSubscription',
     subscriptionLink,
-    new MockLink(mocks as never)
+    new MockLink(mocks)
   )
   render(
     <MockedProvider link={link} cache={new InMemoryCache()}>

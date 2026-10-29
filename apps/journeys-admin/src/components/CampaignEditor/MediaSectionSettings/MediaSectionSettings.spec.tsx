@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { GetCampaign_campaign_blocks_CampaignFeaturedMediaBlock as CampaignFeaturedMediaBlock } from '../../../../__generated__/GetCampaign'
@@ -34,13 +35,13 @@ function updateMock(
 }
 
 function renderEdit(
-  mocks: Array<Record<string, unknown>>,
+  mocks: MockLink.MockedResponse[],
   block: CampaignFeaturedMediaBlock = featured
 ): void {
   render(
     <StaticEditor
       mocks={mocks}
-      campaignProp={{
+      campaign={{
         ...campaign,
         blocks: [...campaign.blocks, block, featuredImage]
       }}

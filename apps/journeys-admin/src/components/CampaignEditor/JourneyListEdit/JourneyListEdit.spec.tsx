@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -22,10 +23,14 @@ import { GET_CAMPAIGN_ACCESSIBLE_JOURNEYS } from '../../../libs/useCampaignAcces
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_JOURNEY_BLOCK_CREATE } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../libs/useCampaignJourneyByLinkLazyQuery'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { blockOf, blockUpdateMock } from '../styleTesting'
-import { BlocksProbe, QueriedEditor, SelectionProbe } from '../testing'
+import {
+  BlocksProbe,
+  QueriedEditor,
+  SelectionProbe,
+  UndoRedo
+} from '../testing'
 
 import { JourneyListEdit } from './JourneyListEdit'
 
@@ -164,13 +169,13 @@ function ListHarness({
 
 async function renderList(
   selectedBlockId?: string,
-  mocks: Array<Record<string, unknown>> = [],
+  mocks: MockLink.MockedResponse[] = [],
   display?: CampaignJourneyListDisplay
 ): Promise<ReturnType<typeof render>> {
   const result = render(
     <SnackbarProvider>
       <QueriedEditor initialState={{ selectedBlockId }} mocks={mocks}>
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <SelectionProbe />
         <BlocksProbe />
         <ListHarness display={display} />

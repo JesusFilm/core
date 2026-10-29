@@ -28,7 +28,7 @@ const translated = {
 function renderBreadcrumb(previewLanguageId: string): void {
   render(
     <StaticEditor
-      campaignProp={translated}
+      campaign={translated}
       initialState={{
         selectedRegionId: 'eurRegionId',
         previewLanguageId
@@ -59,7 +59,7 @@ describe('Breadcrumb', () => {
   it('names a selected Region Line as a Region Line', () => {
     render(
       <StaticEditor
-        campaignProp={translated}
+        campaign={translated}
         initialState={{ selectedBlockId: 'eurLineId' }}
       >
         <Breadcrumb />

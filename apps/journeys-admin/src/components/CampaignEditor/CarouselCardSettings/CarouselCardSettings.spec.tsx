@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
@@ -7,10 +8,14 @@ import { CampaignTextSource } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_VIDEO_BLOCK_UPDATE } from '../../../libs/useCampaignBlockUpdateMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
 import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign, withEmptyTranslations } from '../data'
-import { CommandProbe, PreviewLanguageSwitch, QueriedEditor } from '../testing'
+import {
+  CommandProbe,
+  PreviewLanguageSwitch,
+  QueriedEditor,
+  UndoRedo
+} from '../testing'
 
 import { CarouselCardSettings } from './CarouselCardSettings'
 
@@ -73,16 +78,16 @@ function translationMock(
 }
 
 function renderEdit(
-  mocks: Array<ReturnType<typeof translationMock>>,
+  mocks: MockLink.MockedResponse[],
   previewLanguageId = '529'
 ): void {
   render(
     <QueriedEditor
-      campaignProp={campaignWithCard}
+      campaign={campaignWithCard}
       initialState={{ previewLanguageId }}
-      mocks={mocks as never}
+      mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <PreviewLanguageSwitch languageIds={['529', '496']} />
       <CachedCardEdit />
@@ -104,7 +109,7 @@ describe('CarouselCardSettings', () => {
       }))
     }
     const translation = translationMock('title', 'Outreach')
-    renderEdit([update as never, translation])
+    renderEdit([update, translation])
 
     const title = await screen.findByRole('textbox', { name: 'Title' })
     expect(title).toHaveValue('Outreach around the world')
@@ -135,7 +140,7 @@ describe('CarouselCardSettings', () => {
         data: { campaignVideoBlockUpdate: { ...card, title: 'x'.repeat(201) } }
       }))
     }
-    renderEdit([update as never])
+    renderEdit([update])
 
     const title = await screen.findByRole('textbox', { name: 'Title' })
     fireEvent.change(title, { target: { value: 'x'.repeat(201) } })

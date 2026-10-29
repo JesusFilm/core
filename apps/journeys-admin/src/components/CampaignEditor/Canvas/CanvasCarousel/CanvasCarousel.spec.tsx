@@ -26,7 +26,7 @@ const items = Array.from({ length: 8 }, (_, index) => ({
 
 const withCards: Campaign = {
   ...campaign,
-  blocks: [...campaign.blocks, ...(items as never[])]
+  blocks: [...campaign.blocks, ...items]
 }
 
 function renderCarousel(source: Campaign = withCards) {
@@ -34,7 +34,7 @@ function renderCarousel(source: Campaign = withCards) {
     (candidate) => candidate.id === 'carouselId'
   ) as Extract<CanvasBlock, { __typename: 'CampaignVideoCarouselBlock' }>
   return render(
-    <StaticEditor campaignProp={source}>
+    <StaticEditor campaign={source}>
       <CanvasCarousel block={block} />
     </StaticEditor>
   )
@@ -128,12 +128,12 @@ describe('CanvasCarousel Campaign Strings', () => {
       ...campaign,
       blocks: campaign.blocks.map((block) =>
         block.id === 'carouselId'
-          ? ({
+          ? {
               ...block,
               videoId: 'collectionId',
               videoVariantLanguageId: '529',
               video: collection
-            } as never)
+            }
           : block
       ),
       strings: campaign.strings.map((string) =>

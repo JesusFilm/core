@@ -11,7 +11,7 @@ function renderPanel(
   initialState = {}
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor campaignProp={campaignProp} initialState={initialState}>
+    <StaticEditor campaign={campaignProp} initialState={initialState}>
       <SelectionProbe />
       <PagesPanel />
     </StaticEditor>

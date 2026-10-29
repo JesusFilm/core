@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import Button from '@mui/material/Button'
 import {
   fireEvent,
@@ -13,12 +14,16 @@ import { ReactElement } from 'react'
 import { IdType, JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH } from '../../../../libs/useCampaignJourneyBlockSnapshotRefreshMutation'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { JourneyCardSnapshotRefreshDialog } from '../../JourneyCardSnapshotRefreshDialog'
 import { blockUpdateMock } from '../../styleTesting'
-import { CommandProbe, QueriedEditor, SelectionProbe } from '../../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SelectionProbe,
+  UndoRedo
+} from '../../testing'
 
 import {
   JourneyCardBlock,
@@ -44,7 +49,7 @@ const editedCampaign = {
 
 function journeyMock(
   journey: Record<string, unknown> | null
-): Record<string, unknown> {
+): MockLink.MockedResponse {
   return {
     request: {
       query: GET_CAMPAIGN_JOURNEY_BY_LINK,
@@ -130,17 +135,17 @@ function Harness(): ReactElement {
 
 async function renderHarness(
   journeyResponse: ReturnType<typeof journeyMock>,
-  extraMocks: Array<Record<string, unknown>> = [],
+  extraMocks: MockLink.MockedResponse[] = [],
   campaignProp = editedCampaign
 ): Promise<void> {
   render(
     <SnackbarProvider>
       <QueriedEditor
         mocks={[journeyResponse, ...extraMocks]}
-        campaignProp={campaignProp}
+        campaign={campaignProp}
         initialState={{ selectedBlockId: CARD_ID }}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <CommandProbe />
         <SelectionProbe />
         <Harness />

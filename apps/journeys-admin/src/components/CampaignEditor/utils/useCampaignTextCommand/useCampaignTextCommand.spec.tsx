@@ -35,8 +35,6 @@ import {
   CAMPAIGN_TRANSLATIONS,
   campaignTranslationsVariables
 } from '../../../../libs/useCampaignTranslationsQuery'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import {
   CampaignEditorState,
   useCampaignEditor
@@ -52,7 +50,9 @@ import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
+  SpyMock,
   StaticEditor,
+  UndoRedo,
   campaignCache,
   getCampaignMock,
   getCampaignMockFor
@@ -125,14 +125,7 @@ function ClosableField(): ReactElement {
   )
 }
 
-interface Mock {
-  request: Record<string, unknown>
-  result: ReturnType<typeof vi.fn>
-  delay?: number
-  maxUsageCount?: number
-}
-
-function heroMock(title: string): Mock {
+function heroMock(title: string): SpyMock {
   return blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), { title })
 }
 
@@ -153,7 +146,7 @@ function readTitle(cache: InMemoryCache): string | undefined {
 }
 
 function renderField(
-  mocks: Mock[],
+  mocks: SpyMock[],
   options: {
     blockId?: string
     field?: CampaignTextField
@@ -163,7 +156,7 @@ function renderField(
 ): ReturnType<typeof render> {
   const link = ApolloLink.from([
     new DebounceLink(500),
-    new MockLink([getCampaignMock, ...mocks] as never)
+    new MockLink([getCampaignMock, ...mocks])
   ])
   return render(
     <QueriedEditor
@@ -171,8 +164,7 @@ function renderField(
       cache={options.cache ?? campaignCache()}
       initialState={options.initialState}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <ShowLanding />
@@ -317,7 +309,7 @@ describe('useCampaignTextCommand', () => {
       regionHeader?.__typename === 'CampaignRegionHeaderBlock'
         ? regionHeader.intro
         : ''
-    function introMock(value: string | null): Mock {
+    function introMock(value: string | null): SpyMock {
       return blockUpdateMock(
         blockOf<'CampaignRegionHeaderBlock'>('regionHeaderId'),
         { intro: value }
@@ -364,11 +356,11 @@ describe('useCampaignTextCommand', () => {
       <QueriedEditor
         link={ApolloLink.from([
           new DebounceLink(500),
-          new MockLink([getCampaignMock, ...mocks] as never)
+          new MockLink([getCampaignMock, ...mocks])
         ])}
         initialState={{ selectedBlockId: 'heroId' }}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <ClosableField />
       </QueriedEditor>
     )
@@ -389,16 +381,13 @@ describe('useCampaignTextCommand', () => {
   it('keeps the typed text when a refetch answered with older text lands while the save is pending', async () => {
     const save = heroMock('Typed title')
     const cache = campaignCache()
-    const link = ApolloLink.from([
-      new DebounceLink(500),
-      new MockLink([save] as never)
-    ])
+    const link = ApolloLink.from([new DebounceLink(500), new MockLink([save])])
     function editorWithTitle(title: string): ReactElement {
       return (
         <StaticEditor
           link={link}
           cache={cache}
-          campaignProp={{
+          campaign={{
             ...campaign,
             blocks: campaign.blocks.map((block) =>
               block.id === 'heroId' ? { ...block, title } : block
@@ -423,7 +412,7 @@ describe('useCampaignTextCommand', () => {
   })
 
   it('surfaces the API message verbatim when a save fails and rolls the value back', async () => {
-    const failing: Mock = {
+    const failing: SpyMock = {
       ...heroMock('Bad'),
       result: vi.fn(() => ({
         errors: [{ message: 'title must be at most 150 characters' }]
@@ -481,7 +470,7 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     )
   }
 
-  function stringMock(value: string): Mock {
+  function stringMock(value: string): SpyMock {
     return {
       request: {
         query: CAMPAIGN_STRING_UPDATE,
@@ -505,7 +494,7 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     field: string,
     value: string,
     translations: Array<{ languageId: string; value: string }>
-  ): Mock {
+  ): SpyMock {
     return {
       request: {
         query: CAMPAIGN_TRANSLATION_SET,
@@ -526,18 +515,18 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
   }
 
   function renderWith(
-    mocks: Mock[],
+    mocks: SpyMock[],
     children: ReactElement,
     initialState?: Partial<CampaignEditorState>
   ): ReturnType<typeof render> & { cache: InMemoryCache } {
     const cache = campaignCache()
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([getCampaignMock, ...mocks] as never)
+      new MockLink([getCampaignMock, ...mocks])
     ])
     const rendered = render(
       <QueriedEditor link={link} cache={cache} initialState={initialState}>
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <CommandProbe />
         <SelectionProbe />
         <PreviewLanguageProbe />
@@ -666,7 +655,7 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     )
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([getCampaignMock, ...mocks] as never)
+      new MockLink([getCampaignMock, ...mocks])
     ])
     render(
       <QueriedEditor
@@ -817,10 +806,7 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
       const cache = campaignCache()
       const link = ApolloLink.from([
         new DebounceLink(500),
-        new MockLink([
-          getCampaignMockFor(translatableCampaign),
-          translation
-        ] as never)
+        new MockLink([getCampaignMockFor(translatableCampaign), translation])
       ])
       render(
         <QueriedEditor

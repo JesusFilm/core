@@ -213,7 +213,7 @@ function renderPanel(
   return render(
     <StaticEditor
       initialState={initialState}
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       mocks={[
         extraBelowMock,
         extraAboveMock,

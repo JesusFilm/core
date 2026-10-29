@@ -49,7 +49,7 @@ const notFoundMock = {
 
 function renderField(onLink = vi.fn(async () => undefined)) {
   render(
-    <MockedProvider mocks={[byIdMock, bySlugMock, notFoundMock] as never}>
+    <MockedProvider mocks={[byIdMock, bySlugMock, notFoundMock]}>
       <JourneyPasteField onLink={onLink} />
     </MockedProvider>
   )
