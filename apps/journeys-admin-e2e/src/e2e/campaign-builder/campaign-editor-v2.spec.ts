@@ -1,76 +1,68 @@
 import { test } from '../../fixtures/authenticated'
-import { CampaignBuilderPage } from '../../pages/campaign-builder-page'
+import { DEFAULT_HERO_TITLE } from '../../pages/campaign-builder-page'
+import { CampaignPage } from '../../pages/campaign-page'
 
 /**
  * Campaign editor v2: open a campaign -> select the hero in the Navigator ->
  * change its background kind in the Inspector's Style tab -> add a Rich text
  * section below it from the Add Panel and type its title -> publish from the
- * rail's Publish button. The public half (the hero background and the new
- * section render on the landing page) is
- * apps/journeys-e2e/src/e2e/campaign-editor-v2.spec.ts.
+ * rail's Publish button, then the public page at the address the editor
+ * shows: the landing page renders the hero with the background the editor set
+ * and the Rich text section below it.
  *
- * Human-run, on demand: it is tagged @manual, so `e2e-full` (nightly) skips
- * it. Siyang reviews its report before the editor v2 integration PR merges.
- * Run it with
- *   pnpm exec nx run journeys-admin-e2e:e2e-campaign
+ * Runs in the Daily E2E (`journeys-admin-e2e:e2e-full`).
  *
  * Setup:
- * - The e2e user's team needs the `campaignBuilder` LaunchDarkly flag on in
- *   the preview environment, or the dashboard has no Team Campaigns tab.
- * - The e2e user must be a manager of that team: the run ends by deleting
- *   the campaign, and Delete campaign is offered to managers only. (Publish
- *   is open to any member or manager.)
- * - The campaign is deleted at the end of the run. To run the public half
- *   against it, keep it with CAMPAIGN_E2E_KEEP=true, read the generated slug
- *   from the `campaign-v2-slug` annotation in the report, run the public half
- *   with it as CAMPAIGN_E2E_V2_SLUG (see the journeys-e2e spec), then delete
- *   the campaign by hand (Settings > Delete campaign).
+ * - Needs `campaignBuilder` on for the Playwright User (evaluated per user);
+ *   it is on for everyone on stage, where the Daily E2E runs.
+ * - The Playwright User must be a manager of its active team: the
+ *   `campaignBuilder` fixture deletes the campaign at the end of the run, and
+ *   Delete campaign is offered to managers only. (Publish is open to any
+ *   member or manager.)
+ * - The public checks run on the viewer the admin links to
+ *   (`NEXT_PUBLIC_JOURNEYS_URL`), which must read the same API.
  */
-const KEEP_CAMPAIGN = process.env.CAMPAIGN_E2E_KEEP === 'true'
+// The e2eCleanup sweep finds a leftover campaign by this exact prefix
+// followed by Date.now() (`PLAYWRIGHT_CAMPAIGN_TITLE_PREFIXES`)
 const CAMPAIGN_TITLE = `Playwright editor v2 campaign ${Date.now()}`
-const DEFAULT_LANGUAGE = 'English'
-// Kept in sync with apps/journeys-e2e/src/e2e/campaign-editor-v2.spec.ts
 const HERO_BACKGROUND_KIND = 'Primary'
+// The Primary background kind paints the theme's primary colour; a new
+// campaign's theme is seeded from the Light preset (#C52D3A)
+const HERO_BACKGROUND_COLOR = 'rgb(197, 45, 58)'
 const RICH_TEXT_TITLE = 'Playwright rich text title'
 
-// The cleanup counts against the test's own timeout, which a slow cold run can
-// use up; it gets its own budget so the campaign is not left behind
-const CLEANUP_TIMEOUT_MS = 60 * 1000
+test('select the hero in the Navigator, restyle it, add a Rich text section and publish', async ({
+  campaignBuilder,
+  context
+}) => {
+  // Create, edits, publish and the public page's ISR wait each allow up to
+  // 90s, which can exceed the 3 minute test timeout on a cold run
+  test.slow()
 
-test.afterEach(async ({ authedPage }) => {
-  if (KEEP_CAMPAIGN) return
+  await campaignBuilder.goToCampaigns()
+  await campaignBuilder.createCampaign(CAMPAIGN_TITLE)
+  await campaignBuilder.verifyEditorOpenedOnLandingPage(CAMPAIGN_TITLE)
+  // Read while nothing is selected, so Settings shows the campaign.
+  await campaignBuilder.verifyCanDeleteCampaign()
+  const publicAddress = await campaignBuilder.getPublicAddress()
 
-  test.setTimeout(test.info().timeout + CLEANUP_TIMEOUT_MS)
+  await campaignBuilder.selectHeroInNavigator()
+  await campaignBuilder.setBackgroundKind(HERO_BACKGROUND_KIND)
+  await campaignBuilder.addRichTextSectionBelowSelection(RICH_TEXT_TITLE)
 
-  const deleted = await new CampaignBuilderPage(authedPage).deleteCampaign()
-  if (!deleted) {
-    test.info().annotations.push({
-      type: 'cleanup',
-      description: 'No campaign editor was open, so nothing was deleted'
-    })
-  }
+  test
+    .info()
+    .annotations.push({ type: 'campaign-address', description: publicAddress })
+
+  await campaignBuilder.publish()
+
+  // A page of its own, so the editor stays open for the fixture's cleanup
+  const campaign = new CampaignPage(await context.newPage())
+  await campaign.openLandingPageShowingSection(publicAddress, RICH_TEXT_TITLE)
+  // The hero title is the unedited seed
+  await campaign.verifySectionBackground(
+    DEFAULT_HERO_TITLE,
+    HERO_BACKGROUND_COLOR
+  )
+  await campaign.verifySectionBelowHero(DEFAULT_HERO_TITLE, RICH_TEXT_TITLE)
 })
-
-test(
-  'select the hero in the Navigator, restyle it, add a Rich text section and publish',
-  { tag: '@manual' },
-  async ({ authedPage }) => {
-    const campaignBuilder = new CampaignBuilderPage(authedPage)
-
-    await campaignBuilder.goToCampaigns()
-    await campaignBuilder.createCampaign(CAMPAIGN_TITLE, DEFAULT_LANGUAGE)
-    await campaignBuilder.verifyEditorOpenedOnLandingPage(CAMPAIGN_TITLE)
-    // Read while nothing is selected, so Settings shows the campaign.
-    const slug = await campaignBuilder.getCampaignSlug()
-
-    await campaignBuilder.selectHeroInNavigator()
-    await campaignBuilder.setBackgroundKind(HERO_BACKGROUND_KIND)
-    await campaignBuilder.addRichTextSectionBelowSelection(RICH_TEXT_TITLE)
-
-    test
-      .info()
-      .annotations.push({ type: 'campaign-v2-slug', description: slug })
-
-    await campaignBuilder.publish()
-  }
-)

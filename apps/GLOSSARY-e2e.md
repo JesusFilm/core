@@ -20,7 +20,11 @@ One of the pool of five shared, real test accounts (email/password secrets, plus
 _Avoid_: test fixture, seeded user
 
 **Smoke vs Full (journeys-admin)**:
-journeys-admin-e2e splits into a small smoke set (login, create journey) and the full suite. Terminology trap: its target named plain `e2e` runs only the smoke set — the full suite is `e2e-full` — while every other suite's `e2e` target _is_ its full suite.
+journeys-admin-e2e splits into a small smoke set (login, create journey) and the full suite. Terminology trap: its target named plain `e2e` runs only the smoke set — the full suite is `e2e-full` — while every other suite's `e2e` target runs its full suite. No full suite runs **Manual** tests.
+
+**Manual (`@manual`)**:
+A Playwright tag for a test that the journeys-admin-e2e and journeys-e2e targets skip (`--grep-invert @manual`), so it runs only when a human runs it by hand (`playwright test --grep @manual`). It is the home for a test that cannot run unattended; no test carries it today.
+_Avoid_: optional test, skipped test (`test.skip` is a different thing)
 
 **Monitor**:
 A Checkly uptime check written as a Playwright test (`*.monitor.ts`, currently journeys-admin only) — a production health probe on a retry schedule, not part of any suite run.

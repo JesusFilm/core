@@ -1,8 +1,12 @@
 import { expect } from '@playwright/test'
 import type { FrameLocator, Locator, Page } from 'playwright-core'
 
-export const DEFAULT_HERO_TITLE = 'Share the story of Christmas'
+// Kept in sync with `LANDING_SECTION_SEED` (api-journeys `campaign/seed/sections.ts`)
+export const DEFAULT_HERO_TITLE = 'Share the story'
 export const NEW_REGION_NAME = 'New region'
+export const CAMPAIGN_LANGUAGE = 'English'
+// Kept in sync with `REGION_SECTION_SEED` (api-journeys `campaign/seed/sections.ts`)
+const REGION_SHARE_TITLE = 'Share this journey'
 
 export class CampaignBuilderPage {
   readonly page: Page
@@ -16,18 +20,41 @@ export class CampaignBuilderPage {
     return this.page.frameLocator('iframe[title="Campaign preview"]')
   }
 
+  /**
+   * The canvas renders a section's title as plain text (`InlineText`, a `<p>`
+   * styled as a heading) until the section is selected, so it has no heading
+   * role to find it by.
+   */
+  private canvasText(text: string): Locator {
+    return this.canvas.getByText(text, { exact: true })
+  }
+
   get heroTitleInput(): Locator {
     return this.canvas.getByRole('textbox', { name: 'Title' })
+  }
+
+  /**
+   * The region page's Share section. A canvas `<section>` has no accessible
+   * name, so it has no `region` role: it is found by the title it shows.
+   */
+  private get shareSection(): Locator {
+    return this.canvas
+      .locator('section')
+      .filter({ hasText: REGION_SHARE_TITLE })
   }
 
   async goToCampaigns(): Promise<void> {
     await this.page.goto('/?type=campaigns')
     await expect(
-      this.page.getByRole('tab', { name: /Campaigns$/ })
+      this.page.getByRole('tab', { name: /Campaigns$/ }),
+      'Campaigns tab not shown: the `campaignBuilder` flag is off for PLAYWRIGHT_EMAIL'
     ).toHaveAttribute('aria-selected', 'true')
   }
 
-  async createCampaign(title: string, languageName: string): Promise<void> {
+  async createCampaign(
+    title: string,
+    languageName: string = CAMPAIGN_LANGUAGE
+  ): Promise<void> {
     const createButton = this.page.getByRole('button', {
       name: 'Create campaign',
       exact: true
@@ -47,34 +74,41 @@ export class CampaignBuilderPage {
 
   async verifyEditorOpenedOnLandingPage(title: string): Promise<void> {
     await expect(this.page).toHaveURL(/\/campaigns\/[^/]+$/)
-    await this.togglePagesPanel()
+    await this.openPagesPanel()
     await expect(this.page.getByRole('heading', { name: title })).toBeVisible()
     await expect(
       this.page.getByRole('button', { name: 'Landing page' })
     ).toHaveAttribute('aria-current', 'page')
-    await this.togglePagesPanel()
     await expect(
       this.page.getByText(
         'Pick anything on the page or in the Navigator, then change it in the Inspector.'
       )
     ).toBeVisible()
+    await expect(this.canvasText(DEFAULT_HERO_TITLE)).toBeVisible()
+  }
+
+  /**
+   * The run ends by deleting the campaign, which only a team manager can do,
+   * so check for it before any edit. Call it while nothing is selected (right
+   * after the editor opens), when Settings shows the campaign itself.
+   */
+  async verifyCanDeleteCampaign(): Promise<void> {
+    await this.openSettingsTab()
     await expect(
-      this.canvas.getByRole('heading', { level: 1, name: DEFAULT_HERO_TITLE })
+      this.page.getByRole('button', { name: 'Delete campaign' }),
+      'PLAYWRIGHT_EMAIL is not a manager of its active team; the campaign is left for the e2eCleanup sweep'
     ).toBeVisible()
   }
 
   async editHeroTitle(heroTitle: string): Promise<void> {
-    await this.canvas
-      .getByRole('heading', { level: 1, name: DEFAULT_HERO_TITLE })
-      .click()
+    await this.canvasText(DEFAULT_HERO_TITLE).click()
     await expect(this.heroTitleInput).toHaveValue(DEFAULT_HERO_TITLE)
     await this.heroTitleInput.fill(heroTitle)
     await expect(this.heroTitleInput).toHaveValue(heroTitle)
   }
 
-  /** Opens the Pages panel, or closes it when it is open. */
-  private async togglePagesPanel(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Pages', exact: true }).click()
+  private async openPagesPanel(): Promise<void> {
+    await this.openRailPanel('Pages')
   }
 
   async undo(): Promise<void> {
@@ -99,12 +133,15 @@ export class CampaignBuilderPage {
     return this.page.getByRole('tablist', { name: 'Inspector' })
   }
 
-  /** Opens a Left Rail panel, unless it is already open. */
-  private async openRailPanel(name: 'Navigator' | 'Add'): Promise<void> {
+  /**
+   * Opens a Left Rail panel. One panel is always open and clicking the open
+   * panel's toggle leaves it open, so the click needs no check first.
+   */
+  private async openRailPanel(
+    name: 'Pages' | 'Navigator' | 'Add'
+  ): Promise<void> {
     const toggle = this.page.getByRole('button', { name, exact: true })
-    if ((await toggle.getAttribute('aria-pressed')) !== 'true') {
-      await toggle.click()
-    }
+    await toggle.click()
     await expect(toggle).toHaveAttribute('aria-pressed', 'true')
   }
 
@@ -166,14 +203,11 @@ export class CampaignBuilderPage {
   }
 
   async openRegionPage(): Promise<void> {
-    await this.togglePagesPanel()
+    await this.openPagesPanel()
     await this.page
       .getByRole('button', { name: new RegExp(`^${NEW_REGION_NAME}`) })
       .click()
-    await this.togglePagesPanel()
-    await expect(
-      this.canvas.getByRole('heading', { name: 'Share this journey' })
-    ).toBeVisible()
+    await expect(this.canvasText(REGION_SHARE_TITLE)).toBeVisible()
   }
 
   /**
@@ -182,24 +216,26 @@ export class CampaignBuilderPage {
    * for it (without its scheme).
    */
   async linkJourneyToDefaultShareLanguage(journeyUrl: string): Promise<string> {
-    await this.canvas.getByRole('button', { name: 'Pick a journey' }).click()
-    const journeyLink = this.canvas.getByRole('textbox', {
-      name: 'Journey link'
+    await this.shareSection
+      .getByRole('button', { name: 'Pick a journey' })
+      .click()
+    const journeyLink = this.shareSection.getByRole('textbox', {
+      name: 'or paste a link'
     })
     await journeyLink.fill(journeyUrl)
     await journeyLink.press('Enter')
     // 90s: the pasted link is resolved through the public journey query on a cold API
-    await this.canvas
+    await this.shareSection
       .getByRole('button', { name: 'Use this journey' })
       .click({ timeout: 90000 })
 
     // The Share Link is the target of the link that opens it
-    const openShareLink = this.canvas.getByRole('link', {
+    const openShareLink = this.shareSection.getByRole('link', {
       name: 'Open',
       exact: true
     })
     await expect(openShareLink).toBeVisible()
-    await expect(this.canvas.getByTitle('QR Code')).toBeVisible()
+    await expect(this.shareSection.getByTitle('QR Code')).toBeVisible()
     const shareLink = await openShareLink.getAttribute('href')
     if (shareLink == null) throw new Error('The Open link has no Share Link')
     return shareLink.replace(/^https?:\/\//, '')
@@ -217,18 +253,21 @@ export class CampaignBuilderPage {
   }
 
   /**
-   * The campaign's slug, read from its Settings slug field. Call it while
+   * The campaign's public address, read from the helper text of its Settings
+   * Slug field: the root-domain `/campaign/<slug>` address on the viewer this
+   * admin links to (a new campaign has no Campaign Domain). Call it while
    * nothing is selected (right after the editor opens), when Settings shows
    * the campaign itself; with a selection it shows that selection instead.
    */
-  async getCampaignSlug(): Promise<string> {
+  async getPublicAddress(): Promise<string> {
     await this.openSettingsTab()
-    const slugField = this.page.getByRole('textbox', {
-      name: 'Slug',
-      exact: true
-    })
-    await expect(slugField).toHaveValue(/.+/)
-    return await slugField.inputValue()
+    const currentAddress = this.page.getByText(/^Current public address: /)
+    await expect(currentAddress).toHaveText(
+      /^Current public address: https?:\/\/\S+\/campaign\/\S+$/
+    )
+    const text = await currentAddress.textContent()
+    if (text == null) throw new Error('The Slug field shows no public address')
+    return text.replace(/^Current public address: /, '')
   }
 
   /** Opens the Inspector's Settings tab. */
