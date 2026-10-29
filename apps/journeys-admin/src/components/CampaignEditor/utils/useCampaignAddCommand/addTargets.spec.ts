@@ -1,20 +1,48 @@
 import {
-  REGION_ONLY_TYPENAMES,
-  SLOT_DISALLOWED_TYPENAMES
-} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
-
-import {
   CampaignChildPlacement,
   CampaignPageKind
 } from '../../../../../__generated__/globalTypes'
-import {
-  ADDABLE_SECTION_TYPENAMES,
-  AddableSectionTypename
-} from '../../../../libs/useCampaignSectionCreateMutation'
 import { resolveSelection } from '../../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../../data'
 
 import { AddTargets, addTargets } from './addTargets'
+
+// The menus as main offered them before the grammar (#10058): same members, same order.
+const LANDING_SECTIONS = [
+  'CampaignHeroBlock',
+  'CampaignRegionSwitcherBlock',
+  'CampaignVideoCarouselBlock',
+  'CampaignJourneyListBlock',
+  'CampaignAnalyticsBlock',
+  'CampaignRichTextBlock',
+  'CampaignColumnsBlock',
+  'CampaignImageBlock',
+  'CampaignFeaturedMediaBlock'
+]
+
+const REGION_PAGE_SECTIONS = [
+  'CampaignHeroBlock',
+  'CampaignRegionSwitcherBlock',
+  'CampaignVideoCarouselBlock',
+  'CampaignJourneyListBlock',
+  'CampaignAnalyticsBlock',
+  'CampaignRegionHeaderBlock',
+  'CampaignRegionShareBlock',
+  'CampaignRichTextBlock',
+  'CampaignColumnsBlock',
+  'CampaignImageBlock',
+  'CampaignFeaturedMediaBlock'
+]
+
+const LANDING_SLOT_SECTIONS = [
+  'CampaignHeroBlock',
+  'CampaignRegionSwitcherBlock',
+  'CampaignVideoCarouselBlock',
+  'CampaignJourneyListBlock',
+  'CampaignAnalyticsBlock',
+  'CampaignRichTextBlock',
+  'CampaignFeaturedMediaBlock'
+]
 
 function targetsFor(
   selectedBlockId: string | undefined,
@@ -39,15 +67,6 @@ function targetsFor(
     campaign: campaignProp,
     pageKind
   })
-}
-
-function hasType(
-  targets: AddTargets,
-  typenames: readonly AddableSectionTypename[]
-): boolean {
-  return typenames.some((typename) =>
-    targets.section?.typenames.includes(typename)
-  )
 }
 
 describe('addTargets', () => {
@@ -75,7 +94,7 @@ describe('addTargets', () => {
     })
 
     expect(targets.section?.insert.pageId).toBe('regionPageId')
-    expect(targets.section?.typenames).toEqual([...ADDABLE_SECTION_TYPENAMES])
+    expect(targets.section?.typenames).toEqual(REGION_PAGE_SECTIONS)
   })
 
   it('adds a section below the selected section and an Extra into it, either side of its text', () => {
@@ -88,20 +107,18 @@ describe('addTargets', () => {
     expect(targets.extra).toMatchObject({
       host: { id: 'heroId' },
       placement: CampaignChildPlacement.below,
-      inheritsPlacement: false
+      inheritsPlacement: false,
+      typenames: ['CampaignTypographyBlock', 'CampaignButtonBlock']
     })
   })
 
   it('offers the region-only section types on the Region Page only', () => {
-    expect(hasType(targetsFor('heroId'), REGION_ONLY_TYPENAMES)).toBe(false)
-    expect(hasType(targetsFor(undefined), REGION_ONLY_TYPENAMES)).toBe(false)
+    expect(targetsFor('heroId').section?.typenames).toEqual(LANDING_SECTIONS)
+    expect(targetsFor(undefined).section?.typenames).toEqual(LANDING_SECTIONS)
     expect(
-      REGION_ONLY_TYPENAMES.every((typename) =>
-        targetsFor(undefined, {
-          pageKind: CampaignPageKind.regionTemplate
-        }).section?.typenames.includes(typename)
-      )
-    ).toBe(true)
+      targetsFor(undefined, { pageKind: CampaignPageKind.regionTemplate })
+        .section?.typenames
+    ).toEqual(REGION_PAGE_SECTIONS)
   })
 
   it('adds to the end of the page after chrome, and an Extra into the chrome block', () => {
@@ -132,9 +149,7 @@ describe('addTargets', () => {
       parentOrder: 0,
       parentBlockId: 'slotRightId'
     })
-    expect(hasType(targets, SLOT_DISALLOWED_TYPENAMES)).toBe(false)
-    expect(hasType(targets, REGION_ONLY_TYPENAMES)).toBe(false)
-    expect(targets.section?.typenames).toContain('CampaignHeroBlock')
+    expect(targets.section?.typenames).toEqual(LANDING_SLOT_SECTIONS)
     expect(targets.extra).toBeUndefined()
   })
 
@@ -197,10 +212,9 @@ describe('addTargets', () => {
       expect(targets).toEqual({
         section: {
           insert: { pageId: 'landingPageId', parentOrder: 2 },
-          typenames: expect.arrayContaining(['CampaignHeroBlock'])
+          typenames: LANDING_SECTIONS
         }
       })
-      expect(hasType(targets, SLOT_DISALLOWED_TYPENAMES)).toBe(true)
     })
 
     it('hides slot-disallowed types when the preset is a Column Slot', () => {
@@ -220,7 +234,7 @@ describe('addTargets', () => {
         parentOrder: 0,
         parentBlockId: 'slotRightId'
       })
-      expect(hasType(targets, SLOT_DISALLOWED_TYPENAMES)).toBe(false)
+      expect(targets.section?.typenames).toEqual(LANDING_SLOT_SECTIONS)
     })
   })
 
