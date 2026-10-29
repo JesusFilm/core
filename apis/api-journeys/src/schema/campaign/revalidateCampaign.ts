@@ -1,5 +1,7 @@
 import type { JobsOptions } from 'bullmq'
 
+import { pageLanguageTag } from '@core/journeys/ui/Campaign/libs/campaignAddress'
+import { campaignPagePaths } from '@core/journeys/ui/Campaign/libs/campaignPagePaths'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { queue as revalidateQueue } from '../../workers/revalidate/queue'
@@ -8,10 +10,11 @@ import { logger } from '../logger'
 import { fetchLanguage } from './gatewayClient'
 
 /**
- * The tag the proxy routes `?lang=` to for one language: its bcp47 tag,
- * lowercased as the proxy does. A language that cannot be resolved is logged
- * and `null`, so a gateway failure costs that language's on-demand purge, not
- * the mutation.
+ * The tag the proxy routes `?lang=` to for one language
+ * (`pageLanguageTag`): its bcp47 tag, lowercased, or `null` when the tag is
+ * not one the proxy routes. A language that cannot be resolved is logged and
+ * `null`, so a gateway failure costs that language's on-demand purge, not the
+ * mutation.
  */
 async function resolveLanguageTag(
   campaignId: string,
@@ -19,7 +22,7 @@ async function resolveLanguageTag(
 ): Promise<string | null> {
   try {
     const language = await fetchLanguage(languageId)
-    return language?.bcp47?.toLowerCase() ?? null
+    return pageLanguageTag(language?.bcp47)
   } catch (error) {
     logger.error(
       { error, campaignId, languageId },
@@ -32,7 +35,8 @@ async function resolveLanguageTag(
 /**
  * The tags the proxy routes `?lang=` to (`_lang/<tag>`) for a campaign: the
  * bcp47 tag of each of its Page Languages, lowercased as the proxy does. A
- * language that cannot be resolved is left out.
+ * language that cannot be resolved, or whose tag the proxy never routes to a
+ * page of its own, is left out.
  */
 export async function campaignLanguageTags(
   campaignId: string
@@ -55,39 +59,6 @@ export async function campaignLanguageTags(
     )
     return []
   }
-}
-
-/**
- * Every Next.js page path a campaign is served from: the landing page and
- * every region (listed and orphan) in the root-domain form, and — once it
- * has a Campaign Domain — the same pages in the domain form. The root-domain
- * form of a campaign with a domain is NOT_FOUND; it is still listed so a
- * page cached before the domain was added is purged. Each of them also has
- * one page per `languageTags` entry, under `_lang/<tag>` ahead of the region,
- * which is where a `?lang=` link lands.
- * Paths are the page paths behind the proxy rewrite, which is what
- * `/api/revalidate` needs.
- */
-export function campaignPagePaths(campaign: {
-  slug: string
-  regions: Array<{ slug: string }>
-  hostnames?: string[]
-  languageTags?: string[]
-}): string[] {
-  const bases = [
-    `/home/campaign/${campaign.slug}`,
-    ...(campaign.hostnames ?? []).map((hostname) => `/${hostname}`)
-  ]
-  const pagesUnder = (base: string): string[] => [
-    base,
-    ...campaign.regions.map((region) => `${base}/${region.slug}`)
-  ]
-  return bases.flatMap((base) => [
-    ...pagesUnder(base),
-    ...(campaign.languageTags ?? []).flatMap((tag) =>
-      pagesUnder(`${base}/_lang/${tag}`)
-    )
-  ])
 }
 
 /**
