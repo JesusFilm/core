@@ -27,7 +27,7 @@ builder.mutationField('campaignAnalyticsBlockUpdate', (t) =>
         'CampaignAnalyticsBlock'
       )
       return await updateBlock(block, {
-        ...validateSectionText(input, ['eyebrow', 'title']),
+        ...validateSectionText('CampaignAnalyticsBlock', input),
         showMap: assertNotNull(input.showMap, 'showMap'),
         ...sectionStyleColumns(input)
       })

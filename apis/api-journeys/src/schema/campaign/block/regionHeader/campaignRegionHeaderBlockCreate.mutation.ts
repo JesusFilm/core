@@ -23,7 +23,7 @@ builder.mutationField('campaignRegionHeaderBlockCreate', (t) =>
         input,
         'CampaignRegionHeaderBlock',
         context.user,
-        () => validateSectionText(input, ['intro'])
+        () => validateSectionText('CampaignRegionHeaderBlock', input)
       )
   })
 )

@@ -32,7 +32,7 @@ builder.mutationField('campaignRegionSwitcherBlockUpdate', (t) =>
       )
       const variant = assertNotNull(input.variant, 'variant')
       return await updateBlock(block, {
-        ...validateSectionText(input, ['title']),
+        ...validateSectionText('CampaignRegionSwitcherBlock', input),
         ...(variant !== undefined
           ? {
               switcherVariant: assertEnum(

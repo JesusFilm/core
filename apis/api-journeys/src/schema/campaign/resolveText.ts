@@ -1,4 +1,7 @@
-import { parseTranslations } from './translatedValue'
+import {
+  parseTranslations,
+  readTranslatedField
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 
 /**
  * The public read of a Translated Field: the requested language's translation
@@ -13,10 +16,9 @@ export function resolveText(
   languageId: string | null | undefined,
   defaultLanguageId: string
 ): string {
-  if (languageId != null && languageId !== defaultLanguageId) {
-    const entry = parseTranslations(translations)[languageId]
-    if (entry != null && typeof entry.value === 'string' && entry.value !== '')
-      return entry.value
-  }
-  return field ?? ''
+  const translating = languageId != null && languageId !== defaultLanguageId
+  const entry =
+    languageId != null ? parseTranslations(translations)[languageId] : null
+  const { value, fallback } = readTranslatedField({ field, entry, translating })
+  return value !== '' ? value : fallback
 }

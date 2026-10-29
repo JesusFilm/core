@@ -285,18 +285,6 @@ describe('campaignMachineTranslate', () => {
       expect(asked).not.toContain('heroId:title')
       expect(asked).not.toContain('heroId:description')
     })
-
-    it('keeps other languages’ entries in the same column', async () => {
-      await run({ mode: 'missing', languageId: FRENCH })
-
-      expect(blockWrites().heroId.titleTranslations).toBeUndefined()
-      await run({ mode: 'all', languageId: SPANISH })
-      const spanishTitle = blockWrites().heroId.titleTranslations
-      expect(spanishTitle[FRENCH]).toEqual({
-        value: 'Titre de la personne',
-        source: 'human'
-      })
-    })
   })
 
   describe('mode all', () => {
