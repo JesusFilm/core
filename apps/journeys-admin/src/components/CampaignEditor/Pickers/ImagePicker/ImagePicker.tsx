@@ -10,7 +10,7 @@ import { ChangeEvent, ReactElement, useState } from 'react'
 
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
-import { useCloudflareUploadByUrlMutation } from '../../../../libs/useCloudflareUploadByUrlMutation'
+import { useCloudflareTeamUploadByUrlMutation } from '../../../../libs/useCloudflareTeamUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import { MediaLibrary } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary'
 import { CommandError } from '../../CommandError'
@@ -57,7 +57,7 @@ export function ImagePicker({
   const [candidate, setCandidate] = useState<Candidate>()
   const [error, setError] = useState<string>()
   const [keeping, setKeeping] = useState(false)
-  const [uploadByUrl] = useCloudflareUploadByUrlMutation()
+  const [uploadByUrl] = useCloudflareTeamUploadByUrlMutation()
   const { getRootProps, getInputProps, open, loading, isDragAccept } =
     useImageUpload({
       teamId,

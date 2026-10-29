@@ -20,7 +20,7 @@ import CheckIcon from '@core/shared/ui/icons/Check'
 import { useCampaignPaletteUpdateMutation } from '../../../libs/useCampaignPaletteUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 
-/** The Palette holds the eight most recent colours (PRD §4). */
+/** The Palette holds the eight most recent colours. */
 export const PALETTE_SIZE = 8
 
 const HEX_PATTERN = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i

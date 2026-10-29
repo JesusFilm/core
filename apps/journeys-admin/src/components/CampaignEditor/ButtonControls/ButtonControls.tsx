@@ -15,7 +15,7 @@ import { ColourRows } from '../ColourRows'
 import { CommandError } from '../CommandError'
 import { StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
-import { useHostBand } from '../utils/useHostBand'
+import { useCampaignHostBand } from '../utils/useCampaignHostBand'
 
 export const BUTTON_VARIANTS = [
   ButtonVariant.contained,
@@ -45,7 +45,7 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addFields, error } = useCampaignBlockFieldsCommand()
-  const band = useHostBand()
+  const band = useCampaignHostBand()
 
   const variantLabels: Record<ButtonVariant, string> = {
     contained: t('Contained'),

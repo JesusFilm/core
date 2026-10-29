@@ -11,7 +11,7 @@ import { ColourRows } from '../ColourRows'
 import { CommandError } from '../CommandError'
 import { StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
-import { useHostBand } from '../utils/useHostBand'
+import { useCampaignHostBand } from '../utils/useCampaignHostBand'
 
 /** The twelve variants Size walks, largest first. */
 export const TEXT_SIZES = [
@@ -48,7 +48,7 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addFields, error } = useCampaignBlockFieldsCommand()
-  const band = useHostBand()
+  const band = useCampaignHostBand()
 
   const sizeLabels: Record<TypographyVariant, string> = {
     h1: t('Heading 1'),

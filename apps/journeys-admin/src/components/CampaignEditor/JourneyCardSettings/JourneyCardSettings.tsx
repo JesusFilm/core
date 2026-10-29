@@ -13,8 +13,8 @@ import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyBlock as CampaignJourneyBlock } from '../../../../__generated__/GetCampaign'
 import { JourneyCardSnapshotRefreshDialog } from '../JourneyCardSnapshotRefreshDialog'
+import { useCampaignJourneyBlockSnapshotRefreshCommand } from '../utils/useCampaignJourneyBlockSnapshotRefreshCommand'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
-import { useJourneyCardSnapshotRefreshCommand } from '../utils/useJourneyCardSnapshotRefreshCommand'
 
 interface SnapshotFieldProps {
   block: CampaignJourneyBlock
@@ -70,7 +70,7 @@ export function JourneyCardSettings({
 }: JourneyCardSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { refreshSnapshot, pending, confirmRefresh, cancelRefresh } =
-    useJourneyCardSnapshotRefreshCommand()
+    useCampaignJourneyBlockSnapshotRefreshCommand()
 
   function handleRefresh(): void {
     void refreshSnapshot(block)

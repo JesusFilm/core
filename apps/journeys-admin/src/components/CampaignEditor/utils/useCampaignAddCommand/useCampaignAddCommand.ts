@@ -6,8 +6,8 @@ import { useCampaignButtonBlockCreateMutation } from '../../../../libs/useCampai
 import { CampaignSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignTypographyBlockCreateMutation } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
 import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
-import { useAddSection } from '../useAddSection'
 import { useCampaignBlockCreateCommand } from '../useCampaignBlockCreateCommand'
+import { useCampaignSectionAdd } from '../useCampaignSectionAdd'
 
 import { AddTargets, ExtraTypename, addTargets } from './addTargets'
 
@@ -38,7 +38,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     state: { pageKind, addPreset }
   } = useCampaignEditor()
   const { addBlock } = useCampaignBlockCreateCommand()
-  const addSectionAt = useAddSection()
+  const addSectionAt = useCampaignSectionAdd()
   const [typographyCreate] = useCampaignTypographyBlockCreateMutation(
     campaign.id
   )

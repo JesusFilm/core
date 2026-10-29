@@ -10,7 +10,7 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
-import { YoutubeVideosData } from '../../../../../../../libs/fetchYouTube'
+import { YouTubeVideosData } from '../../../../../../../libs/fetchYouTube'
 import { parseISO8601Duration } from '../../../../../../../libs/parseISO8601Duration'
 import { VideoList } from '../VideoList'
 import { VideoListProps } from '../VideoList/VideoList'
@@ -34,7 +34,7 @@ const fetcher = async (query: string): Promise<Data> => {
     ? `https://www.googleapis.com/youtube/v3/videos?${query}&${params}`
     : `https://www.googleapis.com/youtube/v3/playlistItems?${query}&${params}`
 
-  const videosData: YoutubeVideosData = await (await fetch(apiUrl)).json()
+  const videosData: YouTubeVideosData = await (await fetch(apiUrl)).json()
 
   const items = videosData.items.map((item) => ({
     id: item.kind === 'youtube#video' ? item.id : item.contentDetails.videoId,

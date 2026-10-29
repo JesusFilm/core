@@ -6,8 +6,8 @@ import { CampaignChildPlacement } from '../../../../../__generated__/globalTypes
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../useCampaignBlockOrderCommand'
+import { useCampaignColumnSwapCommand } from '../useCampaignColumnSwapCommand'
 import { useCampaignRegionCommand } from '../useCampaignRegionCommand'
-import { useColumnSwapCommand } from '../useColumnSwapCommand'
 
 /** What a drop on the canvas or in the Navigator moves. */
 export type CampaignReorder =
@@ -28,7 +28,7 @@ export type CampaignReorder =
 export function useCampaignReorder(): (reorder: CampaignReorder) => void {
   const { campaign } = useCampaignEditor()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
-  const { addColumnSwap } = useColumnSwapCommand()
+  const { addColumnSwap } = useCampaignColumnSwapCommand()
   const { reorderRegion } = useCampaignRegionCommand()
 
   return function dispatchReorder(reorder: CampaignReorder): void {

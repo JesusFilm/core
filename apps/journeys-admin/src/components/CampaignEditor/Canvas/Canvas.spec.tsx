@@ -535,7 +535,7 @@ describe('Canvas', () => {
     )
   })
 
-  it('selects an Extra on click and the campaign row on the empty frame', async () => {
+  it('selects an Extra on click and the campaign on the empty frame', async () => {
     const { baseElement } = renderCanvas()
     const body = await frameBody(baseElement, 'CanvasExtra-heroButtonId')
 

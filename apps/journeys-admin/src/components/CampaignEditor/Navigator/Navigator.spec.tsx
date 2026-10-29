@@ -48,8 +48,8 @@ vi.mock('@dnd-kit/core', async (importOriginal) => {
 vi.mock('../utils/useCampaignBlockOrderCommand', () => ({
   useCampaignBlockOrderCommand: () => ({ addBlockOrder: mocks.addBlockOrder })
 }))
-vi.mock('../utils/useColumnSwapCommand', () => ({
-  useColumnSwapCommand: () => ({ addColumnSwap: mocks.addColumnSwap })
+vi.mock('../utils/useCampaignColumnSwapCommand', () => ({
+  useCampaignColumnSwapCommand: () => ({ addColumnSwap: mocks.addColumnSwap })
 }))
 vi.mock('../utils/useCampaignRegionCommand', () => ({
   useCampaignRegionCommand: () => ({ reorderRegion: mocks.reorderRegion })

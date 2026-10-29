@@ -1,6 +1,6 @@
 export { fetchYouTube } from './fetchYouTube'
 export type {
-  YoutubePlaylist,
-  YoutubeVideo,
-  YoutubeVideosData
+  YouTubePlaylistItem,
+  YouTubeVideo,
+  YouTubeVideosData
 } from './fetchYouTube'

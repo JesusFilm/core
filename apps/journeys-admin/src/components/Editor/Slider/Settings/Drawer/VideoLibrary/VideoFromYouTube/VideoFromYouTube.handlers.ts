@@ -1,11 +1,11 @@
 import { delay, http } from 'msw'
 
 import {
-  YoutubePlaylist,
-  YoutubeVideo
+  YouTubePlaylistItem,
+  YouTubeVideo
 } from '../../../../../../../libs/fetchYouTube'
 
-const playlistItem1: YoutubePlaylist = {
+const playlistItem1: YouTubePlaylistItem = {
   kind: 'youtube#playlistItem',
   snippet: {
     title: 'What is the Bible?',
@@ -25,7 +25,7 @@ const playlistItem1: YoutubePlaylist = {
   }
 }
 
-const playlistItem2: YoutubePlaylist = {
+const playlistItem2: YouTubePlaylistItem = {
   kind: 'youtube#playlistItem',
   snippet: {
     title: 'Blessing and Curse',
@@ -45,7 +45,7 @@ const playlistItem2: YoutubePlaylist = {
   }
 }
 
-const playlistItem3: YoutubePlaylist = {
+const playlistItem3: YouTubePlaylistItem = {
   kind: 'youtube#playlistItem',
   snippet: {
     title: 'The Story of the Bible',
@@ -65,7 +65,7 @@ const playlistItem3: YoutubePlaylist = {
   }
 }
 
-const video1: YoutubeVideo = {
+const video1: YouTubeVideo = {
   kind: 'youtube#video',
   id: 'jQaeIJOA6J0',
   snippet: {

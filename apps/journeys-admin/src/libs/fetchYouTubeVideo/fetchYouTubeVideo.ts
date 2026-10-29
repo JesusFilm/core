@@ -1,8 +1,4 @@
-import {
-  YoutubeVideo,
-  YoutubeVideosData,
-  fetchYouTube
-} from '../fetchYouTube'
+import { YouTubeVideo, YouTubeVideosData, fetchYouTube } from '../fetchYouTube'
 
 /**
  * Read one YouTube video (snippet and duration) from the YouTube Data API,
@@ -13,10 +9,10 @@ import {
  */
 export async function fetchYouTubeVideo(
   id: string
-): Promise<YoutubeVideo | undefined> {
-  const videosData = await fetchYouTube<Partial<YoutubeVideosData>>('videos', {
+): Promise<YouTubeVideo | undefined> {
+  const videosData = await fetchYouTube<Partial<YouTubeVideosData>>('videos', {
     part: 'snippet,contentDetails',
     id
   })
-  return videosData.items?.[0] as YoutubeVideo | undefined
+  return videosData.items?.[0] as YouTubeVideo | undefined
 }

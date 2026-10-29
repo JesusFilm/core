@@ -15,15 +15,15 @@ import {
 import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { AnalyticsSettings } from '../../AnalyticsSettings'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { CarouselCardEdit } from '../../CarouselCardEdit'
-import { CarouselEdit } from '../../CarouselEdit'
-import { ChromeEdit } from '../../ChromeEdit'
+import { CarouselCardSettings } from '../../CarouselCardSettings'
+import { CarouselSettings } from '../../CarouselSettings'
+import { ChromeSettings } from '../../ChromeSettings'
 import { HeroSettings } from '../../HeroSettings'
-import { ImageSectionEdit } from '../../ImageSectionEdit'
+import { ImageSectionSettings } from '../../ImageSectionSettings'
 import { JourneyCardSettings } from '../../JourneyCardSettings'
 import { JourneyListSettings } from '../../JourneyListSettings'
 import { LinkSettings } from '../../LinkSettings'
-import { MediaSectionEdit } from '../../MediaSectionEdit'
+import { MediaSectionSettings } from '../../MediaSectionSettings'
 import { RegionSettings } from '../../RegionSettings'
 import { RegionSwitcherSettings } from '../../RegionSwitcherSettings'
 import { SectionWordingSettings } from '../../SectionWordingSettings'
@@ -57,16 +57,16 @@ type SectionEditorTable = {
  * Every other section edits its text in place.
  */
 const SECTION_EDITORS: SectionEditorTable = {
-  CampaignHeaderBlock: (block) => <ChromeEdit block={block} />,
-  CampaignImageBlock: (block) => <ImageSectionEdit block={block} />,
-  CampaignVideoCarouselBlock: (block) => <CarouselEdit block={block} />,
+  CampaignHeaderBlock: (block) => <ChromeSettings block={block} />,
+  CampaignImageBlock: (block) => <ImageSectionSettings block={block} />,
+  CampaignVideoCarouselBlock: (block) => <CarouselSettings block={block} />,
   CampaignHeroBlock: (block) => (
     <Stack spacing={4}>
-      <MediaSectionEdit block={block} />
+      <MediaSectionSettings block={block} />
       <HeroSettings block={block} />
     </Stack>
   ),
-  CampaignFeaturedMediaBlock: (block) => <MediaSectionEdit block={block} />,
+  CampaignFeaturedMediaBlock: (block) => <MediaSectionSettings block={block} />,
   CampaignAnalyticsBlock: (block) => <AnalyticsSettings block={block} />,
   CampaignRegionSwitcherBlock: (block) => (
     <RegionSwitcherSettings block={block} />
@@ -164,7 +164,7 @@ export function CarouselCardSettingsBody(): ReactElement {
     selection: { block }
   } = useCampaignEditor()
   if (block?.__typename !== 'CampaignVideoBlock') return <></>
-  return <CarouselCardEdit key={block.id} block={block} />
+  return <CarouselCardSettings key={block.id} block={block} />
 }
 
 /** A journey card's snapshot text and Refresh from journey. */

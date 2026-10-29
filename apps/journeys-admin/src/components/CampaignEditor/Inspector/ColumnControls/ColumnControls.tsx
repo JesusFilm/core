@@ -16,9 +16,9 @@ import {
   sectionTypesForSlot,
   slotSection
 } from '../../utils/sectionTypes'
-import { useAddSection } from '../../utils/useAddSection'
-import { useChangeTypeCommand } from '../../utils/useChangeTypeCommand'
-import { useColumnSwapCommand } from '../../utils/useColumnSwapCommand'
+import { useCampaignBlockTypeChangeCommand } from '../../utils/useCampaignBlockTypeChangeCommand'
+import { useCampaignColumnSwapCommand } from '../../utils/useCampaignColumnSwapCommand'
+import { useCampaignSectionAdd } from '../../utils/useCampaignSectionAdd'
 
 /** The ⇄ glyph of the column swap control; a symbol, not copy to translate. */
 const SWAP_GLYPH = '⇄'
@@ -26,8 +26,7 @@ const SWAP_GLYPH = '⇄'
 /**
  * A Column Slot's settings: choose the type of an empty slot, change the
  * type of the section in it, and swap the Columns section's two slots. Shown
- * for a selected slot and for the section in one. Each is the Command it
- * was before the Inspector.
+ * for a selected slot and for the section in one. Each is one Command.
  */
 export function ColumnControls(): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
@@ -37,9 +36,9 @@ export function ColumnControls(): ReactElement | null {
     state: { pageKind },
     pageKindOf
   } = useCampaignEditor()
-  const addSection = useAddSection()
-  const { addChangeType } = useChangeTypeCommand()
-  const { addColumnSwap } = useColumnSwapCommand()
+  const addSection = useCampaignSectionAdd()
+  const { addChangeType } = useCampaignBlockTypeChangeCommand()
+  const { addColumnSwap } = useCampaignColumnSwapCommand()
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null)
 
   const slot =

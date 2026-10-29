@@ -26,8 +26,8 @@ import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampai
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaignStringText } from '../utils/campaignStringText'
 import { handleStopPropagation } from '../utils/handleStopPropagation'
-import { useShareLanguageLinkCommand } from '../utils/useShareLanguageLinkCommand'
-import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
+import { useCampaignRegionLanguageLinkCommand } from '../utils/useCampaignRegionLanguageLinkCommand'
+import { useCampaignRegionLanguageSnapshotRefreshCommand } from '../utils/useCampaignRegionLanguageSnapshotRefreshCommand'
 
 import { regionLanguageLabel, shareLanguageState } from './shareLanguage'
 import { ShareLanguageRow } from './ShareLanguageRow'
@@ -81,9 +81,9 @@ export function ShareSectionEdit({
   const [languageCreate] = useCampaignRegionLanguageCreateMutation()
   const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
   const [languageDelete] = useCampaignRegionLanguageDeleteMutation()
-  const { link } = useShareLanguageLinkCommand()
+  const { link } = useCampaignRegionLanguageLinkCommand()
   const { requestRefresh, pending, confirmRefresh, cancelRefresh } =
-    useSnapshotRefreshCommand()
+    useCampaignRegionLanguageSnapshotRefreshCommand()
   const regionLanguages = useMemo(
     () =>
       currentRegion == null

@@ -1,5 +1,5 @@
 /** A YouTube video as the Data API's `videos` resource returns it. */
-export interface YoutubeVideo {
+export interface YouTubeVideo {
   kind: 'youtube#video'
   id: string
   snippet: {
@@ -13,7 +13,7 @@ export interface YoutubeVideo {
 }
 
 /** A playlist entry as the Data API's `playlistItems` resource returns it. */
-export interface YoutubePlaylist {
+export interface YouTubePlaylistItem {
   kind: 'youtube#playlistItem'
   snippet: {
     title: string
@@ -26,8 +26,8 @@ export interface YoutubePlaylist {
 }
 
 /** A page of videos or playlist entries from the Data API. */
-export interface YoutubeVideosData {
-  items: Array<YoutubeVideo | YoutubePlaylist>
+export interface YouTubeVideosData {
+  items: Array<YouTubeVideo | YouTubePlaylistItem>
   nextPageToken?: string
 }
 

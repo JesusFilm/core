@@ -7,7 +7,7 @@ import {
 } from '../../../__generated__/CampaignTranslations'
 
 export const CAMPAIGN_TRANSLATIONS = gql`
-  query CampaignTranslations(
+  query GetCampaignTranslations(
     $campaignId: ID!
     $languageId: ID!
     $filter: CampaignTranslationFilter

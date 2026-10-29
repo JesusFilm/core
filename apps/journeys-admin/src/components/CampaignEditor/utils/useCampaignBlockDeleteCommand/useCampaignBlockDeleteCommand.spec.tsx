@@ -205,7 +205,7 @@ describe('useCampaignBlockDeleteCommand', () => {
       )
     }
 
-    it('asks for confirmation, deletes on confirm, renumbers the page at once and selects the campaign row', async () => {
+    it('asks for confirmation, deletes on confirm, renumbers the page at once and selects the campaign', async () => {
       renderSectionEditor()
       expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
 

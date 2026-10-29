@@ -62,8 +62,8 @@ function previousTheme(
  * values the theme had back through the same mutation, redo writes the
  * change again. A failed save raises the API's message, verbatim, in the
  * editor's error snackbar (`useCommandFailure`), which outlives the panel so
- * an undo or redo from the top bar after the drawer closes still reports its
- * failure. A preset is the mode and the eight colours in one input, so one
+ * an undo or redo from the Left Rail after the Theme panel has gone still
+ * reports its failure. A preset is the mode and the eight colours in one input, so one
  * undo restores all nine. The optimistic row is built from the theme as
  * the cache holds it when the Command runs, so an undo never resurrects
  * columns changed since.
