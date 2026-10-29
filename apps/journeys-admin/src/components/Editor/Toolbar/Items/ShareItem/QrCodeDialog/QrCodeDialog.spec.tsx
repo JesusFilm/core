@@ -204,6 +204,28 @@ describe('QrCodeDialog', () => {
     )
   })
 
+  it('should draw the QR code on a canvas labelled with the short link', async () => {
+    render(
+      <MockedProvider
+        mocks={[getJourneyQrCodesMock, getPlausibleJourneyQrCodeScansMock]}
+      >
+        <Suspense>
+          <JourneyProvider value={{ journey }}>
+            <SnackbarProvider>
+              <QrCodeDialog open onClose={handleClose} journey={journey} />
+            </SnackbarProvider>
+          </JourneyProvider>
+        </Suspense>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        screen.getByLabelText('http://localhost:4100/path')
+      ).toBeInstanceOf(HTMLCanvasElement)
+    )
+  })
+
   it('should show QR code for deployment', async () => {
     const deployedQrCodesMock: MockLink.MockedResponse<
       GetJourneyQrCodes,

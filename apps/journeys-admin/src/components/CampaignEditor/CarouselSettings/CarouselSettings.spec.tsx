@@ -20,7 +20,7 @@ import { CAMPAIGN_VIDEO_CAROUSEL_BLOCK_PLAYLIST_IMPORT } from '../../../libs/use
 import { GET_CAMPAIGN_WATCH_VIDEO } from '../../../libs/useCampaignWatchVideoQuery'
 import { getVideosWithOffsetAndUrl } from '../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromYouTube/VideoFromYouTube.handlers'
 import { campaign } from '../data'
-import { CommandProbe, StaticEditor } from '../testing'
+import { CommandProbe, SpyMock, StaticEditor, UndoRedo } from '../testing'
 
 import { CarouselSettings } from './CarouselSettings'
 
@@ -238,6 +238,75 @@ const setWatchWithTextMock = {
   }))
 }
 
+const WATCH_LONG_SERIES_URL = 'https://www.jesusfilm.org/watch/long-series.html'
+/** Over the carousel title's 150 code points; the emoji is the 149th, straddling a UTF-16 cut. */
+const LONG_SERIES_TITLE = `${'a'.repeat(148)}🎬${'b'.repeat(10)}`
+const FITTED_SERIES_TITLE = `${'a'.repeat(148)}🎬…`
+
+const watchLongSeriesMock = {
+  request: {
+    query: GET_CAMPAIGN_WATCH_VIDEO,
+    variables: { id: 'long-series/english' }
+  },
+  result: {
+    data: {
+      video: {
+        __typename: 'Video',
+        id: 'longSeriesId',
+        label: VideoLabel.series,
+        childrenCount: 4,
+        title: [{ __typename: 'VideoTitle', value: `  ${LONG_SERIES_TITLE} ` }],
+        description: [],
+        images: [],
+        variant: null
+      }
+    }
+  }
+}
+
+const setWatchFittedMock: SpyMock = {
+  request: {
+    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE,
+    variables: {
+      id: 'carouselId',
+      input: {
+        url: WATCH_LONG_SERIES_URL,
+        eyebrow: 'Series',
+        title: FITTED_SERIES_TITLE
+      }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignVideoCarouselBlockUpdate: {
+        ...expandedCarousel,
+        eyebrow: 'Series',
+        title: FITTED_SERIES_TITLE,
+        description: 'Old'
+      }
+    }
+  }))
+}
+
+const undoWatchFittedInput = {
+  videoId: null,
+  videoVariantLanguageId: null,
+  eyebrow: 'Watch',
+  title: 'Films for the season'
+}
+
+const undoWatchFittedMock: SpyMock = {
+  request: {
+    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE,
+    variables: { id: 'carouselId', input: undoWatchFittedInput }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignVideoCarouselBlockUpdate: { ...carousel, description: 'Old' }
+    }
+  }))
+}
+
 const youTubeItemMock = {
   request: {
     query: CAMPAIGN_VIDEO_BLOCK_CREATE,
@@ -326,6 +395,9 @@ function renderEdit(block: CarouselBlock = carousel): void {
           watchMock,
           watchSeriesMock,
           setWatchWithTextMock,
+          watchLongSeriesMock,
+          setWatchFittedMock,
+          undoWatchFittedMock,
           watchEpisodeMock,
           watchEpisodeFallbackMock,
           watchItemMock,
@@ -337,6 +409,7 @@ function renderEdit(block: CarouselBlock = carousel): void {
         ]}
       >
         <CommandProbe />
+        <UndoRedo />
         <CarouselSettings block={block} />
       </StaticEditor>
     </SWRConfig>
@@ -401,6 +474,32 @@ describe('CarouselSettings', () => {
 
     await waitFor(() => expect(setWatchWithTextMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('fits an over-cap Watch title to the cap, and undo writes back only the fields it overwrote', async () => {
+    renderEdit({ ...carousel, description: 'Old' })
+
+    paste(WATCH_LONG_SERIES_URL)
+    const resolved = await screen.findByTestId(
+      'CampaignCarouselPasteFieldResolved'
+    )
+    expect(resolved).toHaveTextContent('Series · 4 videos')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use series' }))
+
+    await waitFor(() => expect(setWatchFittedMock.result).toHaveBeenCalled())
+    expect([...FITTED_SERIES_TITLE]).toHaveLength(150)
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() =>
+      expect(undoWatchFittedMock.result).toHaveBeenCalledWith({
+        id: 'carouselId',
+        input: undoWatchFittedInput
+      })
+    )
+    expect(setWatchFittedMock.result).toHaveBeenCalledTimes(1)
   })
 
   it('adds a pasted Watch video without children as one explicit item', async () => {

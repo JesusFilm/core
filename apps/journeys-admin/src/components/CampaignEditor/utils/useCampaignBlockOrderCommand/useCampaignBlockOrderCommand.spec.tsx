@@ -12,6 +12,7 @@ import {
   BlocksProbe,
   QueriedEditor,
   SelectionProbe,
+  SpyMock,
   UndoRedo,
   holdRequests,
   landRequests
@@ -104,6 +105,37 @@ const crossBodyMock = {
   }))
 }
 
+const crossBackMock: SpyMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+    variables: { id: 'footerPrivacyId', parentOrder: 2, placement: 'below' }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignBlockOrderUpdate: [
+        {
+          __typename: 'CampaignTypographyBlock',
+          id: 'footerCopyrightId',
+          parentOrder: 0,
+          placement: 'below'
+        },
+        {
+          __typename: 'CampaignButtonBlock',
+          id: 'footerTermsId',
+          parentOrder: 1,
+          placement: 'below'
+        },
+        {
+          __typename: 'CampaignButtonBlock',
+          id: 'footerPrivacyId',
+          parentOrder: 2,
+          placement: 'below'
+        }
+      ]
+    }
+  }))
+}
+
 function CrossBodyHarness(): ReactElement {
   const { campaign: current } = useCampaignEditor()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
@@ -121,7 +153,12 @@ function CrossBodyHarness(): ReactElement {
 
 function renderEditor(
   children?: ReactElement,
-  mocks: MockLink.MockedResponse[] = [moveUpMock, moveBackMock, crossBodyMock]
+  mocks: MockLink.MockedResponse[] = [
+    moveUpMock,
+    moveBackMock,
+    crossBodyMock,
+    crossBackMock
+  ]
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
@@ -250,7 +287,7 @@ describe('useCampaignBlockOrderCommand', () => {
     ).toBeInTheDocument()
   })
 
-  it('moves an Extra across the Section Body with its placement in the same Command', async () => {
+  it('moves an Extra across the Section Body with its placement in the same Command, and undo puts both back', async () => {
     renderEditor(<CrossBodyHarness />)
     expect(
       await screen.findByTestId('Block-footerPrivacyId')
@@ -267,5 +304,20 @@ describe('useCampaignBlockOrderCommand', () => {
       'CampaignTypographyBlock|footerId|1|below|'
     )
     await waitFor(() => expect(crossBodyMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-footerPrivacyId')).toHaveTextContent(
+        'CampaignButtonBlock|footerId|2|below|'
+      )
+    )
+    expect(screen.getByTestId('Block-footerCopyrightId')).toHaveTextContent(
+      'CampaignTypographyBlock|footerId|0|below|'
+    )
+    expect(screen.getByTestId('Block-footerTermsId')).toHaveTextContent(
+      'CampaignButtonBlock|footerId|1|below|'
+    )
+    await waitFor(() => expect(crossBackMock.result).toHaveBeenCalled())
   })
 })

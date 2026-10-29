@@ -4,12 +4,13 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { CampaignAiTranslateVariables } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
+import { useCampaignQuery } from '../../../libs/useCampaignQuery'
 import { CAMPAIGN_UPDATE } from '../../../libs/useCampaignUpdateMutation'
-import { getCampaignMock } from '../testing'
+import { SpyMock, campaignCache, getCampaignMock } from '../testing'
 
 import { TranslationRunProvider, useTranslationRun } from '.'
 
@@ -75,6 +76,11 @@ function Probe(): ReactElement {
       >
         Start then swap
       </button>
+      <button
+        onClick={() => start({ ...variables, languageId: '21028' }, 'Español')}
+      >
+        Start Spanish
+      </button>
       <button onClick={cancel}>Cancel</button>
       <span data-testid="Run">
         {run == null
@@ -86,12 +92,22 @@ function Probe(): ReactElement {
   )
 }
 
-function renderProvider(link: ApolloLink): ReturnType<typeof render> {
+/** Watches `GetCampaign` as the editor does, so a refetch of it reaches the link. */
+function CampaignReader(): ReactElement {
+  const { data } = useCampaignQuery({ id: 'campaignId' })
+  return <span data-testid="Campaign">{data?.campaign?.id}</span>
+}
+
+function renderProvider(
+  link: ApolloLink,
+  extra?: ReactNode
+): ReturnType<typeof render> {
   return render(
-    <MockedProvider link={link} cache={new InMemoryCache()}>
+    <MockedProvider link={link} cache={campaignCache()}>
       <SnackbarProvider>
         <TranslationRunProvider>
           <Probe />
+          {extra}
         </TranslationRunProvider>
       </SnackbarProvider>
     </MockedProvider>
@@ -101,7 +117,8 @@ function renderProvider(link: ApolloLink): ReturnType<typeof render> {
 /** The run's subscription on `subscriptionLink`; every other operation on `mocks`. */
 function renderWithMocks(
   subscriptionLink: MockSubscriptionLink,
-  mocks: MockLink.MockedResponse[]
+  mocks: MockLink.MockedResponse[],
+  extra?: ReactNode
 ): ReturnType<typeof render> {
   const link = ApolloLink.split(
     (operation) =>
@@ -109,7 +126,7 @@ function renderWithMocks(
     subscriptionLink,
     new MockLink(mocks)
   )
-  return renderProvider(link)
+  return renderProvider(link, extra)
 }
 
 function conflict(
@@ -230,6 +247,66 @@ describe('TranslationRunProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
 
     expect(screen.getByTestId('Error')).toBeEmptyDOMElement()
+  })
+
+  it('ignores a second Start while a run is in flight, keeping the first run', async () => {
+    const link = new MockSubscriptionLink()
+    const setup = vi.fn()
+    const unsubscribed = vi.fn()
+    link.onSetup(setup)
+    link.onUnsubscribe(unsubscribed)
+    renderProvider(link)
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+    await emit(link, report(55, 'Translated 2 of 4 parts', 6))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Start Spanish' }))
+
+    expect(screen.getByTestId('Run')).toHaveTextContent(
+      'Français 55 Translated 2 of 4 parts 6'
+    )
+    expect(setup).toHaveBeenCalledTimes(1)
+    expect(unsubscribed).not.toHaveBeenCalled()
+    expect(link.operation?.variables).toEqual(variables)
+  })
+
+  it.each([
+    {
+      outcome: 'finished',
+      end: async (link: MockSubscriptionLink): Promise<void> =>
+        await emit(link, report(100, 'Translation completed!', 12, true), true)
+    },
+    {
+      outcome: 'errored',
+      end: async (link: MockSubscriptionLink): Promise<void> =>
+        await emit(link, { error: new Error('Translation failed') })
+    },
+    {
+      outcome: 'cancelled',
+      end: async (): Promise<void> =>
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+        })
+    }
+  ])('reads the campaign again once a run has $outcome', async ({ end }) => {
+    const subscriptionLink = new MockSubscriptionLink()
+    const campaignRead: SpyMock = {
+      ...getCampaignMock,
+      result: vi.fn(() => getCampaignMock.result),
+      maxUsageCount: 2
+    }
+    renderWithMocks(subscriptionLink, [campaignRead], <CampaignReader />)
+    expect(await screen.findByTestId('Campaign')).toHaveTextContent(
+      'campaignId'
+    )
+    expect(campaignRead.result).toHaveBeenCalledTimes(1)
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+    await emit(subscriptionLink, report(55, 'Translated 2 of 4 parts', 6))
+    expect(campaignRead.result).toHaveBeenCalledTimes(1)
+
+    await end(subscriptionLink)
+
+    await waitFor(() => expect(campaignRead.result).toHaveBeenCalledTimes(2))
+    expect(screen.getByTestId('Run')).toHaveTextContent('idle')
   })
 
   it('drops the cached Translations rows when a run is cancelled, so kept strings are read', async () => {
