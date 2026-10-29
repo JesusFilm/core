@@ -2,6 +2,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useMemo, useState } from 'react'
 
@@ -26,7 +27,6 @@ import {
   CampaignTextField,
   isCampaignTextBlock
 } from '../../../../libs/useCampaignBlockTextMutation'
-import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
@@ -52,6 +52,15 @@ import {
 import { SectionText } from '../SectionText'
 import { selectableProps } from '../selectable'
 import { SelectionBadge } from '../SelectionBadge'
+
+/** The analytics panel and its world map load with the first Analytics section. */
+const AnalyticsEdit = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/AnalyticsEdit" */ '../../AnalyticsEdit/AnalyticsEdit'
+    ).then((mod) => mod.AnalyticsEdit),
+  { ssr: false }
+)
 
 interface CanvasSectionProps {
   block: CanvasBlock

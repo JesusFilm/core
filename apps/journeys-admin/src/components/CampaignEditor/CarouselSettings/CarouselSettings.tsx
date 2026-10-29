@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -9,14 +10,24 @@ import { GetCampaign_campaign_blocks_CampaignVideoCarouselBlock as CampaignVideo
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CommandError } from '../CommandError'
-import {
+import type {
   CampaignMediaPick,
-  MediaPasteField,
-  ResolvedVideo,
+  ResolvedVideo
+} from '../Pickers/MediaPasteField'
+import {
   isWatchContainer,
   videoLabelName
-} from '../Pickers/MediaPasteField'
+} from '../Pickers/MediaPasteField/videoLabel'
 import { useCampaignCarouselCommand } from '../utils/useCampaignCarouselCommand'
+
+/** The Mux upload (with the journey editor's provider) loads when the picker first opens. */
+const MediaPasteField = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/Pickers/MediaPasteField" */ '../Pickers/MediaPasteField/MediaPasteField'
+    ).then((mod) => mod.MediaPasteField),
+  { ssr: false }
+)
 
 interface CarouselSettingsProps {
   block: CampaignVideoCarouselBlock

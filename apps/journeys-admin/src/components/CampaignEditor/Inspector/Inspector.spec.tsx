@@ -399,7 +399,7 @@ describe('Inspector', () => {
       expect(screen.getByRole('tab', { name: 'Colours' })).toBeInTheDocument()
     })
 
-    it('shows the media editor of a hero on Settings', () => {
+    it('shows the media editor of a hero on Settings', async () => {
       renderInspector({ selectedBlockId: 'heroId', inspectorTab: 'settings' })
 
       expect(screen.getByTestId('CampaignMediaSectionEdit')).toHaveAttribute(
@@ -407,7 +407,7 @@ describe('Inspector', () => {
         'heroId'
       )
       expect(
-        screen.getByRole('textbox', { name: 'Watch or YouTube link' })
+        await screen.findByRole('textbox', { name: 'Watch or YouTube link' })
       ).toBeInTheDocument()
     })
 

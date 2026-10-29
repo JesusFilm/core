@@ -1030,7 +1030,7 @@ describe('ShareSectionEdit', () => {
     expect(await screen.findByText('Link copied')).toBeInTheDocument()
 
     fireEvent.click(within(english).getByTestId('ShareLanguageDownload'))
-    expect(toDataURL).toHaveBeenCalledWith('image/png')
+    await waitFor(() => expect(toDataURL).toHaveBeenCalledWith('image/png'))
     const clicked = click.mock.contexts[0] as HTMLAnchorElement
     expect(clicked.download).toBe('outreach-2026-eur-en.png')
     toDataURL.mockRestore()

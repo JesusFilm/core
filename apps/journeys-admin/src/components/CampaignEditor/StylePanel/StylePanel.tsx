@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
@@ -27,12 +28,20 @@ import {
   SectionOverrideField
 } from '../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { CampaignPaletteColorPicker } from '../CampaignPaletteColorPicker'
 import { ColourRows } from '../ColourRows'
 import { CommandError } from '../CommandError'
 import { FocalPointControl } from '../FocalPointControl'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
+
+/** `react-colorful` loads when a colour is first edited. */
+const CampaignPaletteColorPicker = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/CampaignPaletteColorPicker" */ '../CampaignPaletteColorPicker/CampaignPaletteColorPicker'
+    ).then((mod) => mod.CampaignPaletteColorPicker),
+  { ssr: false }
+)
 
 type StyleTab = 'background' | 'colours'
 

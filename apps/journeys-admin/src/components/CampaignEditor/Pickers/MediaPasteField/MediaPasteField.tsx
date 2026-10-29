@@ -36,6 +36,7 @@ import {
   parseMediaUrl,
   parsePlaylistUrl
 } from './parseMediaUrl'
+import { videoLabelName } from './videoLabel'
 
 /** What a Media Slot pick names: a Watch, YouTube or Mux video, or an image's stored address. */
 export type CampaignMediaPick = CampaignVideoPick | { src: string }
@@ -46,27 +47,6 @@ type MediaTab = 'link' | 'upload' | 'image'
 const PLAYLIST_IMPORT_LIMIT = 12
 
 type Candidate = ParsedMediaUrl | ParsedPlaylistUrl
-
-export function videoLabelName(t: TFunction, label: VideoLabel): string {
-  switch (label) {
-    case VideoLabel.behindTheScenes:
-      return t('Behind the scenes')
-    case VideoLabel.collection:
-      return t('Collection')
-    case VideoLabel.episode:
-      return t('Episode')
-    case VideoLabel.featureFilm:
-      return t('Feature film')
-    case VideoLabel.segment:
-      return t('Segment')
-    case VideoLabel.series:
-      return t('Series')
-    case VideoLabel.shortFilm:
-      return t('Short film')
-    case VideoLabel.trailer:
-      return t('Trailer')
-  }
-}
 
 /** The resolved target shown before a pasted link is kept. */
 export interface ResolvedVideo {
@@ -80,13 +60,6 @@ export interface ResolvedVideo {
   label: VideoLabel | null
   /** The Watch video's own description, for a carousel to open with. */
   description?: string | null
-}
-
-/** A Watch series or collection: in a carousel it expands into its children rather than becoming one card. */
-export function isWatchContainer(
-  label: VideoLabel | null | undefined
-): boolean {
-  return label === VideoLabel.series || label === VideoLabel.collection
 }
 
 interface Resolution {

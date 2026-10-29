@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { MouseEvent, ReactElement, useState } from 'react'
@@ -14,7 +15,6 @@ import {
   PREVIEW_IFRAME_SANDBOX,
   qrCodeFileName
 } from '@core/journeys/ui/Campaign'
-import { QrCodeCanvas, downloadQrCodePng } from '@core/journeys/ui/QrCodeCanvas'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import Download2Icon from '@core/shared/ui/icons/Download2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
@@ -51,6 +51,15 @@ import {
   PhoneFrame
 } from '../PhoneFrame'
 import { regionLanguageLabel, shareLanguageState } from '../shareLanguage'
+
+/** The QR code renderer loads with the first live row. */
+const QrCodeCanvas = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/QrCodeCanvas" */ '@core/journeys/ui/QrCodeCanvas'
+    ).then((mod) => mod.QrCodeCanvas),
+  { ssr: false }
+)
 
 interface ShareLanguageRowProps {
   /** The Share section the row sits in; clicking the row selects it. */
@@ -140,8 +149,12 @@ export function ShareLanguageRow({
     onCopied(shortLink)
   }
 
-  function handleDownload(): void {
+  async function handleDownload(): Promise<void> {
     if (shortLink == null) return
+    // Loaded on demand: a static import would keep the QR module in the first load.
+    const { downloadQrCodePng } = await import(
+      /* webpackChunkName: "CampaignEditor/QrCodeCanvas" */ '@core/journeys/ui/QrCodeCanvas'
+    )
     downloadQrCodePng(
       shortLink,
       qrCodeFileName(campaign, region, regionLanguage)
@@ -367,7 +380,7 @@ export function ShareLanguageRow({
                 data-testid="ShareLanguageDownload"
                 onClick={(event: MouseEvent<HTMLButtonElement>) => {
                   handleStopPropagation(event)
-                  handleDownload()
+                  void handleDownload()
                 }}
               >
                 {downloadLabel}

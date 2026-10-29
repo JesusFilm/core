@@ -14,7 +14,7 @@ import { CampaignEditorPage } from './CampaignEditorPage'
 
 const mockEditorMounted = vi.fn()
 
-vi.mock('../CampaignEditor', () => ({
+vi.mock('../CampaignEditor/CampaignEditor', () => ({
   CampaignEditor: ({
     campaign: campaignProp
   }: {

@@ -3,6 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -27,9 +28,7 @@ import { Hotkeys } from './Hotkeys'
 import { INSPECTOR_WIDTH, Inspector } from './Inspector'
 import { LEFT_PANEL_WIDTH, LeftPanel } from './LeftPanel'
 import { LEFT_RAIL_WIDTH, LeftRail, PANELS } from './LeftRail'
-import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
-import { Navigator } from './Navigator'
 import { PagesPanel } from './PagesPanel'
 import {
   TranslationRunProvider,
@@ -38,6 +37,24 @@ import {
 import { CampaignRole, campaignRoleOf } from './utils/campaignRole'
 import { CampaignCommandProvider } from './utils/useCampaignCommand'
 import { useCampaignLeaveGuard } from './utils/useCampaignLeaveGuard'
+
+// The tree (`@dnd-kit`, `@mui/x-tree-view`) and the Localize panel load when
+// their panel first opens.
+const Navigator = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/Navigator" */ './Navigator/Navigator'
+    ).then((mod) => mod.Navigator),
+  { ssr: false }
+)
+
+const LocalizePanel = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/LocalizePanel" */ './LocalizePanel/LocalizePanel'
+    ).then((mod) => mod.LocalizePanel),
+  { ssr: false }
+)
 
 /**
  * The editor shell is desktop only: narrower viewports get a message, no

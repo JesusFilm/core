@@ -325,7 +325,7 @@ describe('CampaignEditor', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('opens on the Add panel and shows one panel at a time', () => {
+  it('opens on the Add panel and shows one panel at a time', async () => {
     renderEditor()
     expect(screen.getAllByTestId('CampaignLeftPanel')).toHaveLength(1)
     expect(screen.getByRole('button', { name: 'Add' })).toHaveAttribute(
@@ -339,7 +339,9 @@ describe('CampaignEditor', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Localize' }))
     expect(screen.getAllByTestId('CampaignLeftPanel')).toHaveLength(1)
     expect(screen.queryByTestId('CampaignPagesPanel')).not.toBeInTheDocument()
-    expect(screen.getByTestId('CampaignLocalizePanel')).toBeInTheDocument()
+    expect(
+      await screen.findByTestId('CampaignLocalizePanel')
+    ).toBeInTheDocument()
   })
 
   it.each([EDITOR_MIN_WIDTH, 1440, 1920])(
@@ -465,7 +467,7 @@ describe('CampaignEditor', () => {
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
 
     fireEvent.keyDown(document.body, { key: 'z', code: 'KeyZ' })
-    expect(screen.getByTestId('Navigator')).toBeInTheDocument()
+    expect(await screen.findByTestId('Navigator')).toBeInTheDocument()
     fireEvent.keyDown(body.ownerDocument.body, { key: 'z', code: 'KeyZ' })
     expect(screen.getByTestId('Navigator')).toBeInTheDocument()
     fireEvent.keyDown(body.ownerDocument.body, { key: 'p', code: 'KeyP' })
@@ -491,9 +493,9 @@ describe('CampaignEditor', () => {
       scrollIntoView
 
     fireEvent.click(
-      screen
-        .getByTestId('NavigatorRow-footerId')
-        .querySelector('.MuiTreeItem-content') as HTMLElement
+      (await screen.findByTestId('NavigatorRow-footerId')).querySelector(
+        '.MuiTreeItem-content'
+      ) as HTMLElement
     )
     expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
       'Footer'
@@ -526,10 +528,9 @@ describe('CampaignEditor', () => {
     renderEditor([translationsMock])
 
     fireEvent.click(screen.getByRole('button', { name: 'Localize' }))
-    expect(screen.getByRole('tab', { name: 'Languages' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+    expect(
+      await screen.findByRole('tab', { name: 'Languages' })
+    ).toHaveAttribute('aria-selected', 'true')
     fireEvent.click(screen.getByRole('tab', { name: 'Translations' }))
 
     expect(
