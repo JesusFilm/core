@@ -49,9 +49,10 @@ export {
 } from './CampaignPage'
 export {
   CampaignProvider,
-  campaignBasePath,
+  campaignAddressInput,
   campaignLandingHref,
   campaignPageHref,
+  campaignRegionHref,
   useCampaign,
   useOptionalCampaign
 } from './CampaignProvider'
@@ -92,7 +93,6 @@ export { CampaignSectionHeading } from './CampaignSectionHeading'
 export {
   CampaignSeo,
   campaignPreferredLocation,
-  campaignPagePath,
   campaignSeoProps,
   campaignSocialImage
 } from './CampaignSeo'

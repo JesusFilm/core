@@ -70,18 +70,16 @@ function renderHeader(
   campaign: CampaignPublic = campaignPublic,
   {
     pageKind = CampaignPageKind.landing,
-    region = null,
-    basePath
+    region = null
   }: {
     pageKind?: CampaignPageKind
     region?: CampaignRegion | null
-    basePath?: string
   } = {}
 ) {
   const { header } = campaignChromeTrees(campaign)
   return render(
     <ThemeProvider theme={theme}>
-      <CampaignProvider value={{ campaign, pageKind, region, basePath }}>
+      <CampaignProvider value={{ campaign, pageKind, region }}>
         <CampaignHeader block={header} />
       </CampaignProvider>
     </ThemeProvider>
@@ -189,7 +187,10 @@ describe('CampaignHeader', () => {
     })
 
     it('links to the domain root on a Campaign Domain', () => {
-      renderHeader(campaignPublic, { basePath: '' })
+      renderHeader({
+        ...campaignPublic,
+        customDomainNames: ['outreach.example.org']
+      })
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
         '/?lang=en'

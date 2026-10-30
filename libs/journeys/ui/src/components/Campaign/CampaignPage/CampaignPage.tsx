@@ -26,8 +26,6 @@ interface CampaignPageProps {
   pageKind: CampaignPageKind
   /** The region a Region Page renders for. */
   region?: CampaignRegion | null
-  /** Where the landing page is served; defaults to `/campaign/<slug>`. */
-  basePath?: string
   /** The projected world map, built once on the server from the viewer's `countries-110m.json`. */
   worldMap?: WorldMapShapes | null
 }
@@ -47,7 +45,6 @@ export function CampaignPage({
   campaign,
   pageKind,
   region = null,
-  basePath,
   worldMap = null
 }: CampaignPageProps): ReactElement {
   const chrome = useMemo(() => campaignChromeTrees(campaign), [campaign])
@@ -80,7 +77,7 @@ export function CampaignPage({
 
   return (
     <CampaignProvider
-      value={{ campaign, pageKind, region, basePath, worldMap, pageBlockIds }}
+      value={{ campaign, pageKind, region, worldMap, pageBlockIds }}
     >
       <GlobalStyles styles={{ html: { scrollBehavior: 'smooth' } }} />
       <Box

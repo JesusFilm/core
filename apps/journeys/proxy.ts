@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// The module by its deep path: the `@core/journeys/ui/Campaign` barrel would
+// pull React and MUI into this edge middleware.
+import {
+  languagePagePath,
+  pageLanguageTag
+} from '@core/journeys/ui/Campaign/libs/campaignAddress'
 import { isDevHost } from '@core/shared/dev-hosts'
 
 export const config = {
@@ -16,19 +22,26 @@ export const config = {
   ]
 }
 
-// A `lang` value worth a page of its own: a bcp47-shaped tag. Anything else
-// is served the plain page, so a junk value cannot mint cache entries.
-const LANGUAGE_TAG_PATTERN = /^[a-z]{2,3}(-[a-z0-9]{2,8}){0,3}$/
-
 /**
  * The campaign pages are statically generated, so the Page Language the URL
  * names (`?lang=`) is part of the path they are generated at: `_lang/<tag>`
- * ahead of the optional region. `segments` are the public path's segments
- * after the campaign prefix; the route answers a tag that is not one of the
- * campaign's languages with a redirect to the plain page.
+ * ahead of the optional region (`languagePagePath`), the query kept.
+ * `segments` are the public path's segments after the campaign prefix; the
+ * route answers a tag that is not one of the campaign's languages with a
+ * redirect to the plain page.
  */
-function languagePath(prefix: string, segments: string[], tag: string): string {
-  return [prefix, '_lang', tag, ...segments].join('/')
+function rewriteToLanguage(
+  req: NextRequest,
+  prefix: string,
+  segments: string[],
+  languageTag: string
+): NextResponse {
+  return NextResponse.rewrite(
+    new URL(
+      `${languagePagePath(prefix, segments, languageTag)}${req.nextUrl.search}`,
+      req.url
+    )
+  )
 }
 
 export default async function proxy(
@@ -95,19 +108,20 @@ export default async function proxy(
   // Campaign Domain serves only its own campaign, at its root (#10026), so on
   // any other host the path falls through to the hostname routes and is not
   // found. On the root domain it serves only a campaign with no Campaign
-  // Domain.
-  const lang = url.searchParams.get('lang')?.toLowerCase() ?? ''
-  const language = LANGUAGE_TAG_PATTERN.test(lang) ? lang : null
+  // Domain. A `lang` value worth a page of its own is a bcp47-shaped tag
+  // (`pageLanguageTag`); anything else is served the plain page, so a junk
+  // value cannot mint cache entries.
+  const languageTag = pageLanguageTag(url.searchParams.get('lang'))
   const segments = url.pathname.split('/').filter((segment) => segment !== '')
 
   if (isRootDomain && url.pathname.startsWith('/campaign/')) {
     const [, slug, ...region] = segments
-    if (language != null && slug != null && region.length <= 1)
-      return NextResponse.rewrite(
-        new URL(
-          `${languagePath(`/home/campaign/${slug}`, region, language)}${url.search}`,
-          req.url
-        )
+    if (languageTag != null && slug != null && region.length <= 1)
+      return rewriteToLanguage(
+        req,
+        `/home/campaign/${slug}`,
+        region,
+        languageTag
       )
     return NextResponse.rewrite(new URL(`/home${path}`, req.url))
   }
@@ -121,13 +135,8 @@ export default async function proxy(
 
   // a Campaign Domain's landing page or region (or a journey slug, which the
   // route sends back to the plain path) in the Page Language the URL names
-  if (language != null && segments.length <= 1)
-    return NextResponse.rewrite(
-      new URL(
-        `${languagePath(`/${hostname}`, segments, language)}${url.search}`,
-        req.url
-      )
-    )
+  if (languageTag != null && segments.length <= 1)
+    return rewriteToLanguage(req, `/${hostname}`, segments, languageTag)
 
   // rewrite everything else to `/[hostname]/[slug] dynamic route
   return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url))

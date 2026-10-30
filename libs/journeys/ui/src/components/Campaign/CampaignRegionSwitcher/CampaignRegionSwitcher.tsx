@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import { Children, ReactElement, ReactNode } from 'react'
 
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
-import { campaignPageHref, useCampaign } from '../CampaignProvider'
+import { campaignRegionHref, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { CampaignTypography } from '../CampaignTypography'
@@ -236,7 +236,7 @@ function CampaignRegionCard({
 export function CampaignRegionSwitcher({
   block
 }: CampaignRegionSwitcherProps): ReactElement {
-  const { campaign, basePath, region: current } = useCampaign()
+  const { campaign, region: current } = useCampaign()
   const regions = switcherRegions(campaign.regions, current)
   const variant = block.switcherVariant ?? CampaignSwitcherVariant.cards
 
@@ -253,7 +253,7 @@ export function CampaignRegionSwitcher({
             key={region.id}
             region={region}
             variant={variant}
-            href={campaignPageHref(`${basePath}/${region.slug}`, campaign)}
+            href={campaignRegionHref(campaign, region.slug)}
           />
         ))}
       </Box>
