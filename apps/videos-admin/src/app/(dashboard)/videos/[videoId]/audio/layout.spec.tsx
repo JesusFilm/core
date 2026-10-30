@@ -1834,6 +1834,66 @@ describe('ClientLayout', () => {
       expect(screen.getByText('Published')).toBeInTheDocument()
     })
 
+    it('polls a degraded publish that is still retrying', () => {
+      const start = vi.fn()
+      const stop = vi.fn()
+      mockQueries(
+        [
+          {
+            ...mockVideoVariants[1],
+            reconciliation: {
+              ...pendingReconciliation,
+              status: 'degraded',
+              retryAt: '2026-10-30T20:15:00.000Z'
+            }
+          }
+        ],
+        { start, stop }
+      )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Publishing...')).toBeInTheDocument()
+      expect(start).toHaveBeenCalledWith(15000)
+    })
+
+    it('shows Draft and does not poll once degraded retries are exhausted', () => {
+      const start = vi.fn()
+      const stop = vi.fn()
+      mockQueries(
+        [
+          {
+            ...mockVideoVariants[1],
+            published: false,
+            reconciliation: {
+              ...pendingReconciliation,
+              status: 'degraded',
+              retryAt: null
+            }
+          }
+        ],
+        { start, stop }
+      )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Draft')).toBeInTheDocument()
+      expect(screen.queryByText('Publishing...')).not.toBeInTheDocument()
+      expect(start).not.toHaveBeenCalled()
+    })
+
     it('does not poll when no publish is waiting', () => {
       const start = vi.fn()
       const stop = vi.fn()

@@ -55,6 +55,7 @@ const GET_ADMIN_VIDEO_VARIANT = graphql(`
       reconciliation {
         status
         published
+        retryAt
       }
       hls
       downloads {
@@ -86,6 +87,7 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
       reconciliation {
         status
         published
+        retryAt
       }
     }
   }

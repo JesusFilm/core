@@ -637,5 +637,16 @@ describe('VariantDialog', () => {
         screen.getByText('Finishing publish processing')
       ).toBeInTheDocument()
     })
+
+    it('does not show the Publishing... chip once degraded retries are exhausted', () => {
+      mockDraftVariant({
+        ...pendingReconciliation,
+        status: 'degraded',
+        retryAt: null
+      })
+      renderWithUpdateResponse(null)
+
+      expect(screen.queryByText('Publishing...')).not.toBeInTheDocument()
+    })
   })
 })

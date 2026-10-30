@@ -68,8 +68,27 @@ describe('isPublishPending', () => {
     expect(
       isPublishPending({
         published: false,
-        reconciliation: { status: 'degraded', published: true }
+        reconciliation: {
+          status: 'degraded',
+          published: true,
+          retryAt: '2026-10-30T20:15:00.000Z'
+        }
       })
     ).toBe(true)
+  })
+
+  it('should not be pending once degraded retries are exhausted', () => {
+    expect(
+      isPublishPending({
+        published: false,
+        reconciliation: { status: 'degraded', published: true, retryAt: null }
+      })
+    ).toBe(false)
+    expect(
+      isPublishPending({
+        published: false,
+        reconciliation: { status: 'degraded', published: true }
+      })
+    ).toBe(false)
   })
 })

@@ -43,6 +43,7 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
         reconciliation {
           status
           published
+          retryAt
         }
         language {
           id
