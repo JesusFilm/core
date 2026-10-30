@@ -5,12 +5,11 @@ import { ComponentType, ReactElement } from 'react'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import { getPageRTL } from '../getPageRTL'
+import type { PageRTLProps } from '../getPageRTL'
 
 type EmotionPlugin = NonNullable<
   NonNullable<Parameters<typeof documentGetInitialProps>[1]>['plugins']
 >[number]
-
-type CampaignPageProps = Pick<Parameters<typeof getPageRTL>[0], 'campaign'>
 
 /**
  * A `documentGetInitialProps` plugin that serves right-to-left campaign pages
@@ -30,7 +29,7 @@ export function createRtlEmotionPlugin(): EmotionPlugin {
   return {
     enhanceApp: (App) =>
       function RtlEmotionApp(props: {
-        pageProps?: CampaignPageProps
+        pageProps?: PageRTLProps
       }): ReactElement {
         const Page = App as ComponentType<Record<string, unknown>>
         if (!getPageRTL({ campaign: props.pageProps?.campaign }))

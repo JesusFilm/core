@@ -12,9 +12,9 @@ import type {
   CampaignRegion
 } from '@core/journeys/ui/Campaign/types'
 import { googleFontsHref } from '@core/journeys/ui/fonts/googleFontsHref'
-import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
+import { getPageRTL } from '../../libs/getPageRTL'
 import { CampaignLanguageRedirect } from '../CampaignLanguageRedirect'
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'your.nextstep.is'
@@ -42,7 +42,7 @@ export function CampaignPageWrapper({
   region = null,
   children
 }: CampaignPageWrapperProps): ReactElement {
-  const rtl = getLocaleRTL(campaign.language.bcp47 ?? '')
+  const rtl = getPageRTL({ campaign })
   const theme = useMemo(
     () => createCampaignTheme(campaign.theme, rtl),
     [campaign.theme, rtl]
