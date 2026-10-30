@@ -1764,7 +1764,7 @@ describe('ClientLayout', () => {
       }) as never)
     }
 
-    it('shows Publishing... and polls the audio languages every 3 seconds', () => {
+    it('shows Publishing... and polls the audio languages every 15 seconds', () => {
       const start = vi.fn()
       const stop = vi.fn()
       mockQueries(
@@ -1788,7 +1788,7 @@ describe('ClientLayout', () => {
         screen.getByText('Finishing publish processing')
       ).toBeInTheDocument()
       expect(screen.getByText('Published')).toBeInTheDocument()
-      expect(start).toHaveBeenCalledWith(3000)
+      expect(start).toHaveBeenCalledWith(15000)
     })
 
     it('stops polling once the publish has landed', () => {
@@ -1805,7 +1805,10 @@ describe('ClientLayout', () => {
           </ClientLayout>
         </MockedProvider>
       )
-      expect(start).toHaveBeenCalledWith(3000)
+      expect(start).toHaveBeenCalledWith(15000)
+      // Nothing stops the poll while the publish is still waiting, so the
+      // stop below can only come from the publish landing.
+      expect(stop).not.toHaveBeenCalled()
 
       mockQueries(
         [
@@ -1826,6 +1829,7 @@ describe('ClientLayout', () => {
       )
 
       expect(stop).toHaveBeenCalled()
+      expect(start).toHaveBeenCalledTimes(1)
       expect(screen.queryByText('Publishing...')).not.toBeInTheDocument()
       expect(screen.getByText('Published')).toBeInTheDocument()
     })
