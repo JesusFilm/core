@@ -19,6 +19,46 @@ describe('isGeneratedParentVariant', () => {
   })
 
   it.each([
+    ['episode', { label: 'episode' }],
+    ['shortFilm', { label: 'shortFilm' }]
+  ])(
+    'does not treat a media-less %s Variant as a generated parent',
+    (_label, video) => {
+      expect(
+        isGeneratedParentVariant(
+          { ...baseVariant, video },
+          'video-relationship-change'
+        )
+      ).toBe(false)
+    }
+  )
+
+  it('does not treat a Variant without a loaded Video as a generated parent', () => {
+    expect(
+      isGeneratedParentVariant(
+        { ...baseVariant, video: null },
+        'video-relationship-change'
+      )
+    ).toBe(false)
+  })
+
+  it('does not treat a Variant with a Mux video as a generated parent', () => {
+    expect(
+      isGeneratedParentVariant(
+        { ...baseVariant, muxVideo: { readyToStream: false } },
+        'video-relationship-change'
+      )
+    ).toBe(false)
+  })
+
+  it.each(['video-variant-create', 'process-video-upload'] as const)(
+    'does not treat a media-less container Variant as a generated parent while its reason is the fresh upload %s',
+    (reason) => {
+      expect(isGeneratedParentVariant(baseVariant, reason)).toBe(false)
+    }
+  )
+
+  it.each([
     ['dash', { dash: 'https://cdn.example.com/video.mpd' }],
     ['masterUrl', { masterUrl: 'https://cdn.example.com/master.mp4' }],
     ['assetId', { assetId: 'r2-asset-1' }],
