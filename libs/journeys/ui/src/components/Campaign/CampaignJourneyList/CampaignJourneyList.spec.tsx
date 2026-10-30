@@ -279,21 +279,31 @@ describe('CampaignJourneyList', () => {
     const context = {
       pageKind: CampaignPageKind.landing,
       region: null,
-      regions: campaignPublic.regions
+      regions: campaignPublic.regions,
+      strings: campaignPublic.strings
     }
     const noText = { eyebrow: null, title: null, description: null }
+    const noLine = {
+      ...context,
+      strings: campaignPublic.strings.filter(
+        (string) => string.key !== CampaignStringKey.noJourneys
+      )
+    }
 
-    it('renders the text when there are no live journeys, else the section is skipped', () => {
+    it('renders the text or the noJourneys line when there are no live journeys, else the section is skipped', () => {
       const draftOnly = item('draft', 0, {
         journeyStatus: JourneyStatus.draft,
         journeyUrl: null
       })
 
-      expect(shouldRenderSection(listTree([draftOnly]), context)).toBe(true)
+      expect(shouldRenderSection(listTree([draftOnly]), noLine)).toBe(true)
       expect(shouldRenderSection(listTree([draftOnly], noText), context)).toBe(
+        true
+      )
+      expect(shouldRenderSection(listTree([draftOnly], noText), noLine)).toBe(
         false
       )
-      expect(shouldRenderSection(listTree([], noText), context)).toBe(false)
+      expect(shouldRenderSection(listTree([], noText), noLine)).toBe(false)
     })
 
     it('renders cards alone when the section has no text', () => {

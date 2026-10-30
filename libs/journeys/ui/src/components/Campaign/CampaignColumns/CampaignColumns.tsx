@@ -56,7 +56,8 @@ export function CampaignColumns({ block }: CampaignColumnsProps): ReactElement {
           const section = slotSection(slot, {
             pageKind,
             region,
-            regions: campaign.regions
+            regions: campaign.regions,
+            strings: campaign.strings
           })
           return (
             <Box

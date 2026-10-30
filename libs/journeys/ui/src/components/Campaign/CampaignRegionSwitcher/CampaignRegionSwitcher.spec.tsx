@@ -205,14 +205,16 @@ describe('CampaignRegionSwitcher', () => {
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.landing,
         region: null,
-        regions: [lacRegion]
+        regions: [lacRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(false)
     expect(
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.landing,
         region: null,
-        regions: [eurRegion]
+        regions: [eurRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(true)
   })
@@ -223,14 +225,16 @@ describe('CampaignRegionSwitcher', () => {
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.regionTemplate,
         region: eurRegion,
-        regions: [eurRegion, lacRegion]
+        regions: [eurRegion, lacRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(false)
     expect(
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.regionTemplate,
         region: eurRegion,
-        regions: [eurRegion, afrRegion]
+        regions: [eurRegion, afrRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(true)
   })
@@ -251,7 +255,8 @@ describe('CampaignRegionSwitcher', () => {
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.regionTemplate,
         region: eurRegion,
-        regions: [eurRegion]
+        regions: [eurRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(true)
   })

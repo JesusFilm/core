@@ -1,13 +1,18 @@
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  CampaignStringKey
+} from '../../../../__generated__/globalTypes'
 import { featuredMediaBullets } from '../CampaignFeaturedMedia'
 import { liveJourneyCards } from '../CampaignJourneyList'
 import { hasCampaignMedia } from '../CampaignMediaSlot'
+import { campaignString } from '../CampaignProvider'
 import { shareLanguages } from '../CampaignRegionShare'
 import { switcherRegions } from '../CampaignRegionSwitcher'
 import { splitParagraphs } from '../CampaignRichText'
 import { hasCarouselCards } from '../CampaignVideoCarousel'
 import { hasText, isCampaignSection } from '../types'
 import type {
+  CampaignPublic,
   CampaignRegion,
   CampaignSectionTree,
   CampaignTree
@@ -17,6 +22,7 @@ export interface SectionRenderContext {
   pageKind: CampaignPageKind
   region: CampaignRegion | null
   regions: CampaignRegion[]
+  strings: CampaignPublic['strings']
 }
 
 /**
@@ -51,9 +57,10 @@ function hasExtras(section: CampaignSectionTree): boolean {
  * region to show and no Extra is skipped (on a Region Page the current
  * region is not shown, so one listed region there skips it); a Video Carousel with no card (explicit mode
  * with no items, or a Watch video the gateway no longer serves) renders its
- * text if any, else is skipped — an expanded Video with no published
- * children is still its own card; a Journey List with no
- * live-published journeys renders its text if any, else is skipped;
+ * eyebrow, title or description if any, else is skipped — an expanded Video
+ * with no published children is still its own card; a Journey List with no
+ * live-published journeys renders its text or the campaign's `noJourneys`
+ * line if any, on every page kind, else is skipped;
  * Analytics always renders; Region Header and Region Share render on a
  * Region Page (Share needs text, an Extra or a language with a live-published journey); Rich Text needs
  * a title or a non-empty paragraph; Columns needs a Column Slot whose section
@@ -92,6 +99,7 @@ export function shouldRenderSection(
         hasCarouselCards(section) ||
         hasText(section.eyebrow) ||
         hasText(section.title) ||
+        hasText(section.description) ||
         extras
       )
     case 'CampaignJourneyListBlock':
@@ -100,6 +108,9 @@ export function shouldRenderSection(
         hasText(section.eyebrow) ||
         hasText(section.title) ||
         hasText(section.description) ||
+        hasText(
+          campaignString(context.strings, CampaignStringKey.noJourneys)
+        ) ||
         extras
       )
     case 'CampaignAnalyticsBlock':
