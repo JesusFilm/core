@@ -14,7 +14,7 @@ env:
 jobs:
   build:
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-8vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-8vcpu-ubuntu-2204' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
@@ -79,7 +79,7 @@ jobs:
     # between them and the code that generates them otherwise fails silently
     # (subgraph-check only validates composition against the registry).
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-4vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-4vcpu-ubuntu-2204' }}
     permissions:
       contents: read
     # No NX_CLOUD_ACCESS_TOKEN here on purpose: generate-graphql and
@@ -147,7 +147,7 @@ jobs:
     # 'skip-migration-check' label is the escape hatch for schema edits that
     # genuinely need no migration (comments, formatting).
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-2vcpu-ubuntu-2204' }}
     permissions:
       contents: read
       issues: read
@@ -184,7 +184,7 @@ jobs:
           ./tools/scripts/check-prisma-migrations.sh "origin/$GITHUB_BASE_REF"
   test:
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-8vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-8vcpu-ubuntu-2204' }}
     strategy:
       fail-fast: false
       matrix:
