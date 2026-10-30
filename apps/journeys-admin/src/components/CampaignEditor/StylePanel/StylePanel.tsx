@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
@@ -27,12 +28,20 @@ import {
   SectionOverrideField
 } from '../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { CampaignPaletteColorPicker } from '../CampaignPaletteColorPicker'
 import { ColourRows } from '../ColourRows'
 import { CommandError } from '../CommandError'
 import { FocalPointControl } from '../FocalPointControl'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
+
+/** `react-colorful` loads when a colour is first edited. */
+const CampaignPaletteColorPicker = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/CampaignPaletteColorPicker" */ '../CampaignPaletteColorPicker/CampaignPaletteColorPicker'
+    ).then((mod) => mod.CampaignPaletteColorPicker),
+  { ssr: false }
+)
 
 type StyleTab = 'background' | 'colours'
 
@@ -176,12 +185,28 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
         aria-label={t('Style')}
         variant="fullWidth"
       >
-        <Tab value="background" label={t('Background')} />
-        <Tab value="colours" label={t('Colours')} />
+        <Tab
+          value="background"
+          label={t('Background')}
+          id="style-tab-background"
+          aria-controls="style-panel"
+        />
+        <Tab
+          value="colours"
+          label={t('Colours')}
+          id="style-tab-colours"
+          aria-controls="style-panel"
+        />
       </Tabs>
       <CommandError error={error} />
       {tab === 'background' && (
-        <Stack spacing={4} role="tabpanel" data-testid="StyleBackgroundTab">
+        <Stack
+          spacing={4}
+          role="tabpanel"
+          id="style-panel"
+          aria-labelledby="style-tab-background"
+          data-testid="StyleBackgroundTab"
+        >
           <ToggleButtonGroup
             exclusive
             fullWidth
@@ -274,7 +299,13 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
         </Stack>
       )}
       {tab === 'colours' && (
-        <Stack spacing={4} role="tabpanel" data-testid="StyleColoursTab">
+        <Stack
+          spacing={4}
+          role="tabpanel"
+          id="style-panel"
+          aria-labelledby="style-tab-colours"
+          data-testid="StyleColoursTab"
+        >
           <ColourRows
             label={t('Colour overrides')}
             rows={SECTION_OVERRIDE_FIELDS.map((field) => ({

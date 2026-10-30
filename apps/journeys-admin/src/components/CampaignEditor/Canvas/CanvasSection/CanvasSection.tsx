@@ -2,8 +2,9 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, useCallback, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useMemo, useState } from 'react'
 
 import {
   CAMPAIGN_HEADER_HEIGHT,
@@ -26,7 +27,6 @@ import {
   CampaignTextField,
   isCampaignTextBlock
 } from '../../../../libs/useCampaignBlockTextMutation'
-import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
@@ -50,7 +50,17 @@ import {
   SELECTED_OUTLINE
 } from '../hoverOutline'
 import { SectionText } from '../SectionText'
+import { selectableProps } from '../selectable'
 import { SelectionBadge } from '../SelectionBadge'
+
+/** The analytics panel and its world map load with the first Analytics section. */
+const AnalyticsEdit = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/AnalyticsEdit" */ '../../AnalyticsEdit/AnalyticsEdit'
+    ).then((mod) => mod.AnalyticsEdit),
+  { ssr: false }
+)
 
 interface CanvasSectionProps {
   block: CanvasBlock
@@ -76,7 +86,7 @@ function isAbove(child: CanvasBlock): boolean {
  * stacked below `md` (Featured Media stacked at every width when its layout
  * is `stacked`, the media full width under the text); a Video Carousel shows its cards below its text.
  * Clicking anywhere selects the section; clicking an Extra or a carousel
- * item selects it. The selected block's text fields and strings become
+ * item selects it. Each is focusable, and Enter or Space selects it too. The selected block's text fields and strings become
  * inline inputs. The chrome follows the public layout instead: the header
  * is a sticky row (Brand Mark, nav buttons on the right, a static language
  * select); the footer a row of lines left and links right.
@@ -263,7 +273,11 @@ export function CanvasSection({
             {slots.map((slot) => (
               <CanvasColumnSlot key={slot.id} slot={slot}>
                 {slot.children[0] != null && (
-                  <CanvasSection block={slot.children[0]} inSlot />
+                  <CanvasSection
+                    key={slot.children[0].id}
+                    block={slot.children[0]}
+                    inSlot
+                  />
                 )}
               </CanvasColumnSlot>
             ))}
@@ -336,11 +350,13 @@ export function CanvasSection({
       data-selected={sectionSelected}
       data-hoverable
       style={bandCssVariables(band)}
-      onClick={(event: MouseEvent<HTMLElement>) => {
-        event.stopPropagation()
-        setFocusField(undefined)
-        selectBlock(block.id)
-      }}
+      {...selectableProps(
+        () => {
+          setFocusField(undefined)
+          selectBlock(block.id)
+        },
+        blockLabel(t, block.__typename)
+      )}
       sx={{
         position: 'relative',
         backgroundColor: 'var(--campaign-band-background)',

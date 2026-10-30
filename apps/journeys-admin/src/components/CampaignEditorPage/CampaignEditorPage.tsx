@@ -2,6 +2,7 @@ import { CombinedGraphQLErrors } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
 import { NextSeo } from 'next-seo'
@@ -9,7 +10,15 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { useCampaignQuery } from '../../libs/useCampaignQuery'
-import { CampaignEditor } from '../CampaignEditor'
+
+/** The editor and everything it loads stay out of the route's first load. */
+const CampaignEditor = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor" */ '../CampaignEditor/CampaignEditor'
+    ).then((mod) => mod.CampaignEditor),
+  { ssr: false }
+)
 
 interface CampaignEditorPageProps {
   campaignId?: string

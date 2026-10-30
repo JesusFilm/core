@@ -13,6 +13,10 @@ import {
  *
  * A journey caller must get its own `($journeyId)` document rather than reuse
  * this one.
+ *
+ * Fetching the image can take seconds, so the mutation skips the app-wide
+ * mutation queue (merged into any context the caller passes) rather than hold
+ * every other save behind it.
  */
 export const CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL = gql`
   mutation CreateCloudflareTeamUploadByUrl(
@@ -43,5 +47,8 @@ export function useCloudflareTeamUploadByUrlMutation(
   return useMutation<
     CreateCloudflareTeamUploadByUrl,
     CreateCloudflareTeamUploadByUrlVariables
-  >(CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL, options)
+  >(CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL, {
+    ...options,
+    context: { ...options?.context, skipQueue: true }
+  })
 }

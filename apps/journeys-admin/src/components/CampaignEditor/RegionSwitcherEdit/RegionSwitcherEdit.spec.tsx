@@ -429,6 +429,33 @@ describe('RegionSwitcherEdit', () => {
     expect(deleteMock.result).not.toHaveBeenCalled()
   })
 
+  it.each(['Enter', ' '])(
+    'selects a card on %j and a line, a button, on its own %j',
+    async (key) => {
+      renderSwitcher(campaignWithRegions)
+      const card = await screen.findByTestId('RegionCardEdit-eurRegionId')
+      expect(card).toHaveAttribute('tabindex', '0')
+      expect(card).toHaveAttribute('aria-label', 'Region card: Europe')
+      expect(card).not.toHaveAttribute('role')
+
+      fireEvent.keyDown(card, { key })
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+      expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+        'eurRegionId'
+      )
+
+      const line = screen.getByTestId('RegionLineEdit-eurLineId')
+      expect(line).toHaveAttribute('role', 'button')
+      fireEvent.keyDown(line, { key })
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('text')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'eurLineId'
+      )
+    }
+  )
+
   it('selects a card on click and a line on its own click', async () => {
     renderSwitcher(campaignWithRegions)
 

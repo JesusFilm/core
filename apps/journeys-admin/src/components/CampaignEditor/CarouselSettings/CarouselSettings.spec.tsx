@@ -312,7 +312,8 @@ const getPlaylist = http.get(
     )
 )
 
-function renderEdit(block: CarouselBlock = carousel): void {
+/** Renders the settings and waits for the lazily loaded paste field. */
+async function renderEdit(block: CarouselBlock = carousel): Promise<void> {
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
       <StaticEditor
@@ -341,6 +342,9 @@ function renderEdit(block: CarouselBlock = carousel): void {
       </StaticEditor>
     </SWRConfig>
   )
+  await screen.findByRole('textbox', {
+    name: 'Watch, YouTube video or playlist link'
+  })
 }
 
 function paste(value: string): void {
@@ -358,8 +362,8 @@ describe('CarouselSettings', () => {
     vi.clearAllMocks()
   })
 
-  it('offers a pasted link or an upload, and no image', () => {
-    renderEdit()
+  it('offers a pasted link or an upload, and no image', async () => {
+    await renderEdit()
 
     expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
       'Paste a link',
@@ -368,7 +372,7 @@ describe('CarouselSettings', () => {
   })
 
   it('shows a pasted Watch link resolved, then sets the Watch expansion as one Command', async () => {
-    renderEdit()
+    await renderEdit()
 
     paste(WATCH_URL)
     const resolved = await screen.findByTestId(
@@ -385,7 +389,7 @@ describe('CarouselSettings', () => {
   })
 
   it('writes the expanded series’ label, title and description over the carousel’s text', async () => {
-    renderEdit({
+    await renderEdit({
       ...carousel,
       title: 'Films for the season',
       description: 'Old'
@@ -404,7 +408,7 @@ describe('CarouselSettings', () => {
   })
 
   it('adds a pasted Watch video without children as one explicit item', async () => {
-    renderEdit()
+    await renderEdit()
 
     paste(WATCH_EPISODE_URL)
     const resolved = await screen.findByTestId(
@@ -422,7 +426,7 @@ describe('CarouselSettings', () => {
 
   it('adds a pasted YouTube video as one explicit item', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
-    renderEdit()
+    await renderEdit()
 
     paste(YOUTUBE_URL)
     const resolved = await screen.findByTestId(
@@ -438,7 +442,7 @@ describe('CarouselSettings', () => {
 
   it('shows a pasted YouTube playlist resolved, then imports its first 12 videos as one Command', async () => {
     mswServer.use(getPlaylist)
-    renderEdit()
+    await renderEdit()
 
     paste(PLAYLIST_URL)
     const resolved = await screen.findByTestId(
@@ -457,7 +461,7 @@ describe('CarouselSettings', () => {
   })
 
   it('adds an uploaded video as one explicit item', async () => {
-    renderEdit()
+    await renderEdit()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
     fireEvent.click(
@@ -469,7 +473,7 @@ describe('CarouselSettings', () => {
 
   it('switches an expanded carousel to explicit mode before adding an item', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
-    renderEdit(expandedCarousel)
+    await renderEdit(expandedCarousel)
 
     paste(YOUTUBE_URL)
     await screen.findByTestId('CampaignCarouselPasteFieldResolved')
@@ -481,7 +485,7 @@ describe('CarouselSettings', () => {
   })
 
   it('shows the expanded Watch video and switches to explicit mode with "Use my own videos"', async () => {
-    renderEdit(expandedCarousel)
+    await renderEdit(expandedCarousel)
 
     expect(screen.getByTestId('CampaignCarouselEditWatch')).toHaveTextContent(
       'Showing the videos of Outreach films from Watch'

@@ -64,6 +64,42 @@ describe('FocalPointPicker', () => {
     })
   })
 
+  it('moves the focused dot 1 % per arrow key and reports each step', () => {
+    const onChange = renderPicker()
+    const dot = screen.getByRole('slider', {
+      name: 'Focal point: 50% from the left, 50% from the top'
+    })
+    expect(dot).toHaveAttribute('tabindex', '0')
+
+    fireEvent.keyDown(dot, { key: 'ArrowRight' })
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith({ focalLeft: 51, focalTop: 50 })
+    expect(dot).toHaveStyle({ top: '50%', left: '51%' })
+    expect(dot).toHaveAccessibleName(
+      'Focal point: 51% from the left, 50% from the top'
+    )
+
+    fireEvent.keyDown(dot, { key: 'ArrowUp' })
+
+    expect(onChange).toHaveBeenLastCalledWith({ focalLeft: 51, focalTop: 49 })
+  })
+
+  it('moves the dot 10 % with Shift and stops at the edge', () => {
+    const onChange = renderPicker()
+    const dot = screen.getByTestId('FocalPointDot')
+
+    fireEvent.keyDown(dot, { key: 'ArrowRight', shiftKey: true })
+
+    expect(onChange).toHaveBeenCalledWith({ focalLeft: 60, focalTop: 50 })
+
+    for (let press = 0; press < 5; press++)
+      fireEvent.keyDown(dot, { key: 'ArrowRight', shiftKey: true })
+
+    expect(onChange).toHaveBeenCalledTimes(5)
+    expect(onChange).toHaveBeenLastCalledWith({ focalLeft: 100, focalTop: 50 })
+  })
+
   it('follows a drag of the dot and reports the point where it is released', () => {
     const onChange = renderPicker()
     const dot = screen.getByTestId('FocalPointDot')

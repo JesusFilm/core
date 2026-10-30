@@ -3,11 +3,20 @@ import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
-import { CampaignPaletteColorPicker } from '../CampaignPaletteColorPicker'
 import { ValueIndicator } from '../ValueIndicator'
+
+/** `react-colorful` loads when a colour is first edited. */
+const CampaignPaletteColorPicker = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/CampaignPaletteColorPicker" */ '../CampaignPaletteColorPicker/CampaignPaletteColorPicker'
+    ).then((mod) => mod.CampaignPaletteColorPicker),
+  { ssr: false }
+)
 
 export interface ColourRow<K extends string = string> {
   key: K

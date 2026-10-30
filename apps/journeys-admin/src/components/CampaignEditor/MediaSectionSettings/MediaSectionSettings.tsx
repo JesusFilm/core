@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -15,9 +16,18 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
 import { CommandError } from '../CommandError'
 import { FocalPointControl } from '../FocalPointControl'
-import { CampaignMediaPick, MediaPasteField } from '../Pickers/MediaPasteField'
+import type { CampaignMediaPick } from '../Pickers/MediaPasteField'
 import { ReplaceableMedia } from '../ReplaceableMedia'
 import { useCampaignMediaCommand } from '../utils/useCampaignMediaCommand'
+
+/** The Mux upload (with the journey editor's provider) loads when the picker first opens. */
+const MediaPasteField = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/Pickers/MediaPasteField" */ '../Pickers/MediaPasteField/MediaPasteField'
+    ).then((mod) => mod.MediaPasteField),
+  { ssr: false }
+)
 
 interface MediaSectionSettingsProps {
   block: CampaignMediaOwner

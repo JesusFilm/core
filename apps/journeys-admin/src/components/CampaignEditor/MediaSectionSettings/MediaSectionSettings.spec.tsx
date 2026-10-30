@@ -57,7 +57,7 @@ describe('MediaSectionSettings', () => {
     vi.clearAllMocks()
   })
 
-  it('shows the media the slot holds with Replace and Clear, and the media side', () => {
+  it('shows the media the slot holds with Replace and Clear, and the media side', async () => {
     renderEdit([])
 
     expect(screen.getByTestId('CanvasMediaImage')).toHaveAttribute('src', SRC)
@@ -75,7 +75,7 @@ describe('MediaSectionSettings', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Replace media' }))
 
     expect(
-      screen.getByRole('textbox', { name: 'Watch or YouTube link' })
+      await screen.findByRole('textbox', { name: 'Watch or YouTube link' })
     ).toBeInTheDocument()
   })
 

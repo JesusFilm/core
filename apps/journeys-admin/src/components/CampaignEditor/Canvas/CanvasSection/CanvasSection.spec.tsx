@@ -652,3 +652,51 @@ describe('CanvasSection button label', () => {
     expect(input).toHaveValue('Choose your region\nnow')
   })
 })
+
+describe('CanvasSection keyboard', () => {
+  const hero = transformCampaignBlocks(campaign.blocks).find(
+    (block) => block.id === 'heroId'
+  ) as CanvasBlock
+
+  function renderHero(): void {
+    render(
+      <StaticEditor initialState={{ previewLanguageId: '529' }}>
+        <SelectionProbe />
+        <CanvasSection block={hero} />
+      </StaticEditor>
+    )
+  }
+
+  it('makes the section focusable and labelled, without a button role', () => {
+    renderHero()
+
+    const section = screen.getByTestId('CanvasSection-heroId')
+    expect(section).toHaveAttribute('tabindex', '0')
+    expect(section).toHaveAttribute('aria-label', 'Hero')
+    expect(section).not.toHaveAttribute('role')
+  })
+
+  it.each(['Enter', ' '])('selects the section on %j', (key) => {
+    renderHero()
+
+    fireEvent.keyDown(screen.getByTestId('CanvasSection-heroId'), { key })
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+  })
+
+  it.each(['Enter', ' '])(
+    'selects an Extra, a button, on %j and not its section',
+    (key) => {
+      renderHero()
+      const extra = screen.getByTestId('CanvasExtra-heroButtonId')
+      expect(extra).toHaveAttribute('role', 'button')
+      expect(extra).toHaveAttribute('tabindex', '0')
+
+      fireEvent.keyDown(extra, { key })
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'heroButtonId'
+      )
+    }
+  )
+})

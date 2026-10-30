@@ -293,6 +293,30 @@ describe('useCampaignJourneyBlockSnapshotRefreshCommand', () => {
     )
   })
 
+  it('holds an undo pressed while the refresh is in flight until the refresh settles', async () => {
+    // The refresh skips the app's mutation queue, so the Command queue is what orders the undo after it.
+    await renderHarness(
+      journeyMock(liveJourney),
+      [
+        { ...refreshMock, delay: 200 },
+        { ...restoreUneditedMock, delay: 0 }
+      ],
+      campaign
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(refreshMock.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(restoreUneditedMock.result).toHaveBeenCalled())
+    expect(refreshMock.result.mock.invocationCallOrder[0]).toBeLessThan(
+      restoreUneditedMock.result.mock.invocationCallOrder[0]
+    )
+  })
+
   it('does not ask, or write, when an unedited card already matches the journey', async () => {
     await renderHarness(journeyMock(sameJourney), [refreshMock], campaign)
 

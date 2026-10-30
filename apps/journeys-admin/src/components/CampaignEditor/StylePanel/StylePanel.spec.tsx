@@ -399,6 +399,27 @@ describe('StylePanel', () => {
     })
   })
 
+  describe('tabs', () => {
+    it('names each tab’s panel, and labels the panel by its tab', async () => {
+      renderPanel([])
+      const background = await screen.findByRole('tab', { name: 'Background' })
+      const colours = screen.getByRole('tab', { name: 'Colours' })
+
+      expect(background).toHaveAttribute('aria-controls', 'style-panel')
+      expect(colours).toHaveAttribute('aria-controls', 'style-panel')
+      expect(screen.getByRole('tabpanel')).toHaveAttribute('id', 'style-panel')
+      expect(screen.getByRole('tabpanel', { name: 'Background' })).toBe(
+        screen.getByTestId('StyleBackgroundTab')
+      )
+
+      fireEvent.click(colours)
+
+      expect(screen.getByRole('tabpanel', { name: 'Colours' })).toBe(
+        screen.getByTestId('StyleColoursTab')
+      )
+    })
+  })
+
   describe('validation', () => {
     it('pre-validates only the hex format and writes nothing for a bad value', async () => {
       renderPanel([])

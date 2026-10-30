@@ -3,7 +3,7 @@ import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -27,6 +27,7 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 import { EditorNote } from '../Canvas/EditorNote'
 import { HOVER_OUTLINE_SX, SELECTED_OUTLINE } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { selectableProps } from '../Canvas/selectable'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
@@ -91,18 +92,17 @@ function JourneyCardEdit({
   const { t } = useTranslation('apps-journeys-admin')
   const live = isJourneyCardVisible(card.journeyStatus)
 
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    event.stopPropagation()
-    onSelect('title')
-  }
-
   return (
     <Stack
       id={card.id}
       data-testid={`JourneyCard-${card.id}`}
       data-selected={selected}
       data-hoverable
-      onClick={handleClick}
+      role="button"
+      {...selectableProps(
+        () => onSelect('title'),
+        blockLabel(t, card.__typename)
+      )}
       sx={{
         ...journeyCardFrameSx(display),
         position: 'relative',

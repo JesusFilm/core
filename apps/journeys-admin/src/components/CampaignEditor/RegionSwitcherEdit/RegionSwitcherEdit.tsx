@@ -39,6 +39,7 @@ import {
   SELECTED_OUTLINE
 } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { selectableProps } from '../Canvas/selectable'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { regionCardLabel, regionLineLabel } from '../utils/blockLabel'
 import { regionCardId } from '../utils/regionCardId'
@@ -63,7 +64,7 @@ interface RegionCardEditProps {
  * One region card on the canvas: the name (with a "Needs journey" badge
  * while any of its Share Languages is unlinked), its Region Lines as inline
  * text and its country chips. Clicking the card selects the region; clicking
- * a line selects that line, which then edits in place as any typography.
+ * a line selects that line (Enter or Space on either does the same), which then edits in place as any typography.
  * A pill keeps its lines editable though the public pill never shows them:
  * faded, with a note under the card saying so.
  * The handle on its right edge drags the card onto another card to
@@ -112,11 +113,6 @@ function RegionCardEdit({
     [setDroppableRef, setDraggableRef]
   )
 
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    event.stopPropagation()
-    selectRegion(region.id, hostBlockId)
-  }
-
   const card = (
     <Box
       ref={setCardRef}
@@ -126,7 +122,14 @@ function RegionCardEdit({
       data-unlisted={!region.listed}
       data-drop-target={isOver || undefined}
       data-hoverable
-      onClick={handleClick}
+      {...selectableProps(
+        () => selectRegion(region.id, hostBlockId),
+        `${regionCardLabel(t)}: ${regionDisplayName(
+          region,
+          previewLanguageId,
+          campaign.defaultLanguageId
+        )}`
+      )}
       sx={[
         regionFrameSx(variant),
         {
@@ -204,10 +207,11 @@ function RegionCardEdit({
               data-testid={`RegionLineEdit-${line.id}`}
               data-selected={selection.block?.id === line.id}
               data-hoverable
-              onClick={(event: MouseEvent<HTMLElement>) => {
-                event.stopPropagation()
-                selectBlock(line.id)
-              }}
+              role="button"
+              {...selectableProps(
+                () => selectBlock(line.id),
+                regionLineLabel(t)
+              )}
               sx={{
                 position: 'relative',
                 width: '100%',

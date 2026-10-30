@@ -2,14 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import {
-  ChangeEvent,
-  MouseEvent,
-  ReactElement,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import {
   featuredMediaBullets,
@@ -24,8 +17,11 @@ import {
 import { campaignTextInputKey } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineEditInput } from '../../../Editor/Slider/Content/Canvas/InlineEditWrapper/InlineEditInput'
 import { focusWithoutScroll } from '../../utils/focusWithoutScroll'
+import { handleStopPropagation } from '../../utils/handleStopPropagation'
 import { useCampaignTextCommand } from '../../utils/useCampaignTextCommand'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
+import { FOCUS_OUTLINE_SX } from '../hoverOutline'
+import { selectableProps } from '../selectable'
 
 /** Show the character counter once this share of the cap is used. */
 const COUNTER_THRESHOLD = 0.8
@@ -39,7 +35,7 @@ interface InlineTextProps
   editing: boolean
   /** Take focus when the input mounts. */
   autoFocus?: boolean
-  /** Clicking the text selects its block. */
+  /** Clicking the text (or Enter or Space on it) selects its block. */
   onSelect?: () => void
   variantMapping?: TypographyProps['variantMapping']
   /**
@@ -130,11 +126,18 @@ export function InlineText({
     handleChange(next)
   }
 
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    event.stopPropagation()
-    focusOnEdit.current = true
-    onSelect?.()
-  }
+  // The static text is a button named by its field; the block it selects
+  // then shows the input.
+  const selectable =
+    onSelect == null
+      ? { onClick: handleStopPropagation }
+      : {
+          role: 'button',
+          ...selectableProps(() => {
+            focusOnEdit.current = true
+            onSelect()
+          }, placeholder)
+        }
 
   const items =
     display === 'paragraphs'
@@ -148,8 +151,8 @@ export function InlineText({
       <Stack
         spacing={3}
         data-testid={testId}
-        onClick={handleClick}
-        sx={{ cursor: 'text', ...sx }}
+        {...selectable}
+        sx={{ cursor: 'text', ...FOCUS_OUTLINE_SX, ...sx }}
       >
         {items.map((paragraph, index) => (
           <Typography
@@ -171,8 +174,8 @@ export function InlineText({
       <Box
         component="ul"
         data-testid={testId}
-        onClick={handleClick}
-        sx={{ m: 0, pl: 3, cursor: 'text', ...sx }}
+        {...selectable}
+        sx={{ m: 0, pl: 3, cursor: 'text', ...FOCUS_OUTLINE_SX, ...sx }}
       >
         {items.map((bullet, index) => (
           <Typography
@@ -201,9 +204,10 @@ export function InlineText({
         variantMapping={variantMapping}
         data-testid={testId}
         data-fallback={showingFallback ? 'true' : undefined}
-        onClick={handleClick}
+        {...selectable}
         sx={{
           cursor: 'text',
+          ...FOCUS_OUTLINE_SX,
           whiteSpace: 'pre-line',
           wordBreak: 'break-word',
           ...(value === '' && !showingFallback ? { opacity: 0.5 } : {}),
