@@ -1,1 +1,1 @@
-export { slugify } from './slugify'
+export { slugify, isPublicSlug } from './slugify'
