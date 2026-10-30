@@ -157,6 +157,7 @@
     },
     "codegen": {
       "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/__generated__"],
       "options": {
         "commands": [
           {
