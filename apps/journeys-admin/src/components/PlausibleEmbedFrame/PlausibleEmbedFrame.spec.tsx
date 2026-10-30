@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 
 import {
   PlausibleEmbedFrame,
@@ -19,6 +19,42 @@ describe('PlausibleEmbedFrame', () => {
       '/share/api-journeys-campaign-campaignId?auth=sharedLinkSlug&embed=true&theme=light&background=transparent'
     )
     expect(screen.getByText('The report is loading...')).toBeInTheDocument()
+  })
+
+  it('adds the stylesheet and reveals the dashboard a second after the frame has loaded', () => {
+    vi.useFakeTimers()
+    // jsdom loads nothing into the frame, so give it a document to style.
+    const appendChild = vi.fn()
+    const contentWindow = vi
+      .spyOn(HTMLIFrameElement.prototype, 'contentWindow', 'get')
+      .mockReturnValue({ document: { head: { appendChild } } } as never)
+    try {
+      render(
+        <PlausibleEmbedFrame
+          siteId="api-journeys-campaign-campaignId"
+          status={{ state: 'ready', token: 'sharedLinkSlug' }}
+        />
+      )
+
+      fireEvent.load(screen.getByTestId('PlausibleEmbedFrame'))
+      expect(appendChild).toHaveBeenCalledWith(
+        expect.objectContaining({
+          href: expect.stringMatching(/\/plausible\.css$/)
+        })
+      )
+      act(() => {
+        vi.advanceTimersByTime(999)
+      })
+      expect(screen.getByText('The report is loading...')).toBeVisible()
+
+      act(() => {
+        vi.advanceTimersByTime(1)
+      })
+      expect(screen.getByText('The report is loading...')).not.toBeVisible()
+    } finally {
+      contentWindow.mockRestore()
+      vi.useRealTimers()
+    }
   })
 
   it('waits without a frame while loading', () => {
