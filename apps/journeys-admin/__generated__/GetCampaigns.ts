@@ -29,7 +29,7 @@ export interface GetCampaigns_campaigns {
   slug: string;
   status: CampaignStatus;
   /**
-   * First publish; never cleared by unpublish. Means "first went live", not "currently live".
+   * Last published; kept after unpublish. Stamped on every move from `draft` to `published`, so it means "last went live", not "currently live".
    */
   publishedAt: any | null;
   createdAt: any;

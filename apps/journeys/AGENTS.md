@@ -56,6 +56,8 @@ Page-level wrapping order (from `_app.tsx` and `JourneyPageWrapper`):
 6. `JourneyProvider` — journey data context (`useJourney()`)
 7. `ThemeProvider` — per-step theming with custom fonts
 
+Campaign pages use `CampaignPageWrapper` (`src/components/CampaignPageWrapper/`) in place of `JourneyPageWrapper`: its own `PlausibleProvider` (the team's site, `api-journeys-team-<teamId>`) and a `ThemeProvider` built from the campaign's theme and Page Language direction, around `CampaignPage`.
+
 Tests must wrap components in the required providers:
 
 ```tsx
@@ -107,6 +109,11 @@ Pages Router with static generation:
 - `pages/[hostname]/[journeySlug]/[stepSlug].tsx` — step-specific
 - `pages/[hostname]/embed/[journeySlug].tsx` — embedded view
 - `pages/home/[journeySlug].tsx` — home-hosted journeys
+- `pages/home/campaign/**` — root-domain campaign pages (`/campaign/<slug>` landing page and `/campaign/<slug>/<region slug>`), with `_lang/[lang]/` variants
+- `pages/[hostname]/index.tsx` — a Campaign Domain's landing page (a team domain's journey list otherwise); `pages/[hostname]/[journeySlug].tsx` also serves a Campaign Domain's region pages
+- `pages/[hostname]/_lang/[lang]/**` — a Campaign Domain's pages in the Page Language the URL names
+- `proxy.ts` rewrites a campaign URL's `?lang=<tag>` (a bcp47-shaped tag) to the `_lang/<tag>` path, since the pages are statically generated per language
+- `public/countries-110m.json` — the world atlas for the campaign Analytics world map (`getWorldMap`); served with CORS open so the journeys-admin canvas can fetch it
 - `getStaticProps` with `revalidate: 60`, `getStaticPaths` with `fallback: 'blocking'`
 
 ## RTL and locale
@@ -114,6 +121,9 @@ Pages Router with static generation:
 - `getJourneyRTL(journey)` utility returns `{ locale, rtl }` based on journey language
 - RTL affects layout direction (e.g., `NavigationButton` reverses positions)
 - Emotion cache created with `createEmotionCache({ rtl })` when needed
+- `getPageRTL(pageProps)` (`src/libs/getPageRTL`) decides the Emotion cache direction in `_app`: a campaign page follows its resolved Page Language, a journey page its journey's language
+- The document `lang`/`dir` follow the Page Language on campaign pages only (`documentLanguage` in `pages/_document.tsx`); every other page, a journey page included, keeps the app default
+- `createRtlEmotionPlugin()` (`src/libs/rtlEmotionPlugin`) is the `_document` plugin that swaps in a right-to-left Emotion cache for a campaign page whose Page Language is RTL
 
 ## Testing
 

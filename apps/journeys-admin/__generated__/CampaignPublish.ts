@@ -14,14 +14,14 @@ export interface CampaignPublish_campaignPublish {
   id: string;
   status: CampaignStatus;
   /**
-   * First publish; never cleared by unpublish. Means "first went live", not "currently live".
+   * Last published; kept after unpublish. Stamped on every move from `draft` to `published`, so it means "last went live", not "currently live".
    */
   publishedAt: any | null;
 }
 
 export interface CampaignPublish {
   /**
-   * Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
+   * Move a `draft` Campaign to `published`, stamping `publishedAt` with the time of this publish (it means "last published"; unpublish keeps it). Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team, the same as editing.
    * 

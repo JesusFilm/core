@@ -30,7 +30,7 @@ A block that can carry an Action (button, radio option, sign-up, video). Only Ac
 ### Campaign rendering (viewer-side)
 
 **Campaign Renderer**:
-The campaign counterpart of the Block Renderer: one component per Campaign Block typename behind a single switch, with no Wrappers. The editor canvas paints with its own components and shares only the pure helpers (theme, background bands, block tree, fonts).
+The campaign counterpart of the Block Renderer: one component per section and Extra typename (Hero, Region Switcher, Video Carousel, Featured Media, Journey List, Analytics, Region Header, Region Share, Rich Text, Columns and Image sections; Typography and Button Extras) behind a single switch, with no Wrappers. It renders nothing for the other typenames: the Header and Footer are drawn by the **Campaign Page**'s chrome slots, and a Video, Column or Journey block by the section that holds it (Media Slot or Video Carousel, Columns, Journey List). The editor canvas paints with its own components; besides the pure helpers (theme, background bands, block tree, fonts) it shares the display components `CampaignAnalyticsPanel`, `CampaignCarouselArrows`, `CampaignJourneyCards`, `CampaignJourneyOpenButton`, `CampaignRegionCountries`, `CampaignRegionLines` and `CampaignRegionName`.
 _Avoid_: block renderer (the journey one), wrapper (there are none here)
 
 **Campaign Page**:
@@ -50,14 +50,14 @@ A campaign button whose action target is missing (a scroll target on another pag
 The body of the Analytics section, shared by the public page and the editor canvas: the Top country and visitors tiles and a ranked, numbered list of top countries whose rows animate when the ranking changes. The landing page has a tab per region plus an all-regions tab that follow the WAI-ARIA tabs pattern, a Region Page is fixed to its region, and the **World Map** is optional.
 
 **World Map**:
-The Analytics Panel's optional map: the selected tab's Region Countries are shaded by visitors and the view zooms to them with the whole atlas kept in view (letterboxed). Countries join the map by country code, never by name, so any the map lacks stay in the ranked list only.
+The Analytics Panel's optional map: the selected tab's Region Countries are shaded by visitors and the view zooms in on them, up to 6× (`MAX_SCALE`), until they fill 80 % of it (`FILL_RATIO`), so countries outside them may leave the view; with no matching country it shows the whole atlas (letterboxed). Countries join the map by country code, never by name, so any the map lacks stay in the ranked list only.
 
 **Campaign events**:
 What a Campaign Public Page sends to Plausible besides its automatic page views: `campaignJourneyClick` (a journey card's Open, or the Share section's open-link, told apart by `source`), `campaignRegionClick` (a Region Switcher card; `targetRegion` is the region clicked), `campaignQrDownload` and `campaignShareLinkCopy`. Every view and event carries `campaign_id`, the Region Page's `region` slug (the region the visitor is on; none on the landing page) and the Page Language's `language` tag; share events add `shareLanguage`. A language prop is the BCP 47 tag, left out when the language has none, and `journey` is the last path segment of the journey's address, left out when there is none. Call sites hand over domain objects and `campaignEventProps` builds every event's props. Only the public page reports (`reportEvents`, set by Campaign Page), never the editor canvas, and a same-tab link waits up to a second for the event before it navigates.
 _Avoid_: journey events, Event Mutations (the journey playback events; campaign names always carry the `campaign` prefix)
 
-**Campaign image**:
-Every campaign image (cover, logo, Image section, poster, journey card) renders as a plain `<img>` through `campaignImageSource`, never `NextImage`. The same components paint the public page and the editor canvas; the sources are author-supplied URLs (uploaded to Cloudflare, a Watch banner, a YouTube or Mux poster) that are already delivered at a sized variant, and `next/image` would only admit the hosts in the viewer's `remotePatterns` and fail the rest.
+**Campaign Picture**:
+Any image a campaign page shows, named after the renderer's `CampaignPicture` (the Image section's and a Media Slot's cropped picture) so it is not confused with the API's **Campaign Image**, which is only the stored picture block. Each renders as a plain `<img>`, never `NextImage`: the cover, logo, Image section and Media Slot picture through `campaignImageSource`, while a journey card uses `card.journeyImage.src` and a Watch carousel card its poster directly. The same components paint the public page and the editor canvas; the sources are author-supplied URLs (uploaded to Cloudflare, a Watch banner, a YouTube or Mux poster) that are already delivered at a sized variant, and `next/image` would only admit the hosts in the viewer's `remotePatterns` and fail the rest.
 
 ### Playback (viewer-side)
 
