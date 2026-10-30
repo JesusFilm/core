@@ -40,8 +40,7 @@ function ThemeProbe(): ReactElement {
   return <p data-testid="ThemeDirection">{useTheme().direction}</p>
 }
 
-vi.mock('@core/journeys/ui/Campaign', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
+vi.mock('@core/journeys/ui/Campaign/CampaignPage', () => ({
   CampaignPage: () => <ThemeProbe />
 }))
 

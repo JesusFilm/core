@@ -1,6 +1,6 @@
 import { ReactElement, useEffect } from 'react'
 
-import { CAMPAIGN_LANGUAGE_PARAM } from '@core/journeys/ui/Campaign'
+import { CAMPAIGN_LANGUAGE_PARAM } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
 
 interface LanguageFallbackRedirectProps {
   /** The plain page the `_lang` page stands in for, without a query. */

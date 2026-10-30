@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign'
+import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
 import { campaignPublic } from '@core/journeys/ui/Campaign/testData'
 
 import { CampaignLanguageRedirect } from '../CampaignLanguageRedirect'

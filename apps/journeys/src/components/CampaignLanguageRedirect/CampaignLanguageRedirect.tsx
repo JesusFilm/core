@@ -1,12 +1,12 @@
 import { ReactElement, useEffect } from 'react'
 
+import { campaignLanguageUrl } from '@core/journeys/ui/Campaign/CampaignHeader/CampaignLanguageSelect'
 import {
   CAMPAIGN_LANGUAGE_COOKIE,
   CAMPAIGN_LANGUAGE_PARAM,
-  campaignLanguageUrl,
   resolvePageLanguage
-} from '@core/journeys/ui/Campaign'
-import type { CampaignPublic } from '@core/journeys/ui/Campaign'
+} from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
+import type { CampaignPublic } from '@core/journeys/ui/Campaign/types'
 
 interface CampaignLanguageRedirectProps {
   campaign: Pick<
@@ -24,7 +24,8 @@ function readCookie(name: string): string | null {
 }
 
 /**
- * The cookie and `Accept-Language` steps of the Page Language order (PRD §2).
+ * The cookie and `Accept-Language` steps of Page Language resolution
+ * (glossary).
  * The page is statically generated, so it cannot see either; a visit with no
  * `lang` param is served in the campaign default, and a visitor whose cookie
  * or browser languages name another campaign language is sent to that

@@ -6,8 +6,6 @@ import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslation
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import { matchRegionSlug } from '@core/journeys/ui/Campaign/libs/matchRegionSlug'
-import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 

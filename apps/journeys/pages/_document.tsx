@@ -18,10 +18,10 @@ interface CampaignPageProps {
 }
 
 /**
- * The document's `lang` and `dir` (PRD §2, §11): on a campaign page the
- * resolved Page Language's bcp47 and the RTL lookup on it (`ltr` when there
- * is none), read from the page props the route rendered with; every other
- * page keeps the app default.
+ * The document's `lang` and `dir` (glossary: Campaign Page): on a campaign
+ * page the resolved Page Language's bcp47 and the RTL lookup on it (`ltr`
+ * when there is none), read from the page props the route rendered with;
+ * every other page keeps the app default.
  */
 export function documentLanguage(
   pageProps: CampaignPageProps | undefined,

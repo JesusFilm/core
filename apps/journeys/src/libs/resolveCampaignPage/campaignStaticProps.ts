@@ -18,13 +18,13 @@ import type {
 } from './resolveCampaignPage'
 
 /** The ISR window of a campaign page and of a language fallback. */
-export const CAMPAIGN_REVALIDATE_SECONDS = 60
+const CAMPAIGN_REVALIDATE_SECONDS = 60
 
 /**
  * A not-found regenerates after a second, so it never sticks once the
  * campaign is published.
  */
-export const CAMPAIGN_NOT_FOUND_REVALIDATE_SECONDS = 1
+const CAMPAIGN_NOT_FOUND_REVALIDATE_SECONDS = 1
 
 /**
  * The props of a campaign route: the resolved page or fallback itself, so
@@ -45,7 +45,7 @@ function param(
  * The request a campaign route's params name: `campaignSlug` on the root
  * domain, else `hostname`; the region or journey segment; the `_lang` tag.
  */
-export function requestFromContext(
+function requestFromContext(
   context: GetStaticPropsContext
 ): CampaignPageRequest {
   const slug = param(context, 'campaignSlug')

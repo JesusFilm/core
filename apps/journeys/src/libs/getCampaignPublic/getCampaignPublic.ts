@@ -25,7 +25,7 @@ export const GET_CAMPAIGN_PUBLIC = gql`
  * a hung `campaignPublic` would otherwise hold an uncached page until the
  * function limit.
  */
-export const CAMPAIGN_READ_TIMEOUT_MS = 5_000
+const CAMPAIGN_READ_TIMEOUT_MS = 5_000
 
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/
 const SLUG_MAX_LENGTH = 200
