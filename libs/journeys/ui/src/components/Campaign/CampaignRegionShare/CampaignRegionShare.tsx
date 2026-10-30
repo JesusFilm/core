@@ -19,10 +19,7 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
-import {
-  journeySlug,
-  useCampaignPlausible
-} from '../../../libs/campaignPlausible'
+import { useCampaignPlausible } from '../../../libs/campaignPlausible'
 import { QrCodeCanvas, downloadQrCodePng } from '../../QrCodeCanvas'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
@@ -177,19 +174,17 @@ export function CampaignRegionShare({
   const openLabel = hasText(strings.open) ? strings.open : t('Open')
   const copiedLabel = hasText(strings.copied) ? strings.copied : t('Copied')
   const shortLink = selected?.shortLinkUrl ?? undefined
-  const shareLanguage =
-    selected == null ? '' : (selected.language.bcp47 ?? selected.languageId)
 
   function handleChange(event: SelectChangeEvent<string>): void {
     setSelectedId(event.target.value)
   }
 
   async function handleCopy(): Promise<void> {
-    if (shortLink == null) return
+    if (shortLink == null || selected == null) return
     try {
       await navigator.clipboard.writeText(shortLink)
       setCopied(true)
-      track('campaignShareLinkCopy', { shareLanguage })
+      track('campaignShareLinkCopy', { shareLanguage: selected })
     } catch {
       setCopied(false)
     }
@@ -199,18 +194,17 @@ export function CampaignRegionShare({
     event.preventDefault()
     if (shortLink == null || region == null || selected == null) return
     downloadQrCodePng(shortLink, qrCodeFileName(campaign, region, selected))
-    track('campaignQrDownload', { shareLanguage })
+    track('campaignQrDownload', { shareLanguage: selected })
   }
 
   function handleOpen(event: MouseEvent<HTMLElement>): void {
     if (shortLink == null) return
-    const journeyUrl = selected?.journeyUrl
     track(
       'campaignJourneyClick',
       {
-        ...(journeyUrl != null ? { journey: journeySlug(journeyUrl) } : {}),
         source: 'share',
-        shareLanguage
+        journeyUrl: selected?.journeyUrl,
+        shareLanguage: selected
       },
       event
     )

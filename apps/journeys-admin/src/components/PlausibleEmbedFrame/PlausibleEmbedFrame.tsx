@@ -43,33 +43,60 @@ function usePlausibleStylesheetRef(): (node: HTMLIFrameElement | null) => void {
   return setRef
 }
 
+/**
+ * Where a report's dashboard stands: its token still loading, the load
+ * failed, loaded with no token because the site is not created yet, or
+ * ready with the site's shared-link token.
+ */
+export type PlausibleEmbedStatus =
+  | { state: 'loading' }
+  | { state: 'error' }
+  | { state: 'settingUp' }
+  | { state: 'ready'; token: string }
+
+/** A report query's result as a `PlausibleEmbedStatus`. */
+export function plausibleEmbedStatus({
+  loading,
+  error,
+  token
+}: {
+  loading: boolean
+  error?: unknown
+  token?: string | null
+}): PlausibleEmbedStatus {
+  if (loading) return { state: 'loading' }
+  if (error != null) return { state: 'error' }
+  if (token == null) return { state: 'settingUp' }
+  return { state: 'ready', token }
+}
+
 interface PlausibleEmbedFrameProps {
   /** The Plausible site shown, e.g. `api-journeys-journey-<id>`. */
   siteId: string
-  /** The site's shared-link token, as the caller's query read it; the frame waits while it is null. */
-  token?: string | null
-  /** The caller's query is still loading the token. */
-  loading?: boolean
-  /** The caller's query failed: shows the error message instead of the loading one. */
-  error?: unknown
+  status: PlausibleEmbedStatus
   host?: string // for testing
 }
 
 /**
  * A Plausible site's own dashboard, embedded through its shared link (proxied
  * by the admin's `/share` and `/api/stats` rewrites) and restyled with
- * `/plausible.css`. A loading or error message covers it until it has drawn.
+ * `/plausible.css`. Until it has drawn, a message covers it: loading, the
+ * load failed, or the site is still being set up (loaded with no token).
  */
 export function PlausibleEmbedFrame({
   siteId,
-  token,
-  loading = false,
-  error,
+  status,
   host
 }: PlausibleEmbedFrameProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showDashboard, setShowDashboard] = useState(false)
   const ref = usePlausibleStylesheetRef()
+  const message = {
+    loading: t('The report is loading...'),
+    ready: t('The report is loading...'),
+    error: t('There was an error loading the report'),
+    settingUp: t('The report is being set up. Check back in a few minutes.')
+  }[status.state]
 
   return (
     <>
@@ -93,19 +120,17 @@ export function PlausibleEmbedFrame({
               color: 'secondary.light'
             }}
           >
-            {error != null
-              ? t('There was an error loading the report')
-              : t('The report is loading...')}
+            {message}
           </Typography>
         </Box>
       </Fade>
 
-      {!loading && token != null && (
+      {status.state === 'ready' && (
         <>
           <StyledIFrame
             data-testid="PlausibleEmbedFrame"
             plausible-embed
-            src={`${host ?? ''}/share/${siteId}?auth=${token}&embed=true&theme=light&background=transparent`}
+            src={`${host ?? ''}/share/${siteId}?auth=${status.token}&embed=true&theme=light&background=transparent`}
             loading="lazy"
             onLoad={() => {
               setTimeout(() => {

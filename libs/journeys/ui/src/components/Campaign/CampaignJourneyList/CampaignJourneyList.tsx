@@ -11,10 +11,7 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
-import {
-  journeySlug,
-  useCampaignPlausible
-} from '../../../libs/campaignPlausible'
+import { useCampaignPlausible } from '../../../libs/campaignPlausible'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
@@ -180,12 +177,7 @@ function JourneyCard({
   const journeyUrl = card.journeyUrl
 
   function handleOpen(event: MouseEvent<HTMLElement>): void {
-    if (journeyUrl == null) return
-    track(
-      'campaignJourneyClick',
-      { journey: journeySlug(journeyUrl), source: 'card' },
-      event
-    )
+    track('campaignJourneyClick', { source: 'card', journeyUrl }, event)
   }
 
   return (

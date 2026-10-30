@@ -58,6 +58,43 @@ describe('PlausibleEmbedDashboard', () => {
     expect(screen.getByTestId('PlausibleEmbedFrame')).toBeInTheDocument()
   })
 
+  it('should say the report is being set up when the journey has no token yet', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { journeyId: 'journeyId' }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN,
+              variables: { id: 'journeyId' }
+            },
+            result: {
+              data: {
+                journey: {
+                  __typename: 'Journey',
+                  id: 'journey.id',
+                  plausibleToken: null
+                } as unknown as Journey
+              }
+            }
+          }
+        ]}
+      >
+        <PlausibleEmbedDashboard />
+      </MockedProvider>
+    )
+
+    expect(
+      await screen.findByText(
+        'The report is being set up. Check back in a few minutes.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('PlausibleEmbedFrame')).not.toBeInTheDocument()
+  })
+
   it('should show loading message', () => {
     render(
       <MockedProvider>

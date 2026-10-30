@@ -18,7 +18,8 @@ import type {
 } from '@core/journeys/ui/Campaign'
 import {
   campaignPlausibleProps,
-  campaignSiteId
+  campaignSiteId,
+  teamSiteId
 } from '@core/journeys/ui/campaignPlausible'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
@@ -72,7 +73,7 @@ export function CampaignPageWrapper({
       trackLocalhost
       trackOutboundLinks
       customDomain="/plausible"
-      domain={`${campaignSiteId(campaign.id)},api-journeys-team-${campaign.teamId}`}
+      domain={`${campaignSiteId(campaign.id)},${teamSiteId(campaign.teamId)}`}
       pageviewProps={campaignPlausibleProps(campaign, region)}
     >
       <Head>
