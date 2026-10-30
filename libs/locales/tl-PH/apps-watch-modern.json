@@ -1,17 +1,35 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} Proyekto ng Pelikulang Hesus"
   },
   "RootIndexPage": {
-    "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
-    "description": "Watch, learn and share the gospel in over 2000 languages"
+    "pageTitle": "Panoorin",
+    "title": "Libreng Aklatan <underline>ng Pag-i-stream</underline> ng mga Video ng Ebanghelyo.",
+    "description": "Panoorin, matuto at ibahagi ang ebanghelyo sa mahigit 2000 wika"
+  },
+  "ModernTestPage": {
+    "pageTitle": "Makabagong pagsusulit",
+    "title": "Makabagong Pahina ng Pagsubok",
+    "description": "Ito ay isang pahina ng pagsubok para sa modernong aplikasyon ng relo. Ipinapakita nito ang bagong routing at kakayahan ng proxy.",
+    "feature1": {
+      "title": "Makabagong Arkitektura",
+      "description": "Ginawa gamit ang Next.js App Router at mga makabagong pattern ng React para sa pinakamainam na pagganap at karanasan ng mga developer."
+    },
+    "feature2": {
+      "title": "Matalinong Pag-ruta",
+      "description": "Mabigat na pag-ruta ng proxy na matalinong nagdidirekta ng trapiko sa angkop na mga serbisyong backend."
+    },
+    "feature3": {
+      "title": "Reaktibong Disenyo",
+      "description": "Ganap na responsive na disenyo na gumagana nang walang putol sa lahat ng mga aparato at sukat ng screen."
+    },
+    "footer": "Ang pahinang ito ay ibinibigay ng makabagong watch application sa pamamagitan ng matalinong proxy routing."
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Something went wrong",
-    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
-    "errorDetails": "Error details",
-    "tryAgain": "Try again",
-    "unknownError": "Unknown error"
+    "somethingWentWrong": "May nangyaring mali",
+    "anErrorOccurred": "Nagkaroon ng error habang ina-load ang pahinang ito. Mangyaring subukang i-refresh.",
+    "errorDetails": "Mga detalye ng error",
+    "tryAgain": "Subukan muli",
+    "unknownError": "Hindi kilalang error"
   }
 }
