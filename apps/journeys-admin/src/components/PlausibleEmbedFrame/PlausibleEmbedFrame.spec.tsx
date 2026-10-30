@@ -18,6 +18,9 @@ describe('PlausibleEmbedFrame', () => {
       'src',
       '/share/api-journeys-campaign-campaignId?auth=sharedLinkSlug&embed=true&theme=light&background=transparent'
     )
+    expect(screen.getByTitle('Report dashboard')).toBe(
+      screen.getByTestId('PlausibleEmbedFrame')
+    )
     expect(screen.getByText('The report is loading...')).toBeInTheDocument()
   })
 

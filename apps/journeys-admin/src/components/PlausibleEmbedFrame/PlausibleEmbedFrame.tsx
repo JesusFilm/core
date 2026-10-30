@@ -155,6 +155,7 @@ export function PlausibleEmbedFrame({
             plausible-embed
             src={`${host ?? ''}/share/${siteId}?auth=${status.token}&embed=true&theme=light&background=transparent`}
             loading="lazy"
+            title={t('Report dashboard')}
             onLoad={() => {
               clearTimeout(revealTimer.current)
               revealTimer.current = setTimeout(() => {

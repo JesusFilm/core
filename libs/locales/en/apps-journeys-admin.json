@@ -1753,5 +1753,6 @@
   "This domain is already in use. Remove it where it's connected, then add it here.": "This domain is already in use. Remove it where it's connected, then add it here.",
   "The report is being set up. Check back in a few minutes.": "The report is being set up. Check back in a few minutes.",
   "Report": "Report",
-  "Campaign Report": "Campaign Report"
+  "Campaign Report": "Campaign Report",
+  "Report dashboard": "Report dashboard"
 }
