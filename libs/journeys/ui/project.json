@@ -55,6 +55,9 @@
             "command": "rm -rf libs/journeys/ui/__generated__"
           },
           {
+            "command": "find libs/journeys/ui/src -type d -name __generated__ -prune -exec rm -rf {} +"
+          },
+          {
             "command": "npx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
           }
         ]
