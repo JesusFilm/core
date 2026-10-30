@@ -1,37 +1,22 @@
-import { GetStaticPaths, GetStaticProps } from 'next'
-import { ReactElement } from 'react'
+import { GetStaticProps } from 'next'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
-import { CampaignPageWrapper } from '../../../../src/components/CampaignPageWrapper'
+import { CampaignRoute } from '../../../../src/components/CampaignRoute'
 import {
-  CampaignStaticProps,
-  getCampaignStaticProps
-} from '../../../../src/libs/campaignStaticProps'
+  CampaignRouteProps,
+  campaignStaticPropsFor,
+  getBlockingStaticPaths,
+  readCampaignPage
+} from '../../../../src/libs/resolveCampaignPage'
 
-function CampaignLandingPage({ campaign }: CampaignStaticProps): ReactElement {
-  return (
-    <CampaignPageWrapper
-      campaign={campaign}
-      pageKind={CampaignPageKind.landing}
-    />
-  )
-}
-
-// ISR as the journey routes (PRD §11): rebuilt in the background about once
-// a minute and on demand when the campaign is published or unpublished. This
-// route is the campaign's default language; `?lang=` is rewritten by the
-// proxy to `_lang/[lang]`, and a visitor's cookie or `Accept-Language` choice
-// is followed from the page itself.
-export const getStaticProps: GetStaticProps<CampaignStaticProps> = async (
+// The root-domain Campaign Address: the landing page here, a Region Page at
+// `[regionSlug]`, and each in a Page Language at `_lang/[lang]`, which the
+// proxy rewrites `?lang=` to. All four bind the same route; the resolver
+// reads the params. ISR as the journey routes.
+export const getStaticProps: GetStaticProps<CampaignRouteProps> = async (
   context
 ) =>
-  await getCampaignStaticProps({
-    slug: context.params?.campaignSlug?.toString() ?? '',
-    locale: context.locale
-  })
+  await campaignStaticPropsFor(await readCampaignPage(context), context.locale)
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return { paths: [], fallback: 'blocking' }
-}
+export const getStaticPaths = getBlockingStaticPaths
 
-export default CampaignLandingPage
+export default CampaignRoute

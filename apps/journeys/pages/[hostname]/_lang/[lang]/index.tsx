@@ -1,37 +1,4 @@
-import { GetStaticPaths, GetStaticProps } from 'next'
-
-import { plainPagePath } from '@core/journeys/ui/Campaign/libs/campaignAddress'
-
-import {
-  LanguageFallbackProps,
-  withLanguageFallback
-} from '../../../../src/components/LanguageFallbackRedirect'
-import {
-  CampaignStaticProps,
-  getHostCampaignStaticProps,
-  toLanguageFallback
-} from '../../../../src/libs/campaignStaticProps'
-import HostJourneysPage from '../../index'
-
-// A Campaign Domain's landing page in the campaign language the proxy rewrote
-// `?lang=` to. Without a published root campaign, or for a tag that is not
-// one of its languages, the visitor goes to `/`, keeping the rest of the
-// query.
-export const getStaticProps: GetStaticProps<
-  CampaignStaticProps | LanguageFallbackProps
-> = async (context) =>
-  toLanguageFallback(
-    (await getHostCampaignStaticProps({
-      hostname: context.params?.hostname?.toString() ?? '',
-      language: context.params?.lang?.toString(),
-      locale: context.locale
-    })) ?? {
-      redirect: { destination: plainPagePath('', []), permanent: false }
-    }
-  )
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return { paths: [], fallback: 'blocking' }
-}
-
-export default withLanguageFallback(HostJourneysPage)
+// A custom domain's `/` in the Page Language the proxy rewrote `?lang=` to:
+// the plain route, bound with `language`. A domain with no campaign serves
+// its journeys here on the first response, the tag ignored.
+export { default, getStaticPaths, getStaticProps } from '../../index'

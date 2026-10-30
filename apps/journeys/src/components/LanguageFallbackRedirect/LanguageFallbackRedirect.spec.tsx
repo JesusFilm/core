@@ -1,15 +1,11 @@
-import { render, screen } from '@testing-library/react'
-import { ReactElement } from 'react'
+import { render } from '@testing-library/react'
 
 import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign'
 import { campaignPublic } from '@core/journeys/ui/Campaign/testData'
 
 import { CampaignLanguageRedirect } from '../CampaignLanguageRedirect'
 
-import {
-  LanguageFallbackRedirect,
-  withLanguageFallback
-} from './LanguageFallbackRedirect'
+import { LanguageFallbackRedirect } from './LanguageFallbackRedirect'
 
 describe('LanguageFallbackRedirect', () => {
   const replace = vi.fn()
@@ -38,7 +34,12 @@ describe('LanguageFallbackRedirect', () => {
 
   it('goes to the plain page with the query it arrived with and an empty lang', () => {
     visit('https://custom.org/my-journey?lang=en&utm_source=newsletter')
-    render(<LanguageFallbackRedirect destination="/my-journey" />)
+    render(
+      <LanguageFallbackRedirect
+        destination="/my-journey"
+        campaignId="campaignId"
+      />
+    )
     expect(replace).toHaveBeenCalledWith(
       '/my-journey?utm_source=newsletter&lang='
     )
@@ -46,7 +47,7 @@ describe('LanguageFallbackRedirect', () => {
 
   it('goes to the plain page with an empty lang when lang was the only param', () => {
     visit('https://custom.org/?lang=xx')
-    render(<LanguageFallbackRedirect destination="/" />)
+    render(<LanguageFallbackRedirect destination="/" campaignId="campaignId" />)
     expect(replace).toHaveBeenCalledWith('/?lang=')
   })
 
@@ -55,7 +56,10 @@ describe('LanguageFallbackRedirect', () => {
     vi.spyOn(window.navigator, 'languages', 'get').mockReturnValue(['fr'])
     visit('https://example.org/campaign/christmas-2026?lang=fr&utm_source=a')
     const fallback = render(
-      <LanguageFallbackRedirect destination="/campaign/christmas-2026" />
+      <LanguageFallbackRedirect
+        destination="/campaign/christmas-2026"
+        campaignId={campaignPublic.id}
+      />
     )
     expect(replace).toHaveBeenCalledWith(
       '/campaign/christmas-2026?utm_source=a&lang='
@@ -65,25 +69,5 @@ describe('LanguageFallbackRedirect', () => {
     visit(`https://example.org${replace.mock.calls[0][0] as string}`)
     render(<CampaignLanguageRedirect campaign={campaignPublic} />)
     expect(replace).toHaveBeenCalledTimes(1)
-  })
-
-  describe('withLanguageFallback', () => {
-    function Page({ title }: { title: string }): ReactElement {
-      return <p>{title}</p>
-    }
-    const Wrapped = withLanguageFallback(Page)
-
-    it('renders the page when static props resolved one', () => {
-      visit('https://custom.org/eur?lang=fr')
-      render(<Wrapped title="Campaign page" />)
-      expect(screen.getByText('Campaign page')).toBeInTheDocument()
-      expect(replace).not.toHaveBeenCalled()
-    })
-
-    it('redirects when static props resolved a fallback', () => {
-      visit('https://custom.org/eur?lang=xx&utm_source=a')
-      render(<Wrapped languageFallback="/eur" />)
-      expect(replace).toHaveBeenCalledWith('/eur?utm_source=a&lang=')
-    })
   })
 })
