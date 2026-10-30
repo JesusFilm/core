@@ -35,6 +35,24 @@ export function documentLanguage(
   }
 }
 
+const DEFAULT_FONTS_HREF =
+  'https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap'
+const RTL_FONTS_HREF =
+  'https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap'
+
+/**
+ * The app's Google Fonts stylesheet: the right-to-left pair, or the default
+ * pair. A campaign page links its own (`CampaignPageWrapper`), which already
+ * includes the defaults, so it gets none.
+ */
+export function documentFontsHref(
+  pageProps: CampaignPageProps | undefined,
+  { rtl, locale }: { rtl: boolean; locale: string }
+): string | null {
+  if (pageProps?.campaign != null) return null
+  return rtl && locale !== 'ur' ? RTL_FONTS_HREF : DEFAULT_FONTS_HREF
+}
+
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
   rtl: boolean
@@ -46,38 +64,19 @@ export default class MyDocument extends Document<{
   })
 
   render(): ReactElement {
-    const { lang, dir } = documentLanguage(
-      this.props.__NEXT_DATA__.props.pageProps as CampaignPageProps,
-      this.props
-    )
+    const pageProps = this.props.__NEXT_DATA__.props
+      .pageProps as CampaignPageProps
+    const { lang, dir } = documentLanguage(pageProps, this.props)
+    const fontsHref = documentFontsHref(pageProps, this.props)
     return (
       <Html lang={lang} dir={dir} style={{ overscrollBehaviorY: 'none' }}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
-          {this.props.rtl && this.props.locale !== 'ur' ? (
+          {fontsHref != null && (
             <>
-              <link
-                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
-                rel="stylesheet"
-              />
-              <link
-                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
-                rel="preload"
-                as="style"
-              />
-            </>
-          ) : (
-            <>
-              <link
-                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
-                rel="stylesheet"
-              />
-              <link
-                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
-                rel="preload"
-                as="style"
-              />
+              <link href={fontsHref} rel="stylesheet" />
+              <link href={fontsHref} rel="preload" as="style" />
             </>
           )}
           <link

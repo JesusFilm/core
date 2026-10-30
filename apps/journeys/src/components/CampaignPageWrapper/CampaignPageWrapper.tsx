@@ -7,10 +7,10 @@ import { ReactElement, ReactNode, useMemo } from 'react'
 import {
   CampaignPage,
   CampaignSeo,
-  campaignFontsHref,
   createCampaignTheme
 } from '@core/journeys/ui/Campaign'
 import type { CampaignPublic, CampaignRegion } from '@core/journeys/ui/Campaign'
+import { googleFontsHref } from '@core/journeys/ui/fonts/googleFontsHref'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
@@ -54,7 +54,7 @@ export function CampaignPageWrapper({
       domain={`api-journeys-team-${campaign.teamId}`}
     >
       <Head>
-        <link rel="stylesheet" href={campaignFontsHref(campaign.theme)} />
+        <link rel="stylesheet" href={googleFontsHref(campaign.theme)} />
       </Head>
       <CampaignLanguageRedirect campaign={campaign} />
       <CampaignSeo

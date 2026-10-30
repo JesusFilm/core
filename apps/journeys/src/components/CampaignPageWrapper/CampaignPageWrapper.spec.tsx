@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react'
 import type { NextSeoProps } from 'next-seo'
 import { ReactElement, ReactNode } from 'react'
 
-import { campaignFontsHref } from '@core/journeys/ui/Campaign'
 import { campaignPublic, eurRegion } from '@core/journeys/ui/Campaign/testData'
 import type { CampaignPublic } from '@core/journeys/ui/Campaign/types'
+import { googleFontsHref } from '@core/journeys/ui/fonts/googleFontsHref'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
 
@@ -93,7 +93,7 @@ describe('CampaignPageWrapper', () => {
 
     expect(document.querySelector('link[rel="stylesheet"]')).toHaveAttribute(
       'href',
-      campaignFontsHref(campaignPublic.theme)
+      googleFontsHref(campaignPublic.theme)
     )
   })
 
