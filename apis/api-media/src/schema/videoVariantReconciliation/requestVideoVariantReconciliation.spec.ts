@@ -92,6 +92,33 @@ describe('requestVideoVariantReconciliation', () => {
     expect(data).toMatchObject({ reason: 'video-variant-create' })
   })
 
+  it.each([
+    ['still processing', 'processing'],
+    ['timed out', 'failed']
+  ])(
+    'does not let a fresh upload whose Mux is %s swallow a delete',
+    async (_label, muxState) => {
+      prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+        id: 'status-1',
+        reason: 'video-variant-create',
+        processingStages: { mux: { state: muxState, attempts: 1 } }
+      } as never)
+
+      await requestVideoVariantReconciliation({
+        ...intent,
+        published: false,
+        reason: 'video-variant-delete'
+      })
+
+      const { data } =
+        prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
+      // reconcileReasonSpecificVariant only runs the delete cleanup for this
+      // reason; keeping 'video-variant-create' would leave the row to fail on
+      // a Variant that no longer exists and alert on it.
+      expect(data).toMatchObject({ reason: 'video-variant-delete' })
+    }
+  )
+
   it('overwrites the reason normally once Mux has resolved', async () => {
     prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
       id: 'status-1',

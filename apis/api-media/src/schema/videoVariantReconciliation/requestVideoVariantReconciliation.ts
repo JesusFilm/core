@@ -67,8 +67,11 @@ export async function requestVideoVariantReconciliation(
   // Keep a fresh upload's original reason until Mux actually produces media
   // (or the Variant is reconciled via a different path), so a re-request in
   // between -- including after a timeout, which still leaves no media --
-  // can't make a media-less Variant look like a generated parent.
+  // can't make a media-less Variant look like a generated parent. A delete is
+  // never inherited over: the Variant is gone, and only the delete reason runs
+  // the cleanup in reconcileReasonSpecificVariant.
   const reason =
+    intent.reason !== 'video-variant-delete' &&
     existingReconciliation != null &&
     FRESH_UPLOAD_REASONS.has(
       existingReconciliation.reason as VideoVariantReconciliationReason
