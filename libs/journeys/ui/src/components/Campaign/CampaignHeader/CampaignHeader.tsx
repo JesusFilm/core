@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, useMemo, useState } from 'react'
+import { MouseEvent, ReactElement, useState } from 'react'
 
 import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
@@ -25,13 +25,12 @@ import {
 } from '../CampaignProvider'
 import {
   CAMPAIGN_HEADER_HEIGHT,
-  CampaignBandCover,
-  CampaignSectionContext
+  CampaignSectionContext,
+  useCampaignBand
 } from '../CampaignSectionBand'
 import { shownExtras } from '../libs/campaignBlockGrammar'
 import { campaignImageSource } from '../libs/campaignImageSource'
-import { bandCssVariables, resolveBand } from '../libs/resolveBand'
-import { hasText } from '../types'
+import { hasExtraContent } from '../types'
 import type { CampaignBlockOf, CampaignTree, CampaignTreeOf } from '../types'
 
 import { CampaignLanguageSelect } from './CampaignLanguageSelect'
@@ -52,13 +51,13 @@ function isNavButton(
   return (
     HEADER_EXTRAS.includes(child.__typename) &&
     child.__typename === 'CampaignButtonBlock' &&
-    hasText(child.label)
+    hasExtraContent(child)
   )
 }
 
 /**
  * The Campaign Chrome header: a sticky AppBar painted from the band table
- * like any section (an `image` kind's cover scaled to the header height,
+ * like any section (`useCampaignBand`; an `image` kind's cover scaled to the header height,
  * overlay applied). Fixed elements in the band's text and accent colours:
  * the "All regions" back chip in the leading slot on a Region Page only
  * (its arrow pointing back in the reading direction),
@@ -74,11 +73,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
   const { campaign, region, string } = context
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null)
 
-  const band = useMemo(
-    () => resolveBand(block, campaign.theme),
-    [block, campaign.theme]
-  )
-  const sectionContext = useMemo(() => ({ band, align: null }), [band])
+  const band = useCampaignBand(block)
   const navButtons = block.children.filter(isNavButton)
   const logo = campaignImageSource(block.logo)
   const landingHref = campaignLandingHref(context)
@@ -118,7 +113,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
   }
 
   return (
-    <CampaignSectionContext.Provider value={sectionContext}>
+    <CampaignSectionContext.Provider value={band.context}>
       <AppBar
         position="sticky"
         color="inherit"
@@ -126,7 +121,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
         component="header"
         id={block.id}
         data-testid="CampaignHeader"
-        style={bandCssVariables(band)}
+        style={band.style}
         sx={{
           top: 0,
           overflow: 'hidden',
@@ -140,7 +135,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
           boxShadow: 'inset 0 -1px 0 var(--campaign-band-border)'
         }}
       >
-        <CampaignBandCover block={block} />
+        {band.cover}
         <Container maxWidth="lg" sx={{ position: 'relative' }}>
           <Stack
             direction="row"

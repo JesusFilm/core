@@ -11,6 +11,7 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import { bandButtonSx } from '../CampaignButton'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
@@ -143,16 +144,7 @@ export function CampaignJourneyOpenButton({
       variant="contained"
       size="small"
       data-testid="CampaignJourneyCardOpen"
-      sx={{
-        mt: 1,
-        whiteSpace: 'pre-line',
-        backgroundColor: 'var(--campaign-band-button)',
-        color: 'var(--campaign-band-button-label)',
-        '&:hover': {
-          backgroundColor: 'var(--campaign-band-button)',
-          filter: 'brightness(0.92)'
-        }
-      }}
+      sx={{ ...bandButtonSx, mt: 1, whiteSpace: 'pre-line' }}
     >
       {label}
     </Button>

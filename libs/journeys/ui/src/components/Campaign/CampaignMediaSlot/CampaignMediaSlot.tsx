@@ -4,17 +4,18 @@ import { CampaignPicture } from '../CampaignImage'
 import { CampaignVideo } from '../CampaignVideo'
 import { campaignImageSource } from '../libs/campaignImageSource'
 import type { CampaignTree } from '../types'
-import { hasText } from '../types'
 
 /**
- * Whether a Media Slot holds something to show: an image with a `src`, or a
- * video whose federated `mediaVideo` resolved.
+ * Whether a Media Slot holds something to show: an image with a picture
+ * (`campaignImageSource`, so only an https `src`), or a video whose
+ * federated `mediaVideo` resolved.
  */
 export function hasCampaignMedia(
   media: CampaignTree | null | undefined
 ): media is CampaignTree {
   if (media == null) return false
-  if (media.__typename === 'CampaignImageBlock') return hasText(media.src)
+  if (media.__typename === 'CampaignImageBlock')
+    return campaignImageSource(media) != null
   if (media.__typename === 'CampaignVideoBlock') return media.mediaVideo != null
   return false
 }

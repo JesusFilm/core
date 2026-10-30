@@ -7,8 +7,7 @@ import {
   campaignVideoDetails,
   watchText
 } from '../CampaignVideo/campaignVideoDetails'
-import { watchUrl } from '../libs/watchUrl'
-import { hasText } from '../types'
+import { watchHref } from '../types'
 import type { CampaignTree, CampaignTreeOf } from '../types'
 
 /** Watch expansion shows this many of the Video's children, then "See all on Watch". */
@@ -41,11 +40,6 @@ export interface CampaignCarouselSeeAllCard {
 export type CampaignCarouselCard =
   | CampaignCarouselVideoCard
   | CampaignCarouselSeeAllCard
-
-function watchHref(video: ExpandedVideo | ExpandedChild): string | null {
-  const slug = video.variant?.slug ?? video.slug
-  return hasText(slug) ? watchUrl(slug) : null
-}
 
 function watchCard(
   video: ExpandedVideo | ExpandedChild,

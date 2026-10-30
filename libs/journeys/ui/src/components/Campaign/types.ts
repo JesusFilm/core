@@ -11,6 +11,7 @@ import {
   PAGE_SECTION_TYPENAMES,
   type PageSectionTypename
 } from './libs/campaignBlockGrammar'
+import { watchUrl } from './libs/watchUrl'
 
 export type CampaignBlock = CampaignPublicBlockFields
 export type CampaignBlockOf<T extends CampaignBlock['__typename']> = Extract<
@@ -69,4 +70,34 @@ export function isExtra<T extends { __typename: string }>(
 
 export function hasText(value: string | null | undefined): value is string {
   return value != null && value.trim() !== ''
+}
+
+/** Whether a section's heading has anything to show: an eyebrow, title or description with text. */
+export function hasSectionHeading(section: {
+  eyebrow?: string | null
+  title?: string | null
+  description?: string | null
+}): boolean {
+  return (
+    hasText(section.eyebrow) ||
+    hasText(section.title) ||
+    hasText(section.description)
+  )
+}
+
+/** Whether a child is an Extra that renders: a Typography with content or a Button with a label. */
+export function hasExtraContent(child: CampaignBlock): boolean {
+  if (child.__typename === 'CampaignTypographyBlock')
+    return hasText(child.content)
+  if (child.__typename === 'CampaignButtonBlock') return hasText(child.label)
+  return false
+}
+
+/** The Watch page of a Watch video: its variant's slug, else its own; null without either. */
+export function watchHref(video: {
+  slug: string
+  variant?: { slug: string } | null
+}): string | null {
+  const slug = video.variant?.slug ?? video.slug
+  return hasText(slug) ? watchUrl(slug) : null
 }

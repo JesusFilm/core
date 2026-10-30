@@ -4,7 +4,7 @@ import { CampaignMediaSplit } from '../CampaignMediaSlot'
 import { useOptionalCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
-import { hasText } from '../types'
+import { hasSectionHeading } from '../types'
 import type { CampaignTreeOf } from '../types'
 
 interface CampaignHeroProps {
@@ -27,8 +27,7 @@ export function CampaignHero({ block }: CampaignHeroProps): ReactElement {
     pageHeadingBlockId === undefined || pageHeadingBlockId === block.id
       ? 'h1'
       : 'h2'
-  const hasHeading =
-    hasText(block.eyebrow) || hasText(block.title) || hasText(block.description)
+  const hasHeading = hasSectionHeading(block)
 
   return (
     <CampaignSectionBand

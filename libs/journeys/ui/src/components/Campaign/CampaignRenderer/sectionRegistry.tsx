@@ -30,7 +30,13 @@ import {
   type PageSectionTypename,
   REGION_ONLY_TYPENAMES
 } from '../libs/campaignBlockGrammar'
-import { hasText, isPageSection } from '../types'
+import { campaignImageSource } from '../libs/campaignImageSource'
+import {
+  hasExtraContent,
+  hasSectionHeading,
+  hasText,
+  isPageSection
+} from '../types'
 import type {
   CampaignPublic,
   CampaignRegion,
@@ -59,12 +65,7 @@ interface SectionEntry<T extends PageSectionTypename> {
 type SectionRegistry = { [T in PageSectionTypename]: SectionEntry<T> }
 
 function hasExtras(section: CampaignSectionTree): boolean {
-  return section.children.some(
-    (child) =>
-      (child.__typename === 'CampaignTypographyBlock' &&
-        hasText(child.content)) ||
-      (child.__typename === 'CampaignButtonBlock' && hasText(child.label))
-  )
+  return section.children.some(hasExtraContent)
 }
 
 function useSectionRenderContext(): SectionRenderContext {
@@ -115,9 +116,7 @@ export const sectionRegistry = {
   CampaignHeroBlock: {
     Component: CampaignHero,
     hasContent: (section) =>
-      hasText(section.eyebrow) ||
-      hasText(section.title) ||
-      hasText(section.description) ||
+      hasSectionHeading(section) ||
       hasCampaignMedia(section.media) ||
       hasExtras(section)
   },
@@ -131,18 +130,14 @@ export const sectionRegistry = {
     Component: CampaignVideoCarousel,
     hasContent: (section) =>
       hasCarouselCards(section) ||
-      hasText(section.eyebrow) ||
-      hasText(section.title) ||
-      hasText(section.description) ||
+      hasSectionHeading(section) ||
       hasExtras(section)
   },
   CampaignJourneyListBlock: {
     Component: CampaignJourneyList,
     hasContent: (section, context) =>
       liveJourneyCards(section).length > 0 ||
-      hasText(section.eyebrow) ||
-      hasText(section.title) ||
-      hasText(section.description) ||
+      hasSectionHeading(section) ||
       hasText(campaignString(context.strings, CampaignStringKey.noJourneys)) ||
       hasExtras(section)
   },
@@ -177,14 +172,13 @@ export const sectionRegistry = {
   },
   CampaignImageBlock: {
     Component: CampaignImage,
-    hasContent: (section) => hasText(section.src) || hasExtras(section)
+    hasContent: (section) =>
+      campaignImageSource(section) != null || hasExtras(section)
   },
   CampaignFeaturedMediaBlock: {
     Component: CampaignFeaturedMedia,
     hasContent: (section) =>
-      hasText(section.eyebrow) ||
-      hasText(section.title) ||
-      hasText(section.description) ||
+      hasSectionHeading(section) ||
       featuredMediaBullets(section.bullets).length > 0 ||
       hasCampaignMedia(section.media) ||
       hasExtras(section)

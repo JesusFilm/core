@@ -20,6 +20,7 @@ import {
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
 import { QrCodeCanvas, downloadQrCodePng } from '../../QrCodeCanvas'
+import { bandButtonSx } from '../CampaignButton'
 import { campaignStringOr, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
@@ -401,11 +402,7 @@ export function CampaignRegionShare({
                     void handleCopy()
                   }}
                   data-testid="CampaignRegionShareCopy"
-                  sx={{
-                    backgroundColor: 'var(--campaign-band-button)',
-                    color: 'var(--campaign-band-button-label)',
-                    whiteSpace: 'pre-line'
-                  }}
+                  sx={{ ...bandButtonSx, whiteSpace: 'pre-line' }}
                 >
                   {copyLabel}
                 </Button>

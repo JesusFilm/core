@@ -15,6 +15,7 @@ import {
 import { shouldRenderSection } from '../CampaignPage'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
+import { cssRulesFor } from '../libs/cssRulesFor'
 import { transformCampaignBlocks } from '../libs/transformer'
 import { campaignPublic, eurRegion, regionPageBlocks } from '../testData'
 import type {
@@ -299,6 +300,14 @@ describe('CampaignRegionShare', () => {
       )
     )
     expect(await screen.findByText('Lien copié')).toBeInTheDocument()
+  })
+
+  it('paints the Copy button in the band’s button colours, darkened on hover', () => {
+    renderShare()
+    const rules = cssRulesFor(screen.getByTestId('CampaignRegionShareCopy'))
+    expect(rules).toContain('background-color:var(--campaign-band-button)')
+    expect(rules).toContain('color:var(--campaign-band-button-label)')
+    expect(rules).toContain('filter:brightness(0.92)')
   })
 
   it('renders the preview frame with a relative embed URL unchanged', () => {
