@@ -217,6 +217,12 @@ describe('campaignEventProps', () => {
     ).toEqual({ source: 'card' })
   })
 
+  it("sends the Share Language's tag when the Share Link is copied", () => {
+    expect(
+      campaignEventProps('campaignShareLinkCopy', { shareLanguage: french })
+    ).toEqual({ shareLanguage: 'fr' })
+  })
+
   it('leaves out a Share Language without a BCP 47 tag', () => {
     expect(
       campaignEventProps('campaignShareLinkCopy', { shareLanguage: untagged })

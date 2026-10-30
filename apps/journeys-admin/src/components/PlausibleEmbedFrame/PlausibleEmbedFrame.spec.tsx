@@ -66,18 +66,26 @@ describe('PlausibleEmbedFrame', () => {
 
 describe('plausibleEmbedStatus', () => {
   it('reads a report query as loading, error, setting up or ready', () => {
-    expect(plausibleEmbedStatus({ loading: true, token: 'slug' })).toEqual({
-      state: 'loading'
-    })
+    expect(
+      plausibleEmbedStatus({ loading: true, data: { plausibleToken: 'slug' } })
+    ).toEqual({ state: 'loading' })
     expect(
       plausibleEmbedStatus({ loading: false, error: new Error('network') })
     ).toEqual({ state: 'error' })
-    expect(plausibleEmbedStatus({ loading: false, token: null })).toEqual({
-      state: 'settingUp'
+    expect(
+      plausibleEmbedStatus({ loading: false, data: { plausibleToken: null } })
+    ).toEqual({ state: 'settingUp' })
+    expect(
+      plausibleEmbedStatus({ loading: false, data: { plausibleToken: 'slug' } })
+    ).toEqual({ state: 'ready', token: 'slug' })
+  })
+
+  it('stays loading, not setting up, while no data has arrived', () => {
+    expect(plausibleEmbedStatus({ loading: false })).toEqual({
+      state: 'loading'
     })
-    expect(plausibleEmbedStatus({ loading: false, token: 'slug' })).toEqual({
-      state: 'ready',
-      token: 'slug'
+    expect(plausibleEmbedStatus({ loading: false, data: null })).toEqual({
+      state: 'loading'
     })
   })
 })

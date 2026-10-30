@@ -49,7 +49,7 @@ export function CampaignReport({
       status={plausibleEmbedStatus({
         loading,
         error,
-        token: data?.campaign.plausibleToken
+        data: data?.campaign
       })}
       host={host}
     />

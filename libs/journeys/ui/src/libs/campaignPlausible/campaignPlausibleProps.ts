@@ -109,9 +109,5 @@ export function campaignEventProps<Event extends CampaignPlausibleEventName>(
   event: Event,
   input: CampaignEventInputs[Event]
 ): CampaignPlausibleEvents[Event] {
-  // TypeScript cannot pair a mapped type's entry with its own key's input.
-  const build = eventProps[event] as (
-    input: CampaignEventInputs[Event]
-  ) => CampaignPlausibleEvents[Event]
-  return build(input)
+  return eventProps[event](input)
 }
