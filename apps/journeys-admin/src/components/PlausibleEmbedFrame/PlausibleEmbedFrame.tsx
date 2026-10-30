@@ -3,7 +3,13 @@ import Fade from '@mui/material/Fade'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { type ReactElement, useCallback, useRef, useState } from 'react'
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 const StyledIFrame = styled('iframe')({
   border: 0
@@ -96,7 +102,18 @@ export function PlausibleEmbedFrame({
 }: PlausibleEmbedFrameProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showDashboard, setShowDashboard] = useState(false)
+  const revealTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const ref = usePlausibleStylesheetRef()
+
+  // A report that leaves `ready` (reloading, failing) drops its frame, so
+  // cover the space with its message again and forget any pending reveal.
+  useEffect(() => {
+    if (status.state === 'ready') return
+    clearTimeout(revealTimer.current)
+    setShowDashboard(false)
+  }, [status.state])
+
+  useEffect(() => () => clearTimeout(revealTimer.current), [])
   const message = {
     loading: t('The report is loading...'),
     ready: t('The report is loading...'),
@@ -139,7 +156,8 @@ export function PlausibleEmbedFrame({
             src={`${host ?? ''}/share/${siteId}?auth=${status.token}&embed=true&theme=light&background=transparent`}
             loading="lazy"
             onLoad={() => {
-              setTimeout(() => {
+              clearTimeout(revealTimer.current)
+              revealTimer.current = setTimeout(() => {
                 // wait for css to load
                 setShowDashboard(true)
               }, 1000)

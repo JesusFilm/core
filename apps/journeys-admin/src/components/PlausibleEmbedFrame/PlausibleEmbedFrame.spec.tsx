@@ -57,6 +57,80 @@ describe('PlausibleEmbedFrame', () => {
     }
   })
 
+  it('covers the space with its message again when the report leaves ready', () => {
+    vi.useFakeTimers()
+    const contentWindow = vi
+      .spyOn(HTMLIFrameElement.prototype, 'contentWindow', 'get')
+      .mockReturnValue({
+        document: { head: { appendChild: vi.fn() } }
+      } as never)
+    try {
+      const { rerender } = render(
+        <PlausibleEmbedFrame
+          siteId="api-journeys-campaign-campaignId"
+          status={{ state: 'ready', token: 'sharedLinkSlug' }}
+        />
+      )
+      fireEvent.load(screen.getByTestId('PlausibleEmbedFrame'))
+      act(() => {
+        vi.advanceTimersByTime(1000)
+      })
+      expect(screen.getByText('The report is loading...')).not.toBeVisible()
+
+      rerender(
+        <PlausibleEmbedFrame
+          siteId="api-journeys-campaign-campaignId"
+          status={{ state: 'loading' }}
+        />
+      )
+      expect(screen.getByText('The report is loading...')).toBeVisible()
+
+      rerender(
+        <PlausibleEmbedFrame
+          siteId="api-journeys-campaign-campaignId"
+          status={{ state: 'error' }}
+        />
+      )
+      expect(
+        screen.getByText('There was an error loading the report')
+      ).toBeVisible()
+    } finally {
+      contentWindow.mockRestore()
+      vi.useRealTimers()
+    }
+  })
+
+  it('drops a pending reveal when the report leaves ready before it fires', () => {
+    vi.useFakeTimers()
+    const contentWindow = vi
+      .spyOn(HTMLIFrameElement.prototype, 'contentWindow', 'get')
+      .mockReturnValue({
+        document: { head: { appendChild: vi.fn() } }
+      } as never)
+    try {
+      const { rerender } = render(
+        <PlausibleEmbedFrame
+          siteId="api-journeys-campaign-campaignId"
+          status={{ state: 'ready', token: 'sharedLinkSlug' }}
+        />
+      )
+      fireEvent.load(screen.getByTestId('PlausibleEmbedFrame'))
+      rerender(
+        <PlausibleEmbedFrame
+          siteId="api-journeys-campaign-campaignId"
+          status={{ state: 'loading' }}
+        />
+      )
+      act(() => {
+        vi.advanceTimersByTime(1000)
+      })
+      expect(screen.getByText('The report is loading...')).toBeVisible()
+    } finally {
+      contentWindow.mockRestore()
+      vi.useRealTimers()
+    }
+  })
+
   it('waits without a frame while loading', () => {
     render(
       <PlausibleEmbedFrame
