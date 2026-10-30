@@ -1,7 +1,6 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../builder'
 import { CampaignRegionRef } from '../campaignRegion'
+import { campaignWrite } from '../campaignWrite'
 import { badUserInput } from '../errors'
 
 import { authorizeRegionUpdate, moveRegion } from './service'
@@ -20,8 +19,10 @@ builder.mutationField('campaignRegionOrderUpdate', (t) =>
       const region = await authorizeRegionUpdate(String(id), context.user)
       if (order < 0) throw badUserInput('order must be zero or more', 'order')
       const { campaign: _campaign, ...row } = region
-      return await prisma.$transaction(
-        async (tx) => await moveRegion(tx, row, order)
+      return await campaignWrite(
+        row.campaignId,
+        { structure: true },
+        async ({ tx }) => await moveRegion(tx, row, order)
       )
     }
   })

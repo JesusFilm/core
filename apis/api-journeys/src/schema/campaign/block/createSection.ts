@@ -67,7 +67,9 @@ export async function createSection(
   }
   return await createWithClientIds(
     { id: [id], slotIds: slotIds ?? [] },
-    async (tx) => {
+    campaignId,
+    { structure: true },
+    async ({ tx }) => {
       if (slot != null) return await createSlotChild(tx, slot, data)
       if (typename === 'CampaignColumnsBlock')
         return await createColumnsSection(

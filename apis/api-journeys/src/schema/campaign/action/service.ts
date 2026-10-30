@@ -1,11 +1,11 @@
-import { CampaignAction, Prisma, prisma } from '@core/prisma/journeys/client'
+import { CampaignAction, Prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import {
   CampaignBlockWithCampaignAcl,
   authorizeBlockUpdate
 } from '../block/service'
-import { touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { badUserInput } from '../errors'
 
 /**
@@ -50,23 +50,23 @@ export async function upsertAction(
   block: Pick<CampaignBlockWithCampaignAcl, 'id' | 'campaignId'>,
   data: CampaignActionData
 ): Promise<CampaignAction> {
-  return await prisma.$transaction(async (tx) => {
-    const action = await tx.campaignAction.upsert({
-      where: { campaignBlockId: block.id },
-      create: { campaignBlockId: block.id, ...data },
-      update: { ...CAMPAIGN_ACTION_UPDATE_RESET, ...data }
-    })
-    await touchCampaign(tx, block.campaignId)
-    return action
-  })
+  return await campaignWrite(
+    block.campaignId,
+    {},
+    async ({ tx }) =>
+      await tx.campaignAction.upsert({
+        where: { campaignBlockId: block.id },
+        create: { campaignBlockId: block.id, ...data },
+        update: { ...CAMPAIGN_ACTION_UPDATE_RESET, ...data }
+      })
+  )
 }
 
 /** Remove the button's action row, if any. */
 export async function deleteAction(
   block: Pick<CampaignBlockWithCampaignAcl, 'id' | 'campaignId'>
 ): Promise<void> {
-  await prisma.$transaction(async (tx) => {
+  await campaignWrite(block.campaignId, {}, async ({ tx }) => {
     await tx.campaignAction.deleteMany({ where: { campaignBlockId: block.id } })
-    await touchCampaign(tx, block.campaignId)
   })
 }

@@ -38,7 +38,9 @@ builder.mutationField('campaignJourneyBlockCreate', (t) =>
       const journey = await resolveJourneyLink(url, CARD_JOURNEY_STATUSES)
       return await createWithClientIds(
         { id: [clientId] },
-        async (tx) =>
+        parent.campaignId,
+        { structure: true },
+        async ({ tx }) =>
           await createChildBlock(tx, parent, {
             id: clientId,
             typename: 'CampaignJourneyBlock',

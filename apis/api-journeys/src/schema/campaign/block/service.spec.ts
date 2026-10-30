@@ -11,8 +11,10 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import { mockTransaction } from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
+import { campaignWrite } from '../campaignWrite'
 import { CAMPAIGN_BLOCKS_MAX } from '../validation'
 
 import {
@@ -62,6 +64,20 @@ function errorOf(promise: Promise<unknown>): Promise<GraphQLError> {
   )
 }
 
+/**
+ * Run a `tx`-taking create helper the way its callers do: inside a Campaign
+ * Write that declares `structure`.
+ */
+async function inStructureWrite<T>(
+  run: (tx: Prisma.TransactionClient) => Promise<T>
+): Promise<T> {
+  return await campaignWrite(
+    'campaignId',
+    { structure: true },
+    async ({ tx }) => await run(tx)
+  )
+}
+
 const HERO_COPY_ID = 'dba93414-2864-41ed-801d-43f535a9e73e'
 const HERO_MEDIA_COPY_ID = '1f4216be-2642-4f2d-a4a7-7512e06bda00'
 const COLUMNS_COPY_ID = 'f594bc44-c5a8-480d-b7ea-cbd7a72e98f5'
@@ -74,9 +90,7 @@ describe('authorization', () => {
   const fixture = campaignFactory().build()
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
   })
 
@@ -312,9 +326,7 @@ describe('typename predicates and validators', () => {
   const header = fixture.blocks.find((block) => block.id === 'headerId')!
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
   })
 
@@ -736,9 +748,7 @@ describe('tree order and creates', () => {
   )!
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
   })
 
@@ -849,10 +859,8 @@ describe('tree order and creates', () => {
         include: { action: true }
       })
       expect(created.parentOrder).toBe(2)
-      expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-        where: { id: 'campaignId' },
-        data: { updatedAt: expect.any(Date) }
-      })
+      // The caller's Campaign Write touches the campaign, not the helper.
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
     })
 
     it('copies a chrome parent’s null scoping down', async () => {
@@ -1245,9 +1253,7 @@ describe('delete, restore and duplicate', () => {
 
   describe('removeBlock', () => {
     beforeEach(() => {
-      prismaMock.$transaction.mockImplementation(
-        async (callback: any) => await callback(prismaMock)
-      )
+      mockTransaction(prismaMock)
       prismaMock.campaign.update.mockResolvedValue(fixture)
     })
 
@@ -1303,9 +1309,7 @@ describe('delete, restore and duplicate', () => {
   describe('restoreBlock', () => {
     describe('reinserting the block and the rows deleted with it', () => {
       beforeEach(() => {
-        prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
-        )
+        mockTransaction(prismaMock)
         prismaMock.campaign.update.mockResolvedValue(fixture)
       })
 
@@ -1377,9 +1381,7 @@ describe('delete, restore and duplicate', () => {
 
     describe('under a deleted parent', () => {
       beforeEach(() => {
-        prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
-        )
+        mockTransaction(prismaMock)
       })
 
       it('is refused until the section is restored first (CONFLICT, id), before any write', async () => {
@@ -1468,9 +1470,7 @@ describe('delete, restore and duplicate', () => {
 
   describe('duplicateBlock', () => {
     beforeEach(() => {
-      prismaMock.$transaction.mockImplementation(
-        async (callback: any) => await callback(prismaMock)
-      )
+      mockTransaction(prismaMock)
       prismaMock.campaign.update.mockResolvedValue(fixture)
     })
 
@@ -1731,9 +1731,7 @@ describe('delete, restore and duplicate', () => {
 
   describe('collectSubtree', () => {
     beforeEach(() => {
-      prismaMock.$transaction.mockImplementation(
-        async (callback: any) => await callback(prismaMock)
-      )
+      mockTransaction(prismaMock)
       prismaMock.campaign.update.mockResolvedValue(fixture)
     })
 
@@ -1858,9 +1856,7 @@ describe('owned blocks (cover, logo and media)', () => {
   }
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
   })
 
@@ -1963,10 +1959,8 @@ describe('owned blocks (cover, logo and media)', () => {
         where: { id: 'heroId' },
         data: { coverBlockId: 'coverId' }
       })
-      expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-        where: { id: 'campaignId' },
-        data: { updatedAt: expect.any(Date) }
-      })
+      // The caller's Campaign Write touches the campaign, not the helper.
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
     })
 
     it('writes logoBlockId on the header and deletes nothing when the slot was empty', async () => {
@@ -2070,10 +2064,8 @@ describe('owned blocks (cover, logo and media)', () => {
         where: { id: 'featuredId' },
         data: { mediaBlockId: 'videoId' }
       })
-      expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-        where: { id: 'campaignId' },
-        data: { updatedAt: expect.any(Date) }
-      })
+      // The caller's Campaign Write touches the campaign, not the helper.
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
     })
   })
 })
@@ -2098,9 +2090,7 @@ describe('the slot contract (cover, logo and media)', () => {
     column === 'mediaBlockId' ? 'CampaignVideoBlock' : 'CampaignImageBlock'
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
     mockCampaignBlockWrites(owner)
   })
@@ -2417,9 +2407,7 @@ describe('the structure lock', () => {
   }
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
     mockCampaignBlockWrites(hero)
@@ -2434,19 +2422,25 @@ describe('the structure lock', () => {
       'it counts the siblings',
       async () => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
-        return await createChildBlock(prismaMock, hero, {
-          typename: 'CampaignButtonBlock'
-        })
+        return await inStructureWrite(
+          async (tx) =>
+            await createChildBlock(tx, hero, {
+              typename: 'CampaignButtonBlock'
+            })
+        )
       }
     ],
     [
       'createTopLevelBlock',
       'the chrome singleton and the sibling reads',
       async () =>
-        await createTopLevelBlock(
-          prismaMock,
-          { campaignId: 'campaignId', pageId: null, regionId: null },
-          { typename: 'CampaignFooterBlock' }
+        await inStructureWrite(
+          async (tx) =>
+            await createTopLevelBlock(
+              tx,
+              { campaignId: 'campaignId', pageId: null, regionId: null },
+              { typename: 'CampaignFooterBlock' }
+            )
         )
     ],
     [
@@ -2454,10 +2448,13 @@ describe('the structure lock', () => {
       'it reads the occupant',
       async () => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
-        return await createSlotChild(
-          prismaMock,
-          { ...hero, id: 'slotId', typename: 'CampaignColumnBlock' },
-          { typename: 'CampaignHeroBlock' }
+        return await inStructureWrite(
+          async (tx) =>
+            await createSlotChild(
+              tx,
+              { ...hero, id: 'slotId', typename: 'CampaignColumnBlock' },
+              { typename: 'CampaignHeroBlock' }
+            )
         )
       }
     ],
@@ -2465,18 +2462,24 @@ describe('the structure lock', () => {
       'createColumnsSection',
       'the section and its slots',
       async () =>
-        await createColumnsSection(prismaMock, page, {
-          typename: 'CampaignColumnsBlock'
-        })
+        await inStructureWrite(
+          async (tx) =>
+            await createColumnsSection(tx, page, {
+              typename: 'CampaignColumnsBlock'
+            })
+        )
     ],
     [
       'createOwnedBlock',
       'it reads the slot occupant',
       async () => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
-        return await createOwnedBlock(prismaMock, hero, 'coverBlockId', {
-          typename: 'CampaignImageBlock'
-        })
+        return await inStructureWrite(
+          async (tx) =>
+            await createOwnedBlock(tx, hero, 'coverBlockId', {
+              typename: 'CampaignImageBlock'
+            })
+        )
       }
     ],
     ...(['coverBlockId', 'logoBlockId', 'mediaBlockId'] as const).map(
@@ -2679,9 +2682,7 @@ describe('the block cap', () => {
   }
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
     mockCampaignBlockWrites(hero, { createdId: 'newId' })
@@ -2696,9 +2697,12 @@ describe('the block cap', () => {
     liveParent()
     countBlocks(0)
 
-    await createChildBlock(prismaMock, hero, {
-      typename: 'CampaignTypographyBlock'
-    })
+    await inStructureWrite(
+      async (tx) =>
+        await createChildBlock(tx, hero, {
+          typename: 'CampaignTypographyBlock'
+        })
+    )
 
     expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
       where: { campaignId: 'campaignId', deletedAt: null }

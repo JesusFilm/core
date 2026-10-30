@@ -5,6 +5,7 @@ import { vi } from 'vitest'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { CampaignFixture, campaignFactory } from './campaignFactory'
+import { mockTransaction } from './campaignWrite'
 import { getClient } from './client'
 import { prismaMock } from './prismaMock'
 
@@ -65,9 +66,7 @@ export function setupCampaignBlockSpec(): CampaignFixture {
     userId: mockUser.id,
     roles: []
   })
-  prismaMock.$transaction.mockImplementation(
-    async (callback: any) => await callback(prismaMock)
-  )
+  mockTransaction(prismaMock)
   const fixture = campaignFactory().build()
   prismaMock.campaign.findUnique.mockResolvedValue(fixture)
   prismaMock.campaign.update.mockResolvedValue(fixture)

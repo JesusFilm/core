@@ -1,13 +1,7 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { enqueueShortLinkDeletes } from '../../../workers/shortlinkDelete/queue'
 import { builder } from '../../builder'
 import { CampaignRegionRef } from '../campaignRegion'
-import {
-  lockCampaignStructure,
-  lockCampaignTextRows,
-  touchCampaign
-} from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { conflict, notFound } from '../errors'
 import { deleteQrCodes, findRegionQrCodes } from '../regionLanguage/service'
 import { enqueueRegionRevalidation } from '../revalidateCampaign'
@@ -25,45 +19,47 @@ builder.mutationField('campaignRegionDelete', (t) =>
     },
     resolve: async (_parent, { id }, context) => {
       const region = await authorizeRegionUpdate(String(id), context.user)
-      let shortLinkIds: string[] = []
-      const deleted = await prisma.$transaction(async (tx) => {
-        // Decide from the row as locked, not as authorised: a concurrent
-        // update may have listed it since. Lock every block and region in
-        // the default-language swap's order, not this row alone: the delete
-        // cascades into the region's Region Lines and the renumber writes the
-        // other regions, so a lone row lock could deadlock with the swap.
-        await lockCampaignStructure(tx, region.campaignId)
-        await lockCampaignTextRows(tx, region.campaignId)
-        const current = await tx.campaignRegion.findUnique({
-          where: { id: region.id },
-          select: { listed: true }
-        })
-        if (current == null) throw notFound('region not found')
-        if (current.listed)
-          throw conflict(
-            'a listed region cannot be deleted; unlist it first',
-            'regionId'
+      // The delete cascades into the region's Region Lines and the renumber
+      // writes the other regions, so it declares every text row, not this
+      // row alone.
+      return await campaignWrite(
+        region.campaignId,
+        { structure: true, textRows: true },
+        async ({ tx, afterCommit }) => {
+          // Decide from the row as locked, not as authorised: a concurrent
+          // update may have listed it since.
+          const current = await tx.campaignRegion.findUnique({
+            where: { id: region.id },
+            select: { listed: true }
+          })
+          if (current == null) throw notFound('region not found')
+          if (current.listed)
+            throw conflict(
+              'a listed region cannot be deleted; unlist it first',
+              'regionId'
+            )
+          const shortLinkIds = await deleteQrCodes(
+            tx,
+            await findRegionQrCodes(tx, { regionId: region.id })
           )
-        shortLinkIds = await deleteQrCodes(
-          tx,
-          await findRegionQrCodes(tx, { regionId: region.id })
-        )
-        const deleted = await tx.campaignRegion.delete({
-          where: { id: region.id }
-        })
-        await reorderRegions(
-          await tx.campaignRegion.findMany({
-            where: { campaignId: region.campaignId },
-            orderBy: { order: 'asc' }
-          }),
-          tx
-        )
-        await touchCampaign(tx, region.campaignId)
-        return deleted
-      })
-      await enqueueShortLinkDeletes(shortLinkIds)
-      await enqueueRegionRevalidation(region.campaign, [deleted.slug])
-      return deleted
+          const deleted = await tx.campaignRegion.delete({
+            where: { id: region.id }
+          })
+          await reorderRegions(
+            await tx.campaignRegion.findMany({
+              where: { campaignId: region.campaignId },
+              orderBy: { order: 'asc' }
+            }),
+            tx
+          )
+          afterCommit(async () => await enqueueShortLinkDeletes(shortLinkIds))
+          afterCommit(
+            async () =>
+              await enqueueRegionRevalidation(region.campaign, [deleted.slug])
+          )
+          return deleted
+        }
+      )
     }
   })
 )

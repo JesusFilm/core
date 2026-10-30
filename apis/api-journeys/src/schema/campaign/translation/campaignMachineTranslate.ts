@@ -2,7 +2,7 @@ import { Output, streamText } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
-import { Campaign, Prisma, prisma } from '@core/prisma/journeys/client'
+import { Campaign, prisma } from '@core/prisma/journeys/client'
 import {
   AiRequestTimeoutError,
   createOpenrouterFallbackSession
@@ -15,7 +15,7 @@ import { logger } from '../../../logger'
 import { builder } from '../../builder'
 import { authorizeCampaign } from '../authorizeCampaign'
 import { CampaignRef } from '../campaign'
-import { lockCampaign, touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { type CampaignMachineTranslateModeValue } from '../enums'
 import { badUserInput, conflict } from '../errors'
 import { fetchLanguageName } from '../gatewayClient'
@@ -184,26 +184,6 @@ function withinCap(
 }
 
 /**
- * Lock the batch's target rows in the default-language swap's order: blocks,
- * regions, then strings, each by id, then the campaign row. Block edits and
- * `campaignTranslationSet` lock their one row and then the campaign, so no
- * order of these writers can deadlock.
- */
-async function lockBatchTargets(
-  tx: Prisma.TransactionClient,
-  campaignId: string,
-  targetIds: Map<string, TranslationTargetKind>
-): Promise<void> {
-  for (const kind of ['block', 'region', 'string'] as const) {
-    const ids = [...targetIds]
-      .filter(([, targetKind]) => targetKind === kind)
-      .map(([id]) => id)
-    if (ids.length > 0) await TRANSLATION_TARGETS[kind].lock(tx, ids)
-  }
-  await lockCampaign(tx, campaignId)
-}
-
-/**
  * Write the batch's machine translations as `{ value, source: machine }`
  * (`uncertain: true` on a line the model flagged as a guess) into
  * `<field>Translations[languageId]`. The targets and the campaign are locked
@@ -211,7 +191,8 @@ async function lockBatchTargets(
  * another language's entry, since the run began is lost: `missing` only
  * fills an absent entry, `all` replaces `machine` entries, and neither
  * touches a `human` one. When the language has since become the default or
- * left the campaign, the batch writes nothing.
+ * left the campaign, the batch writes nothing, and a batch that writes
+ * nothing skips the touch.
  */
 async function writeBatch({
   campaignId,
@@ -238,58 +219,67 @@ async function writeBatch({
   const kinds = new Map(
     [...rowsByTarget].map(([targetId, rows]) => [targetId, rows[0].target.kind])
   )
-  return await prisma.$transaction(async (tx) => {
-    await lockBatchTargets(tx, campaignId, kinds)
-    const campaign = await tx.campaign.findUnique({
-      where: { id: campaignId },
-      select: { defaultLanguageId: true, languages: true }
-    })
-    if (
-      campaign == null ||
-      campaign.defaultLanguageId === languageId ||
-      !campaign.languages.some((language) => language.languageId === languageId)
-    ) {
-      logger.warn(
-        { campaignId, languageId, batch: batch.label },
-        'Language is no longer a non-default campaign language; batch skipped'
-      )
-      return 0
-    }
-
-    let written = 0
-    for (const [targetId, rows] of rowsByTarget) {
-      const model =
-        TRANSLATION_TARGETS[kinds.get(targetId) as TranslationTargetKind]
-      const record = await model.find(tx, targetId)
-      if (record == null) continue
-
-      const data: Record<string, TranslationsJson> = {}
-      for (const row of rows) {
-        const column = translationsColumn(row.field)
-        const json = data[column] ?? parseTranslations(record[column])
-        const existing = json[languageId]
-        const hasEntry = existing != null && existing.value !== ''
-        if (hasEntry && (mode === 'missing' || existing.source === 'human'))
-          continue
-        const machine = translated.get(
-          rowKey(targetId, row.field)
-        ) as MachineTranslation
-        json[languageId] = {
-          value: withinCap(machine.value, row.maxLength, {
-            targetId,
-            field: row.field
-          }),
-          source: 'machine',
-          ...(machine.uncertain ? { uncertain: true } : {})
-        }
-        data[column] = json
-        written++
+  return await campaignWrite(
+    campaignId,
+    {
+      targets: [...kinds].map(([id, kind]) => ({ kind, id })),
+      campaignRow: true
+    },
+    async ({ tx, skipTouch }) => {
+      const campaign = await tx.campaign.findUnique({
+        where: { id: campaignId },
+        select: { defaultLanguageId: true, languages: true }
+      })
+      if (
+        campaign == null ||
+        campaign.defaultLanguageId === languageId ||
+        !campaign.languages.some(
+          (language) => language.languageId === languageId
+        )
+      ) {
+        logger.warn(
+          { campaignId, languageId, batch: batch.label },
+          'Language is no longer a non-default campaign language; batch skipped'
+        )
+        skipTouch()
+        return 0
       }
-      if (Object.keys(data).length > 0) await model.update(tx, targetId, data)
+
+      let written = 0
+      for (const [targetId, rows] of rowsByTarget) {
+        const model =
+          TRANSLATION_TARGETS[kinds.get(targetId) as TranslationTargetKind]
+        const record = await model.find(tx, targetId)
+        if (record == null) continue
+
+        const data: Record<string, TranslationsJson> = {}
+        for (const row of rows) {
+          const column = translationsColumn(row.field)
+          const json = data[column] ?? parseTranslations(record[column])
+          const existing = json[languageId]
+          const hasEntry = existing != null && existing.value !== ''
+          if (hasEntry && (mode === 'missing' || existing.source === 'human'))
+            continue
+          const machine = translated.get(
+            rowKey(targetId, row.field)
+          ) as MachineTranslation
+          json[languageId] = {
+            value: withinCap(machine.value, row.maxLength, {
+              targetId,
+              field: row.field
+            }),
+            source: 'machine',
+            ...(machine.uncertain ? { uncertain: true } : {})
+          }
+          data[column] = json
+          written++
+        }
+        if (Object.keys(data).length > 0) await model.update(tx, targetId, data)
+      }
+      if (written === 0) skipTouch()
+      return written
     }
-    if (written > 0) await touchCampaign(tx, campaignId)
-    return written
-  })
+  )
 }
 
 async function translateBatch({

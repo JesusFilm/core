@@ -8,7 +8,6 @@ import {
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
-import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
 import { forbidden, notFound } from '../errors'
 import { renumber } from '../order'
 
@@ -69,15 +68,15 @@ export async function reorderRegions(
 
 /**
  * Move a region to `order` among the campaign's regions (clamped to the end)
- * and renumber them contiguously, inside `tx`, under the structure lock so a
- * concurrent move reads the order this one writes. Returns every region.
+ * and renumber them contiguously, inside `tx`, a Campaign Write that declares
+ * `structure` so a concurrent move reads the order this one writes. Returns
+ * every region.
  */
 export async function moveRegion(
   tx: Prisma.TransactionClient,
   region: CampaignRegion,
   order: number
 ): Promise<CampaignRegion[]> {
-  await lockCampaignStructure(tx, region.campaignId)
   const all = await tx.campaignRegion.findMany({
     where: { campaignId: region.campaignId },
     orderBy: { order: 'asc' }
@@ -85,7 +84,5 @@ export async function moveRegion(
   const self = all.find((candidate) => candidate.id === region.id) ?? region
   const others = all.filter((candidate) => candidate.id !== region.id)
   others.splice(Math.min(order, others.length), 0, self)
-  const regions = await reorderRegions(others, tx)
-  await touchCampaign(tx, region.campaignId)
-  return regions
+  return await reorderRegions(others, tx)
 }

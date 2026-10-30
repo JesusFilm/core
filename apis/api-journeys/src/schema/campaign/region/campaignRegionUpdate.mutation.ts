@@ -1,9 +1,9 @@
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { SlugTakenError } from '../../templateGalleryPage/generateUniqueSlug'
 import { CampaignRegionRef } from '../campaignRegion'
-import { touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { enqueueRegionRevalidation } from '../revalidateCampaign'
 import { assertRegionSlugFreeOfJourneys, validateRegionSlug } from '../slug'
 import {
@@ -50,14 +50,15 @@ builder.mutationField('campaignRegionUpdate', (t) =>
       if (listed !== undefined) data.listed = listed
 
       try {
-        const { updated, regionSlugs } = await prisma.$transaction(
-          async (tx) => {
+        const { updated, regionSlugs } = await campaignWrite(
+          region.campaignId,
+          {},
+          async ({ tx }) => {
             const updated = await tx.campaignRegion.update({
               ...query,
               where: { id },
               data
             })
-            await touchCampaign(tx, region.campaignId)
             const regions = await tx.campaignRegion.findMany({
               where: { campaignId: region.campaignId },
               orderBy: { order: 'asc' }

@@ -9,6 +9,7 @@ import {
   mockUser
 } from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
+import { mockTransaction } from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { fetchLanguage } from '../gatewayClient'
@@ -67,9 +68,7 @@ describe('campaignLanguageAdd', () => {
       userId: mockUser.id,
       roles: []
     })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     mockFetchLanguage.mockResolvedValue({ id: FRENCH, bcp47: 'fr' })
     prismaMock.campaignLanguage.findMany.mockResolvedValue(
       languageRows(['529'])

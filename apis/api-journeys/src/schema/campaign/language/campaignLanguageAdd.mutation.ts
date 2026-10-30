@@ -1,15 +1,9 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../builder'
 import { authorizeCampaign } from '../authorizeCampaign'
 import { CampaignRef } from '../campaign'
-import {
-  lockCampaign,
-  lockCampaignLanguageRows,
-  touchCampaign
-} from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { badUserInput } from '../errors'
 import { fetchLanguage } from '../gatewayClient'
 import { enqueueLanguageRevalidation } from '../revalidateCampaign'
@@ -58,31 +52,32 @@ builder.mutationField('campaignLanguageAdd', (t) =>
           'languageId'
         )
 
-      const updated = await prisma.$transaction(async (tx) => {
-        // A concurrent add appends at the same position: lock the campaign
-        // row and append after what is committed now.
-        await lockCampaignLanguageRows(tx, campaignId)
-        await lockCampaign(tx, campaignId)
-        const languages = await tx.campaignLanguage.findMany({
-          where: { campaignId },
-          orderBy: { order: 'asc' }
-        })
-        if (languages.some((row) => row.languageId === languageId))
-          throw alreadyAdded()
-        if (languages.length >= CAMPAIGN_LANGUAGES_MAX)
-          throw badUserInput(
-            `a campaign has at most ${CAMPAIGN_LANGUAGES_MAX} languages`,
-            'languageId'
-          )
-        await tx.campaignLanguage.create({
-          data: { campaignId, languageId, order: languages.length }
-        })
-        await touchCampaign(tx, campaignId)
-        return await tx.campaign.findUniqueOrThrow({
-          ...query,
-          where: { id: campaignId }
-        })
-      })
+      // A concurrent add appends at the same position: lock the campaign
+      // row and append after what is committed now.
+      const updated = await campaignWrite(
+        campaignId,
+        { languageRows: true, campaignRow: true },
+        async ({ tx }) => {
+          const languages = await tx.campaignLanguage.findMany({
+            where: { campaignId },
+            orderBy: { order: 'asc' }
+          })
+          if (languages.some((row) => row.languageId === languageId))
+            throw alreadyAdded()
+          if (languages.length >= CAMPAIGN_LANGUAGES_MAX)
+            throw badUserInput(
+              `a campaign has at most ${CAMPAIGN_LANGUAGES_MAX} languages`,
+              'languageId'
+            )
+          await tx.campaignLanguage.create({
+            data: { campaignId, languageId, order: languages.length }
+          })
+          return await tx.campaign.findUniqueOrThrow({
+            ...query,
+            where: { id: campaignId }
+          })
+        }
+      )
       await enqueueLanguageRevalidation(campaign, languageId)
       return updated
     }

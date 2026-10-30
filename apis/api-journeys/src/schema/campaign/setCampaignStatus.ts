@@ -1,12 +1,8 @@
-import {
-  Campaign,
-  CampaignStatus,
-  Prisma,
-  prisma
-} from '@core/prisma/journeys/client'
+import { Campaign, CampaignStatus, Prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { authorizeCampaign } from './authorizeCampaign'
+import { campaignWrite } from './campaignWrite'
 import { notFound } from './errors'
 import { enqueueCampaignPagesRevalidation } from './revalidateCampaign'
 
@@ -34,7 +30,8 @@ const TRANSITIONS = {
  * does: the `from` predicate makes updateMany a no-op for a caller that lost
  * the race, so `publishedAt` is set on the winning publish only, and a
  * campaign already in the target status skips the write. Only a transition
- * queues revalidation of every page.
+ * queues revalidation of every page. The transition writes the Campaign row
+ * itself and a no-op writes nothing, so neither touches it.
  */
 export async function setCampaignStatus(
   query: { include?: Prisma.CampaignInclude; select?: Prisma.CampaignSelect },
@@ -49,23 +46,23 @@ export async function setCampaignStatus(
   const transition = TRANSITIONS[operation]
 
   try {
-    const { result, transitioned } = await prisma.$transaction(async (tx) => {
-      let transitioned = false
-      if (campaign.status === transition.from) {
-        const { count } = await tx.campaign.updateMany({
-          where: { id, status: transition.from },
-          data: transition.data()
-        })
-        transitioned = count > 0
+    return await campaignWrite(
+      id,
+      { touch: false },
+      async ({ tx, afterCommit }) => {
+        if (campaign.status === transition.from) {
+          const { count } = await tx.campaign.updateMany({
+            where: { id, status: transition.from },
+            data: transition.data()
+          })
+          if (count > 0)
+            afterCommit(
+              async () => await enqueueCampaignPagesRevalidation(campaign)
+            )
+        }
+        return await tx.campaign.findUniqueOrThrow({ ...query, where: { id } })
       }
-      const result = await tx.campaign.findUniqueOrThrow({
-        ...query,
-        where: { id }
-      })
-      return { result, transitioned }
-    })
-    if (transitioned) await enqueueCampaignPagesRevalidation(campaign)
-    return result
+    )
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&

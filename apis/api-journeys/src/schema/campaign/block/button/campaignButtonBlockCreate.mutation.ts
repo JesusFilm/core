@@ -40,7 +40,9 @@ builder.mutationField('campaignButtonBlockCreate', (t) =>
 
       return await createWithClientIds(
         { id: [id] },
-        async (tx) =>
+        parent.campaignId,
+        { structure: true },
+        async ({ tx }) =>
           await createChildBlock(tx, parent, {
             id,
             typename: 'CampaignButtonBlock',

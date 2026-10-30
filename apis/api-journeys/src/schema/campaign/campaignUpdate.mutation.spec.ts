@@ -9,6 +9,7 @@ import {
   mockUser
 } from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
+import { mockTransaction } from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import {
   UNIQUE_VIOLATION_SHAPES,
@@ -57,6 +58,7 @@ describe('campaignUpdate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
+    mockTransaction(prismaMock)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
       userId: mockUser.id,
@@ -413,12 +415,6 @@ describe('campaignUpdate', () => {
       }
     }
 
-    beforeEach(() => {
-      prismaMock.$transaction.mockImplementation(
-        async (callback: any) => await callback(prismaMock)
-      )
-    })
-
     it('rejects a language that is not one of the campaign languages (BAD_USER_INPUT, field defaultLanguageId)', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(
         campaignFactory({ role: 'member' }).withLanguage(FRENCH).build()
@@ -723,7 +719,8 @@ describe('campaignUpdate', () => {
       const result = await setDefault(campaign.defaultLanguageId)
 
       expect(result.errors).toBeUndefined()
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      // The plain write: no swap, so none of its row locks.
+      expect(prismaMock.$queryRaw).not.toHaveBeenCalled()
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
 

@@ -1,13 +1,10 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../builder'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
-import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { badUserInput } from '../errors'
 
 import {
   authorizeRegionLanguageUpdate,
-  lockRegionLanguage,
   reorderRegionLanguages
 } from './service'
 
@@ -25,33 +22,34 @@ builder.mutationField('campaignRegionLanguageDelete', (t) =>
         String(id),
         context.user
       )
-      return await prisma.$transaction(async (tx) => {
-        await lockCampaignStructure(tx, regionLanguage.region.campaignId)
-        // Decide from the row as locked, not as authorised: a concurrent link
-        // may have given it a QR code since.
-        await lockRegionLanguage(tx, regionLanguage.id)
-        const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
-          where: { id: regionLanguage.id },
-          select: { qrCodeId: true }
-        })
-        if (current.qrCodeId != null)
-          throw badUserInput(
-            'This language has a QR code. Unlink it instead.',
-            'id'
+      // Decide from the row as locked, not as authorised: a concurrent link
+      // may have given it a QR code since.
+      return await campaignWrite(
+        regionLanguage.region.campaignId,
+        { structure: true, shareLanguage: regionLanguage.id },
+        async ({ tx }) => {
+          const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
+            where: { id: regionLanguage.id },
+            select: { qrCodeId: true }
+          })
+          if (current.qrCodeId != null)
+            throw badUserInput(
+              'This language has a QR code. Unlink it instead.',
+              'id'
+            )
+          const deleted = await tx.campaignRegionLanguage.delete({
+            where: { id: regionLanguage.id }
+          })
+          await reorderRegionLanguages(
+            await tx.campaignRegionLanguage.findMany({
+              where: { regionId: regionLanguage.regionId },
+              orderBy: { order: 'asc' }
+            }),
+            tx
           )
-        const deleted = await tx.campaignRegionLanguage.delete({
-          where: { id: regionLanguage.id }
-        })
-        await reorderRegionLanguages(
-          await tx.campaignRegionLanguage.findMany({
-            where: { regionId: regionLanguage.regionId },
-            orderBy: { order: 'asc' }
-          }),
-          tx
-        )
-        await touchCampaign(tx, regionLanguage.region.campaignId)
-        return deleted
-      })
+          return deleted
+        }
+      )
     }
   })
 )

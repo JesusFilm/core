@@ -183,6 +183,10 @@ _Avoid_: live/offline (use published/draft), visibility, state
 How a Campaign is edited: every edit saves in place as its own change, with no working copy, snapshot or Save step, so a published Campaign changes under its visitors as the author works. Undo is the Editor's in-memory **Command** history, not a saved version.
 _Avoid_: autosave (as a feature name — it is the only mode), draft mode, preview mode, versioning
 
+**Campaign Write**:
+One edit of one Campaign, saved as one transaction: it locks what it will write in the one order every edit shares (so two edits never deadlock), ends by bumping the Campaign's `updatedAt` (the touch), and runs what lives outside the database (short-link deletes, revalidation, Vercel removals) only after the commit, or undoes its one gateway call when the commit fails. Every change to an existing Campaign is one, publish, settings and delete included; creating a Campaign is not, as there is nothing to lock yet.
+_Avoid_: transaction (the mechanism, not the edit), save, mutation (a mutation may make one, or none)
+
 **Campaign Settings**:
 The parts of a Campaign that are not content: the default-language title, the slug, the default language (changed by a **Default-language swap**) and the **Palette**, all saved outside the Editor's Command history. The slug never follows a title change.
 _Avoid_: metadata, properties, campaign info

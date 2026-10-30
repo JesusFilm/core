@@ -5,6 +5,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { mockQueueAdd } from '../../../test/bullmqMock'
 import { authClient, mockUser } from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
+import { mockTransaction } from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { deleteVercelDomain } from '../customDomain/service'
@@ -51,9 +52,7 @@ describe('campaignDelete', () => {
       userId: mockUser.id,
       roles: []
     })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([])
   })
 
