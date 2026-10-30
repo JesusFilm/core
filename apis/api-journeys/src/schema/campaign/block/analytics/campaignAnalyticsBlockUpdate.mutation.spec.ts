@@ -61,7 +61,7 @@ describe('campaignAnalyticsBlockUpdate', () => {
 
       const result = await update({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -86,7 +86,7 @@ describe('campaignAnalyticsBlockUpdate', () => {
   it('refuses showMap: null (BAD_USER_INPUT, showMap) and leaves an omitted showMap alone', async () => {
     const nulled = await update({ showMap: null })
 
-    expect(nulled.errors[0]).toMatchObject({
+    expect(nulled.errors?.[0]).toMatchObject({
       message: 'showMap cannot be null',
       extensions: { code: 'BAD_USER_INPUT', field: 'showMap' }
     })
@@ -110,7 +110,7 @@ describe('campaignAnalyticsBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -124,7 +124,7 @@ describe('campaignAnalyticsBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

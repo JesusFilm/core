@@ -126,7 +126,7 @@ describe('campaignBlockUpdateScrollToBlockAction', () => {
 
         const result = await update(targetId, 'heroButtonId')
 
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'BAD_USER_INPUT',
           field: 'blockId'
         })
@@ -166,7 +166,7 @@ describe('campaignBlockUpdateScrollToBlockAction', () => {
 
     const result = await update('ghostId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'blockId'
     })
@@ -178,7 +178,7 @@ describe('campaignBlockUpdateScrollToBlockAction', () => {
 
     const result = await update('carouselId', 'footerCopyrightId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'id'
     })
@@ -195,7 +195,7 @@ describe('campaignBlockUpdateScrollToBlockAction', () => {
 
     const result = await update('carouselId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignAction.upsert).not.toHaveBeenCalled()
   })
 })

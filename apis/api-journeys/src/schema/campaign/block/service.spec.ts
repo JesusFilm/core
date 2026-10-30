@@ -10,8 +10,10 @@ import {
   CampaignBlockRow,
   campaignFactory
 } from '../../../../test/campaignFactory'
-import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
-import { mockTransaction } from '../../../../test/campaignWrite'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
 import { campaignWrite } from '../campaignWrite'
@@ -53,7 +55,12 @@ import {
   validateSlotTarget
 } from './service'
 
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
+
 const user = { id: 'userId' } as unknown as User
+
+/** The Campaign Writes of the running case, as `fakeCampaignWrite` saw them. */
+let writes: CampaignWriteCall[]
 
 function errorOf(promise: Promise<unknown>): Promise<GraphQLError> {
   return promise.then(
@@ -90,8 +97,7 @@ describe('authorization', () => {
   const fixture = campaignFactory().build()
 
   beforeEach(() => {
-    mockTransaction(prismaMock)
-    prismaMock.campaign.update.mockResolvedValue(fixture)
+    writes = fakeCampaignWrite(prismaMock)
   })
 
   describe('authorizeBlockCreate', () => {
@@ -326,8 +332,7 @@ describe('typename predicates and validators', () => {
   const header = fixture.blocks.find((block) => block.id === 'headerId')!
 
   beforeEach(() => {
-    mockTransaction(prismaMock)
-    prismaMock.campaign.update.mockResolvedValue(fixture)
+    writes = fakeCampaignWrite(prismaMock)
   })
 
   describe('validateParentBlock', () => {
@@ -748,8 +753,7 @@ describe('tree order and creates', () => {
   )!
 
   beforeEach(() => {
-    mockTransaction(prismaMock)
-    prismaMock.campaign.update.mockResolvedValue(fixture)
+    writes = fakeCampaignWrite(prismaMock)
   })
 
   describe('getSiblings', () => {
@@ -1251,12 +1255,11 @@ describe('delete, restore and duplicate', () => {
     (block) => block.id === 'heroButtonId'
   )!
 
-  describe('removeBlock', () => {
-    beforeEach(() => {
-      mockTransaction(prismaMock)
-      prismaMock.campaign.update.mockResolvedValue(fixture)
-    })
+  beforeEach(() => {
+    writes = fakeCampaignWrite(prismaMock)
+  })
 
+  describe('removeBlock', () => {
     it('stamps deletedAt and renumbers the remaining siblings contiguously', async () => {
       const first = { ...heroButton, id: 'firstId', parentOrder: 0 }
       const third = { ...heroButton, id: 'thirdId', parentOrder: 2 }
@@ -1308,11 +1311,6 @@ describe('delete, restore and duplicate', () => {
 
   describe('restoreBlock', () => {
     describe('reinserting the block and the rows deleted with it', () => {
-      beforeEach(() => {
-        mockTransaction(prismaMock)
-        prismaMock.campaign.update.mockResolvedValue(fixture)
-      })
-
       it('clears deletedAt and re-inserts the block at its parentOrder, renumbering again', async () => {
         const first = { ...heroButton, id: 'firstId', parentOrder: 0 }
         const third = { ...heroButton, id: 'thirdId', parentOrder: 1 }
@@ -1380,10 +1378,6 @@ describe('delete, restore and duplicate', () => {
     })
 
     describe('under a deleted parent', () => {
-      beforeEach(() => {
-        mockTransaction(prismaMock)
-      })
-
       it('is refused until the section is restored first (CONFLICT, id), before any write', async () => {
         prismaMock.campaignBlock.count.mockResolvedValue(1)
 
@@ -1413,7 +1407,7 @@ describe('delete, restore and duplicate', () => {
 
         expect(error.message).toBe('an owned block comes back through its slot')
         expect(error.extensions).toEqual({ code: 'CONFLICT', field: 'id' })
-        expect(prismaMock.$transaction).not.toHaveBeenCalled()
+        expect(writes).toEqual([])
       })
 
       it('does not look for a parent on a top-level block', async () => {
@@ -1469,11 +1463,6 @@ describe('delete, restore and duplicate', () => {
   })
 
   describe('duplicateBlock', () => {
-    beforeEach(() => {
-      mockTransaction(prismaMock)
-      prismaMock.campaign.update.mockResolvedValue(fixture)
-    })
-
     function row(
       id: string,
       typename: string,
@@ -1725,16 +1714,11 @@ describe('delete, restore and duplicate', () => {
       )
 
       expect(error.extensions).toEqual({ code: 'CONFLICT', field: 'id' })
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      expect(writes).toEqual([])
     })
   })
 
   describe('collectSubtree', () => {
-    beforeEach(() => {
-      mockTransaction(prismaMock)
-      prismaMock.campaign.update.mockResolvedValue(fixture)
-    })
-
     it('lists a block, then its children and owned blocks, parents first', () => {
       const media = {
         ...hero,
@@ -1856,8 +1840,7 @@ describe('owned blocks (cover, logo and media)', () => {
   }
 
   beforeEach(() => {
-    mockTransaction(prismaMock)
-    prismaMock.campaign.update.mockResolvedValue(fixture)
+    writes = fakeCampaignWrite(prismaMock)
   })
 
   describe('assertImageSlot', () => {
@@ -2090,8 +2073,7 @@ describe('the slot contract (cover, logo and media)', () => {
     column === 'mediaBlockId' ? 'CampaignVideoBlock' : 'CampaignImageBlock'
 
   beforeEach(() => {
-    mockTransaction(prismaMock)
-    prismaMock.campaign.update.mockResolvedValue(fixture)
+    writes = fakeCampaignWrite(prismaMock)
     mockCampaignBlockWrites(owner)
   })
 
@@ -2216,7 +2198,9 @@ describe('the slot contract (cover, logo and media)', () => {
       await swapSlot(prismaMock, owner, 'coverBlockId', 'newId', deletedAt)
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([
         {
           where: { id: 'heldCoverId' },
@@ -2236,7 +2220,9 @@ describe('the slot contract (cover, logo and media)', () => {
       )
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([{ where: { id: 'newId' }, data: { deletedAt: null } }])
     })
 
@@ -2244,7 +2230,9 @@ describe('the slot contract (cover, logo and media)', () => {
       await swapSlot(prismaMock, owner, 'logoBlockId', null, deletedAt)
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([{ where: { id: 'heldLogoId' }, data: { deletedAt } }])
     })
 
@@ -2258,7 +2246,9 @@ describe('the slot contract (cover, logo and media)', () => {
       )
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([{ where: { id: 'heldMediaId' }, data: { deletedAt: null } }])
     })
   })
@@ -2281,7 +2271,9 @@ describe('the slot contract (cover, logo and media)', () => {
         await updateBlock(ownerRef, { [column]: 'newId' })
 
         expect(
-          prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+          vi
+            .mocked(prismaMock.campaignBlock.update)
+            .mock.calls.map(([call]) => call)
         ).toEqual([
           {
             where: { id: held[column] },
@@ -2304,7 +2296,9 @@ describe('the slot contract (cover, logo and media)', () => {
 
         expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledTimes(1)
         expect(
-          prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+          vi
+            .mocked(prismaMock.campaignBlock.update)
+            .mock.calls.map(([call]) => call)
         ).toEqual([
           {
             where: { id: held[column] },
@@ -2356,8 +2350,9 @@ describe('the slot contract (cover, logo and media)', () => {
         mediaBlockId: 'newMediaId'
       })
 
-      const stamped = prismaMock.campaignBlock.update.mock.calls
-        .map(([call]: any) => call)
+      const stamped = vi
+        .mocked(prismaMock.campaignBlock.update)
+        .mock.calls.map(([call]) => call)
         .filter((call) => call.data.deletedAt instanceof Date)
       expect(stamped.map((call) => call.where.id)).toEqual([
         'heldCoverId',
@@ -2369,8 +2364,9 @@ describe('the slot contract (cover, logo and media)', () => {
     it('leaves the structure alone for columns that are not slots', async () => {
       await updateBlock(ownerRef, { backgroundKind: 'surface' })
 
-      expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
-      expect(prismaMock.$queryRaw).not.toHaveBeenCalled()
+      expect(writes.map(({ declaration }) => declaration)).toEqual([
+        { structure: false }
+      ])
       expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
     })
   })
@@ -2384,38 +2380,18 @@ describe('the structure lock', () => {
   )!
   const page = fixture.pages[0]
 
-  /** The first invocation of a mocked call, in the order all mocks share. */
-  function firstCall(mock: {
-    mock: { invocationCallOrder: number[] }
-  }): number {
-    return Math.min(...mock.mock.invocationCallOrder)
-  }
-
-  /** The first `$executeRaw` ran before every read and write of the transaction. */
-  function expectLockedBeforeEveryRead(): void {
-    const lockedAt = firstCall(prismaMock.$executeRaw)
-    for (const mock of [
-      prismaMock.campaignBlock.findMany,
-      prismaMock.campaignBlock.findFirst,
-      prismaMock.campaignBlock.count,
-      prismaMock.campaignBlock.create,
-      prismaMock.campaignBlock.update,
-      prismaMock.campaignBlock.updateMany,
-      prismaMock.campaign.update
-    ])
-      expect(firstCall(mock)).toBeGreaterThan(lockedAt)
-  }
-
   beforeEach(() => {
-    mockTransaction(prismaMock)
-    prismaMock.campaign.update.mockResolvedValue(fixture)
+    writes = fakeCampaignWrite(prismaMock)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
     mockCampaignBlockWrites(hero)
   })
 
-  /** Each structural transaction: what it must lock before, and a run of it. */
+  /**
+   * Each structural transaction, what it reads or writes under the lock, and
+   * a run of it. A `tx`-taking create runs in the write its caller opens.
+   */
   const transactions: Array<
-    [name: string, lockedBefore: string, run: () => Promise<unknown>]
+    [name: string, underLock: string, run: () => Promise<unknown>]
   > = [
     [
       'createChildBlock',
@@ -2432,7 +2408,7 @@ describe('the structure lock', () => {
     ],
     [
       'createTopLevelBlock',
-      'the chrome singleton and the sibling reads',
+      'it reads the chrome singleton and the siblings',
       async () =>
         await inStructureWrite(
           async (tx) =>
@@ -2460,7 +2436,7 @@ describe('the structure lock', () => {
     ],
     [
       'createColumnsSection',
-      'the section and its slots',
+      'it creates the section and its slots',
       async () =>
         await inStructureWrite(
           async (tx) =>
@@ -2533,21 +2509,29 @@ describe('the structure lock', () => {
   ]
 
   it.each(transactions)(
-    '%s takes the structure lock as its first statement',
-    async (_name, _lockedBefore, run) => {
+    '%s runs in one Campaign Write that declares the structure lock',
+    async (_name, _underLock, run) => {
       await run()
 
-      expectStructureLockFirst()
-      expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
+      expect(writes.map(({ declaration }) => declaration)).toEqual([
+        { structure: true }
+      ])
     }
   )
 
   it.each(transactions)(
-    '%s locks before %s',
-    async (_name, _lockedBefore, run) => {
+    '%s touches the Campaign once %s, with nothing after the commit',
+    async (_name, _underLock, run) => {
       await run()
 
-      expectLockedBeforeEveryRead()
+      expect(writes).toEqual([
+        {
+          campaignId: 'campaignId',
+          declaration: { structure: true },
+          jobs: [],
+          touched: true
+        }
+      ])
     }
   )
 
@@ -2628,7 +2612,7 @@ describe('the structure lock', () => {
 
       await expectNotFound(removeBlock(hero))
       expect(prismaMock.campaignBlock.updateMany).not.toHaveBeenCalled()
-      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+      expect(writes.map(({ touched }) => touched)).toEqual([false])
     })
 
     it('refuses a reorder of a block binned since (NOT_FOUND), without a write', async () => {
@@ -2682,8 +2666,7 @@ describe('the block cap', () => {
   }
 
   beforeEach(() => {
-    mockTransaction(prismaMock)
-    prismaMock.campaign.update.mockResolvedValue(fixture)
+    writes = fakeCampaignWrite(prismaMock)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
     mockCampaignBlockWrites(hero, { createdId: 'newId' })
   })
@@ -2693,7 +2676,7 @@ describe('the block cap', () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
   }
 
-  it('counts the live blocks inside the transaction, after the structure lock', async () => {
+  it('counts the live blocks inside the write, under the structure lock', async () => {
     liveParent()
     countBlocks(0)
 
@@ -2707,10 +2690,9 @@ describe('the block cap', () => {
     expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
       where: { campaignId: 'campaignId', deletedAt: null }
     })
-    expectStructureLockFirst()
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignBlock.count.mock.invocationCallOrder[0]
-    )
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { structure: true }
+    ])
   })
 
   describe('a child block', () => {

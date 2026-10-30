@@ -9,6 +9,10 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionLanguageWithAcl } from '../../../../test/campaignRegionFactory'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { GATEWAY_TIMEOUT_MS } from '../../../lib/gateway/graphqlRequest'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -21,6 +25,8 @@ import {
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../qrCode/qrCode.service')>()),
@@ -116,9 +122,11 @@ describe('campaignRegionLanguageUpdate', () => {
   `)
 
   let fixture: CampaignFixture
+  let writes: CampaignWriteCall[]
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     fixture = campaignFactory().withRegion('EUR').build()
     prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
       campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529')
@@ -250,7 +258,7 @@ describe('campaignRegionLanguageUpdate', () => {
         url: 'https://your.nextstep.is/draft-journey'
       })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'Journey not found or not published',
         extensions: { code: 'BAD_USER_INPUT', field: 'url' }
       })
@@ -261,7 +269,7 @@ describe('campaignRegionLanguageUpdate', () => {
     it('rejects something that is not a journey link (BAD_USER_INPUT, field url)', async () => {
       const result = await update({ url: 'not a link' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'url'
       })
@@ -305,10 +313,16 @@ describe('campaignRegionLanguageUpdate', () => {
         })
       )
       expect(updateShortLink).not.toHaveBeenCalled()
-      expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-        where: { id: 'campaignId' },
-        data: { updatedAt: expect.any(Date) }
-      })
+      expect(writes).toEqual([
+        {
+          campaignId: 'campaignId',
+          declaration: { shareLanguage: 'eurRegionId-529' },
+          options: { timeout: GATEWAY_TIMEOUT_MS + 5_000 },
+          jobs: [],
+          step: { apply: expect.any(Function), revert: expect.any(Function) },
+          touched: true
+        }
+      ])
     })
 
     it("builds the short-link target on the journey's own team domain", async () => {
@@ -458,21 +472,22 @@ describe('campaignRegionLanguageUpdate', () => {
     })
 
     describe('gateway consistency', () => {
-      it('takes the row lock, then applies the short-link create last, after every database write', async () => {
+      it('declares the row, and makes the short-link create the external step, after every database write', async () => {
         await update({ url: 'https://admin.nextstep.is/journeys/journeyId' })
 
         const order = (mock: unknown): number =>
           vi.mocked(mock as () => void).mock.invocationCallOrder[0]
-        expect(order(prismaMock.$queryRaw)).toBeLessThan(
-          order(prismaMock.qrCode.create)
-        )
+        expect(writes).toEqual([
+          expect.objectContaining({
+            declaration: { shareLanguage: 'eurRegionId-529' },
+            step: expect.objectContaining({ apply: expect.any(Function) })
+          })
+        ])
+        // Not lock order: the gateway call waits for the step, after the body's writes.
         expect(order(prismaMock.qrCode.create)).toBeLessThan(
           order(createShortLink)
         )
         expect(order(prismaMock.campaignRegionLanguage.update)).toBeLessThan(
-          order(createShortLink)
-        )
-        expect(order(prismaMock.campaign.update)).toBeLessThan(
           order(createShortLink)
         )
       })
@@ -502,32 +517,24 @@ describe('campaignRegionLanguageUpdate', () => {
           url: 'https://admin.nextstep.is/journeys/journeyId'
         })
 
-        expect(result.errors[0].message).toBe('gateway down')
+        expect(result.errors?.[0].message).toBe('gateway down')
         expect(deleteShortLink).not.toHaveBeenCalled()
       })
 
       it('gives the transaction a timeout that outlasts the short-link gateway call', async () => {
         await update({ url: 'https://admin.nextstep.is/journeys/journeyId' })
 
-        expect(prismaMock.$transaction).toHaveBeenCalledWith(
-          expect.any(Function),
+        expect(writes.map(({ options }) => options)).toEqual([
           { timeout: GATEWAY_TIMEOUT_MS + 5_000 }
-        )
+        ])
       })
 
-      it('queues the delete of the new short link when the commit fails after the create', async () => {
-        prismaMock.$transaction.mockImplementationOnce((async (
-          callback: any
-        ) => {
-          await callback(prismaMock)
-          throw new Error('transaction timed out')
-        }) as never)
-
-        const result = await update({
+      it('reverts the create by queueing the delete of the new short link, for a commit that fails after it', async () => {
+        await update({
           url: 'https://admin.nextstep.is/journeys/journeyId'
         })
+        await writes[0].step?.revert()
 
-        expect(result.errors[0].message).toBe('transaction timed out')
         const createdId = vi.mocked(createShortLink).mock.calls[0][0].id
         expect(
           mockQueueAdd.mock.calls
@@ -537,23 +544,17 @@ describe('campaignRegionLanguageUpdate', () => {
         expect(deleteShortLink).not.toHaveBeenCalled()
       })
 
-      it('points a retargeted short link back at the previous journey when the commit fails after the retarget', async () => {
+      it('reverts a retarget by pointing the short link back at the previous journey, for a commit that fails after it', async () => {
         prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
         prismaMock.journey.findFirst.mockResolvedValue(
           journeyRow('otherJourneyId', 'noel-europe') as never
         )
-        prismaMock.$transaction.mockImplementationOnce((async (
-          callback: any
-        ) => {
-          await callback(prismaMock)
-          throw new Error('transaction timed out')
-        }) as never)
 
-        const result = await update({
+        await update({
           url: 'https://admin.nextstep.is/journeys/otherJourneyId'
         })
+        await writes[0].step?.revert()
 
-        expect(result.errors[0].message).toBe('transaction timed out')
         expect(updateShortLink).toHaveBeenCalledTimes(2)
         expect(updateShortLink).toHaveBeenLastCalledWith({
           id: 'shortLinkId',
@@ -657,11 +658,11 @@ describe('campaignRegionLanguageUpdate', () => {
 
         const result = await update(input)
 
-        expect(result.errors[0]).toMatchObject({
+        expect(result.errors?.[0]).toMatchObject({
           message: 'You can only link a journey whose stats you can see',
           extensions: { code: 'FORBIDDEN', field }
         })
-        expect(prismaMock.$transaction).not.toHaveBeenCalled()
+        expect(writes).toEqual([])
         expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
         expect(createShortLink).not.toHaveBeenCalled()
       }
@@ -683,7 +684,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
       const result = await update({ journeyId: 'journeyId' })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'You can only link a journey whose stats you can see',
         extensions: { code: 'FORBIDDEN', field: 'journeyId' }
       })
@@ -701,7 +702,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
       const result = await update({ journeyId: 'journeyId' })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'You can only link a journey whose stats you can see',
         extensions: { code: 'FORBIDDEN', field: 'journeyId' }
       })
@@ -717,7 +718,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
       const result = await update({ journeyId: 'journeyId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'FORBIDDEN',
         field: 'journeyId'
       })
@@ -751,7 +752,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
       const result = await update({ journeyId: 'journeyId' })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'Journey not found or not published',
         extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
       })
@@ -778,7 +779,7 @@ describe('campaignRegionLanguageUpdate', () => {
     )
 
     const tooLong = await update({ title: 'x'.repeat(201) })
-    expect(tooLong.errors[0].extensions).toMatchObject({
+    expect(tooLong.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
@@ -818,10 +819,10 @@ describe('campaignRegionLanguageUpdate', () => {
       url: 'https://admin.nextstep.is/journeys/journeyId'
     })
 
-    expect(result.errors[0].message).toBe(
+    expect(result.errors?.[0].message).toBe(
       'user is not allowed to update share language'
     )
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(createShortLink).not.toHaveBeenCalled()
   })
 
@@ -830,6 +831,6 @@ describe('campaignRegionLanguageUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

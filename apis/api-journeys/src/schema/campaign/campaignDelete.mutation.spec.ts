@@ -5,7 +5,10 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { mockQueueAdd } from '../../../test/bullmqMock'
 import { authClient, mockUser } from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { mockTransaction } from '../../../test/campaignWrite'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { deleteVercelDomain } from '../customDomain/service'
@@ -17,6 +20,8 @@ import { fetchLanguage } from './gatewayClient'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('./campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 vi.mock('../qrCode/qrCode.service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../qrCode/qrCode.service')>()),
@@ -44,6 +49,8 @@ describe('campaignDelete', () => {
     }
   `)
 
+  let writes: CampaignWriteCall[]
+
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
@@ -52,7 +59,7 @@ describe('campaignDelete', () => {
       userId: mockUser.id,
       roles: []
     })
-    mockTransaction(prismaMock)
+    writes = fakeCampaignWrite(prismaMock)
     prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([])
   })
 
@@ -81,6 +88,20 @@ describe('campaignDelete', () => {
     expect(prismaMock.campaignPage.deleteMany).not.toHaveBeenCalled()
     expect(deleteShortLink).not.toHaveBeenCalled()
     expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+    // No touch: the Campaign row is gone. The short link deletes, the
+    // revalidation and the Vercel removal wait for the commit.
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { touch: false },
+        jobs: [
+          expect.any(Function),
+          expect.any(Function),
+          expect.any(Function)
+        ],
+        touched: false
+      }
+    ])
   })
 
   it("deletes every Share Language's QR row before the campaign and queues its short link delete", async () => {
@@ -136,6 +157,7 @@ describe('campaignDelete', () => {
     expect(prismaMock.campaign.delete).toHaveBeenCalledTimes(1)
     expect(prismaMock.customDomain.delete).not.toHaveBeenCalled()
     expect(deleteVercelDomain).toHaveBeenCalledWith('outreach.example.org')
+    // Not lock order: Vercel hears of the delete only once the row is gone.
     expect(
       vi.mocked(deleteVercelDomain).mock.invocationCallOrder[0]
     ).toBeGreaterThan(prismaMock.campaign.delete.mock.invocationCallOrder[0])
@@ -255,8 +277,9 @@ describe('campaignDelete', () => {
       variables: { id: 'campaignId' }
     })
 
-    expect(result.errors[0].message).toBe('delete failed')
+    expect(result.errors?.[0].message).toBe('delete failed')
     expect(mockQueueAdd).not.toHaveBeenCalled()
+    expect(writes[0].jobs).toEqual([])
   })
 
   it('throws FORBIDDEN for a member', async () => {

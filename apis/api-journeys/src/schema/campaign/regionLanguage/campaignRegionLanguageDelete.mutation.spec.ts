@@ -9,7 +9,10 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionLanguageWithAcl } from '../../../../test/campaignRegionFactory'
-import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { deleteShortLink } from '../../qrCode/qrCode.service'
@@ -17,6 +20,8 @@ import { deleteShortLink } from '../../qrCode/qrCode.service'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../qrCode/qrCode.service')>()),
@@ -36,9 +41,11 @@ describe('campaignRegionLanguageDelete', () => {
   `)
 
   let fixture: CampaignFixture
+  let writes: CampaignWriteCall[]
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     fixture = campaignFactory()
       .withRegion('EUR')
       .withLinkedJourney('eurRegionId', FRENCH, {
@@ -93,41 +100,36 @@ describe('campaignRegionLanguageDelete', () => {
     expect(deleteShortLink).not.toHaveBeenCalled()
     expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
     expect(mockQueueAdd).not.toHaveBeenCalled()
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-      where: { id: 'campaignId' },
-      data: { updatedAt: expect.any(Date) }
-    })
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { structure: true, shareLanguage: 'eurRegionId-529' },
+        jobs: [],
+        touched: true
+      }
+    ])
   })
 
-  it('takes the structure lock before the row lock and any read or delete', async () => {
+  it('declares the structure lock and the share language row', async () => {
     await remove()
 
-    expectStructureLockFirst()
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignRegionLanguage.findUniqueOrThrow.mock
-        .invocationCallOrder[0]
-    )
-    const rowLock = prismaMock.$queryRaw.mock.calls[0]
-    expect((rowLock[0] as unknown as string[]).join('?')).toContain(
-      'FOR UPDATE'
-    )
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { structure: true, shareLanguage: 'eurRegionId-529' }
+    ])
   })
 
-  it('takes the row lock before any read or delete in the transaction', async () => {
+  it('re-reads the row in the write before it deletes it', async () => {
     await remove()
 
     const order = (mock: unknown): number =>
       vi.mocked(mock as () => void).mock.invocationCallOrder[0]
-    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
-    expect(order(prismaMock.$queryRaw)).toBeLessThan(
-      order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
-    )
     expect(
       prismaMock.campaignRegionLanguage.findUniqueOrThrow
     ).toHaveBeenCalledWith({
       where: { id: 'eurRegionId-529' },
       select: { qrCodeId: true }
     })
+    // Not lock order: the QR code as re-read decides whether the delete runs.
     expect(
       order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
     ).toBeLessThan(order(prismaMock.campaignRegionLanguage.delete))
@@ -145,10 +147,10 @@ describe('campaignRegionLanguageDelete', () => {
 
     const result = await remove(`eurRegionId-${FRENCH}`)
 
-    expect(result.errors[0].message).toBe(
+    expect(result.errors?.[0].message).toBe(
       'This language has a QR code. Unlink it instead.'
     )
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'id'
     })
@@ -165,7 +167,7 @@ describe('campaignRegionLanguageDelete', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'id'
     })
@@ -186,7 +188,7 @@ describe('campaignRegionLanguageDelete', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegionLanguage.delete).not.toHaveBeenCalled()
   })
 
@@ -195,6 +197,6 @@ describe('campaignRegionLanguageDelete', () => {
 
     const result = await remove('missing')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

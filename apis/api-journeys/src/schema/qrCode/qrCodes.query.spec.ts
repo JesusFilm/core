@@ -6,6 +6,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { qrCodeRow } from '../../../test/qrCodeFixtures'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
@@ -15,35 +16,6 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
-
-interface QrCodeRow {
-  id: string
-  teamId: string
-  journeyId: string
-  toJourneyId: string
-  toBlockId: string | null
-  shortLinkId: string
-  shortLinkUrl: string | null
-  color: string | null
-  backgroundColor: string | null
-  campaignRegionLanguages: Array<{ id: string }>
-}
-
-function qrCodeRow(overrides: Partial<QrCodeRow>): QrCodeRow {
-  return {
-    id: 'qrCodeId',
-    teamId: 'teamId',
-    journeyId: 'journeyId',
-    toJourneyId: 'journeyId',
-    toBlockId: null,
-    shortLinkId: 'shortLinkId',
-    shortLinkUrl: null,
-    color: '#000000',
-    backgroundColor: '#FFFFFF',
-    campaignRegionLanguages: [],
-    ...overrides
-  }
-}
 
 describe('qrCodes', () => {
   const mockUser = {
@@ -91,7 +63,7 @@ describe('qrCodes', () => {
       [journeyQrCode, campaignQrCode].filter(
         (row) =>
           (where.campaignRegionLanguages?.none == null ||
-            row.campaignRegionLanguages.length === 0) &&
+            (row.campaignRegionLanguages ?? []).length === 0) &&
           (where.journeyId == null || row.journeyId === where.journeyId) &&
           (where.teamId == null || row.teamId === where.teamId)
       )) as never)

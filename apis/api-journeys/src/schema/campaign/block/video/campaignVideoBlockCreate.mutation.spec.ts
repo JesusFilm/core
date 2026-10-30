@@ -238,7 +238,7 @@ describe('campaignVideoBlockCreate', () => {
         videoId: YOUTUBE_ID
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'mediaBlockId'
       })
@@ -291,7 +291,7 @@ describe('campaignVideoBlockCreate', () => {
         source: 'youTube',
         videoId: YOUTUBE_ID
       })
-      expect(extra.errors[0].extensions).toMatchObject({
+      expect(extra.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
       })
@@ -302,7 +302,7 @@ describe('campaignVideoBlockCreate', () => {
         source: 'youTube',
         videoId: YOUTUBE_ID
       })
-      expect(missing.errors[0].extensions).toMatchObject({
+      expect(missing.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
       })
@@ -427,7 +427,7 @@ describe('campaignVideoBlockCreate', () => {
       async (source, videoId, message) => {
         const result = await create({ source, videoId })
 
-        expect(result.errors[0]).toMatchObject({
+        expect(result.errors?.[0]).toMatchObject({
           message,
           extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
         })
@@ -440,7 +440,7 @@ describe('campaignVideoBlockCreate', () => {
     it('rejects an empty Mux id (BAD_USER_INPUT, videoId)', async () => {
       const result = await create({ source: 'mux', videoId: '' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'videoId'
       })
@@ -456,7 +456,7 @@ describe('campaignVideoBlockCreate', () => {
 
       const result = await create({ source: 'youTube', videoId: YOUTUBE_ID })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'videoId must be a valid YouTube videoId',
         extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
       })
@@ -473,7 +473,7 @@ describe('campaignVideoBlockCreate', () => {
 
       const result = await create({ source: 'mux', videoId: 'muxVideoId' })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'videoId must be a valid Mux videoId',
         extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
       })
@@ -497,8 +497,8 @@ describe('campaignVideoBlockCreate', () => {
 
       const result = await create({ source: 'mux', videoId: 'muxVideoId' })
 
-      expect(result.errors[0].message).toBe('Unexpected error.')
-      expect(result.errors[0].extensions?.code).not.toBe('BAD_USER_INPUT')
+      expect(result.errors?.[0].message).toBe('Unexpected error.')
+      expect(result.errors?.[0].extensions?.code).not.toBe('BAD_USER_INPUT')
       expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
@@ -512,7 +512,7 @@ describe('campaignVideoBlockCreate', () => {
 
       const result = await create({ source: 'youTube', videoId: YOUTUBE_ID })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'YouTube API request failed: quotaExceeded',
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
@@ -527,7 +527,7 @@ describe('campaignVideoBlockCreate', () => {
         url: WATCH_URL
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'url'
       })
@@ -539,7 +539,7 @@ describe('campaignVideoBlockCreate', () => {
     it('takes internal, youTube and mux only (BAD_USER_INPUT, source)', async () => {
       const result = await create({ source: 'cloudflare', videoId: 'cfId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'source'
       })
@@ -646,7 +646,7 @@ describe('campaignVideoBlockCreate', () => {
 
       const result = await create({ source: 'internal', url: WATCH_URL })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: "That link isn't a Watch video",
         extensions: { code: 'BAD_USER_INPUT', field: 'url' }
       })
@@ -663,7 +663,7 @@ describe('campaignVideoBlockCreate', () => {
       async (url) => {
         const result = await create({ source: 'internal', url })
 
-        expect(result.errors[0]).toMatchObject({
+        expect(result.errors?.[0]).toMatchObject({
           message: "That link isn't a Watch video",
           extensions: { code: 'BAD_USER_INPUT', field: 'url' }
         })
@@ -690,7 +690,7 @@ describe('campaignVideoBlockCreate', () => {
 
       const result = await create({ source: 'internal', videoId: 'unknown' })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'videoId is not a published Watch video',
         extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
       })
@@ -700,7 +700,7 @@ describe('campaignVideoBlockCreate', () => {
     it('needs a url or a known Video id (BAD_USER_INPUT, url)', async () => {
       const result = await create({ source: 'internal' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'url'
       })
@@ -729,7 +729,7 @@ describe('campaignVideoBlockCreate', () => {
           [field]: 'x'.repeat(max + 1)
         })
 
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'BAD_USER_INPUT',
           field
         })
@@ -746,7 +746,7 @@ describe('campaignVideoBlockCreate', () => {
 
     const result = await create({ source: 'youTube', videoId: YOUTUBE_ID })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 
@@ -759,7 +759,7 @@ describe('campaignVideoBlockCreate', () => {
       videoId: YOUTUBE_ID
     })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 })

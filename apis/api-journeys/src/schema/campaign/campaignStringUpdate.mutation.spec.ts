@@ -152,7 +152,7 @@ describe('campaignStringUpdate', () => {
 
     const result = await update('copy', 'x'.repeat(201))
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'value'
     })
@@ -162,7 +162,7 @@ describe('campaignStringUpdate', () => {
   it('takes only a CampaignStringKey', async () => {
     const result = await update('notAKey', 'Hello')
 
-    expect(result.errors[0].message).toMatch(/CampaignStringKey/)
+    expect(result.errors?.[0].message).toMatch(/CampaignStringKey/)
     expect(prismaMock.campaign.findUnique).not.toHaveBeenCalled()
   })
 
@@ -173,7 +173,7 @@ describe('campaignStringUpdate', () => {
 
     const result = await update('copy', 'Nope')
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'user is not allowed to update campaign',
       extensions: expect.objectContaining({ code: 'FORBIDDEN' })
     })
@@ -185,7 +185,7 @@ describe('campaignStringUpdate', () => {
 
     const result = await update('copy', 'Nope')
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'campaign not found',
       extensions: expect.objectContaining({ code: 'NOT_FOUND' })
     })
