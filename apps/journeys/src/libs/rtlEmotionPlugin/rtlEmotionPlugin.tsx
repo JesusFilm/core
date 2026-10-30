@@ -14,8 +14,8 @@ type CampaignPageProps = Pick<Parameters<typeof getPageRTL>[0], 'campaign'>
 
 /**
  * A `documentGetInitialProps` plugin that serves right-to-left campaign pages
- * (PRD §2, §11) their CSS compiled right-to-left. The document builds its
- * cache before any page has rendered, so it cannot know the page's language;
+ * (glossary: Page Language resolution) their CSS compiled right-to-left.
+ * The document builds its cache before any page has rendered, so it cannot know the page's language;
  * this plugin holds a second, RTL cache and swaps it in for the render of a
  * campaign page whose Page Language is RTL, then adds that cache's critical
  * styles to the document head. Every other page, an RTL journey page

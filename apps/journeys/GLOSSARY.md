@@ -44,6 +44,10 @@ _Avoid_: host (ambiguous — Host is a presenter identity upstream), hostname (f
 A Custom Domain that belongs to one Campaign, owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context. Here it is a _routing target_: the domain's `/` serves the Campaign's landing page and `/<region slug>` a Region Page; it serves no team Journey, so `/<journey slug>` on it is not found. Once a Campaign has one, its `/campaign/<slug>` address on the Root Domain is not found.
 _Avoid_: Campaign Root (the retired name), home page, default campaign
 
+**Campaign Page resolution**:
+What a campaign request resolves to, decided once from the request (a Campaign's slug on the Root Domain or a hostname, the path segment after it, and the `lang` tag) and the published Campaign: a page (the Campaign, its page kind, the Region a Region Page renders for, and the Page Language), a language fallback to the plain page when the tag names no language of the Campaign, not found, or, on a Custom Domain only, not a campaign, where the domain's Journeys take over. A segment is a Region only if the Campaign read in the Page Language still has it, and a failed read on a Custom Domain is not a campaign rather than an error, so the domain's Journeys stay up. A page and a fallback are regenerated about once a minute, a not found after a second.
+_Avoid_: campaign lookup, campaign routing (the proxy only rewrites the address to a page path)
+
 **Reserved Segment**:
 A first path segment the viewer owns on a domain root (such as `embed`, `legal`, `campaign` and `template-gallery`), so no Journey or Region slug may take it. The viewer owns the concept; one list in the Journeys API backs both Journey and Region slug validation.
 _Avoid_: reserved word, blocked slug

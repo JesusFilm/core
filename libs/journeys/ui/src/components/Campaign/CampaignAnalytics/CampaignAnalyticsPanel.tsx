@@ -34,13 +34,16 @@ import {
 } from './campaignStatsScope'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
 import { MOTION_MS, REDUCED_MOTION } from './motion'
-import { WorldMap, WorldMapShapes } from './WorldMap'
+import { WORLD_MAP_HEIGHT, WORLD_MAP_WIDTH, WorldMap } from './WorldMap'
+import type { WorldMapState } from './WorldMap'
 
 /** Chips and rows keep a near-square 4px corner regardless of the theme radius. */
 const ROW_HEIGHT = 36
 /** The gap between ranked rows, in px. */
 const ROW_GAP = 6
 const ROW_PITCH = ROW_HEIGHT + ROW_GAP
+
+const NO_WORLD_MAP: WorldMapState = { shapes: null, error: null }
 
 const rowEnter = keyframes`
   from { opacity: 0; }
@@ -66,8 +69,8 @@ interface CampaignAnalyticsPanelProps {
   strings: ReadonlyArray<{ key: CampaignStringKey; value: string }>
   /** The Analytics block's `showMap`: draw the world map under the tiles. */
   showMap?: boolean
-  /** The projected map; the map is skipped until it is known. */
-  worldMap?: WorldMapShapes | null
+  /** `useWorldMap`'s answer: a box of the map's size holds its place until the shapes load; on an error the map is skipped. */
+  worldMap?: WorldMapState
   /** The theme accent (`#RRGGBB`) the map shades in. */
   accentColor?: string
 }
@@ -267,7 +270,7 @@ export function CampaignAnalyticsPanel({
   fixedRegion = null,
   strings,
   showMap = false,
-  worldMap = null,
+  worldMap = NO_WORLD_MAP,
   accentColor = '#000000'
 }: CampaignAnalyticsPanelProps): ReactElement {
   const { t, i18n } = useTranslation('libs-journeys-ui')
@@ -414,21 +417,27 @@ export function CampaignAnalyticsPanel({
   const highlightedCodes = mapRegions.flatMap((region) =>
     (region.countries ?? []).map((country) => country.countryId)
   )
-  const mapFor = (
-    visitors?: CampaignAnalyticsCountries
-  ): ReactElement | null =>
-    showMap && worldMap != null ? (
+  const mapFor = (visitors?: CampaignAnalyticsCountries): ReactElement =>
+    worldMap.shapes == null ? (
+      <Box
+        data-testid="WorldMapPlaceholder"
+        sx={{
+          width: '100%',
+          aspectRatio: `${WORLD_MAP_WIDTH} / ${WORLD_MAP_HEIGHT}`
+        }}
+      />
+    ) : (
       <WorldMap
-        shapes={worldMap}
+        shapes={worldMap.shapes}
         highlightedCodes={highlightedCodes}
         zoomToHighlighted={activeRegion != null}
         visitors={visitors}
         accentColor={accentColor}
         locale={locale}
       />
-    ) : null
+    )
 
-  const layout = showMap && worldMap != null ? 'map' : 'stacked'
+  const layout = showMap && worldMap.error == null ? 'map' : 'stacked'
 
   /**
    * One frame for the loading and loaded states, so the chips keep their

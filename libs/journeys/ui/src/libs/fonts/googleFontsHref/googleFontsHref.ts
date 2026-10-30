@@ -1,9 +1,9 @@
-/** The fonts every campaign page and root journey route load. */
-export const CAMPAIGN_DEFAULT_FONTS = ['Montserrat', 'Open Sans', 'El Messiri']
+/** The fonts every campaign page and root-domain journey page load. */
+export const DEFAULT_GOOGLE_FONTS = ['Montserrat', 'Open Sans', 'El Messiri']
 
 const FONT_WEIGHTS = '400;500;600;700;800'
 
-export interface CampaignFonts {
+export interface GoogleFonts {
   headerFont: string | null
   bodyFont: string | null
   labelFont: string | null
@@ -19,11 +19,9 @@ function formatFontName(font: string): string {
  * deduplicated and sorted, `display=swap`. Null fonts add
  * nothing, so a theme with no fonts set loads the defaults only.
  */
-export function campaignFontsHref(
-  fonts: CampaignFonts | null | undefined
-): string {
+export function googleFontsHref(fonts: GoogleFonts | null | undefined): string {
   const families = [
-    ...CAMPAIGN_DEFAULT_FONTS,
+    ...DEFAULT_GOOGLE_FONTS,
     fonts?.headerFont ?? '',
     fonts?.bodyFont ?? '',
     fonts?.labelFont ?? ''

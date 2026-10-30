@@ -1,4 +1,5 @@
 export {
+  LANGUAGE_PAGE_SEGMENT,
   campaignAbsoluteAddress,
   campaignBasePath,
   campaignDomainName,

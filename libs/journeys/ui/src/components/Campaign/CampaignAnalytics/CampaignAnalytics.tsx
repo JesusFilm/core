@@ -6,6 +6,10 @@ import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import type { CampaignTreeOf } from '../types'
 
 import { CampaignAnalyticsPanel } from './CampaignAnalyticsPanel'
+import { useWorldMap } from './WorldMap/useWorldMap'
+
+/** The viewer's own atlas, same-origin on the public page and cached for a week. */
+const ATLAS_URL = '/countries-110m.json'
 
 interface CampaignAnalyticsProps {
   block: CampaignTreeOf<'CampaignAnalyticsBlock'>
@@ -16,12 +20,14 @@ interface CampaignAnalyticsProps {
  * which fetches `campaignStats` client-side after render so the stats cache
  * stays independent of the page payload. A Region Page is fixed to its region;
  * the landing page has region tabs. The world map shows only when the block's
- * `showMap` is on, shaded in the section's Accent override or the theme accent.
+ * `showMap` is on, shaded in the section's Accent override or the theme accent;
+ * it is fetched in the browser, so it never rides in the page props.
  */
 export function CampaignAnalytics({
   block
 }: CampaignAnalyticsProps): ReactElement {
-  const { campaign, region, worldMap } = useCampaign()
+  const { campaign, region } = useCampaign()
+  const worldMap = useWorldMap(block.showMap, ATLAS_URL)
   return (
     <CampaignSectionBand block={block}>
       <CampaignSectionHeading eyebrow={block.eyebrow} title={block.title} />

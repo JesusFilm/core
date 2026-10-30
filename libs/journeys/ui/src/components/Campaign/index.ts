@@ -106,10 +106,6 @@ export {
   useCarouselScroll
 } from './CampaignVideoCarousel'
 export {
-  campaignFontsHref,
-  CAMPAIGN_DEFAULT_FONTS
-} from './libs/campaignFontsHref'
-export {
   campaignImageSource,
   focalImageSx,
   focalObjectPosition

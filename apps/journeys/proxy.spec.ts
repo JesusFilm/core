@@ -385,11 +385,49 @@ describe('journeys proxy', () => {
       )
     })
 
+    it('leaves a ?lang= link deeper than one segment on a custom domain to the catch-all', async () => {
+      const aboutChat = await proxy(
+        buildRequest('custom.example.com', '/legal/about-chat?lang=es')
+      )
+      const embed = await proxy(
+        buildRequest('custom.example.com', '/embed/my-journey?lang=es')
+      )
+
+      expect(aboutChat?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/legal/about-chat?lang=es'
+      )
+      expect(embed?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/embed/my-journey?lang=es'
+      )
+    })
+
     it('leaves the root domain outside /campaign alone', async () => {
       const result = await proxy(buildRequest('your.nextstep.is', '/?lang=es'))
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
         'http://your.nextstep.is/home/?lang=es'
+      )
+    })
+  })
+
+  describe('public _lang paths', () => {
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+    })
+
+    it.each([
+      ['a custom domain', 'custom.example.com', '/_lang/fr/my-journey'],
+      [
+        'the root domain',
+        'your.nextstep.is',
+        '/campaign/christmas-2026/_lang/fr'
+      ]
+    ])('answers not found on %s', async (_name, host, path) => {
+      const result = await proxy(buildRequest(host, path))
+
+      expect(result?.status).toBe(404)
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        `http://${host}/404`
       )
     })
   })
