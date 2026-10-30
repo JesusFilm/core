@@ -111,8 +111,8 @@ export {
   focalObjectPosition
 } from './libs/campaignImageSource'
 export {
-  CAMPAIGN_LANGUAGE_COOKIE,
   CAMPAIGN_LANGUAGE_PARAM,
+  campaignLanguageCookie,
   parseAcceptLanguage,
   resolvePageLanguage
 } from './libs/resolvePageLanguage'

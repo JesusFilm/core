@@ -345,10 +345,11 @@ describe('CampaignHeader', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('writes the language cookie and reloads the page with the chosen language as the lang param', () => {
+    it("writes the campaign's own language cookie and reloads the page with the chosen language as the lang param", () => {
       const assign = vi.fn()
       const location = window.location
-      document.cookie = 'campaign-lang=en; path=/'
+      // jsdom may drop a Secure cookie on http://localhost, so the attributes are read off the setter.
+      const cookieSetter = vi.spyOn(document, 'cookie', 'set')
       Object.defineProperty(window, 'location', {
         configurable: true,
         value: {
@@ -363,7 +364,10 @@ describe('CampaignHeader', () => {
       expect(assign).toHaveBeenCalledWith(
         'http://localhost/campaign/outreach-2026?lang=fr#heroId'
       )
-      expect(document.cookie).toContain('campaign-lang=fr')
+      expect(cookieSetter).toHaveBeenCalledWith(
+        `campaign-lang-${campaignPublic.id}=fr; path=/; max-age=31536000; Secure; SameSite=Lax`
+      )
+      cookieSetter.mockRestore()
       Object.defineProperty(window, 'location', {
         configurable: true,
         value: location
