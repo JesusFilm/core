@@ -43,6 +43,10 @@ How the viewer picks a Campaign's **Page Language**: the `lang` link parameter, 
 The one component every campaign section renders through: it paints the section's background and colours, then orders the Extras placed above, the section body, then the Extras placed below. Typography and buttons inside inherit their colours and alignment from it.
 _Avoid_: section wrapper, card (a card sits inside a band)
 
+**Campaign Block grammar**:
+The one set of rules about which campaign blocks go where (`Campaign/libs/campaignBlockGrammar`): which typenames are page sections, bands, Extras, chrome, Column Slots or Media Slot owners, which sections each page kind and a Column Slot offer, and which Extras a host accepts (`acceptsChild`, the API rule) versus shows (`shownExtras`, the editor and renderer rule; the header shows only its Buttons). Pure, so api-journeys imports it for its block validators.
+_Avoid_: block rules, schema (the GraphQL one)
+
 **Inert button**:
 A campaign button whose action target is missing (a scroll target on another page or a section the page skips, a deleted region, no action at all): rendered static with the same look and never hidden.
 

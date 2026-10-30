@@ -2,6 +2,23 @@ import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  EXTRA_TYPENAMES as CAMPAIGN_CHILD_TYPENAMES,
+  CHROME_TYPENAMES as CAMPAIGN_CHROME_TYPENAMES,
+  BAND_TYPENAMES as CAMPAIGN_HOST_TYPENAMES,
+  MEDIA_OWNER_TYPENAMES as CAMPAIGN_MEDIA_OWNER_TYPENAMES,
+  MEDIA_SLOT_TYPENAMES as CAMPAIGN_MEDIA_TYPENAMES,
+  REGION_ONLY_TYPENAMES as CAMPAIGN_REGION_ONLY_TYPENAMES,
+  PAGE_SECTION_TYPENAMES as CAMPAIGN_SECTION_TYPENAMES,
+  SLOT_DISALLOWED_TYPENAMES as CAMPAIGN_SLOT_DISALLOWED_TYPENAMES,
+  SLOT_TYPENAMES as CAMPAIGN_SLOT_TYPENAMES,
+  CAMPAIGN_TYPENAMES,
+  type ExtraTypename as CampaignChildTypename,
+  type PageSectionTypename as CampaignSectionTypename,
+  type CampaignTypename,
+  acceptsChild,
+  isMediaOwner
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
+import {
   CampaignAction,
   CampaignBackgroundKind,
   CampaignBackgroundOverlay,
@@ -59,93 +76,24 @@ export type CampaignBlockWithCampaignAcl = Prisma.CampaignBlockGetPayload<{
   include: typeof INCLUDE_CAMPAIGN_BLOCK_ACL
 }>
 
-/** Every value of the `typename` column: one per concrete CampaignBlock type. */
-export const CAMPAIGN_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignRegionSwitcherBlock',
-  'CampaignVideoCarouselBlock',
-  'CampaignJourneyListBlock',
-  'CampaignAnalyticsBlock',
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock',
-  'CampaignRichTextBlock',
-  'CampaignColumnsBlock',
-  'CampaignImageBlock',
-  'CampaignFeaturedMediaBlock',
-  'CampaignHeaderBlock',
-  'CampaignFooterBlock',
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock',
-  'CampaignColumnBlock',
-  'CampaignVideoBlock',
-  'CampaignJourneyBlock'
-] as const
-export type CampaignTypename = (typeof CAMPAIGN_TYPENAMES)[number]
-
-/** The two Extra typenames: the only children a section or chrome block takes. */
-export const CAMPAIGN_CHILD_TYPENAMES = [
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock'
-] as const satisfies readonly CampaignTypename[]
-export type CampaignChildTypename = (typeof CAMPAIGN_CHILD_TYPENAMES)[number]
-
-/** Chrome is never deleted, moved or duplicated. */
-export const CAMPAIGN_CHROME_TYPENAMES = [
-  'CampaignHeaderBlock',
-  'CampaignFooterBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
-export const CAMPAIGN_SECTION_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignRegionSwitcherBlock',
-  'CampaignVideoCarouselBlock',
-  'CampaignJourneyListBlock',
-  'CampaignAnalyticsBlock',
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock',
-  'CampaignRichTextBlock',
-  'CampaignColumnsBlock',
-  'CampaignImageBlock',
-  'CampaignFeaturedMediaBlock'
-] as const satisfies readonly CampaignTypename[]
-export type CampaignSectionTypename =
-  (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
-
-/** Every typename that hosts Extras: the sections and the two chrome blocks. */
-export const CAMPAIGN_HOST_TYPENAMES = [
-  ...CAMPAIGN_SECTION_TYPENAMES,
-  ...CAMPAIGN_CHROME_TYPENAMES
-] as const
-
-/** Sections that read the region being rendered: refused on the landing page. */
-export const CAMPAIGN_REGION_ONLY_TYPENAMES = [
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** Column slots are created with their Columns section and never touched on their own. */
-export const CAMPAIGN_SLOT_TYPENAMES = [
-  'CampaignColumnBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** No nesting, and the share panel reads a whole page: neither sits in a slot. */
-export const CAMPAIGN_SLOT_DISALLOWED_TYPENAMES = [
-  'CampaignColumnsBlock',
-  'CampaignRegionShareBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** The sections with a Media Slot (`mediaBlockId`). */
-export const CAMPAIGN_MEDIA_OWNER_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignFeaturedMediaBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** What a Media Slot holds: a Campaign Video or a Campaign Image. */
-export const CAMPAIGN_MEDIA_TYPENAMES = [
-  'CampaignVideoBlock',
-  'CampaignImageBlock'
-] as const satisfies readonly CampaignTypename[]
+/**
+ * The Campaign Block grammar's sets and types under the API's names. The
+ * grammar in journeys-ui is the one copy the API, the editor and the
+ * renderer read; the validators here keep their own error codes and messages.
+ */
+export {
+  CAMPAIGN_CHILD_TYPENAMES,
+  CAMPAIGN_CHROME_TYPENAMES,
+  CAMPAIGN_HOST_TYPENAMES,
+  CAMPAIGN_MEDIA_OWNER_TYPENAMES,
+  CAMPAIGN_MEDIA_TYPENAMES,
+  CAMPAIGN_REGION_ONLY_TYPENAMES,
+  CAMPAIGN_SECTION_TYPENAMES,
+  CAMPAIGN_SLOT_DISALLOWED_TYPENAMES,
+  CAMPAIGN_SLOT_TYPENAMES,
+  CAMPAIGN_TYPENAMES
+}
+export type { CampaignChildTypename, CampaignSectionTypename, CampaignTypename }
 
 /** A Columns section is created with exactly this many slots. */
 export const CAMPAIGN_COLUMN_SLOT_COUNT = 2
@@ -162,9 +110,7 @@ export const isCampaignSlotTypename = isOneOf(CAMPAIGN_SLOT_TYPENAMES)
 export const isCampaignSlotDisallowedTypename = isOneOf(
   CAMPAIGN_SLOT_DISALLOWED_TYPENAMES
 )
-export const isCampaignMediaOwnerTypename = isOneOf(
-  CAMPAIGN_MEDIA_OWNER_TYPENAMES
-)
+export const isCampaignMediaOwnerTypename = isMediaOwner
 
 /** Block create is campaign Update on the campaign the block will belong to. */
 export async function authorizeBlockCreate(
@@ -273,9 +219,10 @@ export async function validateHostBlock(
 }
 
 /**
- * A child block's parent passes `validateHostBlock`, and the child is a
- * Typography or Button block (an Extra), or a CampaignVideoBlock item of a
- * Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
+ * A child block's parent passes `validateHostBlock`, and the grammar's
+ * `acceptsChild` takes the child under it: a Typography or Button block (an
+ * Extra) under any host, the header included, or a CampaignVideoBlock item
+ * of a Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
  * else (`BAD_USER_INPUT` / `typename`). Returns the parent.
  */
 export async function validateParentBlock(
@@ -283,14 +230,13 @@ export async function validateParentBlock(
   campaignId: string,
   typename: CampaignTypename
 ): Promise<CampaignBlock> {
-  const isCarouselItem = typename === 'CampaignVideoBlock'
-  if (!isCarouselItem && !isCampaignChildTypename(typename))
+  if (typename !== 'CampaignVideoBlock' && !isCampaignChildTypename(typename))
     throw badUserInput(
       `typename must be one of ${CAMPAIGN_CHILD_TYPENAMES.join(', ')}, or CampaignVideoBlock in a video carousel`,
       'typename'
     )
   const parent = await validateHostBlock(parentBlockId, campaignId)
-  if (isCarouselItem && parent.typename !== 'CampaignVideoCarouselBlock')
+  if (!acceptsChild(parent.typename, typename))
     throw badUserInput(
       'only a video carousel takes CampaignVideoBlock items',
       'typename'
