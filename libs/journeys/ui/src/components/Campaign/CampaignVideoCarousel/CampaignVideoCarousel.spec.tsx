@@ -6,6 +6,7 @@ import {
   CampaignStringKey,
   VideoLabel
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
 import type {
   CampaignPublicBlockFields_CampaignVideoCarouselBlock_video_children as ExpandedChild,
   CampaignPublicBlockFields_CampaignVideoCarouselBlock_video as ExpandedVideo
@@ -13,7 +14,6 @@ import type {
 import { shouldRenderSection } from '../CampaignPage/shouldRenderSection'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
-import { cssRulesFor } from '../libs/cssRulesFor'
 import {
   campaignPublic,
   heroVideoBlock,

@@ -1,6 +1,3 @@
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
-
 import { MockedProvider } from '@apollo/client/testing/react'
 import { ThemeProvider } from '@mui/material/styles'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -9,6 +6,7 @@ import { I18nContext } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { worldAtlas } from '../../../test/worldAtlas'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import { transformCampaignBlocks } from '../libs/transformer'
@@ -25,22 +23,11 @@ import type { CampaignPublic, CampaignRegion, CampaignTreeOf } from '../types'
 import type { GetCampaignStats_campaignStats as CampaignStats } from './__generated__/GetCampaignStats'
 import { CampaignAnalytics } from './CampaignAnalytics'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
-import type { WorldAtlasTopology } from './WorldMap'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
 
-const atlas = JSON.parse(
-  readFileSync(
-    resolve(
-      __dirname,
-      '../../../../../../../apps/journeys/public/countries-110m.json'
-    ),
-    'utf8'
-  )
-) as WorldAtlasTopology
-
 function atlasResponse(): Response {
-  return { ok: true, json: async () => atlas } as unknown as Response
+  return { ok: true, json: async () => worldAtlas } as unknown as Response
 }
 
 const WORLD_TRANSFORM = 'translate(0.0px, 0.0px) scale(1.000)'

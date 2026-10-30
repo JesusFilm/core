@@ -6,7 +6,7 @@ import { shouldRenderSection } from '../CampaignPage/shouldRenderSection'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import { transformCampaignBlocks } from '../libs/transformer'
-import { LANDING_PAGE_ID, campaignPublic, section } from '../testData'
+import { campaignPublic, richTextSectionBlock } from '../testData'
 import type { CampaignTreeOf } from '../types'
 
 import { CampaignRichText, splitParagraphs } from './CampaignRichText'
@@ -18,16 +18,7 @@ function richTextTree(
     Pick<CampaignTreeOf<'CampaignRichTextBlock'>, 'title' | 'richTextContent'>
   > = {}
 ): CampaignTreeOf<'CampaignRichTextBlock'> {
-  return transformCampaignBlocks([
-    section('CampaignRichTextBlock', {
-      id: 'richTextId',
-      pageId: LANDING_PAGE_ID,
-      parentOrder: 0,
-      title: 'Our story',
-      richTextContent: 'First paragraph.\n\nSecond paragraph.',
-      ...overrides
-    })
-  ])[0]
+  return transformCampaignBlocks([{ ...richTextSectionBlock, ...overrides }])[0]
 }
 
 function renderRichText(block: CampaignTreeOf<'CampaignRichTextBlock'>) {

@@ -1,26 +1,10 @@
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
+import { worldAtlasCountries } from '../../../../test/worldAtlas'
 
 import {
   COUNTRY_NUMERIC_CODES,
   countryAlpha2,
   countryNumericCode
 } from './countryNumericCode'
-
-interface AtlasShape {
-  id?: string
-  properties: { name: string }
-}
-
-const atlas = JSON.parse(
-  readFileSync(
-    resolve(
-      __dirname,
-      '../../../../../../../../apps/journeys/public/countries-110m.json'
-    ),
-    'utf8'
-  )
-) as { objects: { countries: { geometries: AtlasShape[] } } }
 
 describe('countryNumericCode', () => {
   it('has the 249 officially assigned codes, each with its own numeric id', () => {
@@ -48,7 +32,7 @@ describe('countryNumericCode', () => {
 
   it('returns nothing for a microstate with no shape in the 110m atlas', () => {
     expect(countryNumericCode('SG')).toBe('702')
-    const ids = new Set(atlas.objects.countries.geometries.map(({ id }) => id))
+    const ids = new Set(worldAtlasCountries.map(({ id }) => id))
     expect(ids.has('702')).toBe(false)
   })
 
@@ -58,7 +42,7 @@ describe('countryNumericCode', () => {
   })
 
   it('numbers every shape of the atlas but the three it leaves unnumbered', () => {
-    const geometries = atlas.objects.countries.geometries
+    const geometries = worldAtlasCountries
     const unnumbered = geometries.filter(({ id }) => id == null)
     expect(unnumbered.map(({ properties }) => properties.name).sort()).toEqual([
       'Kosovo',

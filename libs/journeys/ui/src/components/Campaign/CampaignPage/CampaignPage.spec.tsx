@@ -7,6 +7,7 @@ import {
   CampaignPageKind,
   CampaignStringKey
 } from '../../../../__generated__/globalTypes'
+import { styleText } from '../../../test/emotionStyles'
 import { GET_CAMPAIGN_STATS } from '../CampaignAnalytics'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
@@ -82,12 +83,6 @@ function pick(
   const block = landingBlocks.find((candidate) => candidate.id === id)
   if (block == null) throw new Error(`no fixture block ${id}`)
   return { ...block, ...overrides } as CampaignBlock
-}
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
 }
 
 describe('CampaignPage', () => {

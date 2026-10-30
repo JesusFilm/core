@@ -7,6 +7,7 @@ import {
   CampaignPageKind,
   CampaignStringKey
 } from '../../../../__generated__/globalTypes'
+import { emotionClass, styleText } from '../../../test/emotionStyles'
 import { campaignChromeTrees } from '../CampaignPage/campaignChromeTrees'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -88,20 +89,6 @@ function renderHeader(
       </CampaignProvider>
     </ThemeProvider>
   )
-}
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
-}
-
-function emotionClass(element: Element): string {
-  const name = Array.from(element.classList).find((candidate) =>
-    candidate.startsWith('css-')
-  )
-  if (name == null) throw new Error('no emotion class')
-  return name.replace(/[-]/g, '\\-')
 }
 
 /** The element's base emotion rule body. */

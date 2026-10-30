@@ -2,6 +2,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { styleText } from '../../../test/emotionStyles'
 import { shouldRenderSection } from '../CampaignPage/shouldRenderSection'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -12,12 +13,6 @@ import type { CampaignBlock, CampaignTreeOf } from '../types'
 import { CampaignImage } from './CampaignImage'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
-}
 
 function imageTree(
   overrides: Partial<CampaignBlock> = {},

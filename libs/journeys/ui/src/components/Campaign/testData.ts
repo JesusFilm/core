@@ -461,6 +461,15 @@ export const imageSectionBlock = section('CampaignImageBlock', {
   scale: null
 })
 
+/** A Rich Text section: a title over two paragraphs. A spec places it in a Column Slot by overriding its parent. */
+export const richTextSectionBlock = section('CampaignRichTextBlock', {
+  id: 'richTextId',
+  pageId: LANDING_PAGE_ID,
+  parentOrder: 6,
+  title: 'Our story',
+  richTextContent: 'First paragraph.\n\nSecond paragraph.'
+})
+
 type VideoBlock = Extract<
   CampaignPublicBlockFields,
   { __typename: 'CampaignVideoBlock' }

@@ -5,11 +5,11 @@ import {
   CampaignPageKind,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
 import { Video } from '../../Video'
 import type { VideoProps } from '../../Video'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
-import { cssRulesFor } from '../libs/cssRulesFor'
 import {
   campaignPublic,
   heroVideoBlock,

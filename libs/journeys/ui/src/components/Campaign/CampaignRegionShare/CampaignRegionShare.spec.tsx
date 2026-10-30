@@ -12,10 +12,11 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
+import { styleText } from '../../../test/emotionStyles'
 import { shouldRenderSection } from '../CampaignPage'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
-import { cssRulesFor } from '../libs/cssRulesFor'
 import { transformCampaignBlocks } from '../libs/transformer'
 import { campaignPublic, eurRegion, regionPageBlocks } from '../testData'
 import type {
@@ -122,12 +123,6 @@ function renderShare(
       </CampaignProvider>
     </ThemeProvider>
   )
-}
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
 }
 
 describe('CampaignRegionShare', () => {

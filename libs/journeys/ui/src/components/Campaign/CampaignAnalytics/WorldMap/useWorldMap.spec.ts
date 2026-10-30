@@ -1,20 +1,8 @@
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
-
 import { renderHook, waitFor } from '@testing-library/react'
 
-import type { WorldAtlasTopology } from './buildWorldMap'
-import { useWorldMap } from './useWorldMap'
+import { worldAtlas } from '../../../../test/worldAtlas'
 
-const atlas = JSON.parse(
-  readFileSync(
-    resolve(
-      __dirname,
-      '../../../../../../../../apps/journeys/public/countries-110m.json'
-    ),
-    'utf8'
-  )
-) as WorldAtlasTopology
+import { useWorldMap } from './useWorldMap'
 
 // The shapes are cached per URL for the page load, so each case reads its own.
 describe('useWorldMap', () => {
@@ -24,7 +12,7 @@ describe('useWorldMap', () => {
     fetchMock.mockReset()
     fetchMock.mockImplementation(async () => ({
       ok: true,
-      json: async () => atlas
+      json: async () => worldAtlas
     }))
     vi.stubGlobal('fetch', fetchMock)
   })
