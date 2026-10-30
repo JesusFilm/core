@@ -98,23 +98,29 @@ export function campaignRegionHref(
   )
 }
 
+/**
+ * The campaign context. The value is memoised on its fields rather than on
+ * the `value` object, which callers build inline each render, so consumers
+ * re-render only when a field changes.
+ */
 export function CampaignProvider({
   value,
   children
 }: CampaignProviderProps): ReactElement {
+  const { campaign, pageKind, region, pageBlockIds, pageHeadingBlockId } = value
   const contextValue = useMemo<CampaignContextValue>(() => {
-    const page = value.campaign.pages.find(
-      (candidate) => candidate.kind === value.pageKind
-    )
+    const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
     return {
-      ...value,
-      basePath: campaignBasePath(campaignAddressInput(value.campaign)),
+      campaign,
+      pageKind,
+      region,
+      basePath: campaignBasePath(campaignAddressInput(campaign)),
       pageBlockIds:
-        value.pageBlockIds ??
-        new Set(page?.blocks.map((block) => block.id) ?? []),
-      string: (key) => campaignString(value.campaign.strings, key)
+        pageBlockIds ?? new Set(page?.blocks.map((block) => block.id) ?? []),
+      pageHeadingBlockId,
+      string: (key) => campaignString(campaign.strings, key)
     }
-  }, [value])
+  }, [campaign, pageKind, region, pageBlockIds, pageHeadingBlockId])
   return (
     <CampaignContext.Provider value={contextValue}>
       {children}

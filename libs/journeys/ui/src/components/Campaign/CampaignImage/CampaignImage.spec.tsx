@@ -53,7 +53,7 @@ const context = {
 }
 
 describe('CampaignImage', () => {
-  it('renders the picture inside its band with alt text, cropped to the wide frame around its focal point', () => {
+  it('renders the picture inside its band with alt text, cropped to the wide frame around its focal point, loaded lazily', () => {
     renderImage(imageTree({ focalLeft: 20, focalTop: 80 }))
     const image = screen.getByRole('img', { name: 'A family reading together' })
     expect(image).toHaveAttribute(
@@ -63,6 +63,8 @@ describe('CampaignImage', () => {
     expect(image).toHaveAttribute('width', '1600')
     expect(image).toHaveAttribute('height', '900')
     expect(image).toHaveAttribute('data-ratio', 'wide')
+    expect(image).toHaveAttribute('loading', 'lazy')
+    expect(image).not.toHaveAttribute('fetchpriority')
     expect(styleText()).toContain('aspect-ratio:16/9')
     expect(styleText()).toContain('object-position:20% 80%')
     expect(

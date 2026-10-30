@@ -261,7 +261,7 @@ describe('CampaignPage', () => {
       expect(bandIds()).toEqual(['heroId'])
     })
 
-    it('Hero renders with media alone, and its owned video never renders as a section', () => {
+    it('Hero renders with media alone, and its owned video never renders as a section', async () => {
       renderPage(
         withLanding([
           pick('heroId', {
@@ -275,9 +275,9 @@ describe('CampaignPage', () => {
       )
       expect(bandIds()).toEqual(['heroId'])
       expect(
-        within(screen.getByTestId('CampaignSectionBand-heroId')).getByTestId(
-          'JourneysVideo-heroVideoId'
-        )
+        await within(
+          screen.getByTestId('CampaignSectionBand-heroId')
+        ).findByTestId('JourneysVideo-heroVideoId')
       ).toBeInTheDocument()
     })
 

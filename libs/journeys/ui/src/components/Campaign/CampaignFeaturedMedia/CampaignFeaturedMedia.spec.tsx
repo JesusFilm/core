@@ -254,14 +254,14 @@ describe('CampaignFeaturedMedia', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('plays a video in its media slot', () => {
+  it('plays a video in its media slot', async () => {
     renderFeatured(
       featuredTree({ mediaBlockId: heroVideoBlock.id }, [
         { ...heroVideoBlock, parentBlockId: 'featuredMediaId' }
       ])
     )
     expect(
-      within(screen.getByTestId('CampaignMediaSlot')).getByTestId(
+      await within(screen.getByTestId('CampaignMediaSlot')).findByTestId(
         'JourneysVideo-heroVideoId'
       )
     ).toBeInTheDocument()
