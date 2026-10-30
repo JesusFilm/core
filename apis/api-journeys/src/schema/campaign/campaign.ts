@@ -58,6 +58,11 @@ export const CampaignRef = builder.prismaObject('Campaign', {
       description:
         'Last published; kept after unpublish. Stamped on every move from `draft` to `published`, so it means "last went live", not "currently live".'
     }),
+    plausibleToken: t.exposeString('plausibleToken', {
+      nullable: true,
+      description:
+        "The shared-link token of the Campaign's own Plausible site (`api-journeys-campaign-<id>`), which the Campaign Report embeds. Null until the plausible worker has created the site, shortly after `campaignCreate`. Never on the CampaignPublic projection."
+    }),
     createdAt: t.expose('createdAt', { type: 'DateTimeISO', nullable: false }),
     updatedAt: t.expose('updatedAt', { type: 'DateTimeISO', nullable: false }),
     languages: t.relation('languages', {

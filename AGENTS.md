@@ -107,7 +107,7 @@ Preferred format: `username/ticket-id-short-description` — all lowercase, no u
 
 Conventions are pulled on demand, not loaded up front — this keeps default context lean. **Before modifying or diagnosing files in a directory, read the nearest `AGENTS.md` first** (the one in that directory, or the closest one above it). Do this at the start of the work, not after.
 
-Nested `AGENTS.md` locations include `apis/AGENTS.md`, `apps/AGENTS.md`, `apps/<app>/AGENTS.md`, `workers/AGENTS.md`, `infrastructure/AGENTS.md`, `infrastructure/kube/AGENTS.md`.
+Nested `AGENTS.md` locations include `apis/AGENTS.md`, `apps/AGENTS.md`, `apps/<app>/AGENTS.md`, `workers/AGENTS.md` and `infrastructure/AGENTS.md`.
 
 ## Testing
 

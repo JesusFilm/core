@@ -113,6 +113,10 @@ type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(g
 
 type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   siteCreate(input: SiteCreateInput!) : MutationSiteCreateResult! @join__field(graph: API_ANALYTICS) 
+  """
+  Adds `props` to the allowed custom properties of every site the caller owns under `domainPrefix` that lacks any of them, keeping the props each already allows. One query finds the sites to change, so a caller can keep a whole family of sites in step without visiting each. Returns how many sites changed.
+  """
+  sitesAllowEventProps(input: SitesAllowEventPropsInput!) : Int! @join__field(graph: API_ANALYTICS) 
   visitorUpdate(id: ID!, input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN) 
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN) 
   blockDelete(
@@ -1037,7 +1041,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionLanguageDelete(id: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the eighteen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
+  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the eighteen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch. Once the campaign is committed, the creation of its own Plausible site (behind the Campaign Report) is queued.
   
   Auth: campaign Create — any member or manager of `input.teamId`.
   
@@ -1693,6 +1697,10 @@ type Campaign @join__type(graph: API_JOURNEYS_MODERN)  {
   Last published; kept after unpublish. Stamped on every move from `draft` to `published`, so it means "last went live", not "currently live".
   """
   publishedAt: DateTimeISO
+  """
+  The shared-link token of the Campaign's own Plausible site (`api-journeys-campaign-<id>`), which the Campaign Report embeds. Null until the plausible worker has created the site, shortly after `campaignCreate`. Never on the CampaignPublic projection.
+  """
+  plausibleToken: String
   createdAt: DateTimeISO!
   updatedAt: DateTimeISO!
   """
@@ -7001,6 +7009,21 @@ input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   domain: String!
   goals: [String!]
   disableSharedLinks: Boolean
+  """
+  Custom properties the dashboard shows; Plausible hides any not listed. Called again for a site the caller owns, missing ones are added and none removed.
+  """
+  allowedEventProps: [String!]
+}
+
+input SitesAllowEventPropsInput @join__type(graph: API_ANALYTICS)  {
+  """
+  Only sites whose domain starts with this, e.g. `api-journeys-campaign-`.
+  """
+  domainPrefix: String!
+  """
+  The custom properties every matching site should allow.
+  """
+  props: [String!]!
 }
 
 input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS_MODERN)  {

@@ -169,7 +169,6 @@ module "bastion" {
   security_group_ids = [module.stage.public_bastion_security_group_id, "sg-0d3fe6651aeda358e"]
 }
 
-
 module "cloudflared" {
   source             = "../../modules/aws/ec2-cloudflared"
   name               = "cloudflared"
@@ -238,12 +237,9 @@ module "plausible" {
   host_names       = ["analytics.stage.central.jesusfilm.org", "plausible.stage.central.jesusfilm.org"]
 }
 
-# The stage Plausible hostname, moved from the EKS ingress NLB to the public
-# ALB. external-dns created this record but no longer manages it: each pass it
-# finds no hosted zone for the name and skips it, and the zone holds no
-# ownership TXT records. allow_overwrite lets Terraform take the record as it
-# is. Rollback is the NLB name again (modules/plausible/README.md, "Stage
-# cutover").
+# The stage Plausible hostname, a CNAME to the stage public ALB. The record
+# predates this configuration, so allow_overwrite lets Terraform take it as it
+# is.
 resource "aws_route53_record" "plausible_analytics" {
   zone_id         = module.route53_stage_central_jesusfilm_org.zone_id
   name            = "analytics"
@@ -281,98 +277,4 @@ module "postgresql" {
   subnet_group_name       = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id   = module.stage.private_rds_security_group_id
   PG_DATABASE_URL_ENV_VAR = "PRIVATE_DATABASE_URL"
-}
-
-module "eks" {
-  source                     = "../../modules/aws/eks"
-  env                        = "stage"
-  cluster_version            = var.versions.eks_cluster
-  node_version               = var.versions.eks_nodes
-  node_max_unavailable       = 1
-  node_ami_type              = "AL2023_x86_64_STANDARD"
-  enforce_sequential_upgrade = true
-  addons = {
-    for name, version in var.eks_addon_versions : name => {
-      version              = version
-      existing             = name == "eks-node-monitoring-agent"
-      configuration_values = lookup(local.eks_addon_configuration, name, null)
-    }
-  }
-  node_repair_thresholds = {
-    max_parallel_nodes_repaired_percentage  = 10
-    max_unhealthy_node_threshold_percentage = 20
-  }
-  node_scaling_config = {
-    desired_size = 3
-    min_size     = 3
-    max_size     = 5
-  }
-  name               = "jfp-eks"
-  subnet_ids         = concat(module.stage.vpc.internal_subnets, module.stage.vpc.public_subnets)
-  security_group_ids = [module.stage.ecs.internal_ecs_security_group_id, module.stage.ecs.public_ecs_security_group_id]
-  vpc_id             = module.stage.vpc.id
-  subnet_ids_2a      = ["subnet-03bd7850c8bbe2ce9", "subnet-01f4e86883462b5ce"]
-  subnet_ids_2b      = ["subnet-0a609b33cdac65789", "subnet-09cbfc19be5214a8b"]
-  subnet_ids_2c      = ["subnet-062de12e3e3639eff", "subnet-0c394639d255c3261"]
-}
-
-locals {
-  # Preserve existing networking, fixed DNS replicas and resource requests
-  # while adopting the EKS bootstrap add-ons into Terraform.
-  eks_addon_configuration = {
-    "vpc-cni" = jsonencode({
-      "env" = {
-        "ADDITIONAL_ENI_TAGS"                   = "{}"
-        "ANNOTATE_POD_IP"                       = "false"
-        "AWS_VPC_CNI_NODE_PORT_SUPPORT"         = "true"
-        "AWS_VPC_ENI_MTU"                       = "9001"
-        "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG"    = "false"
-        "AWS_VPC_K8S_CNI_EXTERNALSNAT"          = "false"
-        "AWS_VPC_K8S_CNI_LOGLEVEL"              = "DEBUG"
-        "AWS_VPC_K8S_CNI_LOG_FILE"              = "/host/var/log/aws-routed-eni/ipamd.log"
-        "AWS_VPC_K8S_CNI_RANDOMIZESNAT"         = "prng"
-        "AWS_VPC_K8S_CNI_VETHPREFIX"            = "eni"
-        "AWS_VPC_K8S_PLUGIN_LOG_FILE"           = "/var/log/aws-routed-eni/plugin.log"
-        "AWS_VPC_K8S_PLUGIN_LOG_LEVEL"          = "DEBUG"
-        "DISABLE_INTROSPECTION"                 = "false"
-        "DISABLE_METRICS"                       = "false"
-        "DISABLE_NETWORK_RESOURCE_PROVISIONING" = "false"
-        "ENABLE_POD_ENI"                        = "false"
-        "ENABLE_PREFIX_DELEGATION"              = "false"
-        "ENABLE_SUBNET_DISCOVERY"               = "true"
-        "NETWORK_POLICY_ENFORCING_MODE"         = "standard"
-        "WARM_ENI_TARGET"                       = "1"
-        "WARM_PREFIX_TARGET"                    = "1"
-      }
-      "resources" = {
-        "requests" = {
-          "cpu" = "25m"
-        }
-      }
-      "nodeAgent" = {
-        "resources" = {
-          "requests" = {
-            "cpu" = "25m"
-          }
-        }
-      }
-    })
-    "coredns" = jsonencode({
-      corefile       = ".:53 {\n    errors\n    health {\n        lameduck 5s\n      }\n    ready\n    kubernetes cluster.local in-addr.arpa ip6.arpa {\n      pods insecure\n      fallthrough in-addr.arpa ip6.arpa\n    }\n    prometheus :9153\n    forward . /etc/resolv.conf\n    cache 30\n    loop\n    reload\n    loadbalance\n}\n"
-      "replicaCount" = 2
-      "resources" = {
-        "limits" = {
-          "memory" = "170Mi"
-        }
-        "requests" = {
-          "cpu"    = "100m"
-          "memory" = "70Mi"
-        }
-      }
-      "podDisruptionBudget" = {
-        "enabled"        = true
-        "maxUnavailable" = 1
-      }
-    })
-  }
 }

@@ -143,6 +143,9 @@ export const yoga = createYoga<
             // served to anyone with the id and never refresh; its Redis stats
             // cache already shares the Plausible reads across callers.
             'Query.campaign': 0,
+            // The shared-link token that opens a Campaign Report: whatever
+            // query carries it, it comes from the resolver's campaign Read.
+            'Campaign.plausibleToken': 0,
             'Query.campaignPublic': 0,
             'Query.campaignStats': 0,
             'Query.campaignTranslations': 0,
