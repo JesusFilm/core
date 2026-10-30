@@ -543,9 +543,9 @@ describe('reconcileVideoVariantReconciliation', () => {
     // the row would never alert. The first failure also keeps driving
     // errorMessage/retryAt, not the later Video record failure.
     expect(
-      prismaMock.videoVariantReconciliation.update
+      prismaMock.videoVariantReconciliation.updateMany
     ).toHaveBeenLastCalledWith({
-      where: { id: 'reconciliation-1' },
+      where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         status: 'degraded',
         errorMessage: 'database unavailable',

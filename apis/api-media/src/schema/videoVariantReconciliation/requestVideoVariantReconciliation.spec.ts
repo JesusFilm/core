@@ -178,12 +178,15 @@ describe('requestVideoVariantReconciliation', () => {
         reason: 'video-variant-delete'
       })
 
-      const { data } =
-        prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
       // reconcileReasonSpecificVariant only runs the delete cleanup for this
       // reason; keeping 'video-variant-create' would leave the row to fail on
       // a Variant that no longer exists and alert on it.
-      expect(data).toMatchObject({ reason: 'video-variant-delete' })
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenLastCalledWith({
+        where: { id: 'status-1', ...notPendingExplicitPublication },
+        data: expect.objectContaining({ reason: 'video-variant-delete' })
+      })
     }
   )
 
