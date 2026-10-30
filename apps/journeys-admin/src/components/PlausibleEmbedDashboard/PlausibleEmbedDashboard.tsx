@@ -49,7 +49,7 @@ export function PlausibleEmbedDashboard({
       status={plausibleEmbedStatus({
         loading,
         error,
-        token: data?.journey.plausibleToken
+        data: data?.journey
       })}
       host={host}
     />

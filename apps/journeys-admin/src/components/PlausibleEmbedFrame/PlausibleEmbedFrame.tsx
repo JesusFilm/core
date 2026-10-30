@@ -54,20 +54,26 @@ export type PlausibleEmbedStatus =
   | { state: 'settingUp' }
   | { state: 'ready'; token: string }
 
-/** A report query's result as a `PlausibleEmbedStatus`. */
+/**
+ * A report query's result as a `PlausibleEmbedStatus`. `data` is the record
+ * the query read the token from (the journey, the campaign): with no record
+ * yet the report is still loading; a record with no token means its site is
+ * still being set up.
+ */
 export function plausibleEmbedStatus({
   loading,
   error,
-  token
+  data
 }: {
   loading: boolean
   error?: unknown
-  token?: string | null
+  data?: { plausibleToken: string | null } | null
 }): PlausibleEmbedStatus {
   if (loading) return { state: 'loading' }
   if (error != null) return { state: 'error' }
-  if (token == null) return { state: 'settingUp' }
-  return { state: 'ready', token }
+  if (data == null) return { state: 'loading' }
+  if (data.plausibleToken == null) return { state: 'settingUp' }
+  return { state: 'ready', token: data.plausibleToken }
 }
 
 interface PlausibleEmbedFrameProps {
