@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import {
   CampaignJourneyListDisplay,
@@ -69,6 +69,13 @@ function renderList(
     </ThemeProvider>
   )
 }
+
+const { track } = vi.hoisted(() => ({ track: vi.fn() }))
+
+vi.mock('../../../libs/campaignPlausible', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../libs/campaignPlausible')>()),
+  useCampaignPlausible: () => track
+}))
 
 describe('CampaignJourneyList', () => {
   it('renders a card for each live-published journey, in order, with its snapshot and live image', () => {
@@ -301,5 +308,21 @@ describe('CampaignJourneyList', () => {
         shouldRenderSection(listTree([item('live', 0)], noText), context)
       ).toBe(true)
     })
+  })
+})
+
+describe('CampaignJourneyList events', () => {
+  beforeEach(() => {
+    track.mockClear()
+  })
+
+  it("sends campaignJourneyClick with the card's journey address when a card is opened", () => {
+    renderList(listTree([item('first', 0)]))
+    fireEvent.click(screen.getByTestId('CampaignJourneyCardOpen'))
+    expect(track).toHaveBeenCalledWith(
+      'campaignJourneyClick',
+      { source: 'card', journeyUrl: 'https://journeys.example.org/first' },
+      expect.anything()
+    )
   })
 })

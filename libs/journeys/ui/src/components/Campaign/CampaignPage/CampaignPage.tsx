@@ -75,7 +75,15 @@ export function CampaignPage({
 
   return (
     <CampaignProvider
-      value={{ campaign, pageKind, region, basePath, worldMap, pageBlockIds }}
+      value={{
+        campaign,
+        pageKind,
+        region,
+        basePath,
+        worldMap,
+        pageBlockIds,
+        reportEvents: true
+      }}
     >
       <GlobalStyles styles={{ html: { scrollBehavior: 'smooth' } }} />
       <Box

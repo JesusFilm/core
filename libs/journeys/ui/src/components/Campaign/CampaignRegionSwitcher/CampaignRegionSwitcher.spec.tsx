@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import {
   CampaignPageKind,
@@ -71,6 +71,13 @@ function renderSwitcher(
     </ThemeProvider>
   )
 }
+
+const { track } = vi.hoisted(() => ({ track: vi.fn() }))
+
+vi.mock('../../../libs/campaignPlausible', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../libs/campaignPlausible')>()),
+  useCampaignPlausible: () => track
+}))
 
 describe('CampaignRegionSwitcher', () => {
   const withLac: CampaignPublic = {
@@ -254,5 +261,21 @@ describe('CampaignRegionSwitcher', () => {
         regions: [eurRegion]
       })
     ).toBe(true)
+  })
+})
+
+describe('CampaignRegionSwitcher events', () => {
+  beforeEach(() => {
+    track.mockClear()
+  })
+
+  it('sends campaignRegionClick with the region clicked', () => {
+    renderSwitcher(switcherTree())
+    fireEvent.click(screen.getByTestId('CampaignRegionCard-afrRegionId'))
+    expect(track).toHaveBeenCalledWith(
+      'campaignRegionClick',
+      { targetRegion: expect.objectContaining({ slug: 'afr' }) },
+      expect.anything()
+    )
   })
 })
