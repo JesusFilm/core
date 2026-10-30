@@ -9,7 +9,11 @@ import { I18nContext } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 
-import { buildWorldMap } from './buildWorldMap'
+import {
+  WORLD_MAP_HEIGHT,
+  WORLD_MAP_WIDTH,
+  buildWorldMap
+} from './buildWorldMap'
 import type { WorldAtlasTopology, WorldMapShapes } from './buildWorldMap'
 import { WorldMap } from './WorldMap'
 
@@ -95,8 +99,8 @@ describe('buildWorldMap', () => {
     expect(shapes.countries.every((country) => country.d.startsWith('M'))).toBe(
       true
     )
-    expect(shapes.width).toBe(960)
-    expect(shapes.height).toBeGreaterThan(400)
+    expect(shapes.width).toBe(WORLD_MAP_WIDTH)
+    expect(shapes.height).toBe(WORLD_MAP_HEIGHT)
   })
 
   it('keeps the shapes the atlas leaves unnumbered, without an id', () => {

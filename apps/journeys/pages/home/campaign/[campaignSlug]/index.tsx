@@ -8,14 +8,10 @@ import {
   getCampaignStaticProps
 } from '../../../../src/libs/campaignStaticProps'
 
-function CampaignLandingPage({
-  campaign,
-  worldMap
-}: CampaignStaticProps): ReactElement {
+function CampaignLandingPage({ campaign }: CampaignStaticProps): ReactElement {
   return (
     <CampaignPageWrapper
       campaign={campaign}
-      worldMap={worldMap}
       pageKind={CampaignPageKind.landing}
     />
   )

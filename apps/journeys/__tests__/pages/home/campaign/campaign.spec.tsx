@@ -12,12 +12,6 @@ vi.mock('../../../../src/libs/getFlags', () => ({
   getFlags: vi.fn().mockResolvedValue({})
 }))
 
-vi.mock('../../../../src/libs/getWorldMap', () => ({
-  getWorldMap: vi
-    .fn()
-    .mockResolvedValue({ width: 960, height: 500, countries: [] })
-}))
-
 const mockQuery = vi.fn()
 vi.mock('../../../../src/libs/apolloClient', () => ({
   createApolloClient: () => ({ query: mockQuery })
@@ -51,8 +45,7 @@ describe('/campaign/<slug>', () => {
     expect(result).toEqual({
       props: expect.objectContaining({
         campaign: campaignPublic,
-        region: null,
-        worldMap: { width: 960, height: 500, countries: [] }
+        region: null
       }),
       revalidate: 60
     })
@@ -95,29 +88,6 @@ describe('/campaign/<slug>', () => {
     expect(result).toEqual(
       expect.objectContaining({ notFound: true, revalidate: 1 })
     )
-  })
-
-  it('skips the world map on a page without an Analytics section', async () => {
-    mockQuery.mockResolvedValueOnce({
-      data: {
-        campaignPublic: {
-          ...campaignPublic,
-          pages: campaignPublic.pages.map((page) => ({
-            ...page,
-            blocks: page.blocks.filter(
-              (block) => block.__typename !== 'CampaignAnalyticsBlock'
-            )
-          }))
-        }
-      }
-    })
-
-    const result = await getLandingStaticProps(context({}))
-
-    expect(result).toEqual({
-      props: expect.objectContaining({ worldMap: null }),
-      revalidate: 60
-    })
   })
 })
 

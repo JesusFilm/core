@@ -25,22 +25,23 @@ import type { CampaignPublic, CampaignRegion, CampaignTreeOf } from '../types'
 import type { GetCampaignStats_campaignStats as CampaignStats } from './__generated__/GetCampaignStats'
 import { CampaignAnalytics } from './CampaignAnalytics'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
-import { WorldAtlasTopology, WorldMapShapes } from './WorldMap'
-import { buildWorldMap } from './WorldMap/buildWorldMap'
+import type { WorldAtlasTopology } from './WorldMap'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
 
-const worldMap = buildWorldMap(
-  JSON.parse(
-    readFileSync(
-      resolve(
-        __dirname,
-        '../../../../../../../apps/journeys/public/countries-110m.json'
-      ),
-      'utf8'
-    )
-  ) as WorldAtlasTopology
-)
+const atlas = JSON.parse(
+  readFileSync(
+    resolve(
+      __dirname,
+      '../../../../../../../apps/journeys/public/countries-110m.json'
+    ),
+    'utf8'
+  )
+) as WorldAtlasTopology
+
+function atlasResponse(): Response {
+  return { ok: true, json: async () => atlas } as unknown as Response
+}
 
 const WORLD_TRANSFORM = 'translate(0.0px, 0.0px) scale(1.000)'
 
@@ -118,7 +119,6 @@ interface RenderOptions {
   campaign?: CampaignPublic
   language?: string
   showMap?: boolean
-  worldMap?: WorldMapShapes | null
 }
 
 async function renderAnalytics({
@@ -127,17 +127,14 @@ async function renderAnalytics({
   region = null,
   campaign = campaignPublic,
   language = 'en',
-  showMap = true,
-  worldMap: shapes = worldMap
+  showMap = true
 }: RenderOptions = {}): Promise<ReturnType<typeof render>> {
   const i18n = await translations(language)
   const view = (): ReactElement => (
     <I18nContext.Provider value={{ i18n }}>
       <MockedProvider mocks={mocks as never}>
         <ThemeProvider theme={theme}>
-          <CampaignProvider
-            value={{ campaign, pageKind, region, worldMap: shapes }}
-          >
+          <CampaignProvider value={{ campaign, pageKind, region }}>
             <CampaignAnalytics
               block={{ ...analyticsBlock(pageKind), showMap }}
             />
@@ -174,6 +171,66 @@ function scaleOf(transform: string): number {
 }
 
 describe('CampaignAnalytics', () => {
+  const fetchMock = vi.fn()
+
+  beforeEach(() => {
+    fetchMock.mockReset()
+    fetchMock.mockImplementation(async () => atlasResponse())
+    vi.stubGlobal('fetch', fetchMock)
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  // First: the map is cached once fetched (a failure is forgotten), so these
+  // run while nothing is cached yet.
+  describe('world map loading', () => {
+    it('falls back to the stacked layout, keeping the stats, when the map cannot be fetched', async () => {
+      fetchMock.mockImplementation(async () => ({ ok: false, status: 404 }))
+      await renderAnalytics()
+      await screen.findByTestId('CampaignAnalyticsVisitors')
+      await waitFor(() =>
+        expect(screen.getByTestId('CampaignAnalyticsStats')).toHaveAttribute(
+          'data-layout',
+          'stacked'
+        )
+      )
+      expect(screen.getByTestId('CampaignAnalyticsList')).toBeInTheDocument()
+      expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
+    })
+
+    it("holds the map layout with an empty box of the map's size while the shapes load", async () => {
+      let land: (() => void) | undefined
+      fetchMock.mockImplementation(
+        async () =>
+          await new Promise<Response>((resolve) => {
+            land = () => resolve(atlasResponse())
+          })
+      )
+      await renderAnalytics()
+      await screen.findByTestId('CampaignAnalyticsVisitors')
+      expect(screen.getByTestId('CampaignAnalyticsStats')).toHaveAttribute(
+        'data-layout',
+        'map'
+      )
+      expect(screen.getByTestId('WorldMapPlaceholder')).toBeInTheDocument()
+      expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
+
+      land?.()
+      expect(await screen.findByTestId('WorldMap')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('WorldMapPlaceholder')
+      ).not.toBeInTheDocument()
+      expect(screen.getByTestId('CampaignAnalyticsStats')).toHaveAttribute(
+        'data-layout',
+        'map'
+      )
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(fetchMock).toHaveBeenCalledWith('/countries-110m.json')
+    })
+  })
+
   describe('states', () => {
     it('renders the eyebrow, title and skeleton tiles and rows at once, before the stats arrive', async () => {
       await renderAnalytics()
@@ -475,12 +532,6 @@ describe('CampaignAnalytics', () => {
         'preserveAspectRatio',
         'xMidYMid meet'
       )
-    })
-
-    it('skips the map while the page carries no world map', async () => {
-      await renderAnalytics({ worldMap: null })
-      await screen.findByTestId('CampaignAnalyticsStats')
-      expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
     })
 
     it('draws the outline at once in the loading state, with no countries coloured', async () => {

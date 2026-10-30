@@ -1,1 +1,0 @@
-export { getWorldMap } from './getWorldMap'

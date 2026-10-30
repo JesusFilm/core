@@ -5,7 +5,6 @@ import { ReactElement, useEffect, useMemo } from 'react'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
-import type { WorldMapShapes } from '../CampaignAnalytics/WorldMap'
 import { CampaignFooter } from '../CampaignFooter'
 import { CampaignHeader } from '../CampaignHeader'
 import { CampaignProvider } from '../CampaignProvider'
@@ -26,8 +25,6 @@ interface CampaignPageProps {
   pageKind: CampaignPageKind
   /** The region a Region Page renders for. */
   region?: CampaignRegion | null
-  /** The projected world map, built once on the server from the viewer's `countries-110m.json`. */
-  worldMap?: WorldMapShapes | null
 }
 
 /**
@@ -44,8 +41,7 @@ interface CampaignPageProps {
 export function CampaignPage({
   campaign,
   pageKind,
-  region = null,
-  worldMap = null
+  region = null
 }: CampaignPageProps): ReactElement {
   const chrome = useMemo(() => campaignChromeTrees(campaign), [campaign])
   const bcp47 = campaign.language.bcp47
@@ -76,9 +72,7 @@ export function CampaignPage({
   }, [campaign, pageKind, region])
 
   return (
-    <CampaignProvider
-      value={{ campaign, pageKind, region, worldMap, pageBlockIds }}
-    >
+    <CampaignProvider value={{ campaign, pageKind, region, pageBlockIds }}>
       <GlobalStyles styles={{ html: { scrollBehavior: 'smooth' } }} />
       <Box
         data-testid="CampaignPage"

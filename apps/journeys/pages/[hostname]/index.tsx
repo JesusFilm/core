@@ -2,7 +2,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { ReactElement } from 'react'
 
-import type { CampaignPublic, WorldMapShapes } from '@core/journeys/ui/Campaign'
+import type { CampaignPublic } from '@core/journeys/ui/Campaign'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -27,14 +27,12 @@ interface HostJourneysPageProps {
   journeys?: GetJourneysSummary['journeys']
   journey?: GetJourney['journey']
   campaign?: CampaignPublic
-  worldMap?: WorldMapShapes | null
 }
 
 function HostJourneysPage({
   journeys,
   journey,
   campaign,
-  worldMap,
   host
 }: HostJourneysPageProps): ReactElement {
   if (campaign != null)
@@ -42,7 +40,6 @@ function HostJourneysPage({
       <CampaignPageWrapper
         campaign={campaign}
         pageKind={CampaignPageKind.landing}
-        worldMap={worldMap}
       />
     )
 

@@ -6,11 +6,7 @@ import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslation
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import type {
-  CampaignPublic,
-  CampaignRegion,
-  WorldMapShapes
-} from '@core/journeys/ui/Campaign'
+import type { CampaignPublic, CampaignRegion } from '@core/journeys/ui/Campaign'
 import { matchRegionSlug } from '@core/journeys/ui/Campaign/libs/matchRegionSlug'
 import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -113,7 +109,6 @@ interface HostSlugPageProps {
   rtl?: boolean
   campaign?: CampaignPublic
   region?: CampaignRegion | null
-  worldMap?: WorldMapShapes | null
 }
 
 // `/<segment>` on a domain is a region of its campaign first, then a
@@ -121,7 +116,6 @@ interface HostSlugPageProps {
 function HostSlugPage({
   campaign,
   region,
-  worldMap,
   journey,
   host,
   locale,
@@ -133,7 +127,6 @@ function HostSlugPage({
         campaign={campaign}
         pageKind={CampaignPageKind.regionTemplate}
         region={region}
-        worldMap={worldMap}
       />
     )
 

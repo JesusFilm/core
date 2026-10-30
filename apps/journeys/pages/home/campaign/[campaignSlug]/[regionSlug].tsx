@@ -10,13 +10,11 @@ import {
 
 function CampaignRegionPage({
   campaign,
-  region,
-  worldMap
+  region
 }: CampaignStaticProps): ReactElement {
   return (
     <CampaignPageWrapper
       campaign={campaign}
-      worldMap={worldMap}
       pageKind={CampaignPageKind.regionTemplate}
       region={region}
     />

@@ -10,7 +10,6 @@ import {
   CampaignPageKind,
   CampaignStringKey
 } from '../../../../__generated__/globalTypes'
-import type { WorldMapShapes } from '../CampaignAnalytics/WorldMap'
 import {
   campaignBasePath,
   campaignDomainName,
@@ -30,8 +29,6 @@ export interface CampaignContextValue {
   region: CampaignRegion | null
   /** The path the landing page is served at (`/campaign/<slug>` or `` on a Campaign Domain), from the campaign's domain. */
   basePath: string
-  /** The projected world map for the Analytics section; null when the page has none (the section then skips the map). */
-  worldMap?: WorldMapShapes | null
   /** Ids of the blocks a same-page anchor can scroll to on the current page. */
   pageBlockIds: ReadonlySet<string>
   /** A Campaign String in the Page Language; empty when the campaign lacks the row or it is blank. */

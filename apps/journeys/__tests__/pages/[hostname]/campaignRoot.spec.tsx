@@ -13,12 +13,6 @@ vi.mock('../../../src/libs/getFlags', () => ({
   getFlags: vi.fn().mockResolvedValue({})
 }))
 
-vi.mock('../../../src/libs/getWorldMap', () => ({
-  getWorldMap: vi
-    .fn()
-    .mockResolvedValue({ width: 960, height: 500, countries: [] })
-}))
-
 vi.mock('../../../src/libs/logger', () => ({
   logger: { error: vi.fn() }
 }))
@@ -91,8 +85,7 @@ describe('Campaign Domain', () => {
       expect(result).toEqual({
         props: expect.objectContaining({
           campaign: campaignPublic,
-          region: null,
-          worldMap: { width: 960, height: 500, countries: [] }
+          region: null
         }),
         revalidate: 60
       })
@@ -167,30 +160,6 @@ describe('Campaign Domain', () => {
       expect(mockQuery).toHaveBeenCalledTimes(1)
       expect(result).toEqual({
         props: expect.objectContaining({ campaign: campaignPublic, region }),
-        revalidate: 60
-      })
-    })
-
-    it('does not embed the world map on a page without an Analytics section', async () => {
-      const withoutAnalytics = {
-        ...campaignPublic,
-        pages: campaignPublic.pages.map((page) => ({
-          ...page,
-          blocks: page.blocks.filter(
-            (block) => block.__typename !== 'CampaignAnalyticsBlock'
-          )
-        }))
-      }
-      mockQuery.mockResolvedValueOnce({
-        data: { campaignPublic: withoutAnalytics }
-      })
-
-      const result = await getSlugStaticProps(
-        context({ journeySlug: region.slug })
-      )
-
-      expect(result).toEqual({
-        props: expect.objectContaining({ worldMap: null }),
         revalidate: 60
       })
     })

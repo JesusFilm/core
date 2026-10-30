@@ -2,17 +2,12 @@ import type { GetStaticPropsResult } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 
 import { matchRegionSlug } from '@core/journeys/ui/Campaign'
-import type {
-  CampaignPublic,
-  CampaignRegion,
-  WorldMapShapes
-} from '@core/journeys/ui/Campaign'
+import type { CampaignPublic, CampaignRegion } from '@core/journeys/ui/Campaign'
 import {
   campaignBasePath,
   plainPagePath
 } from '@core/journeys/ui/Campaign/libs/campaignAddress'
 
-import { CampaignPageKind } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
 import {
@@ -20,7 +15,6 @@ import {
   fetchCampaignPublicInPageLanguageByHostname
 } from '../getCampaignPublic'
 import { getFlags } from '../getFlags'
-import { getWorldMap } from '../getWorldMap'
 import { logger } from '../logger'
 
 /** The ISR window of every campaign page (PRD §11). */
@@ -36,7 +30,6 @@ export interface CampaignStaticProps {
   flags: { [key: string]: boolean | undefined }
   campaign: CampaignPublic
   region: CampaignRegion | null
-  worldMap: WorldMapShapes | null
 }
 
 interface CampaignPageRequest {
@@ -66,39 +59,17 @@ async function translationsFor(
   )
 }
 
-/**
- * Whether the page renders an Analytics section, the one consumer of the
- * world map. Pages without one skip the map, which would otherwise ride in
- * `__NEXT_DATA__` as dead weight.
- */
-export function hasAnalyticsSection(
-  campaign: CampaignPublic,
-  pageKind: CampaignPageKind
-): boolean {
-  return (
-    campaign.pages
-      .find((page) => page.kind === pageKind)
-      ?.blocks.some((block) => block.__typename === 'CampaignAnalyticsBlock') ??
-    false
-  )
-}
-
 async function campaignProps(
   campaign: CampaignPublic,
   region: CampaignRegion | null,
   locale: string | undefined
 ): Promise<GetStaticPropsResult<CampaignStaticProps>> {
-  const pageKind =
-    region == null ? CampaignPageKind.landing : CampaignPageKind.regionTemplate
   return {
     props: {
       flags: await getFlags(),
       ...(await translationsFor(locale)),
       campaign,
-      region,
-      worldMap: hasAnalyticsSection(campaign, pageKind)
-        ? await getWorldMap()
-        : null
+      region
     },
     revalidate: CAMPAIGN_REVALIDATE_SECONDS
   }
