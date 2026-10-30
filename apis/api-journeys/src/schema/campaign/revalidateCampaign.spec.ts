@@ -6,7 +6,6 @@ import { prismaMock } from '../../../test/prismaMock'
 import { fetchLanguage } from './gatewayClient'
 import {
   campaignLanguageTags,
-  campaignPagePaths,
   enqueueCampaignRevalidation,
   enqueueLanguageRevalidation
 } from './revalidateCampaign'
@@ -14,45 +13,6 @@ import {
 vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
 
 const mockFetchLanguage = fetchLanguage as MockedFunction<typeof fetchLanguage>
-
-describe('campaignPagePaths', () => {
-  it('lists the landing page and every region', () => {
-    expect(
-      campaignPagePaths({
-        slug: 'outreach',
-        regions: [{ slug: 'eur' }, { slug: 'afr' }]
-      })
-    ).toEqual([
-      '/home/campaign/outreach',
-      '/home/campaign/outreach/eur',
-      '/home/campaign/outreach/afr'
-    ])
-  })
-
-  it('adds the _lang page of every language tag to the root and domain forms', () => {
-    expect(
-      campaignPagePaths({
-        slug: 'outreach',
-        regions: [{ slug: 'eur' }],
-        hostnames: ['outreach.example.org'],
-        languageTags: ['en', 'es']
-      })
-    ).toEqual([
-      '/home/campaign/outreach',
-      '/home/campaign/outreach/eur',
-      '/home/campaign/outreach/_lang/en',
-      '/home/campaign/outreach/_lang/en/eur',
-      '/home/campaign/outreach/_lang/es',
-      '/home/campaign/outreach/_lang/es/eur',
-      '/outreach.example.org',
-      '/outreach.example.org/eur',
-      '/outreach.example.org/_lang/en',
-      '/outreach.example.org/_lang/en/eur',
-      '/outreach.example.org/_lang/es',
-      '/outreach.example.org/_lang/es/eur'
-    ])
-  })
-})
 
 describe('enqueueCampaignRevalidation', () => {
   it('queues one job per path, retried three times with exponential backoff', async () => {
@@ -112,6 +72,18 @@ describe('campaignLanguageTags', () => {
       .mockRejectedValueOnce(new Error('gateway down'))
 
     expect(await campaignLanguageTags('campaignId')).toEqual(['en'])
+  })
+
+  it('leaves out a language whose tag the proxy never routes', async () => {
+    prismaMock.campaignLanguage.findMany.mockResolvedValue([
+      { languageId: '529' },
+      { languageId: '496' }
+    ] as any)
+    mockFetchLanguage
+      .mockResolvedValueOnce({ id: '529', bcp47: 'zh-Hans-CN' })
+      .mockResolvedValueOnce({ id: '496', bcp47: 'not a tag' })
+
+    expect(await campaignLanguageTags('campaignId')).toEqual(['zh-hans-cn'])
   })
 
   it('returns no tags when the languages cannot be listed', async () => {

@@ -370,7 +370,7 @@ _Avoid_: translation report, review queue
 ### Campaign delivery & stats
 
 **Campaign Address**:
-Where a Campaign is served: its permanent address on the **Root Domain** (`/campaign/<slug>`, region pages one segment deeper) until it has a **Campaign Domain**, and from then on that domain's root and `/<region slug>` only — the root-domain address is not found, as a journey on a route-all team domain is. Its linked Journeys keep opening on their team's domain or the Root Domain, never on the Campaign Domain.
+Where a Campaign is served: its permanent address on the **Root Domain** (`/campaign/<slug>`, region pages one segment deeper) until it has a **Campaign Domain**, and from then on that domain's root and `/<region slug>` only — the root-domain address is not found, as a journey on a route-all team domain is. A page in a **Page Language** other than the campaign default adds `?lang=<bcp47>` to either form; `_lang/<tag>` is the viewer's internal page path the proxy rewrites that to, never an address. Its linked Journeys keep opening on their team's domain or the Root Domain, never on the Campaign Domain.
 _Avoid_: campaign URL (ambiguous between the two forms), vanity link, permalink
 
 **Campaign Domain**:
