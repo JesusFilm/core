@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -15,8 +14,10 @@ import {
 } from '../../../../__generated__/globalTypes'
 import type { VideoProps } from '../../Video'
 import { CampaignPicture } from '../CampaignImage'
+import { CampaignMutedText } from '../CampaignMutedText'
 import { useCampaign } from '../CampaignProvider'
 import { campaignImageSource } from '../libs/campaignImageSource'
+import { campaignCardSx } from '../libs/campaignSx'
 import type { CampaignTreeOf } from '../types'
 
 import {
@@ -25,6 +26,7 @@ import {
   campaignVideoDetails,
   campaignVideoPlayerBlock
 } from './campaignVideoDetails'
+import { CampaignVideoFrame } from './CampaignVideoFrame'
 import { videoCountLabel } from './videoCountLabel'
 
 /** The journeys player and video.js, fetched on the client only when a page plays a video inline. */
@@ -124,33 +126,11 @@ export function CampaignVideo({
           alignItems: 'stretch',
           width: '100%',
           overflow: 'hidden',
-          borderRadius: 1,
-          textAlign: 'start',
-          backgroundColor: 'var(--campaign-band-card)',
-          border: '1px solid var(--campaign-band-border)'
+          ...campaignCardSx,
+          textAlign: 'start'
         }}
       >
-        <Box
-          sx={{
-            aspectRatio: '16 / 9',
-            backgroundColor: 'var(--campaign-band-border)'
-          }}
-        >
-          {details.poster != null && (
-            <Box
-              component="img"
-              src={details.poster}
-              alt=""
-              loading="lazy"
-              sx={{
-                display: 'block',
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover'
-              }}
-            />
-          )}
-        </Box>
+        <CampaignVideoFrame poster={details.poster} />
         <Stack spacing={0.5} sx={{ p: 3 }}>
           {details.title != null && (
             <Typography
@@ -164,17 +144,13 @@ export function CampaignVideo({
               {details.title}
             </Typography>
           )}
-          <Typography
-            variant="body2"
-            component="span"
-            sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
-          >
+          <CampaignMutedText variant="body2" component="span">
             {videoCountLabel(
               details.childrenCount,
               string(CampaignStringKey.videos),
               t
             )}
-          </Typography>
+          </CampaignMutedText>
         </Stack>
       </ButtonBase>
     )
@@ -187,11 +163,9 @@ export function CampaignVideo({
       data-testid={`CampaignVideo-${block.id}`}
       sx={{ m: 0, width: '100%' }}
     >
-      <Box
+      <CampaignVideoFrame
         sx={{
-          position: 'relative',
           width: '100%',
-          aspectRatio: '16 / 9',
           overflow: 'hidden',
           borderRadius: 1,
           backgroundColor: '#000'
@@ -209,7 +183,7 @@ export function CampaignVideo({
             reapplyServerSource
           />
         </ThemeProvider>
-      </Box>
+      </CampaignVideoFrame>
       <CampaignVideoCaption details={details} />
     </Stack>
   )

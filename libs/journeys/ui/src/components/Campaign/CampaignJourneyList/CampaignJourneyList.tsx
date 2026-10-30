@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
@@ -12,18 +11,15 @@ import {
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
 import { bandButtonSx } from '../CampaignButton'
+import { CampaignMutedText } from '../CampaignMutedText'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
+import { campaignCardSx } from '../libs/campaignSx'
+import type { StyleObject } from '../libs/campaignSx'
 import { isHttpsUrl } from '../libs/isHttpsUrl'
 import { hasText } from '../types'
 import type { CampaignBlockOf, CampaignTreeOf } from '../types'
-
-/** A plain style object: it spreads into another `sx`, unlike the array and function forms of `SxProps`. */
-type StyleObject = Exclude<
-  SxProps<Theme>,
-  ReadonlyArray<unknown> | ((theme: Theme) => unknown)
->
 
 interface CampaignJourneyListProps {
   block: CampaignTreeOf<'CampaignJourneyListBlock'>
@@ -66,9 +62,7 @@ export function journeyCardFrameSx(
         ? { xs: 'column', md: 'row' }
         : 'column',
     overflow: 'hidden',
-    borderRadius: 1,
-    backgroundColor: 'var(--campaign-band-card)',
-    border: '1px solid var(--campaign-band-border)'
+    ...campaignCardSx
   }
 }
 
@@ -192,13 +186,12 @@ function JourneyCard({
           </Typography>
         )}
         {hasText(card.description) && (
-          <Typography
+          <CampaignMutedText
             variant="body2"
             data-testid="CampaignJourneyCardDescription"
-            sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
           >
             {card.description}
-          </Typography>
+          </CampaignMutedText>
         )}
         <Box sx={{ flexGrow: 1 }} />
         <CampaignJourneyOpenButton
@@ -235,13 +228,9 @@ export function CampaignJourneyList({
         description={block.description}
       />
       {cards.length === 0 && hasText(noJourneysLabel) && (
-        <Typography
-          variant="body1"
-          data-testid="CampaignJourneyListEmpty"
-          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
-        >
+        <CampaignMutedText data-testid="CampaignJourneyListEmpty">
           {noJourneysLabel}
-        </Typography>
+        </CampaignMutedText>
       )}
       {cards.length > 0 && (
         <CampaignJourneyCards display={display}>

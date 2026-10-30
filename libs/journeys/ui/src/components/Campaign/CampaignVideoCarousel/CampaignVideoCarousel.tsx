@@ -13,7 +13,12 @@ import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { campaignStringOr, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
-import { CampaignVideo, videoCountLabel } from '../CampaignVideo'
+import {
+  CampaignVideo,
+  CampaignVideoFrame,
+  videoCountLabel
+} from '../CampaignVideo'
+import { campaignCardSx } from '../libs/campaignSx'
 import type { CampaignTreeOf } from '../types'
 
 import {
@@ -39,11 +44,9 @@ const cardSx = {
   flex: '0 0 auto',
   width: CARD_WIDTH,
   overflow: 'hidden',
-  borderRadius: 1,
+  ...campaignCardSx,
   textAlign: 'start',
-  scrollSnapAlign: 'start',
-  backgroundColor: 'var(--campaign-band-card)',
-  border: '1px solid var(--campaign-band-border)'
+  scrollSnapAlign: 'start'
 } as const
 
 interface CardFrameProps {
@@ -120,27 +123,7 @@ function VideoCard({
       href={card.href}
       onClick={card.block != null ? () => onPlay(card) : undefined}
     >
-      <Box
-        sx={{
-          position: 'relative',
-          aspectRatio: '16 / 9',
-          backgroundColor: 'var(--campaign-band-border)'
-        }}
-      >
-        {card.poster != null && (
-          <Box
-            component="img"
-            src={card.poster}
-            alt=""
-            loading="lazy"
-            sx={{
-              display: 'block',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
-          />
-        )}
+      <CampaignVideoFrame poster={card.poster}>
         {showDuration && (
           <Typography
             variant="caption"
@@ -159,7 +142,7 @@ function VideoCard({
             {secondsToTimeFormat(card.duration ?? 0, { trimZeroes: true })}
           </Typography>
         )}
-      </Box>
+      </CampaignVideoFrame>
       <Stack spacing={0.5} sx={{ p: 2, flexGrow: 1 }}>
         {card.title != null && (
           <Typography

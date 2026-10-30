@@ -28,7 +28,6 @@ const atlas = JSON.parse(
 ) as WorldAtlasTopology
 
 const accentColor = '#EF3340'
-const neutralColor = '#222222'
 const WORLD_TRANSFORM = 'translate(0.0px, 0.0px) scale(1.000)'
 
 const i18n = createInstance()
@@ -73,7 +72,6 @@ function map(
         zoomToHighlighted={zoomToHighlighted}
         visitors={visitors}
         accentColor={accentColor}
-        neutralColor={neutralColor}
         locale="en"
       />
     </I18nContext.Provider>
@@ -184,7 +182,7 @@ describe('WorldMap', () => {
         })
       )
       const swatch = document.createElement('div')
-      swatch.style.fill = neutralColor
+      swatch.style.fill = 'var(--campaign-band-card)'
       expect(fillOf('WorldMapCountry-840')).toBe(swatch.style.fill)
       expect(fillOf('WorldMapCountry-124')).toBe(swatch.style.fill)
       expect(screen.getByTestId('WorldMapCountry-840')).not.toHaveAttribute(

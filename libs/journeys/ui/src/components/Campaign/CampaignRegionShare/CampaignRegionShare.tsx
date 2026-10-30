@@ -21,6 +21,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { QrCodeCanvas, downloadQrCodePng } from '../../QrCodeCanvas'
 import { bandButtonSx } from '../CampaignButton'
+import { CampaignMutedText } from '../CampaignMutedText'
 import { campaignStringOr, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
@@ -133,12 +134,7 @@ function ShareStep({
         </Typography>
       )}
       {hasText(help) && (
-        <Typography
-          variant="body2"
-          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
-        >
-          {help}
-        </Typography>
+        <CampaignMutedText variant="body2">{help}</CampaignMutedText>
       )}
       {children}
     </Stack>
@@ -222,13 +218,9 @@ export function CampaignRegionShare({
     <CampaignSectionBand block={block}>
       <CampaignSectionHeading title={block.title} />
       {hasText(block.intro) && (
-        <Typography
-          variant="body1"
-          data-testid="CampaignRegionShareIntro"
-          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
-        >
+        <CampaignMutedText data-testid="CampaignRegionShareIntro">
           {block.intro}
-        </Typography>
+        </CampaignMutedText>
       )}
       {selected != null && region != null && (
         <Stack

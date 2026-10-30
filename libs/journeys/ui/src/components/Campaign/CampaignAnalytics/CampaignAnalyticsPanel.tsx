@@ -18,6 +18,7 @@ import {
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { campaignStringOr } from '../CampaignProvider/campaignString'
+import { campaignCardSx } from '../libs/campaignSx'
 import type { CampaignRegion } from '../types'
 
 import type {
@@ -86,16 +87,7 @@ interface TileProps {
 
 function Tile({ testId, label, value, caption }: TileProps): ReactElement {
   return (
-    <Stack
-      data-testid={testId}
-      spacing={0.5}
-      sx={{
-        p: 3,
-        borderRadius: 1,
-        backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)'
-      }}
-    >
+    <Stack data-testid={testId} spacing={0.5} sx={{ p: 3, ...campaignCardSx }}>
       <Typography
         variant="overline"
         component="p"
@@ -493,9 +485,7 @@ export function CampaignAnalyticsPanel({
                   display: 'flex',
                   alignItems: 'center',
                   p: 2,
-                  borderRadius: 1,
-                  border: '1px solid var(--campaign-band-border)',
-                  backgroundColor: 'var(--campaign-band-card)',
+                  ...campaignCardSx,
                   // The map fits whatever height the ranks leave beside it.
                   '& svg': { height: '100%', maxHeight: '100%' }
                 }}
