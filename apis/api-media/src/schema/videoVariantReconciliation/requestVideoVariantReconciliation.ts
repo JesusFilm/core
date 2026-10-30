@@ -171,6 +171,20 @@ export async function requestVideoVariantReconciliation(
       return
     }
 
+    // A delete skips the pending-toggle guard below. Only the delete reason
+    // runs the cleanup in reconcileReasonSpecificVariant, and the Variant it
+    // would protect `published` for is gone, so keeping a pending toggle's
+    // reason would leave the row to wait out the Mux window and alert on a
+    // Variant that no longer exists. `published` is left alone: it means
+    // nothing for a deleted Variant.
+    if (intent.reason === 'video-variant-delete') {
+      await prisma.videoVariantReconciliation.update({
+        where: { id: existingReconciliation.id },
+        data: { ...data, createdAt }
+      })
+      return
+    }
+
     // Only an explicit publish/Draft toggle carries a fresh publish intent.
     // Every other reason -- a language reassignment, a relationship change,
     // a re-create -- can land while a captured upload intent or an explicit
