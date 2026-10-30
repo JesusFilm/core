@@ -12,7 +12,7 @@ concurrency:
 jobs:
   affected:
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-2vcpu-ubuntu-2204' }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -65,7 +65,7 @@ jobs:
             github-ref-name: stage
             github-event-name: push
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-2vcpu-ubuntu-2204' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     outputs:
@@ -172,7 +172,7 @@ jobs:
           retention-days: 2
   deploy-status:
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-2vcpu-ubuntu-2204' }}
     needs: [affected, deploy-preview]
     if: ${{ always() && github.event_name == 'pull_request' }}
     permissions:
@@ -235,7 +235,7 @@ jobs:
     permissions:
       contents: read
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-4vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-4vcpu-ubuntu-2204' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     strategy:
@@ -337,7 +337,7 @@ jobs:
           - app: short-links
             github-ref-name: stage
     runs-on: >-
-      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && 'jfp-proxmox-core' || 'blacksmith-2vcpu-ubuntu-2204' }}
     permissions:
       deployments: write
       contents: write
