@@ -166,6 +166,25 @@ describe('useCampaignPlausible on a same-tab link', () => {
     expect(assign).toHaveBeenCalledWith('https://your.nextstep.is/eur')
   })
 
+  it('still navigates after a second when Plausible throws', () => {
+    plausible.mockImplementationOnce(() => {
+      throw new Error('tracker failed')
+    })
+    renderLink()
+    const link = document.querySelector('a') as Element
+    // React reports the handler's error; the link must still be followed.
+    const reportError = vi.fn((event: ErrorEvent) => event.preventDefault())
+    window.addEventListener('error', reportError)
+    try {
+      fireEvent.click(link)
+    } finally {
+      window.removeEventListener('error', reportError)
+    }
+    expect(assign).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1000)
+    expect(assign).toHaveBeenCalledWith('https://your.nextstep.is/eur')
+  })
+
   it('leaves a new-tab or modified click to the browser', () => {
     renderLink('_blank')
     expect(fireEvent.click(document.querySelector('a') as Element)).toBe(true)
