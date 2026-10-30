@@ -4,6 +4,7 @@ import { render, screen, within } from '@testing-library/react'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
+import { cssRulesFor } from '../libs/cssRulesFor'
 import {
   campaignPublic,
   heroVideoBlock,
@@ -131,6 +132,13 @@ describe('CampaignVideo', () => {
     expect(
       screen.queryByTestId('JourneysVideo-watchParentVideoId')
     ).not.toBeInTheDocument()
+  })
+
+  it('aligns the poster card text to the reading side', () => {
+    renderVideo(videoTree(watchParentVideoBlock), '496')
+    expect(
+      cssRulesFor(screen.getByRole('link', { name: /La Nativité/ }))
+    ).toContain('text-align:start')
   })
 
   it('plays a YouTube video inline with the fields captured at pick', () => {

@@ -84,6 +84,9 @@ describe('CampaignFooter', () => {
         'CampaignTypography'
       )
     ).toHaveTextContent('© 2026 Jesus Film Project')
+    expect(screen.getByRole('navigation', { name: 'Footer links' })).toBe(
+      screen.getByTestId('CampaignFooterLinks')
+    )
     const links = within(
       screen.getByTestId('CampaignFooterLinks')
     ).getAllByRole('link')

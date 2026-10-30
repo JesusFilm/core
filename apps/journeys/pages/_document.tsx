@@ -11,11 +11,8 @@ import { getTheme } from '@core/shared/ui/themes'
 
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 import { getPageRTL } from '../src/libs/getPageRTL'
+import type { PageRTLProps } from '../src/libs/getPageRTL'
 import { createRtlEmotionPlugin } from '../src/libs/rtlEmotionPlugin'
-
-interface CampaignPageProps {
-  campaign?: { language?: { bcp47?: string | null } | null } | null
-}
 
 /**
  * The document's `lang` and `dir` (glossary: Campaign Page): on a campaign
@@ -24,7 +21,7 @@ interface CampaignPageProps {
  * every other page keeps the app default.
  */
 export function documentLanguage(
-  pageProps: CampaignPageProps | undefined,
+  pageProps: PageRTLProps | undefined,
   fallback: { rtl: boolean }
 ): { lang: string; dir: string } {
   const bcp47 = pageProps?.campaign?.language?.bcp47
@@ -46,7 +43,7 @@ const RTL_FONTS_HREF =
  * includes the defaults, so it gets none.
  */
 export function documentFontsHref(
-  pageProps: CampaignPageProps | undefined,
+  pageProps: PageRTLProps | undefined,
   { rtl, locale }: { rtl: boolean; locale: string }
 ): string | null {
   if (pageProps?.campaign != null) return null
@@ -64,8 +61,7 @@ export default class MyDocument extends Document<{
   })
 
   render(): ReactElement {
-    const pageProps = this.props.__NEXT_DATA__.props
-      .pageProps as CampaignPageProps
+    const pageProps = this.props.__NEXT_DATA__.props.pageProps as PageRTLProps
     const { lang, dir } = documentLanguage(pageProps, this.props)
     const fontsHref = documentFontsHref(pageProps, this.props)
     return (

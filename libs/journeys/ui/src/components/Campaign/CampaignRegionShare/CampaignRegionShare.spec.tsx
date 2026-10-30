@@ -170,6 +170,13 @@ describe('CampaignRegionShare', () => {
       )
     })
 
+    it('returns an embed URL that does not parse unchanged', () => {
+      expect(previewEmbedUrl('/embed/eur-en')).toBe('/embed/eur-en')
+      expect(previewEmbedUrl('your.nextstep.is/embed/eur-en')).toBe(
+        'your.nextstep.is/embed/eur-en'
+      )
+    })
+
     it('names the PNG <campaign slug>-<region slug>-<language bcp47>.png, falling back to the language id', () => {
       expect(qrCodeFileName(campaignPublic, region, languages[0])).toBe(
         'outreach-2026-eur-en.png'
@@ -294,7 +301,22 @@ describe('CampaignRegionShare', () => {
     expect(await screen.findByText('Lien copié')).toBeInTheDocument()
   })
 
-  it('does not show the copied toast when the clipboard rejects', async () => {
+  it('renders the preview frame with a relative embed URL unchanged', () => {
+    renderShare({
+      ...region,
+      languages: region.languages.map((entry) =>
+        entry.embedUrl == null
+          ? entry
+          : { ...entry, embedUrl: '/embed/' + entry.id }
+      )
+    })
+
+    expect(
+      screen.getByTestId('CampaignRegionSharePhoneIframe')
+    ).toHaveAttribute('src', '/embed/eur-en')
+  })
+
+  it('shows "Could not copy the link" instead of the copied toast when the clipboard rejects', async () => {
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
       configurable: true
@@ -306,6 +328,9 @@ describe('CampaignRegionShare', () => {
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalled()
     )
+    expect(
+      await screen.findByText('Could not copy the link')
+    ).toBeInTheDocument()
     expect(screen.queryByText('Lien copié')).not.toBeInTheDocument()
   })
 

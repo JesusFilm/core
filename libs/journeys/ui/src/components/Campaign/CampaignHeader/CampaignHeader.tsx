@@ -7,11 +7,13 @@ import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 
 import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
+import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 import Menu1 from '@core/shared/ui/icons/Menu1'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
@@ -58,7 +60,8 @@ function isNavButton(
  * The Campaign Chrome header: a sticky AppBar painted from the band table
  * like any section (an `image` kind's cover scaled to the header height,
  * overlay applied). Fixed elements in the band's text and accent colours:
- * the "All regions" back chip in the leading slot on a Region Page only,
+ * the "All regions" back chip in the leading slot on a Region Page only
+ * (its arrow pointing back in the reading direction),
  * the Brand Mark (logo when set, else the campaign title), and the language
  * select. The authored nav buttons (the header's button children) follow
  * the button fallback chain and collapse into a Menu behind a menu icon
@@ -66,6 +69,7 @@ function isNavButton(
  */
 export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  const { direction } = useTheme()
   const context = useCampaign()
   const { campaign, region, string } = context
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null)
@@ -131,7 +135,9 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
           backgroundColor: 'var(--campaign-band-background)',
           backgroundImage: 'none',
           color: 'var(--campaign-band-text)',
-          borderBottom: '1px solid var(--campaign-band-border)'
+          // The bottom border is drawn inside the header, so CAMPAIGN_HEADER_HEIGHT
+          // stays its true height for the bands' scroll margin.
+          boxShadow: 'inset 0 -1px 0 var(--campaign-band-border)'
         }}
       >
         <CampaignBandCover block={block} />
@@ -155,7 +161,9 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
                   )}
                   size="small"
                   variant="outlined"
-                  icon={<ChevronLeft />}
+                  icon={
+                    direction === 'rtl' ? <ChevronRight /> : <ChevronLeft />
+                  }
                   data-testid="CampaignAllRegionsChip"
                   sx={{
                     color: 'var(--campaign-band-text)',
@@ -207,6 +215,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
             {navButtons.length > 0 && (
               <Box
                 component="nav"
+                aria-label={t('Page sections')}
                 data-testid="CampaignHeaderNav"
                 sx={{
                   display: { xs: 'none', md: 'flex' },

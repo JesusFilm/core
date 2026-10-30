@@ -37,9 +37,19 @@ export const PREVIEW_IFRAME_SANDBOX =
   'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'
 export const PREVIEW_IFRAME_ALLOW = 'autoplay'
 
-/** The preview frame's address: the root-domain embed route kept a preview with `expand=false`. */
+/**
+ * The preview frame's address: the root-domain embed route kept a preview
+ * with `expand=false`. An address that does not parse (a relative or
+ * scheme-less `JOURNEYS_URL`) is returned unchanged rather than throwing
+ * while the page renders.
+ */
 export function previewEmbedUrl(embedUrl: string): string {
-  const url = new URL(embedUrl)
+  let url: URL
+  try {
+    url = new URL(embedUrl)
+  } catch {
+    return embedUrl
+  }
   url.searchParams.set('expand', 'false')
   return url.toString()
 }
@@ -153,7 +163,7 @@ export function CampaignRegionShare({
   const { t } = useTranslation('libs-journeys-ui')
   const { campaign, region, string } = useCampaign()
   const [selectedId, setSelectedId] = useState<string>()
-  const [copied, setCopied] = useState(false)
+  const [copyResult, setCopyResult] = useState<'copied' | 'failed' | null>(null)
   const languages = region == null ? [] : shareLanguages(region)
   const selected =
     languages.find((language) => language.id === selectedId) ??
@@ -195,9 +205,9 @@ export function CampaignRegionShare({
     if (shortLink == null) return
     try {
       await navigator.clipboard.writeText(shortLink)
-      setCopied(true)
+      setCopyResult('copied')
     } catch {
-      setCopied(false)
+      setCopyResult('failed')
     }
   }
 
@@ -422,10 +432,12 @@ export function CampaignRegionShare({
         </Stack>
       )}
       <Snackbar
-        open={copied}
+        open={copyResult != null}
         autoHideDuration={3000}
-        onClose={() => setCopied(false)}
-        message={copiedLabel}
+        onClose={() => setCopyResult(null)}
+        message={
+          copyResult === 'failed' ? t('Could not copy the link') : copiedLabel
+        }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         data-testid="CampaignRegionShareCopied"
       />

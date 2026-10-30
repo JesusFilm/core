@@ -18,7 +18,11 @@ import type {
 } from '../types'
 
 import { campaignChromeTrees } from './campaignChromeTrees'
-import { renderedSectionIds, shouldRenderSection } from './shouldRenderSection'
+import {
+  pageHeadingBlockId,
+  renderedSectionIds,
+  shouldRenderSection
+} from './shouldRenderSection'
 
 interface CampaignPageProps {
   campaign: CampaignPublic
@@ -32,11 +36,15 @@ interface CampaignPageProps {
  * the page's sections treed from its flat block list, filtered through the
  * empty-state matrix, each rendered through `CampaignRenderer`, then the
  * chrome footer. Only the sections it renders are same-page scroll targets,
- * so a button aimed at a skipped one renders inert. Header and footer always render, the same rows the same way
- * on both pages; the page kind decides only the header's back-chip slot.
- * Single column below `md`; the authored layout from `md` up. The document's
- * `lang` is the Page Language's bcp47 and `dir` follows the RTL lookup on it
- * (`ltr` when there is none), mirroring what the document shell renders.
+ * so a button aimed at a skipped one renders inert. The page has one `h1`:
+ * the Region Header's region name when one renders, else the first rendered
+ * Hero's title (`pageHeadingBlockId`). Header and footer always render, the
+ * same rows the same way on both pages; the page kind decides only the
+ * header's back-chip slot. Single column below `md`; the authored layout
+ * from `md` up. Same-page anchors scroll smoothly unless the visitor asks for
+ * reduced motion. The document's `lang` is the Page Language's bcp47 and
+ * `dir` follows the RTL lookup on it, mirroring what the document shell
+ * renders; with no bcp47 both keep what the server rendered.
  */
 export function CampaignPage({
   campaign,
@@ -46,11 +54,12 @@ export function CampaignPage({
   const chrome = useMemo(() => campaignChromeTrees(campaign), [campaign])
   const bcp47 = campaign.language.bcp47
   useEffect(() => {
+    if (bcp47 == null) return
     const root = document.documentElement
-    root.lang = bcp47 ?? ''
-    root.dir = getLocaleRTL(bcp47 ?? '') ? 'rtl' : 'ltr'
+    root.lang = bcp47
+    root.dir = getLocaleRTL(bcp47) ? 'rtl' : 'ltr'
   }, [bcp47])
-  const { sections, pageBlockIds } = useMemo(() => {
+  const { sections, pageBlockIds, headingBlockId } = useMemo(() => {
     const context = {
       pageKind,
       region,
@@ -67,13 +76,28 @@ export function CampaignPage({
           )
     return {
       sections: rendered,
-      pageBlockIds: renderedSectionIds(rendered, context)
+      pageBlockIds: renderedSectionIds(rendered, context),
+      headingBlockId: pageHeadingBlockId(rendered, context)
     }
   }, [campaign, pageKind, region])
 
   return (
-    <CampaignProvider value={{ campaign, pageKind, region, pageBlockIds }}>
-      <GlobalStyles styles={{ html: { scrollBehavior: 'smooth' } }} />
+    <CampaignProvider
+      value={{
+        campaign,
+        pageKind,
+        region,
+        pageBlockIds,
+        pageHeadingBlockId: headingBlockId
+      }}
+    >
+      <GlobalStyles
+        styles={{
+          '@media (prefers-reduced-motion: no-preference)': {
+            html: { scrollBehavior: 'smooth' }
+          }
+        }}
+      />
       <Box
         data-testid="CampaignPage"
         sx={{

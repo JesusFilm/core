@@ -94,7 +94,7 @@ export function regionFrameSx(variant: CampaignSwitcherVariant): StyleObject {
     px: pill ? 4 : 3,
     py: pill ? 1.5 : 3,
     borderRadius: pill ? 999 : 1,
-    textAlign: 'left',
+    textAlign: 'start',
     backgroundColor: 'var(--campaign-band-card)',
     border: '1px solid var(--campaign-band-border)'
   }

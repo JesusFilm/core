@@ -65,14 +65,18 @@ function heroTree(
   return tree as CampaignTreeOf<'CampaignHeroBlock'>
 }
 
-function renderHero(block: CampaignTreeOf<'CampaignHeroBlock'>) {
+function renderHero(
+  block: CampaignTreeOf<'CampaignHeroBlock'>,
+  pageHeadingBlockId?: string | null
+) {
   return render(
     <ThemeProvider theme={theme}>
       <CampaignProvider
         value={{
           campaign: campaignPublic,
           pageKind: CampaignPageKind.landing,
-          region: null
+          region: null,
+          pageHeadingBlockId
         }}
       >
         <CampaignHero block={block} />
@@ -96,6 +100,26 @@ describe('CampaignHero', () => {
     expect(screen.getByTestId('CampaignDescription')).toHaveTextContent(
       'Pick your region to find a journey in your language, ready to share.'
     )
+  })
+
+  it('keeps its title an h1 when the page names no heading block, or names this hero', () => {
+    const { unmount } = renderHero(heroTree())
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Share the story of Outreach'
+    )
+    unmount()
+    renderHero(heroTree(), 'heroId')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Share the story of Outreach'
+    )
+  })
+
+  it('renders its title as an h2 with the h1 look when the page heading is another block', () => {
+    renderHero(heroTree(), 'regionHeaderId')
+    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument()
+    const title = screen.getByRole('heading', { level: 2 })
+    expect(title).toHaveTextContent('Share the story of Outreach')
+    expect(title).toHaveClass('MuiTypography-h1')
   })
 
   it('applies align to the band and the heading', () => {

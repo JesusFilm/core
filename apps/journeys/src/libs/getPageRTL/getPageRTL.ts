@@ -3,7 +3,8 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
-interface PageRTLProps {
+/** The page props the page direction is read from: a journey page's journey, a campaign page's campaign. */
+export interface PageRTLProps {
   journey?: Journey
   campaign?: { language?: { bcp47?: string | null } | null } | null
 }

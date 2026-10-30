@@ -103,7 +103,7 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
           width: '100%',
           overflow: 'hidden',
           borderRadius: 1,
-          textAlign: 'left',
+          textAlign: 'start',
           backgroundColor: 'var(--campaign-band-card)',
           border: '1px solid var(--campaign-band-border)'
         }}

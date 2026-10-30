@@ -1,5 +1,6 @@
 import { campaignRegionHref } from '../CampaignProvider'
 import type { CampaignContextValue } from '../CampaignProvider'
+import { isHttpsUrl } from '../libs/isHttpsUrl'
 import type { CampaignBlockOf } from '../types'
 
 export interface ResolvedCampaignAction {
@@ -7,19 +8,6 @@ export interface ResolvedCampaignAction {
   target?: string
   /** Set for a same-page anchor: the id to scroll to smoothly. */
   scrollToBlockId?: string
-}
-
-/**
- * Only https web links render as links. The API enforces this on write
- * (`assertLinkUrl`); repeating it here keeps a `javascript:` or `data:` URL
- * out of `href` whatever wrote the data.
- */
-function isHttpsUrl(url: string): boolean {
-  try {
-    return new URL(url).protocol === 'https:'
-  } catch {
-    return false
-  }
 }
 
 /**

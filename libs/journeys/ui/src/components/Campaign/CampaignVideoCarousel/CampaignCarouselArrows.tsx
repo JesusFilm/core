@@ -15,6 +15,8 @@ import {
 import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
+import { scrollBehavior } from '../libs/scrollBehavior'
+
 /** Sub-pixel scroll positions would otherwise leave the end arrow enabled. */
 const SCROLL_EDGE_TOLERANCE_PX = 1
 
@@ -78,7 +80,10 @@ export function useCarouselScroll(cardCount: number): CarouselScroll {
     if (row == null) return
     const step = pageStep(row)
     const towardRight = towardEnd === (direction !== 'rtl')
-    row.scrollBy({ left: towardRight ? step : -step, behavior: 'smooth' })
+    row.scrollBy({
+      left: towardRight ? step : -step,
+      behavior: scrollBehavior()
+    })
   }
 
   return {

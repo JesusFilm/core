@@ -5,7 +5,7 @@ import { ReactElement, useMemo } from 'react'
 
 import { useCampaign } from '../CampaignProvider'
 import { withPageLanguage } from '../libs/campaignAddress'
-import { CAMPAIGN_LANGUAGE_COOKIE } from '../libs/resolvePageLanguage'
+import { campaignLanguageCookie } from '../libs/resolvePageLanguage'
 import type { CampaignPublic } from '../types'
 
 type CampaignLanguage = CampaignPublic['languages'][number]
@@ -22,9 +22,12 @@ export function languageAutonym(language: CampaignLanguage): string {
 
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365
 
-/** Remember the chosen Page Language for a year, site-wide, so the next visit without a `lang` param opens in it. */
-export function writeCampaignLanguageCookie(bcp47: string): void {
-  document.cookie = `${CAMPAIGN_LANGUAGE_COOKIE}=${encodeURIComponent(bcp47)}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`
+/** Remember the chosen Page Language for a year, for this campaign only, so its next visit without a `lang` param opens in it. */
+export function writeCampaignLanguageCookie(
+  campaignId: string,
+  bcp47: string
+): void {
+  document.cookie = `${campaignLanguageCookie(campaignId)}=${encodeURIComponent(bcp47)}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; Secure; SameSite=Lax`
 }
 
 /** The current page with the `lang` param set to `bcp47`, other params and the hash kept. */
@@ -39,9 +42,9 @@ export function campaignLanguageUrl(href: string, bcp47: string): string {
 /**
  * The fixed language select: rendered only with two or more campaign
  * languages, labelled by autonym, ordered by `CampaignLanguage.order`, the
- * Page Language selected. Choosing one writes the language cookie and
- * reloads the page with the `lang` param, so the choice is sticky across
- * region switches and shared links open in the sender's language.
+ * Page Language selected. Choosing one writes the campaign's language
+ * cookie and reloads the page with the `lang` param, so the choice is sticky
+ * across region switches and shared links open in the sender's language.
  */
 export function CampaignLanguageSelect(): ReactElement | null {
   const { t } = useTranslation('libs-journeys-ui')
@@ -58,7 +61,7 @@ export function CampaignLanguageSelect(): ReactElement | null {
     )
     const bcp47 = selected?.language.bcp47
     if (bcp47 == null) return
-    writeCampaignLanguageCookie(bcp47)
+    writeCampaignLanguageCookie(campaign.id, bcp47)
     window.location.assign(campaignLanguageUrl(window.location.href, bcp47))
   }
 

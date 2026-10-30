@@ -73,6 +73,8 @@ interface CampaignAnalyticsPanelProps {
   worldMap?: WorldMapState
   /** The theme accent (`#RRGGBB`) the map shades in. */
   accentColor?: string
+  /** The locale numbers, dates and country names format in: the Page Language on the public page; the UI locale when unset. */
+  locale?: string
 }
 
 interface TileProps {
@@ -271,10 +273,11 @@ export function CampaignAnalyticsPanel({
   strings,
   showMap = false,
   worldMap = NO_WORLD_MAP,
-  accentColor = '#000000'
+  accentColor = '#000000',
+  locale: localeProp
 }: CampaignAnalyticsPanelProps): ReactElement {
   const { t, i18n } = useTranslation('libs-journeys-ui')
-  const locale = i18n?.language ?? 'en'
+  const locale = localeProp ?? i18n?.language ?? 'en'
   const theme = useTheme()
   const idPrefix = useId()
   const tabRefs = useRef(new Map<string, HTMLElement>())
@@ -322,12 +325,8 @@ export function CampaignAnalyticsPanel({
     tabRefs.current.get(tabValues[next])?.focus()
   }
 
-  /** A region tab shows the region's code (its slug, upper-cased) and is named by it; the full name is its description. */
-  const tabFor = (
-    value: string,
-    label: string,
-    description?: string
-  ): ReactElement => {
+  /** A tab shows and is named by its label (a region's name); a label cut short by the ellipsis stays whole in the tooltip. */
+  const tabFor = (value: string, label: string): ReactElement => {
     const selected = activeTab === value
     return (
       <ButtonBase
@@ -341,7 +340,7 @@ export function CampaignAnalyticsPanel({
         aria-selected={selected}
         aria-controls={panelId}
         tabIndex={selected ? 0 : -1}
-        title={description}
+        title={label}
         onClick={() => setSelectedTab(value)}
         onKeyDown={handleTabKeyDown}
         data-testid={`CampaignAnalyticsChip-${value}`}
@@ -354,6 +353,7 @@ export function CampaignAnalyticsPanel({
           fontSize: '0.6875rem',
           lineHeight: 1.3,
           textAlign: 'center',
+          minWidth: 0,
           border: '1px solid',
           borderColor: selected
             ? 'var(--campaign-band-accent)'
@@ -371,7 +371,17 @@ export function CampaignAnalyticsPanel({
           ...REDUCED_MOTION
         }}
       >
-        {label}
+        <Box
+          component="span"
+          sx={{
+            display: 'block',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {label}
+        </Box>
       </ButtonBase>
     )
   }
@@ -387,14 +397,12 @@ export function CampaignAnalyticsPanel({
         display: 'flex',
         flexWrap: 'wrap',
         gap: 1,
-        // Each tab is at least as wide as its code and shares the rest of
-        // the row, so a long code never spills past its tab.
+        // Each tab starts at 72px and shares the rest of the row; a region
+        // name too long for its tab stays on one line, cut by an ellipsis.
         '& > *': { flex: '1 1 72px', whiteSpace: 'nowrap' }
       }}
     >
-      {tabRegions.map((region) =>
-        tabFor(region.id, region.slug.toUpperCase(), region.name)
-      )}
+      {tabRegions.map((region) => tabFor(region.id, region.name))}
       {tabFor(
         ALL_REGIONS,
         campaignStringOr(strings, CampaignStringKey.allRegions, t('All'))
@@ -402,12 +410,17 @@ export function CampaignAnalyticsPanel({
     </Box>
   )
 
-  /** The ranked list, labelled by the selected tab; it is the panel the tabs control. */
-  const panel = (content: ReactNode): ReactElement => (
+  /**
+   * The ranked list, labelled by the selected tab; it is the panel the tabs
+   * control. Always mounted, so `aria-controls` never dangles: busy while
+   * the stats load.
+   */
+  const panel = (content: ReactNode, busy: boolean): ReactElement => (
     <Box
       id={panelId}
       role={tabsShown ? 'tabpanel' : undefined}
       aria-labelledby={tabsShown ? tabId(activeTab) : undefined}
+      aria-busy={busy ? 'true' : undefined}
     >
       {content}
     </Box>
@@ -444,74 +457,78 @@ export function CampaignAnalyticsPanel({
    * DOM nodes while the stats arrive. With the map: tiles and map on the
    * left, the region chips and a single column of ranks on the right
    * (stacked below `md`). Without it: chips, tiles, then the ranks in two
-   * columns under their heading.
+   * columns under their heading. Loading (no `ranks`), the map layout's
+   * panel is empty and the stacked layout's holds the skeleton.
    */
   const frame = (
     top: ReactNode,
     ranks: ReactNode,
     mapVisitors?: CampaignAnalyticsCountries
-  ): ReactElement => (
-    <Box
-      data-testid="CampaignAnalyticsStats"
-      data-layout={layout}
-      sx={{
-        p: { xs: 2, md: 3 },
-        borderRadius: 2,
-        border: '1px solid var(--campaign-band-border)',
-        display: 'grid',
-        gap: 3,
-        alignItems: 'stretch',
-        gridTemplateColumns:
-          layout === 'map' ? { xs: '1fr', md: '3fr 2fr' } : '1fr'
-      }}
-    >
-      {layout === 'map' ? (
-        <>
-          <Stack spacing={2} sx={{ height: '100%' }}>
-            {top}
-            <Box
-              data-testid="CampaignAnalyticsMap"
-              sx={{
-                flex: 1,
-                minHeight: 240,
-                display: 'flex',
-                alignItems: 'center',
-                p: 2,
-                borderRadius: 1,
-                border: '1px solid var(--campaign-band-border)',
-                backgroundColor: 'var(--campaign-band-card)',
-                // The map fits whatever height the ranks leave beside it.
-                '& svg': { height: '100%', maxHeight: '100%' }
-              }}
-            >
-              {mapFor(mapVisitors)}
-            </Box>
-          </Stack>
-          <Stack spacing={2}>
-            {tabs}
-            {panel(ranks)}
-          </Stack>
-        </>
-      ) : (
-        <>
-          {tabs}
-          {top}
-          {ranks != null && (
-            <Stack spacing={1.5}>
-              <Typography
-                variant="overline"
-                component="p"
-                sx={{ color: 'var(--campaign-band-muted)' }}
+  ): ReactElement => {
+    const busy = ranks == null
+    return (
+      <Box
+        data-testid="CampaignAnalyticsStats"
+        data-layout={layout}
+        sx={{
+          p: { xs: 2, md: 3 },
+          borderRadius: 2,
+          border: '1px solid var(--campaign-band-border)',
+          display: 'grid',
+          gap: 3,
+          alignItems: 'stretch',
+          gridTemplateColumns:
+            layout === 'map' ? { xs: '1fr', md: '3fr 2fr' } : '1fr'
+        }}
+      >
+        {layout === 'map' ? (
+          <>
+            <Stack spacing={2} sx={{ height: '100%' }}>
+              {top}
+              <Box
+                data-testid="CampaignAnalyticsMap"
+                sx={{
+                  flex: 1,
+                  minHeight: 240,
+                  display: 'flex',
+                  alignItems: 'center',
+                  p: 2,
+                  borderRadius: 1,
+                  border: '1px solid var(--campaign-band-border)',
+                  backgroundColor: 'var(--campaign-band-card)',
+                  // The map fits whatever height the ranks leave beside it.
+                  '& svg': { height: '100%', maxHeight: '100%' }
+                }}
               >
-                {t('Top countries by views')}
-              </Typography>
-              {panel(ranks)}
+                {mapFor(mapVisitors)}
+              </Box>
             </Stack>
-          )}
-        </>
-      )}
-    </Box>
-  )
+            <Stack spacing={2}>
+              {tabs}
+              {panel(ranks, busy)}
+            </Stack>
+          </>
+        ) : (
+          <>
+            {tabs}
+            {busy ? panel(top, busy) : top}
+            {!busy && (
+              <Stack spacing={1.5}>
+                <Typography
+                  variant="overline"
+                  component="p"
+                  sx={{ color: 'var(--campaign-band-muted)' }}
+                >
+                  {t('Top countries by views')}
+                </Typography>
+                {panel(ranks, busy)}
+              </Stack>
+            )}
+          </>
+        )}
+      </Box>
+    )
+  }
 
   if (data == null && loading) return frame(<LoadingState />, null)
 

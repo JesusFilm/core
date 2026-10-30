@@ -1,3 +1,5 @@
+import { isHttpsUrl } from '../isHttpsUrl'
+
 export interface CampaignImageSource {
   src: string
   alt: string | null
@@ -65,7 +67,8 @@ function videoPoster(block: CampaignMediaColumns): string | null | undefined {
  * The image an owned slot block (a cover, logo or Media Slot) renders: a
  * `CampaignImageBlock`'s `src`, or a `CampaignVideoBlock`'s poster — the
  * `image` captured at pick for YouTube and Mux, else a Watch video's banner.
- * Null for an empty slot or a block with nothing to show.
+ * Null for an empty slot, a block with nothing to show, or a `src` that is
+ * not an https URL (any host: journey images are not all on Cloudflare).
  */
 export function campaignImageSource(
   block: CampaignMediaColumns | null | undefined
@@ -73,7 +76,7 @@ export function campaignImageSource(
   if (block == null) return null
   const src =
     block.__typename === 'CampaignVideoBlock' ? videoPoster(block) : block.src
-  if (src == null || src.trim() === '') return null
+  if (src == null || !isHttpsUrl(src)) return null
   return {
     src,
     alt: block.alt ?? null,

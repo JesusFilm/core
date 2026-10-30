@@ -70,15 +70,19 @@ function renderHeader(
   campaign: CampaignPublic = campaignPublic,
   {
     pageKind = CampaignPageKind.landing,
-    region = null
+    region = null,
+    rtl = false
   }: {
     pageKind?: CampaignPageKind
     region?: CampaignRegion | null
+    rtl?: boolean
   } = {}
 ) {
   const { header } = campaignChromeTrees(campaign)
   return render(
-    <ThemeProvider theme={theme}>
+    <ThemeProvider
+      theme={rtl ? createCampaignTheme(campaignPublic.theme, true) : theme}
+    >
       <CampaignProvider value={{ campaign, pageKind, region }}>
         <CampaignHeader block={header} />
       </CampaignProvider>
@@ -225,6 +229,31 @@ describe('CampaignHeader', () => {
       expect(chip).toHaveAttribute('href', '/campaign/outreach-2026?lang=en')
     })
 
+    it("points the chip's arrow back in the reading direction", () => {
+      const { unmount } = renderHeader(campaignPublic, {
+        pageKind: CampaignPageKind.regionTemplate,
+        region: eurRegion
+      })
+      expect(
+        within(screen.getByTestId('CampaignAllRegionsChip')).getByTestId(
+          'ChevronLeftIcon'
+        )
+      ).toBeInTheDocument()
+      unmount()
+
+      renderHeader(campaignPublic, {
+        pageKind: CampaignPageKind.regionTemplate,
+        region: eurRegion,
+        rtl: true
+      })
+      const chip = screen.getByTestId('CampaignAllRegionsChip')
+      expect(within(chip).getByTestId('ChevronRightIcon')).toBeInTheDocument()
+      expect(
+        within(chip).queryByTestId('ChevronLeftIcon')
+      ).not.toBeInTheDocument()
+      expect(chip).toHaveAccessibleName('All regions')
+    })
+
     it('leaves a blank allRegions string blank, keeping All regions as the accessible name', () => {
       renderHeader(
         withHeader({}, chromeBlocks, {
@@ -316,10 +345,11 @@ describe('CampaignHeader', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('writes the language cookie and reloads the page with the chosen language as the lang param', () => {
+    it("writes the campaign's own language cookie and reloads the page with the chosen language as the lang param", () => {
       const assign = vi.fn()
       const location = window.location
-      document.cookie = 'campaign-lang=en; path=/'
+      // jsdom may drop a Secure cookie on http://localhost, so the attributes are read off the setter.
+      const cookieSetter = vi.spyOn(document, 'cookie', 'set')
       Object.defineProperty(window, 'location', {
         configurable: true,
         value: {
@@ -334,7 +364,10 @@ describe('CampaignHeader', () => {
       expect(assign).toHaveBeenCalledWith(
         'http://localhost/campaign/outreach-2026?lang=fr#heroId'
       )
-      expect(document.cookie).toContain('campaign-lang=fr')
+      expect(cookieSetter).toHaveBeenCalledWith(
+        `campaign-lang-${campaignPublic.id}=fr; path=/; max-age=31536000; Secure; SameSite=Lax`
+      )
+      cookieSetter.mockRestore()
       Object.defineProperty(window, 'location', {
         configurable: true,
         value: location
@@ -346,6 +379,9 @@ describe('CampaignHeader', () => {
     it("renders the header's button children as the nav links", () => {
       renderHeader()
       const nav = screen.getByTestId('CampaignHeaderNav')
+      expect(screen.getByRole('navigation', { name: 'Page sections' })).toBe(
+        nav
+      )
       const links = within(nav).getAllByRole('link')
       expect(links.map((link) => link.textContent)).toEqual([
         'Home',
@@ -452,6 +488,15 @@ describe('CampaignHeader', () => {
         band.accent
       )
       expect(band.background).toBe('#26262E')
+    })
+
+    it('draws its bottom border inside the header height, so a scrolled-to band is not under it', () => {
+      renderHeader()
+      const rule = baseRule(screen.getByTestId('CampaignHeader'))
+      expect(rule).toContain(
+        'box-shadow:inset 0 -1px 0 var(--campaign-band-border)'
+      )
+      expect(rule).not.toContain('border-bottom')
     })
 
     it('rule 1: fixed elements take the band text and accent colours; nav buttons follow the button fallback chain', () => {

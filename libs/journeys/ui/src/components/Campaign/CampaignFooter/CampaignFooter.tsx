@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo } from 'react'
 
 import { useCampaign } from '../CampaignProvider'
@@ -36,6 +37,7 @@ function isLink(child: CampaignTree): boolean {
  * both pages.
  */
 export function CampaignFooter({ block }: CampaignFooterProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const { campaign } = useCampaign()
   const band = useMemo(
     () => resolveBand(block, campaign.theme),
@@ -86,6 +88,7 @@ export function CampaignFooter({ block }: CampaignFooterProps): ReactElement {
               {links.length > 0 && (
                 <Box
                   component="nav"
+                  aria-label={t('Footer links')}
                   data-testid="CampaignFooterLinks"
                   sx={{
                     display: 'flex',
