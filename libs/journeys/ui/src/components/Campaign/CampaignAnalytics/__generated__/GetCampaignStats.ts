@@ -43,14 +43,6 @@ export interface GetCampaignStats_campaignStats_regions {
 
 export interface GetCampaignStats_campaignStats {
   __typename: "CampaignStats";
-  /**
-   * The start of the stats window. The window is all time, so this is a fixed early date; the viewer shows the numbers as all-time rather than since it.
-   */
-  from: any;
-  /**
-   * When the cached sweep was taken.
-   */
-  to: any;
   all: GetCampaignStats_campaignStats_all;
   /**
    * Every region, listed and orphan alike, in region order.

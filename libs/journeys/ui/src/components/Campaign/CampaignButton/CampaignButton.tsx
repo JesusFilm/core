@@ -12,9 +12,10 @@ import { useCampaignSection } from '../CampaignSectionBand/CampaignSectionContex
 import { flexAlign } from '../libs/flexAlign'
 import { contrastText } from '../libs/resolveBand'
 import { scrollBehavior } from '../libs/scrollBehavior'
-import { hasText } from '../types'
+import { hasExtraContent } from '../types'
 import type { CampaignBlockOf } from '../types'
 
+import { containedButtonSx } from './bandButtonSx'
 import { resolveCampaignAction } from './resolveCampaignAction'
 
 interface CampaignButtonProps {
@@ -26,12 +27,7 @@ function variantColors(
   fill: string | undefined,
   label: string | undefined
 ): CSSObject {
-  if (variant === ButtonVariant.contained)
-    return {
-      backgroundColor: fill,
-      color: label,
-      '&:hover': { backgroundColor: fill, filter: 'brightness(0.92)' }
-    }
+  if (variant === ButtonVariant.contained) return containedButtonSx(fill, label)
   if (variant === ButtonVariant.outlined)
     return { borderColor: fill, color: fill, '&:hover': { borderColor: fill } }
   return { color: fill }
@@ -50,7 +46,7 @@ export function CampaignButton({
 }: CampaignButtonProps): ReactElement | null {
   const campaign = useCampaign()
   const section = useCampaignSection()
-  if (!hasText(block.label)) return null
+  if (!hasExtraContent(block)) return null
 
   const variant = block.buttonVariant ?? ButtonVariant.contained
   const size = block.size ?? ButtonSize.medium

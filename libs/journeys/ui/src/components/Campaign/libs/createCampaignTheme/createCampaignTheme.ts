@@ -40,7 +40,7 @@ export interface CampaignThemeInput {
   buttonRadius: CampaignThemeRadius
 }
 
-/** `CampaignRadius` → px (PRD §4). */
+/** `CampaignRadius` → px (glossary: **Campaign Theme**). */
 export const CAMPAIGN_RADIUS_PX: Record<CampaignThemeRadius, number> = {
   square: 0,
   slight: 6,

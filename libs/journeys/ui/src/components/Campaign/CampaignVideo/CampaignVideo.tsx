@@ -1,7 +1,7 @@
-import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo } from 'react'
 
@@ -12,8 +12,12 @@ import {
   CampaignStringKey,
   ThemeMode
 } from '../../../../__generated__/globalTypes'
-import { Video } from '../../Video'
+import type { VideoProps } from '../../Video'
+import { CampaignPicture } from '../CampaignImage'
+import { CampaignMutedText } from '../CampaignMutedText'
 import { useCampaign } from '../CampaignProvider'
+import { campaignImageSource } from '../libs/campaignImageSource'
+import { campaignCardSx } from '../libs/campaignSx'
 import type { CampaignTreeOf } from '../types'
 
 import {
@@ -22,10 +26,23 @@ import {
   campaignVideoDetails,
   campaignVideoPlayerBlock
 } from './campaignVideoDetails'
+import { CampaignVideoFrame } from './CampaignVideoFrame'
 import { videoCountLabel } from './videoCountLabel'
+
+/** The journeys player and video.js, fetched on the client only when a page plays a video inline. */
+const Video = dynamic<VideoProps>(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignVideoPlayer" */
+      '../../Video'
+    ).then((mod) => mod.Video),
+  { ssr: false }
+)
 
 interface CampaignVideoProps {
   block: CampaignTreeOf<'CampaignVideoBlock'>
+  /** The Hero's media: the poster loads at once with high priority. */
+  eager?: boolean
 }
 
 function CampaignVideoCaption({
@@ -71,11 +88,17 @@ function CampaignVideoCaption({
  * card — its title in the Page Language and "<n> videos" — linking out to
  * Watch; any other video plays inline in the journeys `Video` player, framed
  * at 16:9 and captioned with its title and description, with the variant's
- * subtitle files offered in the player's subtitle menu. The player sits in
- * the dark theme whatever the band's, so its controls read white over the
- * picture as they do on a journey card.
+ * subtitle files offered in the player's subtitle menu. The player is loaded
+ * on the client only, so a page without a video never fetches it; the
+ * frame's poster is server-rendered and the player mounts over it (eagerly
+ * loaded when `eager`). The player sits in the dark theme whatever the
+ * band's, so its controls read white over the picture as they do on a
+ * journey card.
  */
-export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
+export function CampaignVideo({
+  block,
+  eager = false
+}: CampaignVideoProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { campaign, string } = useCampaign()
   const details = useMemo(
@@ -87,6 +110,7 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
     [block, details]
   )
   const subtitleTracks = useMemo(() => campaignSubtitleTracks(block), [block])
+  const poster = campaignImageSource(block)
 
   if (details.childrenCount > 0) {
     return (
@@ -102,33 +126,11 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
           alignItems: 'stretch',
           width: '100%',
           overflow: 'hidden',
-          borderRadius: 1,
-          textAlign: 'start',
-          backgroundColor: 'var(--campaign-band-card)',
-          border: '1px solid var(--campaign-band-border)'
+          ...campaignCardSx,
+          textAlign: 'start'
         }}
       >
-        <Box
-          sx={{
-            aspectRatio: '16 / 9',
-            backgroundColor: 'var(--campaign-band-border)'
-          }}
-        >
-          {details.poster != null && (
-            <Box
-              component="img"
-              src={details.poster}
-              alt=""
-              loading="lazy"
-              sx={{
-                display: 'block',
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover'
-              }}
-            />
-          )}
-        </Box>
+        <CampaignVideoFrame poster={details.poster} />
         <Stack spacing={0.5} sx={{ p: 3 }}>
           {details.title != null && (
             <Typography
@@ -142,17 +144,13 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
               {details.title}
             </Typography>
           )}
-          <Typography
-            variant="body2"
-            component="span"
-            sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
-          >
+          <CampaignMutedText variant="body2" component="span">
             {videoCountLabel(
               details.childrenCount,
               string(CampaignStringKey.videos),
               t
             )}
-          </Typography>
+          </CampaignMutedText>
         </Stack>
       </ButtonBase>
     )
@@ -165,16 +163,15 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
       data-testid={`CampaignVideo-${block.id}`}
       sx={{ m: 0, width: '100%' }}
     >
-      <Box
+      <CampaignVideoFrame
         sx={{
-          position: 'relative',
           width: '100%',
-          aspectRatio: '16 / 9',
           overflow: 'hidden',
           borderRadius: 1,
           backgroundColor: '#000'
         }}
       >
+        {poster != null && <CampaignPicture image={poster} eager={eager} />}
         <ThemeProvider
           themeName={ThemeName.base}
           themeMode={ThemeMode.dark}
@@ -186,7 +183,7 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
             reapplyServerSource
           />
         </ThemeProvider>
-      </Box>
+      </CampaignVideoFrame>
       <CampaignVideoCaption details={details} />
     </Stack>
   )

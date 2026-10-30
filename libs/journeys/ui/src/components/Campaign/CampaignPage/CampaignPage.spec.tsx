@@ -7,6 +7,7 @@ import {
   CampaignPageKind,
   CampaignStringKey
 } from '../../../../__generated__/globalTypes'
+import { styleText } from '../../../test/emotionStyles'
 import { GET_CAMPAIGN_STATS } from '../CampaignAnalytics'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
@@ -82,12 +83,6 @@ function pick(
   const block = landingBlocks.find((candidate) => candidate.id === id)
   if (block == null) throw new Error(`no fixture block ${id}`)
   return { ...block, ...overrides } as CampaignBlock
-}
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
 }
 
 describe('CampaignPage', () => {
@@ -261,7 +256,7 @@ describe('CampaignPage', () => {
       expect(bandIds()).toEqual(['heroId'])
     })
 
-    it('Hero renders with media alone, and its owned video never renders as a section', () => {
+    it('Hero renders with media alone, and its owned video never renders as a section', async () => {
       renderPage(
         withLanding([
           pick('heroId', {
@@ -275,9 +270,9 @@ describe('CampaignPage', () => {
       )
       expect(bandIds()).toEqual(['heroId'])
       expect(
-        within(screen.getByTestId('CampaignSectionBand-heroId')).getByTestId(
-          'JourneysVideo-heroVideoId'
-        )
+        await within(
+          screen.getByTestId('CampaignSectionBand-heroId')
+        ).findByTestId('JourneysVideo-heroVideoId')
       ).toBeInTheDocument()
     })
 

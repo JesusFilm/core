@@ -6,6 +6,7 @@ import { ReactElement, useState } from 'react'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { CampaignEditorProvider } from '../CampaignEditorProvider'
 import { campaign } from '../data'
 import { LEFT_PANEL_WIDTH } from '../LeftPanel'
@@ -90,7 +91,7 @@ export const TranslationsWithPromotionNotice: Story = {
 const runningTranslation: TranslationRun = {
   campaignId: campaign.id,
   languageId: '496',
-  mode: 'missing',
+  mode: CampaignAiTranslateMode.missing,
   languageName: 'Français',
   progress: 45,
   message: 'Translated 2 of 5 parts',

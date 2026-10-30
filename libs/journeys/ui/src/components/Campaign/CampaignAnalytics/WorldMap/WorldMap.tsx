@@ -19,6 +19,9 @@ export const WORLD_MAP_STEPS = 4
 
 const ZOOM_MS = 600
 
+/** The fill of every country that is not highlighted, and of the outline. */
+const NEUTRAL_COLOR = 'var(--campaign-band-card)'
+
 /** The accent from darkest (fewest visitors) to lightest (most), four steps. */
 const STEP_TONES: ReadonlyArray<(accent: string) => string> = [
   (accent) => darken(accent, 0.55),
@@ -37,8 +40,6 @@ interface WorldMapProps {
   visitors?: ReadonlyArray<CampaignCountryStat>
   /** The theme accent, as `#RRGGBB`. */
   accentColor: string
-  /** The fill of every country that is not highlighted, and of the outline. */
-  neutralColor?: string
   locale: string
 }
 
@@ -65,7 +66,6 @@ export function WorldMap({
   zoomToHighlighted,
   visitors,
   accentColor,
-  neutralColor = 'var(--campaign-band-card)',
   locale
 }: WorldMapProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
@@ -163,7 +163,7 @@ export function WorldMap({
                   : undefined
               }
               style={{
-                fill: step == null ? neutralColor : stepColors[step],
+                fill: step == null ? NEUTRAL_COLOR : stepColors[step],
                 stroke: 'var(--campaign-band-background)',
                 strokeWidth: 0.5,
                 vectorEffect: 'non-scaling-stroke'

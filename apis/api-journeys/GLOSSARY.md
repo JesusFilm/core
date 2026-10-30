@@ -211,14 +211,14 @@ _Avoid_: block (bare, where a Journey Block could be meant), element, widget
 
 **Campaign Section**:
 A top-level Campaign Block on a Campaign Page: one full-width band of one of eleven kinds (Hero, Region Switcher, Region Header, Region Share, Featured Media, Journey List, Video Carousel, Analytics, Rich Text, Columns, Image). Each has a **Section Background** and optional colour overrides and may hold **Extras**, but never a built-in call to action — a button is always an Extra.
-_Avoid_: block (for a section), row, band, panel, module
+_Avoid_: block (for a section), row, band (outside the renderer), panel, module
 
 **Section Body**:
 The typed, fixed part of a Campaign Section that lives on the section's own row (its eyebrow, title, description, media slot, and so on) rather than as child blocks. Extras render above or below it.
 _Avoid_: content, fields, inner blocks
 
 **Section Background**:
-What a Campaign Section sits on: nothing, the theme surface, the contrast band, the primary colour, a custom colour, or an image. An image background is an owned cover block with a light / medium / heavy overlay, as a Card owns its **Cover**.
+What a Campaign Section sits on: nothing, the theme surface, the contrast band, the primary colour, a custom colour, or an image. An image background is an owned cover block with a light / medium / heavy overlay, as a Card owns its **Cover**. In the renderer the painted section is the **Section Band** (`CampaignSectionBand`, `resolveBand`, `--campaign-band-*`), so "band" is the renderer's name for it.
 _Avoid_: backdrop, cover (reserve for the owned image itself)
 
 **Column Slot**:

@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import type { CSSObject } from '@mui/material/styles'
-import { ReactElement, ReactNode, useMemo } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import {
   CampaignBackgroundKind,
@@ -10,16 +10,14 @@ import {
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
 import { CampaignButton } from '../CampaignButton'
-import { useCampaign } from '../CampaignProvider'
 import { CampaignTypography } from '../CampaignTypography'
-import { bandCssVariables, resolveBand } from '../libs/resolveBand'
 import { isExtra } from '../types'
 import type { CampaignSectionTree, CampaignTree } from '../types'
 
-import { CampaignBandCover } from './CampaignBandCover'
 import { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
 import { CampaignSectionContext } from './CampaignSectionContext'
 import { useCampaignSlot } from './CampaignSlotContext'
+import { useCampaignBand } from './useCampaignBand'
 
 interface CampaignSectionBandProps {
   block: CampaignSectionTree
@@ -69,13 +67,14 @@ function spacingFor(block: CampaignSectionTree, inSlot: boolean): CSSObject {
 
 /**
  * The one wrapper every section and chrome block renders through: paints the
- * band from the §4 table as CSS variables (with the `image` cover and overlay
+ * band from the **Section Background** table as CSS variables (with the `image` cover and overlay
  * behind), anchors the band by block id under the sticky header, and orders
  * the Extras placed above, then the typed body, then the Extras placed below,
  * each group by parentOrder. In a Column Slot the band is not a container: no
  * page container or section rhythm, and a section with a background of its
- * own gets padding and a radius. The chrome paints the same band through
- * `CampaignHeader` and `CampaignFooter`.
+ * own gets padding and a radius. The band itself comes from
+ * `useCampaignBand`, which the chrome's `CampaignHeader` and
+ * `CampaignFooter` paint through too; they do not render this wrapper.
  */
 export function CampaignSectionBand({
   block,
@@ -83,11 +82,7 @@ export function CampaignSectionBand({
   minHeight = null,
   children
 }: CampaignSectionBandProps): ReactElement {
-  const { campaign } = useCampaign()
-  const band = useMemo(
-    () => resolveBand(block, campaign.theme),
-    [block, campaign.theme]
-  )
+  const band = useCampaignBand(block, align)
   const inSlot = useCampaignSlot()
   const extras = block.children.filter(
     (child) => child.__typename !== 'CampaignColumnBlock'
@@ -106,12 +101,12 @@ export function CampaignSectionBand({
   )
 
   return (
-    <CampaignSectionContext.Provider value={{ band, align }}>
+    <CampaignSectionContext.Provider value={band.context}>
       <Box
         component="section"
         id={block.id}
         data-testid={`CampaignSectionBand-${block.id}`}
-        style={bandCssVariables(band)}
+        style={band.style}
         sx={{
           position: 'relative',
           backgroundColor: 'var(--campaign-band-background)',
@@ -122,7 +117,7 @@ export function CampaignSectionBand({
           ...minHeightSx(minHeight, inSlot)
         }}
       >
-        <CampaignBandCover block={block} />
+        {band.cover}
         {inSlot ? body : <Container maxWidth="lg">{body}</Container>}
       </Box>
     </CampaignSectionContext.Provider>

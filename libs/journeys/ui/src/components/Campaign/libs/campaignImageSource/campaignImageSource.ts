@@ -1,3 +1,4 @@
+import { hasText } from '../../types'
 import { isHttpsUrl } from '../isHttpsUrl'
 
 export interface CampaignImageSource {
@@ -58,7 +59,7 @@ interface CampaignMediaColumns {
 }
 
 function videoPoster(block: CampaignMediaColumns): string | null | undefined {
-  if (block.image != null && block.image.trim() !== '') return block.image
+  if (hasText(block.image)) return block.image
   if (block.mediaVideo?.__typename !== 'Video') return null
   return block.mediaVideo.images?.[0]?.mobileCinematicHigh
 }

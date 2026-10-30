@@ -8,6 +8,7 @@ import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import {
   CampaignEditorProvider,
   CampaignEditorState
@@ -98,7 +99,7 @@ export const LocalizeTranslating: Story = {
     run: {
       campaignId: campaign.id,
       languageId: '496',
-      mode: 'missing',
+      mode: CampaignAiTranslateMode.missing,
       languageName: 'Français',
       progress: 45,
       message: 'Translated 2 of 5 parts',

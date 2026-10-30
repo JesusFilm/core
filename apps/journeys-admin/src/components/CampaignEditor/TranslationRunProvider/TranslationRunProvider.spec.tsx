@@ -7,12 +7,14 @@ import { ReactElement } from 'react'
 
 import { CampaignAiTranslateVariables } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
+
 import { TranslationRunProvider, useTranslationRun } from '.'
 
 const variables: CampaignAiTranslateVariables = {
   campaignId: 'campaignId',
   languageId: '496',
-  mode: 'missing'
+  mode: CampaignAiTranslateMode.missing
 }
 
 function report(

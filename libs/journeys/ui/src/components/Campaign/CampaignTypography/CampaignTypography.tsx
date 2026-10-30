@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
 import { useCampaignSection } from '../CampaignSectionBand/CampaignSectionContext'
-import { hasText } from '../types'
+import { hasExtraContent } from '../types'
 import type { CampaignBlockOf } from '../types'
 
 interface CampaignTypographyProps {
@@ -46,7 +46,7 @@ export function CampaignTypography({
   block
 }: CampaignTypographyProps): ReactElement | null {
   const section = useCampaignSection()
-  if (!hasText(block.content)) return null
+  if (!hasExtraContent(block)) return null
 
   const variant = block.typographyVariant ?? TypographyVariant.body1
   const sectionColor = sectionColorFor(section, variant)

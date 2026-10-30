@@ -2,17 +2,15 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement } from 'react'
 
-import { useCampaign } from '../CampaignProvider'
 import { CampaignRenderer } from '../CampaignRenderer'
 import {
   CAMPAIGN_HEADER_HEIGHT,
-  CampaignBandCover,
-  CampaignSectionContext
+  CampaignSectionContext,
+  useCampaignBand
 } from '../CampaignSectionBand'
-import { bandCssVariables, resolveBand } from '../libs/resolveBand'
-import { hasText } from '../types'
+import { hasExtraContent } from '../types'
 import type { CampaignTree, CampaignTreeOf } from '../types'
 
 interface CampaignFooterProps {
@@ -21,41 +19,36 @@ interface CampaignFooterProps {
 
 function isLine(child: CampaignTree): boolean {
   return (
-    child.__typename === 'CampaignTypographyBlock' && hasText(child.content)
+    child.__typename === 'CampaignTypographyBlock' && hasExtraContent(child)
   )
 }
 
 function isLink(child: CampaignTree): boolean {
-  return child.__typename === 'CampaignButtonBlock' && hasText(child.label)
+  return child.__typename === 'CampaignButtonBlock' && hasExtraContent(child)
 }
 
 /**
  * The Campaign Chrome footer: a static band at the page end painted from the
- * band table like any section, its typography children as lines and its
+ * band table like any section (`useCampaignBand`), its typography children as lines and its
  * button children as links, each group by parentOrder. Side by side from
  * `md` up, stacked below; an empty footer is a thin band. Same render on
  * both pages.
  */
 export function CampaignFooter({ block }: CampaignFooterProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { campaign } = useCampaign()
-  const band = useMemo(
-    () => resolveBand(block, campaign.theme),
-    [block, campaign.theme]
-  )
-  const sectionContext = useMemo(() => ({ band, align: null }), [band])
+  const band = useCampaignBand(block)
   const lines = block.children.filter(isLine)
   const links = block.children.filter(isLink)
   const empty = lines.length === 0 && links.length === 0
 
   return (
-    <CampaignSectionContext.Provider value={sectionContext}>
+    <CampaignSectionContext.Provider value={band.context}>
       <Box
         component="footer"
         id={block.id}
         data-testid="CampaignFooter"
         data-empty={empty ? 'true' : undefined}
-        style={bandCssVariables(band)}
+        style={band.style}
         sx={{
           position: 'relative',
           backgroundColor: 'var(--campaign-band-background)',
@@ -66,7 +59,7 @@ export function CampaignFooter({ block }: CampaignFooterProps): ReactElement {
           py: empty ? 0 : { xs: 4, md: 5 }
         }}
       >
-        <CampaignBandCover block={block} />
+        {band.cover}
         {!empty && (
           <Container maxWidth="lg" sx={{ position: 'relative' }}>
             <Stack

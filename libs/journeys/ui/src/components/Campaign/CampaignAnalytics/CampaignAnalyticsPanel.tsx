@@ -18,6 +18,7 @@ import {
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { campaignStringOr } from '../CampaignProvider/campaignString'
+import { campaignCardSx } from '../libs/campaignSx'
 import type { CampaignRegion } from '../types'
 
 import type {
@@ -38,6 +39,8 @@ import { WORLD_MAP_HEIGHT, WORLD_MAP_WIDTH, WorldMap } from './WorldMap'
 import type { WorldMapState } from './WorldMap'
 
 /** Chips and rows keep a near-square 4px corner regardless of the theme radius. */
+const CHIP_AND_ROW_RADIUS = '4px'
+
 const ROW_HEIGHT = 36
 /** The gap between ranked rows, in px. */
 const ROW_GAP = 6
@@ -86,16 +89,7 @@ interface TileProps {
 
 function Tile({ testId, label, value, caption }: TileProps): ReactElement {
   return (
-    <Stack
-      data-testid={testId}
-      spacing={0.5}
-      sx={{
-        p: 3,
-        borderRadius: 1,
-        backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)'
-      }}
-    >
+    <Stack data-testid={testId} spacing={0.5} sx={{ p: 3, ...campaignCardSx }}>
       <Typography
         variant="overline"
         component="p"
@@ -181,7 +175,7 @@ function RankedList({ view, locale, columns }: RankedListProps): ReactElement {
               width: '100%',
               height: ROW_HEIGHT,
               px: 1.5,
-              borderRadius: '4px',
+              borderRadius: CHIP_AND_ROW_RADIUS,
               border: '1px solid var(--campaign-band-border)',
               backgroundColor: 'var(--campaign-band-card)',
               display: 'grid',
@@ -233,6 +227,26 @@ function RankedList({ view, locale, columns }: RankedListProps): ReactElement {
       })}
     </Box>
   )
+}
+
+/**
+ * The tab an arrow, Home or End key moves to from `current` of `count`
+ * tabs, wrapping at the ends; the arrows follow the reading direction. Null
+ * for any other key.
+ */
+function nextTabIndex(
+  key: string,
+  current: number,
+  count: number,
+  rtl: boolean
+): number | null {
+  const forwardKey = rtl ? 'ArrowLeft' : 'ArrowRight'
+  const backwardKey = rtl ? 'ArrowRight' : 'ArrowLeft'
+  if (key === forwardKey) return (current + 1) % count
+  if (key === backwardKey) return (current - 1 + count) % count
+  if (key === 'Home') return 0
+  if (key === 'End') return count - 1
+  return null
 }
 
 function LoadingState(): ReactElement {
@@ -306,19 +320,12 @@ export function CampaignAnalyticsPanel({
 
   /** Arrow keys, Home and End move the selection and focus; Left and Right swap in a right-to-left layout. */
   function handleTabKeyDown(event: KeyboardEvent<HTMLElement>): void {
-    const forwardKey = theme.direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight'
-    const backwardKey = theme.direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft'
-    const current = tabValues.indexOf(activeTab)
-    const next =
-      event.key === forwardKey
-        ? (current + 1) % tabValues.length
-        : event.key === backwardKey
-          ? (current - 1 + tabValues.length) % tabValues.length
-          : event.key === 'Home'
-            ? 0
-            : event.key === 'End'
-              ? tabValues.length - 1
-              : null
+    const next = nextTabIndex(
+      event.key,
+      tabValues.indexOf(activeTab),
+      tabValues.length,
+      theme.direction === 'rtl'
+    )
     if (next == null) return
     event.preventDefault()
     setSelectedTab(tabValues[next])
@@ -328,6 +335,9 @@ export function CampaignAnalyticsPanel({
   /** A tab shows and is named by its label (a region's name); a label cut short by the ellipsis stays whole in the tooltip. */
   const tabFor = (value: string, label: string): ReactElement => {
     const selected = activeTab === value
+    function handleTabClick(): void {
+      setSelectedTab(value)
+    }
     return (
       <ButtonBase
         key={value}
@@ -341,14 +351,14 @@ export function CampaignAnalyticsPanel({
         aria-controls={panelId}
         tabIndex={selected ? 0 : -1}
         title={label}
-        onClick={() => setSelectedTab(value)}
+        onClick={handleTabClick}
         onKeyDown={handleTabKeyDown}
         data-testid={`CampaignAnalyticsChip-${value}`}
         sx={{
           px: 1,
           py: 0.5,
           minHeight: 30,
-          borderRadius: '4px',
+          borderRadius: CHIP_AND_ROW_RADIUS,
           typography: 'overline',
           fontSize: '0.6875rem',
           lineHeight: 1.3,
@@ -493,9 +503,7 @@ export function CampaignAnalyticsPanel({
                   display: 'flex',
                   alignItems: 'center',
                   p: 2,
-                  borderRadius: 1,
-                  border: '1px solid var(--campaign-band-border)',
-                  backgroundColor: 'var(--campaign-band-card)',
+                  ...campaignCardSx,
                   // The map fits whatever height the ranks leave beside it.
                   '& svg': { height: '100%', maxHeight: '100%' }
                 }}

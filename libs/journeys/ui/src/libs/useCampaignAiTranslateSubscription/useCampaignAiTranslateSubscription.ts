@@ -33,12 +33,14 @@ export const CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION = gql`
   }
 `
 
-/** `all` also replaces the machine's earlier translations; `missing` fills only the gaps. A person's are never replaced. */
-export interface CampaignAiTranslateVariables {
-  campaignId: string
-  languageId: string
-  mode: 'all' | 'missing'
-}
+/**
+ * The campaign and language a run translates, and its `mode`
+ * (`CampaignAiTranslateMode`): `all` also replaces the machine's earlier
+ * translations; `missing` fills only the gaps. A person's are never
+ * replaced.
+ */
+export type CampaignAiTranslateVariables =
+  CampaignAiTranslateSubscriptionVariables
 
 /**
  * Whether the translation model covers a language. A language outside the
@@ -78,8 +80,11 @@ export function useCampaignAiTranslateSubscription(
     CampaignAiTranslateSubscriptionVariables
   >(CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION, {
     ...rest,
+    // Apollo Client 4 types `variables` as required whenever the operation
+    // declares required ones, but callers mount this hook before a run exists
+    // and pair the absent variables with `skip`.
     skip: rest.skip === true || variables == null,
-    variables: variables as unknown as CampaignAiTranslateSubscriptionVariables,
+    variables: variables as CampaignAiTranslateSubscriptionVariables,
     onData: (result) => {
       erroredRef.current = false
       if (result.data.data?.campaignAiTranslateSubscription.campaign != null) {

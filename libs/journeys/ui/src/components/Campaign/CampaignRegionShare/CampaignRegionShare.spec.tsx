@@ -12,6 +12,8 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
+import { styleText } from '../../../test/emotionStyles'
 import { shouldRenderSection } from '../CampaignPage'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -121,12 +123,6 @@ function renderShare(
       </CampaignProvider>
     </ThemeProvider>
   )
-}
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
 }
 
 describe('CampaignRegionShare', () => {
@@ -299,6 +295,14 @@ describe('CampaignRegionShare', () => {
       )
     )
     expect(await screen.findByText('Lien copié')).toBeInTheDocument()
+  })
+
+  it('paints the Copy button in the band’s button colours, darkened on hover', () => {
+    renderShare()
+    const rules = cssRulesFor(screen.getByTestId('CampaignRegionShareCopy'))
+    expect(rules).toContain('background-color:var(--campaign-band-button)')
+    expect(rules).toContain('color:var(--campaign-band-button-label)')
+    expect(rules).toContain('filter:brightness(0.92)')
   })
 
   it('renders the preview frame with a relative embed URL unchanged', () => {

@@ -7,16 +7,17 @@ import {
   CampaignJourneyListDisplay,
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
 import { shouldRenderSection } from '../CampaignPage/shouldRenderSection'
 import { CampaignProvider } from '../CampaignProvider'
 import { CampaignRenderer } from '../CampaignRenderer'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
-import { cssRulesFor } from '../libs/cssRulesFor'
 import { transformCampaignBlocks } from '../libs/transformer'
 import {
   LANDING_PAGE_ID,
   campaignPublic,
   columnSlot,
+  richTextSectionBlock,
   section
 } from '../testData'
 import type { CampaignTreeOf } from '../types'
@@ -63,15 +64,13 @@ function blocksFor({
     }),
     ...(left
       ? [
-          section('CampaignRichTextBlock', {
+          {
+            ...richTextSectionBlock,
             id: 'leftRichTextId',
-            pageId: LANDING_PAGE_ID,
             parentBlockId: 'slotLeftId',
             parentOrder: 0,
-            title: 'Left title',
-            richTextContent: 'Left text',
             backgroundKind: leftBackground
-          })
+          }
         ]
       : []),
     ...(right
@@ -123,7 +122,7 @@ describe('CampaignColumns', () => {
 
     const left = screen.getByTestId('CampaignColumnSlot-slotLeftId')
     const right = screen.getByTestId('CampaignColumnSlot-slotRightId')
-    expect(within(left).getByText('Left title')).toBeInTheDocument()
+    expect(within(left).getByText('Our story')).toBeInTheDocument()
     expect(within(right).getByText('Right title')).toBeInTheDocument()
     expect(
       left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING
@@ -246,14 +245,14 @@ describe('CampaignColumns', () => {
     it('is skipped when the only sections in its slots would be skipped', () => {
       const tree = transformCampaignBlocks([
         ...blocksFor({ left: false, right: false }),
-        section('CampaignRichTextBlock', {
+        {
+          ...richTextSectionBlock,
           id: 'blankId',
-          pageId: LANDING_PAGE_ID,
           parentBlockId: 'slotLeftId',
           parentOrder: 0,
           title: null,
           richTextContent: ''
-        })
+        }
       ])[0] as CampaignTreeOf<'CampaignColumnsBlock'>
 
       expect(shouldRenderSection(tree, context)).toBe(false)

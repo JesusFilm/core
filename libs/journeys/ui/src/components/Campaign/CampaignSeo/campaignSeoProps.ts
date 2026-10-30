@@ -82,7 +82,7 @@ function headerLogo(campaign: CampaignPublic): CampaignImageSource | null {
 }
 
 /**
- * The social image chain (PRD §11): the page's hero media poster (a video's
+ * The social image chain (glossary: **Campaign Public Page**): the page's hero media poster (a video's
  * image or an image's `src`), a Region Page inheriting the landing hero's
  * when its own has none, else the header logo, else none.
  */
@@ -127,7 +127,7 @@ function campaignLanguageAlternates(
 }
 
 /**
- * The `NextSeo` props for a public campaign page (PRD §11): title from the
+ * The `NextSeo` props for a public campaign page (glossary: **Campaign Public Page**): title from the
  * translated campaign title ("<region> · <title>" on a Region Page);
  * description from the page's hero description, else its title, else none;
  * canonical in the preferred form, with `?lang=<bcp47>` when the page is
@@ -135,7 +135,7 @@ function campaignLanguageAlternates(
  * Open Graph and Twitter as a `website` with the social image chain and `site_name` = the campaign
  * title.
  *
- * `hreflang` alternates (PRD §2): one per language at the address that
+ * `hreflang` alternates (glossary: **Campaign Address**): one per language at the address that
  * language canonicalises to, plus `x-default` at the bare canonical, so no
  * alternate points at a URL whose canonical names another. None when the
  * campaign has fewer than two languages.

@@ -1,25 +1,15 @@
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
-
 import { render, screen } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { GET_CAMPAIGN_STATS } from '@core/journeys/ui/Campaign'
 import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
+import { worldAtlas } from '@core/journeys/ui/test/worldAtlas'
 
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
 import { QueriedEditor } from '../testing'
 
 import { AnalyticsEdit } from './AnalyticsEdit'
-
-const atlas = readFileSync(
-  resolve(
-    __dirname,
-    '../../../../../../apps/journeys/public/countries-110m.json'
-  ),
-  'utf8'
-)
 
 const statsMock = {
   request: { query: GET_CAMPAIGN_STATS, variables: { id: campaign.id } },
@@ -61,7 +51,7 @@ describe('AnalyticsEdit', () => {
     vi.clearAllMocks()
     fetchMock.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(JSON.parse(atlas))
+      json: () => Promise.resolve(worldAtlas)
     })
     vi.stubGlobal('fetch', fetchMock)
   })

@@ -5,10 +5,10 @@ import {
   CampaignPageKind,
   CampaignSwitcherVariant
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
 import { shouldRenderSection } from '../CampaignPage'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
-import { cssRulesFor } from '../libs/cssRulesFor'
 import { transformCampaignBlocks } from '../libs/transformer'
 import {
   afrRegion,
