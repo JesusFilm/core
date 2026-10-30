@@ -1,3 +1,4 @@
+import { campaignLocaleFolder } from '@core/journeys/ui/Campaign/libs/campaignStrings'
 import { CampaignStringKey } from '@core/prisma/journeys/client'
 
 import {
@@ -5,38 +6,9 @@ import {
   CAMPAIGN_STRING_KEYS
 } from './campaignStrings'
 
-type CampaignBundle = Record<string, string>
+export { campaignLocaleFolder }
 
-/**
- * Maps a language's bcp47 tag to its libs/locales folder, mirroring the
- * admin's `fallbackLng` in apps/journeys-admin/next-i18next.config.js. Keep
- * the two in sync.
- */
-const CAMPAIGN_LOCALE_FOLDERS: Record<string, string> = {
-  am: 'am-ET',
-  ar: 'ar-SA',
-  bn: 'bn-BD',
-  de: 'de-DE',
-  es: 'es-ES',
-  fr: 'fr-FR',
-  hi: 'hi-IN',
-  id: 'id-ID',
-  ja: 'ja-JP',
-  ko: 'ko-KR',
-  mn: 'mn-MN',
-  ms: 'ms-MY',
-  my: 'my-MM',
-  ne: 'ne-NP',
-  pt: 'pt-BR',
-  ru: 'ru-RU',
-  th: 'th-TH',
-  tl: 'tl-PH',
-  tr: 'tr-TR',
-  ur: 'ur-PK',
-  vi: 'vi-VN',
-  zh: 'zh-Hans-CN',
-  'zh-Hant': 'zh-Hant-TW'
-}
+type CampaignBundle = Record<string, string>
 
 // One chunk per folder so the API bundle only loads the bundle a campaign
 // actually needs. Both bundles are keyed by their English strings.
@@ -69,24 +41,13 @@ function translationFor(
   return translated
 }
 
-/** The libs/locales folder for a bcp47 tag; null for English or an unknown tag. */
-export function campaignLocaleFolder(
-  bcp47: string | null | undefined
-): string | null {
-  if (bcp47 == null) return null
-  const exact = CAMPAIGN_LOCALE_FOLDERS[bcp47]
-  if (exact != null) return exact
-  const primary = bcp47.split('-')[0]
-  return CAMPAIGN_LOCALE_FOLDERS[primary] ?? null
-}
-
 /**
  * The eighteen Campaign String values for a campaign whose default language
  * has the given bcp47 tag: the English wording, or the libs-journeys-ui
  * bundle's translation when the language is not English and the bundle has
  * that exact string, falling back per key to the admin bundle's translation
  * and then English (GLOSSARY.md: Campaign String). The English wording reaches
- * the bundles through getCampaignStringDefaults in libs/journeys/ui.
+ * the bundles through the Campaign String registry in libs/journeys/ui.
  */
 export async function resolveCampaignStringValues(
   bcp47: string | null | undefined
