@@ -113,6 +113,10 @@ function VideoCard({
     return string(CampaignStringKey.watch)
   }
 
+  function handlePlay(): void {
+    onPlay(card)
+  }
+
   const action = cardAction()
   const showDuration =
     card.childrenCount === 0 && card.duration != null && card.duration > 0
@@ -121,7 +125,7 @@ function VideoCard({
     <CardFrame
       testId={`CampaignVideoCarouselCard-${card.id}`}
       href={card.href}
-      onClick={card.block != null ? () => onPlay(card) : undefined}
+      onClick={card.block != null ? handlePlay : undefined}
     >
       <CampaignVideoFrame poster={card.poster}>
         {showDuration && (
@@ -243,6 +247,10 @@ export function CampaignVideoCarousel({
   const [playing, setPlaying] = useState<CampaignCarouselVideoCard>()
   const { rowRef, ...scroll } = useCarouselScroll(cards.length)
 
+  function handleDialogClose(): void {
+    setPlaying(undefined)
+  }
+
   return (
     <CampaignSectionBand block={block}>
       <CampaignSectionHeading
@@ -288,7 +296,7 @@ export function CampaignVideoCarousel({
         slotProps={{
           paper: { 'aria-label': playing?.title ?? t('Video player') }
         }}
-        onClose={() => setPlaying(undefined)}
+        onClose={handleDialogClose}
         maxWidth="md"
         fullWidth
       >

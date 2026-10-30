@@ -113,7 +113,7 @@ function acceptLanguageMatch(
 }
 
 /**
- * The visitor's Page Language (PRD §2): `?lang=<bcp47>` naming a campaign
+ * The visitor's Page Language (glossary: **Page Language resolution**): `?lang=<bcp47>` naming a campaign
  * language, then the saved cookie, then an `Accept-Language` prefix match
  * against the campaign languages, then the campaign default. Pure, so the
  * four routes and the editor preview share one rule.

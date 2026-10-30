@@ -67,7 +67,7 @@ function spacingFor(block: CampaignSectionTree, inSlot: boolean): CSSObject {
 
 /**
  * The one wrapper every section and chrome block renders through: paints the
- * band from the §4 table as CSS variables (with the `image` cover and overlay
+ * band from the **Section Background** table as CSS variables (with the `image` cover and overlay
  * behind), anchors the band by block id under the sticky header, and orders
  * the Extras placed above, then the typed body, then the Extras placed below,
  * each group by parentOrder. In a Column Slot the band is not a container: no

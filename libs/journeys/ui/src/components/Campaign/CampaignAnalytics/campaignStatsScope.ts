@@ -75,5 +75,3 @@ export function countryName(code: string, locale: string): string {
     return code
   }
 }
-
-/** "Nov 1" (the locale's order), with the year once it is not the current one. */

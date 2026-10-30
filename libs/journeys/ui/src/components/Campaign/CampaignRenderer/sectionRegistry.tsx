@@ -94,7 +94,7 @@ function CampaignColumnsSection({
 
 /**
  * One entry per page section: its component and its row of the public
- * empty-state matrix (PRD §11). A section with no body content and no Extras
+ * empty-state matrix (glossary: **Campaign Public Page**). A section with no body content and no Extras
  * is skipped, band and all, so visitors never see editor hints or empty
  * frames. Per type: Hero renders with any text, media or Extra; Featured
  * Media renders with any text, bullet, media or Extra (text alone full width,

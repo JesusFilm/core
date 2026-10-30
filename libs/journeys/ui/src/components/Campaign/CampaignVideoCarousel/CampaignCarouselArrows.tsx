@@ -135,7 +135,8 @@ export function CampaignCarouselArrows({
   const { direction, breakpoints } = useTheme()
   const rtl = direction === 'rtl'
 
-  function stopPropagation(event: MouseEvent<HTMLElement>): void {
+  /** A click on an arrow stops at the row, so it never reaches the card or section around it. */
+  function handleArrowsClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
   }
 
@@ -144,7 +145,7 @@ export function CampaignCarouselArrows({
       direction="row"
       spacing={1}
       data-testid="CampaignCarouselArrows"
-      onClick={stopPropagation}
+      onClick={handleArrowsClick}
       sx={{
         justifyContent: 'flex-end',
         [breakpoints.down('md')]: { display: 'none' }
