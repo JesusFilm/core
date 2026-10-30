@@ -18,6 +18,7 @@ import { deleteVideo } from '../mux/video/service'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
+import { canHavePlaceholderVariant } from './canHavePlaceholderVariant'
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
@@ -156,7 +157,7 @@ export async function handleParentVariantCreation(
           has: videoId
         }
       },
-      select: { id: true }
+      select: { id: true, label: true }
     }),
     prisma.videoVariant.findFirst({
       where: {
@@ -166,6 +167,9 @@ export async function handleParentVariantCreation(
       select: { published: true }
     })
   ])
+  const containerParents = parentVideos.filter((parent) =>
+    canHavePlaceholderVariant(parent.label)
+  )
 
   // Only create parent variants if:
   // 1. Video exists and is not a feature film
@@ -177,7 +181,7 @@ export async function handleParentVariantCreation(
     video.label === 'featureFilm' ||
     !video.published ||
     !childVariant?.published ||
-    parentVideos.length === 0
+    containerParents.length === 0
   ) {
     return
   }
@@ -207,7 +211,7 @@ export async function handleParentVariantCreation(
   }
 
   // Create empty variants for all parent videos in parallel
-  const promises = parentVideos.map((parent) =>
+  const promises = containerParents.map((parent) =>
     createEmptyParentVariant(parent.id, languageId, languageSlug).catch(
       (error) => {
         console.error(
