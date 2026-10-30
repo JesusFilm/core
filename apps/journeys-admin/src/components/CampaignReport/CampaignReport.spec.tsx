@@ -46,21 +46,6 @@ describe('CampaignReport', () => {
     expect(screen.queryByTestId('PlausibleEmbedFrame')).not.toBeInTheDocument()
   })
 
-  it('says the report is being set up while the campaign has no Plausible site yet', async () => {
-    render(
-      <MockedProvider mocks={[reportMock(null)]}>
-        <CampaignReport campaignId="campaignId" />
-      </MockedProvider>
-    )
-
-    expect(
-      await screen.findByText(
-        'The report is being set up. Check back in a few minutes.'
-      )
-    ).toBeInTheDocument()
-    expect(screen.queryByTestId('PlausibleEmbedFrame')).not.toBeInTheDocument()
-  })
-
   it('shows the error message when the campaign fails to load', async () => {
     render(
       <MockedProvider

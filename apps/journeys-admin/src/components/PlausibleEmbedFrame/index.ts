@@ -1,1 +1,5 @@
-export { PlausibleEmbedFrame } from './PlausibleEmbedFrame'
+export {
+  PlausibleEmbedFrame,
+  plausibleEmbedStatus
+} from './PlausibleEmbedFrame'
+export type { PlausibleEmbedStatus } from './PlausibleEmbedFrame'

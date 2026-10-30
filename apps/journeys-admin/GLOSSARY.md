@@ -197,7 +197,7 @@ The embedded business-intelligence dashboard behind Journeys Analytics, in four 
 _Avoid_: report (unqualified)
 
 **Plausible Embed Frame**:
-The other embedded analytics surface: a Plausible site's own dashboard in an iframe, through its shared link and authorized by its `plausibleToken`, restyled for the admin. Event-level stats, distinct backend from Power BI. The **Plausible Embed Dashboard** and the **Campaign Report** each show one.
+The other embedded analytics surface: a Plausible site's own dashboard in an iframe, through its shared link and authorized by its `plausibleToken`, restyled for the admin. Event-level stats, distinct backend from Power BI. Until the dashboard has drawn it says the report is loading, failed to load, or, loaded with no token because the site is not created yet, is being set up. The **Plausible Embed Dashboard** and the **Campaign Report** each show one.
 _Avoid_: conflating with the Power BI Report
 
 **Plausible Embed Dashboard**:

@@ -10,7 +10,10 @@ import type {
   GetAdminJourneyWithPlausibleToken,
   GetAdminJourneyWithPlausibleTokenVariables
 } from '../../../__generated__/GetAdminJourneyWithPlausibleToken'
-import { PlausibleEmbedFrame } from '../PlausibleEmbedFrame'
+import {
+  PlausibleEmbedFrame,
+  plausibleEmbedStatus
+} from '../PlausibleEmbedFrame'
 
 export const GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN = gql`
   ${JOURNEY_FIELDS}
@@ -43,9 +46,11 @@ export function PlausibleEmbedDashboard({
   return (
     <PlausibleEmbedFrame
       siteId={`api-journeys-journey-${journeyId}`}
-      token={data?.journey.plausibleToken}
-      loading={loading}
-      error={error}
+      status={plausibleEmbedStatus({
+        loading,
+        error,
+        token: data?.journey.plausibleToken
+      })}
       host={host}
     />
   )
