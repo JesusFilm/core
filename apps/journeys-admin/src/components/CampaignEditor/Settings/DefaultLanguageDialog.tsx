@@ -15,6 +15,7 @@ import {
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN } from '../../../libs/useCampaignQuery'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
@@ -128,7 +129,11 @@ export function DefaultLanguageDialog({
   function handleMachineTranslate(): void {
     if (languageId == null) return
     setError(undefined)
-    setSweep({ campaignId: campaign.id, languageId, mode: 'missing' })
+    setSweep({
+      campaignId: campaign.id,
+      languageId,
+      mode: CampaignAiTranslateMode.missing
+    })
   }
 
   return (

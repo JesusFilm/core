@@ -22,6 +22,7 @@ import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_languages as CampaignLanguage
 } from '../../../../__generated__/GetCampaign'
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { useCampaignLanguageAddMutation } from '../../../libs/useCampaignLanguageAddMutation'
 import { useCampaignLanguageRemoveMutation } from '../../../libs/useCampaignLanguageRemoveMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
@@ -102,7 +103,11 @@ export function LanguagesPanel({
       })
       if (isMachineTranslatable(option.id))
         start(
-          { campaignId: campaign.id, languageId: option.id, mode: 'missing' },
+          {
+            campaignId: campaign.id,
+            languageId: option.id,
+            mode: CampaignAiTranslateMode.missing
+          },
           option.nativeName ?? option.localName ?? option.id
         )
     } catch (addError) {

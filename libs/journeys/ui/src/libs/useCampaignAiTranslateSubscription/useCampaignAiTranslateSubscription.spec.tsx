@@ -2,6 +2,8 @@ import { InMemoryCache, gql } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { renderHook, waitFor } from '@testing-library/react'
 
+import { CampaignAiTranslateMode } from '../../../__generated__/globalTypes'
+
 import {
   CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION,
   isMachineTranslatable,
@@ -11,7 +13,7 @@ import {
 const variables = {
   campaignId: 'campaignId',
   languageId: '496',
-  mode: 'missing' as const
+  mode: CampaignAiTranslateMode.missing
 }
 
 const progress = {

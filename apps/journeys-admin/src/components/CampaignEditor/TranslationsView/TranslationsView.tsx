@@ -14,7 +14,10 @@ import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateS
 
 import { CampaignTranslations_campaignTranslations as TranslationRow } from '../../../../__generated__/CampaignTranslations'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
-import { CampaignTranslationGroup } from '../../../../__generated__/globalTypes'
+import {
+  CampaignAiTranslateMode,
+  CampaignTranslationGroup
+} from '../../../../__generated__/globalTypes'
 import {
   campaignTranslationsVariables,
   rowKey,
@@ -242,7 +245,11 @@ export function TranslationsView({
   function handleMachineTranslateMissing(): void {
     if (languageId == null) return
     start(
-      { campaignId: campaign.id, languageId, mode: 'missing' },
+      {
+        campaignId: campaign.id,
+        languageId,
+        mode: CampaignAiTranslateMode.missing
+      },
       selectedLanguage == null
         ? languageId
         : languageNames(selectedLanguage).autonym
