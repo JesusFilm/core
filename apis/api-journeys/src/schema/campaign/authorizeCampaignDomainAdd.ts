@@ -7,8 +7,8 @@ import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
 import { badUserInput, forbidden } from './errors'
 
 /**
- * Load the campaign a Campaign Domain is being added to, with its regions and
- * domains, and refuse it unless it is `teamId`'s, the caller may update it,
+ * Load the campaign a Campaign Domain is being added to, with its domains,
+ * and refuse it unless it is `teamId`'s, the caller may update it,
  * and it has no domain yet (GLOSSARY.md: Campaign Domain). The caller named
  * the campaign in its input, so an unknown one is `BAD_USER_INPUT` on
  * `campaignId`, like one of another team, rather than `NOT_FOUND`.
@@ -20,7 +20,7 @@ export async function authorizeCampaignDomainAdd(
 ) {
   const campaign = await prisma.campaign.findUnique({
     where: { id: campaignId },
-    include: { ...INCLUDE_CAMPAIGN_ACL, regions: true, customDomains: true }
+    include: { ...INCLUDE_CAMPAIGN_ACL, customDomains: true }
   })
   if (campaign == null || campaign.teamId !== teamId)
     throw badUserInput('campaign not found for this team', 'campaignId')

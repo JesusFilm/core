@@ -13,6 +13,7 @@ import { logger } from '../logger'
 import { deleteShortLink } from '../qrCode/qrCode.service'
 
 import { fetchLanguage } from './gatewayClient'
+import { CAMPAIGN_ADDRESS_SELECT } from './revalidateCampaign'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -189,6 +190,7 @@ describe('campaignDelete', () => {
   it('revalidates every page of a published campaign, domain root and _lang pages included, once the delete committed', async () => {
     const published = campaignFactory({ role: 'manager' })
       .withRegion('EUR')
+      .withLanguage('21028')
       .published()
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue({
@@ -196,10 +198,6 @@ describe('campaignDelete', () => {
       customDomains: [{ id: 'customDomainId', name: 'outreach.example.org' }]
     } as any)
     prismaMock.campaign.delete.mockResolvedValue(published)
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      { languageId: '529' },
-      { languageId: '21028' }
-    ] as any)
     vi.mocked(fetchLanguage)
       .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
       .mockResolvedValueOnce({ id: '21028', bcp47: 'es' })
@@ -223,6 +221,36 @@ describe('campaignDelete', () => {
       '/outreach.example.org/_lang/en/eur',
       '/outreach.example.org/_lang/es',
       '/outreach.example.org/_lang/es/eur'
+    ])
+  })
+
+  it('queues the before set though the language rows cascade away: the address is read before the delete', async () => {
+    const published = campaignFactory({ role: 'manager' })
+      .withLanguage('21028')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(published)
+    prismaMock.campaign.delete.mockResolvedValue(published)
+    vi.mocked(fetchLanguage)
+      .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
+      .mockResolvedValueOnce({ id: '21028', bcp47: 'es' })
+
+    await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })
+
+    const snapshotRead = prismaMock.campaign.findUnique.mock.calls.findIndex(
+      ([args]) => args.select === CAMPAIGN_ADDRESS_SELECT
+    )
+    expect(
+      prismaMock.campaign.findUnique.mock.invocationCallOrder[snapshotRead]
+    ).toBeLessThan(prismaMock.campaign.delete.mock.invocationCallOrder[0])
+    expect(prismaMock.campaignLanguage.findMany).not.toHaveBeenCalled()
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/_lang/en',
+      '/home/campaign/outreach-2026/_lang/es'
     ])
   })
 

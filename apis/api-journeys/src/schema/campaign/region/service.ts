@@ -18,7 +18,7 @@ import { renumber } from '../order'
  */
 
 export const INCLUDE_CAMPAIGN_REGION_ACL = {
-  campaign: { include: { ...INCLUDE_CAMPAIGN_ACL, customDomains: true } }
+  campaign: { include: INCLUDE_CAMPAIGN_ACL }
 } satisfies Prisma.CampaignRegionInclude
 
 export type CampaignRegionWithCampaignAcl = Prisma.CampaignRegionGetPayload<{

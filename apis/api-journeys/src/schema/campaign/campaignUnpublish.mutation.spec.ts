@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../test/campaignAddressSnapshot'
 import {
   authClient,
   setupCampaignBlockSpec
@@ -87,18 +88,16 @@ describe('campaignUnpublish', () => {
   it('also revalidates the _lang page of every campaign language, so an unpublish reaches ?lang= visitors', async () => {
     const published = campaignFactory({ role: 'manager' })
       .withRegion('EUR')
+      .withLanguage('21028')
       .published()
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue(published)
+    mockAddressSnapshots(published, { ...published, status: 'draft' })
     prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
       ...published,
       status: 'draft'
     })
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      { languageId: '529' },
-      { languageId: '21028' }
-    ] as any)
     vi.mocked(fetchLanguage)
       .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
       .mockResolvedValueOnce({ id: '21028', bcp47: 'es' })
@@ -125,6 +124,7 @@ describe('campaignUnpublish', () => {
       .published()
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue(published)
+    mockAddressSnapshots(published, { ...published, status: 'draft' })
     prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
       ...published,

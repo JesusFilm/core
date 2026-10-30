@@ -1,3 +1,4 @@
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   CampaignSpecResult,
   authClient,
@@ -126,5 +127,23 @@ describe('campaignRegionOrderUpdate', () => {
     const result = await move(1, 'missing')
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+  })
+
+  it('queues no revalidation on a published campaign: a reorder waits for the ISR window', async () => {
+    const published = campaignFactory()
+      .withRegion('EUR')
+      .withRegion('AFR')
+      .withRegion('LAC')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(published)
+    prismaMock.campaignRegion.findUnique.mockResolvedValue(
+      campaignRegionWithAcl(published, 'eurRegionId')
+    )
+
+    const result = await move(2)
+
+    expect(result.errors).toBeUndefined()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 })

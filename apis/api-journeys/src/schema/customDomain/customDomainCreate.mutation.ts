@@ -5,7 +5,10 @@ import { logger } from '../../logger'
 import { builder } from '../builder'
 import { authorizeCampaignDomainAdd } from '../campaign/authorizeCampaignDomainAdd'
 import { badUserInput } from '../campaign/errors'
-import { enqueueCampaignDomainRevalidation } from '../campaign/revalidateCampaign'
+import {
+  queuePageSetChange,
+  snapshotCampaignAddress
+} from '../campaign/revalidateCampaign'
 import { isUniqueViolation } from '../campaign/validation'
 
 import { CustomDomainRef } from './customDomain'
@@ -89,8 +92,12 @@ builder.mutationField('customDomainCreate', (t) =>
             : await loadDomainCampaign(input, context.user)
 
         let registeredWithVercel = false
-        const customDomain = await prisma
+        const { customDomain, before, after } = await prisma
           .$transaction(async (tx) => {
+            const before =
+              campaign == null
+                ? null
+                : await snapshotCampaignAddress(tx, campaign.id)
             const { apexName } = await createVercelDomain(input.name)
             registeredWithVercel = true
 
@@ -114,10 +121,15 @@ builder.mutationField('customDomainCreate', (t) =>
               }
             }
 
-            return await tx.customDomain.create({
+            const customDomain = await tx.customDomain.create({
               ...query,
               data
             })
+            const after =
+              campaign == null
+                ? null
+                : await snapshotCampaignAddress(tx, campaign.id)
+            return { customDomain, before, after }
           })
           .catch(async (err: unknown) => {
             // Two creates raced for one campaign: the unique campaignId index
@@ -137,7 +149,7 @@ builder.mutationField('customDomainCreate', (t) =>
         // A Campaign Domain serves no team journey, so no short link moves;
         // the Campaign Address moves from the Root Domain to the domain.
         if (campaign != null) {
-          await enqueueCampaignDomainRevalidation([campaign], customDomain.name)
+          await queuePageSetChange(before, after)
           return customDomain
         }
 
