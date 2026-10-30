@@ -178,15 +178,12 @@ describe('requestVideoVariantReconciliation', () => {
         reason: 'video-variant-delete'
       })
 
+      const { data } =
+        prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
       // reconcileReasonSpecificVariant only runs the delete cleanup for this
       // reason; keeping 'video-variant-create' would leave the row to fail on
       // a Variant that no longer exists and alert on it.
-      expect(
-        prismaMock.videoVariantReconciliation.updateMany
-      ).toHaveBeenLastCalledWith({
-        where: { id: 'status-1', ...notPendingExplicitPublication },
-        data: expect.objectContaining({ reason: 'video-variant-delete' })
-      })
+      expect(data).toMatchObject({ reason: 'video-variant-delete' })
     }
   )
 
@@ -521,6 +518,52 @@ describe('requestVideoVariantReconciliation', () => {
         prismaMock.videoVariantReconciliation.update
       ).not.toHaveBeenCalled()
     })
+
+    it.each([
+      ['video-variant-publication-change'],
+      ['fresh-upload-publication-change']
+    ])(
+      'records a delete over a pending %s toggle so the delete cleanup runs',
+      async (pendingReason) => {
+        // Only the delete reason runs the cleanup in
+        // reconcileReasonSpecificVariant. A non-toggle request normally keeps
+        // a pending toggle's reason to protect its `published`, but the
+        // Variant is gone, so there is nothing left to protect; keeping the
+        // toggle's reason would leave the row to wait out the Mux window and
+        // alert on a Variant that no longer exists.
+        prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+          id: 'reconciliation-1',
+          reason: pendingReason,
+          processingStages: { mux: { state: 'processing', attempts: 1 } }
+        } as never)
+
+        await requestVideoVariantReconciliation({
+          videoVariantId: 'variant-1',
+          videoId: 'video-1',
+          languageId: '20770',
+          edition: 'base',
+          published: false,
+          reason: 'video-variant-delete'
+        })
+
+        // No `pendingExplicitPublication` guard: the write is unconditional on
+        // the row's live state.
+        expect(
+          prismaMock.videoVariantReconciliation.updateMany
+        ).not.toHaveBeenCalled()
+        expect(
+          prismaMock.videoVariantReconciliation.update
+        ).toHaveBeenCalledWith({
+          where: { id: 'reconciliation-1' },
+          data: expect.objectContaining({
+            reason: 'video-variant-delete',
+            status: 'processing',
+            retryAt: expect.any(Date),
+            createdAt: expect.any(Date)
+          })
+        })
+      }
+    )
 
     it('adopts the new reason once the pending Draft request has settled', async () => {
       prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
