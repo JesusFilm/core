@@ -47,6 +47,7 @@
         "{projectRoot}/src/**/__generated__/**/*"
       ],
       "options": {
+        "parallel": false,
         "commands": [
           {
             "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
