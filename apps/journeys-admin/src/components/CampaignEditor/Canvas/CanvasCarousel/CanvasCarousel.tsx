@@ -11,11 +11,14 @@ import {
   useCarouselScroll
 } from '@core/journeys/ui/Campaign'
 import type { CampaignCarouselCard } from '@core/journeys/ui/Campaign'
+import { videoCountLabel } from '@core/journeys/ui/Campaign/CampaignVideo'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { CampaignStringKey } from '../../../../../__generated__/globalTypes'
 import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { campaignStringText } from '../../ShareSectionEdit/ShareSectionEdit'
 import type { CanvasBlock } from '../CanvasSection'
 import { EditorNote } from '../EditorNote'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
@@ -38,10 +41,28 @@ interface CanvasCarouselProps {
  */
 export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, selection, selectBlock } = useCampaignEditor()
+  const {
+    campaign,
+    selection,
+    selectBlock,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const cards = carouselCards(block, campaign.defaultLanguageId)
   const explicit = block.videoId == null
   const { rowRef, ...scroll } = useCarouselScroll(cards.length)
+  // The public carousel reads both Campaign Strings with no fallback: a blank one stays blank.
+  const seeAllLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.seeAllOnWatch,
+    previewLanguageId,
+    ''
+  )
+  const videosWord = campaignStringText(
+    campaign,
+    CampaignStringKey.videos,
+    previewLanguageId,
+    ''
+  )
 
   if (cards.length === 0)
     return (
@@ -116,7 +137,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
               variant="subtitle1"
               sx={{ color: 'var(--campaign-band-heading)' }}
             >
-              {t('See all on Watch')}
+              {seeAllLabel}
             </Typography>
           </Box>
         ) : (
@@ -173,7 +194,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
                   variant="caption"
                   sx={{ color: 'var(--campaign-band-muted)' }}
                 >
-                  {t('{{count}} videos', { count: card.childrenCount })}
+                  {videoCountLabel(card.childrenCount, videosWord, t)}
                 </Typography>
               )}
             </Stack>
