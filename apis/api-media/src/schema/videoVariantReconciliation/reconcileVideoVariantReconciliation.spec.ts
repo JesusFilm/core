@@ -39,6 +39,28 @@ function expectAtomicPublish(videoVariantId: string): void {
   ).toBe(true)
 }
 
+// The unpublish write is the mirror image: a single conditional UPDATE gated
+// on the reconciliation row's live `published` still being false, so a stale
+// Draft run cannot undo a publish requested while it was in flight.
+function unpublishWrites(videoVariantId: string): unknown[][] {
+  return prismaMock.$executeRaw.mock.calls.filter(([sqlParts, ...values]) => {
+    const sql = (sqlParts as readonly string[]).join(' ')
+    return (
+      sql.includes('SET published = false') &&
+      values.length === 2 &&
+      values.every((value) => value === videoVariantId)
+    )
+  })
+}
+
+function expectAtomicUnpublish(videoVariantId: string): void {
+  const writes = unpublishWrites(videoVariantId)
+  expect(writes).toHaveLength(1)
+  const sql = (writes[0][0] as readonly string[]).join(' ')
+  expect(sql).toContain('EXISTS')
+  expect(sql).toMatch(/"VideoVariantReconciliation"[\s\S]*published = false/)
+}
+
 describe('reconcileVideoVariantReconciliation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -895,10 +917,8 @@ describe('reconcileVideoVariantReconciliation', () => {
       const result =
         await reconcileVideoVariantReconciliation('reconciliation-1')
 
-      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-        where: { id: 'variant-1' },
-        data: { published: false }
-      })
+      expectAtomicUnpublish('variant-1')
+      expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
       expect(
         prismaMock.videoVariantReconciliation.updateMany
       ).toHaveBeenCalledWith({
@@ -918,6 +938,60 @@ describe('reconcileVideoVariantReconciliation', () => {
         status: 'degraded',
         failure: { stageName: 'parentSync' }
       })
+    })
+  })
+
+  describe('when a publish lands while an unpublish run is in flight', () => {
+    const unpublishReconciliation = (): ReconciliationRecord => ({
+      reason: 'video-variant-publication-change',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: false,
+      videoVariantId: 'variant-1',
+      processingStages: {},
+      createdAt: new Date(),
+      videoVariant: {
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        slug: 'episode-1/20770',
+        published: true,
+        downloadable: false,
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
+      }
+    })
+
+    it('keeps the Variant and its language when the reconciliation row no longer asks for Draft', async () => {
+      // The editor republished after this stale Draft run read its row, so
+      // the conditional UPDATE matches nothing.
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        unpublishReconciliation() as never
+      )
+      prismaMock.$executeRaw.mockResolvedValue(0)
+
+      await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expectAtomicUnpublish('variant-1')
+      expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+      expect(removeLanguageFromVideoIfUnused).not.toHaveBeenCalled()
+      expect(updateParentCollectionLanguages).not.toHaveBeenCalled()
+    })
+
+    it('removes the language and updates parent collections when the unpublish applies', async () => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        unpublishReconciliation() as never
+      )
+      prismaMock.$executeRaw.mockResolvedValue(1)
+
+      await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(removeLanguageFromVideoIfUnused).toHaveBeenCalledWith(
+        'episode-1',
+        '20770'
+      )
+      expect(updateParentCollectionLanguages).toHaveBeenCalledWith('episode-1')
     })
   })
 
@@ -1024,10 +1098,7 @@ describe('reconcileVideoVariantReconciliation', () => {
       const result =
         await reconcileVideoVariantReconciliation('reconciliation-1')
 
-      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-        where: { id: '2_20899-0-La-Liberte' },
-        data: { published: false }
-      })
+      expectAtomicUnpublish('2_20899-0-La-Liberte')
       expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
         '2_20899-0-La-Liberte'
       )
@@ -1098,14 +1169,8 @@ describe('reconcileVideoVariantReconciliation', () => {
 
       const result = await reconcileVideoVariantReconciliation('status-1')
 
-      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-        where: { id: '53424_Rescue' },
-        data: { published: false }
-      })
-      expect(prismaMock.videoVariant.update).not.toHaveBeenCalledWith({
-        where: { id: '53424_Rescue' },
-        data: { published: true }
-      })
+      expectAtomicUnpublish('53424_Rescue')
+      expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
       expect(result).toEqual({ publicationReady: true, status: 'complete' })
     })
 

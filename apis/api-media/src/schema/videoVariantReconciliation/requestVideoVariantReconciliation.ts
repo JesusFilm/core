@@ -31,7 +31,7 @@ export const FRESH_UPLOAD_REASONS = new Set<VideoVariantReconciliationReason>([
 ])
 
 // Reasons that record an editor's explicit publish/Draft request. While one
-// of these is still pending (status 'processing' or 'degraded'), its
+// of these is still pending (processing, or degraded and still retrying), its
 // `published` value is fresher than anything a captured upload intent or a
 // non-toggle re-request could carry.
 const EXPLICIT_PUBLICATION_REASONS: VideoVariantReconciliationReason[] = [
@@ -39,9 +39,16 @@ const EXPLICIT_PUBLICATION_REASONS: VideoVariantReconciliationReason[] = [
   'fresh-upload-publication-change'
 ]
 
+// A degraded row with no retryAt is final: persistReconciliationStatus writes
+// that after five attempts or a non-retryable Algolia error, and
+// dueRecordWhere never sweeps it again. Counting it as pending would make the
+// guard block every later upload callback for good.
 const pendingExplicitPublication = {
   reason: { in: EXPLICIT_PUBLICATION_REASONS },
-  status: { in: ['processing' as const, 'degraded' as const] }
+  OR: [
+    { status: 'processing' as const },
+    { status: 'degraded' as const, retryAt: { not: null } }
+  ]
 }
 
 type ReconciliationIntent = {
@@ -148,8 +155,8 @@ export async function requestVideoVariantReconciliation(
     // stale intent win in either direction; this conditional update instead
     // leaves an existing explicit request untouched, regardless of which way
     // the stale upload intent or the explicit request point. The guard is
-    // scoped to a toggle that is still pending (status still 'processing' or
-    // 'degraded') rather than to the reason value alone -- that value is
+    // scoped to a toggle that is still pending (see pendingExplicitPublication)
+    // rather than to the reason value alone -- that value is
     // never cleared once set, so a later re-upload for the same variant would
     // otherwise find this guard permanently blocking it, even long after the
     // toggle it was protecting has settled.
@@ -172,7 +179,7 @@ export async function requestVideoVariantReconciliation(
     // up to that pending intent yet. Leaving `published` out of the update
     // keeps the pending intent intact instead of discarding it.
     if (intent.reason !== 'video-variant-publication-change') {
-      // A pending explicit toggle (still processing/degraded) protects
+      // A pending explicit toggle (still processing, or retrying) protects
       // `published` from the process-video-upload guard above by its
       // `reason`. Overwriting that reason here -- even though this update
       // already leaves `published` untouched -- would remove that

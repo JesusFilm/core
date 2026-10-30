@@ -7,17 +7,16 @@ import {
   requestVideoVariantReconciliation
 } from './requestVideoVariantReconciliation'
 
-const notPendingExplicitPublication = {
-  NOT: {
-    reason: {
-      in: [
-        'video-variant-publication-change',
-        'fresh-upload-publication-change'
-      ]
-    },
-    status: { in: ['processing', 'degraded'] }
-  }
+// A toggle is pending while its row is still processing, or degraded but
+// still scheduled for a retry. A degraded row with no retryAt is final: the
+// sweep will never pick it up again, so it must not block a later upload.
+const pendingExplicitPublication = {
+  reason: {
+    in: ['video-variant-publication-change', 'fresh-upload-publication-change']
+  },
+  OR: [{ status: 'processing' }, { status: 'degraded', retryAt: { not: null } }]
 }
+const notPendingExplicitPublication = { NOT: pendingExplicitPublication }
 
 describe('requestVideoVariantReconciliation', () => {
   const intent = {
@@ -405,13 +404,7 @@ describe('requestVideoVariantReconciliation', () => {
         )
       expect(protectedCall?.[0].where).toEqual({
         id: 'reconciliation-1',
-        reason: {
-          in: [
-            'video-variant-publication-change',
-            'fresh-upload-publication-change'
-          ]
-        },
-        status: { in: ['processing', 'degraded'] }
+        ...pendingExplicitPublication
       })
       expect(protectedCall?.[0].data).not.toHaveProperty('reason')
       expect(protectedCall?.[0].data).not.toHaveProperty('published')
@@ -449,6 +442,81 @@ describe('requestVideoVariantReconciliation', () => {
           published: true
         })
       })
+    })
+
+    it('lets an upload callback write over a toggle whose degraded state is final', async () => {
+      // 'degraded' with retryAt null is what persistReconciliationStatus
+      // leaves after five attempts or a non-retryable Algolia error. The
+      // sweep never revisits it, so a re-upload's callback must be allowed
+      // to write; otherwise the variant stays offline until someone toggles
+      // it by hand.
+      prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+        id: 'reconciliation-1',
+        reason: 'video-variant-publication-change',
+        processingStages: { mux: { state: 'complete', attempts: 1 } }
+      } as never)
+      prismaMock.videoVariantReconciliation.updateMany.mockResolvedValue({
+        count: 1
+      })
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: false,
+        reason: 'process-video-upload'
+      })
+
+      const { where } =
+        prismaMock.videoVariantReconciliation.updateMany.mock.calls[0][0] ?? {}
+      expect(where).toEqual({
+        id: 'reconciliation-1',
+        ...notPendingExplicitPublication
+      })
+      // The exclusion only covers a degraded row that is still retrying, so
+      // a final one (retryAt null) falls outside it and the write applies.
+      expect(where?.NOT).toMatchObject({
+        OR: expect.arrayContaining([
+          { status: 'degraded', retryAt: { not: null } }
+        ])
+      })
+      expect(where?.NOT).not.toMatchObject({
+        OR: expect.arrayContaining([{ status: 'degraded' }])
+      })
+    })
+
+    it('still protects a toggle that is degraded but retrying from an upload callback', async () => {
+      prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+        id: 'reconciliation-1',
+        reason: 'video-variant-publication-change',
+        processingStages: { mux: { state: 'complete', attempts: 1 } }
+      } as never)
+      prismaMock.videoVariantReconciliation.updateMany.mockResolvedValue({
+        count: 0
+      })
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: true,
+        reason: 'process-video-upload'
+      })
+
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledTimes(1)
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', ...notPendingExplicitPublication },
+        data: expect.objectContaining({ published: true })
+      })
+      expect(
+        prismaMock.videoVariantReconciliation.update
+      ).not.toHaveBeenCalled()
     })
 
     it('adopts the new reason once the pending Draft request has settled', async () => {
