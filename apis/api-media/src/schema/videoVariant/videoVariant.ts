@@ -16,7 +16,9 @@ import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSubtitle } from '../video/videoSubtitle'
+import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
+import { videoVariantAwaitsMux } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -424,7 +426,10 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
       nullable: false,
       description: 'version control for master video file'
     }),
-    video: t.relation('video')
+    video: t.relation('video'),
+    reconciliation: t
+      .withAuth({ isPublisher: true })
+      .relation('reconciliation', { nullable: true })
   })
 })
 
@@ -596,7 +601,10 @@ builder.mutationFields((t) => ({
           published: true,
           videoId: true,
           languageId: true,
-          edition: true
+          edition: true,
+          hls: true,
+          share: true,
+          muxVideo: { select: { readyToStream: true } }
         }
       })
 
@@ -612,6 +620,33 @@ builder.mutationFields((t) => ({
             select: { id: true }
           })) != null
         : true
+
+      // Unpublishing takes effect immediately. Publishing does too, unless a
+      // linked Mux asset is still transcoding with nothing else playable (see
+      // videoVariantAwaitsMux) -- that publish is left to reconciliation,
+      // which publishes the Variant as soon as Mux is ready. This is
+      // evaluated against this same call's own hls/share/muxVideoId, not just
+      // the pre-update row, so publishing and relinking usable media in one
+      // request publishes immediately instead of waiting on reconciliation.
+      const awaitingMux = videoVariantAwaitsMux({
+        hls: input.hls ?? currentVariant.hls,
+        share: input.share ?? currentVariant.share,
+        muxVideo:
+          input.muxVideoId != null
+            ? await prisma.muxVideo.findUnique({
+                where: { id: input.muxVideoId },
+                select: { readyToStream: true }
+              })
+            : currentVariant.muxVideo
+      })
+      const nextPublished =
+        input.published === true
+          ? awaitingMux
+            ? undefined
+            : true
+          : input.published === false
+            ? false
+            : undefined
 
       let updated: PrismaVideoVariant
       try {
@@ -629,10 +664,7 @@ builder.mutationFields((t) => ({
             videoId: input.videoId ?? undefined,
             edition: input.edition ?? undefined,
             downloadable: input.downloadable ?? undefined,
-            published:
-              input.published === undefined
-                ? undefined
-                : currentVariant.published,
+            published: nextPublished,
             muxVideoId: input.muxVideoId ?? undefined,
             assetId: input.assetId ?? undefined,
             version: input.version ?? undefined,
@@ -658,11 +690,35 @@ builder.mutationFields((t) => ({
       // Handle parent variant changes if published status changed
       const wasPublished = currentVariant.published
       const isNowPublished = input.published ?? currentVariant.published
+      // An explicit unpublish must reach reconciliation even when the
+      // published column does not change, so it overwrites any pending
+      // deferred-publish intent left there by an earlier request -- otherwise
+      // reconciliation would still publish the Variant once Mux is ready. A
+      // deferred publish needs the same treatment: nextPublished stays
+      // undefined while Mux is still processing, so the column itself does
+      // not change either.
+      const explicitUnpublish = input.published === false
+      const deferredPublish =
+        input.published === true && nextPublished === undefined
 
-      if (wasPublished !== isNowPublished || languageChanged) {
-        const reason = languageChanged
-          ? 'video-variant-language-change'
-          : 'video-variant-publication-change'
+      if (
+        wasPublished !== isNowPublished ||
+        explicitUnpublish ||
+        deferredPublish ||
+        languageChanged
+      ) {
+        // A fresh explicit `published` value always wins over a language
+        // change: requestVideoVariantReconciliation treats
+        // video-variant-language-change as a reason that must not carry a
+        // publish intent (it exists to protect a pending toggle from being
+        // clobbered by a stale upload), so routing a real new intent through
+        // it would silently drop that intent instead.
+        const reason =
+          input.published !== undefined
+            ? 'video-variant-publication-change'
+            : languageChanged
+              ? 'video-variant-language-change'
+              : 'video-variant-publication-change'
         try {
           await requestVideoVariantReconciliation({
             videoVariantId: updated.id,
@@ -670,7 +726,10 @@ builder.mutationFields((t) => ({
             languageId: nextLanguageId,
             edition: input.edition ?? currentVariant.edition,
             published: isNowPublished,
-            reason
+            reason,
+            // Only an explicit toggle knows the Variant's media state here; a
+            // bare language change keeps whatever the row already records.
+            awaitingMux: input.published !== undefined ? awaitingMux : undefined
           })
         } catch (error) {
           console.error('Video variant reconciliation request error:', error)
@@ -684,6 +743,25 @@ builder.mutationFields((t) => ({
               reason
             }
           })
+        }
+      }
+
+      // A publish/Draft applied to the column above is applied to the
+      // Video's languages and its parents right away too, even when the
+      // column was already at that value: the editor's explicit toggle is
+      // also how a Video whose language went missing gets it back. It runs
+      // after the reconciliation request so that request's createdAt reset
+      // already makes any sweep run still in flight on this row step aside.
+      // A failure here is not fatal: the requested reconciliation repeats
+      // these same writes on the next sweep, and alerts if they keep failing.
+      if (nextPublished !== undefined) {
+        try {
+          await applyVariantPublication(updated)
+        } catch (error) {
+          logger.error(
+            { error, videoVariantId: updated.id, published: updated.published },
+            'Video variant publication apply failed; left to reconciliation'
+          )
         }
       }
 
@@ -720,7 +798,14 @@ builder.mutationFields((t) => ({
         // Log the error but don't throw it
         console.error('Cache reset error:', error)
       }
-      return updated
+      // `updated` was read before reconciliation was requested, so re-read
+      // to return the request just made: videos-admin reads the response's
+      // `reconciliation` to tell a publish waiting on Mux from one that
+      // already applied.
+      return await prisma.videoVariant.findUniqueOrThrow({
+        ...query,
+        where: { id: updated.id }
+      })
     }
   }),
   videoVariantDelete: t.withAuth({ isPublisher: true }).prismaField({
