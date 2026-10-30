@@ -21,7 +21,8 @@ interface CampaignAnalyticsProps {
  * stays independent of the page payload. A Region Page is fixed to its region;
  * the landing page has region tabs. The world map shows only when the block's
  * `showMap` is on, shaded in the section's Accent override or the theme accent;
- * it is fetched in the browser, so it never rides in the page props.
+ * it is fetched in the browser, so it never rides in the page props. Numbers
+ * and country names format in the Page Language.
  */
 export function CampaignAnalytics({
   block
@@ -40,6 +41,8 @@ export function CampaignAnalytics({
         worldMap={worldMap}
         // The section's Accent override recolours the map; else the theme accent.
         accentColor={block.accentColor ?? campaign.theme.accentColor}
+        // Numbers and country names in the Page Language; the UI locale without a bcp47.
+        locale={campaign.language.bcp47 ?? undefined}
       />
     </CampaignSectionBand>
   )
