@@ -22,13 +22,15 @@ const SWEEP_BATCH_SIZE = 200
 // exceed one record's expected processing time (Prisma + Algolia calls).
 const CLAIM_DURATION_MS = 5 * 60 * 1000
 
-// Algolia is a backup search for Watch, so a Variant blocked only on its
-// index writes is left `degraded` for the Algolia troubleshooter in
-// videos-admin rather than paged to Slack. Mux, parent-sync and Downloads
-// failures still alert: those mean the Variant itself isn't right.
-const ALGOLIA_STAGES: ReadonlySet<keyof ProcessingStages> = new Set([
-  'algoliaVideo',
-  'algoliaVariant'
+// The Video record lives in the videos index (Arclight search), a backup for
+// Watch, so a Variant blocked only on that write is left `degraded` for the
+// Algolia troubleshooter in videos-admin rather than paged to Slack. The
+// Variant index is not in this set: a failed write there rolls a publish
+// back, so the editor's change is lost and nothing else will flag it. Mux,
+// parent-sync and Downloads failures alert too: those mean the Variant
+// itself isn't right.
+const QUIET_STAGES: ReadonlySet<keyof ProcessingStages> = new Set([
+  'algoliaVideo'
 ])
 
 export function failedStageNames(processingStages: unknown): string[] {
@@ -48,7 +50,7 @@ export function failedStageNames(processingStages: unknown): string[] {
 export function shouldAlertOnBlockedStages(failedStages: string[]): boolean {
   if (failedStages.length === 0) return true
   return failedStages.some(
-    (stage) => !ALGOLIA_STAGES.has(stage as keyof ProcessingStages)
+    (stage) => !QUIET_STAGES.has(stage as keyof ProcessingStages)
   )
 }
 
@@ -113,7 +115,7 @@ export async function service(logger: Logger = defaultLogger): Promise<void> {
             failedStages,
             errorMessage: currentStatus.errorMessage
           },
-          'Variant blocked on Algolia indexing only; left degraded without Slack alert'
+          'Variant blocked on Video record indexing only; left degraded without Slack alert'
         )
         continue
       }

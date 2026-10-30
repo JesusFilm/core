@@ -55,7 +55,7 @@ describe('videoVariantReconciliation worker service', () => {
     })
   })
 
-  it('does not page Slack when a Variant is blocked only on Algolia', async () => {
+  it('does not page Slack when a Variant is blocked only on its Video record index', async () => {
     prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
       blockedRecord({
         mux: { state: 'complete', attempts: 1 },
@@ -74,7 +74,34 @@ describe('videoVariantReconciliation worker service', () => {
         videoVariantId: '2_20899-0-La-Liberte',
         failedStages: ['algoliaVideo']
       }),
-      expect.stringContaining('Algolia indexing only')
+      expect.stringContaining('Video record indexing only')
+    )
+  })
+
+  it('pages Slack when a publish was rolled back because the Variant index write failed', async () => {
+    // A rejected (non-retryable) variant index write rolls the publish back
+    // and nulls retryAt on the first failure, so this is the only alert the
+    // editor's lost publish will ever produce.
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue({
+      ...blockedRecord({
+        mux: { state: 'complete', attempts: 1 },
+        parentSync: { state: 'complete', attempts: 1 },
+        downloads: { state: 'notApplicable', attempts: 0 },
+        algoliaVideo: { state: 'complete', attempts: 1 },
+        algoliaVariant: { state: 'failed', attempts: 1, retryable: false }
+      }),
+      errorMessage: 'Algolia rejected the Variant record'
+    } as never)
+
+    await service(mockLogger)
+
+    expect(mockLogger.warn).not.toHaveBeenCalled()
+    expect(slackChatPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: {
+          text: expect.stringContaining('Algolia rejected the Variant record')
+        }
+      })
     )
   })
 
@@ -125,10 +152,14 @@ describe('shouldAlertOnBlockedStages', () => {
     expect(shouldAlertOnBlockedStages(['downloads'])).toBe(true)
   })
 
-  it('stays quiet when only Algolia stages failed', () => {
+  it('stays quiet when only the Video record index failed', () => {
     expect(shouldAlertOnBlockedStages(['algoliaVideo'])).toBe(false)
+  })
+
+  it('alerts when the Variant index failed, alone or with the Video record index', () => {
+    expect(shouldAlertOnBlockedStages(['algoliaVariant'])).toBe(true)
     expect(shouldAlertOnBlockedStages(['algoliaVideo', 'algoliaVariant'])).toBe(
-      false
+      true
     )
   })
 
