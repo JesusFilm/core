@@ -13,17 +13,12 @@
         "cwd": "apps/journeys-e2e"
       }
     },
-    "e2e-campaign": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["playwright test --grep @manual"],
-        "cwd": "apps/journeys-e2e"
-      }
-    },
     "update-snapshots": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["playwright test --update-snapshots"],
+        "commands": [
+          "playwright test --update-snapshots --grep-invert @manual"
+        ],
         "cwd": "apps/journeys-e2e"
       }
     },
@@ -31,7 +26,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
+          "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0 --grep-invert @manual"
         ],
         "cwd": "apps/journeys-e2e"
       }
