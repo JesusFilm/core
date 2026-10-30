@@ -30,8 +30,8 @@ export interface CampaignAddressLanguage {
 }
 
 // A `lang` value worth a page of its own: a bcp47-shaped tag, lowercased.
-// Anything else is served the plain page, so a junk value cannot mint cache
-// entries. The same pattern as the journeys app's proxy.
+// Anything else is served the plain page. The same pattern as the journeys
+// app's proxy.
 const LANGUAGE_TAG_PATTERN = /^[a-z]{2,3}(-[a-z0-9]{2,8}){0,3}$/
 
 /**
@@ -129,6 +129,9 @@ export function pageLanguageTag(
   return tag
 }
 
+/** The path segment ahead of the tag in a Page Language's page path. */
+export const LANGUAGE_PAGE_SEGMENT = '_lang'
+
 /**
  * The viewer's page path of a campaign page in a Page Language: the pages
  * are statically generated, so the language is part of the path, as
@@ -142,7 +145,7 @@ export function languagePagePath(
   segments: readonly string[],
   tag: string
 ): string {
-  return [prefix, '_lang', tag, ...segments].join('/')
+  return [prefix, LANGUAGE_PAGE_SEGMENT, tag, ...segments].join('/')
 }
 
 /**

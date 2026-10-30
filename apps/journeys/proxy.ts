@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // The module by its deep path: the `@core/journeys/ui/Campaign` barrel would
 // pull React and MUI into this edge middleware.
 import {
+  LANGUAGE_PAGE_SEGMENT,
   languagePagePath,
   pageLanguageTag
 } from '@core/journeys/ui/Campaign/libs/campaignAddress'
@@ -50,6 +51,13 @@ export default async function proxy(
   const url = req.nextUrl
 
   if (url.pathname.startsWith('/plausible')) return
+
+  // A `_lang` page is reached only through the `?lang=` rewrite below; a
+  // public path naming one is not found, on any host. Answered here, so the
+  // status does not depend on how Next handles a rewrite to `/404`.
+  const segments = url.pathname.split('/').filter((segment) => segment !== '')
+  if (segments.includes(LANGUAGE_PAGE_SEGMENT))
+    return NextResponse.rewrite(new URL('/404', req.url), { status: 404 })
 
   // Get hostname of request
   // (e.g. your.nextstep.is, localhost:4100, example.com)
@@ -109,10 +117,12 @@ export default async function proxy(
   // any other host the path falls through to the hostname routes and is not
   // found. On the root domain it serves only a campaign with no Campaign
   // Domain. A `lang` value worth a page of its own is a bcp47-shaped tag
-  // (`pageLanguageTag`); anything else is served the plain page, so a junk
-  // value cannot mint cache entries.
+  // (`pageLanguageTag`); anything else is served the plain page. Each
+  // distinct tag does mint a `_lang/<tag>` page path: a server render, an
+  // uncached `campaignPublic` read and a 60 s ISR entry (a language fallback
+  // is cached too). That is what requesting a random journey slug costs, so
+  // tags are not limited.
   const languageTag = pageLanguageTag(url.searchParams.get('lang'))
-  const segments = url.pathname.split('/').filter((segment) => segment !== '')
 
   if (isRootDomain && url.pathname.startsWith('/campaign/')) {
     const [, slug, ...region] = segments
