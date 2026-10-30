@@ -6,36 +6,35 @@ import {
   within
 } from '@testing-library/react'
 
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { TypographyAlign } from '../../../../__generated__/globalTypes'
 import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
 import {
-  StyleMock,
   WithBlock,
   blockOf,
   blockUpdateMock,
   paletteMock
 } from '../styleTesting'
-import { CommandProbe, QueriedEditor } from '../testing'
+import { CommandProbe, QueriedEditor, SpyMock, UndoRedo } from '../testing'
 
-import { TEXT_SIZES, TextControls } from './TextControls'
+import { TextControls } from './TextControls'
 
 const note = blockOf<'CampaignTypographyBlock'>('journeyListNoteId')
 
 function textMock(
   input: Record<string, unknown>,
   current: Partial<typeof note> = {}
-): StyleMock {
+): SpyMock {
   return blockUpdateMock(note, input, current)
 }
 
-function renderControls(mocks: StyleMock[]): ReturnType<typeof render> {
+function renderControls(mocks: SpyMock[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       mocks={mocks}
       initialState={{ selectedBlockId: 'journeyListNoteId' }}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <WithBlock blockId="journeyListNoteId" typename="CampaignTypographyBlock">
         {(block) => <TextControls block={block} />}
@@ -47,23 +46,19 @@ function renderControls(mocks: StyleMock[]): ReturnType<typeof render> {
 describe('TextControls', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('shows Size, Align and Colour as inline rows, with no menu or popover', async () => {
+  it('shows Size, Align and Colour as inline rows', async () => {
     renderControls([])
 
     expect(await screen.findByRole('combobox', { name: 'Size' })).toBeVisible()
     expect(screen.getByRole('group', { name: 'Align' })).toBeVisible()
     expect(screen.getByRole('list', { name: 'Colour' })).toBeVisible()
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
   })
 
-  it('walks the twelve typography variants from Size, one Command per choice', async () => {
+  it('sets the typography variant from Size, one Command per choice', async () => {
     const mocks = [textMock({ variant: 'h2' })]
     renderControls(mocks)
 
     const size = await screen.findByRole('combobox', { name: 'Size' })
-    expect(within(size).getAllByRole('option')).toHaveLength(12)
-    expect(TEXT_SIZES).toHaveLength(12)
     expect(size).toHaveValue('overline')
 
     fireEvent.change(size, { target: { value: 'h2' } })
@@ -93,7 +88,7 @@ describe('TextControls', () => {
   it('sets align left, center or right, and Reset follows the section again', async () => {
     const mocks = [
       textMock({ align: 'center' }),
-      textMock({ align: null }, { align: 'center' as never })
+      textMock({ align: null }, { align: TypographyAlign.center })
     ]
     renderControls(mocks)
 

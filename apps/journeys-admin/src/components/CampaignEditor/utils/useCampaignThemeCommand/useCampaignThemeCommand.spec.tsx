@@ -8,10 +8,14 @@ import {
   CampaignRadius,
   ThemeMode
 } from '../../../../../__generated__/globalTypes'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { StyleMock, readTheme, themeMock } from '../../styleTesting'
-import { CommandProbe, QueriedEditor, campaignCache } from '../../testing'
+import { readTheme, themeMock } from '../../styleTesting'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SpyMock,
+  UndoRedo,
+  campaignCache
+} from '../../testing'
 
 import { useCampaignThemeCommand } from './useCampaignThemeCommand'
 
@@ -53,13 +57,12 @@ function ClosablePanel(): ReactElement {
 }
 
 function renderControls(
-  mocks: StyleMock[],
+  mocks: SpyMock[],
   cache = campaignCache()
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor mocks={mocks} cache={cache}>
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SnackbarProvider>
         <Controls />
@@ -160,7 +163,7 @@ describe('useCampaignThemeCommand', () => {
   })
 
   it('surfaces the API message verbatim when a save fails', async () => {
-    const failing: StyleMock = {
+    const failing: SpyMock = {
       ...themeMock({ primaryColor: '#123456' }),
       result: vi.fn(() => ({
         errors: [{ message: 'primaryColor must be a hex colour like #RRGGBB' }]
@@ -176,7 +179,7 @@ describe('useCampaignThemeCommand', () => {
   })
 
   it('surfaces a failed undo after the panel that owned the hook has unmounted', async () => {
-    const failingUndo: StyleMock = {
+    const failingUndo: SpyMock = {
       ...themeMock({ primaryColor: '#C52D3A' }),
       result: vi.fn(() => ({
         errors: [{ message: 'primaryColor must be a hex colour like #RRGGBB' }]
@@ -186,7 +189,7 @@ describe('useCampaignThemeCommand', () => {
       <QueriedEditor
         mocks={[themeMock({ primaryColor: '#123456' }), failingUndo]}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <SnackbarProvider>
           <ClosablePanel />
         </SnackbarProvider>

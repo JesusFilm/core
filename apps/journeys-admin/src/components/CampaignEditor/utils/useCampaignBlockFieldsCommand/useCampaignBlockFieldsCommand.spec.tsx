@@ -1,14 +1,13 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignHeroBlock as CampaignHeroBlock } from '../../../../../__generated__/GetCampaign'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { blockOf, blockUpdateMock } from '../../styleTesting'
-import { QueriedEditor, SelectionProbe } from '../../testing'
+import { QueriedEditor, SelectionProbe, UndoRedo } from '../../testing'
 
 import { useCampaignBlockFieldsCommand } from './useCampaignBlockFieldsCommand'
 
@@ -51,18 +50,14 @@ function Probe({ minHeight }: { minHeight: number }): ReactElement {
   )
 }
 
-function renderCommand(
-  mocks: Array<Record<string, unknown>>,
-  minHeight = 70
-): void {
+function renderCommand(mocks: MockLink.MockedResponse[], minHeight = 70): void {
   render(
     <QueriedEditor
-      campaignData={campaignData}
+      campaign={campaignData}
       mocks={mocks}
       initialState={{ selectedBlockId: 'landingAnalyticsId' }}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <SelectionProbe />
       <Probe minHeight={minHeight} />
     </QueriedEditor>

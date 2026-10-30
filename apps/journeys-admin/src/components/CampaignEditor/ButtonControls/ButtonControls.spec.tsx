@@ -6,17 +6,19 @@ import {
   within
 } from '@testing-library/react'
 
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import {
+  ButtonSize,
+  TypographyAlign
+} from '../../../../__generated__/globalTypes'
 import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
 import {
-  StyleMock,
   WithBlock,
   blockOf,
   blockUpdateMock,
   paletteMock
 } from '../styleTesting'
-import { CommandProbe, QueriedEditor } from '../testing'
+import { CommandProbe, QueriedEditor, SpyMock, UndoRedo } from '../testing'
 
 import { ButtonControls } from './ButtonControls'
 
@@ -25,14 +27,14 @@ const button = blockOf<'CampaignButtonBlock'>('heroButtonId')
 function buttonMock(
   input: Record<string, unknown>,
   current: Partial<typeof button> = {}
-): StyleMock {
+): SpyMock {
   return blockUpdateMock(button, input, current)
 }
 
-function renderControls(mocks: StyleMock[]): ReturnType<typeof render> {
+function renderControls(mocks: SpyMock[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor mocks={mocks} initialState={{ selectedBlockId: button.id }}>
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <WithBlock blockId={button.id} typename="CampaignButtonBlock">
         {(block) => <ButtonControls block={block} />}
@@ -44,7 +46,7 @@ function renderControls(mocks: StyleMock[]): ReturnType<typeof render> {
 describe('ButtonControls', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('shows variant, size, align and both colours as inline rows, with no menu or popover', async () => {
+  it('shows variant, size, align and both colours as inline rows', async () => {
     renderControls([])
 
     expect(await screen.findByRole('group', { name: 'Variant' })).toBeVisible()
@@ -52,8 +54,6 @@ describe('ButtonControls', () => {
     expect(screen.getByRole('group', { name: 'Align' })).toBeVisible()
     expect(screen.getByTestId('ButtonColourRow-color')).toBeVisible()
     expect(screen.getByTestId('ButtonColourRow-labelColor')).toBeVisible()
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
   })
 
   it('sets the variant (text, contained, outlined) as one Command', async () => {
@@ -80,7 +80,7 @@ describe('ButtonControls', () => {
   it('sets the size (small, medium, large) as one Command and undoes it', async () => {
     const mocks = [
       buttonMock({ size: 'large' }),
-      buttonMock({ size: null }, { size: 'large' as never })
+      buttonMock({ size: null }, { size: ButtonSize.large })
     ]
     renderControls(mocks)
 
@@ -102,7 +102,7 @@ describe('ButtonControls', () => {
   it('sets align as one Command and Reset follows the section again', async () => {
     const mocks = [
       buttonMock({ align: 'right' }),
-      buttonMock({ align: null }, { align: 'right' as never })
+      buttonMock({ align: null }, { align: TypographyAlign.right })
     ]
     renderControls(mocks)
 

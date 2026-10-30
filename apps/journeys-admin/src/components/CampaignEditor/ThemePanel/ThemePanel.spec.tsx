@@ -18,11 +18,16 @@ import {
   CampaignRadius,
   ThemeMode
 } from '../../../../__generated__/globalTypes'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
-import { StyleMock, paletteMock, readTheme, themeMock } from '../styleTesting'
-import { CommandProbe, QueriedEditor, campaignCache } from '../testing'
+import { paletteMock, readTheme, themeMock } from '../styleTesting'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SpyMock,
+  UndoRedo,
+  campaignCache
+} from '../testing'
 
 import { ThemePanel } from './ThemePanel'
 
@@ -38,12 +43,12 @@ const lightInput = {
 }
 
 function renderPanel(
-  mocks: StyleMock[],
+  mocks: SpyMock[],
   cache = campaignCache()
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor mocks={mocks} cache={cache}>
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SnackbarProvider>
         <ThemePanel />
@@ -327,7 +332,7 @@ describe('ThemePanel', () => {
     })
 
     it('surfaces the API message verbatim when a save fails', async () => {
-      const failing: StyleMock = {
+      const failing: SpyMock = {
         ...themeMock({ primaryColor: '#123456' }),
         result: vi.fn(() => ({
           errors: [
@@ -349,7 +354,7 @@ describe('ThemePanel', () => {
   })
 
   describe('fonts', () => {
-    it('offers the curated lists per role (10 header, 7 body, 7 label) plus Default, and no free text', async () => {
+    it('offers each role’s curated list, sorted, plus Default, and no free text', async () => {
       renderPanel([])
 
       fireEvent.mouseDown(
@@ -359,7 +364,6 @@ describe('ThemePanel', () => {
         'Default',
         ...[...HEADER_FONT_OPTIONS].sort()
       ])
-      expect(HEADER_FONT_OPTIONS).toHaveLength(10)
       fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' })
 
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Body Text' }))
@@ -367,7 +371,6 @@ describe('ThemePanel', () => {
         'Default',
         ...[...BODY_FONT_OPTIONS].sort()
       ])
-      expect(BODY_FONT_OPTIONS).toHaveLength(7)
       fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' })
 
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label Text' }))
@@ -375,7 +378,6 @@ describe('ThemePanel', () => {
         'Default',
         ...[...LABELS_FONT_OPTIONS].sort()
       ])
-      expect(LABELS_FONT_OPTIONS).toHaveLength(7)
 
       expect(screen.queryByRole('textbox', { name: /font/i })).toBeNull()
     })

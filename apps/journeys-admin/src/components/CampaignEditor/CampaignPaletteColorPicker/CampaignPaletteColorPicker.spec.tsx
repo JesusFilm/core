@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -46,6 +47,13 @@ function slots(): string[] {
       slot.getAttribute('data-testid')?.replace('PaletteSlot-', '')
     )
     .filter((hex): hex is string => hex != null)
+}
+
+/** Runs the picker's commit debounce out on the fake clock. */
+function settle(): void {
+  act(() => {
+    vi.advanceTimersByTime(COMMIT_DEBOUNCE_MS)
+  })
 }
 
 function renderPicker(
@@ -133,6 +141,8 @@ describe('normalizeHex', () => {
 })
 
 describe('PaletteColorPicker', () => {
+  afterEach(() => vi.useRealTimers())
+
   beforeEach(() => vi.clearAllMocks())
 
   it('shows eight slots newest first from the campaign’s palette', async () => {
@@ -194,13 +204,12 @@ describe('PaletteColorPicker', () => {
   it('never commits a partial hex while typing', async () => {
     const { onCommit } = renderPicker()
     const input = await screen.findByRole('textbox', { name: 'Heading hex' })
+    vi.useFakeTimers()
 
     fireEvent.focus(input)
     for (const partial of ['#1', '#12', '#123', '#1234', '#12345'])
       fireEvent.change(input, { target: { value: partial } })
-    await new Promise((resolve) =>
-      setTimeout(resolve, COMMIT_DEBOUNCE_MS + 100)
-    )
+    settle()
 
     expect(onCommit).not.toHaveBeenCalled()
   })
@@ -208,12 +217,11 @@ describe('PaletteColorPicker', () => {
   it('never commits an invalid value and shows the existing error', async () => {
     const { onCommit } = renderPicker()
     const input = await screen.findByRole('textbox', { name: 'Heading hex' })
+    vi.useFakeTimers()
 
     fireEvent.focus(input)
     fireEvent.change(input, { target: { value: '#12345g' } })
-    await new Promise((resolve) =>
-      setTimeout(resolve, COMMIT_DEBOUNCE_MS + 100)
-    )
+    settle()
     expect(onCommit).not.toHaveBeenCalled()
 
     fireEvent.keyDown(input, { key: 'Enter' })
@@ -243,16 +251,13 @@ describe('PaletteColorPicker', () => {
   it('commits a pointer drag on the colour area once, when the pointer lifts, not on a pause', async () => {
     const { onCommit } = renderPicker({ value: '#808080' })
     const [hue] = await screen.findAllByRole('slider')
+    vi.useFakeTimers()
 
     fireEvent.pointerDown(hue)
     fireEvent.keyDown(hue, { key: 'ArrowRight', keyCode: 39 })
-    await new Promise((resolve) =>
-      setTimeout(resolve, COMMIT_DEBOUNCE_MS + 100)
-    )
+    settle()
     fireEvent.keyDown(hue, { key: 'ArrowRight', keyCode: 39 })
-    await new Promise((resolve) =>
-      setTimeout(resolve, COMMIT_DEBOUNCE_MS + 100)
-    )
+    settle()
     expect(onCommit).not.toHaveBeenCalled()
 
     fireEvent.pointerUp(document)
@@ -268,13 +273,12 @@ describe('PaletteColorPicker', () => {
     const onClear = vi.fn()
     const { onCommit } = renderPicker({ value: '#808080', onClear })
     const input = await screen.findByRole('textbox', { name: 'Heading hex' })
+    vi.useFakeTimers()
 
     fireEvent.focus(input)
     fireEvent.change(input, { target: { value: '#123456' } })
     fireEvent.click(screen.getByRole('button', { name: 'Clear' }))
-    await new Promise((resolve) =>
-      setTimeout(resolve, COMMIT_DEBOUNCE_MS + 100)
-    )
+    settle()
 
     expect(onClear).toHaveBeenCalledTimes(1)
     expect(onCommit).not.toHaveBeenCalled()
@@ -291,22 +295,21 @@ describe('PaletteColorPicker', () => {
       />
     )
     const { rerender } = render(
-      <StaticEditor campaignProp={{ ...campaign, palette: eight }}>
+      <StaticEditor campaign={{ ...campaign, palette: eight }}>
         {picker('#808080')}
       </StaticEditor>
     )
     const input = await screen.findByRole('textbox', { name: 'Heading hex' })
+    vi.useFakeTimers()
 
     fireEvent.focus(input)
     fireEvent.change(input, { target: { value: '#123456' } })
     rerender(
-      <StaticEditor campaignProp={{ ...campaign, palette: eight }}>
+      <StaticEditor campaign={{ ...campaign, palette: eight }}>
         {picker(null)}
       </StaticEditor>
     )
-    await new Promise((resolve) =>
-      setTimeout(resolve, COMMIT_DEBOUNCE_MS + 100)
-    )
+    settle()
 
     expect(onCommit).not.toHaveBeenCalled()
   })
@@ -362,7 +365,7 @@ describe('PaletteColorPicker', () => {
       </>
     )
     const { rerender } = render(
-      <StaticEditor campaignProp={light}>{picker}</StaticEditor>
+      <StaticEditor campaign={light}>{picker}</StaticEditor>
     )
     expect(slots()).toEqual(eight)
 
@@ -376,7 +379,7 @@ describe('PaletteColorPicker', () => {
         backgroundColor: '#101010'
       }
     }
-    rerender(<StaticEditor campaignProp={dark}>{picker}</StaticEditor>)
+    rerender(<StaticEditor campaign={dark}>{picker}</StaticEditor>)
 
     expect(slots()).toEqual(eight)
   })

@@ -1,14 +1,22 @@
+import { MockLink } from '@apollo/client/testing'
 import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { CampaignChildPlacement } from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { Inspector } from '../../Inspector'
-import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
+import {
+  BlocksProbe,
+  QueriedEditor,
+  SelectionProbe,
+  SpyMock,
+  UndoRedo,
+  holdRequests,
+  landRequests
+} from '../../testing'
 import { currentSiblings } from '../currentSiblings'
 import { reorderedSiblings } from '../reorderedSiblings'
 
@@ -31,7 +39,6 @@ function sectionRows(order: string[]): Array<Record<string, unknown>> {
 }
 
 const moveUpMock = {
-  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'landingSwitcherId', parentOrder: 0 }
@@ -50,7 +57,6 @@ const moveUpMock = {
 }
 
 const moveBackMock = {
-  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'landingSwitcherId', parentOrder: 1 }
@@ -69,7 +75,6 @@ const moveBackMock = {
 }
 
 const crossBodyMock = {
-  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'footerPrivacyId', parentOrder: 0, placement: 'above' }
@@ -100,6 +105,37 @@ const crossBodyMock = {
   }))
 }
 
+const crossBackMock: SpyMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+    variables: { id: 'footerPrivacyId', parentOrder: 2, placement: 'below' }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignBlockOrderUpdate: [
+        {
+          __typename: 'CampaignTypographyBlock',
+          id: 'footerCopyrightId',
+          parentOrder: 0,
+          placement: 'below'
+        },
+        {
+          __typename: 'CampaignButtonBlock',
+          id: 'footerTermsId',
+          parentOrder: 1,
+          placement: 'below'
+        },
+        {
+          __typename: 'CampaignButtonBlock',
+          id: 'footerPrivacyId',
+          parentOrder: 2,
+          placement: 'below'
+        }
+      ]
+    }
+  }))
+}
+
 function CrossBodyHarness(): ReactElement {
   const { campaign: current } = useCampaignEditor()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
@@ -117,10 +153,11 @@ function CrossBodyHarness(): ReactElement {
 
 function renderEditor(
   children?: ReactElement,
-  mocks: Array<Record<string, unknown>> = [
+  mocks: MockLink.MockedResponse[] = [
     moveUpMock,
     moveBackMock,
-    crossBodyMock
+    crossBodyMock,
+    crossBackMock
   ]
 ): ReturnType<typeof render> {
   return render(
@@ -128,7 +165,7 @@ function renderEditor(
       initialState={{ selectedBlockId: 'landingSwitcherId' }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <SelectionProbe />
       <BlocksProbe />
       <Inspector role="member" />
@@ -139,6 +176,8 @@ function renderEditor(
 
 describe('useCampaignBlockOrderCommand', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  afterEach(() => vi.useRealTimers())
 
   describe('reorderedSiblings', () => {
     it('places the block at the position and renumbers the page’s sections', () => {
@@ -195,37 +234,39 @@ describe('useCampaignBlockOrderCommand', () => {
       'CampaignHeroBlock||0|'
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Move up' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Move up' }))
+    )
 
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'landingSwitcherId'
     )
     // Optimistic: renumbered before the request returns.
-    await waitFor(() =>
-      expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
-        'CampaignRegionSwitcherBlock||0|'
-      )
+    expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
+      'CampaignRegionSwitcherBlock||0|'
     )
     expect(screen.getByTestId('Block-heroId')).toHaveTextContent(
       'CampaignHeroBlock||1|'
     )
     expect(moveUpMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(moveUpMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(moveUpMock.result).toHaveBeenCalled()
     // Now first on the page, Move up is spent.
     expect(screen.getByRole('button', { name: 'Move up' })).toBeDisabled()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    )
 
-    await waitFor(() =>
-      expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
-        'CampaignRegionSwitcherBlock||1|'
-      )
+    expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
+      'CampaignRegionSwitcherBlock||1|'
     )
     expect(screen.getByTestId('Block-heroId')).toHaveTextContent(
       'CampaignHeroBlock||0|'
     )
     expect(moveBackMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(moveBackMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(moveBackMock.result).toHaveBeenCalled()
   })
 
   it('raises the API message in the error snackbar when the move is refused', async () => {
@@ -246,7 +287,7 @@ describe('useCampaignBlockOrderCommand', () => {
     ).toBeInTheDocument()
   })
 
-  it('moves an Extra across the Section Body with its placement in the same Command', async () => {
+  it('moves an Extra across the Section Body with its placement in the same Command, and undo puts both back', async () => {
     renderEditor(<CrossBodyHarness />)
     expect(
       await screen.findByTestId('Block-footerPrivacyId')
@@ -263,5 +304,20 @@ describe('useCampaignBlockOrderCommand', () => {
       'CampaignTypographyBlock|footerId|1|below|'
     )
     await waitFor(() => expect(crossBodyMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-footerPrivacyId')).toHaveTextContent(
+        'CampaignButtonBlock|footerId|2|below|'
+      )
+    )
+    expect(screen.getByTestId('Block-footerCopyrightId')).toHaveTextContent(
+      'CampaignTypographyBlock|footerId|0|below|'
+    )
+    expect(screen.getByTestId('Block-footerTermsId')).toHaveTextContent(
+      'CampaignButtonBlock|footerId|1|below|'
+    )
+    await waitFor(() => expect(crossBackMock.result).toHaveBeenCalled())
   })
 })

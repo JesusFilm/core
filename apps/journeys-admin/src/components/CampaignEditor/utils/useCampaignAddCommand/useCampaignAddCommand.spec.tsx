@@ -4,8 +4,12 @@ import { ReactElement } from 'react'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BlocksProbe, CommandProbe, QueriedEditor } from '../../testing'
+import {
+  BlocksProbe,
+  CommandProbe,
+  QueriedEditor,
+  UndoRedo
+} from '../../testing'
 
 import { useCampaignAddCommand } from './useCampaignAddCommand'
 
@@ -127,7 +131,7 @@ describe('useCampaignAddCommand', () => {
         initialState={{ selectedBlockId: 'journeyListNoteId' }}
         mocks={[createMock, orderMock, deleteMock]}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <CommandProbe />
         <BlocksProbe />
         <AddText />

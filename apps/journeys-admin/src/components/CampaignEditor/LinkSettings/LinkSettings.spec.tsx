@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import {
   CAMPAIGN_BLOCK_DELETE_ACTION,
   CAMPAIGN_BLOCK_UPDATE_LINK_ACTION,
@@ -10,14 +11,14 @@ import {
   CAMPAIGN_BLOCK_UPDATE_SCROLL_TO_BLOCK_ACTION,
   CampaignButtonAction
 } from '../../../libs/useCampaignBlockActionMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaignWithRegions as campaign } from '../data'
 import {
   BlocksProbe,
   CommandProbe,
   QueriedEditor,
-  StaticEditor
+  StaticEditor,
+  UndoRedo
 } from '../testing'
 import { isHttpsUrl } from '../utils/isHttpsUrl'
 
@@ -48,7 +49,7 @@ function renderStatic(
   blockId = 'heroButtonId'
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor campaignProp={campaignProp}>
+    <StaticEditor campaign={campaignProp}>
       <SettingsFor blockId={blockId} />
     </StaticEditor>
   )
@@ -163,7 +164,7 @@ const deleteMock = {
 function renderQueried(): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignProp={campaign}
+      campaign={campaign}
       initialState={{ selectedBlockId: 'heroButtonId' }}
       mocks={[
         scrollToCarouselMock,
@@ -174,7 +175,7 @@ function renderQueried(): ReturnType<typeof render> {
         deleteMock
       ]}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <BlocksProbe />
       <SettingsFor blockId="heroButtonId" />
@@ -304,8 +305,8 @@ describe('LinkSettings', () => {
     it('lists the sections of the page the canvas shows for a chrome button', () => {
       render(
         <StaticEditor
-          campaignProp={campaign}
-          initialState={{ pageKind: 'regionTemplate' as never }}
+          campaign={campaign}
+          initialState={{ pageKind: CampaignPageKind.regionTemplate }}
         >
           <SettingsFor blockId="navHomeId" />
         </StaticEditor>

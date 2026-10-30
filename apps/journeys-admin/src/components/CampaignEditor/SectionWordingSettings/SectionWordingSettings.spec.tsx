@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -26,7 +27,7 @@ const noJourneys = campaign.strings.find(
   (string) => string.key === CampaignStringKey.noJourneys
 )!
 
-function stringMock(value: string): Record<string, unknown> {
+function stringMock(value: string): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_STRING_UPDATE,

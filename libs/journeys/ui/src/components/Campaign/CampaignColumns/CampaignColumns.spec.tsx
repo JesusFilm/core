@@ -167,11 +167,13 @@ describe('CampaignColumns', () => {
     renderColumns(columnsTree())
 
     const left = screen.getByTestId('CampaignColumnSlot-slotLeftId')
-    expect(left.querySelector('.MuiContainer-root')).toBeNull()
     expect(
-      screen
-        .getByTestId('CampaignSectionBand-columnsId')
-        .querySelectorAll('.MuiContainer-root')
+      within(left).queryByTestId('CampaignSectionBandContainer')
+    ).not.toBeInTheDocument()
+    expect(
+      within(
+        screen.getByTestId('CampaignSectionBand-columnsId')
+      ).getAllByTestId('CampaignSectionBandContainer')
     ).toHaveLength(1)
   })
 

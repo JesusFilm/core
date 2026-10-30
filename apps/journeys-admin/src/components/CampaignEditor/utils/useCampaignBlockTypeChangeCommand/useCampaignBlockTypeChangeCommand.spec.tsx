@@ -1,10 +1,9 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { CAMPAIGN_HERO_BLOCK_CREATE } from '../../../../libs/useCampaignSectionCreateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithColumns } from '../../data'
 import { Inspector } from '../../Inspector'
 import {
@@ -13,6 +12,7 @@ import {
   PendingTextSave,
   QueriedEditor,
   SelectionProbe,
+  UndoRedo,
   campaignCache,
   debounceSpyLink
 } from '../../testing'
@@ -34,7 +34,7 @@ const newHero = newSectionBlock('CampaignHeroBlock', {
 /** The order the requests reach the API in. */
 const calls: string[] = []
 
-function deleteMock(id: string): Record<string, unknown> {
+function deleteMock(id: string): MockLink.MockedResponse {
   return {
     delay: 50,
     request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id } },
@@ -45,7 +45,7 @@ function deleteMock(id: string): Record<string, unknown> {
   }
 }
 
-function restoreMock(id: string, block: unknown): Record<string, unknown> {
+function restoreMock(id: string, block: unknown): MockLink.MockedResponse {
   return {
     delay: 50,
     request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id } },
@@ -87,7 +87,7 @@ const restoreNewMock = restoreMock('newId', newHero)
 function renderEditor(): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignData={campaignWithColumns}
+      campaign={campaignWithColumns}
       initialState={{
         selectedBlockId: 'slotRichTextId',
         inspectorTab: 'settings'
@@ -101,8 +101,7 @@ function renderEditor(): ReturnType<typeof render> {
         restoreNewMock
       ]}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
@@ -121,7 +120,7 @@ function slotBlocks(): string[] {
 function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignData={campaignWithColumns}
+      campaign={campaignWithColumns}
       link={debounceSpyLink(
         requests,
         [deleteOldMock, createMock],
@@ -223,7 +222,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
     const failingCreate = { ...createMock, error: new Error('refused') }
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -249,7 +248,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
   it('raises the API message when the delete is refused, and creates nothing', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -276,7 +275,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
   it('raises the API message when the create is refused, and still restores the old section', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -308,7 +307,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
     const failingCreate = { ...createMock, error: new Error('refused') }
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -321,8 +320,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
           createMock
         ]}
       >
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
+        <UndoRedo />
         <BlocksProbe />
         <Inspector role="member" />
       </QueriedEditor>
@@ -348,7 +346,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
   it('waits for a change in flight before undoing it: a refused create shows one snackbar and sends no stray delete', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -360,7 +358,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
           deleteNewMock
         ]}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <BlocksProbe />
         <Inspector role="member" />
       </QueriedEditor>
@@ -386,14 +384,14 @@ describe('useCampaignBlockTypeChangeCommand', () => {
   it('waits for a change in flight before undoing it: once the create lands, undo removes the new section', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
         }}
         mocks={[deleteOldMock, createMock, deleteNewMock, restoreOldMock]}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <BlocksProbe />
         <Inspector role="member" />
       </QueriedEditor>

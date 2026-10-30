@@ -1,20 +1,32 @@
+import { MockLink } from '@apollo/client/testing'
 import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
+import { CAMPAIGN_REGION_CREATE } from '../../../../libs/useCampaignRegionCreateMutation'
+import { CAMPAIGN_REGION_DELETE } from '../../../../libs/useCampaignRegionDeleteMutation'
 import { CAMPAIGN_REGION_ORDER_UPDATE } from '../../../../libs/useCampaignRegionOrderUpdateMutation'
 import { CAMPAIGN_REGION_UPDATE } from '../../../../libs/useCampaignRegionUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaignWithRegions, eurRegion } from '../../data'
 import { Hotkeys } from '../../Hotkeys'
-import { CommandProbe, QueriedEditor, RegionsProbe } from '../../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  RegionsProbe,
+  SpyMock,
+  UndoRedo
+} from '../../testing'
 
 import {
   isEmptyRegion,
+  newRegion,
   nextRegionSlug,
   reorderedRegions,
   useCampaignRegionCommand
 } from './useCampaignRegionCommand'
+
+vi.mock('uuid', () => ({ v4: () => 'newRegionId' }))
 
 function updateMock(listed: boolean) {
   return {
@@ -65,9 +77,39 @@ const moveBackMock = orderMock(0, [
   ['afrRegionId', 1]
 ])
 
+const addedRegion = newRegion(campaignWithRegions, 'newRegionId')
+
+const createMock: SpyMock = {
+  request: {
+    query: CAMPAIGN_REGION_CREATE,
+    variables: { campaignId: campaignWithRegions.id, id: 'newRegionId' }
+  },
+  result: vi.fn(() => ({ data: { campaignRegionCreate: addedRegion } })),
+  maxUsageCount: 2
+}
+
+const unlistAddedMock: SpyMock = {
+  request: {
+    query: CAMPAIGN_REGION_UPDATE,
+    variables: { id: 'newRegionId', input: { listed: false } }
+  },
+  result: vi.fn(() => ({
+    data: { campaignRegionUpdate: { ...addedRegion, listed: false } }
+  }))
+}
+
+const deleteAddedMock: SpyMock = {
+  request: { query: CAMPAIGN_REGION_DELETE, variables: { id: 'newRegionId' } },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionDelete: { __typename: 'CampaignRegion', id: 'newRegionId' }
+    }
+  }))
+}
+
 function Controls(): ReactElement {
   const { campaign } = useCampaignEditor()
-  const { setListed, reorderRegion } = useCampaignRegionCommand()
+  const { addRegion, setListed, reorderRegion } = useCampaignRegionCommand()
   const eur = campaign.regions.find((region) => region.id === 'eurRegionId')
   if (eur == null) return <></>
   return (
@@ -76,6 +118,7 @@ function Controls(): ReactElement {
       <Button onClick={() => reorderRegion(eur, eur.order + 1)}>
         Move down
       </Button>
+      <Button onClick={() => addRegion()}>Add region</Button>
     </>
   )
 }
@@ -83,7 +126,7 @@ function Controls(): ReactElement {
 const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderCommands(
-  mocks: Array<Record<string, unknown>> = [
+  mocks: MockLink.MockedResponse[] = [
     unlistMock,
     listMock,
     moveDownMock,
@@ -91,11 +134,12 @@ function renderCommands(
   ]
 ): ReturnType<typeof render> {
   return render(
-    <QueriedEditor campaignProp={campaignWithRegions} mocks={mocks}>
+    <QueriedEditor campaign={campaignWithRegions} mocks={mocks}>
       <Hotkeys />
       <CommandProbe />
       <RegionsProbe />
       <Controls />
+      <UndoRedo />
     </QueriedEditor>
   )
 }
@@ -153,6 +197,49 @@ describe('useCampaignRegionCommand', () => {
         .getAllByTestId(/^Region-/)
         .map((item) => item.getAttribute('data-testid'))
     ).toEqual(['Region-eurRegionId', 'Region-afrRegionId'])
+  })
+
+  it('adds a region as a Command; undo unlists and deletes it while empty, and redo recreates it', async () => {
+    renderCommands([createMock, unlistAddedMock, deleteAddedMock])
+    await waitFor(() =>
+      expect(screen.getByTestId('Region-eurRegionId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add region' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('Region-newRegionId')).toHaveTextContent(
+        'New region|new-region|2|true|'
+      )
+    )
+    await waitFor(() => expect(createMock.result).toHaveBeenCalledTimes(1))
+    expect(createMock.result).toHaveBeenCalledWith({
+      campaignId: campaignWithRegions.id,
+      id: 'newRegionId'
+    })
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('Region-newRegionId')).not.toBeInTheDocument()
+    )
+    expect(unlistAddedMock.result).toHaveBeenCalledTimes(1)
+    expect(deleteAddedMock.result).toHaveBeenCalledWith({ id: 'newRegionId' })
+    expect(
+      screen
+        .getAllByTestId(/^Region-/)
+        .map((item) => item.getAttribute('data-testid'))
+    ).toEqual(['Region-eurRegionId', 'Region-afrRegionId'])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('Region-newRegionId')).toHaveTextContent(
+        'New region|new-region|2|true|'
+      )
+    )
+    await waitFor(() => expect(createMock.result).toHaveBeenCalledTimes(2))
   })
 
   it('raises the API message in the error snackbar when a list or unlist is refused', async () => {

@@ -8,15 +8,14 @@ import {
   CAMPAIGN_BLOCK_UPDATE_SCROLL_TO_BLOCK_ACTION,
   CampaignButtonAction
 } from '../../../../libs/useCampaignBlockActionMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import {
   BlocksProbe,
   CommandProbe,
   QueriedEditor,
-  SelectionProbe
+  SelectionProbe,
+  UndoRedo
 } from '../../testing'
 
 import { useCampaignActionCommand } from './useCampaignActionCommand'
@@ -152,8 +151,7 @@ function renderHarness(
       initialState={{ selectedBlockId: 'heroId' }}
       mocks={[linkMock, scrollMock, deleteMock, errorMock]}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
@@ -269,7 +267,7 @@ describe('useCampaignActionCommand', () => {
         initialState={{ selectedBlockId: 'heroId' }}
         mocks={[linkMock, errorMock]}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <RemovableHarness action={linkAction} undoAction={badLinkAction} />
       </QueriedEditor>
     )

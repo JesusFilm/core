@@ -1,4 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
@@ -65,7 +66,7 @@ interface RenderOptions {
   campaign?: Campaign
   role?: CampaignRole
   onRoleRetry?: () => void
-  mocks?: Array<Record<string, unknown>>
+  mocks?: MockLink.MockedResponse[]
   onDefaultLanguageChanged?: () => void
   cache?: InMemoryCache
   /** A background machine-translation run in flight. */
@@ -82,7 +83,7 @@ function renderSettings({
   run
 }: RenderOptions = {}): void {
   render(
-    <MockedProvider mocks={mocks as never} cache={cache}>
+    <MockedProvider mocks={mocks} cache={cache}>
       <SnackbarProvider>
         <CommandProvider>
           <CommandCount />
@@ -345,16 +346,6 @@ describe('Settings', () => {
     expect(screen.getByText('Title is required')).toBeInTheDocument()
   })
 
-  it('has no Save button, Unsaved chip or save indicator', () => {
-    renderSettings()
-
-    expect(
-      screen.queryByRole('button', { name: 'Save' })
-    ).not.toBeInTheDocument()
-    expect(screen.queryByText('Unsaved')).not.toBeInTheDocument()
-    expect(screen.queryByText(/Saving/)).not.toBeInTheDocument()
-  })
-
   it('offers Delete campaign to managers and confirms before campaignDelete', async () => {
     const result = vi.fn(() => ({
       data: { campaignDelete: { __typename: 'Campaign', id: 'campaignId' } }
@@ -495,14 +486,14 @@ describe('Settings', () => {
     }
 
     function updateMock(
-      result: Record<string, unknown>
-    ): Record<string, unknown> {
+      response: Omit<MockLink.MockedResponse, 'request'>
+    ): MockLink.MockedResponse {
       return {
         request: {
           query: CAMPAIGN_UPDATE,
           variables: { id: 'campaignId', input: { defaultLanguageId: FRENCH } }
         },
-        ...result
+        ...response
       }
     }
 

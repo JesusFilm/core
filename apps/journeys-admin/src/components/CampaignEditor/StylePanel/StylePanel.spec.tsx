@@ -17,17 +17,22 @@ import {
   newOwnedImageBlock
 } from '../../../libs/useCampaignImageBlockCreateMutation'
 import { CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL } from '../../../libs/useCloudflareTeamUploadByUrlMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
 import {
-  StyleMock,
   WithBlock,
   blockOf,
   blockUpdateMock,
   paletteMock
 } from '../styleTesting'
-import { CommandProbe, QueriedEditor } from '../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SpyMock,
+  UndoRedo,
+  holdRequests,
+  landRequests
+} from '../testing'
 
 import { StylePanel } from './StylePanel'
 
@@ -88,10 +93,10 @@ const coverCreateMock = {
   }))
 }
 
-function renderPanel(mocks: StyleMock[]): ReturnType<typeof render> {
+function renderPanel(mocks: SpyMock[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor mocks={mocks} initialState={{ selectedBlockId: 'heroId' }}>
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <WithBlock blockId="heroId" typename="CampaignHeroBlock">
         {(block) => <StylePanel block={block} />}
@@ -113,32 +118,32 @@ describe('StylePanel', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
+  afterEach(() => vi.useRealTimers())
+
   describe('Background', () => {
     it('writes a chosen kind as one Command with an optimistic response', async () => {
       const mocks = [
-        {
-          ...blockUpdateMock(hero, {
-            backgroundKind: CampaignBackgroundKind.surface
-          }),
-          delay: 200
-        }
+        blockUpdateMock(hero, {
+          backgroundKind: CampaignBackgroundKind.surface
+        })
       ]
       renderPanel(mocks)
       const none = await screen.findByRole('button', { name: 'None' })
       expect(none).toHaveAttribute('aria-pressed', 'true')
 
-      fireEvent.click(screen.getByRole('button', { name: 'Surface' }))
+      await holdRequests(() =>
+        fireEvent.click(screen.getByRole('button', { name: 'Surface' }))
+      )
 
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
       // The optimistic response flips the selection before the request returns.
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: 'Surface' })).toHaveAttribute(
-          'aria-pressed',
-          'true'
-        )
+      expect(screen.getByRole('button', { name: 'Surface' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
       )
       expect(mocks[0].result).not.toHaveBeenCalled()
-      await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+      await landRequests()
+      expect(mocks[0].result).toHaveBeenCalled()
     })
 
     it('offers the image kind: choosing it without a cover shows the picker and writes nothing yet', async () => {
@@ -413,7 +418,7 @@ describe('StylePanel', () => {
     })
 
     it('shows the API’s message verbatim when it refuses a value', async () => {
-      const failing: StyleMock = {
+      const failing: SpyMock = {
         ...blockUpdateMock(hero, { headingColor: '#AABBCC' }),
         result: vi.fn(() => ({
           errors: [{ message: 'headingColor is not allowed on this band' }]

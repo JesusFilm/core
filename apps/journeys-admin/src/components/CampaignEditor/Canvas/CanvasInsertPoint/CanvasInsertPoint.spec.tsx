@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -14,8 +15,8 @@ import { Canvas } from '../Canvas'
 vi.mock('uuid', () => ({ v4: vi.fn(() => 'newId') }))
 
 function heroCreateMock(
-  input: Record<string, unknown>
-): Record<string, unknown> {
+  input: Omit<Parameters<typeof newSectionBlock>[1], 'id' | 'campaignId'>
+): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_HERO_BLOCK_CREATE,
@@ -27,7 +28,7 @@ function heroCreateMock(
           id: 'newId',
           campaignId: 'campaignId',
           ...input
-        } as never)
+        })
       }
     }))
   }
@@ -82,7 +83,7 @@ function PresetProbe(): ReactElement {
 function renderCanvas(campaignProp = campaign): ReturnType<typeof render> {
   return render(
     <StaticEditor
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       mocks={[heroBetweenMock, heroFirstMock, heroIntoSlotMock]}
     >
       <SelectionProbe />

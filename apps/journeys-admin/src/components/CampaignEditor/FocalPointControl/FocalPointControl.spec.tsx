@@ -1,12 +1,12 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { imageSectionBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithColumns, withEmptyTranslations } from '../data'
 import { blockUpdateMock } from '../styleTesting'
-import { CommandProbe, StaticEditor } from '../testing'
+import { CommandProbe, StaticEditor, UndoRedo } from '../testing'
 
 import { FocalPointControl } from './FocalPointControl'
 
@@ -18,24 +18,24 @@ const image = {
 function focalMock(
   focalLeft: number,
   focalTop: number
-): Record<string, unknown> {
+): MockLink.MockedResponse {
   return blockUpdateMock(image, { focalLeft, focalTop })
 }
 
-function zoomMock(scale: number | null): Record<string, unknown> {
+function zoomMock(scale: number | null): MockLink.MockedResponse {
   return blockUpdateMock(image, { scale })
 }
 
-function renderControl(mocks: Array<Record<string, unknown>>): void {
+function renderControl(mocks: MockLink.MockedResponse[]): void {
   render(
     <StaticEditor
-      campaignProp={{
+      campaign={{
         ...campaignWithColumns,
         blocks: [...campaignWithColumns.blocks, image]
       }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <FocalPointControl image={image} />
     </StaticEditor>

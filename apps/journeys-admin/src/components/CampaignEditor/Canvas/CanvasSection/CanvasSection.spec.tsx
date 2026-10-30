@@ -11,7 +11,13 @@ import {
   CampaignStringKey
 } from '../../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { campaign, campaignWithColumns, campaignWithRegions } from '../../data'
+import {
+  campaign,
+  campaignWithColumns,
+  campaignWithRegions,
+  withEmptyTranslations
+} from '../../data'
+import { blockOf } from '../../styleTesting'
 import { SelectionProbe, StaticEditor, frameBody } from '../../testing'
 import { newSectionBlock } from '../../utils/sectionTypes'
 import { Canvas } from '../Canvas'
@@ -39,7 +45,7 @@ const withLogo: Campaign = {
         ? { ...block, logoBlockId: 'headerLogoId' }
         : block
     ),
-    headerLogoBlock as never
+    withEmptyTranslations(headerLogoBlock)
   ]
 }
 
@@ -48,15 +54,20 @@ const withoutNavButtons: Campaign = {
   blocks: campaign.blocks.filter((block) => block.parentBlockId !== 'headerId')
 }
 
+/** The header with its Resources nav button swapped for a typography block in the same place. */
 const withHeaderText: Campaign = {
   ...campaign,
   blocks: campaign.blocks.map((block) =>
     block.id === 'navResourcesId'
-      ? ({
-          ...block,
-          __typename: 'CampaignTypographyBlock',
+      ? {
+          ...blockOf<'CampaignTypographyBlock'>('journeyListNoteId'),
+          id: block.id,
+          pageId: block.pageId,
+          regionId: block.regionId,
+          parentBlockId: block.parentBlockId,
+          parentOrder: block.parentOrder,
           content: 'Not a nav button'
-        } as never)
+        }
       : block
   )
 }
@@ -93,7 +104,7 @@ function renderChrome(
 ): RenderResult {
   return render(
     <StaticEditor
-      campaignProp={source}
+      campaign={source}
       initialState={{ selectedBlockId, previewLanguageId: '529' }}
     >
       <SelectionProbe />
@@ -108,7 +119,7 @@ describe('CanvasSection header', () => {
     function renderRegionHeader(source: Campaign): void {
       render(
         <StaticEditor
-          campaignProp={source}
+          campaign={source}
           initialState={{
             pageKind: CampaignPageKind.regionTemplate,
             regionId: 'eurRegionId',
@@ -408,7 +419,7 @@ describe('CanvasSection region header', () => {
   it('shows the previewed region’s name and its lines, read-only', () => {
     render(
       <StaticEditor
-        campaignProp={campaignWithRegions}
+        campaign={campaignWithRegions}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
@@ -441,7 +452,7 @@ describe('CanvasSection region header', () => {
   ): void {
     render(
       <StaticEditor
-        campaignProp={campaignProp}
+        campaign={campaignProp}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
@@ -507,7 +518,7 @@ describe('CanvasSection rich text in a column slot', () => {
   function renderColumns(selectedBlockId?: string): RenderResult {
     return render(
       <StaticEditor
-        campaignProp={emptyRichText}
+        campaign={emptyRichText}
         initialState={{ selectedBlockId, previewLanguageId: '529' }}
       >
         <SelectionProbe />

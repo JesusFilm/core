@@ -126,7 +126,7 @@ function renderCanvas(
   return render(
     <StaticEditor
       mocks={[orderMock, regionOrderMock]}
-      campaignProp={canvasCampaign}
+      campaign={canvasCampaign}
     >
       <SelectionProbe />
       <CommandProbe />
@@ -650,7 +650,7 @@ describe('Canvas', () => {
   describe('Columns', () => {
     function renderColumnsCanvas(): ReturnType<typeof render> {
       return render(
-        <StaticEditor campaignProp={campaignWithColumns} mocks={[swapMock]}>
+        <StaticEditor campaign={campaignWithColumns} mocks={[swapMock]}>
           <SelectionProbe />
           <CommandProbe />
           <Canvas
@@ -897,7 +897,7 @@ describe('Canvas scaled to fit', () => {
 
   it('still swaps the slots of a Columns section', async () => {
     const { baseElement } = render(
-      <StaticEditor campaignProp={campaignWithColumns} mocks={[swapMock]}>
+      <StaticEditor campaign={campaignWithColumns} mocks={[swapMock]}>
         <CommandProbe />
         <Canvas
           campaign={campaignWithColumns}
@@ -1004,7 +1004,7 @@ describe('Canvas preview language', () => {
   it('renders the campaign text in the preview language the Pages panel chose, falling back to the default where no translation exists', async () => {
     const { baseElement } = render(
       <StaticEditor
-        campaignProp={translated}
+        campaign={translated}
         initialState={{ previewLanguageId: '496' }}
       >
         <Canvas
@@ -1048,7 +1048,7 @@ describe('Canvas preview language', () => {
     }
     const { baseElement } = render(
       <StaticEditor
-        campaignProp={arabic}
+        campaign={arabic}
         initialState={{ previewLanguageId: '22658' }}
       >
         <Canvas

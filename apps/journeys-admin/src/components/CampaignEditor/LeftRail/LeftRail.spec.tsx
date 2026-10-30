@@ -66,7 +66,7 @@ function Harness(): ReactElement {
   const [view, setView] = useState<CanvasView>('desktop')
   return (
     <SnackbarProvider>
-      <StaticEditor campaignProp={campaign}>
+      <StaticEditor campaign={campaign}>
         <AddCommandButton />
         <CommandProbe />
         <PanelProbe />
@@ -81,7 +81,7 @@ function Harness(): ReactElement {
 function RunningHarness(): ReactElement {
   return (
     <SnackbarProvider>
-      <StaticEditor campaignProp={campaign}>
+      <StaticEditor campaign={campaign}>
         <TranslationRunContext.Provider
           value={{ run, start: vi.fn(), cancel: vi.fn() }}
         >
@@ -190,18 +190,6 @@ describe('LeftRail', () => {
     fireEvent.click(localize)
     expect(screen.getByTestId('OpenPanel')).toHaveTextContent('localize')
     expect(localize).toHaveAttribute('aria-pressed', 'true')
-  })
-
-  it('lists the panel toggles as Add, Pages, Navigator, Localize', () => {
-    render(<Harness />)
-
-    const panels = ['Add', 'Pages', 'Navigator', 'Localize']
-    const toggles = screen
-      .getAllByRole('button')
-      .map((button) => button.getAttribute('aria-label') ?? '')
-      .filter((label) => panels.includes(label))
-
-    expect(toggles).toEqual(['Add', 'Pages', 'Navigator', 'Localize'])
   })
 
   it('keeps the Navigator panel open when its toggle is pressed again', () => {

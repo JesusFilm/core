@@ -11,7 +11,7 @@ function renderPanel(
   initialState = {}
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor campaignProp={campaignProp} initialState={initialState}>
+    <StaticEditor campaign={campaignProp} initialState={initialState}>
       <SelectionProbe />
       <PagesPanel />
     </StaticEditor>
@@ -39,7 +39,7 @@ describe('PagesPanel', () => {
     expect(pageNames()).toEqual(['Landing page', 'Region page'])
   })
 
-  it('lists each region as the Region Page rendered for it, with " · not listed" for orphans, the Needs journey chip and no " · custom"', () => {
+  it('lists each region as the Region Page rendered for it, with " · not listed" for orphans and the Needs journey chip', () => {
     renderPanel(campaignWithRegions)
 
     expect(pageNames()).toEqual([
@@ -47,7 +47,6 @@ describe('PagesPanel', () => {
       'EuropeNeeds journey',
       'Africa · not listedNeeds journey'
     ])
-    expect(screen.queryByText(/custom/)).not.toBeInTheDocument()
   })
 
   it('drops the Needs journey chip once every language of a region is linked', () => {

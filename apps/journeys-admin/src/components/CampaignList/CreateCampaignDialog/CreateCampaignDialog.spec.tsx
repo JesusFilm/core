@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
@@ -50,12 +51,12 @@ const createVariables = {
   input: { teamId: 'teamId', title: 'Outreach 2026', defaultLanguageId: '529' }
 }
 
-function renderDialog(mocks: Array<Record<string, unknown>>): {
+function renderDialog(mocks: MockLink.MockedResponse[]): {
   onClose: ReturnType<typeof vi.fn>
 } {
   const onClose = vi.fn()
   render(
-    <MockedProvider mocks={[languagesMock, ...mocks] as never}>
+    <MockedProvider mocks={[languagesMock, ...mocks]}>
       <SnackbarProvider>
         <CreateCampaignDialog open onClose={onClose} teamId="teamId" />
       </SnackbarProvider>

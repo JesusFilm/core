@@ -1,4 +1,5 @@
-import { InMemoryCache, gql } from '@apollo/client'
+import { InMemoryCache } from '@apollo/client'
+import { parse } from 'graphql'
 import { ReactElement } from 'react'
 
 import {
@@ -18,14 +19,7 @@ import { CAMPAIGN_THEME_UPDATE } from '../../libs/useCampaignThemeUpdateMutation
 
 import { useCampaignEditor } from './CampaignEditorProvider'
 import { campaign } from './data'
-
-/** A type alias, not an interface, so the array is assignable to the editors' `Record<string, unknown>[]` mocks. */
-export type StyleMock = {
-  request: Record<string, unknown>
-  result: ReturnType<typeof vi.fn>
-  delay?: number
-  maxUsageCount?: number
-}
+import { SpyMock } from './testing'
 
 /**
  * A mock for one block update through `useCampaignBlockUpdateMutation`:
@@ -36,7 +30,7 @@ export function blockUpdateMock<B extends CampaignUpdatableBlock>(
   block: B,
   input: CampaignBlockUpdateInput<B['__typename']>,
   current: Partial<B> = {}
-): StyleMock {
+): SpyMock {
   const row: B = { ...block, ...current }
   return {
     request: {
@@ -53,7 +47,7 @@ export function blockUpdateMock<B extends CampaignUpdatableBlock>(
 }
 
 /** A mock for the Palette save `nextPalette` produces for `palette`. */
-export function paletteMock(palette: string[]): StyleMock {
+export function paletteMock(palette: string[]): SpyMock {
   return {
     request: {
       query: CAMPAIGN_PALETTE_UPDATE,
@@ -67,7 +61,9 @@ export function paletteMock(palette: string[]): StyleMock {
   }
 }
 
-const SECTION_STYLE = gql`
+// Test-only fragments are parsed rather than tagged with gql, so codegen does
+// not generate types for them into the app's __generated__.
+const SECTION_STYLE = parse(`
   fragment SectionStyle on CampaignSectionBlock {
     backgroundKind
     backgroundColor
@@ -77,7 +73,7 @@ const SECTION_STYLE = gql`
     buttonTextColor
     accentColor
   }
-`
+`)
 
 /** The nine shared fields of a block as the cache currently holds them (optimistic layer included). */
 export function readSectionStyle(
@@ -121,7 +117,7 @@ export function WithBlock<T extends CampaignBlock['__typename']>({
 export function themeMock(
   input: CampaignThemeUpdateInput,
   current: Partial<CampaignTheme> = {}
-): StyleMock {
+): SpyMock {
   return {
     request: {
       query: CAMPAIGN_THEME_UPDATE,
@@ -133,7 +129,7 @@ export function themeMock(
   }
 }
 
-const THEME_FIELDS = gql`
+const THEME_FIELDS = parse(`
   fragment ThemeFields on CampaignTheme {
     themeMode
     headerFont
@@ -150,7 +146,7 @@ const THEME_FIELDS = gql`
     radius
     buttonRadius
   }
-`
+`)
 
 /** The Campaign Theme as the cache currently holds it (optimistic layer included). */
 export function readTheme(

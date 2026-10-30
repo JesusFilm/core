@@ -8,12 +8,10 @@ import {
   CAMPAIGN_IMAGE_BLOCK_CREATE,
   newOwnedImageBlock
 } from '../../../../libs/useCampaignImageBlockCreateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { blockOf, blockUpdateMock } from '../../styleTesting'
-import { QueriedEditor } from '../../testing'
+import { QueriedEditor, UndoRedo } from '../../testing'
 
 import { useCampaignOwnedImageCommand } from './useCampaignOwnedImageCommand'
 
@@ -103,7 +101,7 @@ describe('useCampaignOwnedImageCommand', () => {
   it('undoes a pick with the owner write alone, never campaignBlockRestore, and redoes it without a second create', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithCover}
+        campaign={campaignWithCover}
         mocks={[
           createdMock,
           restoreOldCoverMock,
@@ -111,8 +109,7 @@ describe('useCampaignOwnedImageCommand', () => {
           pointAtOldMock
         ]}
       >
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
+        <UndoRedo />
         <Probe />
       </QueriedEditor>
     )
@@ -134,7 +131,7 @@ describe('useCampaignOwnedImageCommand', () => {
   it('sends nothing on undo after a refused create, and retries the create on redo', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithCover}
+        campaign={campaignWithCover}
         mocks={[
           createRefusedMock,
           createdMock,
@@ -143,8 +140,7 @@ describe('useCampaignOwnedImageCommand', () => {
           pointAtOldMock
         ]}
       >
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
+        <UndoRedo />
         <Probe />
       </QueriedEditor>
     )

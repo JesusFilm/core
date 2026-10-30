@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -16,11 +17,9 @@ import {
   CampaignVideoPick,
   newOwnedVideoBlock
 } from '../../../../libs/useCampaignVideoBlockCreateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { blockOf, blockUpdateMock } from '../../styleTesting'
-import { CommandProbe, QueriedEditor } from '../../testing'
+import { CommandProbe, QueriedEditor, UndoRedo } from '../../testing'
 
 import { useCampaignMediaCommand } from './useCampaignMediaCommand'
 
@@ -116,11 +115,10 @@ function HeroMedia(): ReactElement {
   )
 }
 
-function renderHook(mocks: Array<Record<string, unknown>>): void {
+function renderHook(mocks: MockLink.MockedResponse[]): void {
   render(
     <QueriedEditor mocks={mocks}>
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <HeroMedia />
     </QueriedEditor>

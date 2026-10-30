@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -9,17 +10,22 @@ import {
 import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../../data'
 import { Inspector } from '../../Inspector'
-import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
+import {
+  BlocksProbe,
+  QueriedEditor,
+  SelectionProbe,
+  UndoRedo,
+  holdRequests,
+  landRequests
+} from '../../testing'
 
 const footerTerms = campaign.blocks.find(
   (block) => block.id === 'footerTermsId'
 )!
 
 const deleteMock = {
-  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'footerTermsId' } },
   result: vi.fn(() => ({
     data: {
@@ -40,7 +46,6 @@ const deleteMock = {
 }
 
 const restoreMock = {
-  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_RESTORE,
     variables: { id: 'footerTermsId' }
@@ -59,14 +64,14 @@ const restoreMock = {
 const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderEditor(
-  mocks: Array<Record<string, unknown>> = [deleteMock, restoreMock]
+  mocks: MockLink.MockedResponse[] = [deleteMock, restoreMock]
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       initialState={{ selectedBlockId: 'footerTermsId' }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <SelectionProbe />
       <BlocksProbe />
       <Inspector role="member" />
@@ -77,25 +82,26 @@ function renderEditor(
 describe('useCampaignBlockDeleteCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
+  afterEach(() => vi.useRealTimers())
+
   it('deletes without confirmation, renumbers the siblings at once and selects the host', async () => {
     renderEditor()
     expect(await screen.findByTestId('Block-footerTermsId')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    )
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('footerId')
     // Optimistic: gone and renumbered before the delete request returns.
-    await waitFor(() =>
-      expect(
-        screen.queryByTestId('Block-footerTermsId')
-      ).not.toBeInTheDocument()
-    )
+    expect(screen.queryByTestId('Block-footerTermsId')).not.toBeInTheDocument()
     expect(screen.getByTestId('Block-footerPrivacyId')).toHaveTextContent(
       'CampaignButtonBlock|footerId|1|'
     )
     expect(deleteMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(deleteMock.result).toHaveBeenCalled()
   })
 
   it('undoes through campaignBlockRestore, putting the block back in place and reselecting it', async () => {
@@ -104,22 +110,23 @@ describe('useCampaignBlockDeleteCommand', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
 
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    )
 
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'footerTermsId'
     )
     // Optimistic: back in place before the restore request returns.
-    await waitFor(() =>
-      expect(screen.getByTestId('Block-footerTermsId')).toHaveTextContent(
-        'CampaignButtonBlock|footerId|1|below||"Terms of Use"|null|CampaignLinkAction'
-      )
+    expect(screen.getByTestId('Block-footerTermsId')).toHaveTextContent(
+      'CampaignButtonBlock|footerId|1|below||"Terms of Use"|null|CampaignLinkAction'
     )
     expect(screen.getByTestId('Block-footerPrivacyId')).toHaveTextContent(
       'CampaignButtonBlock|footerId|2|'
     )
     expect(restoreMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(restoreMock.result).toHaveBeenCalled()
   })
 
   it('raises the API message in the error snackbar when the delete is refused', async () => {
@@ -157,7 +164,6 @@ describe('useCampaignBlockDeleteCommand', () => {
     ]
 
     const sectionDeleteMock = {
-      delay: 1000,
       request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'heroId' } },
       result: vi.fn(() => ({
         data: {
@@ -174,7 +180,6 @@ describe('useCampaignBlockDeleteCommand', () => {
     }
 
     const sectionRestoreMock = {
-      delay: 1000,
       request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id: 'heroId' } },
       result: vi.fn(() => ({
         data: {
@@ -197,7 +202,7 @@ describe('useCampaignBlockDeleteCommand', () => {
           initialState={{ selectedBlockId, pageKind }}
           mocks={[sectionDeleteMock, sectionRestoreMock]}
         >
-          <CommandUndoItem variant="button" />
+          <UndoRedo />
           <SelectionProbe />
           <BlocksProbe />
           <Inspector role="member" />
@@ -216,17 +221,18 @@ describe('useCampaignBlockDeleteCommand', () => {
       expect(dialog).not.toHaveTextContent('from every region page')
       expect(screen.getByTestId('Block-heroId')).toBeInTheDocument()
 
-      fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+      await holdRequests(() =>
+        fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+      )
 
       expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
-      await waitFor(() =>
-        expect(screen.queryByTestId('Block-heroId')).not.toBeInTheDocument()
-      )
+      expect(screen.queryByTestId('Block-heroId')).not.toBeInTheDocument()
       expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
         'CampaignRegionSwitcherBlock||0|'
       )
       expect(sectionDeleteMock.result).not.toHaveBeenCalled()
-      await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
+      await landRequests()
+      expect(sectionDeleteMock.result).toHaveBeenCalled()
     })
 
     it('carries the "from every region page" warning on the Region Page', async () => {
@@ -265,13 +271,16 @@ describe('useCampaignBlockDeleteCommand', () => {
       await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
       expect(screen.queryByTestId('Block-heroButtonId')).not.toBeInTheDocument()
 
-      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await holdRequests(() =>
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      )
 
-      expect(await screen.findByTestId('Block-heroButtonId')).toHaveTextContent(
+      expect(screen.getByTestId('Block-heroButtonId')).toHaveTextContent(
         'CampaignButtonBlock|heroId|0|'
       )
       expect(sectionRestoreMock.result).not.toHaveBeenCalled()
-      await waitFor(() => expect(sectionRestoreMock.result).toHaveBeenCalled())
+      await landRequests()
+      expect(sectionRestoreMock.result).toHaveBeenCalled()
     })
 
     it('restores the section with its children in place on undo', async () => {
@@ -286,13 +295,13 @@ describe('useCampaignBlockDeleteCommand', () => {
       )
       await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
 
-      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await holdRequests(() =>
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      )
 
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
-      await waitFor(() =>
-        expect(screen.getByTestId('Block-heroId')).toHaveTextContent(
-          `CampaignHeroBlock||0||||${String(hero.__typename === 'CampaignHeroBlock' ? hero.align : '')}|`
-        )
+      expect(screen.getByTestId('Block-heroId')).toHaveTextContent(
+        `CampaignHeroBlock||0||||${String(hero.__typename === 'CampaignHeroBlock' ? hero.align : '')}|`
       )
       expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
         'CampaignRegionSwitcherBlock||1|'
@@ -301,7 +310,8 @@ describe('useCampaignBlockDeleteCommand', () => {
         'CampaignButtonBlock|heroId|0|'
       )
       expect(sectionRestoreMock.result).not.toHaveBeenCalled()
-      await waitFor(() => expect(sectionRestoreMock.result).toHaveBeenCalled())
+      await landRequests()
+      expect(sectionRestoreMock.result).toHaveBeenCalled()
     })
   })
 })

@@ -1,4 +1,5 @@
 import { useApolloClient } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
@@ -31,7 +32,10 @@ const request = { query: GET_CAMPAIGN, variables: { id: campaign.id } }
 const campaignResult = { request, result: { data: { campaign } } }
 const campaignError = { request, error: new Error('Bad gateway') }
 
-function campaignRefused(code: string, message: string): unknown {
+function campaignRefused(
+  code: string,
+  message: string
+): MockLink.MockedResponse {
   return {
     request,
     result: { errors: [new GraphQLError(message, { extensions: { code } })] }
@@ -54,9 +58,9 @@ function RefetchCampaign(): ReactElement {
   )
 }
 
-function renderPage(mocks: unknown[]): void {
+function renderPage(mocks: MockLink.MockedResponse[]): void {
   render(
-    <MockedProvider mocks={mocks as never} cache={campaignCache()}>
+    <MockedProvider mocks={mocks} cache={campaignCache()}>
       <SnackbarProvider>
         <CampaignEditorPage campaignId={campaign.id} />
         <RefetchCampaign />

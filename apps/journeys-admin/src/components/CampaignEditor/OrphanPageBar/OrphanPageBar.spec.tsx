@@ -56,7 +56,7 @@ function renderBanner(
   return render(
     <SnackbarProvider>
       <QueriedEditor
-        campaignProp={campaignWithRegions}
+        campaign={campaignWithRegions}
         initialState={initialState}
         mocks={[deleteMock, listMock]}
       >
@@ -163,7 +163,7 @@ describe('OrphanPageBar', () => {
         <QueriedEditor
           link={debounceSpyLink(requests, [deleteMock], campaignWithAfrLine)}
           cache={campaignCache()}
-          campaignProp={campaignWithAfrLine}
+          campaign={campaignWithAfrLine}
           initialState={{
             pageKind: CampaignPageKind.regionTemplate,
             regionId: 'afrRegionId'

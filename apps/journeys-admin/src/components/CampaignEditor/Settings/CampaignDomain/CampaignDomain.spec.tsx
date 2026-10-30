@@ -1,4 +1,5 @@
-import { InMemoryCache, gql } from '@apollo/client'
+import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
@@ -25,7 +26,7 @@ const domain = {
   apexName: 'example.org'
 }
 
-function createMock(result: () => unknown): Record<string, unknown> {
+function createMock(result: () => ApolloLink.Result): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_DOMAIN_CREATE,
@@ -41,7 +42,7 @@ function createMock(result: () => unknown): Record<string, unknown> {
   }
 }
 
-function deleteMock(result: () => unknown): Record<string, unknown> {
+function deleteMock(result: () => ApolloLink.Result): MockLink.MockedResponse {
   return {
     request: {
       query: DELETE_CUSTOM_DOMAIN,
@@ -51,11 +52,11 @@ function deleteMock(result: () => unknown): Record<string, unknown> {
   }
 }
 
-const createResult = (): unknown => ({
+const createResult = (): ApolloLink.Result => ({
   data: { customDomainCreate: domain }
 })
 
-const deleteResult = (): unknown => ({
+const deleteResult = (): ApolloLink.Result => ({
   data: {
     customDomainDelete: { __typename: 'CustomDomain', id: 'customDomainId' }
   }
@@ -71,11 +72,11 @@ function renderDomain({
   campaign?: Campaign
   role?: CampaignRole
   onRoleRetry?: () => void
-  mocks?: Array<Record<string, unknown>>
+  mocks?: MockLink.MockedResponse[]
   cache?: InMemoryCache
 } = {}): void {
   render(
-    <MockedProvider mocks={mocks as never} cache={cache}>
+    <MockedProvider mocks={mocks} cache={cache}>
       <ThemeProvider>
         <SnackbarProvider>
           <CampaignDomain

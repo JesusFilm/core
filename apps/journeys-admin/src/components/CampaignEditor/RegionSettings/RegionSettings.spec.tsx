@@ -191,19 +191,17 @@ function renderSettings(region = eurRegion, previewLanguageId = '529'): void {
   render(
     <StaticEditor
       initialState={{ previewLanguageId }}
-      mocks={
-        [
-          countriesMock,
-          renameMock,
-          slugMock,
-          reservedSlugMock,
-          longNameMock,
-          addCountryMock,
-          removeCountryMock,
-          translateNameMock,
-          clearNameTranslationMock
-        ] as never
-      }
+      mocks={[
+        countriesMock,
+        renameMock,
+        slugMock,
+        reservedSlugMock,
+        longNameMock,
+        addCountryMock,
+        removeCountryMock,
+        translateNameMock,
+        clearNameTranslationMock
+      ]}
     >
       <PreviewLanguageSwitch languageIds={['529', '496']} />
       <RegionSettings region={region} />
