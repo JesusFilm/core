@@ -58,7 +58,28 @@ function renderButton(
   )
 }
 
+/** `window.matchMedia` answering `prefers-reduced-motion: reduce` as asked; jsdom has none. */
+function mockReducedMotion(reduce: boolean): void {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: (query: string) => ({
+      matches: reduce && query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn()
+    })
+  })
+}
+
 describe('CampaignButton', () => {
+  afterEach(() => {
+    delete (window as unknown as Record<string, unknown>).matchMedia
+  })
+
   it('defaults variant to contained and size to medium', () => {
     renderButton(
       <CampaignButton
@@ -176,6 +197,23 @@ describe('CampaignButton', () => {
     fireEvent.click(link)
     expect(target.scrollIntoView).toHaveBeenCalledWith({
       behavior: 'smooth',
+      block: 'start'
+    })
+  })
+
+  it('jumps to the scroll target instead of scrolling under prefers-reduced-motion: reduce', () => {
+    mockReducedMotion(true)
+    renderButton(
+      <>
+        <section id="landingSwitcherId" />
+        <CampaignButton block={heroButton} />
+      </>
+    )
+    const target = document.getElementById('landingSwitcherId') as HTMLElement
+    target.scrollIntoView = vi.fn()
+    fireEvent.click(screen.getByRole('link', { name: 'Choose your region' }))
+    expect(target.scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'auto',
       block: 'start'
     })
   })

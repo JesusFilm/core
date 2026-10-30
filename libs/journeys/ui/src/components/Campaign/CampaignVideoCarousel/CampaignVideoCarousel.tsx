@@ -40,7 +40,7 @@ const cardSx = {
   width: CARD_WIDTH,
   overflow: 'hidden',
   borderRadius: 1,
-  textAlign: 'left',
+  textAlign: 'start',
   scrollSnapAlign: 'start',
   backgroundColor: 'var(--campaign-band-card)',
   border: '1px solid var(--campaign-band-border)'

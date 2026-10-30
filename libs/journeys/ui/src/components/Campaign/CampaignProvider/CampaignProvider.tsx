@@ -31,6 +31,12 @@ export interface CampaignContextValue {
   basePath: string
   /** Ids of the blocks a same-page anchor can scroll to on the current page. */
   pageBlockIds: ReadonlySet<string>
+  /**
+   * The block whose heading is the page's one `h1` (a Region Header or a
+   * Hero), or null when neither renders. Unset outside `CampaignPage`, where
+   * a Hero keeps its `h1`.
+   */
+  pageHeadingBlockId?: string | null
   /** A Campaign String in the Page Language; empty when the campaign lacks the row or it is blank. */
   string: (key: CampaignStringKey) => string
 }

@@ -11,6 +11,7 @@ import { GET_CAMPAIGN_STATS } from '../CampaignAnalytics'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
   LANDING_PAGE_ID,
+  REGION_PAGE_ID,
   afrRegion,
   campaignPublic,
   campaignStatsFixture,
@@ -595,6 +596,94 @@ describe('CampaignPage', () => {
     })
   })
 
+  describe('page heading', () => {
+    function hero(
+      id: string,
+      title: string,
+      overrides: Pick<
+        Partial<CampaignBlock>,
+        'pageId' | 'parentBlockId' | 'parentOrder'
+      > = {}
+    ): CampaignBlock {
+      return section('CampaignHeroBlock', {
+        id,
+        pageId: LANDING_PAGE_ID,
+        parentOrder: 0,
+        eyebrow: null,
+        title,
+        description: null,
+        align: null,
+        minHeight: null,
+        mediaBlockId: null,
+        ...overrides
+      })
+    }
+
+    it('makes the region name the one h1 of a Region Page with a Hero, and the Hero title an h2', () => {
+      renderPage(
+        withRegionPage([
+          hero('regionHeroId', 'Welcome to the region', {
+            pageId: REGION_PAGE_ID
+          }),
+          ...regionPageBlocks.map((block, index) => ({
+            ...block,
+            parentOrder: index + 1
+          }))
+        ]),
+        CampaignPageKind.regionTemplate,
+        eurRegion
+      )
+
+      expect(bandIds()[0]).toBe('regionHeroId')
+      const headings = screen.getAllByRole('heading', { level: 1 })
+      expect(headings).toHaveLength(1)
+      expect(headings[0]).toHaveTextContent('Europe')
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Welcome to the region' })
+      ).toBeInTheDocument()
+    })
+
+    it('makes the first Hero title the one h1 of a landing page with two Heroes', () => {
+      renderPage(
+        withLanding([
+          hero('firstHeroId', 'First hero'),
+          hero('secondHeroId', 'Second hero', { parentOrder: 1 })
+        ])
+      )
+
+      const headings = screen.getAllByRole('heading', { level: 1 })
+      expect(headings).toHaveLength(1)
+      expect(headings[0]).toHaveTextContent('First hero')
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Second hero' })
+      ).toBeInTheDocument()
+    })
+
+    it("counts a Column Slot Hero in its Columns' place", () => {
+      renderPage(
+        withLanding([
+          section('CampaignColumnsBlock', {
+            id: 'columnsId',
+            pageId: LANDING_PAGE_ID,
+            parentOrder: 0,
+            ratio: CampaignColumnsRatio.equal
+          }),
+          columnSlot({
+            id: 'slotLeftId',
+            parentBlockId: 'columnsId',
+            parentOrder: 0
+          }),
+          hero('slotHeroId', 'In a column', { parentBlockId: 'slotLeftId' }),
+          hero('laterHeroId', 'Later hero', { parentOrder: 1 })
+        ])
+      )
+
+      const headings = screen.getAllByRole('heading', { level: 1 })
+      expect(headings).toHaveLength(1)
+      expect(headings[0]).toHaveTextContent('In a column')
+    })
+  })
+
   describe('responsive', () => {
     it('is single column below md and auto-fills switcher cards at 230px minimum at md and up', () => {
       renderPage(campaignPublic)
@@ -608,9 +697,18 @@ describe('CampaignPage', () => {
       )
     })
 
-    it('enables smooth scrolling for same-page anchors', () => {
+    it('enables smooth scrolling for same-page anchors only without a reduced-motion preference', () => {
       renderPage(campaignPublic)
-      expect(styleText()).toContain('scroll-behavior:smooth')
+      const css = styleText()
+      expect(css).toMatch(
+        /@media \(prefers-reduced-motion: ?no-preference\)\s*\{\s*html\s*\{\s*scroll-behavior:\s*smooth;?\s*\}\s*\}/
+      )
+      expect(
+        css.replace(
+          /@media \(prefers-reduced-motion: ?no-preference\)\s*\{[^}]*\}\s*\}/g,
+          ''
+        )
+      ).not.toContain('scroll-behavior')
     })
   })
 })
@@ -682,6 +780,17 @@ describe('CampaignPage page language', () => {
 
   it('sets html lang to the resolved bcp47 and dir to ltr when the language is not right-to-left', () => {
     renderPage(campaignPublic)
+    expect(document.documentElement).toHaveAttribute('lang', 'en')
+    expect(document.documentElement).toHaveAttribute('dir', 'ltr')
+  })
+
+  it('keeps the server-rendered lang and dir when the page language has no bcp47', () => {
+    document.documentElement.lang = 'en'
+    document.documentElement.dir = 'ltr'
+    renderPage({
+      ...campaignPublic,
+      language: { __typename: 'Language', id: '529', bcp47: null }
+    })
     expect(document.documentElement).toHaveAttribute('lang', 'en')
     expect(document.documentElement).toHaveAttribute('dir', 'ltr')
   })

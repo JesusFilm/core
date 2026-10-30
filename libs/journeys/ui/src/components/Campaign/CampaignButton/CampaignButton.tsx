@@ -11,6 +11,7 @@ import { useCampaign } from '../CampaignProvider'
 import { useCampaignSection } from '../CampaignSectionBand/CampaignSectionContext'
 import { flexAlign } from '../libs/flexAlign'
 import { contrastText } from '../libs/resolveBand'
+import { scrollBehavior } from '../libs/scrollBehavior'
 import { hasText } from '../types'
 import type { CampaignBlockOf } from '../types'
 
@@ -69,7 +70,7 @@ export function CampaignButton({
     const target = document.getElementById(resolved.scrollToBlockId)
     if (target == null) return
     event.preventDefault()
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    target.scrollIntoView({ behavior: scrollBehavior(), block: 'start' })
     window.history.replaceState(null, '', resolved.href)
   }
 

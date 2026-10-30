@@ -8,6 +8,7 @@ import {
 import { shouldRenderSection } from '../CampaignPage'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
+import { cssRulesFor } from '../libs/cssRulesFor'
 import { transformCampaignBlocks } from '../libs/transformer'
 import {
   afrRegion,
@@ -89,6 +90,13 @@ describe('CampaignRegionSwitcher', () => {
     expect(
       screen.queryByTestId('CampaignRegionCard-lacRegionId')
     ).not.toBeInTheDocument()
+  })
+
+  it('aligns the card text to the reading side', () => {
+    renderSwitcher(switcherTree())
+    expect(
+      cssRulesFor(screen.getByTestId('CampaignRegionCard-eurRegionId'))
+    ).toContain('text-align:start')
   })
 
   it('shows the name as heading with the lines beneath and country chips with flags', () => {

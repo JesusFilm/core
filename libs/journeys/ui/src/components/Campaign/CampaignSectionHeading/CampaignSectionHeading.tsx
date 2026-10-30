@@ -11,6 +11,8 @@ interface CampaignSectionHeadingProps {
   title?: string | null
   description?: string | null
   titleVariant?: 'h1' | 'h2'
+  /** The title's element when it differs from its look (`titleVariant`). */
+  titleComponent?: 'h1' | 'h2'
   align?: TypographyAlign | null
 }
 
@@ -24,6 +26,7 @@ export function CampaignSectionHeading({
   title,
   description,
   titleVariant = 'h2',
+  titleComponent = titleVariant,
   align = null
 }: CampaignSectionHeadingProps): ReactElement | null {
   if (!hasText(eyebrow) && !hasText(title) && !hasText(description)) return null
@@ -53,6 +56,7 @@ export function CampaignSectionHeading({
       {hasText(title) && (
         <Typography
           variant={titleVariant}
+          component={titleComponent}
           data-testid="CampaignTitle"
           sx={{ color: 'var(--campaign-band-heading)', whiteSpace: 'pre-line' }}
         >
