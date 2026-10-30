@@ -14,6 +14,7 @@ import { Logger } from 'pino'
 import {
   campaignAllowedProps,
   campaignGoals,
+  campaignSiteDomainPrefix,
   campaignSiteId
 } from '@core/journeys/ui/campaignPlausible/campaignPlausibleSite'
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
@@ -98,6 +99,12 @@ export const SITE_CREATE = gql(`
         }
       }
     }
+  }
+`)
+
+export const SITES_ALLOW_EVENT_PROPS = gql(`
+  mutation SitesAllowEventProps($input: SitesAllowEventPropsInput!) {
+    sitesAllowEventProps(input: $input)
   }
 `)
 
@@ -394,13 +401,12 @@ async function createSites(logger?: Logger): Promise<void> {
     )
   }
 
-  // Every campaign, not just those without a site: `siteCreate` returns an
-  // existing site and adds any of `campaignAllowedProps` it lacks, so a prop
-  // added later reaches older sites on the next start. Goals do not: an
-  // existing site keeps the goals it was created with.
   logger?.info('creating campaign sites...')
   const campaignIds = (
-    await prisma.campaign.findMany({ select: { id: true } })
+    await prisma.campaign.findMany({
+      where: { plausibleToken: null },
+      select: { id: true }
+    })
   ).map(({ id }) => id)
 
   for (const ids of chunk(campaignIds, BATCH_SIZE)) {
@@ -421,6 +427,36 @@ async function createSites(logger?: Logger): Promise<void> {
         }
       })
     )
+  }
+
+  await allowCampaignProps(logger)
+}
+
+/**
+ * Bring every existing campaign site's allowed props up to
+ * `campaignAllowedProps` in one call, so a prop added later reaches older
+ * sites on the next start. api-analytics finds the sites that lack one in a
+ * single query, so the cost does not grow with the number of campaigns.
+ * Goals are not synced: an existing site keeps the goals it was created with.
+ */
+async function allowCampaignProps(logger?: Logger): Promise<void> {
+  try {
+    const { data } = await client.mutate<{ sitesAllowEventProps: number }>({
+      mutation: SITES_ALLOW_EVENT_PROPS,
+      variables: {
+        input: {
+          domainPrefix: campaignSiteDomainPrefix,
+          props: campaignAllowedProps
+        }
+      }
+    })
+    logger?.info(
+      { updated: data?.sitesAllowEventProps },
+      'campaign site props brought up to date in Plausible'
+    )
+  } catch (error) {
+    // Retried by the next start, like a missing site.
+    logger?.warn({ error }, 'failed to update campaign site props in Plausible')
   }
 }
 

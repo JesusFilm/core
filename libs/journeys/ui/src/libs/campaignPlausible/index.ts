@@ -2,6 +2,7 @@ export {
   campaignAllowedProps,
   campaignGoals,
   campaignPlausibleSite,
+  campaignSiteDomainPrefix,
   campaignSiteId,
   teamSiteId
 } from './campaignPlausibleSite'
