@@ -2,6 +2,8 @@ import { ApolloLink, gql } from '@apollo/client'
 import { useApolloClient } from '@apollo/client/react'
 import { useCallback } from 'react'
 
+import { isMediaOwner } from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
+
 import { CampaignHeroBlockUpdateMedia } from '../../../__generated__/CampaignHeroBlockUpdateMedia'
 import {
   GetCampaign_campaign_blocks_CampaignFeaturedMediaBlock as CampaignFeaturedMediaBlock,
@@ -24,16 +26,11 @@ export const CAMPAIGN_HERO_BLOCK_UPDATE_MEDIA = gql`
 /** The two sections with a Media Slot. */
 export type CampaignMediaOwner = CampaignHeroBlock | CampaignFeaturedMediaBlock
 
-export const CAMPAIGN_MEDIA_OWNER_TYPENAMES: ReadonlyArray<
-  CampaignMediaOwner['__typename']
-> = ['CampaignHeroBlock', 'CampaignFeaturedMediaBlock']
-
+/** A section with a Media Slot: the grammar's `MEDIA_OWNER_TYPENAMES`. */
 export function isCampaignMediaOwner(block: {
   __typename: string
 }): block is CampaignMediaOwner {
-  return (CAMPAIGN_MEDIA_OWNER_TYPENAMES as readonly string[]).includes(
-    block.__typename
-  )
+  return isMediaOwner(block.__typename)
 }
 
 export interface CampaignMediaSlotInput {

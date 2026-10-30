@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import {
-  CampaignSectionTypename,
+  AddableSectionTypename,
   useCampaignSectionCreateMutation
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
@@ -24,7 +24,7 @@ export interface SectionInsert {
  * the Inspector's column type picker.
  */
 export function useAddSection(): (
-  typename: CampaignSectionTypename,
+  typename: AddableSectionTypename,
   insert: SectionInsert
 ) => void {
   const { campaign } = useCampaignEditor()

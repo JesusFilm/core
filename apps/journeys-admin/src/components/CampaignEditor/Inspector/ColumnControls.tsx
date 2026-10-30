@@ -8,7 +8,7 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import Layout1Icon from '@core/shared/ui/icons/Layout1'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
-import { CampaignSectionTypename } from '../../../libs/useCampaignSectionCreateMutation'
+import { AddableSectionTypename } from '../../../libs/useCampaignSectionCreateMutation'
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { columnSlots, sectionTypesForSlot, slotSection } from '../sectionTypes'
@@ -57,7 +57,7 @@ export function ColumnControls(): ReactElement | null {
   const slotPageKind =
     pageKindOf(selection.block ?? { pageId: slot.pageId }) ?? pageKind
 
-  function handlePick(typename: CampaignSectionTypename): void {
+  function handlePick(typename: AddableSectionTypename): void {
     setMenuAnchor(null)
     if (slot?.pageId == null) return
     if (changing) {

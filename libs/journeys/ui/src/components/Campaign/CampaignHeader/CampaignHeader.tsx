@@ -26,10 +26,11 @@ import {
   CampaignBandCover,
   CampaignSectionContext
 } from '../CampaignSectionBand'
+import { shownExtras } from '../libs/campaignBlockGrammar'
 import { campaignImageSource } from '../libs/campaignImageSource'
 import { bandCssVariables, resolveBand } from '../libs/resolveBand'
 import { hasText } from '../types'
-import type { CampaignBlockOf, CampaignTreeOf } from '../types'
+import type { CampaignBlockOf, CampaignTree, CampaignTreeOf } from '../types'
 
 import { CampaignLanguageSelect } from './CampaignLanguageSelect'
 
@@ -38,6 +39,20 @@ interface CampaignHeaderProps {
 }
 
 const LOGO_HEIGHT = CAMPAIGN_HEADER_HEIGHT - 24
+
+/** The Extras the grammar shows on the header: its Buttons, which are its nav links. */
+const HEADER_EXTRAS: readonly string[] = shownExtras('CampaignHeaderBlock')
+
+/** A shown header child with a label: any other child of the header renders nothing. */
+function isNavButton(
+  child: CampaignTree
+): child is CampaignTreeOf<'CampaignButtonBlock'> {
+  return (
+    HEADER_EXTRAS.includes(child.__typename) &&
+    child.__typename === 'CampaignButtonBlock' &&
+    hasText(child.label)
+  )
+}
 
 /**
  * The Campaign Chrome header: a sticky AppBar painted from the band table
@@ -60,10 +75,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
     [block, campaign.theme]
   )
   const sectionContext = useMemo(() => ({ band, align: null }), [band])
-  const navButtons = block.children.filter(
-    (child): child is CampaignTreeOf<'CampaignButtonBlock'> =>
-      child.__typename === 'CampaignButtonBlock' && hasText(child.label)
-  )
+  const navButtons = block.children.filter(isNavButton)
   const logo = campaignImageSource(block.logo)
   const landingHref = campaignLandingHref(context)
   const allRegions = string(CampaignStringKey.allRegions)

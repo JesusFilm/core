@@ -33,6 +33,7 @@ import {
   resolveBand
 } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
+import { shownExtras } from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
@@ -653,9 +654,10 @@ export function CanvasSection({
         previewLanguage.language.bcp47 ??
         previewLanguage.languageId)
 
-  /** Only buttons are nav: the public header drops any other child. */
-  const navButtons = extras.filter(
-    (child) => child.__typename === 'CampaignButtonBlock'
+  /** The header's nav is the Extras the grammar shows on it, its buttons: the public header drops any other child. */
+  const shownHeaderExtras: readonly string[] = shownExtras(block.__typename)
+  const navButtons = extras.filter((child) =>
+    shownHeaderExtras.includes(child.__typename)
   )
   const navButtonSelected = navButtons.some((child) => child.id === selectedId)
   /** Below `md` the nav sits behind the menu icon; a selected nav button opens it so it can be outlined and scrolled to. */

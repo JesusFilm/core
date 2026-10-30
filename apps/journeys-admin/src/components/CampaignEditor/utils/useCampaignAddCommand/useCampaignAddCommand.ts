@@ -1,15 +1,17 @@
 import { v4 as uuidv4 } from 'uuid'
 
+import type { ExtraTypename } from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
+
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../../__generated__/globalTypes'
 import { useCampaignButtonBlockCreateMutation } from '../../../../libs/useCampaignButtonBlockCreateMutation'
-import { CampaignSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
+import { AddableSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignTypographyBlockCreateMutation } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
 import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
 import { useAddSection } from '../useAddSection'
 import { useCampaignBlockCreateCommand } from '../useCampaignBlockCreateCommand'
 
-import { AddTargets, ExtraTypename, addTargets } from './addTargets'
+import { AddTargets, addTargets } from './addTargets'
 
 /** The label a new button Extra is born with (PRD §14); campaign content, not UI copy. */
 export const NEW_BUTTON_LABEL = 'Button'
@@ -17,7 +19,7 @@ export const NEW_BUTTON_LABEL = 'Button'
 interface CampaignAddCommand {
   /** What the selection can be added to; see `addTargets`. */
   targets: AddTargets
-  addSection: (typename: CampaignSectionTypename) => void
+  addSection: (typename: AddableSectionTypename) => void
   addExtra: (
     typename: ExtraTypename,
     placement?: CampaignChildPlacement
@@ -50,7 +52,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     preset: addPreset
   })
 
-  function addSection(typename: CampaignSectionTypename): void {
+  function addSection(typename: AddableSectionTypename): void {
     if (targets.section == null) return
     addSectionAt(typename, targets.section.insert)
   }

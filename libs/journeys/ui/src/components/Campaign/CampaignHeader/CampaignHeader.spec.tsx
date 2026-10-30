@@ -394,6 +394,28 @@ describe('CampaignHeader', () => {
       expect(resources).not.toHaveAttribute('href')
     })
 
+    it('renders no Typography child of the header, which shows only its Buttons', () => {
+      const footerLine = chromeBlocks.find(
+        (block) => block.__typename === 'CampaignTypographyBlock'
+      )
+      if (footerLine == null) throw new Error('no footer line')
+      const headerLine = {
+        ...footerLine,
+        id: 'headerLineId',
+        parentBlockId: 'headerId',
+        parentOrder: 2,
+        content: 'Header tagline'
+      }
+      renderHeader(withHeader({}, [...chromeBlocks, headerLine]))
+      expect(screen.queryByText('Header tagline')).not.toBeInTheDocument()
+      const nav = screen.getByTestId('CampaignHeaderNav')
+      expect(
+        within(nav)
+          .getAllByRole('link')
+          .map((link) => link.textContent)
+      ).toEqual(['Home', 'Resources'])
+    })
+
     it('renders no nav and no menu icon when the header has no button children', () => {
       renderHeader(withHeader({}, [headerBlock, footerBlock]))
       expect(screen.queryByTestId('CampaignHeaderNav')).not.toBeInTheDocument()

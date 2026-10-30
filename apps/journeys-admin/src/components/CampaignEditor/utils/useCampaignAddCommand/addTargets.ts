@@ -1,4 +1,9 @@
 import {
+  type ExtraTypename,
+  shownExtras
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
+
+import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock,
   GetCampaign_campaign_regions as CampaignRegion
@@ -7,7 +12,7 @@ import {
   CampaignChildPlacement,
   CampaignPageKind
 } from '../../../../../__generated__/globalTypes'
-import { CampaignSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
+import { AddableSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
 import type {
   CampaignAddPreset,
   CampaignSelection
@@ -19,23 +24,15 @@ import {
 } from '../../sectionTypes'
 import type { SectionInsert } from '../useAddSection'
 
-export type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
-
-const EXTRA_TYPENAMES: readonly ExtraTypename[] = [
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock'
-]
-
-/** The Extra types a host renders: the header shows only its button children (its nav links). */
+/** The Extra types a host renders, from the grammar: the header shows only its button children (its nav links). */
 function extraTypenamesFor(host: CampaignBlock): ExtraTypename[] {
-  if (host.__typename === 'CampaignHeaderBlock') return ['CampaignButtonBlock']
-  return [...EXTRA_TYPENAMES]
+  return [...shownExtras(host.__typename)]
 }
 
 /** Where a new section goes and which types fit there. */
 export interface SectionTarget {
   insert: SectionInsert
-  typenames: CampaignSectionTypename[]
+  typenames: AddableSectionTypename[]
 }
 
 /**

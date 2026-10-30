@@ -5,47 +5,22 @@ import {
   CampaignFeaturedMediaLayout,
   CampaignJourneyListDisplay,
   CampaignMediaSide,
-  CampaignPageKind,
   CampaignSwitcherVariant
 } from '../../../__generated__/globalTypes'
 import {
-  CAMPAIGN_SECTION_TYPENAMES,
-  CampaignSectionBlock,
-  CampaignSectionTypename
+  AddableSectionBlock,
+  AddableSectionTypename
 } from '../../libs/useCampaignSectionCreateMutation'
 
-/** Sections that read the region being rendered: offered on the Region Page only. */
-export const REGION_ONLY_TYPENAMES: readonly CampaignSectionTypename[] = [
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
-]
-
-/** The section types a page's "+Add section" offers, in menu order. */
-export function sectionTypesForPage(
-  pageKind: CampaignPageKind
-): CampaignSectionTypename[] {
-  return CAMPAIGN_SECTION_TYPENAMES.filter(
-    (typename) =>
-      pageKind === CampaignPageKind.regionTemplate ||
-      !REGION_ONLY_TYPENAMES.includes(typename)
-  )
-}
-
-/** Sections a Column Slot's type picker never offers: no nesting, the share panel reads a whole page, and an Image section is created on a page (its `parentBlockId` names an owner, not a slot). */
-export const SLOT_DISALLOWED_TYPENAMES: readonly CampaignSectionTypename[] = [
-  'CampaignColumnsBlock',
-  'CampaignRegionShareBlock',
-  'CampaignImageBlock'
-]
-
-/** The section types a Column Slot's type picker offers on a page, in menu order. */
-export function sectionTypesForSlot(
-  pageKind: CampaignPageKind
-): CampaignSectionTypename[] {
-  return sectionTypesForPage(pageKind).filter(
-    (typename) => !SLOT_DISALLOWED_TYPENAMES.includes(typename)
-  )
-}
+/**
+ * The section types a page's "+Add section" offers and a Column Slot's type
+ * picker offers, in menu order: the Campaign Block grammar's. A generated
+ * `CampaignPageKind` value is a grammar page kind.
+ */
+export {
+  sectionTypesForPage,
+  sectionTypesForSlot
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
 
 interface NewSectionBase {
   id: string
@@ -61,9 +36,9 @@ interface NewSectionBase {
  * stores when nothing is given, no background, and the type's defaults.
  */
 export function newSectionBlock(
-  typename: CampaignSectionTypename,
+  typename: AddableSectionTypename,
   base: NewSectionBase
-): CampaignSectionBlock {
+): AddableSectionBlock {
   const shared = {
     ...base,
     regionId: null,
