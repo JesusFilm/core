@@ -181,13 +181,16 @@ export function CampaignRegionShare({
 
   async function handleCopy(): Promise<void> {
     if (shortLink == null || selected == null) return
+    // Only the clipboard decides the toast: a tracking failure after a copy
+    // must not take the confirmation back.
     try {
       await navigator.clipboard.writeText(shortLink)
-      setCopied(true)
-      track('campaignShareLinkCopy', { shareLanguage: selected })
     } catch {
       setCopied(false)
+      return
     }
+    setCopied(true)
+    track('campaignShareLinkCopy', { shareLanguage: selected })
   }
 
   function handleDownload(event: MouseEvent<HTMLButtonElement>): void {
