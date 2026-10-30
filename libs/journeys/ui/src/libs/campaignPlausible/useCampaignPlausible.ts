@@ -65,8 +65,9 @@ export function useCampaignPlausible(): CampaignPlausibleTrack {
         followed = true
         window.location.assign(href)
       }
-      plausible(eventName, { props, callback: follow })
+      // The fallback first, so a tracker that throws cannot strand the link.
       setTimeout(follow, FOLLOW_TIMEOUT_MS)
+      plausible(eventName, { props, callback: follow })
     },
     [context, plausible]
   )
