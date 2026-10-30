@@ -102,6 +102,27 @@ describe('CampaignJourneyList', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('renders a card without its image when the image src is not https', () => {
+    renderList(
+      listTree([
+        item('insecure', 0, {
+          journeyImage: {
+            __typename: 'CampaignJourneyImage',
+            src: 'http://images.example.org/cover.jpg',
+            alt: 'Cover'
+          }
+        })
+      ])
+    )
+
+    expect(
+      screen.getByTestId('CampaignJourneyCard-insecure')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('CampaignJourneyCardImage')
+    ).not.toBeInTheDocument()
+  })
+
   it('omits a card whose journey is neither published nor archived, and keeps an archived one', () => {
     renderList(
       listTree([

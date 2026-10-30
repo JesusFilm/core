@@ -88,6 +88,33 @@ describe('campaignImageSource', () => {
     expect(campaignImageSource({ __typename: 'CampaignHeroBlock' })).toBeNull()
   })
 
+  it('returns null for a src that is not an https URL', () => {
+    expect(
+      campaignImageSource({
+        __typename: 'CampaignImageBlock',
+        src: 'http://images.example.org/logo.png'
+      })
+    ).toBeNull()
+    expect(
+      campaignImageSource({
+        __typename: 'CampaignImageBlock',
+        src: 'javascript:alert(1)'
+      })
+    ).toBeNull()
+    expect(
+      campaignImageSource({
+        __typename: 'CampaignImageBlock',
+        src: '/logo.png'
+      })
+    ).toBeNull()
+    expect(
+      campaignImageSource({
+        __typename: 'CampaignVideoBlock',
+        image: 'data:image/png;base64,AAAA'
+      })
+    ).toBeNull()
+  })
+
   describe('focalImageSx', () => {
     it('positions on the focal point, and zooms from it only above 100', () => {
       expect(focalImageSx({ focalLeft: 20, focalTop: 80, scale: 100 })).toEqual(

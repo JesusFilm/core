@@ -14,6 +14,7 @@ import {
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
+import { isHttpsUrl } from '../libs/isHttpsUrl'
 import { hasText } from '../types'
 import type { CampaignBlockOf, CampaignTreeOf } from '../types'
 
@@ -174,7 +175,7 @@ function JourneyCard({
       data-testid={`CampaignJourneyCard-${card.id}`}
       sx={journeyCardFrameSx(display)}
     >
-      {card.journeyImage != null && (
+      {card.journeyImage != null && isHttpsUrl(card.journeyImage.src) && (
         <Box
           component="img"
           src={card.journeyImage.src}
@@ -220,10 +221,10 @@ function JourneyCard({
 /**
  * The Journey List: its heading, then a card for each live-published journey
  * as a grid or a list (`display`), one column below `md`. Each card carries
- * the journey's snapshot title and description, its primary image read live,
- * and an "Open journey" button (the campaign's `openTemplate` string) to the
- * journey's own public address. With no live card it shows the campaign's
- * `noJourneys` string under the heading instead.
+ * the journey's snapshot title and description, its primary image read live
+ * (only an https one), and an "Open journey" button (the campaign's
+ * `openTemplate` string) to the journey's own public address. With no live
+ * card it shows the campaign's `noJourneys` string under the heading instead.
  */
 export function CampaignJourneyList({
   block
