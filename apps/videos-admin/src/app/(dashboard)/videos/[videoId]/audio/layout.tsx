@@ -112,6 +112,11 @@ const RESUME_VIDEO_VARIANT_UPLOAD = graphql(`
   }
 `)
 
+// A pending publish only lands on api-media's 15-minute reconciliation sweep
+// (workers/videoVariantReconciliation/config.ts), and each poll refetches the
+// whole variant list, so polling faster than this buys nothing.
+const PENDING_PUBLISH_POLL_INTERVAL_MS = 15000
+
 export default function ClientLayout({
   children
 }: {
@@ -190,7 +195,7 @@ export default function ClientLayout({
 
   useEffect(() => {
     if (hasPendingPublish) {
-      startVariantPolling(3000)
+      startVariantPolling(PENDING_PUBLISH_POLL_INTERVAL_MS)
       return () => stopVariantPolling()
     }
 
