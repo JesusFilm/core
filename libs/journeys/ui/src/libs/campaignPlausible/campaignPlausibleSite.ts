@@ -39,9 +39,13 @@ type PropsOf<Specs extends PropSpecs> = {
 
 type Flatten<Type> = { [Key in keyof Type]: Type[Key] }
 
+/** What every Campaign Plausible site's domain starts with. */
+export const campaignSiteDomainPrefix = 'api-journeys-campaign-'
+
 export const campaignPlausibleSite = {
   /** The Plausible site a Campaign reports to on its own. */
-  siteId: (campaignId: string): string => `api-journeys-campaign-${campaignId}`,
+  siteId: (campaignId: string): string =>
+    `${campaignSiteDomainPrefix}${campaignId}`,
   /**
    * The props every campaign page view and event carries. Keys are lowercase:
    * page-view props travel as `event-<key>` attributes on the script tag,

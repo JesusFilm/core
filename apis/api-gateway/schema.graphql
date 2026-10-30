@@ -121,6 +121,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Deletes the sites with these domains that the caller owns, and returns how many it deleted. Goals, shared links and memberships go with them (the foreign keys cascade). Events already recorded in ClickHouse are left in place. Deleting many sites is slow unless sitesDeletePrepare has run over them first.
   """
   sitesDelete(domains: [String!]!) : MutationSitesDeleteResult! @join__field(graph: API_ANALYTICS) 
+  """
+  Adds `props` to the allowed custom properties of every site the caller owns under `domainPrefix` that lacks any of them, keeping the props each already allows. One query finds the sites to change, so a caller can keep a whole family of sites in step without visiting each. Returns how many sites changed.
+  """
+  sitesAllowEventProps(input: SitesAllowEventPropsInput!) : Int! @join__field(graph: API_ANALYTICS) 
   visitorUpdate(id: ID!, input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN) 
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS_MODERN) 
   blockDelete(
@@ -7091,6 +7095,17 @@ input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   Custom properties the dashboard shows; Plausible hides any not listed. Called again for a site the caller owns, missing ones are added and none removed.
   """
   allowedEventProps: [String!]
+}
+
+input SitesAllowEventPropsInput @join__type(graph: API_ANALYTICS)  {
+  """
+  Only sites whose domain starts with this, e.g. `api-journeys-campaign-`.
+  """
+  domainPrefix: String!
+  """
+  The custom properties every matching site should allow.
+  """
+  props: [String!]!
 }
 
 input BlockDuplicateIdMap @join__type(graph: API_JOURNEYS_MODERN)  {
