@@ -30,6 +30,24 @@ type ChildVariant = {
 type ParentReconciliationResult = {
   publicationReady: false
   status: 'degraded'
+  // The stage that blocked this parent, so the first failure of a run can be
+  // persisted again after later parents have persisted their own.
+  failedStage: ProcessingStage
+}
+
+// `stages.parentSync` is a single slot shared across every parent processed in
+// one run. Once a parent has failed it, a later parent's outcome must not
+// replace it: a clean sync would erase the failure (so a later Video record
+// failure would be the only one left, and that one stays quiet), and a second
+// failure would count a second attempt for the run -- the same rules as
+// syncVideoRecordStage for the shared algoliaVideo slot.
+function recordParentSyncFailure(
+  stages: ProcessingStages,
+  error: unknown
+): ProcessingStage {
+  if (stages.parentSync.state === 'failed') return stages.parentSync
+  stages.parentSync = failedStage(error, stages.parentSync.attempts + 1)
+  return stages.parentSync
 }
 
 export async function reconcileParentVariants({
@@ -67,6 +85,13 @@ export async function reconcileParentVariants({
     if (failure != null && firstFailure == null) firstFailure = failure
   }
 
+  // A later parent persists its own outcome (e.g. a Video record failure), and
+  // the last write wins. Write the first failure again so the row's
+  // errorMessage and retryAt follow it.
+  if (firstFailure != null && parentVideos.length > 1) {
+    await persistStatus('degraded', firstFailure.failedStage)
+  }
+
   return firstFailure
 }
 
@@ -96,12 +121,16 @@ async function reconcileParentVariant({
   })
 
   if (parentVariant != null && videoVariantContainsMedia(parentVariant)) {
-    stages.parentSync = failedStage(
-      `Parent Variant ${parentVariant.id} contains media and requires operator review`,
-      stages.parentSync.attempts + 1
+    const failedStageValue = recordParentSyncFailure(
+      stages,
+      `Parent Variant ${parentVariant.id} contains media and requires operator review`
     )
-    await persistStatus('degraded', stages.parentSync)
-    return { publicationReady: false, status: 'degraded' }
+    await persistStatus('degraded', failedStageValue)
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failedStage: failedStageValue
+    }
   }
 
   try {
@@ -151,11 +180,17 @@ async function reconcileParentVariant({
     await addLanguageToVideo(parentVideo.id, variant.languageId)
     await updateParentCollectionLanguages(parentVideo.id)
     await videoCacheReset(parentVideo.id)
-    stages.parentSync = completedStage(stages.parentSync.attempts + 1)
+    if (stages.parentSync.state !== 'failed') {
+      stages.parentSync = completedStage(stages.parentSync.attempts + 1)
+    }
   } catch (error) {
-    stages.parentSync = failedStage(error, stages.parentSync.attempts + 1)
-    await persistStatus('degraded', stages.parentSync)
-    return { publicationReady: false, status: 'degraded' }
+    const failedStageValue = recordParentSyncFailure(stages, error)
+    await persistStatus('degraded', failedStageValue)
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failedStage: failedStageValue
+    }
   }
 
   if (parentVariant == null) {
@@ -190,7 +225,11 @@ async function reconcileParentVariant({
       // the real child Variant (not yet processed) must not get stuck behind
       // its container's search-index sync.
       if (result.failure.stageName !== 'algoliaVideo') {
-        return { publicationReady: false, status: 'degraded' }
+        return {
+          publicationReady: false,
+          status: 'degraded',
+          failedStage: result.failure.stage
+        }
       }
     }
     return null
@@ -209,7 +248,11 @@ async function reconcileParentVariant({
       stages.algoliaVariant.attempts + 1
     )
     await persistStatus('degraded', stages.algoliaVariant)
-    return { publicationReady: false, status: 'degraded' }
+    return {
+      publicationReady: false,
+      status: 'degraded',
+      failedStage: stages.algoliaVariant
+    }
   }
 
   // Record the parent Video-record failure, but don't block on it: the

@@ -344,6 +344,89 @@ describe('reconcileVideoVariantReconciliation', () => {
     })
   })
 
+  it('keeps an earlier parent’s parentSync failure when a later parent syncs cleanly but fails its Video record', async () => {
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {},
+      createdAt: new Date(),
+      videoVariant: {
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        slug: 'episode-1/20770',
+        published: false,
+        downloadable: false,
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
+      }
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
+    vi.mocked(findContainerParentIds).mockResolvedValue([
+      'series-1',
+      'collection-1'
+    ])
+    prismaMock.video.findMany.mockResolvedValue([
+      { id: 'series-1', slug: 'do-you-ever-wonder' },
+      { id: 'collection-1', slug: 'wonder-collection' }
+    ] as never)
+    prismaMock.videoVariant.findFirst.mockResolvedValueOnce({
+      id: '20770_series-1',
+      hls: '',
+      dash: '',
+      share: '',
+      downloads: []
+    } as never)
+    prismaMock.videoVariant.findFirst.mockResolvedValueOnce({
+      id: '20770_collection-1',
+      hls: '',
+      dash: '',
+      share: '',
+      downloads: []
+    } as never)
+    // The first parent's language write fails; the second parent's succeeds
+    // but its Video record then fails to index.
+    vi.mocked(addLanguageToVideo).mockRejectedValueOnce(
+      new Error('database unavailable')
+    )
+    vi.mocked(updateVideoInAlgolia).mockRejectedValueOnce(
+      new Error('Algolia unavailable')
+    )
+
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
+
+    expect(addLanguageToVideo).toHaveBeenCalledWith('series-1', '20770')
+    expect(addLanguageToVideo).toHaveBeenCalledWith('collection-1', '20770')
+    // The second parent's clean sync must not erase the first parent's
+    // failure, or the last snapshot would show only algoliaVideo failed and
+    // the row would never alert. The first failure also keeps driving
+    // errorMessage/retryAt, not the later Video record failure.
+    expect(
+      prismaMock.videoVariantReconciliation.update
+    ).toHaveBeenLastCalledWith({
+      where: { id: 'reconciliation-1' },
+      data: expect.objectContaining({
+        status: 'degraded',
+        errorMessage: 'database unavailable',
+        processingStages: expect.objectContaining({
+          parentSync: expect.objectContaining({
+            state: 'failed',
+            error: 'database unavailable',
+            attempts: 1
+          }),
+          algoliaVideo: expect.objectContaining({ state: 'failed' })
+        })
+      })
+    })
+    expect(result).toEqual({ publicationReady: false, status: 'degraded' })
+  })
+
   it('publishes with degraded health when requested Downloads are missing', async () => {
     const reconciliation: ReconciliationRecord = {
       reason: 'video-variant-publication-change',

@@ -172,7 +172,12 @@ export async function reconcileVideoVariantReconciliation(
     stages,
     persistStatus
   })
-  if (parentResult != null) return parentResult
+  if (parentResult != null) {
+    return {
+      publicationReady: parentResult.publicationReady,
+      status: parentResult.status
+    }
+  }
 
   try {
     await addLanguageToVideo(variant.videoId, variant.languageId)
