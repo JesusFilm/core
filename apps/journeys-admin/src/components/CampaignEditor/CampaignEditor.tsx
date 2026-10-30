@@ -35,8 +35,8 @@ import { TranslationRunProvider } from './TranslationRunProvider'
  * The editor shell is desktop only: narrower viewports get a message, no
  * canvas. The minimum is the row at its narrowest: the Left Rail (56 px), the
  * docked left panel (300 px), the Inspector (328 px) and the canvas gutters
- * (2 × 32 px), plus the 600 px stage the Desktop frame needs at its 0.5 floor
- * scale, so the frame never paints under the panel or the Inspector. 1348 px.
+ * (2 × 16 px), plus the 600 px stage the Desktop frame needs at its 0.5 floor
+ * scale, so the frame never paints under the panel or the Inspector. 1316 px.
  */
 export const EDITOR_MIN_WIDTH =
   LEFT_RAIL_WIDTH +
