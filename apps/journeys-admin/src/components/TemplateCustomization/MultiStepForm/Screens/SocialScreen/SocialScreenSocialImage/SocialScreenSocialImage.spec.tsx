@@ -368,6 +368,7 @@ describe('SocialScreenSocialImage', () => {
         )
       ).toBeInTheDocument()
     })
+    expect(screen.queryByText('Social image updated')).not.toBeInTheDocument()
   })
 
   it('should not upload when no file is selected', async () => {

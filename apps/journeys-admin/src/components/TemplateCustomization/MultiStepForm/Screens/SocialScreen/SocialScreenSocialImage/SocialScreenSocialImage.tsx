@@ -134,7 +134,11 @@ export function SocialScreenSocialImage({
             })
           }
         }
-      } catch (error) {
+        enqueueSnackbar(t('Social image updated'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      } catch {
         enqueueSnackbar(
           t('Failed to update social image, please try again later'),
           {
@@ -144,10 +148,6 @@ export function SocialScreenSocialImage({
         )
       } finally {
         setLoading(false)
-        enqueueSnackbar(t('Social image updated'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
       }
     }
   }
