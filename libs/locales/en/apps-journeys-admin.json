@@ -1756,5 +1756,6 @@
   "Campaign Report": "Campaign Report",
   "Report dashboard": "Report dashboard",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)",
-  "Maximum file size: 10 MB": "Maximum file size: 10 MB"
+  "Maximum file size: 10 MB": "Maximum file size: 10 MB",
+  "PNG, JPG, GIF, SVG, HEIC or WebP, up to 10 MB": "PNG, JPG, GIF, SVG, HEIC or WebP, up to 10 MB"
 }
