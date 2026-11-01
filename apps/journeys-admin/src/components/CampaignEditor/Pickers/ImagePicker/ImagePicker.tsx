@@ -143,7 +143,7 @@ export function ImagePicker({
           color="text.secondary"
           sx={{ mt: 1 }}
         >
-          {t('PNG, JPG, GIF, SVG or HEIC, up to 10 MB')}
+          {t('PNG, JPG, GIF, SVG, HEIC or WebP, up to 10 MB')}
         </Typography>
       </Box>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
