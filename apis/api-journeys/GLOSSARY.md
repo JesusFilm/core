@@ -258,7 +258,7 @@ What a Campaign Button does when pressed: open a web link, scroll to a block on 
 _Avoid_: link (bare), href, navigation
 
 **Campaign Chrome**:
-The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. Both take the same Extras as any section; the header's nav links are Button Extras.
+The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. The header accepts the same Extras as any section, but for now the editor offers and the public header shows only its Button Extras (its nav links); the footer takes and shows both kinds. The **Campaign Block grammar** records both facts (`acceptsChild`, `shownExtras`).
 _Avoid_: nav bar, site header/footer, layout, shell
 
 **Brand Mark**:
