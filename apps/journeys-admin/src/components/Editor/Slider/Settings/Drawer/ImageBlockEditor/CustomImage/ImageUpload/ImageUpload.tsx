@@ -18,6 +18,7 @@ import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/
 import { useAuth } from '../../../../../../../../libs/auth'
 import {
   ImageUploadFileError,
+  describeFileContents,
   prepareImageUpload
 } from '../../../../../../../../libs/prepareImageUpload'
 import {
@@ -28,6 +29,20 @@ import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/
 import { MAX_IMAGE_UPLOAD_BYTES } from '../../../../../../../../libs/useImageUpload'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
+
+// Labels a wrong-type file by its contents for the failure event. Analytics
+// must never break the upload UI, so a file that can't be read goes unlabelled.
+async function detectRejectedFileType(
+  file: File,
+  errorCode: string | undefined
+): Promise<string | undefined> {
+  if (errorCode !== ErrorCode.FileInvalidType) return
+  try {
+    return await describeFileContents(file)
+  } catch {
+    return undefined
+  }
+}
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -82,7 +97,11 @@ export function ImageUpload({
       sendImageUploadFailureEvent({
         fileSize: rejection.file.size,
         fileType: rejection.file.type,
-        errorCode: rejectionCode
+        errorCode: rejectionCode,
+        detectedFileType: await detectRejectedFileType(
+          rejection.file,
+          rejectionCode
+        )
       })
       return
     }
@@ -102,7 +121,11 @@ export function ImageUpload({
       sendImageUploadFailureEvent({
         fileSize: droppedFile.size,
         fileType: droppedFile.type,
-        errorCode: prepareErrorCode ?? 'upload-prepare-failed'
+        errorCode: prepareErrorCode ?? 'upload-prepare-failed',
+        detectedFileType: await detectRejectedFileType(
+          droppedFile,
+          prepareErrorCode
+        )
       })
       return
     }

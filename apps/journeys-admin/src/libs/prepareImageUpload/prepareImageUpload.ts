@@ -81,6 +81,89 @@ export async function detectImageType(
   if (parseSvg(await file.text()) != null) return 'svg'
 }
 
+// Formats people pick by mistake, matched on their leading bytes. Only used to
+// report what a rejected file really was; none of these can be uploaded.
+const OTHER_FILE_SIGNATURES: Array<{
+  type: string
+  matches: (bytes: Uint8Array) => boolean
+}> = [
+  { type: 'pdf', matches: (bytes) => readAscii(bytes, 0, 5) === '%PDF-' },
+  // DOCX, XLSX and PPTX are ZIP archives too; telling them apart means
+  // reading inside the archive
+  {
+    type: 'zip',
+    matches: (bytes) => matchesBytes(bytes, [0x50, 0x4b, 0x03, 0x04])
+  },
+  { type: 'gzip', matches: (bytes) => matchesBytes(bytes, [0x1f, 0x8b]) },
+  { type: 'rar', matches: (bytes) => readAscii(bytes, 0, 4) === 'Rar!' },
+  {
+    type: 'avif',
+    matches: (bytes) =>
+      readAscii(bytes, 4, 8) === 'ftyp' &&
+      ['avif', 'avis'].includes(readAscii(bytes, 8, 12))
+  },
+  // Any other ISO-BMFF brand: MP4, MOV, M4A, 3GP
+  { type: 'mp4', matches: (bytes) => readAscii(bytes, 4, 8) === 'ftyp' },
+  {
+    type: 'webm',
+    matches: (bytes) => matchesBytes(bytes, [0x1a, 0x45, 0xdf, 0xa3])
+  },
+  {
+    type: 'wav',
+    matches: (bytes) =>
+      readAscii(bytes, 0, 4) === 'RIFF' && readAscii(bytes, 8, 12) === 'WAVE'
+  },
+  {
+    type: 'avi',
+    matches: (bytes) =>
+      readAscii(bytes, 0, 4) === 'RIFF' && readAscii(bytes, 8, 12) === 'AVI '
+  },
+  {
+    type: 'mp3',
+    matches: (bytes) =>
+      readAscii(bytes, 0, 3) === 'ID3' ||
+      (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0)
+  },
+  { type: 'bmp', matches: (bytes) => readAscii(bytes, 0, 2) === 'BM' },
+  {
+    type: 'tiff',
+    matches: (bytes) =>
+      matchesBytes(bytes, [0x49, 0x49, 0x2a, 0x00]) ||
+      matchesBytes(bytes, [0x4d, 0x4d, 0x00, 0x2a])
+  },
+  { type: 'psd', matches: (bytes) => readAscii(bytes, 0, 4) === '8BPS' }
+]
+
+function isText(bytes: Uint8Array): boolean {
+  if (bytes.includes(0)) return false
+  try {
+    // stream: a multi-byte character cut off at the end of the sample is fine
+    new TextDecoder('utf-8', { fatal: true }).decode(bytes, { stream: true })
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Names what a file really contains, for upload-failure analytics: the image
+ * type when it is one, else a common non-image format, else 'text' or
+ * 'unknown'.
+ */
+export async function describeFileContents(file: Blob): Promise<string> {
+  const imageType = await detectImageType(file)
+  if (imageType != null) return imageType
+
+  const bytes = new Uint8Array(await file.slice(0, 512).arrayBuffer())
+  if (bytes.length === 0) return 'empty'
+  const signature = OTHER_FILE_SIGNATURES.find(({ matches }) => matches(bytes))
+  if (signature != null) return signature.type
+  if (!isText(bytes)) return 'unknown'
+  return /^\s*<(!doctype\s+html|html)[\s>]/i.test(readAscii(bytes, 0, 512))
+    ? 'html'
+    : 'text'
+}
+
 function parseLength(value: string | null): number | undefined {
   if (value == null) return
   const match = /^\s*(\d*\.?\d+)\s*(px)?\s*$/.exec(value)

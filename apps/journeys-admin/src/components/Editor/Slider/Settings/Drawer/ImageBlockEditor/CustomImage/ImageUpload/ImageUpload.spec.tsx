@@ -670,8 +670,37 @@ describe('ImageUpload', () => {
     expect(result).not.toHaveBeenCalled()
     expect(setUploading).toHaveBeenCalledWith(false)
     expect(onChange).not.toHaveBeenCalled()
-    expect(mockSendGTMEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ errorCode: 'file-invalid-type' })
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileSize: textFile.size,
+        fileType: 'image/png',
+        errorCode: 'file-invalid-type',
+        detectedFileType: 'text'
+      })
+    )
+  })
+
+  it('should report what a renamed non-image file really is', async () => {
+    render(
+      <MockedProvider>
+        <ImageUpload onChange={vi.fn()} loading={false} />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+    const pdfFile = new File(['%PDF-1.7\n'], 'scan.png', { type: 'image/png' })
+    Object.defineProperty(inputEl, 'files', { value: [pdfFile] })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fileType: 'image/png',
+          errorCode: 'file-invalid-type',
+          detectedFileType: 'pdf'
+        })
+      )
     )
   })
 

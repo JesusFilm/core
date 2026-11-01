@@ -3,6 +3,7 @@ import { ErrorCode } from 'react-dropzone'
 import {
   ImageUploadFileError,
   SVG_RASTER_LONGEST_EDGE,
+  describeFileContents,
   detectImageType,
   prepareImageUpload
 } from './prepareImageUpload'
@@ -116,6 +117,44 @@ describe('prepareImageUpload', () => {
           textFile('<html><body/></html>', 'a.svg', 'image/svg+xml')
         )
       ).toBeUndefined()
+    })
+  })
+
+  describe('describeFileContents', () => {
+    it.each([
+      ['an accepted image', PNG_FILE_BYTES, 'png'],
+      ['a PDF', asciiBytes('%PDF-1.7\n'), 'pdf'],
+      ['a ZIP or Office document', [0x50, 0x4b, 0x03, 0x04, 0x14], 'zip'],
+      ['an AVIF', [0, 0, 0, 0x1c, ...asciiBytes('ftypavif')], 'avif'],
+      ['an MP4', [0, 0, 0, 0x20, ...asciiBytes('ftypisom')], 'mp4'],
+      ['a WAV', [...asciiBytes('RIFF'), 0, 0, 0, 0, ...asciiBytes('WAVE')], 'wav'],
+      ['an MP3', asciiBytes('ID3\u0004'), 'mp3'],
+      ['a TIFF', [0x49, 0x49, 0x2a, 0x00], 'tiff'],
+      ['a Photoshop file', asciiBytes('8BPS'), 'psd'],
+      ['binary data', [0x00, 0x13, 0x37, 0x00, 0xfe], 'unknown']
+    ])('should identify %s', async (_label, bytes, expected) => {
+      expect(
+        await describeFileContents(binaryFile(bytes, 'file.png', 'image/png'))
+      ).toBe(expected)
+    })
+
+    it('should identify text and HTML', async () => {
+      expect(
+        await describeFileContents(
+          textFile('Meeting notes — café', 'notes.png', 'image/png')
+        )
+      ).toBe('text')
+      expect(
+        await describeFileContents(
+          textFile('<!DOCTYPE html><html></html>', 'page.png', 'image/png')
+        )
+      ).toBe('html')
+    })
+
+    it('should identify an empty file', async () => {
+      expect(
+        await describeFileContents(textFile('', 'empty.png', 'image/png'))
+      ).toBe('empty')
     })
   })
 
