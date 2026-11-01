@@ -1,6 +1,7 @@
 import { UserTeamRole, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
+import { TEAM_DOMAINS_WHERE } from '../customDomain/teamDomainsWhere'
 import { UserTeamRef } from '../userTeam/userTeam'
 
 export const TeamRef = builder.prismaObject('Team', {
@@ -34,7 +35,12 @@ export const TeamRef = builder.prismaObject('Team', {
         return userTeams
       }
     }),
-    customDomains: t.relation('customDomains', { nullable: false }),
+    customDomains: t.relation('customDomains', {
+      nullable: false,
+      description:
+        "The team's own domains; a Campaign Domain belongs to its campaign and is left out.",
+      query: { where: TEAM_DOMAINS_WHERE }
+    }),
     integrations: t.relation('integrations', { nullable: false }),
     qrCodes: t.relation('qrCodes', { nullable: false })
   })

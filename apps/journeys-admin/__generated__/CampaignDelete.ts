@@ -1,0 +1,30 @@
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CampaignDelete
+// ====================================================
+
+export interface CampaignDelete_campaignDelete {
+  __typename: "Campaign";
+  id: string;
+}
+
+export interface CampaignDelete {
+  /**
+   * Hard-delete a Campaign. A published campaign queues on-demand revalidation of its pages, so they stop serving within the publish bound. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; its Campaign Domain is deleted with it and removed from Vercel (a Vercel failure is logged, not thrown), and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
+   * 
+   * Auth: campaign Delete — a manager of the campaign’s team.
+   * 
+   * Errors:
+   * - NOT_FOUND: id does not resolve.
+   * - FORBIDDEN: caller is not a manager of the team.
+   */
+  campaignDelete: CampaignDelete_campaignDelete;
+}
+
+export interface CampaignDeleteVariables {
+  id: string;
+}

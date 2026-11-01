@@ -802,9 +802,17 @@ builder.mutationFields((t) => ({
         const validChildIds = (input.childIds || []).filter((id) =>
           existingVideoIds.has(id)
         )
-        affectedChildIds = Array.from(
-          new Set([...(existingParent?.childIds ?? []), ...validChildIds])
-        )
+        // Only children that were added or removed change any parent's
+        // languages. Reconciling every child on a reorder or a single add
+        // queued one record per published Variant of every child (55k on
+        // JFM1), and the sweep works oldest first, so every publish toggle
+        // waited behind them for days.
+        const previousChildIds = new Set(existingParent?.childIds ?? [])
+        const nextChildIds = new Set(validChildIds)
+        affectedChildIds = [
+          ...[...previousChildIds].filter((id) => !nextChildIds.has(id)),
+          ...validChildIds.filter((id) => !previousChildIds.has(id))
+        ]
 
         // Update the children relation
         childRelationUpdate = {
