@@ -169,7 +169,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -259,7 +261,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -323,7 +327,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -349,7 +355,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -458,7 +466,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
