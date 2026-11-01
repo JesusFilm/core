@@ -10,10 +10,7 @@ import {
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import {
-  ImageUploadFileError,
-  prepareImageUpload
-} from '../prepareImageUpload'
+import { ImageUploadFileError, prepareImageUpload } from '../prepareImageUpload'
 import { useCloudflareTeamUploadByFileMutation } from '../useCloudflareTeamUploadByFileMutation'
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 

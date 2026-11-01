@@ -208,7 +208,9 @@ describe('ImageUpload', () => {
       </MockedProvider>
     )
     const input = screen.getByTestId('drop zone')
-    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
     Object.defineProperty(input, 'files', { value: [file] })
     fireEvent.drop(input)
     // The mock only matches when journeyId is sent, so being called proves it threaded
@@ -867,9 +869,7 @@ describe('ImageUpload', () => {
     )
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
-      value: [
-        new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
-      ]
+      value: [new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })]
     })
     fireEvent.drop(inputEl)
 
@@ -948,9 +948,7 @@ describe('ImageUpload', () => {
     )
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
-      value: [
-        new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
-      ]
+      value: [new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })]
     })
     fireEvent.drop(inputEl)
 
@@ -994,9 +992,7 @@ describe('ImageUpload', () => {
     )
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
-      value: [
-        new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
-      ]
+      value: [new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })]
     })
     fireEvent.drop(inputEl)
 

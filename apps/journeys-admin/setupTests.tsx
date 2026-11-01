@@ -56,7 +56,8 @@ function readBlob<T extends 'readAsArrayBuffer' | 'readAsText'>(
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result as never)
-    reader.onerror = () => reject(reader.error)
+    reader.onerror = () =>
+      reject(reader.error ?? new Error('Could not read blob'))
     reader[method](blob)
   })
 }

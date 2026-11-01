@@ -90,7 +90,10 @@ function parseViewBox(
   value: string | null
 ): { width: number; height: number } | undefined {
   if (value == null) return
-  const parts = value.trim().split(/[\s,]+/).map(Number)
+  const parts = value
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number)
   if (parts.length !== 4 || parts.some(Number.isNaN)) return
   const [, , width, height] = parts
   if (width <= 0 || height <= 0) return
@@ -153,9 +156,7 @@ async function rasterizeSvg(file: File): Promise<File> {
   if (svg == null) throw new ImageUploadFileError(ErrorCode.FileInvalidType)
 
   const { markup, width, height } = sizeSvgForRaster(svg)
-  const url = URL.createObjectURL(
-    new Blob([markup], { type: 'image/svg+xml' })
-  )
+  const url = URL.createObjectURL(new Blob([markup], { type: 'image/svg+xml' }))
   try {
     const image = await loadImage(url)
     const canvas = document.createElement('canvas')

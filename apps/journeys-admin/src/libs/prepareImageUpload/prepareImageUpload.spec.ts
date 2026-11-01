@@ -1,15 +1,12 @@
 import { ErrorCode } from 'react-dropzone'
 
 import {
-  JPEG_FILE_BYTES,
-  PNG_FILE_BYTES
-} from './prepareImageUpload.mock'
-import {
   ImageUploadFileError,
   SVG_RASTER_LONGEST_EDGE,
   detectImageType,
   prepareImageUpload
 } from './prepareImageUpload'
+import { JPEG_FILE_BYTES, PNG_FILE_BYTES } from './prepareImageUpload.mock'
 
 function binaryFile(
   bytes: Uint8Array | number[],
@@ -34,7 +31,9 @@ describe('prepareImageUpload', () => {
         await detectImageType(binaryFile(PNG_FILE_BYTES, 'a.png', 'image/png'))
       ).toBe('png')
       expect(
-        await detectImageType(binaryFile(JPEG_FILE_BYTES, 'a.jpg', 'image/jpeg'))
+        await detectImageType(
+          binaryFile(JPEG_FILE_BYTES, 'a.jpg', 'image/jpeg')
+        )
       ).toBe('jpeg')
       expect(
         await detectImageType(
