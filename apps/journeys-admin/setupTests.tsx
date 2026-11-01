@@ -47,6 +47,30 @@ if (typeof URL.revokeObjectURL === 'undefined') {
   URL.revokeObjectURL = vi.fn()
 }
 
+// jsdom's Blob lacks the promise-based readers browsers have; image uploads
+// read file contents with them to check the file really is an image.
+function readBlob<T extends 'readAsArrayBuffer' | 'readAsText'>(
+  blob: Blob,
+  method: T
+): Promise<T extends 'readAsText' ? string : ArrayBuffer> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as never)
+    reader.onerror = () => reject(reader.error)
+    reader[method](blob)
+  })
+}
+if (typeof Blob.prototype.arrayBuffer === 'undefined') {
+  Blob.prototype.arrayBuffer = function (this: Blob) {
+    return readBlob(this, 'readAsArrayBuffer')
+  }
+}
+if (typeof Blob.prototype.text === 'undefined') {
+  Blob.prototype.text = function (this: Blob) {
+    return readBlob(this, 'readAsText')
+  }
+}
+
 // getRandomValues is required for powerBi unit tests, see issue:
 // https://community.powerbi.com/t5/Developer/TypeError-cryptoObj-getRandomValues-is-not-a-function-unrelated/m-p/1963294
 Object.defineProperty(window.self, 'crypto', {

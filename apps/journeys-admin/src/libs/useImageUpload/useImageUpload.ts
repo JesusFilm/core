@@ -10,8 +10,14 @@ import {
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import {
+  ImageUploadFileError,
+  prepareImageUpload
+} from '../prepareImageUpload'
 import { useCloudflareTeamUploadByFileMutation } from '../useCloudflareTeamUploadByFileMutation'
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
+
+import { MAX_IMAGE_UPLOAD_BYTES } from './constants'
 
 /**
  * Error codes for image upload.
@@ -55,7 +61,6 @@ export interface UseImageUploadReturn {
   fileRejections: readonly FileRejection[]
 }
 
-export const MAX_IMAGE_UPLOAD_BYTES = 10_000_000 // 10 MB (decimal)
 const DEFAULT_MAX_SIZE = MAX_IMAGE_UPLOAD_BYTES
 const DEFAULT_ACCEPT: Accept = {
   'image/png': [],
@@ -151,6 +156,7 @@ export function useImageUpload(
     onUploadStart?.()
 
     try {
+      const file = await prepareImageUpload(acceptedFiles[0])
       const { data } =
         teamId != null
           ? await createCloudflareTeamUploadByFile({ variables: { teamId } })
@@ -159,7 +165,6 @@ export function useImageUpload(
             })
 
       if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
-        const file = acceptedFiles[0]
         const formData = new FormData()
         formData.append('file', file)
 
@@ -195,9 +200,12 @@ export function useImageUpload(
       } else {
         throw new Error(t('No upload URL'))
       }
-    } catch {
+    } catch (uploadError) {
       setSuccess(false)
-      const error: ImageUploadErrorCode = 'unknown-error'
+      const error: ImageUploadErrorCode =
+        uploadError instanceof ImageUploadFileError
+          ? uploadError.code
+          : 'unknown-error'
       setErrorCode(error)
       onUploadError?.(error, getErrorMessage(error))
     } finally {
