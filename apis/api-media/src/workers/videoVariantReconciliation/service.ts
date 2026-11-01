@@ -10,6 +10,8 @@ import { reconcileVideoVariantReconciliation } from '../../schema/videoVariantRe
 import type { ProcessingStages } from '../../schema/videoVariantReconciliation/reconciliationStages'
 import { logger as defaultLogger } from '../lib/logger'
 
+import { findDueReconciliations } from './dueRecords'
+
 // Cap per-sweep work so a growing table can't push a single sweep past the
 // worker's repeat interval (config.ts `repeat`).
 const SWEEP_BATCH_SIZE = 200
@@ -61,10 +63,8 @@ function dueRecordWhere() {
 }
 
 export async function service(logger: Logger = defaultLogger): Promise<void> {
-  const dueStatuses = await prisma.videoVariantReconciliation.findMany({
+  const dueStatuses = await findDueReconciliations({
     where: dueRecordWhere(),
-    select: { id: true },
-    orderBy: { retryAt: 'asc' },
     take: SWEEP_BATCH_SIZE
   })
 

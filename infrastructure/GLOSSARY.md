@@ -59,18 +59,14 @@ The one Aurora PostgreSQL cluster per Environment (`jfp-core`) that all the Serv
 _Avoid_: "the RDS" / per-service database (there is one cluster, many logical databases)
 
 **Short-links ClickHouse**:
-One ClickHouse Cloud service per Environment (`jfp-short-links-<env>`, module `modules/clickhouse/service`; stage first, prod once stage has proven the setup) holding the short-link scan events the redirect Worker inserts and api-media reads. Terraform manages the service only: its address and admin password are published into Doppler (`core` project, `SHORT_LINKS_CLICKHOUSE_URL`, `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD`); the database, table and the two limited users come from the runbook in `workers/short-links-redirect/README.md`. It accepts connections from anywhere because Cloudflare Workers have no fixed egress addresses. Not to be confused with Plausible's self-hosted ClickHouse on EKS.
-_Avoid_: "the ClickHouse" (there are two: this managed service and Plausible's)
+One ClickHouse Cloud service per Environment (`jfp-short-links-<env>`, module `modules/clickhouse/service`; stage first, prod once stage has proven the setup) holding the short-link scan events the redirect Worker inserts and api-media reads. Terraform manages the service only: its address and admin password are published into Doppler (`core` project, `SHORT_LINKS_CLICKHOUSE_URL`, `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD`); the database, table and the two limited users come from the runbook in `workers/short-links-redirect/README.md`. It accepts connections from anywhere because Cloudflare Workers have no fixed egress addresses. The same service also holds Plausible's event database (`plausible_events_db`, `modules/plausible/README.md`).
+_Avoid_: "the ClickHouse" (say which database: the short-links one or Plausible's)
 
 **Doppler Token**:
 The per-Service, per-Environment secret handle: Terraform reads it from SSM and passes it to the task, which pulls its env vars from Doppler at runtime. Secrets never live in Terraform state or task definitions.
 
 **Bastion**:
 The SSH jump host (`bastion.central.jesusfilm.org`) for reaching internal resources (the Core Database, Redis); access is an IP allowlist of named individuals.
-
-**Platform Cluster**:
-The EKS cluster (`jfp-eks`) per Environment. It runs platform/ops tooling only (cert-manager, Datadog, ingress, external-dns, and the Plausible Analytics Deployment until its move to ECS completes — plan `docs/plans/2026-10-14-002-feat-plausible-on-ecs-graviton-plan.md`) via Argo CD GitOps from `infrastructure/kube/` — no product Services run there. ECS is the product runtime; EKS is the ops runtime, and once Plausible has left it has no tenant of its own.
-_Avoid_: "the cluster" (ambiguous with the ECS cluster)
 
 ### Terminology traps
 

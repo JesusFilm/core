@@ -1,5 +1,0 @@
-kubernetes-dashboard:
-  app:
-    ingress:
-      # Keep disabled by default; enable explicitly per environment.
-      enabled: false

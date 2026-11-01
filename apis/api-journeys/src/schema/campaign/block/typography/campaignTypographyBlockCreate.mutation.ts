@@ -49,7 +49,9 @@ builder.mutationField('campaignTypographyBlockCreate', (t) =>
         const region = await validateRegion(String(input.regionId), campaignId)
         return await createWithClientIds(
           { id: [id] },
-          async (tx) =>
+          region.campaignId,
+          { structure: true },
+          async ({ tx }) =>
             await createRegionLine(tx, region, {
               id,
               typename: 'CampaignTypographyBlock',
@@ -67,7 +69,9 @@ builder.mutationField('campaignTypographyBlockCreate', (t) =>
 
       return await createWithClientIds(
         { id: [id] },
-        async (tx) =>
+        parent.campaignId,
+        { structure: true },
+        async ({ tx }) =>
           await createChildBlock(tx, parent, {
             id,
             typename: 'CampaignTypographyBlock',

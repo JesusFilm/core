@@ -1,11 +1,10 @@
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import { GATEWAY_TIMEOUT_MS } from '../../../lib/gateway/graphqlRequest'
 import { builder } from '../../builder'
-import { logger } from '../../logger'
 import { snapshotOf } from '../block/journey/snapshot'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
-import { touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { JourneyWithPublicUrl } from '../getJourneyPublicUrl'
 import { parseJourneyLink, resolveShareLanguageJourney } from '../journeyLink'
 import {
@@ -17,10 +16,8 @@ import {
 
 import { CampaignRegionLanguageUpdateInput } from './inputs'
 import {
-  ShortLinkStep,
   authorizeRegionLanguageUpdate,
   createRegionLanguageQrCode,
-  lockRegionLanguage,
   retargetRegionLanguageQrCode
 } from './service'
 
@@ -82,77 +79,67 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
                 context.user
               )
 
-      // The short-link step is decided inside the transaction and applied as its
-      // last statement; should the transaction fail after that, it is undone.
-      const shortLink: { step?: ShortLinkStep; applied: boolean } = {
-        applied: false
-      }
-      try {
-        return await prisma.$transaction(
-          async (tx) => {
-            // Decide from the row as locked, not as authorised: a concurrent
-            // call may already have linked or unlinked it.
-            await lockRegionLanguage(tx, id)
-            const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
-              where: { id },
-              include: { qrCode: true }
-            })
+      // Decide from the row as locked, not as authorised: a concurrent call
+      // may already have linked or unlinked it, and a second "Use this
+      // journey" waits and re-reads `qrCodeId` instead of minting a second QR
+      // row and short link. The short-link step is decided inside the write
+      // and applied as its last statement; should the commit fail after
+      // that, it is undone.
+      return await campaignWrite(
+        campaign.id,
+        { shareLanguage: id },
+        async ({ tx, externalStep }) => {
+          const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
+            where: { id },
+            include: { qrCode: true }
+          })
 
-            if (journey === null && current.journeyId != null) {
-              // Unlink: the QR row and its short link stay, still pointing at
-              // the last linked journey, so printed codes keep working; a
-              // later link retargets them.
-              data.journeyId = null
-              data.title = null
-              data.description = null
+          if (journey === null && current.journeyId != null) {
+            // Unlink: the QR row and its short link stay, still pointing at
+            // the last linked journey, so printed codes keep working; a
+            // later link retargets them.
+            data.journeyId = null
+            data.title = null
+            data.description = null
+            data.snapshotEdited = false
+          } else if (journey != null) {
+            // Re-linking the journey already linked keeps its snapshot, an
+            // edited one included; it only mints a missing QR code.
+            if (journey.id !== current.journeyId) {
+              data.journeyId = journey.id
+              const snapshot = snapshotOf(journey)
+              data.title = snapshot.title
+              data.description = snapshot.description
               data.snapshotEdited = false
-            } else if (journey != null) {
-              // Re-linking the journey already linked keeps its snapshot, an
-              // edited one included; it only mints a missing QR code.
-              if (journey.id !== current.journeyId) {
-                data.journeyId = journey.id
-                const snapshot = snapshotOf(journey)
-                data.title = snapshot.title
-                data.description = snapshot.description
-                data.snapshotEdited = false
-              }
-              if (current.qrCode == null) {
-                const created = await createRegionLanguageQrCode(
-                  tx,
-                  campaign.teamId,
-                  journey.id
-                )
-                data.qrCodeId = created.qrCodeId
-                shortLink.step = created.step
-              } else if (current.qrCode.toJourneyId !== journey.id)
-                shortLink.step = await retargetRegionLanguageQrCode(
+            }
+            if (current.qrCode == null) {
+              const created = await createRegionLanguageQrCode(
+                tx,
+                campaign.teamId,
+                journey.id
+              )
+              data.qrCodeId = created.qrCodeId
+              externalStep(created.step)
+            } else if (current.qrCode.toJourneyId !== journey.id)
+              externalStep(
+                await retargetRegionLanguageQrCode(
                   tx,
                   current.qrCode,
                   journey.id
                 )
-            }
+              )
+          }
 
-            const updated = await tx.campaignRegionLanguage.update({
-              ...query,
-              where: { id },
-              data
-            })
-            await touchCampaign(tx, campaign.id)
-            await shortLink.step?.apply()
-            shortLink.applied = shortLink.step != null
-            return updated
-          },
-          // The short-link step is a gateway call of up to
-          // GATEWAY_TIMEOUT_MS inside this transaction: outlast it.
-          { timeout: GATEWAY_TIMEOUT_MS + 5_000 }
-        )
-      } catch (error) {
-        if (shortLink.applied)
-          await shortLink.step?.revert().catch((revertError) => {
-            logger.error({ error: revertError }, 'short link revert failed')
+          return await tx.campaignRegionLanguage.update({
+            ...query,
+            where: { id },
+            data
           })
-        throw error
-      }
+        },
+        // The short-link step is a gateway call of up to
+        // GATEWAY_TIMEOUT_MS inside this transaction: outlast it.
+        { timeout: GATEWAY_TIMEOUT_MS + 5_000 }
+      )
     }
   })
 )

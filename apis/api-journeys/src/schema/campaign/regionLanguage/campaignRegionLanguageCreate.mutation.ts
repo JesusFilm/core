@@ -4,7 +4,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
-import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { badUserInput } from '../errors'
 import { fetchLanguage } from '../gatewayClient'
 import { authorizeRegionUpdate } from '../region/service'
@@ -49,26 +49,27 @@ builder.mutationField('campaignRegionLanguageCreate', (t) =>
           'languageId'
         )
 
-      return await prisma.$transaction(async (tx) => {
-        await lockCampaignStructure(tx, region.campaignId)
-        const current = await tx.campaignRegionLanguage.findMany({
-          where: { regionId },
-          orderBy: { order: 'asc' }
-        })
-        if (current.some((row) => row.languageId === languageId))
-          throw alreadyAdded(languageId)
-        if (current.length >= REGION_SHARE_LANGUAGES_MAX)
-          throw badUserInput(
-            `a region has at most ${REGION_SHARE_LANGUAGES_MAX} share languages`,
-            'languageId'
-          )
-        const created = await tx.campaignRegionLanguage.create({
-          ...query,
-          data: { regionId, languageId, order: current.length }
-        })
-        await touchCampaign(tx, region.campaignId)
-        return created
-      })
+      return await campaignWrite(
+        region.campaignId,
+        { structure: true },
+        async ({ tx }) => {
+          const current = await tx.campaignRegionLanguage.findMany({
+            where: { regionId },
+            orderBy: { order: 'asc' }
+          })
+          if (current.some((row) => row.languageId === languageId))
+            throw alreadyAdded(languageId)
+          if (current.length >= REGION_SHARE_LANGUAGES_MAX)
+            throw badUserInput(
+              `a region has at most ${REGION_SHARE_LANGUAGES_MAX} share languages`,
+              'languageId'
+            )
+          return await tx.campaignRegionLanguage.create({
+            ...query,
+            data: { regionId, languageId, order: current.length }
+          })
+        }
+      )
     }
   })
 )

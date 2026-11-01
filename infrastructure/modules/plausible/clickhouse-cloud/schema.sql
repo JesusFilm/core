@@ -1,9 +1,9 @@
--- Plausible's ClickHouse schema (plausible_events_db), exported from the stage
--- EKS StatefulSet (ClickHouse 24.3, Plausible CE v2.1.1) on 2026-10-26 and
--- rewritten for ClickHouse Cloud: CREATE TABLE IF NOT EXISTS, and Ecto's
+-- Plausible's ClickHouse schema (plausible_events_db) as of Plausible CE
+-- v2.1.1, written for ClickHouse Cloud: CREATE TABLE IF NOT EXISTS, and Ecto's
 -- TinyLog schema_migrations as MergeTree ORDER BY tuple() (Cloud rejects
--- TinyLog). Run as `default` before the copy (README.md, "Moving the events
--- to ClickHouse Cloud"). Plausible's own migrations own the schema afterwards.
+-- TinyLog). Run as `default` when preparing a Cloud service for Plausible
+-- (README.md, "Preparing the event store"). Plausible's own migrations own
+-- the schema afterwards.
 
 CREATE DATABASE IF NOT EXISTS plausible_events_db;
 
