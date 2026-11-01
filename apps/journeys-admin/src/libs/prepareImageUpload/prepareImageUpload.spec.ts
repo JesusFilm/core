@@ -127,7 +127,11 @@ describe('prepareImageUpload', () => {
       ['a ZIP or Office document', [0x50, 0x4b, 0x03, 0x04, 0x14], 'zip'],
       ['an AVIF', [0, 0, 0, 0x1c, ...asciiBytes('ftypavif')], 'avif'],
       ['an MP4', [0, 0, 0, 0x20, ...asciiBytes('ftypisom')], 'mp4'],
-      ['a WAV', [...asciiBytes('RIFF'), 0, 0, 0, 0, ...asciiBytes('WAVE')], 'wav'],
+      [
+        'a WAV',
+        [...asciiBytes('RIFF'), 0, 0, 0, 0, ...asciiBytes('WAVE')],
+        'wav'
+      ],
       ['an MP3', asciiBytes('ID3\u0004'), 'mp3'],
       ['a TIFF', [0x49, 0x49, 0x2a, 0x00], 'tiff'],
       ['a Photoshop file', asciiBytes('8BPS'), 'psd'],
