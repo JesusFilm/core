@@ -48,7 +48,25 @@ describe('prepareImageUpload', () => {
             'image/heic'
           )
         )
-      ).toBe('heic')
+      ).toBe('heif')
+      expect(
+        await detectImageType(
+          binaryFile(
+            [0, 0, 0, 0x1c, ...asciiBytes('ftypmif1')],
+            'a.heif',
+            'image/heif'
+          )
+        )
+      ).toBe('heif')
+      expect(
+        await detectImageType(
+          binaryFile(
+            [...asciiBytes('RIFF'), 0x24, 0, 0, 0, ...asciiBytes('WEBP')],
+            'a.webp',
+            'image/webp'
+          )
+        )
+      ).toBe('webp')
     })
 
     it('should detect an SVG with a prolog and comments', async () => {
@@ -67,6 +85,27 @@ describe('prepareImageUpload', () => {
       expect(
         await detectImageType(
           textFile('not <svg> at all', 'a.svg', 'image/svg+xml')
+        )
+      ).toBeUndefined()
+    })
+
+    it('should not detect other RIFF or ISO-BMFF files', async () => {
+      expect(
+        await detectImageType(
+          binaryFile(
+            [...asciiBytes('RIFF'), 0x24, 0, 0, 0, ...asciiBytes('WAVE')],
+            'a.webp',
+            'image/webp'
+          )
+        )
+      ).toBeUndefined()
+      expect(
+        await detectImageType(
+          binaryFile(
+            [0, 0, 0, 0x1c, ...asciiBytes('ftypisom')],
+            'a.heic',
+            'image/heic'
+          )
         )
       ).toBeUndefined()
     })

@@ -2,7 +2,7 @@ import { ErrorCode } from 'react-dropzone'
 
 import { MAX_IMAGE_UPLOAD_BYTES } from '../useImageUpload/constants'
 
-type DetectedImageType = 'png' | 'jpeg' | 'gif' | 'heic' | 'svg'
+type DetectedImageType = 'png' | 'jpeg' | 'gif' | 'heif' | 'webp' | 'svg'
 
 // Longest edge, in pixels, an SVG is rasterized to. Vectors stay sharp at any
 // size, so small icons are scaled up to fill a full-bleed card background.
@@ -12,7 +12,8 @@ export const SVG_RASTER_LONGEST_EDGE = 2048
 const DEFAULT_SVG_WIDTH = 300
 const DEFAULT_SVG_HEIGHT = 150
 
-const HEIC_BRANDS = new Set([
+// ISO-BMFF major brands of HEIC/HEIF images (AVIF's 'avif' is not accepted).
+const HEIF_BRANDS = new Set([
   'heic',
   'heix',
   'hevc',
@@ -71,9 +72,11 @@ export async function detectImageType(
   if (gifHeader === 'GIF87a' || gifHeader === 'GIF89a') return 'gif'
   if (
     readAscii(bytes, 4, 8) === 'ftyp' &&
-    HEIC_BRANDS.has(readAscii(bytes, 8, 12))
+    HEIF_BRANDS.has(readAscii(bytes, 8, 12))
   )
-    return 'heic'
+    return 'heif'
+  if (readAscii(bytes, 0, 4) === 'RIFF' && readAscii(bytes, 8, 12) === 'WEBP')
+    return 'webp'
 
   if (parseSvg(await file.text()) != null) return 'svg'
 }

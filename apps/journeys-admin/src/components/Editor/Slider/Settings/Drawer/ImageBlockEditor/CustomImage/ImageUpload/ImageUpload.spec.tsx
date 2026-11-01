@@ -8,7 +8,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { PNG_FILE_BYTES } from '../../../../../../../../libs/prepareImageUpload/prepareImageUpload.mock'
+import {
+  HEIF_FILE_BYTES,
+  PNG_FILE_BYTES,
+  WEBP_FILE_BYTES
+} from '../../../../../../../../libs/prepareImageUpload/prepareImageUpload.mock'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
 import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
 
@@ -128,10 +132,10 @@ describe('ImageUpload', () => {
   })
 
   it.each([
-    ['webp', 'testFile.webp', 'image/webp'],
-    ['heif', 'testFile.heif', 'image/heif'],
-    ['heif with no reported type', 'testFile.heif', '']
-  ])('should accept %s files', async (_label, fileName, fileType) => {
+    ['webp', WEBP_FILE_BYTES, 'testFile.webp', 'image/webp'],
+    ['heif', HEIF_FILE_BYTES, 'testFile.heif', 'image/heif'],
+    ['heif with no reported type', HEIF_FILE_BYTES, 'testFile.heif', '']
+  ])('should accept %s files', async (_label, bytes, fileName, fileType) => {
     const result = vi.fn(() => ({
       data: {
         createCloudflareUploadByFile: {
@@ -161,7 +165,7 @@ describe('ImageUpload', () => {
     )
     window.URL.createObjectURL = vi.fn().mockImplementation(() => 'url')
     const input = screen.getByTestId('drop zone')
-    const file = new File(['file'], fileName, { type: fileType })
+    const file = new File([bytes], fileName, { type: fileType })
     Object.defineProperty(input, 'files', {
       value: [file]
     })
@@ -658,7 +662,7 @@ describe('ImageUpload', () => {
       expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
       expect(
         screen.getByText(
-          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
         )
       ).toBeInTheDocument()
     })

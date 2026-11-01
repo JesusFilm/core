@@ -422,7 +422,7 @@ describe('SocialScreenSocialImage', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
         )
       ).toBeInTheDocument()
     })

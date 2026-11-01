@@ -254,7 +254,7 @@ describe('useImageUpload', () => {
     expect(onUploadComplete).not.toHaveBeenCalled()
     expect(onUploadError).toHaveBeenCalledWith(
       ErrorCode.FileInvalidType,
-      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
     )
     expect(result.current.errorCode).toBe(ErrorCode.FileInvalidType)
     expect(result.current.loading).toBe(false)

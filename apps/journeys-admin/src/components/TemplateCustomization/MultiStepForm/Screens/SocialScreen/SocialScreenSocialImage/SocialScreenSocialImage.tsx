@@ -87,7 +87,7 @@ export function SocialScreenSocialImage({
               'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
             )
           : t(
-              'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+              'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
             ),
         { variant: 'error', preventDuplicate: true }
       )
@@ -250,7 +250,7 @@ export function SocialScreenSocialImage({
                 onChange={(event) => handleImageChange(event.target.files?.[0])}
                 data-testid="SocialScreenSocialImageInput"
                 type="file"
-                accept="image/png,image/jpeg,image/gif,image/svg+xml,image/heic"
+                accept="image/png,image/jpeg,image/gif,image/svg+xml,image/heic,.heic,image/heif,.heif,image/webp"
               />
             </IconButton>
           </>
