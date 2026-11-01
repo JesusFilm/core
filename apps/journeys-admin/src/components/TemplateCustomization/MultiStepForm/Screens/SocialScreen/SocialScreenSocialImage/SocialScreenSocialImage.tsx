@@ -17,12 +17,17 @@ import { useTranslation } from 'next-i18next/pages'
 import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { ErrorCode } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
+import {
+  ImageUploadFileError,
+  prepareImageUpload
+} from '../../../../../../libs/prepareImageUpload'
 import { useCloudflareUploadByFileMutation } from '../../../../../../libs/useCloudflareUploadByFileMutation'
 import { useJourneyImageBlockAssociationUpdateMutation } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
 import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
@@ -70,12 +75,31 @@ export function SocialScreenSocialImage({
     if (journey == null || file == null) return
     setLoading(true)
 
+    let uploadFile: File
+    try {
+      uploadFile = await prepareImageUpload(file)
+    } catch (error) {
+      setLoading(false)
+      enqueueSnackbar(
+        error instanceof ImageUploadFileError &&
+          error.code === ErrorCode.FileTooLarge
+          ? t(
+              'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+            )
+          : t(
+              'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+            ),
+        { variant: 'error', preventDuplicate: true }
+      )
+      return
+    }
+
     const { data } = await createCloudflareUploadByFile({
       variables: { journeyId: journey?.id }
     })
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', uploadFile)
       try {
         const response = await (
           await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
@@ -226,7 +250,7 @@ export function SocialScreenSocialImage({
                 onChange={(event) => handleImageChange(event.target.files?.[0])}
                 data-testid="SocialScreenSocialImageInput"
                 type="file"
-                accept="image/*"
+                accept="image/png,image/jpeg,image/gif,image/svg+xml,image/heic"
               />
             </IconButton>
           </>

@@ -7,6 +7,7 @@ import { type MockedFunction } from 'vitest'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 
+import { PNG_FILE_BYTES } from '../../../../../../libs/prepareImageUpload/prepareImageUpload.mock'
 import { cloudflareUploadMutationMock } from '../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation.mock'
 import { journeyImageBlockAssociationUpdateMock } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation/useJourneyImageBlockAssociationUpdateMutation.mock'
 import { journeyImageBlockCreateMock } from '../../../../../../libs/useJourneyImageBlockCreateMutation/useJourneyImageBlockCreateMutation.mock'
@@ -168,7 +169,7 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -258,7 +259,7 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -322,7 +323,7 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -348,7 +349,7 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -386,6 +387,44 @@ describe('SocialScreenSocialImage', () => {
     })
   })
 
+  it('should reject a text file named like an image without uploading it', async () => {
+    render(
+      <MockedProvider mocks={[cloudflareUploadMutationMock]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: mockJourney,
+              renderMode: 'admin'
+            }}
+          >
+            <SocialScreenSocialImage />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
+    const file = new File(['just some notes'], 'notes.png', {
+      type: 'image/png'
+    })
+
+    fireEvent.change(fileInput, { target: { files: [file] } })
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+        )
+      ).toBeInTheDocument()
+    })
+    expect(cloudflareUploadMutationMock.result).not.toHaveBeenCalled()
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(screen.queryByText('Social image updated')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('SocialScreenSocialImageSkeleton')
+    ).not.toBeInTheDocument()
+  })
+
   it('should show loading state during upload', async () => {
     mockFetch.mockImplementationOnce(
       () =>
@@ -419,7 +458,7 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
