@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface IntegrationGrowthSpacesDelete_integrationDelete {
-  __typename: "IntegrationGrowthSpaces" | "IntegrationGoogle";
+  __typename: "IntegrationGoogle" | "IntegrationGrowthSpaces";
   id: string;
 }
 

@@ -10,7 +10,7 @@ import { CampaignBackgroundKind } from "./globalTypes";
 // ====================================================
 
 export interface SectionStyle {
-  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignHeroBlock" | "CampaignRegionSwitcherBlock" | "CampaignVideoCarouselBlock" | "CampaignJourneyListBlock" | "CampaignAnalyticsBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRichTextBlock" | "CampaignColumnsBlock" | "CampaignImageBlock" | "CampaignFeaturedMediaBlock";
+  __typename: "CampaignAnalyticsBlock" | "CampaignColumnsBlock" | "CampaignFeaturedMediaBlock" | "CampaignFooterBlock" | "CampaignHeaderBlock" | "CampaignHeroBlock" | "CampaignImageBlock" | "CampaignJourneyListBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRegionSwitcherBlock" | "CampaignRichTextBlock" | "CampaignVideoCarouselBlock";
   backgroundKind: CampaignBackgroundKind;
   /**
    * Read only when backgroundKind is `custom`. `#RRGGBB`.

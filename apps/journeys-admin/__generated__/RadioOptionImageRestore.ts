@@ -7,8 +7,8 @@
 // GraphQL mutation operation: RadioOptionImageRestore
 // ====================================================
 
-export interface RadioOptionImageRestore_blockRestore_StepBlock {
-  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface RadioOptionImageRestore_blockRestore_ButtonBlock {
+  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -32,7 +32,7 @@ export interface RadioOptionImageRestore_blockRestore_ImageBlock {
   customizable: boolean | null;
 }
 
-export type RadioOptionImageRestore_blockRestore = RadioOptionImageRestore_blockRestore_StepBlock | RadioOptionImageRestore_blockRestore_ImageBlock;
+export type RadioOptionImageRestore_blockRestore = RadioOptionImageRestore_blockRestore_ButtonBlock | RadioOptionImageRestore_blockRestore_ImageBlock;
 
 export interface RadioOptionImageRestore_radioOptionBlockUpdate {
   __typename: "RadioOptionBlock";
