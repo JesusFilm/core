@@ -1723,6 +1723,8 @@
   "Report": "รายงาน",
   "Campaign Report": "รายงานการรณรงค์",
   "Report dashboard": "หน้าแสดงข้อมูลรายงาน",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "ไม่รองรับประเภทไฟล์นี้ โปรดอัปโหลดไฟล์หนึ่งในประเภทต่อไปนี้: (PNG, JPG, GIF, SVG, HEIC หรือ WebP)",
+  "Maximum file size: 10 MB": "ขนาดไฟล์สูงสุด: 10 MB",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cards</1>",
   "{{count}} visitors_other": "ผู้เข้าชม {{count}} คน",
