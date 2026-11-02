@@ -13,6 +13,7 @@ describe('loadJourneyLivesOfBlocks', () => {
   it('reads nothing when no block is a journey card', async () => {
     const lives = await loadJourneyLivesOfBlocks([
       { typename: 'CampaignHeroBlock', journeyId: null },
+      { typename: 'CampaignHeroBlock', journeyId: 'journeyA' },
       { typename: 'CampaignButtonBlock', journeyId: null }
     ])
 
