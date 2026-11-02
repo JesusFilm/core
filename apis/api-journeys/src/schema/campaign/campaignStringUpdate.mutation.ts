@@ -1,10 +1,8 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../builder'
 
 import { authorizeCampaign } from './authorizeCampaign'
 import { CampaignStringRef } from './campaignString'
-import { touchCampaign } from './campaignWrite'
+import { campaignWrite } from './campaignWrite'
 import { CampaignStringKey } from './enums'
 import {
   TEXT_CAPS,
@@ -31,15 +29,16 @@ builder.mutationField('campaignStringUpdate', (t) =>
         TEXT_CAPS.stringValue
       )
 
-      return await prisma.$transaction(async (tx) => {
-        const string = await tx.campaignString.update({
-          ...query,
-          where: { campaignId_key: { campaignId, key: args.key } },
-          data: { value }
-        })
-        await touchCampaign(tx, campaignId)
-        return string
-      })
+      return await campaignWrite(
+        campaignId,
+        {},
+        async ({ tx }) =>
+          await tx.campaignString.update({
+            ...query,
+            where: { campaignId_key: { campaignId, key: args.key } },
+            data: { value }
+          })
+      )
     }
   })
 )

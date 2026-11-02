@@ -290,7 +290,7 @@ describe('campaignBlockDuplicate', () => {
 
       const result = await duplicate(id)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })
@@ -374,7 +374,7 @@ describe('campaignBlockDuplicate', () => {
   ])('refuses %s (BAD_USER_INPUT, idMap)', async (_label, idMap) => {
     const result = await duplicate('heroId', idMap)
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'idMap'
     })
@@ -391,7 +391,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('slotId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -427,7 +427,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('slotHeroId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -443,7 +443,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('regionPageId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -454,7 +454,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('gone')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -467,7 +467,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('heroId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 })

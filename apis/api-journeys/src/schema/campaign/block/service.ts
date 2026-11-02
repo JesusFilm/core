@@ -2,6 +2,23 @@ import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  EXTRA_TYPENAMES as CAMPAIGN_CHILD_TYPENAMES,
+  CHROME_TYPENAMES as CAMPAIGN_CHROME_TYPENAMES,
+  BAND_TYPENAMES as CAMPAIGN_HOST_TYPENAMES,
+  MEDIA_OWNER_TYPENAMES as CAMPAIGN_MEDIA_OWNER_TYPENAMES,
+  MEDIA_SLOT_TYPENAMES as CAMPAIGN_MEDIA_TYPENAMES,
+  REGION_ONLY_TYPENAMES as CAMPAIGN_REGION_ONLY_TYPENAMES,
+  PAGE_SECTION_TYPENAMES as CAMPAIGN_SECTION_TYPENAMES,
+  SLOT_DISALLOWED_TYPENAMES as CAMPAIGN_SLOT_DISALLOWED_TYPENAMES,
+  SLOT_TYPENAMES as CAMPAIGN_SLOT_TYPENAMES,
+  CAMPAIGN_TYPENAMES,
+  type ExtraTypename as CampaignChildTypename,
+  type PageSectionTypename as CampaignSectionTypename,
+  type CampaignTypename,
+  acceptsChild,
+  isMediaOwner
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
+import {
   CampaignAction,
   CampaignBackgroundKind,
   CampaignBackgroundOverlay,
@@ -20,7 +37,11 @@ import {
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
-import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
+import {
+  CampaignWrite,
+  CampaignWriteDeclaration,
+  campaignWrite
+} from '../campaignWrite'
 import { CAMPAIGN_IMAGE_SLOTS, type CampaignImageSlotValue } from '../enums'
 import { badUserInput, conflict, forbidden, notFound } from '../errors'
 import { renumber } from '../order'
@@ -55,93 +76,24 @@ export type CampaignBlockWithCampaignAcl = Prisma.CampaignBlockGetPayload<{
   include: typeof INCLUDE_CAMPAIGN_BLOCK_ACL
 }>
 
-/** Every value of the `typename` column: one per concrete CampaignBlock type. */
-export const CAMPAIGN_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignRegionSwitcherBlock',
-  'CampaignVideoCarouselBlock',
-  'CampaignJourneyListBlock',
-  'CampaignAnalyticsBlock',
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock',
-  'CampaignRichTextBlock',
-  'CampaignColumnsBlock',
-  'CampaignImageBlock',
-  'CampaignFeaturedMediaBlock',
-  'CampaignHeaderBlock',
-  'CampaignFooterBlock',
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock',
-  'CampaignColumnBlock',
-  'CampaignVideoBlock',
-  'CampaignJourneyBlock'
-] as const
-export type CampaignTypename = (typeof CAMPAIGN_TYPENAMES)[number]
-
-/** The two Extra typenames: the only children a section or chrome block takes. */
-export const CAMPAIGN_CHILD_TYPENAMES = [
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock'
-] as const satisfies readonly CampaignTypename[]
-export type CampaignChildTypename = (typeof CAMPAIGN_CHILD_TYPENAMES)[number]
-
-/** Chrome is never deleted, moved or duplicated. */
-export const CAMPAIGN_CHROME_TYPENAMES = [
-  'CampaignHeaderBlock',
-  'CampaignFooterBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
-export const CAMPAIGN_SECTION_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignRegionSwitcherBlock',
-  'CampaignVideoCarouselBlock',
-  'CampaignJourneyListBlock',
-  'CampaignAnalyticsBlock',
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock',
-  'CampaignRichTextBlock',
-  'CampaignColumnsBlock',
-  'CampaignImageBlock',
-  'CampaignFeaturedMediaBlock'
-] as const satisfies readonly CampaignTypename[]
-export type CampaignSectionTypename =
-  (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
-
-/** Every typename that hosts Extras: the sections and the two chrome blocks. */
-export const CAMPAIGN_HOST_TYPENAMES = [
-  ...CAMPAIGN_SECTION_TYPENAMES,
-  ...CAMPAIGN_CHROME_TYPENAMES
-] as const
-
-/** Sections that read the region being rendered: refused on the landing page. */
-export const CAMPAIGN_REGION_ONLY_TYPENAMES = [
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** Column slots are created with their Columns section and never touched on their own. */
-export const CAMPAIGN_SLOT_TYPENAMES = [
-  'CampaignColumnBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** No nesting, and the share panel reads a whole page: neither sits in a slot. */
-export const CAMPAIGN_SLOT_DISALLOWED_TYPENAMES = [
-  'CampaignColumnsBlock',
-  'CampaignRegionShareBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** The sections with a Media Slot (`mediaBlockId`). */
-export const CAMPAIGN_MEDIA_OWNER_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignFeaturedMediaBlock'
-] as const satisfies readonly CampaignTypename[]
-
-/** What a Media Slot holds: a Campaign Video or a Campaign Image. */
-export const CAMPAIGN_MEDIA_TYPENAMES = [
-  'CampaignVideoBlock',
-  'CampaignImageBlock'
-] as const satisfies readonly CampaignTypename[]
+/**
+ * The Campaign Block grammar's sets and types under the API's names. The
+ * grammar in journeys-ui is the one copy the API, the editor and the
+ * renderer read; the validators here keep their own error codes and messages.
+ */
+export {
+  CAMPAIGN_CHILD_TYPENAMES,
+  CAMPAIGN_CHROME_TYPENAMES,
+  CAMPAIGN_HOST_TYPENAMES,
+  CAMPAIGN_MEDIA_OWNER_TYPENAMES,
+  CAMPAIGN_MEDIA_TYPENAMES,
+  CAMPAIGN_REGION_ONLY_TYPENAMES,
+  CAMPAIGN_SECTION_TYPENAMES,
+  CAMPAIGN_SLOT_DISALLOWED_TYPENAMES,
+  CAMPAIGN_SLOT_TYPENAMES,
+  CAMPAIGN_TYPENAMES
+}
+export type { CampaignChildTypename, CampaignSectionTypename, CampaignTypename }
 
 /** A Columns section is created with exactly this many slots. */
 export const CAMPAIGN_COLUMN_SLOT_COUNT = 2
@@ -158,9 +110,7 @@ export const isCampaignSlotTypename = isOneOf(CAMPAIGN_SLOT_TYPENAMES)
 export const isCampaignSlotDisallowedTypename = isOneOf(
   CAMPAIGN_SLOT_DISALLOWED_TYPENAMES
 )
-export const isCampaignMediaOwnerTypename = isOneOf(
-  CAMPAIGN_MEDIA_OWNER_TYPENAMES
-)
+export const isCampaignMediaOwnerTypename = isMediaOwner
 
 /** Block create is campaign Update on the campaign the block will belong to. */
 export async function authorizeBlockCreate(
@@ -269,9 +219,10 @@ export async function validateHostBlock(
 }
 
 /**
- * A child block's parent passes `validateHostBlock`, and the child is a
- * Typography or Button block (an Extra), or a CampaignVideoBlock item of a
- * Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
+ * A child block's parent passes `validateHostBlock`, and the grammar's
+ * `acceptsChild` takes the child under it: a Typography or Button block (an
+ * Extra) under any host, the header included, or a CampaignVideoBlock item
+ * of a Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
  * else (`BAD_USER_INPUT` / `typename`). Returns the parent.
  */
 export async function validateParentBlock(
@@ -279,14 +230,13 @@ export async function validateParentBlock(
   campaignId: string,
   typename: CampaignTypename
 ): Promise<CampaignBlock> {
-  const isCarouselItem = typename === 'CampaignVideoBlock'
-  if (!isCarouselItem && !isCampaignChildTypename(typename))
+  if (typename !== 'CampaignVideoBlock' && !isCampaignChildTypename(typename))
     throw badUserInput(
       `typename must be one of ${CAMPAIGN_CHILD_TYPENAMES.join(', ')}, or CampaignVideoBlock in a video carousel`,
       'typename'
     )
   const parent = await validateHostBlock(parentBlockId, campaignId)
-  if (isCarouselItem && parent.typename !== 'CampaignVideoCarouselBlock')
+  if (!acceptsChild(parent.typename, typename))
     throw badUserInput(
       'only a video carousel takes CampaignVideoBlock items',
       'typename'
@@ -379,8 +329,9 @@ export async function reorderSiblings(
  * Refuse an add that would take the campaign past `CAMPAIGN_BLOCKS_MAX` live
  * blocks, Region Lines and owned blocks included (`BAD_USER_INPUT` /
  * `campaignId`). `adding` is the number of rows the add brings to life: one
- * for a create, the subtree for a duplicate or restore. Run it in `tx` after
- * `lockCampaignStructure`, so concurrent adds are counted one after another.
+ * for a create, the subtree for a duplicate or restore. Run it in the `tx` of
+ * a Campaign Write that declares `structure`, so concurrent adds are counted
+ * one after another.
  */
 export async function assertCampaignBlockRoom(
   tx: Prisma.TransactionClient,
@@ -433,16 +384,19 @@ export async function withClientIds<T>(
 }
 
 /**
- * The shape of every block create: `withClientIds` around one transaction,
- * so a client-chosen id that is already taken is reported on its field.
+ * The shape of every block create: `withClientIds` around one Campaign
+ * Write of `campaignId`, so a client-chosen id that is already taken is
+ * reported on its field.
  */
 export async function createWithClientIds<T>(
   clientIds: Record<string, Array<string | null | undefined>>,
-  create: (tx: Prisma.TransactionClient) => Promise<T>
+  campaignId: string,
+  declaration: CampaignWriteDeclaration,
+  create: (write: CampaignWrite) => Promise<T>
 ): Promise<T> {
   return await withClientIds(
     clientIds,
-    async () => await prisma.$transaction(async (tx) => await create(tx))
+    async () => await campaignWrite(campaignId, declaration, create)
   )
 }
 
@@ -455,20 +409,6 @@ export type CampaignChildCreateData = Omit<
   | 'parentOrder'
   | 'typename'
 > & { typename: CampaignTypename }
-
-/**
- * Create a child of `parent` inside `tx`: `parentOrder = siblings.length`
- * (one contiguous sequence across `above` and `below` children) and the
- * parent's `pageId` / `regionId` copied down.
- */
-export async function createChildBlock(
-  tx: Prisma.TransactionClient,
-  parent: CampaignBlock,
-  data: CampaignChildCreateData
-): Promise<CampaignBlockWithAction> {
-  await lockCampaignStructure(tx, parent.campaignId)
-  return await insertChildBlock(tx, parent, data)
-}
 
 /**
  * The parent or owner a create validated before the transaction is still
@@ -493,8 +433,13 @@ export async function assertParentStillLive(
   return current
 }
 
-/** `createChildBlock` for a caller that already holds the structure lock. */
-async function insertChildBlock(
+/**
+ * Create a child of `parent` inside `tx`, a Campaign Write that declares
+ * `structure`: `parentOrder = siblings.length` (one contiguous sequence
+ * across `above` and `below` children) and the parent's `pageId` /
+ * `regionId` copied down.
+ */
+export async function createChildBlock(
   tx: Prisma.TransactionClient,
   parent: CampaignBlock,
   data: CampaignChildCreateData
@@ -505,7 +450,7 @@ async function insertChildBlock(
     { ...parent, parentBlockId: parent.id },
     tx
   )
-  const block = await tx.campaignBlock.create({
+  return await tx.campaignBlock.create({
     data: {
       ...data,
       campaignId: parent.campaignId,
@@ -516,32 +461,32 @@ async function insertChildBlock(
     },
     include: { action: true }
   })
-  await touchCampaign(tx, parent.campaignId)
-  return block
 }
 
 /**
  * Write validated columns to a block and bump its campaign. A slot column in
- * `data` (`coverBlockId`, `logoBlockId`, `mediaBlockId`) is a swap: under the
- * structure lock the owner is re-read, the target validated against it, and
- * the outgoing block soft-deleted and the incoming one restored, before the
- * column itself is written.
+ * `data` (`coverBlockId`, `logoBlockId`, `mediaBlockId`) is a swap: the write
+ * declares `structure`, and under it the owner is re-read, the target
+ * validated against it, and the outgoing block soft-deleted and the incoming
+ * one restored, before the column itself is written.
  */
 export async function updateBlock(
   block: Pick<CampaignBlock, 'id' | 'campaignId'>,
   data: Prisma.CampaignBlockUncheckedUpdateInput
 ): Promise<CampaignBlockWithAction> {
   const slots = slotTargets(data)
-  return await prisma.$transaction(async (tx) => {
-    if (slots.length > 0) await swapSlots(tx, block, slots)
-    const updated = await tx.campaignBlock.update({
-      where: { id: block.id },
-      data,
-      include: { action: true }
-    })
-    await touchCampaign(tx, block.campaignId)
-    return updated
-  })
+  return await campaignWrite(
+    block.campaignId,
+    { structure: slots.length > 0 },
+    async ({ tx }) => {
+      if (slots.length > 0) await swapSlots(tx, block, slots)
+      return await tx.campaignBlock.update({
+        where: { id: block.id },
+        data,
+        include: { action: true }
+      })
+    }
+  )
 }
 
 /**
@@ -555,25 +500,25 @@ export async function updateBlock(
 export async function removeBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
-  return await prisma.$transaction(async (tx) => {
-    await lockCampaignStructure(tx, block.campaignId)
-    const live = await tx.campaignBlock.findMany({
-      where: { campaignId: block.campaignId, deletedAt: null },
-      include: { action: true }
-    })
-    const subtree = collectSubtree(block.id, live)
-    if (subtree.length === 0) throw notFound('block not found')
-    await tx.campaignBlock.updateMany({
-      where: { id: { in: subtree.map((row) => row.id) }, deletedAt: null },
-      data: { deletedAt: new Date() }
-    })
-    const siblings =
-      block.parentOrder != null
+  return await campaignWrite(
+    block.campaignId,
+    { structure: true },
+    async ({ tx }) => {
+      const live = await tx.campaignBlock.findMany({
+        where: { campaignId: block.campaignId, deletedAt: null },
+        include: { action: true }
+      })
+      const subtree = collectSubtree(block.id, live)
+      if (subtree.length === 0) throw notFound('block not found')
+      await tx.campaignBlock.updateMany({
+        where: { id: { in: subtree.map((row) => row.id) }, deletedAt: null },
+        data: { deletedAt: new Date() }
+      })
+      return block.parentOrder != null
         ? await reorderSiblings(await getSiblings(block, tx), tx)
         : []
-    await touchCampaign(tx, block.campaignId)
-    return siblings
-  })
+    }
+  )
 }
 
 function getDescendants(
@@ -638,51 +583,53 @@ export async function restoreBlock(
 ): Promise<CampaignBlockWithAction[]> {
   if (block.parentOrder == null)
     throw conflict('an owned block comes back through its slot', 'id')
-  return await prisma.$transaction(async (tx) => {
-    await lockCampaignStructure(tx, block.campaignId)
-    await assertParentLiveForRestore(block, tx)
-    await assertSlotFreeForRestore(block, tx)
-    if (block.deletedAt != null)
-      await assertCampaignBlockRoom(
-        tx,
-        block.campaignId,
-        await tx.campaignBlock.count({
-          where: { campaignId: block.campaignId, deletedAt: block.deletedAt }
+  return await campaignWrite(
+    block.campaignId,
+    { structure: true },
+    async ({ tx }) => {
+      await assertParentLiveForRestore(block, tx)
+      await assertSlotFreeForRestore(block, tx)
+      if (block.deletedAt != null)
+        await assertCampaignBlockRoom(
+          tx,
+          block.campaignId,
+          await tx.campaignBlock.count({
+            where: { campaignId: block.campaignId, deletedAt: block.deletedAt }
+          })
+        )
+      if (block.deletedAt != null)
+        await tx.campaignBlock.updateMany({
+          where: {
+            campaignId: block.campaignId,
+            deletedAt: block.deletedAt,
+            id: { not: block.id }
+          },
+          data: { deletedAt: null }
         })
-      )
-    if (block.deletedAt != null)
-      await tx.campaignBlock.updateMany({
+      const restored = await tx.campaignBlock.update({
+        where: { id: block.id },
+        data: { deletedAt: null },
+        include: { action: true }
+      })
+      let siblings: CampaignBlockWithAction[] = [restored]
+      if (restored.parentOrder != null) {
+        const others = await getSiblings(restored, tx, {
+          id: { not: restored.id }
+        })
+        others.splice(restored.parentOrder, 0, restored)
+        siblings = await reorderSiblings(others, tx)
+      }
+      const live = await tx.campaignBlock.findMany({
         where: {
-          campaignId: block.campaignId,
-          deletedAt: block.deletedAt,
-          id: { not: block.id }
+          campaignId: restored.campaignId,
+          deletedAt: null,
+          NOT: { id: restored.id }
         },
-        data: { deletedAt: null }
+        include: { action: true }
       })
-    const restored = await tx.campaignBlock.update({
-      where: { id: block.id },
-      data: { deletedAt: null },
-      include: { action: true }
-    })
-    let siblings: CampaignBlockWithAction[] = [restored]
-    if (restored.parentOrder != null) {
-      const others = await getSiblings(restored, tx, {
-        id: { not: restored.id }
-      })
-      others.splice(restored.parentOrder, 0, restored)
-      siblings = await reorderSiblings(others, tx)
+      return [...siblings, ...getDescendants(restored.id, live)]
     }
-    const live = await tx.campaignBlock.findMany({
-      where: {
-        campaignId: restored.campaignId,
-        deletedAt: null,
-        NOT: { id: restored.id }
-      },
-      include: { action: true }
-    })
-    await touchCampaign(tx, restored.campaignId)
-    return [...siblings, ...getDescendants(restored.id, live)]
-  })
+  )
 }
 
 /**
@@ -800,7 +747,6 @@ export async function createTopLevelBlock(
 ): Promise<CampaignBlockWithAction> {
   assertTopLevelScope(data.typename, scope)
   assertParentOrder(parentOrder)
-  await lockCampaignStructure(tx, scope.campaignId)
   if (isCampaignChromeTypename(data.typename))
     await assertChromeSingleton(tx, scope.campaignId, data.typename)
   await assertCampaignBlockRoom(tx, scope.campaignId, 1)
@@ -821,7 +767,6 @@ export async function createTopLevelBlock(
     siblings.splice(parentOrder, 0, created)
     block = (await reorderSiblings(siblings, tx))[parentOrder]
   }
-  await touchCampaign(tx, scope.campaignId)
   return block
 }
 
@@ -914,34 +859,35 @@ export async function reorderBlock(
       'placement applies to section children only',
       'placement'
     )
-  return await prisma.$transaction(async (tx) => {
-    await lockCampaignStructure(tx, block.campaignId)
-    const all = await getSiblings(block, tx)
-    const self = all.find((candidate) => candidate.id === block.id)
-    if (self == null) throw notFound('block not found')
-    if (nextPlacement != null && nextPlacement !== block.placement)
-      await tx.campaignBlock.update({
-        where: { id: block.id },
-        data: { placement: nextPlacement }
+  return await campaignWrite(
+    block.campaignId,
+    { structure: true },
+    async ({ tx }) => {
+      const all = await getSiblings(block, tx)
+      const self = all.find((candidate) => candidate.id === block.id)
+      if (self == null) throw notFound('block not found')
+      if (nextPlacement != null && nextPlacement !== block.placement)
+        await tx.campaignBlock.update({
+          where: { id: block.id },
+          data: { placement: nextPlacement }
+        })
+      const others = all.filter((candidate) => candidate.id !== block.id)
+      const slotCount = all.filter((candidate) =>
+        isCampaignSlotTypename(candidate.typename)
+      ).length
+      const position = clampAroundSlots(
+        parentOrder,
+        isCampaignSlotTypename(block.typename),
+        slotCount,
+        others.length
+      )
+      others.splice(position, 0, {
+        ...self,
+        placement: nextPlacement ?? block.placement
       })
-    const others = all.filter((candidate) => candidate.id !== block.id)
-    const slotCount = all.filter((candidate) =>
-      isCampaignSlotTypename(candidate.typename)
-    ).length
-    const position = clampAroundSlots(
-      parentOrder,
-      isCampaignSlotTypename(block.typename),
-      slotCount,
-      others.length
-    )
-    others.splice(position, 0, {
-      ...self,
-      placement: nextPlacement ?? block.placement
-    })
-    const siblings = await reorderSiblings(others, tx)
-    await touchCampaign(tx, block.campaignId)
-    return siblings
-  })
+      return await reorderSiblings(others, tx)
+    }
+  )
 }
 
 export interface CampaignBlockIdMap {
@@ -1091,84 +1037,89 @@ async function duplicateSubtree(
   block: CampaignBlock,
   idMap: CampaignBlockIdMap[]
 ): Promise<CampaignBlockWithAction[]> {
-  return await prisma.$transaction(async (tx) => {
-    await lockCampaignStructure(tx, block.campaignId)
-    const live = await tx.campaignBlock.findMany({
-      where: { campaignId: block.campaignId, deletedAt: null },
-      orderBy: { parentOrder: 'asc' },
-      include: { action: true }
-    })
-    const subtree = collectSubtree(block.id, live)
-    if (subtree.length === 0) throw notFound('block not found')
-    const parent = live.find((row) => row.id === block.parentBlockId)
-    if (parent != null && isCampaignSlotTypename(parent.typename))
-      throw conflict('a column slot holds at most one section', 'id')
-    await assertCampaignBlockRoom(tx, block.campaignId, subtree.length)
-    const ids = new Map<string, string>()
-    for (const row of subtree)
-      ids.set(
-        row.id,
-        idMap.find((entry) => entry.oldId === row.id)?.newId ?? uuidv4()
-      )
-    const remap = (id: string | null): string | null =>
-      id == null ? null : (ids.get(id) ?? id)
-    const remapSlot = (id: string | null): string | null =>
-      id == null ? null : (ids.get(id) ?? null)
-    const siblings = await getSiblings(block, tx)
+  return await campaignWrite(
+    block.campaignId,
+    { structure: true },
+    async ({ tx }) => {
+      const live = await tx.campaignBlock.findMany({
+        where: { campaignId: block.campaignId, deletedAt: null },
+        orderBy: { parentOrder: 'asc' },
+        include: { action: true }
+      })
+      const subtree = collectSubtree(block.id, live)
+      if (subtree.length === 0) throw notFound('block not found')
+      const parent = live.find((row) => row.id === block.parentBlockId)
+      if (parent != null && isCampaignSlotTypename(parent.typename))
+        throw conflict('a column slot holds at most one section', 'id')
+      await assertCampaignBlockRoom(tx, block.campaignId, subtree.length)
+      const ids = new Map<string, string>()
+      for (const row of subtree)
+        ids.set(
+          row.id,
+          idMap.find((entry) => entry.oldId === row.id)?.newId ?? uuidv4()
+        )
+      const remap = (id: string | null): string | null =>
+        id == null ? null : (ids.get(id) ?? id)
+      const remapSlot = (id: string | null): string | null =>
+        id == null ? null : (ids.get(id) ?? null)
+      const siblings = await getSiblings(block, tx)
 
-    const copies: CampaignBlockWithAction[] = []
-    for (const row of subtree) {
-      copies.push(
-        await tx.campaignBlock.create({
+      const copies: CampaignBlockWithAction[] = []
+      for (const row of subtree) {
+        copies.push(
+          await tx.campaignBlock.create({
+            data: {
+              ...copyColumns(row),
+              id: ids.get(row.id),
+              parentBlockId:
+                row.id === block.id
+                  ? block.parentBlockId
+                  : remap(row.parentBlockId),
+              parentOrder:
+                row.id === block.id ? siblings.length : row.parentOrder
+            },
+            include: { action: true }
+          })
+        )
+      }
+      for (const [index, row] of subtree.entries()) {
+        const slots: Partial<Record<(typeof SLOT_COLUMNS)[number], string>> = {}
+        for (const column of SLOT_COLUMNS) {
+          const target = remapSlot(row[column])
+          if (target != null) slots[column] = target
+        }
+        if (Object.keys(slots).length === 0 && row.action == null) continue
+        copies[index] = await tx.campaignBlock.update({
+          where: { id: ids.get(row.id) },
           data: {
-            ...copyColumns(row),
-            id: ids.get(row.id),
-            parentBlockId:
-              row.id === block.id
-                ? block.parentBlockId
-                : remap(row.parentBlockId),
-            parentOrder: row.id === block.id ? siblings.length : row.parentOrder
+            ...slots,
+            ...(row.action != null
+              ? {
+                  action: {
+                    create: {
+                      blockId: remap(row.action.blockId),
+                      regionId: row.action.regionId,
+                      url: row.action.url,
+                      target: row.action.target
+                    }
+                  }
+                }
+              : {})
           },
           include: { action: true }
         })
-      )
-    }
-    for (const [index, row] of subtree.entries()) {
-      const slots: Partial<Record<(typeof SLOT_COLUMNS)[number], string>> = {}
-      for (const column of SLOT_COLUMNS) {
-        const target = remapSlot(row[column])
-        if (target != null) slots[column] = target
       }
-      if (Object.keys(slots).length === 0 && row.action == null) continue
-      copies[index] = await tx.campaignBlock.update({
-        where: { id: ids.get(row.id) },
-        data: {
-          ...slots,
-          ...(row.action != null
-            ? {
-                action: {
-                  create: {
-                    blockId: remap(row.action.blockId),
-                    regionId: row.action.regionId,
-                    url: row.action.url,
-                    target: row.action.target
-                  }
-                }
-              }
-            : {})
-        },
-        include: { action: true }
-      })
-    }
 
-    const copy = copies[0]
-    const others = siblings.filter((candidate) => candidate.id !== copy.id)
-    const original = others.findIndex((candidate) => candidate.id === block.id)
-    others.splice(original + 1, 0, copy)
-    const reordered = await reorderSiblings(others, tx)
-    await touchCampaign(tx, block.campaignId)
-    return [...reordered, ...copies.slice(1)]
-  })
+      const copy = copies[0]
+      const others = siblings.filter((candidate) => candidate.id !== copy.id)
+      const original = others.findIndex(
+        (candidate) => candidate.id === block.id
+      )
+      others.splice(original + 1, 0, copy)
+      const reordered = await reorderSiblings(others, tx)
+      return [...reordered, ...copies.slice(1)]
+    }
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -1266,14 +1217,13 @@ export async function createSlotChild(
   slot: CampaignBlock,
   data: CampaignBlockCreateData
 ): Promise<CampaignBlockWithAction> {
-  await lockCampaignStructure(tx, slot.campaignId)
   const occupant = await getSiblings({ ...slot, parentBlockId: slot.id }, tx)
   if (occupant.length > 0)
     throw badUserInput(
       'a column slot holds at most one section',
       'parentBlockId'
     )
-  return await insertChildBlock(tx, slot, data)
+  return await createChildBlock(tx, slot, data)
 }
 
 // ---------------------------------------------------------------------------
@@ -1409,7 +1359,6 @@ export async function createOwnedBlock(
   column: CampaignOwnedSlotColumn,
   data: CampaignChildCreateData
 ): Promise<CampaignBlockWithAction> {
-  await lockCampaignStructure(tx, owner.campaignId)
   const current = await assertParentStillLive(tx, owner.id)
   const previousId = current[column]
   await assertCampaignBlockRoom(
@@ -1437,7 +1386,6 @@ export async function createOwnedBlock(
     where: { id: owner.id },
     data: { [column]: block.id }
   })
-  await touchCampaign(tx, owner.campaignId)
   return block
 }
 
@@ -1553,10 +1501,9 @@ function slotTargets(
  */
 async function swapSlots(
   tx: Prisma.TransactionClient,
-  block: Pick<CampaignBlock, 'id'> & Pick<CampaignBlock, 'campaignId'>,
+  block: Pick<CampaignBlock, 'id'>,
   targets: SlotTarget[]
 ): Promise<void> {
-  await lockCampaignStructure(tx, block.campaignId)
   const current = await assertParentStillLive(tx, block.id, () =>
     notFound('block not found')
   )

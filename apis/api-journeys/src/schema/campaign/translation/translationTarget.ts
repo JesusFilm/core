@@ -26,8 +26,6 @@ export type TranslationTargetCampaign = Prisma.CampaignGetPayload<{
 type Row = Record<string, unknown>
 
 interface TranslationTargetModel {
-  /** Row-lock the targets by id, in id order, inside the caller's transaction. */
-  lock: (tx: Prisma.TransactionClient, ids: string[]) => Promise<void>
   /** The live target row with every column, or null. */
   find: (db: Prisma.TransactionClient, id: string) => Promise<Row | null>
   /** The live target row and its campaign (ACL and languages), or null. */
@@ -61,9 +59,6 @@ export const TRANSLATION_TARGETS: Record<
   TranslationTargetModel
 > = {
   block: {
-    lock: async (tx, ids) => {
-      await tx.$queryRaw`SELECT 1 FROM "CampaignBlock" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`
-    },
     find: async (db, id) =>
       await db.campaignBlock.findFirst({ where: { id, deletedAt: null } }),
     findWithCampaign: async (db, id) => {
@@ -81,9 +76,6 @@ export const TRANSLATION_TARGETS: Record<
     caps: (row) => CAMPAIGN_BLOCK_TEXT_FIELDS[String(row.typename)] ?? {}
   },
   region: {
-    lock: async (tx, ids) => {
-      await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`
-    },
     find: async (db, id) =>
       await db.campaignRegion.findUnique({ where: { id } }),
     findWithCampaign: async (db, id) => {
@@ -101,9 +93,6 @@ export const TRANSLATION_TARGETS: Record<
     caps: () => CAMPAIGN_REGION_TEXT_FIELDS
   },
   string: {
-    lock: async (tx, ids) => {
-      await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`
-    },
     find: async (db, id) =>
       await db.campaignString.findUnique({ where: { id } }),
     findWithCampaign: async (db, id) => {
@@ -121,9 +110,6 @@ export const TRANSLATION_TARGETS: Record<
     caps: () => CAMPAIGN_STRING_TEXT_FIELDS
   },
   campaign: {
-    lock: async (tx, ids) => {
-      await tx.$queryRaw`SELECT 1 FROM "Campaign" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`
-    },
     find: async (db, id) => await db.campaign.findUnique({ where: { id } }),
     findWithCampaign: async (db, id) => {
       const campaign = await db.campaign.findUnique({

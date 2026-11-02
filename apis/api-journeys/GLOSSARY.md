@@ -183,6 +183,10 @@ _Avoid_: live/offline (use published/draft), visibility, state
 How a Campaign is edited: every edit saves in place as its own change, with no working copy, snapshot or Save step, so a published Campaign changes under its visitors as the author works. Undo is the Editor's in-memory **Command** history, not a saved version.
 _Avoid_: autosave (as a feature name — it is the only mode), draft mode, preview mode, versioning
 
+**Campaign Write**:
+One edit of one Campaign, saved as one transaction: it locks what it will write in the one order every edit shares (so two edits never deadlock), ends by bumping the Campaign's `updatedAt` (the touch), and runs what lives outside the database (short-link deletes, revalidation, Vercel removals) only after the commit, or undoes its one gateway call when the commit fails. Every change to an existing Campaign is one, publish, settings and delete included; creating a Campaign is not, as there is nothing to lock yet.
+_Avoid_: transaction (the mechanism, not the edit), save, mutation (a mutation may make one, or none)
+
 **Campaign Settings**:
 The parts of a Campaign that are not content: the default-language title, the slug, the default language (changed by a **Default-language swap**) and the **Palette**, all saved outside the Editor's Command history. The slug never follows a title change.
 _Avoid_: metadata, properties, campaign info
@@ -254,7 +258,7 @@ What a Campaign Button does when pressed: open a web link, scroll to a block on 
 _Avoid_: link (bare), href, navigation
 
 **Campaign Chrome**:
-The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. Both take the same Extras as any section; the header's nav links are Button Extras.
+The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. The header accepts the same Extras as any section, but for now the editor offers and the public header shows only its Button Extras (its nav links); the footer takes and shows both kinds. The **Campaign Block grammar** records both facts (`acceptsChild`, `shownExtras`).
 _Avoid_: nav bar, site header/footer, layout, shell
 
 **Brand Mark**:
@@ -352,7 +356,7 @@ A visitor-facing text field of a Campaign. Its default-language value sits on th
 _Avoid_: localised string, i18n key, label
 
 **Campaign String**:
-One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Distinct from the editor's own chrome, which is admin i18n.
+One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Each string names the sections that show it; the wording, keys and hosts live in one registry in `libs/journeys/ui`, which the API seed reads. Distinct from the editor's own chrome, which is admin i18n.
 _Avoid_: UI string, i18n string, interface key
 
 **Machine Translation**:

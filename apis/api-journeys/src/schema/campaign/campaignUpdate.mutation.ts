@@ -1,10 +1,11 @@
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 import { SlugTakenError } from '../templateGalleryPage/generateUniqueSlug'
 
 import { authorizeCampaign } from './authorizeCampaign'
 import { CampaignRef } from './campaign'
+import { campaignWrite } from './campaignWrite'
 import { badUserInput } from './errors'
 import { CampaignUpdateInput } from './inputs'
 import { enqueueCampaignSlugRevalidation } from './revalidateCampaign'
@@ -81,10 +82,14 @@ builder.mutationField('campaignUpdate', (t) =>
           'title'
         )
 
+      // Both paths write the Campaign row, whose `updatedAt` is `@updatedAt`,
+      // so neither needs the touch.
       try {
         const updated = changesDefaultLanguage
-          ? await prisma.$transaction(
-              async (tx) => {
+          ? await campaignWrite(
+              id,
+              { textRows: true, campaignRow: true, touch: false },
+              async ({ tx }) => {
                 const swapped = await swapDefaultLanguage(
                   tx,
                   id,
@@ -102,7 +107,12 @@ builder.mutationField('campaignUpdate', (t) =>
               },
               { timeout: DEFAULT_LANGUAGE_SWAP_TIMEOUT_MS }
             )
-          : await prisma.campaign.update({ ...query, where: { id }, data })
+          : await campaignWrite(
+              id,
+              { touch: false },
+              async ({ tx }) =>
+                await tx.campaign.update({ ...query, where: { id }, data })
+            )
         if (slug != null)
           await enqueueCampaignSlugRevalidation(
             { ...campaign, slug },
