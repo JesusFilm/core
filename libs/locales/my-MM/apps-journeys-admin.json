@@ -1723,6 +1723,8 @@
   "Report": "အစီရင်ခံစာ",
   "Campaign Report": "မဲဆွယ်ရေးအစီရင်ခံစာ",
   "Report dashboard": "အစီရင်ခံ ဒက်ရှ်ဘုတ်",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "ဖိုင်အမျိုးအစား မလက်ခံပါ။ အောက်ပါ ဖိုင်အမျိုးအစားများထဲမှ တစ်ခုဖြင့် တင်ပါ။ (PNG, JPG, GIF, SVG, HEIC, သို့မဟုတ် WebP)",
+  "Maximum file size: 10 MB": "အများဆုံး ဖိုင်အရွယ်အစား: 10 MB",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cards</1>",
   "{{count}} visitors_other": "လာရောက်ကြည့်ရှုသူ {{count}} ဦး",
