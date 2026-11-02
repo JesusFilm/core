@@ -47,6 +47,31 @@ describe('LanguageSwitcher', () => {
     })
   })
 
+  it('should list languages alphabetically by English name with the current language first', () => {
+    mockUseTranslation.mockReturnValue({
+      t,
+      i18n: {
+        language: 'ja',
+        options: {
+          locales: ['en', 'ja', 'zh', 'zh-Hant', 'zh-Hans-CN', 'de', 'my', 'mn']
+        }
+      }
+    })
+    mockUseRouter.mockReturnValue({
+      push: vi.fn(),
+      asPath: '/'
+    } as unknown as NextRouter)
+    const { getByRole, getAllByRole } = render(
+      <LanguageSwitcher open handleClose={handleClose} />
+    )
+
+    fireEvent.mouseDown(getByRole('combobox'))
+
+    expect(
+      getAllByRole('option').map((option) => option.getAttribute('data-value'))
+    ).toEqual(['ja', 'my', 'zh-Hans-CN', 'zh-Hant', 'en', 'de', 'mn'])
+  })
+
   it('should translate page when new language selected', async () => {
     const push = vi.fn()
     mockUseRouter.mockReturnValue({

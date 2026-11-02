@@ -133,7 +133,6 @@ module "bastion" {
   instance_type      = "t3.medium"
 }
 
-
 module "cloudflared" {
   source             = "../../modules/aws/ec2-cloudflared"
   name               = "cloudflared"
@@ -161,51 +160,97 @@ module "datadog_aurora" {
 module "redis" {
   source            = "../../modules/aws/elasticache"
   cluster_id        = "redis-prod"
+  node_type         = "cache.t2.medium"
+  apply_immediately = true
   subnet_ids        = module.prod.vpc.internal_subnets
   security_group_id = module.prod.ecs.internal_ecs_security_group_id
   cidr              = module.prod.cidr
   vpc_id            = module.prod.vpc.id
 }
 
+# Short-link scan events (ClickHouse Cloud, always on; stage idles).
+module "short_links_clickhouse" {
+  source        = "../../modules/clickhouse/service"
+  env           = "prod"
+  idle_scaling  = false
+  doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
+}
+
+# Plausible Analytics on ECS (arm64 Fargate). Serves analytics.jesusfilm.org
+# (a Cloudflare CNAME to the public ALB, by hand) and plausible.central.jesusfilm.org
+# (the module's own record, for smoke tests). Its events are in
+# short_links_clickhouse above, reached by the CLICKHOUSE_DATABASE_URL of the
+# prd_ecs Doppler branch config; that config's token must be in SSM before the
+# first apply (modules/plausible/README.md, "Prerequisites").
+module "plausible" {
+  source = "../../modules/plausible"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "8000"
+    })
+  })
+  env              = "prod"
+  doppler_token    = data.aws_ssm_parameter.doppler_plausible_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_names       = ["analytics.jesusfilm.org", "plausible.central.jesusfilm.org"]
+}
+
+# analytics.jesusfilm.org is served by Cloudflare DNS, not Route53, so the ACM
+# validation CNAME is added there by hand (modules/plausible/README.md) and
+# the certificate is attached to the public listener in the cutover step once
+# ACM reports ISSUED. Deliberately no aws_acm_certificate_validation: it would
+# hold an Atlantis apply for up to 75 minutes waiting on that record.
+resource "aws_acm_certificate" "analytics_jesusfilm_org" {
+  domain_name       = "analytics.jesusfilm.org"
+  validation_method = "DNS"
+
+  tags = {
+    Name = "analytics.jesusfilm.org"
+    Env  = "prod"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Attach only once ACM reports the certificate ISSUED; attaching a pending
+# certificate fails the apply. The public listener then answers for
+# analytics.jesusfilm.org, and the Cloudflare CNAME edit is the cutover
+# (modules/plausible/README.md, "Prod cutover").
+resource "aws_lb_listener_certificate" "analytics_jesusfilm_org" {
+  listener_arn    = module.prod.public_alb.alb_listener.arn
+  certificate_arn = aws_acm_certificate.analytics_jesusfilm_org.arn
+}
+
 module "postgresql" {
-  source                  = "../../modules/aws/aurora"
-  name                    = "jfp-core"
-  env                     = "prod"
+  source                          = "../../modules/aws/aurora"
+  name                            = "jfp-core"
+  env                             = "prod"
+  engine_version                  = var.versions.aurora
+  enforce_major_upgrade_approval  = true
+  allow_major_version_upgrade     = var.allow_aurora_major_upgrade
+  db_cluster_parameter_group_name = split(".", var.versions.aurora)[0] == "13" ? "aurora-postgresql13-cluster-replication" : null
+  managed_parameter_group_family  = split(".", var.versions.aurora)[0] == "13" ? null : "aurora-postgresql${split(".", var.versions.aurora)[0]}"
+  db_parameter_group_name         = "default.aurora-postgresql${split(".", var.versions.aurora)[0]}"
+  managed_cluster_parameters = {
+    "rds.logical_replication"    = { value = "1", apply_method = "pending-reboot" }
+    "log_min_duration_statement" = { value = "5000", apply_method = "immediate" }
+    # PostgreSQL 13 uses 0; preserve the existing connection policy during the
+    # major upgrade rather than also changing application TLS requirements.
+    "rds.force_ssl" = { value = "0", apply_method = "immediate" }
+  }
+  storage_type      = null
+  apply_immediately = true
+  serverlessv2_capacity = {
+    min_capacity = 0.5
+    max_capacity = 16
+  }
   doppler_token           = data.aws_ssm_parameter.doppler_core_prod_token.value
   doppler_project         = "core"
   subnet_group_name       = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id   = module.prod.private_rds_security_group_id
   PG_DATABASE_URL_ENV_VAR = "PRIVATE_DATABASE_URL"
 }
-
-module "eks" {
-  source             = "../../modules/aws/eks"
-  env                = "prod"
-  name               = "jfp-eks"
-  subnet_ids         = concat(module.prod.vpc.internal_subnets, module.prod.vpc.public_subnets)
-  security_group_ids = [module.prod.ecs.internal_ecs_security_group_id, module.prod.ecs.public_ecs_security_group_id]
-  vpc_id             = module.prod.vpc.id
-  subnet_ids_2a      = ["subnet-0b7c1e14af0ffb3ea", "subnet-036663ddfdb3b94b0"]
-  subnet_ids_2b      = ["subnet-05c389158df4b940a", "subnet-01aa708571a3e499c"]
-  subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
-}
-
-# Bounded EBS snapshot retention for the Plausible ClickHouse volumes: 7 daily
-# plus 4 weekly snapshots, replacing the former SnapScheduler schedule,
-# whose EBS snapshots were never deleted (the VolumeSnapshotClass uses
-# deletionPolicy: Retain).
-module "plausible_clickhouse_snapshots" {
-  source       = "../../modules/aws/ebs-snapshot-policy"
-  env          = "prod"
-  name         = "plausible-clickhouse"
-  cluster_name = module.eks.cluster_name
-  pvc_names = [
-    "plausible-analytics-clickhouse-data-plausible-analytics-clickhouse-0",
-    "plausible-analytics-clickhouse-replica-data-plausible-analytics-clickhouse-replica-0"
-  ]
-  schedules = [
-    { name = "daily", cron_expression = "cron(0 1 * * ? *)", retain_count = 7 },
-    { name = "weekly", cron_expression = "cron(0 2 ? * SUN *)", retain_count = 4 }
-  ]
-}
-

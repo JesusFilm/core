@@ -36,7 +36,7 @@ AWS resources are named `jfp-<thing>-<env>` (`jfp` = Jesus Film Project), e.g. `
 ### Services
 
 **Service**:
-A deployable workload running on ECS Fargate in each Environment: the six subgraph APIs plus Arclight. Its infrastructure lives in its own Infrastructure Folder; its container image is deployed by GitHub Actions, not by Terraform.
+A deployable workload running on ECS Fargate in each Environment: the six subgraph APIs, Arclight, and Plausible. Its infrastructure lives in its own Infrastructure Folder; its container image is deployed by GitHub Actions, not by Terraform. Plausible is the exception on both counts: no code in this repo, so its folder is `infrastructure/modules/plausible`, and it runs the published upstream image pinned by tag (and on ARM64, the only Graviton Service so far).
 _Avoid_: app (ambiguous — most `apps/*` deploy to Vercel, not ECS)
 
 **Infrastructure Folder**:
@@ -46,7 +46,7 @@ The `infrastructure/` directory inside a Service's own project (e.g. `apis/api-m
 A Service's runtime shape — CPU, memory, desired count, port, health check, autoscaling — defined in its Infrastructure Folder.
 
 **Public Service / Internal Service**:
-A Service's exposure class. Public Services (`api-gateway`, `arclight`) sit behind the public ALB and real hostnames; Internal Services (the other five APIs) sit behind the internal ALB and are reachable only inside the VPC as `<name>.service.internal`.
+A Service's exposure class. Public Services (`api-gateway`, `arclight`, `plausible`) sit behind the public ALB and real hostnames; Internal Services (the other five APIs) sit behind the internal ALB and are reachable only inside the VPC as `<name>.service.internal`. Plausible's prod hostname (`analytics.jesusfilm.org`) is the one public hostname whose DNS is in Cloudflare rather than Route53 and whose certificate is a per-hostname ACM certificate validated there by hand.
 _Avoid_: external/private (say Public/Internal to match the ALB names)
 
 **Deploy Surface**:
@@ -58,15 +58,15 @@ Where a deployable actually runs — ECS (the Services), Vercel (the Next.js fro
 The one Aurora PostgreSQL cluster per Environment (`jfp-core`) that all the Services' databases live in; its connection URL is published into Doppler, not consumed as a Terraform output.
 _Avoid_: "the RDS" / per-service database (there is one cluster, many logical databases)
 
+**Short-links ClickHouse**:
+One ClickHouse Cloud service per Environment (`jfp-short-links-<env>`, module `modules/clickhouse/service`; stage first, prod once stage has proven the setup) holding the short-link scan events the redirect Worker inserts and api-media reads. Terraform manages the service only: its address and admin password are published into Doppler (`core` project, `SHORT_LINKS_CLICKHOUSE_URL`, `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD`); the database, table and the two limited users come from the runbook in `workers/short-links-redirect/README.md`. It accepts connections from anywhere because Cloudflare Workers have no fixed egress addresses. The same service also holds Plausible's event database (`plausible_events_db`, `modules/plausible/README.md`).
+_Avoid_: "the ClickHouse" (say which database: the short-links one or Plausible's)
+
 **Doppler Token**:
 The per-Service, per-Environment secret handle: Terraform reads it from SSM and passes it to the task, which pulls its env vars from Doppler at runtime. Secrets never live in Terraform state or task definitions.
 
 **Bastion**:
 The SSH jump host (`bastion.central.jesusfilm.org`) for reaching internal resources (the Core Database, Redis); access is an IP allowlist of named individuals.
-
-**Platform Cluster**:
-The EKS cluster (`jfp-eks`) per Environment. It runs platform/ops tooling only (Plausible Analytics, cert-manager, Datadog, ingress) via Argo CD GitOps from `infrastructure/kube/` — no product Services run there. ECS is the product runtime; EKS is the ops runtime.
-_Avoid_: "the cluster" (ambiguous with the ECS cluster)
 
 ### Terminology traps
 

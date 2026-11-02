@@ -1,0 +1,38 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["node", "vitest/globals"],
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/short-links-admin/tsc/.tsbuildinfo",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strictNullChecks": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["*"],
+      "@core/shared/gql": ["../../../libs/shared/gql/src"]
+    },
+    "baseUrl": "./src"
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    ".next/types/**/*.ts",
+    "../../dist/apps/short-links-admin/.next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", "vitest.config.mts", ".next"]
+}
