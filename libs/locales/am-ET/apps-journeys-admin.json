@@ -1723,6 +1723,8 @@
   "Report": "Report",
   "Campaign Report": "Campaign Report",
   "Report dashboard": "Report dashboard",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)",
+  "Maximum file size: 10 MB": "Maximum file size: 10 MB",
   "Appears on <0>{{count}}</0> card_one": "በ<0>{{count}}</0> ካርድ ላይ ይታያል",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>ካርድ</1>",
