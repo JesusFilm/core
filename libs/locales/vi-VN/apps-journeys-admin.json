@@ -1723,6 +1723,8 @@
   "Report": "Báo cáo",
   "Campaign Report": "Báo cáo chiến dịch",
   "Report dashboard": "Bảng điều khiển báo cáo",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Loại tệp này không được chấp nhận. Vui lòng tải lên một trong các định dạng sau: (PNG, JPG, GIF, SVG, HEIC hoặc WebP)",
+  "Maximum file size: 10 MB": "Kích thước tệp tối đa: 10 MB",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cards</1>",
   "{{count}} visitors_other": "{{count}} khách truy cập",
