@@ -163,7 +163,9 @@ export function BackgroundVideo({
                   lg: 'scale(1.2)'
                 }
               : 'unset',
-            bottom: { xs: children.length !== 0 ? 50 : 0, lg: 0 }
+            // Offset applies to the xs (portrait) layout only. From sm up the card content
+            // sits beside the video, so an offset leaves a gap under the footer.
+            bottom: { xs: children.length !== 0 ? 50 : 0, sm: 0 }
           },
           '> .vjs-tech': {
             objectFit: videoFit,
