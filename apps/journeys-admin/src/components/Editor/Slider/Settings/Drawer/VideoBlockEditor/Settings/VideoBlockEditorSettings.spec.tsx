@@ -859,9 +859,8 @@ describe('VideoBlockEditorSettings', () => {
         </ThemeProvider>
       )
 
-      const switchInput = getByTestId('MuxSubtitleSwitch').querySelector(
-        'input'
-      )
+      const switchInput =
+        getByTestId('MuxSubtitleSwitch').querySelector('input')
       expect(switchInput).toBeDisabled()
       expect(switchInput).not.toBeChecked()
       expect(
