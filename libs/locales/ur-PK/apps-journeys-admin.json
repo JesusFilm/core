@@ -1723,6 +1723,8 @@
   "Report": "رپورٹ",
   "Campaign Report": "مہم کی رپورٹ",
   "Report dashboard": "رپورٹ ڈیش بورڈ",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "فائل کی قسم قبول نہیں کی گئی۔ براہ کرم درج ذیل میں سے کسی ایک کو اپ لوڈ کریں: (PNG, JPG, GIF, SVG, HEIC, یا WebP)",
+  "Maximum file size: 10 MB": "فائل کا زیادہ سے زیادہ سائز: 10 ایم بی",
   "Appears on <0>{{count}}</0> card_one": "<0>{{count}}</0> کارڈ پر ظاہر ہوتا ہے",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>کارڈ</1>",
