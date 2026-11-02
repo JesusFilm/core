@@ -1723,6 +1723,8 @@
   "Report": "Laporan",
   "Campaign Report": "Laporan Kampanye",
   "Report dashboard": "Dasbor laporan",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Jenis file tidak didukung. Silakan unggah salah satu dari format berikut: (PNG, JPG, GIF, SVG, HEIC, atau WebP)",
+  "Maximum file size: 10 MB": "Ukuran file maksimum: 10 MB",
   "Appears on <0>{{count}}</0> card_other": "Muncul di <0>{{count}}</0> kartu",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>kartu</1>",
   "{{count}} visitors_other": "{{count}} pengunjung",
