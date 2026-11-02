@@ -1723,6 +1723,8 @@
   "Report": "Тайлан",
   "Campaign Report": "Аяны тайлан",
   "Report dashboard": "Тайлангийн самбар",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Файлын төрөл хүлээн зөвшөөрөгдөхгүй байна. Дараах файлуудын аль нэгийг байршуулна уу: (PNG, JPG, GIF, SVG, HEIC эсвэл WebP)",
+  "Maximum file size: 10 MB": "Файлын хамгийн их хэмжээ: 10 МБ",
   "Appears on <0>{{count}}</0> card_one": "<0>{{count}}</0> карт дээр харагдана",
   "Appears on <0>{{count}}</0> card_other": "<0>{{count}}</0> карт дээр харагдана",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>карт</1>",
