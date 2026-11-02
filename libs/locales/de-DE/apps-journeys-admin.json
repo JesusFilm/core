@@ -1723,6 +1723,8 @@
   "Report": "Bericht",
   "Campaign Report": "Kampagnenbericht",
   "Report dashboard": "Berichts-Dashboard",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Dateiformat wird nicht unterstützt. Bitte lade eine der folgenden Dateiformate hoch: (PNG, JPG, GIF, SVG, HEIC oder WebP)",
+  "Maximum file size: 10 MB": "Maximale Dateigröße: 10 MB",
   "Appears on <0>{{count}}</0> card_one": "Erscheint auf <0>{{count}}</0> Karte",
   "Appears on <0>{{count}}</0> card_other": "Erscheint auf <0>{{count}}</0> Karte",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>Karte</1>",
