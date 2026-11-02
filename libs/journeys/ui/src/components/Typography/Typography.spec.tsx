@@ -1,3 +1,4 @@
+import { createTheme } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
 
 import {
@@ -11,6 +12,8 @@ import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated
 
 import { TypographyFields } from './__generated__/TypographyFields'
 import { Typography } from './Typography'
+
+const theme = createTheme()
 
 const block: TreeBlock<TypographyFields> = {
   __typename: 'TypographyBlock',
@@ -48,6 +51,42 @@ describe('Typography', () => {
       <Typography {...block} variant={TypographyVariant.caption} />
     )
     expect(getByText('Hello World!').tagName).toBe('P')
+  })
+
+  it('should apply a hex color from settings', () => {
+    render(
+      <Typography
+        {...block}
+        settings={{ __typename: 'TypographyBlockSettings', color: '#EBB109' }}
+      />
+    )
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: '#EBB109'
+    })
+  })
+
+  it('should fall back to the palette color when settings has no color', () => {
+    render(<Typography {...block} color={TypographyColor.error} />)
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: theme.palette.error.main
+    })
+  })
+
+  it('should use the disabled text color when content is empty', () => {
+    render(
+      <Typography
+        {...block}
+        content=""
+        placeholderText="Add your text here..."
+        settings={{ __typename: 'TypographyBlockSettings', color: '#EBB109' }}
+      />
+    )
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: theme.palette.text.disabled
+    })
   })
 
   it('should render placholder text if content is empty', () => {

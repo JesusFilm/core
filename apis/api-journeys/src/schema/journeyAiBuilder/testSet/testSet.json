@@ -1,0 +1,120 @@
+{
+  "_note": "DRAFT for Siyang to edit, then freeze (ENG-3768). Creates start from an empty draft. Edits start from a base journey in journeySchema/examples.ts: short, typical or media. expectRoute marks a behaviour check rather than a build. The YouTube links are placeholders: swap in real ministry videos.",
+  "creates": [
+    { "id": "create-01", "message": "A 5-step Easter journey for teens" },
+    { "id": "create-02", "message": "An Easter journey" },
+    {
+      "id": "create-03",
+      "message": "Introduce Jesus to university students in 4 cards, and end with a way for them to send a prayer request"
+    },
+    {
+      "id": "create-04",
+      "message": "A Christmas outreach journey for families. Start with this nativity video: https://www.youtube.com/watch?v=aqz-KE-bpKQ then ask what they thought of it"
+    },
+    {
+      "id": "create-05",
+      "message": "A follow-up journey for people who just watched the JESUS film: ask what they thought and offer next steps"
+    },
+    {
+      "id": "create-06",
+      "message": "A welcome journey for first-time visitors to our church: who we are, what Sunday looks like, and a way to tell us their name and email so we can say hi"
+    },
+    {
+      "id": "create-07",
+      "message": "A short devotional on Psalm 23 with one reflection question at the end"
+    },
+    {
+      "id": "create-08",
+      "message": "Help someone decide to follow Jesus. Explain the gospel simply, include a prayer they can pray, and a button saying 'I prayed this prayer'"
+    },
+    {
+      "id": "create-09",
+      "message": "A grief support journey: a few comforting verses, ask how they are feeling with a poll, and offer to talk by leaving their email"
+    },
+    {
+      "id": "create-10",
+      "message": "A quiz: how well do you know the Christmas story? Three poll questions, then a card with the answers"
+    },
+    {
+      "id": "create-11",
+      "message": "Youth camp interest check: which activities interest you (they can pick several), then their name and email"
+    },
+    {
+      "id": "create-12",
+      "message": "A calm 6-card journey on forgiveness for adults, light theme throughout"
+    },
+    {
+      "id": "create-13",
+      "message": "A respectful 5-card journey for Muslims who are curious about who Jesus is"
+    },
+    {
+      "id": "create-14",
+      "message": "A prayer request journey: what can we pray for (pick any), more details, and an optional email"
+    },
+    {
+      "id": "create-15",
+      "message": "Invite men to a Saturday breakfast at church: what to expect, why come, and RSVP with their name and email"
+    },
+    {
+      "id": "create-16",
+      "message": "A journey for people struggling with anxiety, with Bible verses and a link to read more at https://www.bible.com"
+    },
+    {
+      "id": "create-17",
+      "message": "Two cards: this video https://youtu.be/aqz-KE-bpKQ and then a question asking what stood out"
+    },
+    {
+      "id": "create-18",
+      "message": "Make me something",
+      "expectRoute": "ask"
+    }
+  ],
+  "edits": [
+    {
+      "id": "edit-01",
+      "base": "short",
+      "message": "Change the heading on the second card to 'Jesus made a bold claim'"
+    },
+    {
+      "id": "edit-02",
+      "base": "short",
+      "message": "Add a poll after the welcome asking how much they already know about Jesus"
+    },
+    { "id": "edit-03", "base": "short", "message": "Make the last card dark" },
+    {
+      "id": "edit-04",
+      "base": "typical",
+      "message": "Remove the email field"
+    },
+    {
+      "id": "edit-05",
+      "base": "typical",
+      "message": "Change the prayer frequency options to: Daily, Weekly, Rarely, Never"
+    },
+    {
+      "id": "edit-06",
+      "base": "typical",
+      "message": "Make it shorter, 3 cards at most"
+    },
+    {
+      "id": "edit-07",
+      "base": "typical",
+      "message": "Add 'Relationships' as a prayer topic"
+    },
+    {
+      "id": "edit-08",
+      "base": "media",
+      "message": "Swap the video for https://youtu.be/aqz-KE-bpKQ"
+    },
+    {
+      "id": "edit-09",
+      "base": "media",
+      "message": "Add a final card thanking them, with a button linking to https://www.jesusfilm.org/watch"
+    },
+    {
+      "id": "edit-10",
+      "base": "media",
+      "message": "Make the whole journey about Easter instead of Christmas"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+export { getPageRTL } from './getPageRTL'

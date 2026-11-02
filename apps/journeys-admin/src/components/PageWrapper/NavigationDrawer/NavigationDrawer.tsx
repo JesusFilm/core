@@ -17,6 +17,7 @@ import { ReactElement, Suspense, useState } from 'react'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
+import StarsIcon from '@core/shared/ui/icons/Stars'
 
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
@@ -172,6 +173,22 @@ export function NavigationDrawer({
           </ListItemIcon>
           <ListItemText
             primary={t('Templates')}
+            slotProps={{
+              primary: { style: { whiteSpace: 'nowrap' } }
+            }}
+          />
+        </ListItemButton>
+        <ListItemButton
+          LinkComponent={NextLink}
+          href="/ai-builder"
+          selected={selectedPage === 'ai-builder'}
+          data-testid="NavigationListItemAiBuilder"
+        >
+          <ListItemIcon>
+            <StarsIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary={t('AI Builder')}
             slotProps={{
               primary: { style: { whiteSpace: 'nowrap' } }
             }}

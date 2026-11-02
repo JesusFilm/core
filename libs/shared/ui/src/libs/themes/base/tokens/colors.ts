@@ -76,7 +76,7 @@ export const baseColorsLight = (): Required<
       MuiButtonGroup: {
         styleOverrides: {
           root: {
-            [`&.${buttonGroupClasses.contained}.${buttonGroupClasses.vertical} .${buttonGroupClasses.grouped}:not(:last-of-type)`]:
+            [`&.${buttonGroupClasses.contained}.${buttonGroupClasses.vertical} :is(.${buttonGroupClasses.firstButton}, .${buttonGroupClasses.middleButton})`]:
               {
                 borderBottom: `1px solid ${palette[700]}`
               }
@@ -168,7 +168,7 @@ export const baseColorsDark = (): Required<
       MuiButtonGroup: {
         styleOverrides: {
           root: {
-            [`&.${buttonGroupClasses.contained}.${buttonGroupClasses.vertical} .${buttonGroupClasses.grouped}:not(:last-of-type)`]:
+            [`&.${buttonGroupClasses.contained}.${buttonGroupClasses.vertical} :is(.${buttonGroupClasses.firstButton}, .${buttonGroupClasses.middleButton})`]:
               {
                 borderBottom: `1px solid ${palette[300]}`
               }

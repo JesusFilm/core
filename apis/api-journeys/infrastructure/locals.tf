@@ -1,6 +1,9 @@
 locals {
   port = 4004
-  environment_variables = [
+  # The prototype is staged only. Production does not require builder secrets.
+  environment_variables = concat(var.env == "stage" ? [
+    "QWEN_AI_JOURNEYS_KEY"
+    ] : [], [
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
     "CLOUDFLARE_ACCOUNT_ID",
@@ -58,7 +61,7 @@ locals {
     "VERCEL_JOURNEYS_PROJECT_ID",
     "VERCEL_TEAM_ID",
     "VERCEL_TOKEN"
-  ]
+  ])
   service_config = {
     name                              = "api-journeys-modern"
     doppler_project_name              = "api-journeys"
