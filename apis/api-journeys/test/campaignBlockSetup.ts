@@ -25,21 +25,22 @@ const authExecutor = getClient({
 })
 
 /**
- * The data `TDocument` selects. The subgraph's `graphql()` has no
- * introspection yet, so its documents yield `never` and this falls back to
- * `any`; it narrows by itself once the introspection is wired in.
+ * The data `TDocument` selects: `any`, for now, for every document. The
+ * subgraph's `graphql()` is declared with `introspection: any`
+ * (`src/lib/graphql/subgraphGraphql.ts`), so no document has a result type
+ * and `data` stays untyped until the subgraph introspection is wired in.
  */
 type DataOf<TDocument> = [ResultOf<TDocument>] extends [never]
   ? any
   : ResultOf<TDocument>
 
 /**
- * The response to `TDocument` as the campaign specs read it: `data` typed by
- * the document, `errors` read only by the cases that expect one.
+ * The response to `TDocument` as the campaign specs read it: `data` (untyped,
+ * see `DataOf`), and `errors` only when the operation failed.
  */
 export interface CampaignSpecResult<TDocument> {
   data: DataOf<TDocument>
-  errors: GraphQLFormattedError[]
+  errors?: GraphQLFormattedError[]
 }
 
 /** Runs `document` as the authenticated member of the campaign specs. */

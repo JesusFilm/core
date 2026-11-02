@@ -90,7 +90,7 @@ describe('campaignRegionUpdate', () => {
   it('requires a name (BAD_USER_INPUT, field name)', async () => {
     const result = await update({ name: '   ' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'name'
     })
@@ -100,7 +100,7 @@ describe('campaignRegionUpdate', () => {
   it('caps the name at 60 characters (BAD_USER_INPUT, field name)', async () => {
     const result = await update({ name: 'x'.repeat(61) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'name'
     })
@@ -134,19 +134,21 @@ describe('campaignRegionUpdate', () => {
   ])('rejects the reserved slug %s (%s)', async (slug) => {
     const result = await update({ slug })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'slug'
     })
   })
 
   it('rejects a malformed or over-long slug (BAD_USER_INPUT, field slug)', async () => {
-    expect((await update({ slug: '---' })).errors[0].extensions).toMatchObject({
+    expect(
+      (await update({ slug: '---' })).errors?.[0].extensions
+    ).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'slug'
     })
     expect(
-      (await update({ slug: 'x'.repeat(201) })).errors[0].extensions
+      (await update({ slug: 'x'.repeat(201) })).errors?.[0].extensions
     ).toMatchObject({ code: 'BAD_USER_INPUT', field: 'slug' })
   })
 
@@ -157,7 +159,7 @@ describe('campaignRegionUpdate', () => {
 
     const result = await update({ slug: 'afr' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'slug'
     })
@@ -172,7 +174,7 @@ describe('campaignRegionUpdate', () => {
 
     const result = await update({ slug: 'outreach-europe' })
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: expect.stringContaining('Outreach Europe'),
       extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
     })
@@ -188,7 +190,7 @@ describe('campaignRegionUpdate', () => {
 
       const result = await update({ slug: 'lac' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slug'
       })
@@ -214,7 +216,7 @@ describe('campaignRegionUpdate', () => {
 
     const result = await update({ name: 'Europe' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 
   it('throws NOT_FOUND for an unknown region', async () => {
@@ -222,7 +224,7 @@ describe('campaignRegionUpdate', () => {
 
     const result = await update({ name: 'Europe' }, 'missing')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   describe('revalidation', () => {

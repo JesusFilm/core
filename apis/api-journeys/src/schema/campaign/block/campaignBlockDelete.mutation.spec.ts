@@ -89,7 +89,7 @@ describe('campaignBlockDelete', () => {
 
       const result = await remove(id)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })
@@ -102,7 +102,7 @@ describe('campaignBlockDelete', () => {
 
     const result = await remove('gone')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -115,7 +115,7 @@ describe('campaignBlockDelete', () => {
 
     const result = await remove('footerTermsId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -205,7 +205,7 @@ describe('campaignBlockDelete', () => {
 
     const result = await remove('slotId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -224,7 +224,7 @@ describe('campaignBlockDelete', () => {
 
     const result = await remove('coverId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -253,7 +253,7 @@ describe('campaignBlockDelete', () => {
 
       const result = await remove(id)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })

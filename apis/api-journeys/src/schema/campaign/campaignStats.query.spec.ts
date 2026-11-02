@@ -436,7 +436,7 @@ describe('campaignStats', () => {
         variables: { id: 'campaignId' }
       })) as CampaignStatsFailure
 
-      expect(result.errors[0].extensions.code).toBe('NOT_FOUND')
+      expect(result.errors?.[0].extensions.code).toBe('NOT_FOUND')
       expect(mockAxios.get).not.toHaveBeenCalled()
     })
 
@@ -448,7 +448,7 @@ describe('campaignStats', () => {
         variables: { id: 'missing' }
       })) as CampaignStatsFailure
 
-      expect(result.errors[0].extensions.code).toBe('NOT_FOUND')
+      expect(result.errors?.[0].extensions.code).toBe('NOT_FOUND')
     })
   })
 

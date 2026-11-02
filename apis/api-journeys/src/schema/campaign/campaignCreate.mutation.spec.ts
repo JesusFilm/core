@@ -880,7 +880,7 @@ describe('campaignCreate', () => {
 
         const result = await create()
 
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'CONFLICT',
           field: 'slug'
         })

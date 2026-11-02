@@ -182,10 +182,10 @@ describe('campaignJourneyBlockCreate', () => {
 
     const result = await create('https://admin.nextstep.is/journeys/draftId')
 
-    expect(result.errors[0].message).toBe(
+    expect(result.errors?.[0].message).toBe(
       'Journey not found, or not published or archived'
     )
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'url'
     })
@@ -199,7 +199,7 @@ describe('campaignJourneyBlockCreate', () => {
   ])('rejects %s as not a journey link (BAD_USER_INPUT, url)', async (url) => {
     const result = await create(url)
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'url'
     })
@@ -215,7 +215,7 @@ describe('campaignJourneyBlockCreate', () => {
       'heroId'
     )
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'parentBlockId'
     })
@@ -230,7 +230,7 @@ describe('campaignJourneyBlockCreate', () => {
       'missing'
     )
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -241,7 +241,7 @@ describe('campaignJourneyBlockCreate', () => {
 
     const result = await create('https://admin.nextstep.is/journeys/journeyId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 })
