@@ -1723,6 +1723,8 @@
   "Report": "Informe",
   "Campaign Report": "Informe de campaña",
   "Report dashboard": "Panel de control de informes",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "No se admite este tipo de archivo. Sube uno de los siguientes: (PNG, JPG, GIF, SVG, HEIC o WebP)",
+  "Maximum file size: 10 MB": "Tamaño máximo del archivo: 10 MB",
   "Appears on <0>{{count}}</0> card_one": "Aparece en <0>{{count}}</0> tarjeta",
   "Appears on <0>{{count}}</0> card_other": "Aparece en <0>{{count}}</0> tarjetas",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>tarjeta</1>",
