@@ -7,7 +7,7 @@
  * Big plans (every create, big edits) are confirmed automatically with "Yes,
  * build it", as a user would type.
  *
- * Needs the api-journeys env (AI_GATEWAY_*, and GATEWAY_URL + INTEROP_TOKEN
+ * Needs the api-journeys env (QWEN_AI_JOURNEYS_KEY, and GATEWAY_URL + INTEROP_TOKEN
  * for images). From the repo root, with the env loaded, e.g.:
  *
  *   doppler run -p api-journeys -c dev -- pnpm exec tsx \
@@ -95,7 +95,7 @@ async function main(): Promise<void> {
 
   const model = getGatewayModel()
   if (model == null)
-    throw new Error('AI_GATEWAY_URL / AI_GATEWAY_API_KEY are not set')
+    throw new Error('QWEN_AI_JOURNEYS_KEY is not set')
 
   const testSet = JSON.parse(
     readFileSync(join(TEST_SET_DIR, 'testSet.json'), 'utf8')

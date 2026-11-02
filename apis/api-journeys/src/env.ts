@@ -11,10 +11,10 @@ export const env = createEnv({
     throw new Error('Invalid environment variables')
   },
   server: {
-    // AI journey builder (ENG-3766). Optional: api-journeys starts without
-    // them, and only the builder subscription reports that it isn't set up.
-    AI_GATEWAY_URL: z.string().trim().min(1).optional(),
-    AI_GATEWAY_API_KEY: z.string().trim().min(1).optional(),
+    // AI journey builder (ENG-3766). Only the key is required to enable it;
+    // api-journeys starts without it and the subscription reports not set up.
+    AI_GATEWAY_URL: z.url().default('https://ai-gateway.jesusfilm.org'),
+    QWEN_AI_JOURNEYS_KEY: z.string().trim().min(1).optional(),
     AI_GATEWAY_MODEL: z.string().trim().min(1).default('coding'),
     AI_JOURNEY_BUILDER_TIMEOUT_MS: z.coerce
       .number()
