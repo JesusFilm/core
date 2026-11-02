@@ -1723,6 +1723,8 @@
   "Report": "تقرير",
   "Campaign Report": "تقرير الحملة",
   "Report dashboard": "لوحة معلومات التقارير",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "نوع الملف غير مقبول. يرجى تحميل أحد الأنواع التالية: (PNG، JPG، GIF، SVG، HEIC، أو WebP)",
+  "Maximum file size: 10 MB": "الحجم الأقصى للملف: 10 ميغابايت",
   "Appears on <0>{{count}}</0> card_zero": "Appears on <0>{{count}}</0> cards",
   "Appears on <0>{{count}}</0> card_one": "يظهر على <0>{{count}}</0> البطاقة",
   "Appears on <0>{{count}}</0> card_two": "Appears on <0>{{count}}</0> cards",
