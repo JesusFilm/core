@@ -1723,6 +1723,8 @@
   "Report": "प्रतिवेदन",
   "Campaign Report": "अभियान प्रतिवेदन",
   "Report dashboard": "रिपोर्ट ड्यासबोर्ड",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "फाइल प्रकार स्वीकार गरिएको छैन। कृपया निम्नलिखित मध्ये कुनै एक अपलोड गर्नुहोस्: (PNG, JPG, GIF, SVG, HEIC, वा WebP)",
+  "Maximum file size: 10 MB": "अधिकतम फाइल आकार: १० एमबी",
   "Appears on <0>{{count}}</0> card_one": "<0>{{count}}मा देखा पर्दछ</0> कार्ड",
   "Appears on <0>{{count}}</0> card_other": "<0>{{count}}मा देखा पर्दछ</0> कार्ड",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>कार्ड</1>",
