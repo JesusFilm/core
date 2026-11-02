@@ -11,6 +11,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
 
 import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import File5Icon from '@core/shared/ui/icons/File5'
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
@@ -96,14 +97,15 @@ function PanelToggle({
 /**
  * The editor's left column of icon buttons: the back button to the campaigns
  * list, the Add, Pages, Navigator and Localize panel toggles (one panel always
- * open, docked beside the rail), and at the bottom undo, redo, the Desktop /
- * Phone view and the Publish button.
+ * open, docked beside the rail), the link to the Campaign Report, and at the
+ * bottom undo, redo, the Desktop / Phone view and the Publish button.
  * Undo and redo run the one Command history; the view toggle is never a
  * Command.
  */
 export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { run } = useTranslationRun()
+  const { campaign } = useCampaignEditor()
 
   function handleViewChange(
     _event: unknown,
@@ -163,6 +165,15 @@ export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
           icon={<TranslateIcon />}
           progress={run?.progress}
         />
+        <Tooltip title={t('Report')} placement="right" arrow>
+          <IconButton
+            component={NextLink}
+            href={`/campaigns/${campaign.id}/reports`}
+            aria-label={t('Report')}
+          >
+            <BarGroup3Icon />
+          </IconButton>
+        </Tooltip>
       </Stack>
       <Stack spacing={1} sx={{ alignItems: 'center' }}>
         <CommandUndoItem variant="icon-button" />

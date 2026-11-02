@@ -2,19 +2,33 @@ import { Logger } from 'pino'
 import { vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
-import {
-  journeyRow,
-  mockApolloClient,
-  mockMutate,
-  mockQuery,
-  qrCodeRow
-} from '../../../../test/qrCodeFixtures'
+import { journeyRow, qrCodeRow } from '../../../../test/qrCodeFixtures'
 
 import {
   REWRITE_BATCH_SIZE,
   updateAllShortLinks,
   updateJourneyShortLink
 } from './service'
+
+// The short-link rewrite talks to the gateway through an Apollo client: its
+// `shortLink` query and `shortLinkUpdate` mutation run through these mocks.
+const { mockQuery, mockMutate, mockApolloClient } = vi.hoisted(() => {
+  const query = vi.fn()
+  const mutate = vi.fn()
+  return {
+    mockQuery: query,
+    mockMutate: mutate,
+    mockApolloClient: vi.fn(function () {
+      return { query, mutate }
+    })
+  }
+})
+
+vi.mock('@apollo/client', () => ({
+  ApolloClient: mockApolloClient,
+  InMemoryCache: vi.fn(),
+  HttpLink: vi.fn()
+}))
 
 function shortLinkResult(to: string) {
   return {
@@ -55,7 +69,7 @@ describe('shortlinkUpdater service', () => {
         })
       ])
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
-        journeyRow({ slug: 'renamed' })
+        journeyRow({ slug: 'renamed' }) as never
       )
 
       await updateJourneyShortLink('journeyId', logger)
@@ -103,7 +117,9 @@ describe('shortlinkUpdater service', () => {
           shortLinkId: 'campaignShortLinkId'
         })
       ])
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
       mockMutate.mockRejectedValueOnce(new Error('gateway down'))
 
       await expect(
@@ -123,7 +139,9 @@ describe('shortlinkUpdater service', () => {
 
     it('logs a ZodError result and does not throw', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([qrCodeRow()])
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
       mockMutate.mockResolvedValue({
         data: { shortLinkUpdate: { __typename: 'ZodError', message: 'bad' } }
       })
@@ -148,7 +166,7 @@ describe('shortlinkUpdater service', () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
         journeyRow({
           customDomains: [{ name: 'team.org', routeAllTeamJourneys: false }]
-        })
+        }) as never
       )
       mockQuery.mockResolvedValue(
         shortLinkResult(
@@ -174,13 +192,15 @@ describe('shortlinkUpdater service', () => {
         })
       ])
       prismaMock.journey.findUniqueOrThrow
-        .mockResolvedValueOnce(journeyRow({ id: 'otherJourneyId', slug: 'a' }))
+        .mockResolvedValueOnce(
+          journeyRow({ id: 'otherJourneyId', slug: 'a' }) as never
+        )
         .mockResolvedValueOnce(
           journeyRow({
             id: 'teamBJourneyId',
             slug: 'b',
             customDomains: [{ name: 'b.org', routeAllTeamJourneys: true }]
-          })
+          }) as never
         )
 
       const count = await updateAllShortLinks(logger)
@@ -211,7 +231,9 @@ describe('shortlinkUpdater service', () => {
 
     it('uses the short link id as utm_campaign, not the QR code id', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([qrCodeRow()])
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
 
       await updateAllShortLinks(logger)
 
@@ -230,7 +252,9 @@ describe('shortlinkUpdater service', () => {
           })
         )
       )
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
       let inFlight = 0
       let maxInFlight = 0
       mockMutate.mockImplementation(async () => {
@@ -259,7 +283,7 @@ describe('shortlinkUpdater service', () => {
       ])
       prismaMock.journey.findUniqueOrThrow
         .mockRejectedValueOnce(new Error('No Journey found'))
-        .mockResolvedValueOnce(journeyRow())
+        .mockResolvedValueOnce(journeyRow() as never)
 
       const count = await updateAllShortLinks(logger)
 

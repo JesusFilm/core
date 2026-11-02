@@ -102,7 +102,7 @@ describe('campaignBlockUpdateLinkAction', () => {
     async (target) => {
       const result = await update({ url: 'https://example.com', target })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'target'
       })
@@ -115,7 +115,7 @@ describe('campaignBlockUpdateLinkAction', () => {
     async (url) => {
       const result = await update({ url })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'url'
       })
@@ -128,7 +128,7 @@ describe('campaignBlockUpdateLinkAction', () => {
       url: `https://example.com/${'a'.repeat(LINK_URL_MAX_LENGTH)}`
     })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'url'
     })
@@ -145,7 +145,7 @@ describe('campaignBlockUpdateLinkAction', () => {
       'footerCopyrightId'
     )
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'id'
     })
@@ -157,7 +157,7 @@ describe('campaignBlockUpdateLinkAction', () => {
 
     const result = await update({ url: 'https://example.com' }, 'ghostId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'ghostId', deletedAt: null } })
     )
@@ -173,7 +173,7 @@ describe('campaignBlockUpdateLinkAction', () => {
 
     const result = await update({ url: 'https://example.com' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignAction.upsert).not.toHaveBeenCalled()
   })
 })

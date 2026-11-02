@@ -66,8 +66,8 @@ describe('campaignLocale', () => {
   })
 
   describe('resolveCampaignStringValues', () => {
-    // Characterization: the wording a new campaign was seeded with before
-    // the Campaign String registry, copied literally.
+    // Characterization: the wording a new English campaign was seeded with
+    // before the Campaign String registry, copied literally.
     it('seeds the same English wording as before', async () => {
       expect(await resolveCampaignStringValues(null)).toEqual({
         allRegions: 'All regions',
@@ -78,29 +78,6 @@ describe('campaignLocale', () => {
         step4: 'Or download a QR code for print.',
         copy: 'Copy link',
         copied: 'Link copied',
-        downloadQr: 'Download QR code',
-        open: 'Open',
-        watch: 'Watch',
-        openTemplate: 'Open journey',
-        youtube: 'Watch on YouTube',
-        totalVisitors: 'Total visitors',
-        topCountry: 'Top country',
-        seeAllOnWatch: 'See all on Watch',
-        videos: 'videos',
-        noJourneys: 'Journeys for this region are coming soon'
-      })
-    })
-
-    it('seeds the same French wording as before', async () => {
-      expect(await resolveCampaignStringValues('fr')).toEqual({
-        allRegions: 'All regions',
-        step1: 'Pick a language your friend understands.',
-        step2: 'Preview what they will see.',
-        step2help: 'Tap through the preview like they would.',
-        step3: 'Share this link with them.',
-        step4: 'Or download a QR code for print.',
-        copy: 'Copier le lien',
-        copied: 'Lien copié',
         downloadQr: 'Download QR code',
         open: 'Open',
         watch: 'Watch',

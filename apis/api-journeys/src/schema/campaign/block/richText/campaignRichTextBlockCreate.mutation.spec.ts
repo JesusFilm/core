@@ -110,7 +110,7 @@ describe('campaignRichTextBlockCreate', () => {
 
       const result = await create({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -158,7 +158,7 @@ describe('campaignRichTextBlockCreate', () => {
 
       const result = await create({ parentBlockId: 'slotId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
       })
@@ -170,7 +170,7 @@ describe('campaignRichTextBlockCreate', () => {
 
       const result = await create({ parentBlockId: 'heroId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
       })
@@ -185,7 +185,7 @@ describe('campaignRichTextBlockCreate', () => {
 
     const result = await create({})
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 })

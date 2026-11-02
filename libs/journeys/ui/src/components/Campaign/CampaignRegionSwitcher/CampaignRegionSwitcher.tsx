@@ -5,9 +5,10 @@ import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { Children, ReactElement, ReactNode } from 'react'
+import { Children, MouseEvent, ReactElement, ReactNode } from 'react'
 
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
+import { useCampaignPlausible } from '../../../libs/campaignPlausible'
 import { campaignPageHref, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
@@ -201,9 +202,16 @@ function CampaignRegionCard({
   variant,
   href
 }: CampaignRegionCardProps): ReactElement {
+  const track = useCampaignPlausible()
+
+  function handleClick(event: MouseEvent<HTMLElement>): void {
+    track('campaignRegionClick', { targetRegion: region }, event)
+  }
+
   return (
     <ButtonBase
       href={href}
+      onClick={handleClick}
       data-testid={`CampaignRegionCard-${region.id}`}
       sx={regionFrameSx(variant)}
     >

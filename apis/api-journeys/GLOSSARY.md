@@ -356,7 +356,7 @@ A visitor-facing text field of a Campaign. Its default-language value sits on th
 _Avoid_: localised string, i18n key, label
 
 **Campaign String**:
-One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Each string names the sections that show it; the wording, keys and hosts live in one registry in `libs/journeys/ui` that the seed, the renderer and the editor read. Distinct from the editor's own chrome, which is admin i18n.
+One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Each string names the sections that show it; the wording, keys and hosts live in one registry in `libs/journeys/ui`, which the API seed, renderer and editor read. Distinct from the editor's own chrome, which is admin i18n.
 _Avoid_: UI string, i18n string, interface key
 
 **Machine Translation**:
@@ -391,7 +391,11 @@ _Avoid_: block renderer (that is the Journey one), template, layout engine
 
 **Campaign Stats**:
 The visitor numbers a Campaign shows: for each Share Language Journey that is not trashed (published, archived and draft alike), its unique visitors by country over all time (the sweep starts at a fixed early date, and the public tile says "all time"), read from that Journey's own **Plausible** site and summed along the Campaign's region and language structure into landing, region and country totals. One cached sweep serves anyone once the Campaign is published and its team while a draft, and a visitor who opens two Share Language Journeys counts in both.
-_Avoid_: analytics (too broad; the section is the Analytics section, the data is Campaign Stats), views (the metric is visitors), per-region stats (there is one sweep, scoped on read)
+_Avoid_: analytics (too broad; the section is the Analytics section, the data is Campaign Stats), views (the metric is visitors), per-region stats (there is one sweep, scoped on read), site traffic (that is the Campaign's own Plausible site)
+
+**Campaign Plausible site**:
+The Plausible site a Campaign reports to on its own, `api-journeys-campaign-<campaignId>`, created by the plausible worker once `campaignCreate` commits. Its id, page props and events are defined once in journeys-ui (`campaignPlausibleSite`), from which its goals (every campaign event plus `Outbound Link: Click`) and the props its dashboard may show (`campaignAllowedProps`; Plausible stores every prop but shows only allowed ones) are derived. The startup backfill creates the site of every Campaign that has none, then brings every existing campaign site's allowed props up to date in one api-analytics call (`sitesAllowEventProps`), which finds the sites lacking one in a single query; its shared-link token is `Campaign.plausibleToken`, readable with campaign Read and never on Campaign Public. The Campaign Public Page reports every view and event to it and to its Team's site; the admin's Campaign Report embeds its dashboard, so no query of this API reads its numbers. It counts from its creation and outlives the Campaign, as a Journey's site does.
+_Avoid_: campaign stats (those are the Share Language Journeys' visitors), team site (the Team's own roll-up site, which also gets these views)
 
 ### Account deletion
 

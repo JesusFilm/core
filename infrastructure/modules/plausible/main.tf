@@ -1,13 +1,12 @@
 # Plausible Analytics as an ECS Fargate Service on ARM64 (Graviton), from the
-# upstream community-edition image, behind the environment's public ALB. It
-# replaces the Helm deployment on the EKS Platform Cluster; the cutover per
-# environment and the rollback are in README.md. Plan:
+# upstream community-edition image, behind the environment's public ALB.
+# README.md is the runbook. Plan:
 # docs/plans/2026-10-14-002-feat-plausible-on-ecs-graviton-plan.md.
 #
 # Its two databases are elsewhere, both read from Doppler: PostgreSQL in the
 # Core Database (Aurora, DATABASE_URL) and the event store (CLICKHOUSE_DATABASE_URL)
 # in the environment's ClickHouse Cloud service, database plausible_events_db
-# (clickhouse-cloud/ has its schema and users; README.md has the move from EKS).
+# (clickhouse-cloud/ has its schema and user).
 
 module "ecs-task" {
   source                = "../aws/ecs-task"
@@ -25,9 +24,8 @@ module "ecs-task" {
   # ECR repository (jfp-plausible-<env>) is created anyway and stays empty.
   image = "ghcr.io/plausible/community-edition:${var.plausible_version}"
 
-  # What the Helm chart's init container did: create the ClickHouse database
-  # if missing, run both repos' migrations, then serve. Against the existing
-  # EKS database, and later the prepared Cloud tenant, the first two are no-ops.
+  # Create the ClickHouse database if missing, run both repos' migrations,
+  # then serve. Against a prepared database the first two are no-ops.
   command = ["sh", "-c", "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"]
 
   cpu_architecture = "ARM64"
