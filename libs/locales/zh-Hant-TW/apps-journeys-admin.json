@@ -1723,6 +1723,8 @@
   "Report": "報告",
   "Campaign Report": "活動報告",
   "Report dashboard": "報告儀表板",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "不接受此檔案類型。請上傳以下其中一種檔案格式：(PNG、JPG、GIF、SVG、HEIC 或 WebP)",
+  "Maximum file size: 10 MB": "最大檔案大小：10 MB",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cards</1>",
   "{{count}} visitors_other": "{{count}} 訪客",
