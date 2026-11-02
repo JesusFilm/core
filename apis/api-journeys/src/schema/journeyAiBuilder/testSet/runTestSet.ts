@@ -94,8 +94,7 @@ async function main(): Promise<void> {
   const withImages = !args.includes('--no-images')
 
   const model = getGatewayModel()
-  if (model == null)
-    throw new Error('QWEN_AI_JOURNEYS_KEY is not set')
+  if (model == null) throw new Error('QWEN_AI_JOURNEYS_KEY is not set')
 
   const testSet = JSON.parse(
     readFileSync(join(TEST_SET_DIR, 'testSet.json'), 'utf8')
