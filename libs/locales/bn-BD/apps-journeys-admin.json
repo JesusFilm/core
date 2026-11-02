@@ -1723,6 +1723,8 @@
   "Report": "প্রতিবেদন",
   "Campaign Report": "প্রচার প্রতিবেদন",
   "Report dashboard": "রিপোর্ট ড্যাশবোর্ড",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "ফাইল ধরন গ্রহণযোগ্য নয়। অনুগ্রহ করে নিম্নলিখিতগুলির মধ্যে একটি আপলোড করুন: (PNG, JPG, GIF, SVG, HEIC, বা WebP)",
+  "Maximum file size: 10 MB": "সর্বোচ্চ ফাইল আকার: ১০ এমবি",
   "Appears on <0>{{count}}</0> card_one": "<0>{{count}}</0>টি কার্ডে প্রদর্শিত হয়",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>কার্ড</1>",
