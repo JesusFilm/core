@@ -1723,6 +1723,8 @@
   "Report": "Rapor",
   "Campaign Report": "Kampanya Raporu",
   "Report dashboard": "Rapor panosu",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Bu dosya türü kabul edilmiyor. Lütfen aşağıdakilerden birini yükleyin: (PNG, JPG, GIF, SVG, HEIC veya WebP)",
+  "Maximum file size: 10 MB": "Maksimum dosya boyutu: 10 MB",
   "Appears on <0>{{count}}</0> card_one": "Üzerinde görünür <0>{{count}}</0> kart",
   "Appears on <0>{{count}}</0> card_other": "Üzerinde görünür <0>{{count}}</0> kartlar",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>kart</1>",
