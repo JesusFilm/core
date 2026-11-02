@@ -70,6 +70,10 @@ export function VideoBlockEditorSettings({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const isWebsite = journey?.website === true
+  // A card's background video has no parent order. Its player always mutes,
+  // autoplays and hides captions, so those settings are locked here.
+  const isBackgroundVideo =
+    selectedBlock != null && selectedBlock.parentOrder == null
   const { enqueueSnackbar } = useSnackbar()
 
   // Fetch closed captions using custom hook
@@ -154,19 +158,29 @@ export function VideoBlockEditorSettings({
             <Typography
               variant="subtitle2"
               sx={{
-                color: selectedBlock == null ? 'action.disabled' : undefined
+                color:
+                  selectedBlock == null || isBackgroundVideo
+                    ? 'action.disabled'
+                    : undefined
               }}
             >
               {t('Subtitles')}
             </Typography>
             <YouTubeSubtitleSelector
-              selectedSubtitleId={values.subtitleLanguageId}
+              selectedSubtitleId={
+                isBackgroundVideo ? null : values.subtitleLanguageId
+              }
               availableLanguages={availableSubtitles}
               onChange={async (subtitleLanguageId) => {
                 await setFieldValue('subtitleLanguageId', subtitleLanguageId)
               }}
-              disabled={selectedBlock == null}
+              disabled={selectedBlock == null || isBackgroundVideo}
             />
+            {isBackgroundVideo && (
+              <Typography variant="caption" sx={{ color: 'action.disabled' }}>
+                {t('Subtitles are not available for background videos')}
+              </Typography>
+            )}
             <Divider />
           </Stack>
         )}
@@ -182,6 +196,7 @@ export function VideoBlockEditorSettings({
                   : null
               }
               journeyLanguageBcp47={journey?.language.bcp47}
+              disabled={isBackgroundVideo}
               onChange={async (showGeneratedSubtitles) => {
                 await setValues(
                   {
@@ -195,6 +210,11 @@ export function VideoBlockEditorSettings({
                 )
               }}
             />
+            {isBackgroundVideo && (
+              <Typography variant="caption" sx={{ color: 'action.disabled' }}>
+                {t('Subtitles are not available for background videos')}
+              </Typography>
+            )}
             <Divider />
           </Stack>
         )}

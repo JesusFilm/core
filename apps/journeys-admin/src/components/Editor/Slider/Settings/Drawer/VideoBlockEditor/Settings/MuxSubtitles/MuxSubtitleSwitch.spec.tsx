@@ -314,6 +314,40 @@ describe('MuxSubtitleSwitch', () => {
     })
   })
 
+  it('locks switch off when disabled, even with showGeneratedSubtitles true', async () => {
+    validateMuxLanguage.mockReturnValue(false)
+    const videoBlockWithSubtitles: TreeBlock<VideoBlock> = {
+      ...mockVideoBlock,
+      showGeneratedSubtitles: true
+    }
+
+    render(
+      <MockedProvider mocks={[]}>
+        <EditorProvider
+          initialState={{ selectedBlock: videoBlockWithSubtitles }}
+        >
+          <MuxSubtitleSwitch
+            videoBlockId="video-1"
+            muxVideoId="mux-video-id"
+            journeyLanguageBcp47="ja"
+            onChange={mockOnChange}
+            disabled
+          />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const switchElement = screen.getByRole('switch')
+    expect(switchElement).not.toBeChecked()
+    expect(switchElement).toBeDisabled()
+    expect(
+      screen.queryByText('Subtitles not available for this video language')
+    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(mockOnChange).not.toHaveBeenCalled()
+    })
+  })
+
   it('calls onChange with true when switch is toggled on', async () => {
     mockOnChange.mockResolvedValue(undefined)
 

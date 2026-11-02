@@ -12,6 +12,9 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
+import { getYouTubePlayer } from '../../../Video/utils/getYouTubePlayer'
+import { unloadYouTubeCaptions } from '../../../Video/utils/unloadYouTubeCaptions'
+import VideoJsPlayer from '../../../Video/utils/videoJsTypes'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
@@ -116,6 +119,40 @@ export function BackgroundVideo({
       })
     }
   }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
+
+  // Background videos never show captions, whatever the source or subtitle
+  // setting: like muted and autoplay, they have no controls to change it
+  useEffect(() => {
+    const player = playerRef.current as VideoJsPlayer | null
+    if (player == null) return
+
+    // Streams bring their own tracks (e.g. iOS Safari auto-selects the
+    // AUTOSELECT=YES track in Mux and library HLS manifests), so turn every
+    // track off as it arrives and whenever the browser switches one on
+    const textTracks = player.textTracks?.()
+    const disableCaptions = (): void => {
+      if (textTracks == null) return
+      for (let i = 0; i < textTracks.length; i++) {
+        const track = textTracks[i]
+        if (track.kind !== 'subtitles' && track.kind !== 'captions') continue
+        if (track.mode !== 'disabled') track.mode = 'disabled'
+      }
+    }
+    // YouTube draws captions inside its iframe, outside video.js text tracks
+    const unloadCaptions = (): void => {
+      if (isYouTube) unloadYouTubeCaptions(getYouTubePlayer(player))
+    }
+
+    disableCaptions()
+    textTracks?.addEventListener('addtrack', disableCaptions)
+    textTracks?.addEventListener('change', disableCaptions)
+    player.on('playing', unloadCaptions)
+    return () => {
+      textTracks?.removeEventListener('addtrack', disableCaptions)
+      textTracks?.removeEventListener('change', disableCaptions)
+      player.off('playing', unloadCaptions)
+    }
+  }, [isYouTube])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()

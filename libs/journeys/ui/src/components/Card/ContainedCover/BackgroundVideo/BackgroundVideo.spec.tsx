@@ -71,6 +71,7 @@ const video: TreeBlock<VideoFields> = {
 const playerRefMock = {
   current: null,
   on: vi.fn(),
+  off: vi.fn(),
   ready: vi.fn(),
   currentTime: vi.fn(),
   play: vi.fn(),
@@ -100,6 +101,125 @@ describe('BackgroundVideo', () => {
       )
 
       // Jest height/width are not rendered by jest dom for testing
+    })
+
+    describe('captions', () => {
+      function mockTextTracks(
+        tracks: Array<Pick<TextTrack, 'kind' | 'mode'>>
+      ): typeof tracks & {
+        addEventListener: ReturnType<typeof vi.fn>
+        removeEventListener: ReturnType<typeof vi.fn>
+      } {
+        const textTracks = Object.assign(tracks, {
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn()
+        })
+        vi.mocked(videojs).mockReturnValue({
+          ...playerRefMock,
+          textTracks: () => textTracks
+        } as unknown as Player)
+        return textTracks
+      }
+
+      it('should turn off every subtitle and caption track', () => {
+        const textTracks = mockTextTracks([
+          { kind: 'captions', mode: 'showing' },
+          { kind: 'subtitles', mode: 'hidden' },
+          { kind: 'metadata', mode: 'hidden' }
+        ])
+
+        render(
+          <BackgroundVideo setLoading={vi.fn()} cardColor="black" {...video} />
+        )
+
+        expect(textTracks.map(({ mode }) => mode)).toEqual([
+          'disabled',
+          'disabled',
+          'hidden'
+        ])
+      })
+
+      it('should keep captions off when mux subtitles are turned on', () => {
+        const textTracks = mockTextTracks([
+          { kind: 'captions', mode: 'showing' },
+          { kind: 'subtitles', mode: 'showing' }
+        ])
+
+        render(
+          <BackgroundVideo
+            setLoading={vi.fn()}
+            cardColor="black"
+            {...video}
+            source={VideoBlockSource.mux}
+            showGeneratedSubtitles
+          />
+        )
+
+        expect(textTracks.map(({ mode }) => mode)).toEqual([
+          'disabled',
+          'disabled'
+        ])
+      })
+
+      it('should turn off tracks the stream adds later', () => {
+        const textTracks = mockTextTracks([])
+
+        render(
+          <BackgroundVideo setLoading={vi.fn()} cardColor="black" {...video} />
+        )
+
+        textTracks.push({ kind: 'subtitles', mode: 'showing' })
+        const handleAddTrack = textTracks.addEventListener.mock.calls.find(
+          ([event]) => event === 'addtrack'
+        )?.[1]
+        handleAddTrack()
+
+        expect(textTracks[0].mode).toBe('disabled')
+      })
+
+      it('should turn captions back off when the browser switches one on', () => {
+        const textTracks = mockTextTracks([
+          { kind: 'captions', mode: 'disabled' }
+        ])
+
+        render(
+          <BackgroundVideo setLoading={vi.fn()} cardColor="black" {...video} />
+        )
+
+        textTracks[0].mode = 'showing'
+        const handleChange = textTracks.addEventListener.mock.calls.find(
+          ([event]) => event === 'change'
+        )?.[1]
+        handleChange()
+
+        expect(textTracks[0].mode).toBe('disabled')
+      })
+
+      it('should unload youtube captions when the video plays', () => {
+        const unloadModule = vi.fn()
+        const on = vi.fn()
+        vi.mocked(videojs).mockReturnValue({
+          ...playerRefMock,
+          on,
+          tech: () => ({ ytPlayer: { unloadModule } })
+        } as unknown as Player)
+
+        render(
+          <BackgroundVideo
+            setLoading={vi.fn()}
+            cardColor="black"
+            {...video}
+            source={VideoBlockSource.youTube}
+            mediaVideo={null}
+          />
+        )
+
+        on.mock.calls
+          .filter(([event]) => event === 'playing')
+          .forEach(([, handlePlaying]) => handlePlaying())
+
+        expect(unloadModule).toHaveBeenCalledWith('captions')
+      })
     })
   })
 })
