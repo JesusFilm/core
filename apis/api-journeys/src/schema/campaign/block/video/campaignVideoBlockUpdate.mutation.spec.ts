@@ -135,7 +135,7 @@ describe('campaignVideoBlockUpdate', () => {
       prismaMock.campaignBlock.update.mockClear()
       const result = await update({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -205,7 +205,7 @@ describe('campaignVideoBlockUpdate', () => {
 
     const result = await update({ title: null })
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message:
         "YouTube is unavailable right now, so the video's original text can't be restored. Try again later.",
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
@@ -223,7 +223,7 @@ describe('campaignVideoBlockUpdate', () => {
 
     const result = await update({ description: null })
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'videoId cannot be found on YouTube',
       extensions: { code: 'NOT_FOUND' }
     })
@@ -261,7 +261,7 @@ describe('campaignVideoBlockUpdate', () => {
 
     const result = await update({ title: 'x' }, 'heroId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -276,7 +276,7 @@ describe('campaignVideoBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

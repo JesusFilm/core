@@ -151,10 +151,9 @@ describe('campaignImageBlockCreate', () => {
       expect(transformInput).not.toHaveBeenCalled()
       expect(
         sortBy(
-          prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => [
-            call.where.id,
-            call.data.parentOrder
-          ]),
+          vi
+            .mocked(prismaMock.campaignBlock.update)
+            .mock.calls.map(([call]) => [call.where.id, call.data.parentOrder]),
           ([, parentOrder]) => parentOrder
         )
       ).toEqual([
@@ -199,7 +198,7 @@ describe('campaignImageBlockCreate', () => {
         scale: 250
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'scale'
       })
@@ -211,7 +210,7 @@ describe('campaignImageBlockCreate', () => {
 
       const result = await create({ pageId: 'missing', src: SRC })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'pageId'
       })
@@ -236,7 +235,7 @@ describe('campaignImageBlockCreate', () => {
       async (src) => {
         const result = await create({ pageId: 'landingPageId', src })
 
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'BAD_USER_INPUT',
           field: 'src'
         })
@@ -250,7 +249,7 @@ describe('campaignImageBlockCreate', () => {
 
       const result = await create({ pageId: 'landingPageId', src: SRC })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'src'
       })
@@ -263,7 +262,7 @@ describe('campaignImageBlockCreate', () => {
         alt: 'x'.repeat(501)
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'alt'
       })
@@ -278,7 +277,7 @@ describe('campaignImageBlockCreate', () => {
         { pageId: 'landingPageId', parentBlockId: 'heroId', src: SRC }
       ]) {
         const result = await create(input)
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'BAD_USER_INPUT',
           field: 'pageId'
         })
@@ -388,7 +387,7 @@ describe('campaignImageBlockCreate', () => {
         scale: 250
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'scale'
       })
@@ -445,7 +444,7 @@ describe('campaignImageBlockCreate', () => {
         src: SRC
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'logoBlockId'
       })
@@ -457,14 +456,14 @@ describe('campaignImageBlockCreate', () => {
         fixture.blocks.find((block) => block.id === 'heroButtonId')!
       )
       const extra = await create({ parentBlockId: 'heroButtonId', src: SRC })
-      expect(extra.errors[0].extensions).toMatchObject({
+      expect(extra.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
       })
 
       prismaMock.campaignBlock.findFirst.mockResolvedValueOnce(null)
       const missing = await create({ parentBlockId: 'elsewhere', src: SRC })
-      expect(missing.errors[0].extensions).toMatchObject({
+      expect(missing.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
       })
@@ -479,7 +478,7 @@ describe('campaignImageBlockCreate', () => {
 
     const result = await create({ pageId: 'landingPageId', src: SRC })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 
@@ -488,6 +487,6 @@ describe('campaignImageBlockCreate', () => {
 
     const result = await create({ campaignId: 'missing', pageId: 'p' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

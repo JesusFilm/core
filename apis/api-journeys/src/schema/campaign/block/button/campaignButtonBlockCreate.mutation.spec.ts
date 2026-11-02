@@ -135,7 +135,7 @@ describe('campaignButtonBlockCreate', () => {
   it('caps the label at 60 characters (BAD_USER_INPUT, label)', async () => {
     const result = await create({ label: 'x'.repeat(61) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'label'
     })
@@ -147,7 +147,7 @@ describe('campaignButtonBlockCreate', () => {
     async (field) => {
       const result = await create({ [field]: 'rgb(1,2,3)' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -161,7 +161,7 @@ describe('campaignButtonBlockCreate', () => {
 
     const result = await create({ parentBlockId: 'navHomeId' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'parentBlockId'
     })
@@ -174,7 +174,7 @@ describe('campaignButtonBlockCreate', () => {
 
     const result = await create({})
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 
   describe('the client-chosen id', () => {
@@ -184,7 +184,7 @@ describe('campaignButtonBlockCreate', () => {
     ])('refuses an id that is %s (BAD_USER_INPUT, id)', async (_label, id) => {
       const result = await create({ id })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'id must be a UUID',
         extensions: { code: 'BAD_USER_INPUT', field: 'id' }
       })
@@ -198,7 +198,7 @@ describe('campaignButtonBlockCreate', () => {
         id: '0f2b4c6d-8e9f-4a1b-9c2d-3e4f5a6b7c8d'
       })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'id is already taken',
         extensions: { code: 'BAD_USER_INPUT', field: 'id' }
       })
