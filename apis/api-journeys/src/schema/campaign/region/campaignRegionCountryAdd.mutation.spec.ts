@@ -10,7 +10,10 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
-import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { fetchCountry } from '../gatewayClient'
@@ -18,6 +21,8 @@ import { fetchCountry } from '../gatewayClient'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 vi.mock('../gatewayClient', () => ({ fetchCountry: vi.fn() }))
 
@@ -48,9 +53,11 @@ describe('campaignRegionCountryAdd', () => {
   `)
 
   let fixture: CampaignFixture
+  let writes: CampaignWriteCall[]
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     fixture = campaignFactory().withRegion('EUR').build()
     mockFetchCountry.mockResolvedValue({ id: 'FR' })
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
@@ -93,10 +100,14 @@ describe('campaignRegionCountryAdd', () => {
         data: { regionId: 'eurRegionId', countryId: 'FR', order: 1 }
       })
     )
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-      where: { id: 'campaignId' },
-      data: { updatedAt: expect.any(Date) }
-    })
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { structure: true },
+        jobs: [],
+        touched: true
+      }
+    ])
   })
 
   it('rejects a country api-languages does not know (BAD_USER_INPUT, field countryId)', async () => {
@@ -104,7 +115,7 @@ describe('campaignRegionCountryAdd', () => {
 
     const result = await add('XX')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'countryId'
     })
@@ -114,7 +125,7 @@ describe('campaignRegionCountryAdd', () => {
   it('rejects the same country twice (BAD_USER_INPUT, field countryId)', async () => {
     const result = await add('DE')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'countryId'
     })
@@ -129,7 +140,7 @@ describe('campaignRegionCountryAdd', () => {
 
     const result = await add('FR')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'countryId'
     })
@@ -145,16 +156,15 @@ describe('campaignRegionCountryAdd', () => {
         )
     }
 
-    it('takes the structure lock before it re-reads the countries, and appends after them', async () => {
+    it('re-reads the countries under the structure lock, and appends after them', async () => {
       committedRows(['DE', 'IT'])
 
       const result = await add('FR')
 
       expect(result.data.campaignRegionCountryAdd.order).toBe(2)
-      expectStructureLockFirst()
-      expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-        prismaMock.campaignRegionCountry.findMany.mock.invocationCallOrder[1]
-      )
+      expect(writes.map(({ declaration }) => declaration)).toEqual([
+        { structure: true }
+      ])
       expect(prismaMock.campaignRegionCountry.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: { regionId: 'eurRegionId', countryId: 'FR', order: 2 }
@@ -167,7 +177,7 @@ describe('campaignRegionCountryAdd', () => {
 
       const result = await add('FR')
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'countryId'
       })
@@ -179,7 +189,7 @@ describe('campaignRegionCountryAdd', () => {
 
       const result = await add('FR')
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'countryId'
       })
@@ -197,7 +207,7 @@ describe('campaignRegionCountryAdd', () => {
 
     const result = await add('FR')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 
   it('throws NOT_FOUND for an unknown region', async () => {
@@ -205,6 +215,6 @@ describe('campaignRegionCountryAdd', () => {
 
     const result = await add('FR')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

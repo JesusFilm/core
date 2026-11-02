@@ -89,7 +89,7 @@ describe('campaignHeroBlockUpdate', () => {
 
       const result = await update({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -116,7 +116,7 @@ describe('campaignHeroBlockUpdate', () => {
     async (minHeight) => {
       const result = await update({ minHeight })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'minHeight'
       })
@@ -145,7 +145,7 @@ describe('campaignHeroBlockUpdate', () => {
 
       for (const bad of ['', 'red']) {
         const result = await update({ [column]: bad })
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'BAD_USER_INPUT',
           field: column
         })
@@ -178,7 +178,7 @@ describe('campaignHeroBlockUpdate', () => {
     async (field, value, enumName) => {
       const result = await update({ [field]: value })
 
-      expect(result.errors[0].message).toContain(
+      expect(result.errors?.[0].message).toContain(
         `Value "${value}" does not exist in "${enumName}" enum`
       )
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
@@ -212,7 +212,9 @@ describe('campaignHeroBlockUpdate', () => {
         select: { id: true, typename: true }
       })
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => call)
       ).toEqual([
         { where: { id: 'heroImageId' }, data: { deletedAt: expect.any(Date) } },
         { where: { id: 'heroVideoId' }, data: { deletedAt: null } },
@@ -235,7 +237,7 @@ describe('campaignHeroBlockUpdate', () => {
 
       const result = await update({ mediaBlockId: 'heroButtonId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'mediaBlockId'
       })
@@ -250,7 +252,7 @@ describe('campaignHeroBlockUpdate', () => {
 
     const result = await update({ title: 'x' }, 'carouselId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -264,6 +266,6 @@ describe('campaignHeroBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 })

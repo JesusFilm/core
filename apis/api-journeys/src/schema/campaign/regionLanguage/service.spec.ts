@@ -52,6 +52,7 @@ describe('createRegionLanguageQrCode', () => {
       where: { id: 'qrCodeId' },
       data: { shortLinkUrl: `https://short.example.org/${shortLinkId}` }
     })
+    // Not lock order: the short link exists before its address is saved.
     expect(vi.mocked(createShortLink).mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.qrCode.update.mock.invocationCallOrder[0]
     )

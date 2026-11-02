@@ -17,6 +17,7 @@ import {
   updateShortLink
 } from '../../qrCode/qrCode.service'
 import { campaignAcl } from '../campaign.acl'
+import { CampaignWriteStep } from '../campaignWrite'
 import { forbidden, notFound } from '../errors'
 import { renumber } from '../order'
 import { INCLUDE_CAMPAIGN_REGION_ACL } from '../region/service'
@@ -57,28 +58,13 @@ export async function authorizeRegionLanguageUpdate(
 }
 
 /**
- * A short-link gateway call held back to the end of the transaction that
- * decides it, with the call that undoes it. The gateway cannot roll back with
- * the database: running the call last means a failed call rolls the
- * transaction back with nothing changed, and `revert` restores the gateway
- * should the commit itself then fail.
+ * A short-link gateway call held back to the end of the Campaign Write that
+ * decides it (its external step), with the call that undoes it. The gateway
+ * cannot roll back with the database: running the call last means a failed
+ * call rolls the write back with nothing changed, and `revert` restores the
+ * gateway should the commit itself then fail.
  */
-export interface ShortLinkStep {
-  apply: () => Promise<void>
-  revert: () => Promise<void>
-}
-
-/**
- * Take the row lock that serialises concurrent mutations of one Share
- * Language, so a second "Use this journey" waits and re-reads `qrCodeId`
- * instead of minting a second QR row and short link.
- */
-export async function lockRegionLanguage(
-  tx: Prisma.TransactionClient,
-  id: string
-): Promise<void> {
-  await tx.$queryRaw`SELECT "id" FROM "CampaignRegionLanguage" WHERE "id" = ${id} FOR UPDATE`
-}
+export type ShortLinkStep = CampaignWriteStep
 
 /**
  * Create the Campaign QR Code for a freshly linked journey: a `QrCode` row in

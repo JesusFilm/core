@@ -114,7 +114,9 @@ describe('campaignHeaderBlockUpdate', () => {
       select: { id: true, typename: true }
     })
     expect(
-      prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+      vi
+        .mocked(prismaMock.campaignBlock.update)
+        .mock.calls.map(([call]) => call)
     ).toEqual([
       { where: { id: 'oldLogoId' }, data: { deletedAt: expect.any(Date) } },
       { where: { id: 'logoId' }, data: { deletedAt: null } },
@@ -157,7 +159,7 @@ describe('campaignHeaderBlockUpdate', () => {
 
     const result = await update({ logoBlockId: 'heroId' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'logoBlockId'
     })
@@ -167,7 +169,7 @@ describe('campaignHeaderBlockUpdate', () => {
   it('rejects a bad colour with the column as field (BAD_USER_INPUT)', async () => {
     const result = await update({ textColor: 'red' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'textColor'
     })
@@ -181,7 +183,7 @@ describe('campaignHeaderBlockUpdate', () => {
 
     const result = await update({ backgroundKind: 'surface' }, 'footerId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -195,7 +197,7 @@ describe('campaignHeaderBlockUpdate', () => {
 
     const result = await update({ backgroundKind: 'surface' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

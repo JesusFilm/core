@@ -129,6 +129,13 @@ function styleText(): string {
     .join('')
 }
 
+const { track } = vi.hoisted(() => ({ track: vi.fn() }))
+
+vi.mock('../../../libs/campaignPlausible', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../libs/campaignPlausible')>()),
+  useCampaignPlausible: () => track
+}))
+
 describe('CampaignRegionShare', () => {
   beforeAll(() => {
     Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
@@ -432,5 +439,76 @@ describe('CampaignRegionShare', () => {
         })
       ).toBe(true)
     })
+  })
+})
+
+describe('CampaignRegionShare events', () => {
+  beforeAll(() => {
+    Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+      value: vi.fn(),
+      writable: true,
+      configurable: true
+    })
+  })
+
+  beforeEach(() => {
+    track.mockClear()
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+      configurable: true
+    })
+  })
+
+  const english = expect.objectContaining({ id: 'eur-en' })
+
+  it('sends campaignShareLinkCopy with the Share Language once the Share Link is copied', async () => {
+    renderShare(region, campaignPublic)
+    fireEvent.click(screen.getByTestId('CampaignRegionShareCopy'))
+    await waitFor(() =>
+      expect(track).toHaveBeenCalledWith('campaignShareLinkCopy', {
+        shareLanguage: english
+      })
+    )
+  })
+
+  it('sends no copy event when the clipboard rejects', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
+      configurable: true
+    })
+    renderShare(region, campaignPublic)
+    fireEvent.click(screen.getByTestId('CampaignRegionShareCopy'))
+    await waitFor(() =>
+      expect(navigator.clipboard.writeText).toHaveBeenCalled()
+    )
+    expect(track).not.toHaveBeenCalled()
+  })
+
+  it('sends campaignQrDownload with the Share Language when the QR code is downloaded', () => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue(
+      'data:image/png;base64,QR'
+    )
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
+      () => undefined
+    )
+    renderShare(region, campaignPublic)
+    fireEvent.click(screen.getByTestId('CampaignRegionShareDownload'))
+    expect(track).toHaveBeenCalledWith('campaignQrDownload', {
+      shareLanguage: english
+    })
+  })
+
+  it("sends campaignJourneyClick with the Share Language's journey address when the Share Link is opened", () => {
+    renderShare(region, campaignPublic)
+    fireEvent.click(screen.getByRole('link', { name: 'Open' }))
+    expect(track).toHaveBeenCalledWith(
+      'campaignJourneyClick',
+      {
+        source: 'share',
+        journeyUrl: 'https://your.nextstep.is/eur-en',
+        shareLanguage: english
+      },
+      expect.anything()
+    )
   })
 })

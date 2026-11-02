@@ -183,6 +183,10 @@ _Avoid_: live/offline (use published/draft), visibility, state
 How a Campaign is edited: every edit saves in place as its own change, with no working copy, snapshot or Save step, so a published Campaign changes under its visitors as the author works. Undo is the Editor's in-memory **Command** history, not a saved version.
 _Avoid_: autosave (as a feature name — it is the only mode), draft mode, preview mode, versioning
 
+**Campaign Write**:
+One edit of one Campaign, saved as one transaction: it locks what it will write in the one order every edit shares (so two edits never deadlock), ends by bumping the Campaign's `updatedAt` (the touch), and runs what lives outside the database (short-link deletes, revalidation, Vercel removals) only after the commit, or undoes its one gateway call when the commit fails. Every change to an existing Campaign is one, publish, settings and delete included; creating a Campaign is not, as there is nothing to lock yet.
+_Avoid_: transaction (the mechanism, not the edit), save, mutation (a mutation may make one, or none)
+
 **Campaign Settings**:
 The parts of a Campaign that are not content: the default-language title, the slug, the default language (changed by a **Default-language swap**) and the **Palette**, all saved outside the Editor's Command history. The slug never follows a title change.
 _Avoid_: metadata, properties, campaign info
@@ -254,7 +258,7 @@ What a Campaign Button does when pressed: open a web link, scroll to a block on 
 _Avoid_: link (bare), href, navigation
 
 **Campaign Chrome**:
-The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. Both take the same Extras as any section; the header's nav links are Button Extras.
+The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. The header accepts the same Extras as any section, but for now the editor offers and the public header shows only its Button Extras (its nav links); the footer takes and shows both kinds. The **Campaign Block grammar** records both facts (`acceptsChild`, `shownExtras`).
 _Avoid_: nav bar, site header/footer, layout, shell
 
 **Brand Mark**:
@@ -387,7 +391,11 @@ _Avoid_: block renderer (that is the Journey one), template, layout engine
 
 **Campaign Stats**:
 The visitor numbers a Campaign shows: for each Share Language Journey that is not trashed (published, archived and draft alike), its unique visitors by country over all time (the sweep starts at a fixed early date, and the public tile says "all time"), read from that Journey's own **Plausible** site and summed along the Campaign's region and language structure into landing, region and country totals. One cached sweep serves anyone once the Campaign is published and its team while a draft, and a visitor who opens two Share Language Journeys counts in both.
-_Avoid_: analytics (too broad; the section is the Analytics section, the data is Campaign Stats), views (the metric is visitors), per-region stats (there is one sweep, scoped on read)
+_Avoid_: analytics (too broad; the section is the Analytics section, the data is Campaign Stats), views (the metric is visitors), per-region stats (there is one sweep, scoped on read), site traffic (that is the Campaign's own Plausible site)
+
+**Campaign Plausible site**:
+The Plausible site a Campaign reports to on its own, `api-journeys-campaign-<campaignId>`, created by the plausible worker once `campaignCreate` commits. Its id, page props and events are defined once in journeys-ui (`campaignPlausibleSite`), from which its goals (every campaign event plus `Outbound Link: Click`) and the props its dashboard may show (`campaignAllowedProps`; Plausible stores every prop but shows only allowed ones) are derived. The startup backfill creates the site of every Campaign that has none, then brings every existing campaign site's allowed props up to date in one api-analytics call (`sitesAllowEventProps`), which finds the sites lacking one in a single query; its shared-link token is `Campaign.plausibleToken`, readable with campaign Read and never on Campaign Public. The Campaign Public Page reports every view and event to it and to its Team's site; the admin's Campaign Report embeds its dashboard, so no query of this API reads its numbers. It counts from its creation and outlives the Campaign, as a Journey's site does.
+_Avoid_: campaign stats (those are the Share Language Journeys' visitors), team site (the Team's own roll-up site, which also gets these views)
 
 ### Account deletion
 

@@ -1,6 +1,5 @@
 import { Prisma } from '@core/prisma/journeys/client'
 
-import { lockCampaign, lockCampaignTextRows } from '../campaignWrite'
 import { badUserInput, conflict } from '../errors'
 import { TranslationsJson, parseTranslations } from '../translatedValue'
 
@@ -65,9 +64,9 @@ export function countMissingTranslations(
 }
 
 /**
- * Promote `newDefaultLanguageId` to the campaign's default inside `tx`. The
- * text rows, then the campaign row (the order block edits take them in), are
- * locked and read again here so the language-membership check,
+ * Promote `newDefaultLanguageId` to the campaign's default inside `tx`, a
+ * Campaign Write that declares the text rows and the campaign row. Everything
+ * is read again here under those locks so the language-membership check,
  * the completeness gate and the swap see one consistent snapshot that a
  * concurrent language removal cannot change: a language no longer on the
  * campaign rejects with `BAD_USER_INPUT`, field `defaultLanguageId`; any missing text on a live block rejects with
@@ -84,8 +83,6 @@ export async function swapDefaultLanguage(
   campaignId: string,
   newDefaultLanguageId: string
 ): Promise<SwappedColumns> {
-  await lockCampaignTextRows(tx, campaignId)
-  await lockCampaign(tx, campaignId)
   const campaign = await tx.campaign.findUniqueOrThrow({
     where: { id: campaignId },
     include: { ...INCLUDE_TRANSLATIONS_CAMPAIGN, blocks: true }

@@ -19,6 +19,7 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import { useCampaignPlausible } from '../../../libs/campaignPlausible'
 import { QrCodeCanvas, downloadQrCodePng } from '../../QrCodeCanvas'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
@@ -152,6 +153,7 @@ export function CampaignRegionShare({
 }: CampaignRegionShareProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { campaign, region, string } = useCampaign()
+  const track = useCampaignPlausible()
   const [selectedId, setSelectedId] = useState<string>()
   const [copied, setCopied] = useState(false)
   const languages = region == null ? [] : shareLanguages(region)
@@ -178,19 +180,37 @@ export function CampaignRegionShare({
   }
 
   async function handleCopy(): Promise<void> {
-    if (shortLink == null) return
+    if (shortLink == null || selected == null) return
+    // Only the clipboard decides the toast: a tracking failure after a copy
+    // must not take the confirmation back.
     try {
       await navigator.clipboard.writeText(shortLink)
-      setCopied(true)
     } catch {
       setCopied(false)
+      return
     }
+    setCopied(true)
+    track('campaignShareLinkCopy', { shareLanguage: selected })
   }
 
   function handleDownload(event: MouseEvent<HTMLButtonElement>): void {
     event.preventDefault()
     if (shortLink == null || region == null || selected == null) return
     downloadQrCodePng(shortLink, qrCodeFileName(campaign, region, selected))
+    track('campaignQrDownload', { shareLanguage: selected })
+  }
+
+  function handleOpen(event: MouseEvent<HTMLElement>): void {
+    if (shortLink == null) return
+    track(
+      'campaignJourneyClick',
+      {
+        source: 'share',
+        journeyUrl: selected?.journeyUrl,
+        shareLanguage: selected
+      },
+      event
+    )
   }
 
   return (
@@ -354,6 +374,7 @@ export function CampaignRegionShare({
                         href={shortLink}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={handleOpen}
                         aria-label={openLabel}
                         size="small"
                         sx={{ color: 'var(--campaign-band-accent)' }}

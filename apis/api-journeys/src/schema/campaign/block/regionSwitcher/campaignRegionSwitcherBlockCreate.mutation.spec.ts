@@ -117,7 +117,7 @@ describe('campaignRegionSwitcherBlockCreate', () => {
   it('caps title at 150 characters (BAD_USER_INPUT, title)', async () => {
     const result = await create({ title: 'x'.repeat(151) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
@@ -128,7 +128,7 @@ describe('campaignRegionSwitcherBlockCreate', () => {
 
     const result = await create({ pageId: 'missing' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'pageId'
     })
@@ -142,7 +142,7 @@ describe('campaignRegionSwitcherBlockCreate', () => {
 
     const result = await create({})
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 })
