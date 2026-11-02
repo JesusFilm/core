@@ -28,6 +28,10 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { CancelButton } from '../../../../../../components/CancelButton'
 import { FormSelectField } from '../../../../../../components/FormSelectField'
+import {
+  PublishedChip,
+  isPublishPending
+} from '../../../../../../components/PublishedChip'
 import { videoStatuses } from '../../../../../../constants'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../../constants'
 import { VariantVideo } from '../_VariantVideo'
@@ -48,6 +52,10 @@ const GET_ADMIN_VIDEO_VARIANT = graphql(`
     videoVariant(id: $id) {
       id
       published
+      reconciliation {
+        status
+        published
+      }
       hls
       downloads {
         id
@@ -75,6 +83,10 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
     videoVariantUpdate(input: $input) {
       id
       published
+      reconciliation {
+        status
+        published
+      }
     }
   }
 `)
@@ -113,8 +125,15 @@ function VariantDialogContent({
       variables: {
         input: { id: variantId, published: values.published === 'published' }
       },
-      onCompleted: () => {
-        enqueueSnackbar('Variant updated', { variant: 'success' })
+      onCompleted: ({ videoVariantUpdate }) => {
+        if (isPublishPending(videoVariantUpdate)) {
+          enqueueSnackbar(
+            'Publishing once background processing finishes for this audio language',
+            { variant: 'info' }
+          )
+        } else {
+          enqueueSnackbar('Variant updated', { variant: 'success' })
+        }
         resetForm({ values })
         router.push(`/videos/${videoId}/audio`, {
           scroll: false
@@ -186,6 +205,12 @@ function VariantDialogContent({
                     {data.videoVariant.videoEdition?.name != null && (
                       <VideoEditionChip
                         editionName={data.videoVariant.videoEdition.name}
+                      />
+                    )}
+                    {isPublishPending(data.videoVariant) && (
+                      <PublishedChip
+                        published={data.videoVariant.published}
+                        pending
                       />
                     )}
                   </Stack>

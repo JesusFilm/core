@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface CampaignBlockDelete_campaignBlockDelete {
-  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignTypographyBlock" | "CampaignButtonBlock" | "CampaignHeroBlock" | "CampaignRegionSwitcherBlock" | "CampaignVideoCarouselBlock" | "CampaignVideoBlock" | "CampaignJourneyListBlock" | "CampaignJourneyBlock" | "CampaignAnalyticsBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRichTextBlock" | "CampaignColumnsBlock" | "CampaignImageBlock" | "CampaignFeaturedMediaBlock" | "CampaignColumnBlock";
+  __typename: "CampaignAnalyticsBlock" | "CampaignButtonBlock" | "CampaignColumnBlock" | "CampaignColumnsBlock" | "CampaignFeaturedMediaBlock" | "CampaignFooterBlock" | "CampaignHeaderBlock" | "CampaignHeroBlock" | "CampaignImageBlock" | "CampaignJourneyBlock" | "CampaignJourneyListBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRegionSwitcherBlock" | "CampaignRichTextBlock" | "CampaignTypographyBlock" | "CampaignVideoBlock" | "CampaignVideoCarouselBlock";
   id: string;
   /**
    * Order among siblings. Null on an owned block (a cover, logo or media slot).
