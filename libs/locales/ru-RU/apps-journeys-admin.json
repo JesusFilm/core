@@ -1723,6 +1723,8 @@
   "Report": "Отчёт",
   "Campaign Report": "Отчёт о кампании",
   "Report dashboard": "Панель отчётов",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Неподдерживаемый тип файла. Загрузи один из следующих форматов: (PNG, JPG, GIF, SVG, HEIC или WebP)",
+  "Maximum file size: 10 MB": "Максимальный размер файла: 10 МБ",
   "Appears on <0>{{count}}</0> card_one": "Появляется на <0>{{count}}</0> карточка",
   "Appears on <0>{{count}}</0> card_few": "Появляется на <0>{{count}}</0> карточках",
   "Appears on <0>{{count}}</0> card_many": "Появляется на <0>{{count}}</0> карточках",
