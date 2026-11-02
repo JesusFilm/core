@@ -1723,6 +1723,8 @@
   "Report": "Ulat",
   "Campaign Report": "Ulat ng Kampanya",
   "Report dashboard": "Iulat ang dashboard",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Hindi tinatanggap ang uri ng file. Mangyaring mag-upload ng isa sa mga sumusunod: (PNG, JPG, GIF, SVG, HEIC, o WebP)",
+  "Maximum file size: 10 MB": "Pinakamalaking laki ng file: 10 MB",
   "Appears on <0>{{count}}</0> card_one": "Lumalabas sa <0>{{count}}</0> na card",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>card</1>",
