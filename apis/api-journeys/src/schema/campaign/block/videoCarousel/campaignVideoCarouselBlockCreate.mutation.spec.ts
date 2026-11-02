@@ -129,7 +129,7 @@ describe('campaignVideoCarouselBlockCreate', () => {
       description: 'x'.repeat(TEXT_CAPS.description + 1)
     })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'description'
     })
