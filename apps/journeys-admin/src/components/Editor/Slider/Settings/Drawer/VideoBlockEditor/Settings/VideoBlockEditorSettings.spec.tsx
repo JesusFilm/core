@@ -536,7 +536,7 @@ describe('VideoBlockEditorSettings', () => {
     expect(combobox).toHaveClass('Mui-disabled')
     expect(combobox).toHaveTextContent('Off')
     expect(
-      getByText('Subtitles are not available for background videos')
+      getByText('Subtitles are turned off for background videos')
     ).toBeInTheDocument()
   })
 
@@ -864,7 +864,7 @@ describe('VideoBlockEditorSettings', () => {
       expect(switchInput).toBeDisabled()
       expect(switchInput).not.toBeChecked()
       expect(
-        getByText('Subtitles are not available for background videos')
+        getByText('Subtitles are turned off for background videos')
       ).toBeInTheDocument()
     })
 

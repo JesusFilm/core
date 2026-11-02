@@ -178,7 +178,7 @@ export function VideoBlockEditorSettings({
             />
             {isBackgroundVideo && (
               <Typography variant="caption" sx={{ color: 'action.disabled' }}>
-                {t('Subtitles are not available for background videos')}
+                {t('Subtitles are turned off for background videos')}
               </Typography>
             )}
             <Divider />
@@ -212,7 +212,7 @@ export function VideoBlockEditorSettings({
             />
             {isBackgroundVideo && (
               <Typography variant="caption" sx={{ color: 'action.disabled' }}>
-                {t('Subtitles are not available for background videos')}
+                {t('Subtitles are turned off for background videos')}
               </Typography>
             )}
             <Divider />

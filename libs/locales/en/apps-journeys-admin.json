@@ -1757,5 +1757,5 @@
   "Report dashboard": "Report dashboard",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)",
   "Maximum file size: 10 MB": "Maximum file size: 10 MB",
-  "Subtitles are not available for background videos": "Subtitles are not available for background videos"
+  "Subtitles are turned off for background videos": "Subtitles are turned off for background videos"
 }
