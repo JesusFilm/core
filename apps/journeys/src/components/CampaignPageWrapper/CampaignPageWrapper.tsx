@@ -16,6 +16,11 @@ import type {
   CampaignRegion,
   WorldMapShapes
 } from '@core/journeys/ui/Campaign'
+import {
+  campaignPlausibleProps,
+  campaignSiteId,
+  teamSiteId
+} from '@core/journeys/ui/campaignPlausible'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
@@ -39,11 +44,15 @@ interface CampaignPageWrapperProps {
 /**
  * Everything a public campaign page shares: the campaign theme, the Google
  * Fonts link, SEO and social tags (`CampaignSeo`, canonical in the preferred
- * address form), and Plausible page views on the campaign team's existing site through the same `/plausible` proxy journeys use (page path
- * as rendered; automatic page views, so nothing is reported from the admin
- * canvas, which uses its own components). The page is static, so a visitor
- * whose cookie or browser languages name another campaign language is sent on
- * to it by `CampaignLanguageRedirect`.
+ * address form), and Plausible page views on the Campaign's own site (the one
+ * its Campaign Report shows) and its team's site, through the same
+ * `/plausible` proxy journeys use. Page views are automatic (page path as
+ * rendered) and tagged with `campaign_id`, the Region Page's `region` slug and
+ * the Page Language's `language` tag; the campaign events (`campaign*`) carry
+ * the same props. Nothing is reported from the admin canvas, which renders no
+ * `CampaignPage`. The page is static, so a visitor whose cookie or browser
+ * languages name another campaign language is sent on to it by
+ * `CampaignLanguageRedirect`.
  */
 export function CampaignPageWrapper({
   campaign,
@@ -64,7 +73,8 @@ export function CampaignPageWrapper({
       trackLocalhost
       trackOutboundLinks
       customDomain="/plausible"
-      domain={`api-journeys-team-${campaign.teamId}`}
+      domain={`${campaignSiteId(campaign.id)},${teamSiteId(campaign.teamId)}`}
+      pageviewProps={campaignPlausibleProps(campaign, region)}
     >
       <Head>
         <link rel="stylesheet" href={campaignFontsHref(campaign.theme)} />

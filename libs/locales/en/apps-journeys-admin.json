@@ -1749,5 +1749,11 @@
   "Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.": "Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.",
   "Copy value": "Copy value",
   "This domain is already in use. Remove it where it's connected, then add it here.": "This domain is already in use. Remove it where it's connected, then add it here.",
-  "All regions label": "All regions label"
+  "The report is being set up. Check back in a few minutes.": "The report is being set up. Check back in a few minutes.",
+  "Report": "Report",
+  "Campaign Report": "Campaign Report",
+  "Report dashboard": "Report dashboard",
+  "All regions label": "All regions label",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)",
+  "Maximum file size: 10 MB": "Maximum file size: 10 MB"
 }

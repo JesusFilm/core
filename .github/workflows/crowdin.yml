@@ -7,7 +7,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   synchronize-with-crowdin:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     steps:
       - name: Checkout
         uses: actions/checkout@v4

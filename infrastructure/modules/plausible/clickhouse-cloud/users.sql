@@ -1,7 +1,7 @@
--- Plausible's two users on the environment's ClickHouse Cloud service, run as
--- `default` (or your SQL console login) after schema.sql (README.md, "Moving the events to ClickHouse
--- Cloud"). The service also holds the short-links `redirects` database;
--- neither user can see it.
+-- Plausible's user on the environment's ClickHouse Cloud service, run as
+-- `default` (or your SQL console login) after schema.sql (README.md,
+-- "Preparing the event store"). The service also holds the short-links
+-- `redirects` database; this user cannot see it.
 --
 -- Passwords: Cloud wants 12+ characters with upper, lower, digit and symbol,
 -- and Plausible's goes into a URL, so use URL-safe characters only:
@@ -27,10 +27,3 @@ CREATE USER IF NOT EXISTS plausible IDENTIFIED WITH sha256_password BY '<plausib
   SETTINGS PROFILE 'plausible_profile';
 GRANT SELECT, INSERT, ALTER, CREATE TABLE, CREATE DATABASE, DROP TABLE, DROP DATABASE, TRUNCATE, OPTIMIZE
   ON plausible_events_db.* TO plausible;
-
--- The copy (copy-to-cloud.sh). Dropped after the cutover:
---   DROP USER migrator;
-CREATE USER IF NOT EXISTS migrator IDENTIFIED WITH sha256_password BY '<migrator password>';
-GRANT INSERT, SELECT ON plausible_events_db.* TO migrator;
--- copy-to-cloud.sh compares column lists through system.columns.
-GRANT SELECT ON system.columns TO migrator;

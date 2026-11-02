@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   affected:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -47,7 +47,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     steps:
       - uses: actions/checkout@v4
         with:
@@ -81,7 +81,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     steps:
       - uses: actions/checkout@v4
         with:

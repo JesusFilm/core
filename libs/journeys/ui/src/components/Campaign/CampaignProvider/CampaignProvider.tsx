@@ -29,6 +29,8 @@ export interface CampaignContextValue {
   pageBlockIds: ReadonlySet<string>
   /** A Campaign String in the Page Language; empty when the campaign lacks the row or it is blank. */
   string: (key: CampaignStringKey) => string
+  /** Whether the page sends campaign events to Plausible: the public page only, never the editor canvas. */
+  reportEvents?: boolean
 }
 
 const CampaignContext = createContext<CampaignContextValue | null>(null)
