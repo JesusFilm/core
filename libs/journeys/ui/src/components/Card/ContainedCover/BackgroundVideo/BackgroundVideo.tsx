@@ -12,6 +12,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
+import VideoJsPlayer from '../../../Video/utils/videoJsTypes'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
@@ -31,6 +32,7 @@ export function BackgroundVideo({
   startAt,
   endAt,
   objectFit,
+  showGeneratedSubtitles,
   setLoading
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -116,6 +118,38 @@ export function BackgroundVideo({
       })
     }
   }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
+
+  // Keep the stream's own captions off unless the creator turned on Mux subtitles
+  useEffect(() => {
+    const textTracks = (
+      playerRef.current as VideoJsPlayer | null
+    )?.textTracks?.()
+    if (textTracks == null) return
+
+    const showCaptions =
+      source === VideoBlockSource.mux && showGeneratedSubtitles === true
+
+    const applyCaptionModes = (): void => {
+      let captionShown = false
+      for (let i = 0; i < textTracks.length; i++) {
+        const track = textTracks[i]
+        if (track.kind !== 'subtitles' && track.kind !== 'captions') continue
+        // Only one caption track at a time so they don't stack
+        const mode = showCaptions && !captionShown ? 'showing' : 'disabled'
+        if (mode === 'showing') captionShown = true
+        if (track.mode !== mode) track.mode = mode
+      }
+    }
+
+    applyCaptionModes()
+    // Tracks arrive with the stream, and native players may switch one on by themselves
+    textTracks.addEventListener('addtrack', applyCaptionModes)
+    textTracks.addEventListener('change', applyCaptionModes)
+    return () => {
+      textTracks.removeEventListener('addtrack', applyCaptionModes)
+      textTracks.removeEventListener('change', applyCaptionModes)
+    }
+  }, [source, showGeneratedSubtitles])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()
