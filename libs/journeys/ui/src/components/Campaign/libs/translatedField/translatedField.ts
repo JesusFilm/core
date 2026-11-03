@@ -213,7 +213,11 @@ export function entrySource(entry: TranslatedEntryLike): TranslatedFieldSource {
 
 /** Whether an entry is a machine guess a person should check. */
 export function isUncertain(entry: TranslatedEntryLike): boolean {
-  return entrySource(entry) === 'machine' && entry?.uncertain === true
+  return (
+    isTranslated(entry) &&
+    entrySource(entry) === 'machine' &&
+    entry.uncertain === true
+  )
 }
 
 /** Whether the editor is translating: the Preview Language is not the default. */

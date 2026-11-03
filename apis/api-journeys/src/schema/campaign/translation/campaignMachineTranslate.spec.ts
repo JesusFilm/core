@@ -285,6 +285,17 @@ describe('campaignMachineTranslate', () => {
       expect(asked).not.toContain('heroId:title')
       expect(asked).not.toContain('heroId:description')
     })
+
+    it('keeps other languages’ entries in the same column', async () => {
+      await run({ mode: 'missing', languageId: FRENCH })
+
+      expect(blockWrites().heroId.titleTranslations).toBeUndefined()
+      await run({ mode: 'all', languageId: SPANISH })
+      expect(blockWrites().heroId.titleTranslations).toEqual({
+        [FRENCH]: { value: 'Titre de la personne', source: 'human' },
+        [SPANISH]: { value: 'FR heroId title', source: 'machine' }
+      })
+    })
   })
 
   describe('mode all', () => {

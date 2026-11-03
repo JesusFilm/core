@@ -216,6 +216,16 @@ describe('translatedField', () => {
       ).toBe(false)
     })
 
+    it.each<TranslatedEntryLike>([
+      { value: '', source: 'machine', uncertain: true },
+      { value: 42, source: 'machine', uncertain: true },
+      { source: 'machine', uncertain: true },
+      null,
+      undefined
+    ])('does not flag a missing translation as uncertain: %j', (entry) => {
+      expect(isUncertain(entry)).toBe(false)
+    })
+
     it('parses a JSON column into a fresh object, and anything else as none', () => {
       const json = { [FRENCH]: { value: 'Bonjour', source: 'human' } }
       expect(parseTranslations(json)).toEqual(json)
