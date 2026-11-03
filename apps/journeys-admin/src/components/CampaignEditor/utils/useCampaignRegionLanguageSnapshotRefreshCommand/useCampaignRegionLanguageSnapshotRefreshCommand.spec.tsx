@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
@@ -11,7 +12,7 @@ import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaignWithRegions, eurEnglish } from '../../data'
 import { CommandProbe, QueriedEditor } from '../../testing'
 
-import { useSnapshotRefreshCommand } from './useSnapshotRefreshCommand'
+import { useCampaignRegionLanguageSnapshotRefreshCommand } from './useCampaignRegionLanguageSnapshotRefreshCommand'
 
 /** English, reworded by the author since it was linked; the journey itself says something newer. */
 const edited: CampaignRegionLanguage = {
@@ -63,7 +64,7 @@ const undoMock = {
 function Probe(): ReactElement {
   const { campaign } = useCampaignEditor()
   const { requestRefresh, pending, confirmRefresh, cancelRefresh } =
-    useSnapshotRefreshCommand()
+    useCampaignRegionLanguageSnapshotRefreshCommand()
   const { undo, redo } = useCommand()
   const english = campaign.regions[0].languages[0]
   return (
@@ -85,11 +86,11 @@ const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderHook(
   english: CampaignRegionLanguage,
-  mocks: Array<Record<string, unknown>> = [refreshMock, undoMock]
+  mocks: MockLink.MockedResponse[] = [refreshMock, undoMock]
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignProp={{
+      campaign={{
         ...campaignWithRegions,
         regions: campaignWithRegions.regions.map((region) =>
           region.id === 'eurRegionId'
@@ -110,7 +111,7 @@ function renderHook(
   )
 }
 
-describe('useSnapshotRefreshCommand', () => {
+describe('useCampaignRegionLanguageSnapshotRefreshCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('refreshes an unedited snapshot at once as a Command, with no confirmation', async () => {
@@ -217,5 +218,25 @@ describe('useSnapshotRefreshCommand', () => {
       )
     )
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalledTimes(2))
+  })
+
+  it('holds an undo pressed while the refresh is in flight until the refresh settles', async () => {
+    // The refresh skips the app's mutation queue, so the Command queue is what orders the undo after it.
+    renderHook(edited, [
+      { ...refreshMock, delay: 200 },
+      { ...undoMock, delay: 0 }
+    ])
+    await screen.findByText('Refresh')
+
+    fireEvent.click(screen.getByText('Refresh'))
+    fireEvent.click(screen.getByText('Confirm'))
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    fireEvent.click(screen.getByText('Undo'))
+
+    expect(refreshMock.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+    expect(refreshMock.result.mock.invocationCallOrder[0]).toBeLessThan(
+      undoMock.result.mock.invocationCallOrder[0]
+    )
   })
 })

@@ -1,22 +1,22 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { CAMPAIGN_HERO_BLOCK_CREATE } from '../../../../libs/useCampaignSectionCreateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithColumns } from '../../data'
 import { Inspector } from '../../Inspector'
-import { newSectionBlock } from '../../sectionTypes'
 import {
   BlocksProbe,
   CommandProbe,
   PendingTextSave,
   QueriedEditor,
   SelectionProbe,
+  UndoRedo,
   campaignCache,
   debounceSpyLink
 } from '../../testing'
+import { newSectionBlock } from '../sectionTypes'
 
 vi.mock('uuid', () => ({ v4: () => 'newId' }))
 
@@ -34,7 +34,7 @@ const newHero = newSectionBlock('CampaignHeroBlock', {
 /** The order the requests reach the API in. */
 const calls: string[] = []
 
-function deleteMock(id: string): Record<string, unknown> {
+function deleteMock(id: string): MockLink.MockedResponse {
   return {
     delay: 50,
     request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id } },
@@ -45,7 +45,7 @@ function deleteMock(id: string): Record<string, unknown> {
   }
 }
 
-function restoreMock(id: string, block: unknown): Record<string, unknown> {
+function restoreMock(id: string, block: unknown): MockLink.MockedResponse {
   return {
     delay: 50,
     request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id } },
@@ -87,7 +87,7 @@ const restoreNewMock = restoreMock('newId', newHero)
 function renderEditor(): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignData={campaignWithColumns}
+      campaign={campaignWithColumns}
       initialState={{
         selectedBlockId: 'slotRichTextId',
         inspectorTab: 'settings'
@@ -101,12 +101,11 @@ function renderEditor(): ReturnType<typeof render> {
         restoreNewMock
       ]}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector isManager />
     </QueriedEditor>
   )
 }
@@ -121,7 +120,7 @@ function slotBlocks(): string[] {
 function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignData={campaignWithColumns}
+      campaign={campaignWithColumns}
       link={debounceSpyLink(
         requests,
         [deleteOldMock, createMock],
@@ -135,12 +134,12 @@ function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
     >
       <PendingTextSave block={slotRichText} />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector isManager />
     </QueriedEditor>
   )
 }
 
-describe('useChangeTypeCommand', () => {
+describe('useCampaignBlockTypeChangeCommand', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     calls.length = 0
@@ -223,7 +222,7 @@ describe('useChangeTypeCommand', () => {
     const failingCreate = { ...createMock, error: new Error('refused') }
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -231,7 +230,7 @@ describe('useChangeTypeCommand', () => {
         mocks={[deleteOldMock, failingCreate, restoreOldMock]}
       >
         <BlocksProbe />
-        <Inspector isManager={false} />
+        <Inspector isManager />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -249,7 +248,7 @@ describe('useChangeTypeCommand', () => {
   it('raises the API message when the delete is refused, and creates nothing', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -257,7 +256,7 @@ describe('useChangeTypeCommand', () => {
         mocks={[{ ...deleteOldMock, result: refusal }, createMock]}
       >
         <BlocksProbe />
-        <Inspector isManager={false} />
+        <Inspector isManager />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -276,7 +275,7 @@ describe('useChangeTypeCommand', () => {
   it('raises the API message when the create is refused, and still restores the old section', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -288,7 +287,7 @@ describe('useChangeTypeCommand', () => {
         ]}
       >
         <BlocksProbe />
-        <Inspector isManager={false} />
+        <Inspector isManager />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -304,11 +303,11 @@ describe('useChangeTypeCommand', () => {
     await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
   })
 
-  it('stays quiet when an undo finds the never-created section missing, but raises a refused restore', async () => {
+  it('sends nothing on undo when the create was refused, and runs the whole change again on redo', async () => {
     const failingCreate = { ...createMock, error: new Error('refused') }
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
@@ -317,59 +316,13 @@ describe('useChangeTypeCommand', () => {
           deleteOldMock,
           failingCreate,
           restoreOldMock,
-          { ...deleteNewMock, error: new Error('NOT_FOUND') },
-          {
-            ...restoreMock('slotRichTextId', slotRichText),
-            result: { errors: [{ message: 'Restore refused' }] }
-          }
-        ]}
-      >
-        <CommandUndoItem variant="button" />
-        <BlocksProbe />
-        <Inspector isManager={false} />
-      </QueriedEditor>
-    )
-    await waitFor(() =>
-      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
-    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
-
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-
-    expect(await screen.findByText('Restore refused')).toBeInTheDocument()
-    expect(screen.queryByText('NOT_FOUND')).not.toBeInTheDocument()
-  })
-
-  it('runs the whole change again on redo when the create was refused, instead of restoring the section it never made', async () => {
-    const failingCreate = { ...createMock, error: new Error('refused') }
-    const deleteMissingNew = {
-      ...deleteNewMock,
-      error: new Error('NOT_FOUND')
-    }
-    const restoreOldOnUndo = restoreMock('slotRichTextId', slotRichText)
-    render(
-      <QueriedEditor
-        campaignData={campaignWithColumns}
-        initialState={{
-          selectedBlockId: 'slotRichTextId',
-          inspectorTab: 'settings'
-        }}
-        mocks={[
-          deleteOldMock,
-          failingCreate,
-          restoreOldMock,
-          deleteMissingNew,
-          restoreOldOnUndo,
           deleteOldAgainMock,
           createMock
         ]}
       >
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
+        <UndoRedo />
         <BlocksProbe />
-        <Inspector isManager={false} />
+        <Inspector isManager />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -378,44 +331,36 @@ describe('useChangeTypeCommand', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
     await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(restoreOldOnUndo.result).toHaveBeenCalled())
-    await waitFor(() => expect(slotBlocks()).toEqual(['Block-slotRichTextId']))
     calls.length = 0
 
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     fireEvent.click(await screen.findByRole('button', { name: 'Redo' }))
 
     await waitFor(() =>
       expect(calls).toEqual(['delete slotRichTextId', 'create newId'])
     )
     await waitFor(() => expect(slotBlocks()).toEqual(['Block-newId']))
-    expect(screen.queryByText('NOT_FOUND')).not.toBeInTheDocument()
+    expect(deleteNewMock.result).not.toHaveBeenCalled()
   })
 
-  it('still restores the old section on undo when the new one was never created', async () => {
-    const failingCreate = { ...createMock, error: new Error('refused') }
-    const deleteMissingNew = {
-      ...deleteNewMock,
-      error: new Error('NOT_FOUND')
-    }
+  it('waits for a change in flight before undoing it: a refused create shows one snackbar and sends no stray delete', async () => {
     render(
       <QueriedEditor
-        campaignData={campaignWithColumns}
+        campaign={campaignWithColumns}
         initialState={{
           selectedBlockId: 'slotRichTextId',
           inspectorTab: 'settings'
         }}
         mocks={[
           deleteOldMock,
-          failingCreate,
+          { ...createMock, result: refusal },
           restoreOldMock,
-          deleteMissingNew,
-          restoreMock('slotRichTextId', slotRichText)
+          deleteNewMock
         ]}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <BlocksProbe />
-        <Inspector isManager={false} />
+        <Inspector isManager />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -423,12 +368,49 @@ describe('useChangeTypeCommand', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
-    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
-    calls.length = 0
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
-    await waitFor(() => expect(calls).toEqual(['restore slotRichTextId']))
+    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+    await waitFor(() => expect(slotBlocks()).toEqual(['Block-slotRichTextId']))
+    expect(calls).toEqual(['delete slotRichTextId', 'restore slotRichTextId'])
+    expect(deleteNewMock.result).not.toHaveBeenCalled()
+    expect(screen.getAllByText('The request was refused')).toHaveLength(1)
+  })
+
+  it('waits for a change in flight before undoing it: once the create lands, undo removes the new section', async () => {
+    render(
+      <QueriedEditor
+        campaign={campaignWithColumns}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
+        mocks={[deleteOldMock, createMock, deleteNewMock, restoreOldMock]}
+      >
+        <UndoRedo />
+        <BlocksProbe />
+        <Inspector isManager />
+      </QueriedEditor>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
+    expect(calls).toEqual([
+      'delete slotRichTextId',
+      'create newId',
+      'delete newId',
+      'restore slotRichTextId'
+    ])
     await waitFor(() => expect(slotBlocks()).toEqual(['Block-slotRichTextId']))
   })
 })

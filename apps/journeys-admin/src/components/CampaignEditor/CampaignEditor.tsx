@@ -13,6 +13,8 @@ import { UserTeamRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
+import { CampaignCommandProvider } from './utils/useCampaignCommand'
+
 import { AddPanel } from './AddPanel'
 import {
   CampaignEditorProvider,
@@ -205,6 +207,7 @@ export function CampaignEditor({
   return (
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
+        <CampaignCommandProvider>
         <MuxVideoUploadProvider>
           <TranslationRunProvider>
             <NavigatorHoverProvider>
@@ -212,6 +215,7 @@ export function CampaignEditor({
             </NavigatorHoverProvider>
           </TranslationRunProvider>
         </MuxVideoUploadProvider>
+        </CampaignCommandProvider>
       </CampaignEditorProvider>
     </CommandProvider>
   )

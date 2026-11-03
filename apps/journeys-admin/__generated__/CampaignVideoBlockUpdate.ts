@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignVideoBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignVideoBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignVideoBlockUpdate
@@ -100,6 +100,26 @@ export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Yo
 
 export type CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo = CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video | CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_MuxVideo | CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_YouTube;
 
+export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate {
   __typename: "CampaignVideoBlock";
   id: string;
@@ -149,6 +169,8 @@ export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate {
    * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
    */
   mediaVideo: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo | null;
+  titleTranslations: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_titleTranslations[];
+  descriptionTranslations: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_descriptionTranslations[];
 }
 
 export interface CampaignVideoBlockUpdate {

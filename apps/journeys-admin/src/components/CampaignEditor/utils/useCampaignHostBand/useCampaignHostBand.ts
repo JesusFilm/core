@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { resolveBand } from '@core/journeys/ui/Campaign'
 
-import { isCampaignStyledBlock } from '../../../../libs/useCampaignSectionStyleMutation'
+import { isCampaignStyledBlock } from '../../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 
 type ResolvedBand = ReturnType<typeof resolveBand>
@@ -12,7 +12,7 @@ type ResolvedBand = ReturnType<typeof resolveBand>
  * inherits while its own are null. Undefined when the selection has no
  * styled host (a Region Line), where the theme applies.
  */
-export function useHostBand(): ResolvedBand | undefined {
+export function useCampaignHostBand(): ResolvedBand | undefined {
   const { campaign, selection } = useCampaignEditor()
   const { host } = selection
   return useMemo(
