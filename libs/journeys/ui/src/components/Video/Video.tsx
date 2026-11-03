@@ -47,6 +47,8 @@ const VIDEO_FOREGROUND_COLOR = '#FFF'
 const StyledVideo = styled('video')(() => ({}))
 
 export type VideoProps = TreeBlock<VideoFields> & {
+  /** Interactive draft playback, without viewer events or navigation. */
+  preview?: boolean
   /** Subtitle files to offer as text tracks beside the stream's own; none by default. */
   subtitleTracks?: SubtitleTrack[]
   /** Re-set a server-rendered source once the player is ready (the campaign page); off by default. */
@@ -74,7 +76,8 @@ export function Video({
   eventLabel,
   endEventLabel,
   subtitleTracks,
-  reapplyServerSource
+  reapplyServerSource,
+  preview = false
 }: VideoProps): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -160,8 +163,8 @@ export function Video({
     mediaVideo?.__typename === 'MuxVideo' ? 0 : effectiveStartAt
 
   useEffect(() => {
-    setActiveStep(isActiveBlockOrDescendant(blockId))
-  }, [blockId, blockHistory])
+    setActiveStep(preview || isActiveBlockOrDescendant(blockId))
+  }, [blockId, blockHistory, preview])
 
   return (
     <Box
@@ -215,7 +218,8 @@ export function Video({
         subtitleTracks={subtitleTracks}
         reapplyServerSource={reapplyServerSource}
       />
-      {activeStep &&
+      {!preview &&
+        activeStep &&
         player != null &&
         eventVideoTitle != null &&
         eventVideoId != null && (
@@ -313,7 +317,7 @@ export function Video({
           )}
           {/* TODO: Add back VideoTriggers when we have a way to add them in admin */}
           {/* Default navigate to next card on video end */}
-          {action != null && (
+          {!preview && action != null && (
             <VideoTrigger
               blockId={blockId}
               player={player}

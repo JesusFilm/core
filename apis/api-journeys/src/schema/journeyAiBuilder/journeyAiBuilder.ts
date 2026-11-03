@@ -8,6 +8,7 @@ import { builder } from '../builder'
 
 import { getGatewayModel } from './gateway'
 import { choosePhotos } from './images/choosePhotos'
+import { resolveImageAsset } from './images/resolveImageAsset'
 import {
   searchUnsplashPhotos,
   triggerUnsplashDownload
@@ -120,7 +121,7 @@ builder.subscriptionField('journeyAiBuilderSubscription', (t) =>
     args: {
       input: t.arg({ type: JourneyAiBuilderInput, required: true })
     },
-    subscribe: async function* (_root, { input }) {
+    subscribe: async function* (_root, { input }, context) {
       const model = getGatewayModel()
       if (model == null)
         throw new GraphQLError('The AI journey builder is not set up', {
@@ -161,8 +162,11 @@ builder.subscriptionField('journeyAiBuilderSubscription', (t) =>
           },
           {
             model,
+            userId: context.user.id,
             abortSignal,
             images: {
+              resolveAsset: async (src) =>
+                await resolveImageAsset(src, abortSignal),
               searchPhotos: searchUnsplashPhotos,
               choosePhotos: async (needs) =>
                 await choosePhotos(model, abortSignal, needs),

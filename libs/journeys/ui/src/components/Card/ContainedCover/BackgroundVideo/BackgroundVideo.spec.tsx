@@ -82,7 +82,16 @@ const playerRefMock = {
 describe('BackgroundVideo', () => {
   describe('BackgroundVideo', () => {
     beforeEach(() => {
+      vi.clearAllMocks()
       vi.mocked(videojs).mockReturnValue(playerRefMock as unknown as Player)
+    })
+
+    it('disposes playback when a preview card is changed or removed', () => {
+      const { unmount } = render(
+        <BackgroundVideo setLoading={vi.fn()} cardColor="black" {...video} />
+      )
+      unmount()
+      expect(playerRefMock.dispose).toHaveBeenCalledOnce()
     })
 
     it('should set container to 16:9', () => {

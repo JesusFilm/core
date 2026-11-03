@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { exampleJourneys, shortJourney } from './examples'
+import { exampleJourneys, mediaJourney, shortJourney } from './examples'
 import {
   journeyForModel,
   journeyInputSchema,
@@ -8,6 +8,35 @@ import {
 } from './journeySchema'
 
 describe('journeySchema', () => {
+  it.each(['fit', 'fill', 'zoomed'])(
+    'retains the native %s video fit through model and stored schemas',
+    (objectFit) => {
+      const journey = structuredClone(mediaJourney)
+      const watch = journey.steps.find((step) => step.name === 'watch')!
+      const video = { url: 'https://youtu.be/dQw4w9WgXcQ', objectFit }
+      const input = {
+        ...journey,
+        steps: [
+          {
+            ...watch,
+            card: {
+              ...watch.card,
+              backgroundVideo: video,
+              content: [{ type: 'video', name: 'watch-video', ...video }]
+            }
+          }
+        ]
+      }
+      for (const schema of [journeyInputSchema, journeySchema]) {
+        const parsed = schema.parse(input)
+        expect(parsed.steps[0].card.backgroundVideo).toMatchObject({
+          objectFit
+        })
+        expect(parsed.steps[0].card.content[0]).toMatchObject({ objectFit })
+      }
+    }
+  )
+
   it('accepts the three example journeys', () => {
     exampleJourneys.forEach((journey) => {
       expect(journeySchema.safeParse(journey).success).toBe(true)

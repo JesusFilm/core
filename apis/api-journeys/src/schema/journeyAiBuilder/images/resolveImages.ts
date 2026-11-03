@@ -17,6 +17,9 @@ export interface ImageNeed {
 }
 
 export interface ImageDeps {
+  resolveAsset?: (
+    src: string
+  ) => Promise<{ width: number; height: number; blurhash: string }>
   searchPhotos: (
     query: string,
     orientation: 'portrait' | 'landscape'
@@ -36,8 +39,8 @@ const CANDIDATES_PER_IMAGE = 5
 
 /**
  * Fills src, width, height and blurhash on every image (ENG-3767 "Images").
- * The model writes only search and alt, so the photo fields are the server's
- * to add. Mutates `journey` in place.
+ * The model supplies a search or existing asset and framing; the server adds
+ * photo metadata. Mutates `journey` in place.
  *
  * - An image that already carries a photo is kept, so resolving a journey
  *   twice does not search twice.
@@ -53,30 +56,82 @@ export async function resolveImages(
   previous: Journey | null,
   deps: ImageDeps
 ): Promise<string[]> {
+  const warnings: string[] = []
   const previousImages = new Map(
     previous == null
       ? []
       : imageSlots(previous).map((slot) => [slot.name, slot.image])
   )
 
-  const missing = imageSlots(journey).filter((slot) => {
+  const slots = imageSlots(journey)
+  await Promise.all(
+    slots
+      .filter((slot) => slot.image.assetUrl != null)
+      .map(async (slot) => {
+        const { assetUrl, assetWidth, assetHeight } = slot.image
+        if (assetUrl == null) return
+        if (assetWidth != null && assetHeight != null) {
+          Object.assign(slot.image, {
+            src: assetUrl,
+            width: assetWidth,
+            height: assetHeight,
+            blurhash: ''
+          })
+          return
+        }
+        const earlier = previousImages.get(slot.name)
+        if (
+          earlier?.assetUrl === assetUrl &&
+          earlier.width != null &&
+          earlier.height != null
+        ) {
+          Object.assign(slot.image, {
+            src: assetUrl,
+            width: earlier.width,
+            height: earlier.height,
+            blurhash: earlier.blurhash
+          })
+          return
+        }
+        try {
+          if (deps.resolveAsset == null)
+            throw new Error('Asset metadata lookup is unavailable.')
+          Object.assign(slot.image, {
+            src: assetUrl,
+            ...(await deps.resolveAsset(assetUrl))
+          })
+        } catch {
+          warnings.push(
+            `image \`${slot.name}\`: could not load the selected asset. Choose an existing editor upload or supported library image.`
+          )
+        }
+      })
+  )
+  const missing = slots.filter((slot) => {
+    if (slot.image.assetUrl != null) {
+      return false
+    }
     if (slot.image.src != null) return false
     const earlier = previousImages.get(slot.name)
     if (earlier?.src != null && earlier.search === slot.image.search) {
-      Object.assign(slot.image, { ...earlier, alt: slot.image.alt })
+      Object.assign(slot.image, {
+        src: earlier.src,
+        width: earlier.width,
+        height: earlier.height,
+        blurhash: earlier.blurhash
+      })
       return false
     }
     return true
   })
-  if (missing.length === 0) return []
+  if (missing.length === 0) return warnings
 
-  const warnings: string[] = []
   const needs: Array<ImageNeed & { slot: ImageSlot }> = []
   await Promise.all(
     missing.map(async (slot) => {
       try {
         const candidates = (
-          await deps.searchPhotos(slot.image.search, slot.orientation)
+          await deps.searchPhotos(slot.image.search ?? '', slot.orientation)
         ).slice(0, CANDIDATES_PER_IMAGE)
         if (candidates.length === 0) {
           warnings.push(
@@ -87,7 +142,7 @@ export async function resolveImages(
         needs.push({
           slot,
           name: slot.name,
-          search: slot.image.search,
+          search: slot.image.search ?? '',
           alt: slot.image.alt,
           candidates
         })
@@ -138,12 +193,33 @@ function imageSlots(journey: Journey): ImageSlot[] {
         image: step.card.backgroundImage,
         orientation: 'portrait'
       })
+    if (step.card.backgroundVideo?.poster != null)
+      slots.push({
+        name: `${step.card.name}:cover:poster`,
+        image: step.card.backgroundVideo.poster,
+        orientation: 'landscape'
+      })
     step.card.content.forEach((item) => {
       if (item.type === 'image')
         slots.push({
           name: item.name,
           image: item.image,
           orientation: 'landscape'
+        })
+      if (item.type === 'video' && item.poster != null)
+        slots.push({
+          name: `${item.name}:poster`,
+          image: item.poster,
+          orientation: 'landscape'
+        })
+      if (item.type === 'poll')
+        item.options.forEach((option) => {
+          if (option.image != null)
+            slots.push({
+              name: `${option.name}:image`,
+              image: option.image,
+              orientation: 'landscape'
+            })
         })
     })
     return slots

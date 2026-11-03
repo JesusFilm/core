@@ -1,0 +1,299 @@
+{
+  "rows": [
+    {
+      "label": "text style title",
+      "status": "retained",
+      "schemaValue": "title",
+      "convertedValue": "h1"
+    },
+    {
+      "label": "text style heading",
+      "status": "retained",
+      "schemaValue": "heading",
+      "convertedValue": "h3"
+    },
+    {
+      "label": "text style subtitle",
+      "status": "retained",
+      "schemaValue": "subtitle",
+      "convertedValue": "subtitle1"
+    },
+    {
+      "label": "text style body",
+      "status": "retained",
+      "schemaValue": "body",
+      "convertedValue": "body1"
+    },
+    {
+      "label": "text style caption",
+      "status": "retained",
+      "schemaValue": "caption",
+      "convertedValue": "caption"
+    },
+    {
+      "label": "native text variant h2",
+      "status": "retained",
+      "schemaValue": "h2",
+      "convertedValue": "h2"
+    },
+    {
+      "label": "native text variant body2",
+      "status": "retained",
+      "schemaValue": "body2",
+      "convertedValue": "body2"
+    },
+    {
+      "label": "text alignment left",
+      "status": "retained",
+      "schemaValue": "left",
+      "convertedValue": "left"
+    },
+    {
+      "label": "text alignment center",
+      "status": "retained",
+      "schemaValue": "center",
+      "convertedValue": "center"
+    },
+    {
+      "label": "text alignment right",
+      "status": "retained",
+      "schemaValue": "right",
+      "convertedValue": "right"
+    },
+    {
+      "label": "text custom color",
+      "status": "retained",
+      "schemaValue": "#ff0000",
+      "convertedValue": {
+        "__typename": "TypographyBlockSettings",
+        "color": "#ff0000"
+      }
+    },
+    {
+      "label": "button style primary",
+      "status": "retained",
+      "schemaValue": "primary",
+      "convertedValue": "contained"
+    },
+    {
+      "label": "button style secondary",
+      "status": "retained",
+      "schemaValue": "secondary",
+      "convertedValue": "outlined"
+    },
+    {
+      "label": "button color",
+      "status": "retained",
+      "schemaValue": "secondary",
+      "convertedValue": "secondary"
+    },
+    {
+      "label": "button size",
+      "status": "retained",
+      "schemaValue": "small",
+      "convertedValue": "small"
+    },
+    {
+      "label": "button alignment",
+      "status": "retained",
+      "schemaValue": "left",
+      "convertedValue": {
+        "__typename": "ButtonBlockSettings",
+        "alignment": "left"
+      }
+    },
+    {
+      "label": "button text-only variant",
+      "status": "retained",
+      "schemaValue": "text",
+      "convertedValue": "text"
+    },
+    {
+      "label": "button trailing icon",
+      "status": "retained",
+      "schemaValue": "ArrowForwardRounded",
+      "convertedValue": "sample:end-icon"
+    },
+    {
+      "label": "button no action",
+      "status": "retained",
+      "schemaValue": {
+        "none": true
+      },
+      "convertedValue": null
+    },
+    {
+      "label": "video fit fit",
+      "status": "retained",
+      "schemaValue": "fit",
+      "convertedValue": "fit"
+    },
+    {
+      "label": "video fit fill",
+      "status": "retained",
+      "schemaValue": "fill",
+      "convertedValue": "fill"
+    },
+    {
+      "label": "video fit zoomed",
+      "status": "retained",
+      "schemaValue": "zoomed",
+      "convertedValue": "zoomed"
+    },
+    {
+      "label": "video autoplay false",
+      "status": "retained",
+      "schemaValue": false,
+      "convertedValue": false
+    },
+    {
+      "label": "video muted true",
+      "status": "retained",
+      "schemaValue": true,
+      "convertedValue": true
+    },
+    {
+      "label": "video custom poster",
+      "status": "retained",
+      "schemaValue": {
+        "search": "green hills",
+        "alt": "Hills"
+      },
+      "convertedValue": "sample:poster"
+    },
+    {
+      "label": "video start/end",
+      "status": "retained",
+      "schemaValue": 40,
+      "convertedValue": 40
+    },
+    {
+      "label": "image focal point",
+      "status": "retained",
+      "schemaValue": 20,
+      "convertedValue": 20
+    },
+    {
+      "label": "image scale",
+      "status": "retained",
+      "schemaValue": 150,
+      "convertedValue": 150
+    },
+    {
+      "label": "poll grid",
+      "status": "retained",
+      "schemaValue": true,
+      "convertedValue": true
+    },
+    {
+      "label": "response kind freeForm",
+      "status": "retained",
+      "schemaValue": "freeForm",
+      "convertedValue": "freeForm"
+    },
+    {
+      "label": "response kind name",
+      "status": "retained",
+      "schemaValue": "name",
+      "convertedValue": "name"
+    },
+    {
+      "label": "response kind email",
+      "status": "retained",
+      "schemaValue": "email",
+      "convertedValue": "email"
+    },
+    {
+      "label": "response kind phone",
+      "status": "retained",
+      "schemaValue": "phone",
+      "convertedValue": "phone"
+    },
+    {
+      "label": "response hint",
+      "status": "retained",
+      "schemaValue": "Please explain",
+      "convertedValue": "Please explain"
+    },
+    {
+      "label": "response rows",
+      "status": "retained",
+      "schemaValue": 4,
+      "convertedValue": 4
+    },
+    {
+      "label": "response hidden label",
+      "status": "retained",
+      "schemaValue": true,
+      "convertedValue": true
+    },
+    {
+      "label": "spacer exact spacing",
+      "status": "retained",
+      "schemaValue": 70,
+      "convertedValue": 70
+    },
+    {
+      "label": "card dark theme",
+      "status": "retained",
+      "schemaValue": "dark",
+      "convertedValue": "dark"
+    },
+    {
+      "label": "card light theme",
+      "status": "retained",
+      "schemaValue": "light",
+      "convertedValue": "light"
+    },
+    {
+      "label": "card blur",
+      "status": "retained",
+      "schemaValue": 10,
+      "convertedValue": 10
+    },
+    {
+      "label": "card alpha color",
+      "status": "retained",
+      "schemaValue": "#12345680",
+      "convertedValue": "#12345680"
+    }
+  ],
+  "multiselectConstraints": [
+    {
+      "limits": {},
+      "errors": []
+    },
+    {
+      "limits": {
+        "min": 1,
+        "max": 2
+      },
+      "errors": []
+    },
+    {
+      "limits": {
+        "min": 3
+      },
+      "errors": [
+        "step `audit`, item `sample`: min is more than the number of options (2)."
+      ]
+    },
+    {
+      "limits": {
+        "min": 1,
+        "max": 3
+      },
+      "errors": [
+        "step `audit`, item `sample`: max is more than the number of options (2)."
+      ]
+    },
+    {
+      "limits": {
+        "min": 2,
+        "max": 1
+      },
+      "errors": ["step `audit`, item `sample`: min must not be more than max."]
+    }
+  ],
+  "note": "Unknown schema fields may be stripped; a successful parse alone is not proof an option is supported. Image probes show the retained image object and the independent native framing default."
+}

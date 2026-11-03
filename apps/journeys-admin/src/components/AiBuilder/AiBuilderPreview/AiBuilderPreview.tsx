@@ -13,23 +13,26 @@ import {
 
 import { TreeBlock, transformer } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
-import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName as SharedThemeName } from '@core/shared/ui/themes'
+import type { FontFamilies } from '@core/shared/ui/themes'
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import type {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../../__generated__/BlockFields'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import { AiBuilderCard } from '../AiBuilderCard'
+import { AiBuilderVideo } from '../AiBuilderVideo'
 
 const FRAME_WIDTH = 360
 const FRAME_HEIGHT = 640
@@ -47,6 +50,7 @@ const PREVIEW_JOURNEY = {
 
 interface AiBuilderPreviewProps {
   blocks: BlockFields[]
+  journey?: Record<string, unknown> | null
 }
 
 /**
@@ -54,7 +58,8 @@ interface AiBuilderPreviewProps {
  * renderer. Taps inside the card are blocked; the arrows change card.
  */
 export function AiBuilderPreview({
-  blocks
+  blocks,
+  journey
 }: AiBuilderPreviewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const steps = useMemo(
@@ -62,6 +67,31 @@ export function AiBuilderPreview({
     [blocks]
   )
   const [index, setIndex] = useState(0)
+  const previewJourney = useMemo(() => {
+    const language =
+      journey?.language != null && typeof journey.language === 'object'
+        ? (journey.language as Record<string, unknown>)
+        : {}
+    return {
+      ...PREVIEW_JOURNEY,
+      language: {
+        ...PREVIEW_JOURNEY.language,
+        id: typeof language.id === 'string' ? language.id : '529',
+        bcp47: typeof language.bcp47 === 'string' ? language.bcp47 : 'en'
+      }
+    }
+  }, [journey?.language])
+  const { rtl, locale } = getJourneyRTL(previewJourney)
+  const fontFamilies = useMemo<FontFamilies | undefined>(() => {
+    if (journey?.fonts == null || typeof journey.fonts !== 'object')
+      return undefined
+    const fonts = journey.fonts as Record<string, unknown>
+    return {
+      headerFont: typeof fonts.headerFont === 'string' ? fonts.headerFont : '',
+      bodyFont: typeof fonts.bodyFont === 'string' ? fonts.bodyFont : '',
+      labelFont: typeof fonts.labelFont === 'string' ? fonts.labelFont : ''
+    }
+  }, [journey?.fonts])
 
   useEffect(() => {
     if (index >= steps.length) setIndex(Math.max(0, steps.length - 1))
@@ -69,6 +99,12 @@ export function AiBuilderPreview({
 
   // Block activation before it reaches a block, without covering its scroll area.
   function handlePreviewInteraction(event: SyntheticEvent): void {
+    const target = event.target as Element | null
+    if (
+      event.type !== 'submit' &&
+      target?.closest?.('[data-ai-preview-video]') != null
+    )
+      return
     event.preventDefault()
     event.stopPropagation()
   }
@@ -93,7 +129,12 @@ export function AiBuilderPreview({
   const cardBlock = step.children.find(
     (child) => child.__typename === 'CardBlock'
   )
-  const themeMode = cardBlock?.themeMode ?? ThemeMode.dark
+  const themeMode =
+    cardBlock?.themeMode ??
+    (journey?.theme === 'light' ? ThemeMode.light : ThemeMode.dark)
+  const video = cardBlock?.children.find(
+    (child) => child.__typename === 'VideoBlock'
+  )
 
   return (
     <Stack spacing={2} sx={{ alignItems: 'center', p: 3 }}>
@@ -122,6 +163,20 @@ export function AiBuilderPreview({
       <Typography variant="caption" color="text.secondary">
         {step.id}
       </Typography>
+      {video?.__typename === 'VideoBlock' && (
+        <Typography variant="caption" color="text.secondary">
+          {video.title} ·{' '}
+          {t('Clip {{start}} to {{end}}', {
+            start: secondsToTimeFormat(video.startAt ?? 0, {
+              trimZeroes: true
+            }),
+            end:
+              video.endAt != null
+                ? secondsToTimeFormat(video.endAt, { trimZeroes: true })
+                : t('end')
+          })}
+        </Typography>
+      )}
       <Box
         sx={{
           position: 'relative',
@@ -135,14 +190,16 @@ export function AiBuilderPreview({
       >
         <FramePortal
           sx={{ width: FRAME_WIDTH, height: FRAME_HEIGHT }}
-          dir="ltr"
+          dir={rtl ? 'rtl' : 'ltr'}
+          fontFamilies={fontFamilies}
         >
-          <JourneyProvider value={{ journey: PREVIEW_JOURNEY }}>
+          <JourneyProvider value={{ journey: previewJourney }}>
             <ThemeProvider
               themeName={SharedThemeName.journeyUi}
               themeMode={themeMode}
-              rtl={false}
-              locale="en"
+              rtl={rtl}
+              locale={locale}
+              fontFamilies={fontFamilies}
             >
               <Box
                 sx={{ position: 'relative', height: '100%' }}
@@ -158,13 +215,17 @@ export function AiBuilderPreview({
                 <ThemeProvider
                   themeName={cardBlock?.themeName ?? ThemeName.base}
                   themeMode={themeMode}
-                  rtl={false}
-                  locale="en"
+                  rtl={rtl}
+                  locale={locale}
                   nested
+                  fontFamilies={fontFamilies}
                 >
                   <BlockRenderer
                     block={step}
-                    wrappers={{ VideoWrapper, CardWrapper }}
+                    wrappers={{
+                      VideoWrapper: AiBuilderVideo,
+                      CardWrapper: AiBuilderCard
+                    }}
                   />
                 </ThemeProvider>
                 <StepFooter selectedStep={step} />

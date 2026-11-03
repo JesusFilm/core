@@ -1,5 +1,5 @@
 import type { LanguageModel } from 'ai'
-import type { z } from 'zod'
+import { ZodError, type z } from 'zod'
 
 import { logger } from '../../../logger'
 import { checkJourney } from '../checkJourney'
@@ -7,6 +7,7 @@ import { type GenerateJsonResult, generateJson } from '../generateJson'
 import { type ImageDeps, resolveImages } from '../images/resolveImages'
 import { type Journey, journeyInputSchema } from '../journeySchema'
 import { journeyToBlocks } from '../journeyToBlocks'
+import { resolveLibraryVideos } from '../libraryVideos/resolveLibraryVideos'
 import { restoreKeptSteps, scopeCheck } from '../scopeCheck'
 import {
   BUILDER_INSTRUCTIONS,
@@ -30,6 +31,7 @@ import {
 } from '../stages/stageSchemas'
 
 import type { BuilderEvent, Stage } from './events'
+import { checkPlanScope, checkStepStructure } from './planScope'
 
 export interface PipelineInput extends StageContext {
   message: string
@@ -41,6 +43,7 @@ export interface PipelineDeps {
   model: LanguageModel
   abortSignal: AbortSignal
   images: ImageDeps
+  userId?: string
   /** Defaults to `generateJson`; injectable for tests. */
   generate?: typeof generateJson
 }
@@ -52,6 +55,35 @@ export function isBigPlan(plan: Plan): boolean {
   if (plan.kind === 'create') return true
   const cards = new Set(plan.changes.map((change) => change.step))
   return cards.size >= BIG_PLAN_CARD_COUNT
+}
+
+/** A changed card must never be restored from the planner's conflicting keep list. */
+function preparePlan(plan: Plan, journey: Journey | null): Plan {
+  if (plan.kind !== 'edit' || journey == null) return plan
+  const owners = new Map<string, string>()
+  for (const step of journey.steps) {
+    owners.set(step.name, step.name)
+    owners.set(step.card.name, step.name)
+    for (const item of step.card.content) {
+      owners.set(item.name, step.name)
+      if (item.type === 'poll' || item.type === 'multiselect')
+        item.options.forEach((option) => owners.set(option.name, step.name))
+      if (item.type === 'video')
+        item.triggers?.forEach((trigger) => owners.set(trigger.name, step.name))
+    }
+  }
+  const changes = plan.changes.map((change) => ({
+    ...change,
+    step: owners.get(change.step) ?? owners.get(change.name) ?? change.step
+  }))
+  const changedSteps = new Set(changes.map((change) => change.step))
+  return {
+    ...plan,
+    changes,
+    keep: journey.steps
+      .filter((step) => !changedSteps.has(step.name))
+      .map((step) => step.name)
+  }
 }
 
 const STREAM_PROGRESS_INTERVAL_MS = 1000
@@ -96,15 +128,21 @@ export async function* runPipeline(
     stage: Stage,
     instructions: string,
     prompt: string,
-    schema: z.ZodType<T>
+    schema: z.ZodType<T>,
+    validate?: (value: T) => string[]
   ): AsyncGenerator<BuilderEvent, T | null> {
     yield { type: 'progress', stage, status: 'started' }
     for (let attempt = 0; attempt < 2; attempt++) {
       const result = yield* call(stage, instructions, prompt, schema)
-      if (result.ok) {
+      const errors = result.ok
+        ? (validate?.(result.value) ?? [])
+        : [result.error]
+      if (result.ok && errors.length === 0) {
         yield { type: 'progress', stage, status: 'done' }
         return result.value
       }
+      if (errors.length > 0)
+        prompt += `\n\nCorrect the previous response:\n${errors.join('\n')}`
     }
     return null
   }
@@ -149,6 +187,13 @@ export async function* runPipeline(
     case 'change': {
       yield { type: 'message', text: guide.reply }
       const kind = input.journey == null ? 'create' : (guide.kind ?? 'edit')
+      const allowStepChanges = guide.allowStepChanges ?? false
+      function scopePlan(plan: Plan): Plan {
+        return preparePlan(
+          plan.kind === 'edit' ? { ...plan, allowStepChanges } : plan,
+          input.journey
+        )
+      }
       const planner = yield* callWithRetry(
         'planner',
         PLANNER_INSTRUCTIONS,
@@ -160,7 +205,11 @@ export async function* runPipeline(
           input.message,
           kind
         ),
-        plannerOutputSchema
+        plannerOutputSchema,
+        (output) =>
+          output.plan == null
+            ? []
+            : checkPlanScope(scopePlan(output.plan), input.journey)
       )
       if (planner == null) {
         yield { type: 'error', text: "Sorry, I couldn't plan that change." }
@@ -173,12 +222,13 @@ export async function* runPipeline(
         }
         break
       }
-      if (isBigPlan(planner.plan)) {
-        yield { type: 'content', kind: 'plan', payload: planner.plan }
+      const preparedPlan = scopePlan(planner.plan)
+      if (isBigPlan(preparedPlan)) {
+        yield { type: 'content', kind: 'plan', payload: preparedPlan }
         yield { type: 'message', text: "Here's the plan. Shall I build it?" }
         break
       }
-      plan = planner.plan
+      plan = preparedPlan
       break
     }
   }
@@ -206,6 +256,23 @@ export async function* runPipeline(
   yield { type: 'done' }
 
   async function* build(plan: Plan): AsyncGenerator<BuilderEvent> {
+    plan = preparePlan(plan, input.journey)
+    if (checkPlanScope(plan, input.journey).length > 0) {
+      yield {
+        type: 'error',
+        text: 'That plan changes the card structure without a request to add, remove or reorder cards. Please describe the edit again; your journey is unchanged.'
+      }
+      return
+    }
+    // The plan may abbreviate exact colors, fonts and other native settings.
+    // Include the latest request even for an edit that builds immediately.
+    const buildContext: StageContext = {
+      ...context,
+      messages: [
+        ...context.messages.slice(-9),
+        { role: 'user', content: input.message }
+      ]
+    }
     const previous = plan.kind === 'edit' ? input.journey : null
     const keep = plan.kind === 'edit' ? plan.keep : []
     // Kept steps come from the previous journey, not the model's copy of them.
@@ -214,20 +281,32 @@ export async function* runPipeline(
     function checkOutput(result: GenerateJsonResult<Journey>): CheckedOutput {
       if (!result.ok)
         return { journey: null, errors: [result.error], warnings: [] }
+      function validate(journey: Journey): CheckedOutput {
+        const checked = checkJourney(journey)
+        return {
+          journey,
+          ...checked,
+          errors: [
+            ...checked.errors,
+            ...(previous != null && plan.kind === 'edit'
+              ? checkStepStructure(previous, journey, plan)
+              : [])
+          ]
+        }
+      }
       if (previous != null) {
         const restored = restoreKeptSteps(result.value, previous, keep)
-        const restoredCheck = checkJourney(restored)
-        if (restoredCheck.errors.length === 0)
-          return { journey: restored, ...restoredCheck }
+        const restoredCheck = validate(restored)
+        if (restoredCheck.errors.length === 0) return restoredCheck
       }
-      return { journey: result.value, ...checkJourney(result.value) }
+      return validate(result.value)
     }
 
     yield { type: 'progress', stage: 'builder', status: 'started' }
     const first = yield* call(
       'builder',
       BUILDER_INSTRUCTIONS,
-      builderPrompt(context, plan),
+      builderPrompt(buildContext, plan),
       journeyInputSchema
     )
     let checked = checkOutput(first)
@@ -238,7 +317,7 @@ export async function* runPipeline(
       const second = yield* call(
         'repair',
         BUILDER_INSTRUCTIONS,
-        repairPrompt(context, plan, first.text, checked.errors),
+        repairPrompt(buildContext, plan, first.text, checked.errors),
         journeyInputSchema
       )
       checked = checkOutput(second)
@@ -269,12 +348,31 @@ export async function* runPipeline(
     const outOfScope =
       previous != null ? scopeCheck(previous, journey, keep) : []
 
+    let libraryVideos: Awaited<ReturnType<typeof resolveLibraryVideos>>
+    try {
+      libraryVideos = await resolveLibraryVideos(
+        journey,
+        deps.abortSignal,
+        deps.userId
+      )
+    } catch (error) {
+      if (deps.abortSignal.aborted) throw error
+      yield {
+        type: 'error',
+        text:
+          error instanceof Error && !(error instanceof ZodError)
+            ? `${error.message} Your journey is unchanged.`
+            : 'The selected video or language is unavailable. Choose a different asset. Your journey is unchanged.'
+      }
+      return
+    }
+
     yield {
       type: 'content',
       kind: 'journey',
       payload: {
         journey,
-        blocks: journeyToBlocks(journey),
+        blocks: journeyToBlocks(journey, libraryVideos),
         warnings: [...checked.warnings, ...imageWarnings],
         outOfScope
       }

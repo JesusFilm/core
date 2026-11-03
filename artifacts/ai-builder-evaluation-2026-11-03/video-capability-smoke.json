@@ -1,0 +1,25 @@
+{
+  "id": "video-capability-smoke",
+  "target": "video-support",
+  "stages": [],
+  "edits": [
+    {
+      "index": 1,
+      "prompt": "Change the video clip so it starts at 25 seconds and ends at 35 seconds. Keep the same film and leave the other cards alone."
+    },
+    {
+      "index": 2,
+      "prompt": "On the welcome card, replace the still background photo with a muted looping clip from the same Fact or Fiction film, from 20 to 30 seconds. Keep the welcome text and button readable over the usual blurred video background. Leave the other cards alone."
+    }
+  ],
+  "startedAt": "2026-11-03T02:00:51.216Z",
+  "observations": [
+    "Creation used the correct library film and 40-second endpoint, but its initial start caption is 0 rather than the requested 20 seconds."
+  ],
+  "playbackCheck": {
+    "currentTime": 35.155202,
+    "duration": 330.324,
+    "paused": true,
+    "readyState": 4
+  }
+}

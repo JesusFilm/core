@@ -13,6 +13,59 @@ function clone(journey: Journey): Journey {
 }
 
 describe('checkJourney', () => {
+  it('validates background clips and refuses competing image/video covers', () => {
+    const journey = clone(shortJourney)
+    journey.steps[0].card.backgroundVideo = {
+      libraryVideo: 'resurrection',
+      startAt: 300,
+      endAt: 400
+    }
+    expect(checkJourney(journey).errors.join(' ')).toContain('342')
+    journey.steps[0].card.backgroundVideo.endAt = 320
+    expect(checkJourney(journey).errors).toEqual([])
+    journey.steps[0].card.backgroundImage = { search: 'hills', alt: 'Hills' }
+    expect(checkJourney(journey).errors.join(' ')).toContain(
+      'choose backgroundImage or backgroundVideo'
+    )
+  })
+
+  it('accepts a seeded library video and validates its clip bounds', () => {
+    const journey = clone(shortJourney)
+    journey.steps[1].next = 'close'
+    journey.steps[1].card.content = [
+      {
+        type: 'video',
+        name: 'claims-video',
+        libraryVideo: 'fact-or-fiction',
+        startAt: 20,
+        endAt: 60
+      }
+    ]
+    expect(checkJourney(journey).errors).toEqual([])
+    journey.steps[1].card.content[0] = {
+      type: 'video',
+      name: 'claims-video',
+      libraryVideo: 'fact-or-fiction',
+      startAt: 20,
+      endAt: 999
+    }
+    expect(checkJourney(journey).errors.join(' ')).toContain('330')
+  })
+
+  it('rejects conflicting video sources instead of silently choosing one', () => {
+    const journey = clone(shortJourney)
+    journey.steps[1].next = 'close'
+    journey.steps[1].card.content = [
+      {
+        type: 'video',
+        name: 'claims-video',
+        libraryVideo: 'fact-or-fiction',
+        url: 'https://youtu.be/dQw4w9WgXcQ'
+      }
+    ]
+    expect(checkJourney(journey).errors.join(' ')).toContain('exactly one')
+  })
+
   it('passes the example journeys', () => {
     exampleJourneys.forEach((journey) => {
       expect(checkJourney(journey).errors).toEqual([])
@@ -95,7 +148,7 @@ describe('checkJourney', () => {
     ]
 
     expect(checkJourney(journey).errors).toEqual([
-      'step `claims`, item `claims-video`: `https://vimeo.com/1234` is not a YouTube video link. Only YouTube videos are supported.',
+      'step `claims`, item `claims-video`: `https://vimeo.com/1234` is not a YouTube video link. Use a YouTube link or an approved libraryVideo.',
       'step `claims`, item `claims-video`: startAt must be before endAt.'
     ])
   })

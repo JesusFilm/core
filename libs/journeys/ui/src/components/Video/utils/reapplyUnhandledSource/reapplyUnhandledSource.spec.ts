@@ -19,6 +19,19 @@ function fakePlayer(
 }
 
 describe('reapplyUnhandledSource', () => {
+  it('recognizes media elements inside an iframe preview', () => {
+    const iframe = document.createElement('iframe')
+    document.body.appendChild(iframe)
+    try {
+      const video = iframe.contentDocument!.createElement('video')
+      const player = fakePlayer(video)
+      reapplyUnhandledSource(player)
+      expect(player.src).toHaveBeenCalledWith([hls])
+    } finally {
+      iframe.remove()
+    }
+  })
+
   it('sets the sources again when the media element was left on its <source> children', () => {
     const video = document.createElement('video')
     video.appendChild(document.createElement('source'))

@@ -1,0 +1,94 @@
+[
+  {
+    "id": "r1-nua1",
+    "round": 1,
+    "target": "nua1",
+    "prompt": "Make a short Fact or Fiction journey for someone curious or sceptical about Jesus. Help them think about whether the story of Jesus can be trusted, give them a little historical context, and finish by asking who they think Jesus was. Keep it welcoming and let them express what they actually think.",
+    "startedAt": "2026-11-03T01:48:53.928Z",
+    "stages": [
+      {
+        "label": "initial",
+        "capturedAt": "2026-11-03T01:50:42.952Z",
+        "cards": [
+          {
+            "position": 1,
+            "text": "Fact or Fiction: Jesus\n\nLet's look at a few claims about Jesus from history. Ready?\n\nLet's start"
+          },
+          {
+            "position": 2,
+            "text": "FACT\n\nJesus of Nazareth existed outside the Bible. Non-Christian historians like Tacitus and Josephus wrote about him.\n\nNext claim"
+          },
+          {
+            "position": 3,
+            "text": "FICTION\n\nHe died on the cross. While his teachings were powerful, the early Christian movement was built around the fact of his crucifixion, which was difficult to accept for his followers.\n\nYour turn"
+          },
+          {
+            "position": 4,
+            "text": "Where do you stand?\n\nBased on what you've seen, who do you think Jesus was to history?\n\nShare your view\n​\n\nSubmit"
+          }
+        ],
+        "snapshot": "- navigation:\n  - button \"Navigation Drawer Toggle\":\n  - link \"Projects\":\n    - /url: /\n    - generic: Projects\n  - link \"Templates\":\n    - /url: /templates\n    - generic: Templates\n  - link \"AI Builder\":\n    - /url: /ai-builder\n    - generic: AI Builder\n  - separator\n  - button \"Impersonate\":\n    - generic: Impersonate\n  - link \"Delete User\":\n    - /url: /users/delete\n    - generic: Delete User\n  - button \"Profile\":\n    - generic: Profile\n  - img \"Next Steps Logo\"\n  - img \"Next Steps Title\"\n- main:\n  - generic: AI Builder\n  - button \"New draft\": New draft\n  - list:\n    - 'button \"Fact or Fiction: Jesus 03/11/2026, 14:50:25\"':\n      - generic: \"Fact or Fiction: Jesus\"\n      - paragraph: 03/11/2026, 14:50:25\n    - button \"Delete draft\":\n    - 'button \"Easter: A New Beginning 03/11/2026, 14:26:14\"':\n      - generic: \"Easter: A New Beginning\"\n      - paragraph: 03/11/2026, 14:26:14\n    - button \"Delete draft\":\n  - paragraph: Make a short Fact or Fiction journey for someone curious or sceptical about Jesus. Help them think about whether the story of Jesus can be trusted, give them a little historical context, and finish by asking who they think Jesus was. Keep it welcoming and let them express what they actually think.\n  - paragraph: I'll create a short “Fact or Fiction” journey for people who are curious or sceptical about Jesus, with historical context and a final prompt asking who they think He was.\n  - text: Plan\n  - paragraph: \"Fact or Fiction: Jesus 1. welcome: Welcome sceptical or curious visitors and set a respectful, honest tone. 2. fact-1: Present a historical fact about Jesus's existence and offer context. 3. fiction-1: Address a common myth about Jesus and clarify the historical perspective. 4. reflection: Invite the user to share their own view on who Jesus was. Assumed: The journey ends with a textResponse card where the user types their answer; no further steps or redirects are needed after submission. Assumed: Historical context is kept brief to maintain a 'short' journey length of 4 steps. Assumed: The 'reflection' step serves as the closing action, fulfilling the requirement to finish with a question.\"\n  - paragraph: Here's the plan. Shall I build it?\n  - paragraph: Yes, build it.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 4 of 4\n  - button \"Next card\" [disabled]:\n  - generic: reflection\n  - iframe:\n    - button:\n    - img \"An open notebook and pen resting on a wooden table\"\n    - img \"An open notebook and pen resting on a wooden table\"\n    - heading \"Where do you stand?\" [level=1]\n    - paragraph: Based on what you've seen, who do you think Jesus was to history?\n    - heading \"Share your view\" [level=6]\n    - textbox \"Share your view\":\n      - /placeholder: \"\"\n    - button \"Submit\":\n      - paragraph: Submit\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert"
+      },
+      {
+        "label": "edit-1",
+        "capturedAt": "2026-11-03T01:51:49.709Z",
+        "cards": [
+          {
+            "position": 1,
+            "text": "Fact or Fiction: Jesus\n\nLet's look at a few claims about Jesus from history. Ready?\n\nLet's start"
+          },
+          {
+            "position": 2,
+            "text": "FACT\n\nJesus of Nazareth existed outside the Bible. Non-Christian historians like Tacitus and Josephus wrote about him.\n\nNext claim"
+          },
+          {
+            "position": 3,
+            "text": "FICTION\n\nFiction: Jesus did not die on the cross. In reality, virtually all sources—including the Bible and Roman historian Tacitus—record his crucifixion by the Roman governor Pontius Pilate. This is a well-established historical fact.\n\nYour turn"
+          },
+          {
+            "position": 4,
+            "text": "Where do you stand?\n\nWho do you think Jesus was?\n\nShare your view\n​\n\nSubmit"
+          }
+        ],
+        "snapshot": "- navigation:\n  - button \"Navigation Drawer Toggle\":\n  - link \"Projects\":\n    - /url: /\n    - generic: Projects\n  - link \"Templates\":\n    - /url: /templates\n    - generic: Templates\n  - link \"AI Builder\":\n    - /url: /ai-builder\n    - generic: AI Builder\n  - separator\n  - button \"Impersonate\":\n    - generic: Impersonate\n  - link \"Delete User\":\n    - /url: /users/delete\n    - generic: Delete User\n  - button \"Profile\":\n    - generic: Profile\n  - img \"Next Steps Logo\"\n  - img \"Next Steps Title\"\n- main:\n  - generic: AI Builder\n  - button \"New draft\": New draft\n  - list:\n    - 'button \"Fact or Fiction: Jesus 03/11/2026, 14:51:37\"':\n      - generic: \"Fact or Fiction: Jesus\"\n      - paragraph: 03/11/2026, 14:51:37\n    - button \"Delete draft\":\n    - 'button \"Easter: A New Beginning 03/11/2026, 14:26:14\"':\n      - generic: \"Easter: A New Beginning\"\n      - paragraph: 03/11/2026, 14:26:14\n    - button \"Delete draft\":\n  - paragraph: Make a short Fact or Fiction journey for someone curious or sceptical about Jesus. Help them think about whether the story of Jesus can be trusted, give them a little historical context, and finish by asking who they think Jesus was. Keep it welcoming and let them express what they actually think.\n  - paragraph: I'll create a short “Fact or Fiction” journey for people who are curious or sceptical about Jesus, with historical context and a final prompt asking who they think He was.\n  - text: Plan\n  - paragraph: \"Fact or Fiction: Jesus 1. welcome: Welcome sceptical or curious visitors and set a respectful, honest tone. 2. fact-1: Present a historical fact about Jesus's existence and offer context. 3. fiction-1: Address a common myth about Jesus and clarify the historical perspective. 4. reflection: Invite the user to share their own view on who Jesus was. Assumed: The journey ends with a textResponse card where the user types their answer; no further steps or redirects are needed after submission. Assumed: Historical context is kept brief to maintain a 'short' journey length of 4 steps. Assumed: The 'reflection' step serves as the closing action, fulfilling the requirement to finish with a question.\"\n  - paragraph: Here's the plan. Shall I build it?\n  - paragraph: Yes, build it.\n  - paragraph: The card labelled FICTION is confusing because it says Jesus died without explaining what claim is fiction. Make that contrast clear and fair for a sceptical reader. Also make the final question about who they think Jesus was, not just his place in history. Keep the rest of the journey as it is.\n  - paragraph: I'll clarify the FICTION card so the specific claim about Jesus' death is obvious, and I will update the final question to ask who you think he was.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 4 of 4\n  - button \"Next card\" [disabled]:\n  - generic: reflection\n  - iframe:\n    - button:\n    - img \"An open notebook and pen resting on a wooden table\"\n    - img \"An open notebook and pen resting on a wooden table\"\n    - heading \"Where do you stand?\" [level=1]\n    - paragraph: Who do you think Jesus was?\n    - heading \"Share your view\" [level=6]\n    - textbox \"Share your view\":\n      - /placeholder: \"\"\n    - button \"Submit\":\n      - paragraph: Submit\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert"
+      }
+    ],
+    "planSnapshot": "- navigation:\n  - button \"Navigation Drawer Toggle\":\n  - link \"Projects\":\n    - /url: /\n    - generic: Projects\n  - link \"Templates\":\n    - /url: /templates\n    - generic: Templates\n  - link \"AI Builder\":\n    - /url: /ai-builder\n    - generic: AI Builder\n  - separator\n  - button \"Impersonate\":\n    - generic: Impersonate\n  - link \"Delete User\":\n    - /url: /users/delete\n    - generic: Delete User\n  - button \"Profile\":\n    - generic: Profile\n  - img \"Next Steps Logo\"\n  - img \"Next Steps Title\"\n- main:\n  - generic: AI Builder\n  - button \"New draft\": New draft\n  - list:\n    - button \"Make a short Fact or Fiction journey for someone curious or 03/11/2026, 14:49:05\":\n      - generic: Make a short Fact or Fiction journey for someone curious or\n      - paragraph: 03/11/2026, 14:49:05\n    - button \"Delete draft\":\n    - 'button \"Easter: A New Beginning 03/11/2026, 14:26:14\"':\n      - generic: \"Easter: A New Beginning\"\n      - paragraph: 03/11/2026, 14:26:14\n    - button \"Delete draft\":\n  - paragraph: Make a short Fact or Fiction journey for someone curious or sceptical about Jesus. Help them think about whether the story of Jesus can be trusted, give them a little historical context, and finish by asking who they think Jesus was. Keep it welcoming and let them express what they actually think.\n  - paragraph: I'll create a short “Fact or Fiction” journey for people who are curious or sceptical about Jesus, with historical context and a final prompt asking who they think He was.\n  - text: Plan\n  - paragraph: \"Fact or Fiction: Jesus 1. welcome: Welcome sceptical or curious visitors and set a respectful, honest tone. 2. fact-1: Present a historical fact about Jesus's existence and offer context. 3. fiction-1: Address a common myth about Jesus and clarify the historical perspective. 4. reflection: Invite the user to share their own view on who Jesus was. Assumed: The journey ends with a textResponse card where the user types their answer; no further steps or redirects are needed after submission. Assumed: Historical context is kept brief to maintain a 'short' journey length of 4 steps. Assumed: The 'reflection' step serves as the closing action, fulfilling the requirement to finish with a question.\"\n  - paragraph: Here's the plan. Shall I build it?\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - paragraph: Your journey preview will appear here.\n- button \"Open Next.js Dev Tools\":\n- alert",
+    "initial": {
+      "purpose": 3,
+      "clarity": 2,
+      "flow": 3,
+      "visual": 3,
+      "notes": [
+        "Historical names are supplied and a sceptical tone is mostly respected.",
+        "The FICTION card states that Jesus died without identifying a fictional claim; its heading reverses or obscures its meaning.",
+        "The closing question is about Jesus in history rather than clearly exploring his identity.",
+        "Closing form and button need scrolling within the compact preview."
+      ],
+      "repairObserved": true
+    },
+    "edits": [
+      {
+        "index": 1,
+        "prompt": "The card labelled FICTION is confusing because it says Jesus died without explaining what claim is fiction. Make that contrast clear and fair for a sceptical reader. Also make the final question about who they think Jesus was, not just his place in history. Keep the rest of the journey as it is.",
+        "startedAt": "2026-11-03T01:51:04.515Z",
+        "evaluation": {
+          "fidelity": 1,
+          "collateralChanges": [],
+          "notes": [
+            "Both requested text changes were applied; other card text was preserved.",
+            "The revised historical statement now overstates the breadth of source agreement."
+          ]
+        }
+      }
+    ],
+    "lastSnapshot": "- navigation:\n  - button \"Navigation Drawer Toggle\":\n  - link \"Projects\":\n    - /url: /\n    - generic: Projects\n  - link \"Templates\":\n    - /url: /templates\n    - generic: Templates\n  - link \"AI Builder\":\n    - /url: /ai-builder\n    - generic: AI Builder\n  - separator\n  - button \"Impersonate\":\n    - generic: Impersonate\n  - link \"Delete User\":\n    - /url: /users/delete\n    - generic: Delete User\n  - button \"Profile\":\n    - generic: Profile\n  - img \"Next Steps Logo\"\n  - img \"Next Steps Title\"\n- main:\n  - generic: AI Builder\n  - button \"New draft\": New draft\n  - list:\n    - 'button \"Fact or Fiction: Jesus 03/11/2026, 14:51:37\"':\n      - generic: \"Fact or Fiction: Jesus\"\n      - paragraph: 03/11/2026, 14:51:37\n    - button \"Delete draft\":\n    - 'button \"Easter: A New Beginning 03/11/2026, 14:26:14\"':\n      - generic: \"Easter: A New Beginning\"\n      - paragraph: 03/11/2026, 14:26:14\n    - button \"Delete draft\":\n  - paragraph: Make a short Fact or Fiction journey for someone curious or sceptical about Jesus. Help them think about whether the story of Jesus can be trusted, give them a little historical context, and finish by asking who they think Jesus was. Keep it welcoming and let them express what they actually think.\n  - paragraph: I'll create a short “Fact or Fiction” journey for people who are curious or sceptical about Jesus, with historical context and a final prompt asking who they think He was.\n  - text: Plan\n  - paragraph: \"Fact or Fiction: Jesus 1. welcome: Welcome sceptical or curious visitors and set a respectful, honest tone. 2. fact-1: Present a historical fact about Jesus's existence and offer context. 3. fiction-1: Address a common myth about Jesus and clarify the historical perspective. 4. reflection: Invite the user to share their own view on who Jesus was. Assumed: The journey ends with a textResponse card where the user types their answer; no further steps or redirects are needed after submission. Assumed: Historical context is kept brief to maintain a 'short' journey length of 4 steps. Assumed: The 'reflection' step serves as the closing action, fulfilling the requirement to finish with a question.\"\n  - paragraph: Here's the plan. Shall I build it?\n  - paragraph: Yes, build it.\n  - paragraph: The card labelled FICTION is confusing because it says Jesus died without explaining what claim is fiction. Make that contrast clear and fair for a sceptical reader. Also make the final question about who they think Jesus was, not just his place in history. Keep the rest of the journey as it is.\n  - paragraph: I'll clarify the FICTION card so the specific claim about Jesus' death is obvious, and I will update the final question to ask who you think he was.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 4 of 4\n  - button \"Next card\" [disabled]:\n  - generic: reflection\n  - iframe:\n    - button:\n    - img \"An open notebook and pen resting on a wooden table\"\n    - img \"An open notebook and pen resting on a wooden table\"\n    - heading \"Where do you stand?\" [level=1]\n    - paragraph: Who do you think Jesus was?\n    - heading \"Share your view\" [level=6]\n    - textbox \"Share your view\":\n      - /placeholder: \"\"\n    - button \"Submit\":\n      - paragraph: Submit\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+    "status": "preliminary-before-library-video-support",
+    "final": {
+      "purpose": 3,
+      "clarity": 3,
+      "flow": 3,
+      "visual": 3
+    }
+  }
+]

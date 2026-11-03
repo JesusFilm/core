@@ -1,0 +1,230 @@
+[
+  {
+    "card": 1,
+    "snapshot": "- navigation:\n  - button \"Navigation Drawer Toggle\":\n  - link \"Projects\":\n    - /url: /\n    - generic: Projects\n  - link \"Templates\":\n    - /url: /templates\n    - generic: Templates\n  - link \"AI Builder\":\n    - /url: /ai-builder\n    - generic: AI Builder\n  - separator\n  - button \"Impersonate\":\n    - generic: Impersonate\n  - link \"Delete User\":\n    - /url: /users/delete\n    - generic: Delete User\n  - button \"Profile\":\n    - generic: Profile\n  - img \"Next Steps Logo\"\n  - img \"Next Steps Title\"\n- main:\n  - generic: AI Builder\n  - button \"New draft\": New draft\n  - list:\n    - button \"Dark Style Test 04/11/2026, 08:28:20\":\n      - generic: Dark Style Test\n      - paragraph: 04/11/2026, 08:28:20\n    - button \"Delete draft\":\n    - 'button \"Fact or Fiction: Can We Trust Jesus? 03/11/2026, 15:34:23\"':\n      - generic: \"Fact or Fiction: Can We Trust Jesus?\"\n      - paragraph: 03/11/2026, 15:34:23\n    - button \"Delete draft\":\n    - 'button \"Easter: A New Beginning 03/11/2026, 14:26:14\"':\n      - generic: \"Easter: A New Beginning\"\n      - paragraph: 03/11/2026, 14:26:14\n    - button \"Delete draft\":\n  - paragraph: \"Create a three-card dark-mode style test. On the first card use a Title-sized heading, Normal Body text colored #AADDFF, Inter for headings and Nunito for body text, and a small centered outlined button in the secondary color with a Home leading icon and a left-chevron trailing icon. Second card: a Text and Image poll with two outdoor-photo choices. Third card: an optional phone-number response with a helpful hint, two visible rows, and a Send button. Use no external links or integrations. Keep all text very short.\"\n  - paragraph: \"Got it. I'll create a 3-card dark-mode test journey: Card 1 gets an Inter h2 heading, #AADDFF body text in Nunito, and a small centered outlined secondary button with Home leading icon and ChevronLeftRounded end icon; Card 2 is a text-and-image poll with two outdoor photos; Card 3 is an optional phone field with a hint, 2 rows, and a Send button. No links or integrations.\"\n  - text: Plan\n  - paragraph: \"Dark Style Test 1. welcome: Styled welcome with heading, colored body text, and a test button. 2. poll: Two-choice Text and Image poll with outdoor photos. 3. phone-response: Optional phone entry with hint, followed by a Send button. Assumed: The trailing icon is the standard end icon position on the button (ChevronLeftRounded). Assumed: The poll's next destination after selection is the phone-response step. Assumed: The Send button after the phone response has no navigation action (none). Assumed: Background images are subtle dark outdoor/landscape stock photos to keep the cards from looking bland while staying dark-themed. Assumed: All text content is kept to short placeholder phrases as requested.\"\n  - paragraph: Here's the plan. Shall I build it?\n  - paragraph: Yes, build it.\n  - paragraph: The AI model isn't responding right now. Please try again in a few minutes. Your journey is unchanged.\n  - paragraph: Please retry building the agreed three-card style-test plan.\n  - paragraph: The AI model isn't responding right now. Please try again in a few minutes. Your journey is unchanged.\n  - paragraph: Retry building the same agreed style-test plan now.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - alert:\n    - text: \"Some things need a look:\"\n    - generic: \"step `phone-response`: nothing links to it.\"\n  - button \"Previous card\" [disabled]:\n  - paragraph: Card 1 of 3\n  - button \"Next card\":\n  - generic: welcome\n  - iframe:\n    - button:\n    - img \"A dark mountain landscape at dusk\"\n    - img \"A dark mountain landscape at dusk\"\n    - heading \"Welcome in\" [level=2]\n    - paragraph: Tap through to see how things look.\n    - button \"Continue\":\n      - paragraph: Continue\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+    "visible": {
+      "buttons": [
+        {
+          "html": "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-sizeMedium MuiButton-colorPrimary iframe-u3enuh-MuiButtonBase-root-MuiButton-root",
+          "styles": {
+            "classes": "MuiBox-root iframe-10wg7hs",
+            "color": "rgb(254, 254, 254)",
+            "font": "\"Open Sans\", Tahoma, Verdana, sans-serif",
+            "fontSize": "16px",
+            "tag": "DIV",
+            "text": "Continue"
+          },
+          "svg": ["ChevronLeftRoundedIcon"],
+          "text": "Continue"
+        }
+      ],
+      "fontsLoaded": {
+        "Inter": true,
+        "Nunito": true
+      },
+      "images": [
+        {
+          "alt": "A dark mountain landscape at dusk",
+          "height": 640,
+          "src": "/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1597327108036-262f75e2db6f%3Fcrop%3Dentropy%26cs%3Dtinysrgb%26fit%3Dmax%26fm%3Djpg%26ixid%3DM3w0MDYwNDN8MHwxfHNlYXJjaHw1fHxkYXJrJTIwbW9vZHklMjBtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwxfDF8fHwxNzkzNzM0MDk2fDA%26ixlib%3Drb-4.1.0%26q%3D80%26w%3D1080&w=3840&q=75",
+          "width": 360
+        },
+        {
+          "alt": "A dark mountain landscape at dusk",
+          "height": 378,
+          "src": "/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1597327108036-262f75e2db6f%3Fcrop%3Dentropy%26cs%3Dtinysrgb%26fit%3Dmax%26fm%3Djpg%26ixid%3DM3w0MDYwNDN8MHwxfHNlYXJjaHw1fHxkYXJrJTIwbW9vZHklMjBtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwxfDF8fHwxNzkzNzM0MDk2fDA%26ixlib%3Drb-4.1.0%26q%3D80%26w%3D1080&w=3840&q=75",
+          "width": 360
+        }
+      ],
+      "inputs": [],
+      "text": "Welcome in\n\nTap through to see how things look.\n\nContinue",
+      "textBlocks": [
+        {
+          "classes": "MuiTypography-root MuiTypography-h2 MuiTypography-alignCenter MuiTypography-gutterBottom iframe-13cluky-MuiTypography-root",
+          "color": "rgb(254, 254, 254)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "36px",
+          "tag": "H2",
+          "text": "Welcome in"
+        },
+        {
+          "classes": "MuiTypography-root MuiTypography-body2 MuiTypography-alignCenter MuiTypography-gutterBottom iframe-vtdawp-MuiTypography-root",
+          "color": "rgb(158, 197, 255)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "14px",
+          "tag": "P",
+          "text": "Tap through to see how things look."
+        },
+        {
+          "classes": "MuiTypography-root MuiTypography-inherit iframe-sug9gd-MuiTypography-root",
+          "color": "rgb(38, 38, 46)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "16px",
+          "tag": "P",
+          "text": "Continue"
+        }
+      ]
+    }
+  },
+  {
+    "card": 2,
+    "snapshot": "- navigation:\n  - button \"Navigation Drawer Toggle\":\n  - link \"Projects\":\n    - /url: /\n    - generic: Projects\n  - link \"Templates\":\n    - /url: /templates\n    - generic: Templates\n  - link \"AI Builder\":\n    - /url: /ai-builder\n    - generic: AI Builder\n  - separator\n  - button \"Impersonate\":\n    - generic: Impersonate\n  - link \"Delete User\":\n    - /url: /users/delete\n    - generic: Delete User\n  - button \"Profile\":\n    - generic: Profile\n  - img \"Next Steps Logo\"\n  - img \"Next Steps Title\"\n- main:\n  - generic: AI Builder\n  - button \"New draft\": New draft\n  - list:\n    - button \"Dark Style Test 04/11/2026, 08:28:20\":\n      - generic: Dark Style Test\n      - paragraph: 04/11/2026, 08:28:20\n    - button \"Delete draft\":\n    - 'button \"Fact or Fiction: Can We Trust Jesus? 03/11/2026, 15:34:23\"':\n      - generic: \"Fact or Fiction: Can We Trust Jesus?\"\n      - paragraph: 03/11/2026, 15:34:23\n    - button \"Delete draft\":\n    - 'button \"Easter: A New Beginning 03/11/2026, 14:26:14\"':\n      - generic: \"Easter: A New Beginning\"\n      - paragraph: 03/11/2026, 14:26:14\n    - button \"Delete draft\":\n  - paragraph: \"Create a three-card dark-mode style test. On the first card use a Title-sized heading, Normal Body text colored #AADDFF, Inter for headings and Nunito for body text, and a small centered outlined button in the secondary color with a Home leading icon and a left-chevron trailing icon. Second card: a Text and Image poll with two outdoor-photo choices. Third card: an optional phone-number response with a helpful hint, two visible rows, and a Send button. Use no external links or integrations. Keep all text very short.\"\n  - paragraph: \"Got it. I'll create a 3-card dark-mode test journey: Card 1 gets an Inter h2 heading, #AADDFF body text in Nunito, and a small centered outlined secondary button with Home leading icon and ChevronLeftRounded end icon; Card 2 is a text-and-image poll with two outdoor photos; Card 3 is an optional phone field with a hint, 2 rows, and a Send button. No links or integrations.\"\n  - text: Plan\n  - paragraph: \"Dark Style Test 1. welcome: Styled welcome with heading, colored body text, and a test button. 2. poll: Two-choice Text and Image poll with outdoor photos. 3. phone-response: Optional phone entry with hint, followed by a Send button. Assumed: The trailing icon is the standard end icon position on the button (ChevronLeftRounded). Assumed: The poll's next destination after selection is the phone-response step. Assumed: The Send button after the phone response has no navigation action (none). Assumed: Background images are subtle dark outdoor/landscape stock photos to keep the cards from looking bland while staying dark-themed. Assumed: All text content is kept to short placeholder phrases as requested.\"\n  - paragraph: Here's the plan. Shall I build it?\n  - paragraph: Yes, build it.\n  - paragraph: The AI model isn't responding right now. Please try again in a few minutes. Your journey is unchanged.\n  - paragraph: Please retry building the agreed three-card style-test plan.\n  - paragraph: The AI model isn't responding right now. Please try again in a few minutes. Your journey is unchanged.\n  - paragraph: Retry building the same agreed style-test plan now.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - alert:\n    - text: \"Some things need a look:\"\n    - generic: \"step `phone-response`: nothing links to it.\"\n  - button \"Previous card\":\n  - paragraph: Card 2 of 3\n  - button \"Next card\" [active]:\n  - generic: poll\n  - iframe:\n    - button:\n    - img \"A misty forest path under low light\"\n    - img \"A misty forest path under low light\"\n    - heading \"Which photo do you like?\" [level=2]\n    - img \"A sunrise over rolling green hills\"\n    - paragraph: Text and Image\n    - img \"A calm mountain lake at dawn\"\n    - paragraph: Text and Image\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+    "visible": {
+      "buttons": [],
+      "fontsLoaded": {
+        "Inter": true,
+        "Nunito": true
+      },
+      "images": [
+        {
+          "alt": "A misty forest path under low light",
+          "height": 640,
+          "src": "/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1673083636122-107bf34f8db7%3Fcrop%3Dentropy%26cs%3Dtinysrgb%26fit%3Dmax%26fm%3Djpg%26ixid%3DM3w0MDYwNDN8MHwxfHNlYXJjaHwzfHxtaXN0eSUyMGZvcmVzdCUyMHBhdGglMjBhdCUyMG5pZ2h0fGVufDF8MXx8fDE3OTM3MzQwOTZ8MA%26ixlib%3Drb-4.1.0%26q%3D80%26w%3D1080&w=3840&q=75",
+          "width": 360
+        },
+        {
+          "alt": "A misty forest path under low light",
+          "height": 272,
+          "src": "/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1673083636122-107bf34f8db7%3Fcrop%3Dentropy%26cs%3Dtinysrgb%26fit%3Dmax%26fm%3Djpg%26ixid%3DM3w0MDYwNDN8MHwxfHNlYXJjaHwzfHxtaXN0eSUyMGZvcmVzdCUyMHBhdGglMjBhdCUyMG5pZ2h0fGVufDF8MXx8fDE3OTM3MzQwOTZ8MA%26ixlib%3Drb-4.1.0%26q%3D80%26w%3D1080&w=3840&q=75",
+          "width": 360
+        },
+        {
+          "alt": "A sunrise over rolling green hills",
+          "height": 100,
+          "src": "/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1607136104080-78bbfe2d1234%3Fcrop%3Dentropy%26cs%3Dtinysrgb%26fit%3Dmax%26fm%3Djpg%26ixid%3DM3w0MDYwNDN8MHwxfHNlYXJjaHwyfHxzdW5yaXNlJTIwb3ZlciUyMHJvbGxpbmclMjBncmVlbiUyMGhpbGxzfGVufDF8MHx8fDE3OTM3MzQwOTZ8MA%26ixlib%3Drb-4.1.0%26q%3D80%26w%3D1080&w=3840&q=75",
+          "width": 136
+        },
+        {
+          "alt": "A calm mountain lake at dawn",
+          "height": 100,
+          "src": "/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1557316655-8715fdecd2d1%3Fcrop%3Dentropy%26cs%3Dtinysrgb%26fit%3Dmax%26fm%3Djpg%26ixid%3DM3w0MDYwNDN8MHwxfHNlYXJjaHwxfHxjYWxtJTIwbW91bnRhaW4lMjBsYWtlJTIwYXQlMjBkYXdufGVufDF8MHx8fDE3OTM3MzQwOTZ8MA%26ixlib%3Drb-4.1.0%26q%3D80%26w%3D1080&w=3840&q=75",
+          "width": 136
+        }
+      ],
+      "inputs": [],
+      "text": "Which photo do you like?\n\nText and Image\n\nText and Image",
+      "textBlocks": [
+        {
+          "classes": "MuiTypography-root MuiTypography-h2 MuiTypography-alignCenter MuiTypography-gutterBottom iframe-13cluky-MuiTypography-root",
+          "color": "rgb(254, 254, 254)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "36px",
+          "tag": "H2",
+          "text": "Which photo do you like?"
+        },
+        {
+          "classes": "MuiTypography-root MuiTypography-body2 iframe-1x51rrv-MuiTypography-root",
+          "color": "rgb(29, 29, 29)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "14px",
+          "tag": "P",
+          "text": "Text and Image"
+        },
+        {
+          "classes": "MuiTypography-root MuiTypography-body2 iframe-1x51rrv-MuiTypography-root",
+          "color": "rgb(29, 29, 29)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "14px",
+          "tag": "P",
+          "text": "Text and Image"
+        }
+      ]
+    }
+  },
+  {
+    "card": 3,
+    "snapshot": "- navigation:\n  - button \"Navigation Drawer Toggle\":\n  - link \"Projects\":\n    - /url: /\n    - generic: Projects\n  - link \"Templates\":\n    - /url: /templates\n    - generic: Templates\n  - link \"AI Builder\":\n    - /url: /ai-builder\n    - generic: AI Builder\n  - separator\n  - button \"Impersonate\":\n    - generic: Impersonate\n  - link \"Delete User\":\n    - /url: /users/delete\n    - generic: Delete User\n  - button \"Profile\":\n    - generic: Profile\n  - img \"Next Steps Logo\"\n  - img \"Next Steps Title\"\n- main:\n  - generic: AI Builder\n  - button \"New draft\": New draft\n  - list:\n    - button \"Dark Style Test 04/11/2026, 08:28:20\":\n      - generic: Dark Style Test\n      - paragraph: 04/11/2026, 08:28:20\n    - button \"Delete draft\":\n    - 'button \"Fact or Fiction: Can We Trust Jesus? 03/11/2026, 15:34:23\"':\n      - generic: \"Fact or Fiction: Can We Trust Jesus?\"\n      - paragraph: 03/11/2026, 15:34:23\n    - button \"Delete draft\":\n    - 'button \"Easter: A New Beginning 03/11/2026, 14:26:14\"':\n      - generic: \"Easter: A New Beginning\"\n      - paragraph: 03/11/2026, 14:26:14\n    - button \"Delete draft\":\n  - paragraph: \"Create a three-card dark-mode style test. On the first card use a Title-sized heading, Normal Body text colored #AADDFF, Inter for headings and Nunito for body text, and a small centered outlined button in the secondary color with a Home leading icon and a left-chevron trailing icon. Second card: a Text and Image poll with two outdoor-photo choices. Third card: an optional phone-number response with a helpful hint, two visible rows, and a Send button. Use no external links or integrations. Keep all text very short.\"\n  - paragraph: \"Got it. I'll create a 3-card dark-mode test journey: Card 1 gets an Inter h2 heading, #AADDFF body text in Nunito, and a small centered outlined secondary button with Home leading icon and ChevronLeftRounded end icon; Card 2 is a text-and-image poll with two outdoor photos; Card 3 is an optional phone field with a hint, 2 rows, and a Send button. No links or integrations.\"\n  - text: Plan\n  - paragraph: \"Dark Style Test 1. welcome: Styled welcome with heading, colored body text, and a test button. 2. poll: Two-choice Text and Image poll with outdoor photos. 3. phone-response: Optional phone entry with hint, followed by a Send button. Assumed: The trailing icon is the standard end icon position on the button (ChevronLeftRounded). Assumed: The poll's next destination after selection is the phone-response step. Assumed: The Send button after the phone response has no navigation action (none). Assumed: Background images are subtle dark outdoor/landscape stock photos to keep the cards from looking bland while staying dark-themed. Assumed: All text content is kept to short placeholder phrases as requested.\"\n  - paragraph: Here's the plan. Shall I build it?\n  - paragraph: Yes, build it.\n  - paragraph: The AI model isn't responding right now. Please try again in a few minutes. Your journey is unchanged.\n  - paragraph: Please retry building the agreed three-card style-test plan.\n  - paragraph: The AI model isn't responding right now. Please try again in a few minutes. Your journey is unchanged.\n  - paragraph: Retry building the same agreed style-test plan now.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - alert:\n    - text: \"Some things need a look:\"\n    - generic: \"step `phone-response`: nothing links to it.\"\n  - button \"Previous card\":\n  - paragraph: Card 3 of 3\n  - button \"Next card\" [disabled]:\n  - generic: phone-response\n  - iframe:\n    - button:\n    - img \"A quiet river shoreline at evening\"\n    - img \"A quiet river shoreline at evening\"\n    - heading \"Where can we reach you?\" [level=2]\n    - paragraph: Optional — only if you'd like a follow-up.\n    - heading \"Phone number\" [level=6]\n    - textbox \"Phone number\":\n      - /placeholder: \"\"\n    - paragraph: Include your area code\n    - button \"Send\":\n      - paragraph: Send\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+    "visible": {
+      "buttons": [
+        {
+          "html": "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-sizeMedium MuiButton-colorPrimary iframe-u3enuh-MuiButtonBase-root-MuiButton-root",
+          "styles": {
+            "classes": "MuiBox-root iframe-10wg7hs",
+            "color": "rgb(254, 254, 254)",
+            "font": "\"Open Sans\", Tahoma, Verdana, sans-serif",
+            "fontSize": "16px",
+            "tag": "DIV",
+            "text": "Send"
+          },
+          "svg": [],
+          "text": "Send"
+        }
+      ],
+      "fontsLoaded": {
+        "Inter": true,
+        "Nunito": true
+      },
+      "images": [
+        {
+          "alt": "A quiet river shoreline at evening",
+          "height": 640,
+          "src": "/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1766786497069-6fa04d8ebc93%3Fcrop%3Dentropy%26cs%3Dtinysrgb%26fit%3Dmax%26fm%3Djpg%26ixid%3DM3w0MDYwNDN8MHwxfHNlYXJjaHw1fHxxdWlldCUyMGV2ZW5pbmclMjByaXZlciUyMHNob3JlbGluZXxlbnwxfDF8fHwxNzkzNzM0MDk2fDA%26ixlib%3Drb-4.1.0%26q%3D80%26w%3D1080&w=3840&q=75",
+          "width": 360
+        },
+        {
+          "alt": "A quiet river shoreline at evening",
+          "height": 228,
+          "src": "/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1766786497069-6fa04d8ebc93%3Fcrop%3Dentropy%26cs%3Dtinysrgb%26fit%3Dmax%26fm%3Djpg%26ixid%3DM3w0MDYwNDN8MHwxfHNlYXJjaHw1fHxxdWlldCUyMGV2ZW5pbmclMjByaXZlciUyMHNob3JlbGluZXxlbnwxfDF8fHwxNzkzNzM0MDk2fDA%26ixlib%3Drb-4.1.0%26q%3D80%26w%3D1080&w=3840&q=75",
+          "width": 360
+        }
+      ],
+      "inputs": [
+        {
+          "placeholder": "",
+          "rows": null,
+          "tag": "TEXTAREA",
+          "type": null
+        },
+        {
+          "placeholder": null,
+          "rows": null,
+          "tag": "TEXTAREA",
+          "type": null
+        }
+      ],
+      "text": "Where can we reach you?\n\nOptional — only if you'd like a follow-up.\n\nPhone number\n​\n\nInclude your area code\n\nSend",
+      "textBlocks": [
+        {
+          "classes": "MuiTypography-root MuiTypography-h2 MuiTypography-alignCenter MuiTypography-gutterBottom iframe-13cluky-MuiTypography-root",
+          "color": "rgb(254, 254, 254)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "36px",
+          "tag": "H2",
+          "text": "Where can we reach you?"
+        },
+        {
+          "classes": "MuiTypography-root MuiTypography-body2 MuiTypography-alignCenter MuiTypography-gutterBottom iframe-12g5vzv-MuiTypography-root",
+          "color": "rgb(254, 254, 254)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "14px",
+          "tag": "P",
+          "text": "Optional — only if you'd like a follow-up."
+        },
+        {
+          "classes": "MuiTypography-root MuiTypography-subtitle2 iframe-ux3ptq-MuiTypography-root",
+          "color": "rgb(254, 254, 254)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "14px",
+          "tag": "H6",
+          "text": "Phone number"
+        },
+        {
+          "classes": "MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained iframe-1tmy5pq-MuiFormHelperText-root",
+          "color": "rgb(220, 221, 229)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "12px",
+          "tag": "P",
+          "text": "Include your area code"
+        },
+        {
+          "classes": "MuiTypography-root MuiTypography-inherit iframe-sug9gd-MuiTypography-root",
+          "color": "rgb(38, 38, 46)",
+          "font": "Montserrat, \"Open Sans\", sans-serif",
+          "fontSize": "16px",
+          "tag": "P",
+          "text": "Send"
+        }
+      ]
+    }
+  }
+]

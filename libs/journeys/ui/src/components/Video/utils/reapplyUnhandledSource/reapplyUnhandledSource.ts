@@ -21,7 +21,12 @@ export function reapplyUnhandledSource(player: VideoJsPlayer): void {
   const sources = player.currentSources() as unknown as PlayerSource[]
   if (sources.length === 0) return
   const el = player.tech({ IWillNotUseThisInPlugins: true })?.el()
-  if (!(el instanceof HTMLMediaElement) || el.getAttribute('src') != null)
+  // The player may live in a preview iframe with a different DOM constructor.
+  if (
+    el == null ||
+    !['VIDEO', 'AUDIO'].includes(el.tagName) ||
+    el.getAttribute('src') != null
+  )
     return
   player.src(sources)
 }

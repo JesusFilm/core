@@ -1,0 +1,19 @@
+{
+  "fitSnapshot": "the first card’s video to Fit.\n  - paragraph: Switching the welcome card's background video to Fit so the full frame is visible.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\" [disabled]:\n  - paragraph: Card 1 of 6\n  - button \"Next card\":\n  - generic: welcome\n  - generic: 2.1 Was Jesus the Real Deal? · Clip 0:11 to 1:00\n  - iframe:\n    - button:\n    - region \"Video Player\"\n    - heading \"Is Jesus history?\" [level=2]\n    - paragraph: If you're curious or a little skeptical, this short journey is for you. No pressure — just a few minutes and some food for thought.\n    - button \"Watch the intro\":\n      - paragraph: Watch the intro\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+  "fitComputed": [
+    "contain"
+  ],
+  "fillSnapshot": "irst card’s video to Fit.\n  - paragraph: Switching the welcome card's background video to Fit so the full frame is visible.\n  - paragraph: Change the first card to Fill.\n  - paragraph: Switching the welcome card’s background video back to Fill so it covers the whole card again.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\" [disabled]:\n  - paragraph: Card 1 of 6\n  - button \"Next card\":\n  - generic: welcome\n  - generic: 2.1 Was Jesus the Real Deal? · Clip 0:11 to 1:00\n  - iframe:\n    - button:\n    - region \"Video Player\"\n    - heading \"Is Jesus history?\" [level=2]\n    - paragraph: If you're curious or a little skeptical, this short journey is for you. No pressure — just a few minutes and some food for thought.\n    - button \"Watch the intro\":\n      - paragraph: Watch the intro\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+  "fillComputed": [
+    {
+      "fit": "cover",
+      "paused": false,
+      "readyState": 4
+    }
+  ],
+  "prompts": [
+    "Set the first card’s video to Fit.",
+    "Change the first card to Fill."
+  ],
+  "navigatedAway": false
+}

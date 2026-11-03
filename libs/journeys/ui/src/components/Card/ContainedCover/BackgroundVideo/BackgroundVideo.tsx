@@ -59,6 +59,10 @@ export function BackgroundVideo({
         // Don't use poster prop as image isn't optimised
       })
     }
+    return () => {
+      playerRef.current?.dispose()
+      playerRef.current = null
+    }
   }, [])
 
   // Set up video listeners

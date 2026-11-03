@@ -1,0 +1,46 @@
+[
+  {
+    "name": "catalogue-search",
+    "passed": true,
+    "videos": [
+      {
+        "id": "7_0-nfs0201",
+        "title": "2.1 Was Jesus the Real Deal?",
+        "languageId": "529",
+        "duration": 330,
+        "hasPlayableStream": true
+      }
+    ]
+  },
+  {
+    "name": "Spanish-audio",
+    "passed": false,
+    "error": "Choose an exact language for \"Spanish\". Options: Español / Spanish, Latin American (21028); Castellano / Spanish, Castilian (21046)."
+  },
+  {
+    "name": "Spanish-Castilian-audio",
+    "passed": true,
+    "videos": [
+      {
+        "id": "7_0-nfs0201",
+        "title": "2.1 Was Jesus the Real Deal?",
+        "languageId": "21046",
+        "duration": 307,
+        "hasPlayableStream": true
+      }
+    ]
+  },
+  {
+    "name": "French-audio",
+    "passed": true,
+    "videos": [
+      {
+        "id": "7_0-nfs0201",
+        "title": "2.1 Was Jesus the Real Deal?",
+        "languageId": "496",
+        "duration": 307,
+        "hasPlayableStream": true
+      }
+    ]
+  }
+]

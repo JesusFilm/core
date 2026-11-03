@@ -1,4 +1,10 @@
-import { type LanguageModel, Output, streamText } from 'ai'
+import {
+  type JSONSchema7,
+  type LanguageModel,
+  Output,
+  jsonSchema,
+  streamText
+} from 'ai'
 import { z } from 'zod'
 
 export type GenerateJsonResult<T> =
@@ -41,7 +47,7 @@ export async function generateJson<T>({
     maxRetries: 0,
     instructions,
     messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }],
-    output: Output.object({ schema }),
+    output: Output.object({ schema: jsonSchema<T>(providerSchema(schema)) }),
     onError: ({ error }) => {
       streamError = error
     }
@@ -58,6 +64,31 @@ export async function generateJson<T>({
       : new Error('The AI model request failed', { cause: streamError })
 
   return parseJson(text, schema)
+}
+
+/**
+ * The gateway's structured-output engine rejects regex lookarounds, including
+ * Zod's default email pattern. Keep other constraints for token guidance, then
+ * validate the complete original Zod schema in parseJson on the server.
+ */
+function providerSchema(schema: z.ZodType): JSONSchema7 {
+  const result = z.toJSONSchema(schema)
+  function visit(value: unknown): void {
+    if (Array.isArray(value)) {
+      value.forEach(visit)
+      return
+    }
+    if (value == null || typeof value !== 'object') return
+    const object = value as Record<string, unknown>
+    if (
+      typeof object.pattern === 'string' &&
+      /\(\?[=!]|\(\?<[=!]/.test(object.pattern)
+    )
+      delete object.pattern
+    Object.values(object).forEach(visit)
+  }
+  visit(result)
+  return result as JSONSchema7
 }
 
 export function parseJson<T>(

@@ -1,4 +1,10 @@
-import type { ContentItem, Journey, JourneyAction } from '../journeySchema'
+import type {
+  ContentItem,
+  Journey,
+  JourneyAction,
+  JourneyImage
+} from '../journeySchema'
+import { LIBRARY_VIDEOS } from '../libraryVideos/catalog'
 
 import { youTubeId } from './youTubeId'
 
@@ -32,7 +38,8 @@ export function checkJourney(journey: Journey): CheckResult {
   }
 
   const linkedSteps = new Set<string>()
-  function checkAction(action: JourneyAction, where: string): void {
+  function checkAction(action: JourneyAction | undefined, where: string): void {
+    if (action == null || 'none' in action) return
     if ('goTo' in action) {
       linkedSteps.add(action.goTo)
       if (!stepNames.includes(action.goTo))
@@ -41,16 +48,64 @@ export function checkJourney(journey: Journey): CheckResult {
         )
       return
     }
-    if (!isHttpUrl(action.url))
+    if ('email' in action || 'phone' in action) return
+    const url = 'chatUrl' in action ? action.chatUrl : action.url
+    if (!isHttpUrl(url))
       errors.push(
-        `${where}: url \`${action.url}\` must start with http:// or https://.`
+        `${where}: url \`${url}\` must start with http:// or https://.`
       )
+  }
+
+  function checkVideo(
+    video: NonNullable<Journey['steps'][number]['card']['backgroundVideo']>,
+    where: string
+  ): void {
+    const sources = [
+      video.url,
+      video.libraryVideo,
+      video.libraryVideoId,
+      video.librarySearch,
+      video.muxVideoId
+    ].filter((value) => value != null && value !== '')
+    if (sources.length !== 1)
+      errors.push(
+        `${where}: choose exactly one of url, libraryVideo, libraryVideoId, librarySearch or muxVideoId.`
+      )
+    if (video.url != null && youTubeId(video.url) == null)
+      errors.push(
+        `${where}: \`${video.url}\` is not a YouTube video link. Use a YouTube link or an approved libraryVideo.`
+      )
+    if (video.libraryVideo != null) {
+      const duration = LIBRARY_VIDEOS[video.libraryVideo].duration
+      if (
+        (video.startAt ?? 0) >= duration ||
+        (video.endAt ?? duration) > duration
+      )
+        errors.push(
+          `${where}: clip must fit within the video's ${duration} seconds.`
+        )
+    }
+    if (video.endAt != null && (video.startAt ?? 0) >= video.endAt)
+      errors.push(`${where}: startAt must be before endAt.`)
+    if (video.poster != null) checkImage(video.poster, `${where}, poster`)
+  }
+
+  function checkImage(image: JourneyImage, where: string): void {
+    if (image.assetUrl != null) {
+      if (!isHttpUrl(image.assetUrl))
+        errors.push(`${where}: assetUrl must use http(s).`)
+      return
+    }
+    if (!image.search?.trim())
+      errors.push(`${where}: provide a stock search or an exact assetUrl.`)
   }
 
   journey.steps.forEach((step, index) => {
     const stepWhere = `step \`${step.name}\``
     claimName(step.name, stepWhere)
     claimName(step.card.name, `${stepWhere}, card \`${step.card.name}\``)
+    if (step.card.backgroundImage != null)
+      checkImage(step.card.backgroundImage, `${stepWhere}, background image`)
 
     if (step.next != null) {
       linkedSteps.add(step.next)
@@ -58,6 +113,14 @@ export function checkJourney(journey: Journey): CheckResult {
         errors.push(
           `${stepWhere}: next \`${step.next}\` doesn't exist. Use one of: ${stepList}.`
         )
+    }
+
+    if (step.card.backgroundVideo != null) {
+      if (step.card.backgroundImage != null)
+        errors.push(
+          `${stepWhere}: choose backgroundImage or backgroundVideo, not both.`
+        )
+      checkVideo(step.card.backgroundVideo, `${stepWhere}, background video`)
     }
 
     const content = step.card.content
@@ -96,11 +159,26 @@ export function checkJourney(journey: Journey): CheckResult {
         case 'button':
           checkAction(item.action, where)
           return
+        case 'signUp':
+          checkAction(item.action, where)
+          return
+        case 'image':
+          checkImage(item.image, where)
+          return
+        case 'text':
+          if (item.variant == null && item.style == null)
+            errors.push(`${where}: choose an editor text variant.`)
+          return
+        case 'spacer':
+          if (item.spacing == null && item.size == null)
+            errors.push(`${where}: provide spacing in pixels or a legacy size.`)
+          return
         case 'poll':
           item.options.forEach((option) => {
             const optionWhere = `${where}, option \`${option.name}\``
             claimName(option.name, optionWhere)
             checkAction(option.action, optionWhere)
+            if (option.image != null) checkImage(option.image, optionWhere)
           })
           return
         case 'multiselect':
@@ -113,22 +191,28 @@ export function checkJourney(journey: Journey): CheckResult {
             errors.push(
               `${where}: max is more than the number of options (${item.options.length}).`
             )
+          if (item.min != null && item.min > item.options.length)
+            errors.push(
+              `${where}: min is more than the number of options (${item.options.length}).`
+            )
           checkFollowedByButton(where, itemIndex, 'multiselect')
           return
         case 'textResponse':
+          if (item.routeId != null && item.integrationId == null)
+            errors.push(
+              `${where}: a route requires its existing integrationId.`
+            )
           checkFollowedByButton(where, itemIndex, 'text response')
           return
         case 'video':
-          if (youTubeId(item.url) == null)
-            errors.push(
-              `${where}: \`${item.url}\` is not a YouTube video link. Only YouTube videos are supported.`
-            )
-          if (
-            item.startAt != null &&
-            item.endAt != null &&
-            item.startAt >= item.endAt
-          )
-            errors.push(`${where}: startAt must be before endAt.`)
+          checkVideo(item, where)
+          checkAction(item.action, where)
+          item.triggers?.forEach((trigger) => {
+            claimName(trigger.name, `${where}, trigger`)
+            checkAction(trigger.action, `${where}, trigger`)
+            if (item.endAt != null && trigger.triggerStart > item.endAt)
+              errors.push(`${where}: trigger starts after the clip ends.`)
+          })
           return
         default:
           return

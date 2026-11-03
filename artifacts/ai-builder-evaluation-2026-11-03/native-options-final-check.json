@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-04",
+  "draft": "Dark Style Test",
+  "cards": 3,
+  "language": "en",
+  "welcome": {
+    "direction": "ltr",
+    "nextIcon": "ChevronRightRounded",
+    "variant": "outlined",
+    "size": "small",
+    "color": "secondary",
+    "bodyColor": "#AADDFF"
+  },
+  "rtlTest": {
+    "language": "ar",
+    "direction": "rtl",
+    "nextIcon": "ChevronLeftRounded",
+    "screenshot": "navigation-arabic-left.png"
+  },
+  "phone": {
+    "inputmode": "tel",
+    "hint": "Include your area code",
+    "visibleHeight": 58
+  },
+  "knownModelAdherenceIssue": "Image poll labels changed to Text and Image during earlier edits. Schema and converter preserve supplied labels.",
+  "screenshot": "navigation-final-english.png"
+}

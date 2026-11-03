@@ -1,14 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { VideoEvents } from '../VideoEvents'
+import { VideoTrigger } from '../VideoTrigger'
 
 import { VideoFields } from './__generated__/VideoFields'
 
 import { Video } from '.'
+
+vi.mock('../VideoEvents', () => ({ VideoEvents: vi.fn(() => null) }))
+vi.mock('../VideoTrigger', () => ({ VideoTrigger: vi.fn(() => null) }))
 
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -85,6 +90,34 @@ const block: TreeBlock<VideoFields> = {
 }
 
 describe('Video', () => {
+  it('keeps the real controls in preview but suppresses viewer events and navigation', async () => {
+    vi.clearAllMocks()
+    const action = {
+      __typename: 'NavigateToBlockAction' as const,
+      parentBlockId: block.id,
+      gtmEventName: null,
+      blockId: 'next'
+    }
+    const viewer = render(
+      <MockedProvider>
+        <Video {...block} action={action} />
+      </MockedProvider>
+    )
+    expect(VideoTrigger).toHaveBeenCalled()
+    viewer.unmount()
+    vi.clearAllMocks()
+    render(
+      <MockedProvider>
+        <Video {...block} action={action} preview />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('JourneysVideoControls')).toBeInTheDocument()
+    )
+    expect(VideoEvents).not.toHaveBeenCalled()
+    expect(VideoTrigger).not.toHaveBeenCalled()
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
   })

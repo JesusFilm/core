@@ -1,0 +1,56 @@
+block,editor_option,editor_values_or_range,AI_schema_or_converter,status
+Text,Alignment,Left; Center; Right,align: left; center; right,match
+Text,Text size,Small Body; Normal Body; Large Body; Heading 4; Heading 3; Heading 2; Heading 1; Title; Display,variant: all nine native sizes; legacy style aliases preserved,implemented
+Text,Custom color,Hex color picker,color: hex -> TypographyBlockSettings.color,implemented
+Text,Font theme,Journey-wide font/theme editor,fonts: headerFont; bodyFont; labelFont from native font lists,implemented
+Button,Label,Editable label,label,match
+Button,Variant,Contained; Outlined; Text,variant: contained; outlined; text; legacy style aliases preserved,implemented
+Button,Color,Primary; Secondary; Error,color: primary; secondary; error,implemented
+Button,Size,Small; Medium; Large,size: small; medium; large,implemented
+Button,Alignment,Left; Center; Right; Justify,alignment -> native button settings,implemented
+Button,Leading icon,Editor icon selector,All 26 current icons; legacy stored values retained; semantic next/previous follow language direction,implemented
+Button,Trailing icon,Editor icon selector,endIcon; semantic next/previous follow language direction,implemented; browser verified LTR/RTL
+Button,Icon color,Editor icon color selector,iconColor; endIconColor,implemented
+Actions,Selected card,Step selection,action.goTo,match
+Actions,Website,Web URL,action.url with http(s) validation,match
+Actions,None,Clear action,Optional action or action.none=true -> null native action,implemented
+Actions,Email; Chat; Phone/SMS,Dedicated action controls,action.email; chatUrl; phone/countryCode/contactAction,implemented
+Image,Stock photo,Stock image library,search + server resolver,match
+Image,Alt text,Editable image metadata,alt,match
+Image,Exact asset / upload,Image library / upload,assetUrl plus optional assetWidth/assetHeight; safe server metadata resolution,existing assets supported; binary upload uses existing editor workflow
+Image,Focal point,Image position percentages,focalLeft; focalTop 0-100,implemented
+Image,Zoom,1x–2x in 0.1x increments,scale 100-200 in 10 percent steps,implemented
+Video,Source,Jesus Film library; YouTube; uploaded/Mux,YouTube; seeded keys; libraryVideoId; librarySearch; owned ready muxVideoId,implemented; new upload uses existing editor workflow
+Video,Audio language,Available film variants,languageName or languageId; live available variant lookup,implemented; live English/Spanish/French verified
+Video,Start / end,Clip boundaries in seconds,startAt; endAt; actual source duration checked,match
+Video,Aspect ratio / fit,Fill; Fit; Crop,objectFit: fill; fit; zoomed,match; native renderer browser verified
+Video,Fit availability,Disabled for YouTube and microwebsites,Native player source/context restrictions retained,native restriction
+Video,Autoplay,Standalone video toggle,autoplay; preview deliberately starts paused,implemented
+Video,Muted,Standalone video toggle; first-card/runtime constraints,muted; native runtime restrictions retained,implemented
+Video background,Autoplay; muted; loop,Native renderer forces true; controls disabled for background,Native background renderer controls autoplay/mute/loop,native fixed behavior
+Video,Cover image,Image shown while loading,poster image with stock search or existing asset,implemented
+Video,Subtitles,YouTube subtitle selection; Mux generated subtitle toggle,subtitleLanguageName/Id/Bcp47; showGeneratedSubtitles; source-dependent renderer,implemented; resolver/converter tested; no live subtitle playback test
+Video,Template adapter notes,Optional template-specific notes,notes max 100 characters,implemented; native template context required
+Poll,Labels / ordering,Editable option labels and order,options label and array order,match
+Poll,Variant,Text Only; Text and Image,gridView,implemented; browser verified
+Poll,Option image,Image on each grid option,options.image -> native child ImageBlock,implemented; browser verified
+Poll,Option action,Shared actions,All shared native action types,implemented
+Multiselect,Labels / ordering,Editable labels and order,options label and array order,match
+Multiselect,Selection limit,Toggle; min/max within option count,Optional min/max; both bounded by option count; min <= max,implemented and validated
+Text response,Type,Freeform; Name; Email; Phone,kind: freeForm; name; email; phone,implemented; phone browser verified
+Text response,Label / placeholder / required,Editor controls,label; placeholder; required,match
+Text response,Helper text,Hint,hint,implemented; browser verified
+Text response,Minimum size,One; Two; Three; Four Rows,minRows: 1; 2; 3; 4,implemented; browser verified 2 rows
+Text response,Hide label,Toggle,hideLabel,implemented
+Text response,Routing / integrations,Growth Spaces controls when applicable,integrationId; routeId; route requires integration,existing references supported; provisioning uses existing account workflow
+Spacer,Spacing,20–400px in 10px steps,spacing 20-400 in 10px steps; legacy size aliases retained,implemented
+Card,Style,Default; Light; Dark,theme: default; light; dark; journey default dark,implemented
+Card,Layout,Contained; Expanded; background video requires Contained,fullscreen; native background video remains contained,match
+Card,Background media,Image or Video,backgroundImage or backgroundVideo; mutually exclusive,match
+Card,Filter color,Hex color and opacity,backgroundColor: six or eight hex digits,implemented
+Card,Filter opacity,0–100 percent on eligible expanded image layouts,Alpha component of backgroundColor,implemented; eligible native layout required
+Card,Backdrop blur,0–100 percent mapped to 0–25px; expanded image layout,backdropBlur: 0-25,implemented; eligible native layout required
+Card,AI chat,Enable and expand controls behind feature flags,showAssistant; expandChatByDefault,implemented; native feature flags/runtime required
+Tracking,Tracking labels,Card; Button; Poll option; Video feature/template controls,Canonical eventLabel/endEventLabel; action.gtmEventName,implemented; analytics reporting requires published/runtime journey
+Subscribe / SignUp,Existing legacy block,Submit label; icon; action; properties panel remains available,legacySignUp: label; icon; action,implemented for existing legacy blocks
+VideoTrigger,Timed action,Persisted support; no normal current Add block UI,video.triggers: name; triggerStart; action,implemented for existing legacy support

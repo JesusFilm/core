@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-04",
+  "causeOfExtraCard": "Planner explicitly interpreted change the first card as insert a new first card. Edit scope previously lacked structural validation.",
+  "causeOfMissedAppearance": "Native imperative video player retained stale fit styling on an in-place edit. Navigating away/back showed the saved Fill setting.",
+  "fixes": [
+    "Guide records whether card structure was requested; planner retries structural additions for appearance-only edits.",
+    "Builder output rejects unplanned added/removed/reordered cards.",
+    "Display-order index and follow-up instructions identify existing cards and include background videos.",
+    "Preview players remount when objectFit changes.",
+    "Shared dark and fill defaults; explicit Fit/Crop/Light and unrelated existing settings preserved."
+  ],
+  "verification": {
+    "apiTests": 119,
+    "adminTests": 19,
+    "typeChecks": ["api-journeys", "journeys-admin"],
+    "fitThenFillVerifiedImmediately": true,
+    "cards": 6,
+    "checks": [
+      {
+        "card": 1,
+        "snapshot": "is visible.\n  - paragraph: Change the first card back to Fill.\n  - paragraph: Sure — switching the welcome card's background video back to Fill so it covers the whole card again.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\" [disabled]:\n  - paragraph: Card 1 of 6\n  - button \"Next card\":\n  - generic: welcome\n  - generic: 2.1 Was Jesus the Real Deal? · Clip 0:11 to 1:00\n  - iframe:\n    - button:\n    - region \"Video Player\"\n    - heading \"Is Jesus history?\" [level=2]\n    - paragraph: If you're curious or a little skeptical, this short journey is for you. No pressure — just a few minutes and some food for thought.\n    - button \"Watch the intro\":\n      - paragraph: Watch the intro\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+        "videoFits": ["cover"],
+        "immediateUpdateWithoutNavigation": true
+      },
+      {
+        "card": 2,
+        "snapshot": "e — switching the welcome card’s background video back to Fill so it covers the whole card again.\n  - paragraph: Set the first card’s video to Fit.\n  - paragraph: Switching the welcome card's background video to Fit so the full frame is visible.\n  - paragraph: Change the first card back to Fill.\n  - paragraph: Sure — switching the welcome card's background video back to Fill so it covers the whole card again.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 2 of 6\n  - button \"Next card\" [active]:\n  - generic: watch-intro\n  - generic: 2.1 Was Jesus the Real Deal? · Clip 0:00 to 2:13\n  - iframe:\n    - button:\n    - region \"Video Player\"\n    - region \"video-controls\":\n      - button \"center-play-button\":\n      - generic: 0:00 / 2:13\n      - button \"subtitles\" [disabled]:\n      - button \"video settings\":\n      - button \"fullscreen\":\n      - slider \"mobile-progress-control\" [disabled]\n    - img \"video image\"\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+        "videoFits": ["cover"]
+      },
+      {
+        "card": 3,
+        "snapshot": " to Fit.\n  - paragraph: Changing the welcome card’s background video to Fit so the full frame is visible without cropping.\n  - paragraph: Change the first card back to Fill.\n  - paragraph: Sure — switching the welcome card’s background video back to Fill so it covers the whole card again.\n  - paragraph: Set the first card’s video to Fit.\n  - paragraph: Switching the welcome card's background video to Fit so the full frame is visible.\n  - paragraph: Change the first card back to Fill.\n  - paragraph: Sure — switching the welcome card's background video back to Fill so it covers the whole card again.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 3 of 6\n  - button \"Next card\" [active]:\n  - generic: trust-question\n  - iframe:\n    - button:\n    - heading \"Does the Gospel story feel trustworthy to you?\" [level=2]\n    - button \"Yes, it feels reliable\"\n    - button \"I'm not sure\"\n    - button \"No, it doesn't\"\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+        "videoFits": []
+      },
+      {
+        "card": 4,
+        "snapshot": "witching the welcome card’s background video back to Fill so it covers the whole card again.\n  - paragraph: Set the first card’s video to Fit.\n  - paragraph: Switching the welcome card's background video to Fit so the full frame is visible.\n  - paragraph: Change the first card back to Fill.\n  - paragraph: Sure — switching the welcome card's background video back to Fill so it covers the whole card again.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 4 of 6\n  - button \"Next card\" [active]:\n  - generic: watch-discussion\n  - generic: 2.1 Was Jesus the Real Deal? · Clip 2:14 to 5:06\n  - iframe:\n    - button:\n    - region \"Video Player\"\n    - region \"video-controls\":\n      - button \"center-play-button\":\n      - generic: 0:00 / 2:52\n      - button \"subtitles\" [disabled]:\n      - button \"video settings\":\n      - button \"fullscreen\":\n      - slider \"mobile-progress-control\" [disabled]\n    - img \"video image\"\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+        "videoFits": ["cover"]
+      },
+      {
+        "card": 5,
+        "snapshot": " card again.\n  - paragraph: Set the first card’s video to Fit.\n  - paragraph: Switching the welcome card's background video to Fit so the full frame is visible.\n  - paragraph: Change the first card back to Fill.\n  - paragraph: Sure — switching the welcome card's background video back to Fill so it covers the whole card again.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 5 of 6\n  - button \"Next card\" [active]:\n  - generic: evidence-reflection\n  - iframe:\n    - button:\n    - img \"A weathered scroll of parchment resting on old stone\"\n    - img \"A weathered scroll of parchment resting on old stone\"\n    - heading \"What do the sources say?\" [level=2]\n    - paragraph: Roman, Jewish, and early Christian writers all mention Jesus within a few decades of his life — a rare kind of agreement for a figure of that era. It's not proof, but it's worth pausing on.\n    - button \"Continue\":\n      - paragraph: Continue\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+        "videoFits": []
+      },
+      {
+        "card": 6,
+        "snapshot": "ping.\n  - paragraph: Change the first card back to Fill.\n  - paragraph: Sure — switching the welcome card’s background video back to Fill so it covers the whole card again.\n  - paragraph: Set the first card’s video to Fit.\n  - paragraph: Switching the welcome card's background video to Fit so the full frame is visible.\n  - paragraph: Change the first card back to Fill.\n  - paragraph: Sure — switching the welcome card's background video back to Fill so it covers the whole card again.\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 6 of 6\n  - button \"Next card\" [disabled]:\n  - generic: who-was-jesus\n  - iframe:\n    - button:\n    - img \"A calm open hillside lit by early sunrise\"\n    - img \"A calm open hillside lit by early sunrise\"\n    - heading \"Who do you think Jesus was?\" [level=2]\n    - button \"A wise teacher\"\n    - button \"A prophet\"\n    - button \"The Messiah\"\n    - button \"I'm still figuring it out\"\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+        "videoFits": []
+      }
+    ]
+  },
+  "pushed": false
+}

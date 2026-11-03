@@ -23,6 +23,12 @@ export const guideOutputSchema = z.object({
     .describe(
       'Only for change: create when there is no journey yet, else edit'
     ),
+  allowStepChanges: z
+    .boolean()
+    .optional()
+    .describe(
+      'For edits, false unless the user explicitly requests adding, removing, reordering, splitting or merging cards. Changing fit, size, background, wording or style of an existing card never requires a new step.'
+    ),
   questions: z
     .array(z.string())
     .optional()
@@ -61,6 +67,12 @@ export const planSchema = z.discriminatedUnion('kind', [
   }),
   z.object({
     kind: z.literal('edit'),
+    allowStepChanges: z
+      .boolean()
+      .optional()
+      .describe(
+        "Server carries forward the guide's explicit card-structure intent. Default false."
+      ),
     changes: z.array(plannedChangeSchema).min(1),
     keep: z
       .array(nameSchema)

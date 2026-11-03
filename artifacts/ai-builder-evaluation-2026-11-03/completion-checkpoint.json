@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-04",
+  "status": "schema-parity-implemented-and-local-browser-verified",
+  "draft": "Dark Style Test",
+  "cards": 3,
+  "language": "en",
+  "nextIcon": "ChevronRightRounded",
+  "originalDraftsPreserved": true,
+  "pushed": false,
+  "report": "block-schema-audit.json"
+}

@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-03",
+  "timezone": "Pacific/Auckland",
+  "status": "paused at user's request",
+  "objective": "Match AI journey schema and conversion to all current real builder options",
+  "worktree": "/Users/siyangcao/.codex/worktrees/eng-3768-stage/core",
+  "branch": "siyangcao/eng-3768-chunk-1-generate-and-edit-journeys-with-qwen-locally",
+  "deployment": "Local worktree only. No new push, stage deployment, Atlantis, or PR changes in this pass.",
+  "currentChanges": [
+    "Expanded schema: nine editor text variants, hex text color; native button variant/color/size/alignment, both icons and colors; all current icons plus legacy compatibility.",
+    "Added phone field, hint, rows, hide-label, existing integration/route IDs, exact spacer spacing; fixed min > option count validation and route-without-integration.",
+    "Added image focal point/scale, exact existing/uploaded asset URL; nested poll images and video posters; image metadata lookup for supported public CDNs.",
+    "Added contact/no-action buttons and video actions, tracking enum, legacy Subscribe and timed video-trigger representation.",
+    "Added card alpha color/blur/inherited theme/chat fields, journey fonts rendered in iframe and themes.",
+    "Added catalogue title search, known film IDs, audio/subtitle language lookup, existing Mux uploads with owner checks, real metadata clip-bound validation.",
+    "Updated model instructions, preserved old style aliases and existing drafts."
+  ],
+  "checks": {
+    "apiTests": "100 tests passed in 11 files (/tmp/ai-parity-tests.log)",
+    "typeChecks": "api-journeys, journeys-admin, journeys-ui run completed; see /tmp/ai-parity-checkpoint-types.log",
+    "apiLint": "One remaining lint error: resolveLibraryVideos.spec.ts JSON.parse(String(init.body)) triggers no-base-to-string. Use a typeof body === 'string' guard. See /tmp/ai-parity-api-lint.log.",
+    "adminLint": "Passed before final changes to API-only tests; /tmp/ai-parity-admin-lint.log.",
+    "diffCheck": "Passed."
+  },
+  "browser": {
+    "url": "https://tailscale-dev-siyang.taila2a609.ts.net:8443/ai-builder",
+    "tabId": "576280274",
+    "currentDraft": "Dark Style Test: disposable test draft, plan exists, no journey was generated.",
+    "result": "After plan confirmation the UI reported: The AI model isn't responding right now. Please try again in a few minutes. Your journey is unchanged.",
+    "preserve": [
+      "Fact or Fiction: Can We Trust Jesus? (7 cards, Fit/Fill/Crop on cards 2/3/4)",
+      "Easter: A New Beginning"
+    ],
+    "notes": "Do not count this functional smoke test as a journey quality benchmark. No retry was started after the pause request."
+  },
+  "resume": [
+    "Inspect the failed model request in local API/gateway logs without exposing credentials. Determine whether this is provider availability/rate limit or an expanded structured-output schema compatibility/size issue.",
+    "Fix the single test lint error, then rerun the relevant lint/test/type checks.",
+    "Finish browser verification of style/color/icons, image polls, phone rows/hints and fonts; verify real media/title/language lookup.",
+    "Review edge cases before declaring parity complete: source-specific subtitle behavior; legacy icon handling; exact asset lookup; chat feature flags; external integration/upload workflows remain separate from draft JSON.",
+    "Update parity CSV/audit with implemented/tested status instead of claiming all options have been browser-verified.",
+    "Remove only disposable test drafts after saving results. Preserve the user's comparison and Easter drafts.",
+    "Do not push or run Atlantis. If later asked to push, follow the full lint:changed --fix / commit / affected type-check ritual."
+  ]
+}

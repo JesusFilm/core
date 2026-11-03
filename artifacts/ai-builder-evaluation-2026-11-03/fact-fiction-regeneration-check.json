@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-04",
+  "title": "Fact or Fiction: Is Jesus History?",
+  "cards": 6,
+  "seed": "nua1",
+  "libraryVideoId": "7_0-nfs0201",
+  "language": "English",
+  "welcomeClip": [
+    11,
+    60
+  ],
+  "watchClips": [
+    [
+      0,
+      133
+    ],
+    [
+      134,
+      306
+    ]
+  ],
+  "postGenerationEdits": 0,
+  "planCorrection": "All trust choices should lead to second watch segment.",
+  "prompt": "Create a fresh English journey called “Fact or Fiction: Is Jesus History?” for someone curious or skeptical about whether Jesus was real and whether the Gospel accounts are trustworthy. Keep it welcoming and thoughtful, with short copy, dark cards, a quick response about whether they trust the story, a brief historical-evidence reflection, and a closing question about who they think Jesus was. Use the seeded Jesus Film library video “Fact or Fiction” in English throughout: a short muted background segment beginning around 11 seconds on the welcome, then two separate full-screen watch cards at different points in the journey, playing 0–133 seconds and 134–306 seconds of that same film. Put the trust question between the two watch cards and the final identity question after the evidence reflection. Show as much of the video as possible rather than cropping it. Make the choices and Continue buttons connect the journey naturally. No external links, sign-ups or contact collection.",
+  "checks": [
+    {
+      "card": 1,
+      "snapshot": "s the Watch Discussion; kept the trust step's primary forward destination as the Evidence Reflection per the outline. Assumed: Who Was Jesus poll options carry no action so the journey ends on that card, with no external links, sign-ups, or contact collection.\"\n  - paragraph: Here's the plan. Shall I build it?\n  - paragraph: \"Yes, build it. One correction to the routing: every answer on trust-question must lead to watch-discussion, so people see the second video segment before evidence-reflection. The flow is welcome → watch-intro → trust-question → watch-discussion → evidence-reflection → who-was-jesus.\"\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 2 of 6\n  - button \"Next card\" [active]:\n  - generic: watch-intro\n  - generic: 2.1 Was Jesus the Real Deal? · Clip 0:00 to 2:13\n  - iframe:\n    - button:\n    - region \"Video Player\"\n    - region \"video-controls\":\n      - button \"center-play-button\":\n      - generic: 0:00 / 2:13\n      - button \"subtitles\" [disabled]:\n      - button \"video settings\":\n      - button \"fullscreen\":\n      - slider \"mobile-progress-control\" [disabled]\n    - img \"video image\"\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert"
+    },
+    {
+      "card": 3,
+      "snapshot": "e flow is welcome → watch-intro → trust-question → watch-discussion → evidence-reflection → who-was-jesus.\"\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 4 of 6\n  - button \"Next card\" [active]:\n  - generic: watch-discussion\n  - generic: 2.1 Was Jesus the Real Deal? · Clip 2:14 to 5:06\n  - iframe:\n    - button:\n    - region \"Video Player\"\n    - region \"video-controls\":\n      - button \"center-play-button\":\n      - generic: 0:00 / 2:52\n      - button \"subtitles\" [disabled]:\n      - button \"video settings\":\n      - button \"fullscreen\":\n      - slider \"mobile-progress-control\" [disabled]\n    - img \"video image\"\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert"
+    },
+    {
+      "card": 4,
+      "snapshot": "econd video segment before evidence-reflection. The flow is welcome → watch-intro → trust-question → watch-discussion → evidence-reflection → who-was-jesus.\"\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 4 of 6\n  - button \"Next card\" [active]:\n  - generic: watch-discussion\n  - generic: 2.1 Was Jesus the Real Deal? · Clip 2:14 to 5:06\n  - iframe:\n    - button:\n    - region \"Video Player\"\n    - region \"video-controls\":\n      - button \"center-play-button\":\n      - generic: 0:00 / 2:52\n      - button \"subtitles\" [disabled]:\n      - button \"video settings\":\n      - button \"fullscreen\":\n      - slider \"mobile-progress-control\" [disabled]\n    - img \"video image\"\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert",
+      "video": [
+        {
+          "currentTime": 134,
+          "fit": "contain",
+          "paused": true,
+          "readyState": 4,
+          "source": "blob:https://tailscale-dev-siyang.taila2a609.ts.net:8443/cf97e466-fb59-41f1-ac18-b64682dabb64"
+        }
+      ]
+    },
+    {
+      "card": 2,
+      "clip": "0–133",
+      "playbackVerified": true,
+      "fit": "contain"
+    },
+    {
+      "card": 4,
+      "clip": "134–306",
+      "playbackVerified": true,
+      "observedSourceTime": 139.095765,
+      "fit": "contain"
+    },
+    {
+      "card": 5,
+      "snapshot": "he plan. Shall I build it?\n  - paragraph: \"Yes, build it. One correction to the routing: every answer on trust-question must lead to watch-discussion, so people see the second video segment before evidence-reflection. The flow is welcome → watch-intro → trust-question → watch-discussion → evidence-reflection → who-was-jesus.\"\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 5 of 6\n  - button \"Next card\" [active]:\n  - generic: evidence-reflection\n  - iframe:\n    - button:\n    - img \"A weathered scroll of parchment resting on old stone\"\n    - img \"A weathered scroll of parchment resting on old stone\"\n    - heading \"What do the sources say?\" [level=2]\n    - paragraph: Roman, Jewish, and early Christian writers all mention Jesus within a few decades of his life — a rare kind of agreement for a figure of that era. It's not proof, but it's worth pausing on.\n    - button \"Continue\":\n      - paragraph: Continue\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert"
+    },
+    {
+      "card": 6,
+      "snapshot": ": \"Yes, build it. One correction to the routing: every answer on trust-question must lead to watch-discussion, so people see the second video segment before evidence-reflection. The flow is welcome → watch-intro → trust-question → watch-discussion → evidence-reflection → who-was-jesus.\"\n  - textbox \"Message\":\n    - /placeholder: Message the journey builder\n  - button \"Send\" [disabled]\n  - button \"Previous card\":\n  - paragraph: Card 6 of 6\n  - button \"Next card\" [disabled]:\n  - generic: who-was-jesus\n  - iframe:\n    - button:\n    - img \"A calm open hillside lit by early sunrise\"\n    - img \"A calm open hillside lit by early sunrise\"\n    - heading \"Who do you think Jesus was?\" [level=2]\n    - button \"A wise teacher\"\n    - button \"A prophet\"\n    - button \"The Messiah\"\n    - button \"I'm still figuring it out\"\n    - button:\n    - button:\n    - button:\n- button \"Open Next.js Dev Tools\":\n- alert"
+    }
+  ],
+  "readyForUserEvaluation": true
+}

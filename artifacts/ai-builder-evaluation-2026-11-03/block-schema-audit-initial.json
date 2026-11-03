@@ -1,0 +1,326 @@
+{
+  "date": "2026-11-03",
+  "scope": "Completed source audit of 55 current editor option groups, plus actual schema parsing/conversion probes and native renderer availability checks.",
+  "schema": "apis/api-journeys/src/schema/journeyAiBuilder/journeySchema/journeySchema.ts",
+  "converter": "apis/api-journeys/src/schema/journeyAiBuilder/journeyToBlocks/journeyToBlocks.ts",
+  "comparison": {
+    "card2": "Fit",
+    "card3": "Fill",
+    "card4": "Crop",
+    "film": "7_0-nfs0201",
+    "startAt": 0,
+    "endAt": 133,
+    "notes": "Native Crop is contain plus 1.33x scaling. It retains letterboxing; Fill uses cover. Poster and video transforms verified in the browser."
+  },
+  "blocks": [
+    {
+      "block": "Video",
+      "covered": [
+        "YouTube",
+        "Four seeded English library films",
+        "Clip start/end",
+        "Standalone and background video",
+        "Fit, Fill, Crop"
+      ],
+      "missing": [
+        "Standalone autoplay toggle",
+        "Standalone mute toggle",
+        "Custom loading/cover image",
+        "Source-appropriate subtitles",
+        "Library film search beyond the four seeds",
+        "Audio-language selection",
+        "Existing uploaded/Mux sources and uploads",
+        "Template adapter notes",
+        "Tracking labels"
+      ],
+      "implementation": "Standalone converter fixes autoplay=true and muted=false; preview deliberately overrides autoplay=false. Backgrounds are fixed muted/autoplay. Library resolver fixes English language 529. Autoplay and mute toggle gaps concern standalone videos; native backgrounds always autoplay, mute and loop.",
+      "priority": "Autoplay, mute and custom cover first. Broader library search requires a discovery tool/resolver, not only an enum. Languages, uploads and subtitle catalogues require accompanying workflows.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/VideoBlockEditor/Settings/VideoBlockEditorSettings.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/VideoBlockEditor/Settings/Poster/VideoBlockEditorSettingsPoster.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/VideoBlockEditor/VideoBlockEditor.tsx"
+      ]
+    },
+    {
+      "block": "Image, including card cover",
+      "covered": [
+        "Stock search phrase",
+        "Alt text",
+        "Server-resolved photo metadata"
+      ],
+      "missing": [
+        "Focal point",
+        "Zoom/scale",
+        "Explicit existing image selection",
+        "Uploads / image library asset choice"
+      ],
+      "implementation": "imageForModel retains only search and alt. Converter fixes focal point at 50/50 and scale=null.",
+      "priority": "Focal point and scale first, for requests such as keep the face visible. Asset IDs should be resolved by a media tool.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image/Options/ImageOptions.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundMedia/Image/FocalPoint/FocalPoint.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundMedia/Image/ZoomImage/ZoomImage.tsx"
+      ]
+    },
+    {
+      "block": "Text",
+      "covered": ["Content", "Alignment", "Five simplified styles"],
+      "missing": [
+        "Custom text color",
+        "Full editor type-size range",
+        "Journey font-theme configuration"
+      ],
+      "namingMismatch": "AI title maps to h1, which the editor labels Display. AI body maps to body1, which the editor labels Large Body. Editor Title is h2; Normal Body is body2. Several heading sizes are unavailable through the AI aliases. AI subtitle maps to subtitle1, which is not offered in the current editor size selector.",
+      "priority": "Align style vocabulary with the editor and add text color. This can reduce oversized titles/body text on cards. Font themes are journey-wide rather than per-block fields.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography/Typography.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography/Variant/Variant.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography/Color/Color.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography/ThemeBuilderDialog/ThemeSettings/ThemeSettings.tsx"
+      ]
+    },
+    {
+      "block": "Button and icons",
+      "covered": [
+        "Label",
+        "Contained/outlined aliases",
+        "Leading icon from a subset",
+        "Step/link actions",
+        "Automatic form submit button"
+      ],
+      "missing": [
+        "Small/medium size choice",
+        "Left/center/right/justify alignment",
+        "Primary/secondary/error color",
+        "Text-only variant",
+        "Trailing icon",
+        "Remaining editor icon choices",
+        "Icon color",
+        "Explicit no-action button",
+        "Email/chat/phone/SMS actions",
+        "Tracking labels"
+      ],
+      "implementation": "Both primary and secondary AI styles use buttonColor=primary. Secondary only means outlined; it does not select secondary color. Size is fixed large. settings=null and endIconId=null. The schema has 21 icons, including 2 deprecated options; 7 of the editor's 26 current choices are absent.",
+      "priority": "Expose size, alignment, actual variant/color and trailing icon separately. Keep submit behavior semantic and automatic.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button/Button.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button/Variant/Variant.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button/Alignment/Alignment.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/controls/Icon/Icon.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/utils/actions/actions.ts"
+      ]
+    },
+    {
+      "block": "Poll / single-choice",
+      "covered": [
+        "Option labels",
+        "Per-option step/link action",
+        "Option order"
+      ],
+      "missing": [
+        "Text-and-image/grid variant",
+        "Image per option",
+        "Additional action types",
+        "Tracking labels"
+      ],
+      "implementation": "Converter sets gridView=false and pollOptionImageBlockId=null.",
+      "priority": "Image polls are a meaningful missing capability, distinct from adding an unrelated image block above the poll.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/RadioQuestion/RadioQuestion.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/RadioOption/RadioOption.tsx"
+      ]
+    },
+    {
+      "block": "Multiselect",
+      "covered": [
+        "Option labels",
+        "Option order",
+        "Minimum and maximum selection count",
+        "No-limit behavior by omitting min/max",
+        "Automatic submit button"
+      ],
+      "missing": [
+        "Minimum-selection upper-bound validation when max is omitted"
+      ],
+      "implementation": "All main settings are exposed, but min alone can exceed option count. The editor clamps this case.",
+      "priority": "Add min <= option count validation, including when max is absent.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Multiselect/Multiselect.tsx"
+      ]
+    },
+    {
+      "block": "Text response",
+      "covered": [
+        "Label",
+        "Placeholder",
+        "Required",
+        "Freeform/name/email type"
+      ],
+      "missing": [
+        "Phone type",
+        "Hint/helper text",
+        "Minimum visible rows",
+        "Hide-label toggle",
+        "Growth Spaces routing/integration selection"
+      ],
+      "implementation": "Converter fixes hint/minRows/integrationId/routeId=null and hideLabel=false.",
+      "priority": "Phone, hint and row count are useful additions. Integration configuration is a separate account-backed workflow.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/TextResponse/TextResponseFields/TextResponseFields.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/TextResponse/TextResponseFields/Type/Type.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/TextResponse/TextResponseFields/Label/Label.tsx"
+      ]
+    },
+    {
+      "block": "Spacer",
+      "covered": ["Small 40px", "Medium 100px", "Large 160px"],
+      "missing": ["Exact spacing value"],
+      "implementation": "Editor allows 20\u2013400px in 10px increments.",
+      "priority": "Low. Avoid encouraging large spacers after the footer-overlap problem.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Spacer/Spacing/Spacing.tsx"
+      ]
+    },
+    {
+      "block": "Card",
+      "covered": [
+        "Dark/light theme",
+        "Opaque hex background color",
+        "Image or video cover",
+        "Contained/expanded image layout"
+      ],
+      "missing": [
+        "Background/filter opacity",
+        "Adjustable blur amount",
+        "AI-chat enable/expand controls",
+        "Tracking labels"
+      ],
+      "implementation": "Color accepts six hex digits only, backdropBlur=null, showAssistant=false and expandChatByDefault=false. Native background-video layout remains contained, matching the editor restriction. Explicit inherited/default style is not represented; omitted theme deliberately resolves dark.",
+      "priority": "Opacity and blur are useful visual controls. Chat requires assistant/runtime support beyond draft JSON.",
+      "sources": [
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/Card.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundColor/BackgroundColor.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundColor/ColorOpacityField/ColorOpacityField.tsx",
+        "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card/ChatAssistant/ChatAssistant.tsx"
+      ]
+    }
+  ],
+  "crossCutting": {
+    "actions": "Step and website actions exist in AI; email, chat, phone/SMS and no-action are omitted.",
+    "templates": "Customization placeholders, customizable media/actions, adapter notes and global font themes are outside the current draft schema.",
+    "legacy": "SignUp exists in the shared renderer but is absent from the current Add a block menu and explicitly unsupported by the AI. VideoTrigger exists in data/rendering but is not currently authorable as a normal editor block; do not count these as ordinary missing menu options.",
+    "sources": [
+      "apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/AddBlock/AddBlock.tsx",
+      "libs/journeys/ui/src/components/BlockRenderer/BlockRenderer.tsx",
+      "libs/journeys/ui/src/components/Video/Video.tsx"
+    ]
+  },
+  "recommendedNextBatch": [
+    "Fix the multiselect minimum-count validation gap",
+    "Text style vocabulary parity and color",
+    "Image focal point and scale",
+    "Button size/alignment/variant/color/trailing icon",
+    "Phone input, hint, rows and hide-label",
+    "Video autoplay, mute and poster",
+    "Image polls",
+    "Card opacity and blur"
+  ],
+  "verificationPolicy": "For each addition, verify schema acceptance and retention, conversion to native block fields, and visible browser behavior. Keep IDs, stream URLs and available assets resolved by trusted tools. A field appearing in JSON alone does not establish support.",
+  "verification": {
+    "method": "Read current Properties dispatch, all block property controls and native renderer fields; ran actual schema parsing, block conversion and semantic checks with 41 option probes plus five multiselect limit cases.",
+    "optionMatrix": "block-option-parity.csv",
+    "optionGroups": 55,
+    "probes": "schema-options-probes.json",
+    "results": {
+      "retained": 19,
+      "rejected": 5,
+      "stripped": 17
+    },
+    "newFinding": "Multiselect with two options and min=3, max omitted passes current AI validation; current editor clamps minimum to the option count.",
+    "nativeConstraints": {
+      "imageZoom": "100\u2013200 percent in 10 percent steps",
+      "responseMinRows": [1, 2, 3, 4],
+      "spacer": "20\u2013400px in 10px steps",
+      "backgroundVideo": "Native renderer always autoplays, mutes and loops; these are not editable standalone-style toggles for backgrounds.",
+      "videoFit": "YouTube and website mode force Fit. Editor disables the choice for those contexts.",
+      "cardDefault": "Editor supports Default/inherited in addition to Light/Dark; AI resolves omitted theme to Dark.",
+      "filterOpacity": "Alpha/opacity editing is available for eligible expanded image layouts, not contained covers.",
+      "youTubeBackground": "YouTube fit controls are disabled in the editor. The native background renderer additionally scales its wrapper by viewport; objectFit alone does not promise an uncropped YouTube background."
+    },
+    "icons": {
+      "editorNonDeprecated": [
+        "ArrowBackRounded",
+        "ArrowForwardRounded",
+        "ArrowLeftContained2",
+        "ArrowRightContained2",
+        "ChevronLeftRounded",
+        "ChevronRightRounded",
+        "MenuBookRounded",
+        "ChatBubbleOutlineRounded",
+        "FormatQuoteRounded",
+        "MessageChat1",
+        "CheckCircleRounded",
+        "ContactSupportRounded",
+        "Home4",
+        "TranslateRounded",
+        "Launch",
+        "LinkAngled",
+        "SendRounded",
+        "BeenhereRounded",
+        "MailOutline",
+        "Phone",
+        "UserProfile2",
+        "UsersProfiles3",
+        "PlayArrowRounded",
+        "SubscriptionsRounded",
+        "Volume5",
+        "Note2"
+      ],
+      "aiSchema": [
+        "ArrowForwardRounded",
+        "ArrowBackRounded",
+        "ChevronRightRounded",
+        "CheckCircleRounded",
+        "ChatBubbleOutlineRounded",
+        "ContactSupportRounded",
+        "FormatQuoteRounded",
+        "Launch",
+        "LinkAngled",
+        "LiveTvRounded",
+        "LockOpenRounded",
+        "MailOutline",
+        "MenuBookRounded",
+        "MessageChat1",
+        "Phone",
+        "PlayArrowRounded",
+        "SendRounded",
+        "SubscriptionsRounded",
+        "TranslateRounded",
+        "UserProfile2",
+        "UsersProfiles3"
+      ],
+      "missingFromAI": [
+        "ArrowLeftContained2",
+        "ArrowRightContained2",
+        "BeenhereRounded",
+        "ChevronLeftRounded",
+        "Home4",
+        "Note2",
+        "Volume5"
+      ],
+      "aiOutsideEditorNonDeprecated": ["LiveTvRounded", "LockOpenRounded"]
+    },
+    "namingDetails": [
+      "AI title maps to editor Display, not editor Title.",
+      "AI body maps to editor Large Body, not Normal Body.",
+      "AI subtitle maps to subtitle1, which is not a size offered in the current text variant selector.",
+      "AI button primary/secondary select contained/outlined appearance; both use primary color."
+    ],
+    "findingsRequiringFix": [
+      "Multiselect minimum can exceed option count when maximum is omitted.",
+      "AI icon list includes deprecated LiveTvRounded and LockOpenRounded and omits seven non-deprecated editor choices.",
+      "Text style and button style aliases do not match editor labels."
+    ]
+  }
+}

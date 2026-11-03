@@ -111,6 +111,142 @@ editedJourney.steps[1].card.content[0] = {
 }
 
 describe('runPipeline', () => {
+  it('replans a hallucinated new first card when the guide requests an in-place edit', async () => {
+    const corrected = structuredClone(shortJourney)
+    corrected.steps[0].card.backgroundColor = '#123456'
+    const correctPlan: Plan = {
+      kind: 'edit',
+      changes: [
+        {
+          op: 'update',
+          step: 'welcome',
+          name: 'welcome-card',
+          detail: 'Change the existing first card background color.'
+        }
+      ],
+      keep: ['claims', 'close'],
+      assumptions: []
+    }
+    const generate = fakeGenerate({
+      guide: [
+        {
+          ok: true,
+          value: {
+            route: 'change',
+            kind: 'edit',
+            reply: '',
+            brief: 'Change the background color of the existing welcome card.',
+            allowStepChanges: false
+          }
+        }
+      ],
+      planner: [
+        {
+          ok: true,
+          value: {
+            plan: {
+              ...correctPlan,
+              allowStepChanges: true,
+              changes: [
+                {
+                  op: 'add',
+                  step: 'intro-video',
+                  name: 'intro-video',
+                  detail: 'Insert a new first card with Continue.'
+                }
+              ]
+            }
+          }
+        },
+        { ok: true, value: { plan: correctPlan } }
+      ],
+      builder: [{ ok: true, value: corrected }]
+    })
+
+    const events = await collect(
+      input({ message: 'Change the first card too.', journey: shortJourney }),
+      generate
+    )
+
+    expect(generate.prompts.planner).toHaveLength(2)
+    expect(generate.prompts.planner[1]).toContain(
+      'Do not add, remove or reorder steps'
+    )
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        type: 'content',
+        kind: 'journey',
+        payload: expect.objectContaining({ journey: corrected })
+      })
+    )
+  })
+
+  it('repairs an extra Continue-only step during an existing-card video-fit edit', async () => {
+    const before = structuredClone(shortJourney)
+    before.steps[0].card.backgroundVideo = {
+      url: 'https://youtu.be/dQw4w9WgXcQ',
+      objectFit: 'fit'
+    }
+    const corrected = structuredClone(before)
+    corrected.steps[0].card.backgroundVideo!.objectFit = 'fill'
+    const extraCard = structuredClone(corrected)
+    extraCard.steps.unshift({
+      name: 'intro-video',
+      card: {
+        name: 'intro-video-card',
+        content: [
+          {
+            type: 'button',
+            name: 'intro-continue',
+            label: 'Continue',
+            action: { goTo: 'welcome' }
+          }
+        ]
+      }
+    })
+    const generate = fakeGenerate({
+      guide: [{ ok: true, value: { route: 'build', reply: '' } }],
+      builder: [
+        { ok: true, value: extraCard },
+        { ok: true, value: corrected }
+      ]
+    })
+
+    const events = await collect(
+      input({
+        message: 'Change the first card to fill too.',
+        journey: before,
+        pendingPlan: {
+          kind: 'edit',
+          changes: [
+            {
+              op: 'update',
+              step: 'welcome',
+              name: 'welcome-card',
+              detail: 'Set the existing background video objectFit to fill.'
+            }
+          ],
+          keep: ['claims', 'close'],
+          assumptions: []
+        }
+      }),
+      generate
+    )
+
+    expect(events).toContainEqual({
+      type: 'progress',
+      stage: 'repair',
+      status: 'started'
+    })
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        type: 'content',
+        kind: 'journey',
+        payload: expect.objectContaining({ journey: corrected })
+      })
+    )
+  })
+
   it('stops at the guide for a reply', async () => {
     const generate = fakeGenerate({
       guide: [{ ok: true, value: { route: 'reply', reply: 'A poll asks…' } }]
@@ -285,6 +421,33 @@ describe('runPipeline', () => {
     expect(events).toContainEqual(
       expect.objectContaining({ type: 'content', kind: 'journey' })
     )
+  })
+
+  it('applies a requested card edit even if the planner also puts that step in keep', async () => {
+    const generate = fakeGenerate({
+      guide: [{ ok: true, value: { route: 'build', reply: '' } }],
+      builder: [{ ok: true, value: editedJourney }]
+    })
+    const events = await collect(
+      input({
+        message: 'Keep the exact color #AADDFF.',
+        journey: shortJourney,
+        pendingPlan: {
+          ...editPlan,
+          kind: 'edit',
+          keep: ['welcome', 'claims', 'close']
+        }
+      }),
+      generate
+    )
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        type: 'content',
+        kind: 'journey',
+        payload: expect.objectContaining({ journey: editedJourney })
+      })
+    )
+    expect(generate.prompts.builder[0]).toContain('#AADDFF')
   })
 
   it('plans, instead of dead-ending, when the guide says build but no plan is waiting', async () => {

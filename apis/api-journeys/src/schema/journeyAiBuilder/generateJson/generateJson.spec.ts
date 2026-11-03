@@ -6,6 +6,7 @@ import { extractJson, generateJson, parseJson } from './generateJson'
 
 vi.mock('ai', () => ({
   Output: { object: vi.fn((config) => ({ type: 'object', ...config })) },
+  jsonSchema: vi.fn((schema) => ({ jsonSchema: schema })),
   streamText: vi.fn()
 }))
 
@@ -45,9 +46,46 @@ describe('generateJson', () => {
       expect.objectContaining({
         instructions: 'system',
         maxRetries: 0,
-        output: expect.objectContaining({ schema })
+        output: expect.objectContaining({
+          schema: expect.objectContaining({
+            jsonSchema: expect.objectContaining({
+              properties: expect.objectContaining({ route: expect.any(Object) })
+            })
+          })
+        })
       })
     )
+  })
+
+  it('keeps unsupported regex lookarounds out of the provider schema while validating returned emails fully', async () => {
+    const emailSchema = z.object({
+      options: z.array(
+        z.union([
+          z.object({ email: z.email() }),
+          z.object({ name: z.string().regex(/^[a-z-]+$/) })
+        ])
+      )
+    })
+    mockStreamText.mockReturnValue(
+      streamOf(['{"options":[{"email":".person@example.com"}]}'])
+    )
+    const result = await generateJson({
+      model: {} as LanguageModel,
+      abortSignal: new AbortController().signal,
+      instructions: 'system',
+      prompt: 'hello',
+      schema: emailSchema
+    })
+    const call = mockStreamText.mock.lastCall?.[0]
+    const output = call?.output as unknown as {
+      schema: { jsonSchema: unknown }
+    }
+    const providerSchema = output.schema.jsonSchema
+    expect(providerSchema).toBeDefined()
+    expect(JSON.stringify(providerSchema)).not.toContain('(?!')
+    expect(JSON.stringify(providerSchema)).toContain('^[a-z-]+$')
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toContain('email')
   })
 })
 

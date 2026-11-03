@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-03",
+  "environment": "Local worktree via Tailscale, browser UI only for creation and edits",
+  "rounds": 3,
+  "order": ["nua1", "nua2", "nua8", "nua9"],
+  "max_edit_requests": 5,
+  "confirmations_count_as_edits": false,
+  "stop_early": "All four quality dimensions at least 4/5, no major missing purpose or broken rendering",
+  "scoring": {
+    "purpose": "1 misses the idea; 3 mostly conveys it with important gaps; 5 communicates the central idea and appropriate response fully",
+    "clarity": "1 confusing or inaccessible; 3 understandable with rough or insider language; 5 concise, welcoming and clear for a curious newcomer",
+    "flow": "1 dead ends or contradictory structure; 3 usable but thin choices or weak follow-up; 5 coherent progression, meaningful response options and next steps",
+    "visual": "1 broken or unreadable; 3 usable with crowding or weak imagery; 5 readable, consistent, relevant imagery and accessible scrolling",
+    "edit_fidelity": "Per edit: 0 ignored/failed, 0.5 partly fulfilled, 1 fulfilled; record collateral changes separately"
+  },
+  "limitations": [
+    "No code/model changes during the twelve runs",
+    "Preview buttons intentionally cannot be clicked; navigation structure assessed from visible cards and plans, not live viewer playback",
+    "Seed library-video and email-delivery features may be approximated with supported content",
+    "Subjective agent assessment, not human user research or independent historical/theological fact-checking"
+  ],
+  "targets": [
+    {
+      "id": "nua1",
+      "title": "Fact or Fiction",
+      "prompt": "Make a short Fact or Fiction journey for someone curious or sceptical about Jesus. Help them think about whether the story of Jesus can be trusted, give them a little historical context, and finish by asking who they think Jesus was. Keep it welcoming and let them express what they actually think.",
+      "essentials": [
+        "trustworthiness of Jesus/Gospel story",
+        "some concrete historical context without overstating evidence",
+        "space for sceptical as well as positive responses",
+        "reflection on Jesus' identity"
+      ]
+    },
+    {
+      "id": "nua2",
+      "title": "What About the Resurrection?",
+      "prompt": "Create a short journey called What About the Resurrection? for someone exploring Christianity. Invite them to think about the empty tomb and the different explanations for it, explain why Christians believe Jesus really died and rose again, and ask what that would mean for how they see Christianity. Make room for doubt rather than assuming they already believe.",
+      "essentials": [
+        "empty tomb and alternative explanations",
+        "Jesus really died, Christian claim of resurrection",
+        "support or evidence with honest framing",
+        "personal implications and room for uncertainty"
+      ]
+    },
+    {
+      "id": "nua8",
+      "title": "What's Jesus Got to Do With Me?",
+      "prompt": "Make a short journey about what Jesus' death and resurrection have to do with me personally. It's for someone who isn't sure they are good enough for God. Help them explore grace, Jesus' love and forgiveness, and give them a chance to say what they think or what they are unsure about. Keep it down to earth and not preachy.",
+      "essentials": [
+        "personal relevance of Jesus' death/resurrection",
+        "grace rather than earning God's acceptance",
+        "love, forgiveness and freedom from sin",
+        "meaningful personal response including uncertainty"
+      ]
+    },
+    {
+      "id": "nua9",
+      "title": "Decision / Can I Know Him?",
+      "prompt": "Create a gentle journey for someone deciding whether to follow Jesus. Explain that Jesus wants a relationship with them, let them respond yes, not yet, or unsure, and give each response a helpful next step. For someone who says yes, help them express a simple prayer of trust and suggest how to begin growing in faith. Don't pressure people who aren't ready.",
+      "essentials": [
+        "relational invitation to trust/follow Jesus",
+        "distinct yes/not yet/unsure responses with suitable next steps",
+        "prayer includes thanks/love, forgiveness/turning, trust/new life",
+        "growth/helpful follow-up without pressure"
+      ]
+    }
+  ]
+}

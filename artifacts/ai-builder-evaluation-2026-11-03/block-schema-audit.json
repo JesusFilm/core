@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-04",
+  "scope": "All 55 audited native editor option groups now represented or retain their existing native constraints. Schema and converter parity does not add publishing, account provisioning, or binary-upload workflows.",
+  "schema": "apis/api-journeys/src/schema/journeyAiBuilder/journeySchema/journeySchema.ts",
+  "converter": "apis/api-journeys/src/schema/journeyAiBuilder/journeyToBlocks/journeyToBlocks.ts",
+  "comparison": {
+    "card2": "Fit",
+    "card3": "Fill",
+    "card4": "Crop",
+    "film": "7_0-nfs0201",
+    "startAt": 0,
+    "endAt": 133,
+    "notes": "Native Crop is contain plus 1.33x scaling. It retains letterboxing; Fill uses cover. Poster and video transforms verified in the browser."
+  },
+  "matrix": "block-option-parity.csv",
+  "initialAudit": "block-schema-audit-initial.json",
+  "verification": {
+    "apiTests": 113,
+    "adminTests": 19,
+    "schemaRetentionProbes": 41,
+    "semanticLimitCases": 5,
+    "typeChecks": ["api-journeys", "journeys-admin", "journeys-ui"],
+    "liveMedia": "media-service-smoke.json",
+    "nativeConstraints": {
+      "imageZoom": "100\u2013200 percent in 10 percent steps",
+      "responseMinRows": [1, 2, 3, 4],
+      "spacer": "20\u2013400px in 10px steps",
+      "backgroundVideo": "Native renderer always autoplays, mutes and loops; these are not editable standalone-style toggles for backgrounds.",
+      "videoFit": "YouTube and website mode force Fit. Editor disables the choice for those contexts.",
+      "cardDefault": "Editor supports Default/inherited in addition to Light/Dark; AI resolves omitted theme to Dark.",
+      "filterOpacity": "Alpha/opacity editing is available for eligible expanded image layouts, not contained covers.",
+      "youTubeBackground": "YouTube fit controls are disabled in the editor. The native background renderer additionally scales its wrapper by viewport; objectFit alone does not promise an uncropped YouTube background."
+    },
+    "scopedLint": "passed for changed API, admin and shared UI files",
+    "formatting": "passed",
+    "fullProjectLint": "Not completed: journeys-admin lint exceeded Node heap. Scoped changed-file lint passed with an increased heap.",
+    "serviceHealth": "Frontend, Tailscale frontend, gateway, journeys, media, languages, analytics and users all HTTP 200 on final check."
+  },
+  "browserVerified": [
+    "Native full-card and background library video rendering and Fit/Fill/Crop comparison",
+    "Text size/color and header/body fonts",
+    "Outlined small secondary button with leading and trailing icons",
+    "Image poll grid",
+    "Optional phone input with tel keyboard, helper text and two visible rows",
+    "Logical next arrow right for English and left for Arabic"
+  ],
+  "fixesFoundDuringVerification": [
+    "Qwen structured-output compiler rejects regex lookarounds from Zod email schema. Provider schema omits unsupported patterns; complete original Zod validation remains on server.",
+    "Builder now receives recent messages and the current request so exact edit values are not lost when the planner summarizes them.",
+    "Kept steps are derived from actual edit targets and missing untouched steps are restored."
+  ],
+  "remainingWorkflowLimits": [
+    "Drafts still live in browser storage; this chunk does not create or publish database journeys.",
+    "Existing image and owned ready Mux assets can be referenced. Creating uploads remains the native editor workflow.",
+    "Existing integration/route IDs can be represented. Creating or selecting account integrations remains the account workflow.",
+    "Subtitle availability, chat feature flags, template controls and analytics still depend on the native source/runtime. Live subtitle playback and user-uploaded Mux playback were not exercised.",
+    "Model adherence remains imperfect. During testing it changed poll labels and omitted requested links; schema/converter coverage is not a generation-quality benchmark."
+  ],
+  "localOnly": true
+}

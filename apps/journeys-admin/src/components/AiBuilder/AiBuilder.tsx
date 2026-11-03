@@ -127,7 +127,10 @@ export function AiBuilder(): ReactElement {
             ))}
           </Alert>
         )}
-        <AiBuilderPreview blocks={activeDraft?.blocks ?? []} />
+        <AiBuilderPreview
+          blocks={activeDraft?.blocks ?? []}
+          journey={activeDraft?.journey}
+        />
       </Box>
     </Stack>
   )
