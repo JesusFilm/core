@@ -3,5 +3,11 @@
 -- with this functional index instead of a full table scan. Not representable
 -- in schema.prisma (Prisma has no expression-index syntax), so this will show
 -- as drift on `prisma migrate dev` / introspection -- that's expected.
+--
+-- CONCURRENTLY avoids the write-blocking lock a plain CREATE INDEX would
+-- hold on `User` for the build's duration -- every sign-in on the `me` path
+-- writes to this table. Postgres rejects CONCURRENTLY inside a transaction
+-- block, so this migration must stay this file's only statement -- do not
+-- add further DDL here.
 -- CreateIndex
-CREATE INDEX "User_email_lower_idx" ON "User" (LOWER("email"));
+CREATE INDEX CONCURRENTLY IF NOT EXISTS "User_email_lower_idx" ON "User" (LOWER("email"));

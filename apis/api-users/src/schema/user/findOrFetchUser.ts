@@ -59,8 +59,18 @@ async function relinkUserToFirebaseUid(
 ): Promise<User> {
   return await prisma.$transaction(async (tx) => {
     const holder = await tx.user.findUnique({ where: { email } })
-    if (holder == null)
+    if (holder == null) {
+      // Another concurrent call may have already relinked this exact
+      // mixed-case email and normalized the row's email to lowercase as
+      // part of that write, so this lookup by the original string no
+      // longer matches anything. Check by userId before giving up, same
+      // recovery as the update-conflict branch below.
+      const relinkedByOtherCall = await tx.user.findUnique({
+        where: { userId }
+      })
+      if (relinkedByOtherCall != null) return relinkedByOtherCall
       throw new Error('User row holding the email disappeared during re-link')
+    }
     if (holder.userId === userId) return holder
     // A superAdmin row's email can be orphaned (e.g. the admin moved on and
     // the address was reassigned), so an unrelated person later verifying it
@@ -210,9 +220,15 @@ export async function findOrFetchUser(
   // mixed case (predating the lowercasing above) would not collide with this
   // create and a duplicate row would be created instead of relinking. Check
   // case-insensitively first so legacy rows still relink.
+  //
+  // Prisma's `mode: 'insensitive'` on Postgres compiles to ILIKE, which
+  // treats `%` and `_` as wildcards, so an unescaped email containing either
+  // (a valid RFC-5322 local-part character) could match an unrelated row
+  // and relink it onto this verified-but-wrong account.
   if (data.email != null) {
+    const escapedEmail = data.email.replace(/[\\%_]/g, '\\$&')
     const caseInsensitiveHolder = await prisma.user.findFirst({
-      where: { email: { equals: data.email, mode: 'insensitive' } }
+      where: { email: { equals: escapedEmail, mode: 'insensitive' } }
     })
     const holderEmail = caseInsensitiveHolder?.email
     if (holderEmail != null) {

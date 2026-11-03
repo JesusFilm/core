@@ -531,6 +531,48 @@ describe('findOrFetchUser', () => {
       })
     })
 
+    it('should return the already re-linked row when the holder lookup races a concurrent relink', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      const relinkedRow = { ...existingRow, userId: newUid }
+      // A concurrent call already relinked this exact email and normalized
+      // the row's email to lowercase as part of that write, so this lookup
+      // by the original (pre-normalization) string finds nothing.
+      tx.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(relinkedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(relinkedRow)
+      expect(tx.user.findUnique).toHaveBeenNthCalledWith(1, {
+        where: { email }
+      })
+      expect(tx.user.findUnique).toHaveBeenNthCalledWith(2, {
+        where: { userId: newUid }
+      })
+      expect(tx.user.update).not.toHaveBeenCalled()
+    })
+
+    it('should rethrow when the holder email disappeared and no row was relinked for this uid', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      tx.user.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(null)
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        'User row holding the email disappeared during re-link'
+      )
+      expect(tx.user.update).not.toHaveBeenCalled()
+    })
+
     it('should refuse to re-link a superAdmin row', async () => {
       mockFirebaseUser(true)
       const superAdminRow = { ...existingRow, superAdmin: true }
@@ -719,6 +761,33 @@ describe('findOrFetchUser', () => {
 
       expect(prismaMock.user.create).toHaveBeenCalledWith({
         data: expect.objectContaining({ email: 'amin@email.com' })
+      })
+    })
+
+    it('should escape ILIKE wildcards in the email before the case-insensitive lookup', async () => {
+      // `%` and `_` are valid, unescaped RFC-5322 local-part characters but
+      // are also ILIKE wildcards. Unescaped, 'jane_doe@x.com' would match an
+      // unrelated row like 'janeXdoe@x.com' and relink it by mistake.
+      ;(auth.getUser as Mock).mockReturnValueOnce({
+        uid: newUid,
+        displayName: 'Jane Doe',
+        email: 'jane_doe@x.com',
+        photoURL: 'https://bit.ly/3Gth4',
+        emailVerified: true
+      })
+      prismaMock.user.findFirst.mockResolvedValueOnce(null)
+      prismaMock.user.create.mockResolvedValueOnce({
+        ...legacyRow,
+        userId: newUid,
+        email: 'jane_doe@x.com'
+      })
+
+      await findOrFetchUser({}, newUid, undefined)
+
+      expect(prismaMock.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          email: { equals: 'jane\\_doe@x.com', mode: 'insensitive' }
+        }
       })
     })
   })
