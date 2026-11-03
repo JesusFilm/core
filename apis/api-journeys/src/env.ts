@@ -11,6 +11,16 @@ export const env = createEnv({
     throw new Error('Invalid environment variables')
   },
   server: {
+    // AI journey builder (ENG-3766). Only the key is required to enable it;
+    // api-journeys starts without it and the subscription reports not set up.
+    AI_GATEWAY_URL: z.url().default('https://ai-gateway.jesusfilm.org'),
+    QWEN_AI_JOURNEYS_KEY: z.string().trim().min(1).optional(),
+    AI_GATEWAY_MODEL: z.string().trim().min(1).default('coding'),
+    AI_JOURNEY_BUILDER_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(5 * 60 * 1000),
     CLOUDFLARE_UPLOAD_KEY: z.string().trim().min(1),
     FACEBOOK_APP_ID: z.string().trim().min(1),
     FACEBOOK_APP_SECRET: z.string().trim().min(1),
