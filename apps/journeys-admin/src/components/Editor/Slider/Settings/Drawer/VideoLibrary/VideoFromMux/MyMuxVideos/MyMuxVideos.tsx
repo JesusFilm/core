@@ -50,7 +50,7 @@ interface MyMuxVideosProps {
 }
 
 export const PAGE_SIZE = 10
-const PEEK_LIMIT = PAGE_SIZE + 1
+export const PEEK_LIMIT = PAGE_SIZE + 1
 
 export function MyMuxVideos({
   selectedVideoId,

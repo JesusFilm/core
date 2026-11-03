@@ -13,14 +13,8 @@ import {
   CampaignBlockFieldsCommand,
   useCampaignBlockFieldsCommand
 } from '../useCampaignBlockFieldsCommand'
-import {
-  CampaignStyleCommand,
-  useCampaignStyleCommand
-} from '../useCampaignStyleCommand'
 
-export interface CampaignMediaCommand
-  extends CampaignBlockFieldsCommand,
-    Pick<CampaignStyleCommand, 'addStyle'> {
+export interface CampaignMediaCommand extends CampaignBlockFieldsCommand {
   /** Fill (or replace) the owner's Media Slot with a picked video or image as one Command. */
   addMediaPick: (owner: CampaignMediaOwner, pick: CampaignMediaPick) => void
   /** Empty the owner's Media Slot as one Command. */
@@ -45,7 +39,6 @@ export function useCampaignMediaCommand(): CampaignMediaCommand {
   const createImage = useCampaignImageBlockCreateMutation(campaign.id)
   const { update } = useCampaignBlockUpdateMutation()
   const fieldsCommand = useCampaignBlockFieldsCommand()
-  const { addStyle } = useCampaignStyleCommand()
 
   function addMediaPick(
     owner: CampaignMediaOwner,
@@ -82,5 +75,5 @@ export function useCampaignMediaCommand(): CampaignMediaCommand {
     fieldsCommand.addFields(owner, { mediaBlockId: null })
   }
 
-  return { addStyle, ...fieldsCommand, addMediaPick, clearMedia }
+  return { ...fieldsCommand, addMediaPick, clearMedia }
 }

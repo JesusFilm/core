@@ -1,1 +1,1 @@
-export { JourneyCardSnapshotRefreshDialog } from '../utils/useJourneyCardSnapshotRefreshCommand/JourneyCardSnapshotRefreshDialog'
+export { JourneyCardSnapshotRefreshDialog } from './JourneyCardSnapshotRefreshDialog'

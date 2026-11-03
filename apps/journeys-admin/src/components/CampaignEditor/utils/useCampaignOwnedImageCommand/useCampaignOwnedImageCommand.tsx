@@ -12,18 +12,9 @@ import {
   CampaignBlockFieldsCommand,
   useCampaignBlockFieldsCommand
 } from '../useCampaignBlockFieldsCommand'
-import {
-  CampaignStyleCommand,
-  useCampaignStyleCommand
-} from '../useCampaignStyleCommand'
 
 export interface AddOwnedImageOptions<B extends CampaignUpdatableBlock> {
   /** The section or chrome block that will own the image. */
-  previous?: CampaignBlockUpdateInput<B['__typename']>
-  write?: (
-    block: B,
-    input: CampaignBlockUpdateInput<B['__typename']>
-  ) => Promise<unknown>
   owner: B
   slot: CampaignImageSlot
   /** The stored (imagedelivery.net) address the picker returned. */
@@ -32,13 +23,11 @@ export interface AddOwnedImageOptions<B extends CampaignUpdatableBlock> {
   input: (imageId: string) => CampaignBlockUpdateInput<B['__typename']>
   /** The image id a set of the owner's fields points the slot at. */
   imageIdOf: (
-    fields: CampaignBlockUpdateInput<NoInfer<B>['__typename']>
+    fields: CampaignBlockUpdateInput<B['__typename']>
   ) => string | null | undefined
 }
 
-export interface CampaignOwnedImageCommand
-  extends CampaignBlockFieldsCommand,
-    Pick<CampaignStyleCommand, 'addStyle'> {
+export interface CampaignOwnedImageCommand extends CampaignBlockFieldsCommand {
   /** Create a cover or logo and point the owner at it as one Command. */
   addOwnedImage: <B extends CampaignUpdatableBlock>(
     options: AddOwnedImageOptions<B>
@@ -63,7 +52,6 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
   const createOwnedImage = useCampaignImageBlockCreateMutation(campaign.id)
   const { update } = useCampaignBlockUpdateMutation()
   const fieldsCommand = useCampaignBlockFieldsCommand()
-  const { addStyle } = useCampaignStyleCommand()
 
   function addOwnedImage<B extends CampaignUpdatableBlock>({
     owner,
@@ -88,5 +76,5 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
     })
   }
 
-  return { addStyle, ...fieldsCommand, addOwnedImage }
+  return { ...fieldsCommand, addOwnedImage }
 }

@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -10,36 +11,46 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
 
-import { GetCampaign_campaign_blocks } from '../../../../__generated__/GetCampaign'
-import { TypographyAlign } from '../../../../__generated__/globalTypes'
+import {
+  GetCampaign_campaign_blocks_CampaignColumnsBlock as ColumnsBlock,
+  GetCampaign_campaign_blocks,
+  GetCampaign_campaign_blocks_CampaignTypographyBlock as TypographyBlock
+} from '../../../../__generated__/GetCampaign'
+import {
+  CampaignColumnsRatio,
+  CampaignStatus,
+  TypographyAlign
+} from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../libs/useCampaignBlockDuplicateMutation'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
-import { CAMPAIGN_COLUMNS_BLOCK_UPDATE_RATIO } from '../../../libs/useCampaignColumnsBlockRatioMutation'
+import { CAMPAIGN_BLOCK_RESTORE } from '../../../libs/useCampaignBlockRestoreMutation'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import {
   CAMPAIGN_HERO_BLOCK_CREATE,
   CAMPAIGN_RICH_TEXT_BLOCK_CREATE
 } from '../../../libs/useCampaignSectionCreateMutation'
-import { CAMPAIGN_TYPOGRAPHY_BLOCK_UPDATE_STYLE } from '../../../libs/useCampaignTypographyBlockUpdateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import {
   campaign,
   campaignWithColumns,
+  campaignWithFrenchRegionName,
   campaignWithRegions,
+  eurLine,
   withEmptyTranslations
 } from '../data'
 import { Hotkeys } from '../Hotkeys'
-import { newSectionBlock } from '../sectionTypes'
+import { blockUpdateMock } from '../styleTesting'
 import {
   BlocksProbe,
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
-  StaticEditor
+  StaticEditor,
+  UndoRedo
 } from '../testing'
+import { newSectionBlock } from '../utils/sectionTypes'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
-import { textStyleRow } from '../utils/useCampaignExtraStyleCommand'
 
 import { Inspector } from './Inspector'
 
@@ -170,21 +181,12 @@ const swapMock = {
   }))
 }
 
-const ratioMock = {
-  request: {
-    query: CAMPAIGN_COLUMNS_BLOCK_UPDATE_RATIO,
-    variables: { id: 'columnsId', input: { ratio: 'wideRight' } }
-  },
-  result: vi.fn(() => ({
-    data: {
-      campaignColumnsBlockUpdate: {
-        __typename: 'CampaignColumnsBlock',
-        id: 'columnsId',
-        ratio: 'wideRight'
-      }
-    }
-  }))
-}
+const ratioMock = blockUpdateMock(
+  campaignWithColumns.blocks.find(
+    (block) => block.id === 'columnsId'
+  ) as ColumnsBlock,
+  { ratio: CampaignColumnsRatio.wideRight }
+)
 
 const heroInSlotMock = {
   request: {
@@ -241,12 +243,12 @@ const richTextInSlotMock = {
 function renderInspector(
   initialState?: Partial<CampaignEditorState>,
   campaignProp = campaign,
-  extraMocks: Array<Record<string, unknown>> = []
+  extraMocks: MockLink.MockedResponse[] = []
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor
       initialState={initialState}
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       mocks={[
         ...extraMocks,
         noteDeleteMock,
@@ -260,7 +262,7 @@ function renderInspector(
       <Hotkeys />
       <SelectionProbe />
       <CommandProbe />
-      <Inspector isManager={false} />
+      <Inspector role="member" />
     </StaticEditor>
   )
 }
@@ -313,7 +315,7 @@ describe('Inspector', () => {
         <StaticEditor>
           <Hotkeys />
           <input aria-label="Shell field" />
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </StaticEditor>
       )
 
@@ -362,19 +364,13 @@ describe('Inspector', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('shows the campaign settings on Settings, with no Languages or Translations buttons', () => {
+    it('shows the campaign settings on Settings', () => {
       renderInspector({ inspectorTab: 'settings' })
 
       expect(screen.getByTestId('CampaignSettings')).toBeInTheDocument()
       expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
         campaign.title
       )
-      expect(
-        screen.queryByRole('button', { name: 'Languages' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Translations' })
-      ).not.toBeInTheDocument()
     })
   })
 
@@ -399,7 +395,7 @@ describe('Inspector', () => {
       expect(screen.getByRole('tab', { name: 'Colours' })).toBeInTheDocument()
     })
 
-    it('shows the media editor of a hero on Settings', () => {
+    it('shows the media editor of a hero on Settings', async () => {
       renderInspector({ selectedBlockId: 'heroId', inspectorTab: 'settings' })
 
       expect(screen.getByTestId('CampaignMediaSectionEdit')).toHaveAttribute(
@@ -407,7 +403,11 @@ describe('Inspector', () => {
         'heroId'
       )
       expect(
-        screen.getByRole('textbox', { name: 'Watch or YouTube link' })
+        await screen.findByRole(
+          'textbox',
+          { name: 'Watch or YouTube link' },
+          { timeout: 5000 }
+        )
       ).toBeInTheDocument()
     })
 
@@ -644,22 +644,12 @@ describe('Inspector', () => {
             : block
         )
       }
-      const resetMock = {
-        request: {
-          query: CAMPAIGN_TYPOGRAPHY_BLOCK_UPDATE_STYLE,
-          variables: { id: 'journeyListNoteId', input: { align: null } }
-        },
-        result: vi.fn(() => ({
-          data: {
-            campaignTypographyBlockUpdate: textStyleRow(
-              centred.blocks.find(
-                (block) => block.id === 'journeyListNoteId'
-              ) as Parameters<typeof textStyleRow>[0],
-              { align: null }
-            )
-          }
-        }))
-      }
+      const resetMock = blockUpdateMock(
+        centred.blocks.find(
+          (block) => block.id === 'journeyListNoteId'
+        ) as TypographyBlock,
+        { align: null }
+      )
       renderInspector({ selectedBlockId: 'journeyListNoteId' }, centred, [
         resetMock
       ])
@@ -701,6 +691,53 @@ describe('Inspector', () => {
 
       fireEvent.keyDown(document.body, { key: 'Escape' })
       expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+    })
+
+    it('selects a deleted Region Line’s region card, and undo selects the line again', async () => {
+      const lineDeleteMock = {
+        request: {
+          query: CAMPAIGN_BLOCK_DELETE,
+          variables: { id: 'eurLineId' }
+        },
+        result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
+      }
+      const lineRestoreMock = {
+        request: {
+          query: CAMPAIGN_BLOCK_RESTORE,
+          variables: { id: 'eurLineId' }
+        },
+        result: vi.fn(() => ({ data: { campaignBlockRestore: [eurLine] } }))
+      }
+      render(
+        <StaticEditor
+          initialState={{ selectedBlockId: 'eurLineId' }}
+          campaign={campaignWithRegions}
+          mocks={[lineDeleteMock, lineRestoreMock]}
+        >
+          <UndoRedo />
+          <SelectionProbe />
+          <Inspector role="member" />
+        </StaticEditor>
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+      await waitFor(() => expect(lineDeleteMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingSwitcherId'
+      )
+      expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+        'eurRegionId'
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+      await waitFor(() => expect(lineRestoreMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('text')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'eurLineId'
+      )
     })
   })
 
@@ -1025,6 +1062,23 @@ describe('Inspector', () => {
       selectedBlockId: 'landingSwitcherId'
     }
 
+    it.each([
+      ['the French name', 'eurRegionId', 'L’Europe'],
+      ['the default name without a French one', 'afrRegionId', 'Africa']
+    ])(
+      'names the region in the Preview Language in the header: %s',
+      (_label, selectedRegionId, name) => {
+        renderInspector(
+          { ...regionState, selectedRegionId, previewLanguageId: '496' },
+          campaignWithFrenchRegionName
+        )
+
+        expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
+          name
+        )
+      }
+    )
+
     it('says it is styled by its section, naming the region in the header', () => {
       renderInspector(regionState, campaignWithRegions)
 
@@ -1078,14 +1132,46 @@ describe('Inspector', () => {
       )
 
       expect(screen.getByTestId('RegionSettings')).toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: 'Refresh and open page' })
-      ).toBeNull()
       expect(screen.getByRole('button', { name: 'Unlist' })).toBeEnabled()
 
       fireEvent.click(screen.getByRole('button', { name: 'Edit page' }))
 
       expect(screen.getByTestId('PageKind')).toHaveTextContent('regionTemplate')
+    })
+
+    it('disables Open page on a draft, with a caption that the page goes live on publish', () => {
+      renderInspector(
+        { ...regionState, inspectorTab: 'settings' },
+        campaignWithRegions,
+        [countriesMock]
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Open page' })
+      ).not.toBeInTheDocument()
+      const button = screen.getByRole('button', { name: 'Open page' })
+      expect(button).toBeDisabled()
+      expect(button).toHaveAccessibleDescription(
+        'The page goes live when you publish.'
+      )
+    })
+
+    it('opens the region’s public page through the refresh route once published', () => {
+      renderInspector(
+        { ...regionState, inspectorTab: 'settings' },
+        { ...campaignWithRegions, status: CampaignStatus.published },
+        [countriesMock]
+      )
+
+      const link = screen.getByRole('link', { name: 'Open page' })
+      expect(link).toHaveAttribute(
+        'href',
+        '/api/campaign/open?id=campaignId&regionSlug=eur'
+      )
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(
+        screen.queryByText('The page goes live when you publish.')
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -1163,14 +1249,14 @@ describe('Inspector', () => {
     ): ReturnType<typeof render> {
       return render(
         <StaticEditor
-          campaignProp={carouselCampaign}
+          campaign={carouselCampaign}
           initialState={{ selectedBlockId, inspectorTab }}
           mocks={[moveRightMock, moveLeftMock, cardDeleteMock]}
         >
           <Hotkeys />
           <SelectionProbe />
           <CommandProbe />
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </StaticEditor>
       )
     }
@@ -1281,12 +1367,12 @@ describe('Inspector', () => {
             selectedBlockId: 'slotRightId',
             inspectorTab: 'settings'
           }}
-          campaignProp={campaignWithColumns}
+          campaign={campaignWithColumns}
           mocks={[richTextInSlotMock]}
         >
           <SelectionProbe />
           <BlocksProbe />
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </QueriedEditor>
       )
 

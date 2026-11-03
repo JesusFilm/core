@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -7,11 +6,11 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement, useState } from 'react'
 import useSWR from 'swr'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
@@ -25,7 +24,9 @@ import { parseISO8601Duration } from '../../../../libs/parseISO8601Duration'
 import type { CampaignVideoPick } from '../../../../libs/useCampaignVideoBlockCreateMutation'
 import { useCampaignWatchVideoQuery } from '../../../../libs/useCampaignWatchVideoQuery'
 import { AddByFile } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/AddByFile'
-import { messageOf } from '../../utils/useCampaignStyleCommand'
+import { CommandError } from '../../CommandError'
+import { messageOf } from '../../utils/messageOf'
+import { onEnterKey } from '../../utils/onEnterKey'
 import { ImagePicker } from '../ImagePicker'
 import { MuxUploads } from '../MuxUploads'
 
@@ -35,6 +36,7 @@ import {
   parseMediaUrl,
   parsePlaylistUrl
 } from './parseMediaUrl'
+import { videoLabelName } from './videoLabel'
 
 /** What a Media Slot pick names: a Watch, YouTube or Mux video, or an image's stored address. */
 export type CampaignMediaPick = CampaignVideoPick | { src: string }
@@ -45,32 +47,6 @@ type MediaTab = 'link' | 'upload' | 'image'
 const PLAYLIST_IMPORT_LIMIT = 12
 
 type Candidate = ParsedMediaUrl | ParsedPlaylistUrl
-
-export type Translate = (
-  key: string,
-  options?: Record<string, unknown>
-) => string
-
-export function videoLabelName(t: Translate, label: VideoLabel): string {
-  switch (label) {
-    case VideoLabel.behindTheScenes:
-      return t('Behind the scenes')
-    case VideoLabel.collection:
-      return t('Collection')
-    case VideoLabel.episode:
-      return t('Episode')
-    case VideoLabel.featureFilm:
-      return t('Feature film')
-    case VideoLabel.segment:
-      return t('Segment')
-    case VideoLabel.series:
-      return t('Series')
-    case VideoLabel.shortFilm:
-      return t('Short film')
-    case VideoLabel.trailer:
-      return t('Trailer')
-  }
-}
 
 /** The resolved target shown before a pasted link is kept. */
 export interface ResolvedVideo {
@@ -84,13 +60,6 @@ export interface ResolvedVideo {
   label: VideoLabel | null
   /** The Watch video's own description, for a carousel to open with. */
   description?: string | null
-}
-
-/** A Watch series or collection: in a carousel it expands into its children rather than becoming one card. */
-export function isWatchContainer(
-  label: VideoLabel | null | undefined
-): boolean {
-  return label === VideoLabel.series || label === VideoLabel.collection
 }
 
 interface Resolution {
@@ -107,7 +76,7 @@ interface Resolution {
  */
 function useResolution(
   candidate: Candidate | undefined,
-  t: Translate
+  t: TFunction
 ): Resolution {
   const watch = useCampaignWatchVideoQuery(
     candidate?.source === VideoBlockSource.internal
@@ -216,13 +185,12 @@ function useResolution(
   }
 }
 
-function PreviewCard({
-  video,
-  testId
-}: {
+interface PreviewCardProps {
   video: ResolvedVideo
   testId: string
-}): ReactElement {
+}
+
+function PreviewCard({ video, testId }: PreviewCardProps): ReactElement {
   return (
     <Stack
       direction="row"
@@ -309,6 +277,8 @@ export function MediaPasteField({
     setCandidate(parsed)
   }
 
+  const handleUrlKeyDown = onEnterKey(handlePreview)
+
   function handleKeep(): void {
     if (candidate == null || resolution.video == null) return
     if (candidate.source === 'youTubePlaylist') {
@@ -332,15 +302,6 @@ export function MediaPasteField({
     onPick({ source: VideoBlockSource.mux, videoId })
   }
 
-  /** AddByFile keys its upload task by the journey editor's selected block; here that is the slot's section. */
-  const uploadTarget = {
-    __typename: 'VideoBlock',
-    id: uploadKey,
-    parentBlockId: null,
-    parentOrder: null,
-    children: []
-  } as unknown as TreeBlock
-
   return (
     <Stack spacing={3} data-testid={testId}>
       <Tabs
@@ -363,12 +324,7 @@ export function MediaPasteField({
               }
               value={url}
               onChange={handleUrlChange}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault()
-                  handlePreview()
-                }
-              }}
+              onKeyDown={handleUrlKeyDown}
               error={!urlValid}
               helperText={
                 urlValid
@@ -403,11 +359,7 @@ export function MediaPasteField({
                   <CircularProgress size={24} />
                 </Box>
               )}
-              {resolution.error != null && (
-                <Alert severity="error" role="alert">
-                  {resolution.error}
-                </Alert>
-              )}
+              <CommandError error={resolution.error} />
               {resolution.video != null && (
                 <PreviewCard video={resolution.video} testId={testId} />
               )}
@@ -440,8 +392,8 @@ export function MediaPasteField({
       )}
       {tab === 'upload' && (
         <>
-          <EditorProvider initialState={{ selectedBlock: uploadTarget }}>
-            <AddByFile onChange={handleUploadComplete} />
+          <EditorProvider>
+            <AddByFile uploadKey={uploadKey} onChange={handleUploadComplete} />
           </EditorProvider>
           <MuxUploads teamId={teamId} onPick={handleUploadComplete} />
         </>

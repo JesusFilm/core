@@ -1,25 +1,28 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import {
-  ChangeEvent,
-  MouseEvent,
-  ReactElement,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
-import { campaignTextCap } from '../../../../libs/useCampaignBlockTextMutation'
+import { featuredMediaBullets } from '@core/journeys/ui/Campaign/CampaignFeaturedMedia'
+import { splitParagraphs } from '@core/journeys/ui/Campaign/CampaignRichText'
+import {
+  TRANSLATED_FIELDS,
+  textLength,
+  translatedFieldCap
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+
+import { campaignTextInputKey } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineEditInput } from '../../../Editor/Slider/Content/Canvas/InlineEditWrapper/InlineEditInput'
+import { focusWithoutScroll } from '../../utils/focusWithoutScroll'
+import { handleStopPropagation } from '../../utils/handleStopPropagation'
 import { useCampaignTextCommand } from '../../utils/useCampaignTextCommand'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
+import { FOCUS_OUTLINE_SX } from '../hoverOutline'
+import { selectableProps } from '../selectable'
 
 /** Show the character counter once this share of the cap is used. */
 const COUNTER_THRESHOLD = 0.8
-
-/** `CampaignString.value` cap (PRD §15). */
-export const CAMPAIGN_STRING_CAP = 200
 
 interface InlineTextProps
   extends Pick<TypographyProps, 'variant' | 'component' | 'align' | 'sx'> {
@@ -30,7 +33,7 @@ interface InlineTextProps
   editing: boolean
   /** Take focus when the input mounts. */
   autoFocus?: boolean
-  /** Clicking the text selects its block. */
+  /** Clicking the text (or Enter or Space on it) selects its block. */
   onSelect?: () => void
   variantMapping?: TypographyProps['variantMapping']
   /**
@@ -39,11 +42,24 @@ interface InlineTextProps
    * like a text field. Still multi-line: Enter inserts a line break.
    */
   autoWidth?: boolean
+  /**
+   * How the unselected text lays out, as the public section does: one text,
+   * one paragraph per blank-line-separated run (Rich Text), or one list item
+   * per line with accent markers (Featured Media bullets). Editing is always
+   * one textarea, and an empty text shows its placeholder or fallback as text.
+   */
+  display?: 'text' | 'paragraphs' | 'bullets'
 }
 
-/** Count text the way the API does: Unicode code points after trim. */
-export function textLength(value: string): number {
-  return [...value.trim()].length
+/** The cap of an inline text, from the Translated Field declaration, which declares every inline text field. */
+export function inlineTextCap(target: CampaignTextTarget): number {
+  if (target.string != null) return TRANSLATED_FIELDS.string.value
+  return (
+    translatedFieldCap(
+      { kind: 'block', typename: target.block.__typename },
+      campaignTextInputKey(target.field)
+    ) ?? 0
+  )
 }
 
 export function inlineTextTestId(target: CampaignTextTarget): string {
@@ -73,13 +89,11 @@ export function InlineText({
   align,
   sx,
   variantMapping,
-  autoWidth = false
+  autoWidth = false,
+  display = 'text'
 }: InlineTextProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const max =
-    target.string != null
-      ? CAMPAIGN_STRING_CAP
-      : campaignTextCap(target.block.__typename, target.field)
+  const max = inlineTextCap(target)
   const { value, fallback, error, handleChange, handleFocus, handleBlur } =
     useCampaignTextCommand(target)
   const [overLength, setOverLength] = useState(false)
@@ -92,14 +106,11 @@ export function InlineText({
   const testId = inlineTextTestId(target)
   const showingFallback = value === '' && fallback !== ''
 
-  // Focus without scrolling: a plain focus() (and the autoFocus attribute)
-  // scrolls every ancestor to centre the input, including the editor page that
-  // holds the scaled frame.
   useEffect(() => {
     const wanted = autoFocus || focusOnEdit.current
     focusOnEdit.current = false
     if (!editing || !wanted) return
-    inputRef.current?.focus({ preventScroll: true })
+    focusWithoutScroll(inputRef.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing])
 
@@ -113,11 +124,74 @@ export function InlineText({
     handleChange(next)
   }
 
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    event.stopPropagation()
-    focusOnEdit.current = true
-    onSelect?.()
-  }
+  // The static text is a button named by its field; the block it selects
+  // then shows the input.
+  const selectable =
+    onSelect == null
+      ? { onClick: handleStopPropagation }
+      : {
+          role: 'button',
+          ...selectableProps(() => {
+            focusOnEdit.current = true
+            onSelect()
+          }, placeholder)
+        }
+
+  const items =
+    display === 'paragraphs'
+      ? splitParagraphs(value)
+      : display === 'bullets'
+        ? featuredMediaBullets(value)
+        : []
+
+  if (!editing && display === 'paragraphs' && items.length > 0)
+    return (
+      <Stack
+        spacing={3}
+        data-testid={testId}
+        {...selectable}
+        sx={{ cursor: 'text', ...FOCUS_OUTLINE_SX, ...sx }}
+      >
+        {items.map((paragraph, index) => (
+          <Typography
+            key={index}
+            variant={variant}
+            align={align}
+            variantMapping={variantMapping}
+            data-testid="InlineTextParagraph"
+            sx={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}
+          >
+            {paragraph}
+          </Typography>
+        ))}
+      </Stack>
+    )
+
+  if (!editing && display === 'bullets' && items.length > 0)
+    return (
+      <Box
+        component="ul"
+        data-testid={testId}
+        {...selectable}
+        sx={{ m: 0, pl: 3, cursor: 'text', ...FOCUS_OUTLINE_SX, ...sx }}
+      >
+        {items.map((bullet, index) => (
+          <Typography
+            key={index}
+            component="li"
+            variant={variant}
+            align={align}
+            sx={{
+              mb: 1,
+              wordBreak: 'break-word',
+              '&::marker': { color: 'var(--campaign-band-accent)' }
+            }}
+          >
+            {bullet}
+          </Typography>
+        ))}
+      </Box>
+    )
 
   if (!editing)
     return (
@@ -128,9 +202,10 @@ export function InlineText({
         variantMapping={variantMapping}
         data-testid={testId}
         data-fallback={showingFallback ? 'true' : undefined}
-        onClick={handleClick}
+        {...selectable}
         sx={{
           cursor: 'text',
+          ...FOCUS_OUTLINE_SX,
           whiteSpace: 'pre-line',
           wordBreak: 'break-word',
           ...(value === '' && !showingFallback ? { opacity: 0.5 } : {}),

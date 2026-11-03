@@ -15,12 +15,6 @@ import {
   campaignBlockUpdateRow
 } from '../../libs/useCampaignBlockUpdateMutation'
 import { CAMPAIGN_PALETTE_UPDATE } from '../../libs/useCampaignPaletteUpdateMutation'
-import {
-  CampaignSectionStyleInput,
-  CampaignStyledBlock,
-  SECTION_STYLE_OPERATIONS,
-  campaignSectionStyleRow
-} from '../../libs/useCampaignSectionStyleMutation'
 import { CAMPAIGN_THEME_UPDATE } from '../../libs/useCampaignThemeUpdateMutation'
 
 import { useCampaignEditor } from './CampaignEditorProvider'
@@ -163,23 +157,4 @@ export function readTheme(
     fragment: THEME_FIELDS,
     optimistic: true
   })
-}
-
-export type StyleMock = SpyMock
-
-/** A mock for one section style write: the block's row with `input` applied. */
-export function sectionStyleMock(
-  block: CampaignStyledBlock,
-  input: CampaignSectionStyleInput,
-  current: CampaignSectionStyleInput = {}
-): StyleMock {
-  const { document, operation } = SECTION_STYLE_OPERATIONS[block.__typename]
-  return {
-    request: { query: document, variables: { id: block.id, input } },
-    result: vi.fn(() => ({
-      data: {
-        [operation]: campaignSectionStyleRow({ ...block, ...current }, input)
-      }
-    }))
-  }
 }

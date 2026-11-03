@@ -9,7 +9,9 @@ import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
-  UndoRedo
+  UndoRedo,
+  holdRequests,
+  landRequests
 } from '../../testing'
 
 function slotRows(order: string[]): Array<Record<string, unknown>> {
@@ -21,7 +23,6 @@ function slotRows(order: string[]): Array<Record<string, unknown>> {
 }
 
 const swapMock = {
-  delay: 100,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'slotLeftId', parentOrder: 1 }
@@ -32,7 +33,6 @@ const swapMock = {
 }
 
 const swapBackMock = {
-  delay: 100,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'slotLeftId', parentOrder: 0 }
@@ -43,7 +43,6 @@ const swapBackMock = {
 }
 
 const swapFromRightMock = {
-  delay: 100,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'slotRightId', parentOrder: 0 }
@@ -76,7 +75,7 @@ function renderEditor(
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }
@@ -96,16 +95,19 @@ describe('useCampaignColumnSwapCommand', () => {
     expect(parentOrderOf('slotLeftId')).toBe('0')
     expect(parentOrderOf('slotRightId')).toBe('1')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Swap columns' }))
+    await holdRequests(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Swap columns' }))
+    })
 
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
     // Optimistic: renumbered before the request returns.
-    await waitFor(() => expect(parentOrderOf('slotLeftId')).toBe('1'))
+    expect(parentOrderOf('slotLeftId')).toBe('1')
     expect(parentOrderOf('slotRightId')).toBe('0')
     expect(swapMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'slotRichTextId'
     )
+    await landRequests()
     await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
     expect(parentOrderOf('slotLeftId')).toBe('1')
     expect(parentOrderOf('slotRightId')).toBe('0')

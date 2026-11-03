@@ -16,13 +16,13 @@ import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrder
 import { CAMPAIGN_REGION_ORDER_UPDATE } from '../../../libs/useCampaignRegionOrderUpdateMutation'
 import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
-import { newSectionBlock } from '../sectionTypes'
 import {
   CommandProbe,
   SelectionProbe,
   StaticEditor,
   frameBody
 } from '../testing'
+import { newSectionBlock } from '../utils/sectionTypes'
 
 import { Canvas, dropEdgeFor, dropParentOrder, regionDropOrder } from './Canvas'
 import type { CanvasView } from './Canvas'
@@ -126,7 +126,7 @@ function renderCanvas(
   return render(
     <StaticEditor
       mocks={[orderMock, regionOrderMock]}
-      campaignProp={canvasCampaign}
+      campaign={canvasCampaign}
     >
       <SelectionProbe />
       <CommandProbe />
@@ -467,8 +467,13 @@ describe('Canvas', () => {
       featuredSection.querySelector('[data-testid="CanvasMediaPlaceholder"]')
     ).not.toBeNull()
     expect(
-      featuredSection.querySelector('[data-testid="InlineText-bullets"]')
-    ).toHaveTextContent('Free to share In many languages')
+      Array.from(
+        featuredSection.querySelectorAll(
+          '[data-testid="InlineText-bullets"] li'
+        ),
+        (item) => item.textContent
+      )
+    ).toEqual(['Free to share', 'In many languages'])
   })
 
   it('lays a stacked Featured Media section out as one column at every width, the media under the text', async () => {
@@ -535,7 +540,7 @@ describe('Canvas', () => {
     )
   })
 
-  it('selects an Extra on click and the campaign row on the empty frame', async () => {
+  it('selects an Extra on click and the campaign on the empty frame', async () => {
     const { baseElement } = renderCanvas()
     const body = await frameBody(baseElement, 'CanvasExtra-heroButtonId')
 
@@ -650,7 +655,7 @@ describe('Canvas', () => {
   describe('Columns', () => {
     function renderColumnsCanvas(): ReturnType<typeof render> {
       return render(
-        <StaticEditor campaignProp={campaignWithColumns} mocks={[swapMock]}>
+        <StaticEditor campaign={campaignWithColumns} mocks={[swapMock]}>
           <SelectionProbe />
           <CommandProbe />
           <Canvas
@@ -897,7 +902,7 @@ describe('Canvas scaled to fit', () => {
 
   it('still swaps the slots of a Columns section', async () => {
     const { baseElement } = render(
-      <StaticEditor campaignProp={campaignWithColumns} mocks={[swapMock]}>
+      <StaticEditor campaign={campaignWithColumns} mocks={[swapMock]}>
         <CommandProbe />
         <Canvas
           campaign={campaignWithColumns}
@@ -1004,7 +1009,7 @@ describe('Canvas preview language', () => {
   it('renders the campaign text in the preview language the Pages panel chose, falling back to the default where no translation exists', async () => {
     const { baseElement } = render(
       <StaticEditor
-        campaignProp={translated}
+        campaign={translated}
         initialState={{ previewLanguageId: '496' }}
       >
         <Canvas
@@ -1048,7 +1053,7 @@ describe('Canvas preview language', () => {
     }
     const { baseElement } = render(
       <StaticEditor
-        campaignProp={arabic}
+        campaign={arabic}
         initialState={{ previewLanguageId: '22658' }}
       >
         <Canvas

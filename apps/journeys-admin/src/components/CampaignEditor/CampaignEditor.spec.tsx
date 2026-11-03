@@ -122,16 +122,16 @@ describe('CampaignEditor', () => {
     mockUseRouter.mockReturnValue({ push: vi.fn() } as unknown as NextRouter)
   })
 
-  it('shows the larger-screen message and no canvas below 1348 px', () => {
+  it('shows the larger-screen message and no canvas below 1316 px', () => {
     setViewport(EDITOR_MIN_WIDTH - 1)
 
     const { baseElement } = renderEditor()
 
-    expect(useMediaQuery).toHaveBeenCalledWith('(min-width:1348px)')
+    expect(useMediaQuery).toHaveBeenCalledWith('(min-width:1316px)')
     expect(screen.getByText('Open this on a larger screen')).toBeInTheDocument()
     expect(
       screen.getByText(
-        'The campaign editor needs a window at least 1348 pixels wide.'
+        'The campaign editor needs a window at least 1316 pixels wide.'
       )
     ).toBeInTheDocument()
     expect(screen.queryByTestId('CampaignCanvas')).not.toBeInTheDocument()
