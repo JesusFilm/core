@@ -13,7 +13,6 @@ import { type MockedFunction } from 'vitest'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
-
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import type { CanvasView } from '../Canvas'
 import { campaign } from '../data'
