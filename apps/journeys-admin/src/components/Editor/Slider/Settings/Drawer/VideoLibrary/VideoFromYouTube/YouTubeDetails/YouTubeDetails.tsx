@@ -16,24 +16,13 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { fetchYouTubeVideo } from '../../../../../../../../libs/fetchYouTubeVideo'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
-import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
+import type { YoutubeVideo } from '../VideoFromYouTube'
 
 import 'video.js/dist/video-js.css'
-
-const fetcher = async (id: string): Promise<YoutubeVideo> => {
-  const videosQuery = new URLSearchParams({
-    part: 'snippet,contentDetails',
-    key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
-    id
-  }).toString()
-  const videosData: YoutubeVideosData = await (
-    await fetch(`https://www.googleapis.com/youtube/v3/videos?${videosQuery}`)
-  ).json()
-  return videosData.items[0] as YoutubeVideo
-}
 
 export function YouTubeDetails({
   open,
@@ -48,9 +37,9 @@ export function YouTubeDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
-  const { data, error } = useSWR<YoutubeVideo>(
+  const { data, error } = useSWR<YoutubeVideo | undefined>(
     () => (open ? id : null),
-    fetcher
+    fetchYouTubeVideo
   )
 
   // Get subtitle language ID from the active video block

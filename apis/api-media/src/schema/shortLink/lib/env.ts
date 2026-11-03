@@ -3,6 +3,9 @@ import { z } from 'zod'
 
 const optionalString = z.string().trim().min(1).optional()
 
+const LOCAL_DESTINATIONS_IN_PRODUCTION =
+  'SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true is for local development only and must not be set when NODE_ENV=production'
+
 /**
  * The short-link settings api-media reads from the environment. Every one is
  * optional: a missing group switches its feature off (edge publishing, scan
@@ -13,8 +16,19 @@ const optionalString = z.string().trim().min(1).optional()
  * reconfigured between tests; the schema is a handful of strings, so the cost
  * per read is negligible. `index.ts` reads it once at boot so a malformed
  * value fails loudly there instead of on the first request that needs it.
+ *
+ * `SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true` is refused under
+ * `NODE_ENV=production`, which every deployed api-media task runs with: there
+ * the destination health check fetches from inside the VPC. That rule is
+ * checked before `createEnv` too, so `SKIP_ENV_VALIDATION=1` cannot switch it
+ * off.
  */
 export function readShortLinksEnv() {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS === 'true'
+  )
+    throw new Error(LOCAL_DESTINATIONS_IN_PRODUCTION)
   return createEnv({
     runtimeEnv: process.env,
     emptyStringAsUndefined: true,
@@ -24,6 +38,9 @@ export function readShortLinksEnv() {
         `Invalid short-link environment variables: ${JSON.stringify(issues)}`
       )
     },
+    shared: {
+      NODE_ENV: optionalString
+    },
     server: {
       // edge publishing (Cloudflare KV); CLOUDFLARE_ACCOUNT_ID is shared with
       // the other Cloudflare integrations
@@ -32,6 +49,10 @@ export function readShortLinksEnv() {
       CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID: optionalString,
       /** Local dev only: a `wrangler dev` Worker standing in for api.cloudflare.com. */
       CLOUDFLARE_SHORT_LINKS_API_BASE_URL: z.url().optional(),
+      /** Local dev only: let a link point at localhost or a private host, where the journeys app runs; never set in a deployed environment. */
+      SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS: z
+        .enum(['true', 'false'])
+        .optional(),
       // scan statistics (ClickHouse, read side)
       SHORT_LINKS_CLICKHOUSE_URL: z.url().optional(),
       SHORT_LINKS_CLICKHOUSE_DATABASE: z
@@ -48,7 +69,19 @@ export function readShortLinksEnv() {
       VERCEL_SHORT_LINKS_PROJECT_ID: optionalString,
       VERCEL_TEAM_ID: optionalString,
       VERCEL_TOKEN: optionalString
-    }
+    },
+    createFinalSchema: (shape) =>
+      z
+        .object(shape)
+        .refine(
+          (env) =>
+            env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS !== 'true' ||
+            env.NODE_ENV !== 'production',
+          {
+            path: ['SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS'],
+            message: LOCAL_DESTINATIONS_IN_PRODUCTION
+          }
+        )
   })
 }
 

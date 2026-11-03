@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { type MockedFunction } from 'vitest'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { ThemeProvider } from '../../ThemeProvider'
 
@@ -26,6 +27,10 @@ vi.mock('next-i18next/pages', () => ({
   useTranslation: vi.fn(() => ({
     t: (key: string) => key
   }))
+}))
+
+vi.mock('../../CampaignList', () => ({
+  CampaignList: () => <div data-testid="CampaignList" />
 }))
 
 vi.mock('@core/journeys/ui/TeamProvider', () => ({
@@ -314,5 +319,121 @@ describe('JourneyListView', () => {
     expect(
       queryByRole('tab', { name: 'Team Templates' })
     ).not.toBeInTheDocument()
+  })
+
+  describe('Team Campaigns tab', () => {
+    function renderView(campaignBuilder: boolean): ReturnType<typeof render> {
+      return render(
+        <FlagsProvider flags={{ campaignBuilder }}>
+          <ThemeProvider>
+            <JourneyListView
+              renderList={mockRenderList}
+              setActiveEvent={mockSetActiveEvent}
+              setSortOrder={mockSetSortOrder}
+            />
+          </ThemeProvider>
+        </FlagsProvider>
+      )
+    }
+
+    beforeEach(() => {
+      mockedUseTeam.mockReturnValue({
+        activeTeam: { id: 'teamId', title: 'Test Team' }
+      } as never)
+    })
+
+    it('should show the Team Campaigns tab after Team Templates when the campaignBuilder flag is on', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'journeys' },
+        push: vi.fn()
+      } as unknown as NextRouter)
+
+      const { getAllByRole } = renderView(true)
+
+      expect(getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
+        'Team Projects',
+        'Team Templates',
+        'Team Campaigns'
+      ])
+    })
+
+    it('should hide the Team Campaigns tab when the campaignBuilder flag is off', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'journeys' },
+        push: vi.fn()
+      } as unknown as NextRouter)
+
+      const { queryByRole } = renderView(false)
+
+      expect(
+        queryByRole('tab', { name: 'Team Campaigns' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should hide the Team Campaigns tab in Shared With Me mode', () => {
+      mockedUseTeam.mockReturnValue({ activeTeam: null } as never)
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'journeys' },
+        push: vi.fn()
+      } as unknown as NextRouter)
+
+      const { queryByRole } = renderView(true)
+
+      expect(
+        queryByRole('tab', { name: 'Team Campaigns' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should set type=campaigns without a journey refetch when selected', () => {
+      const pushMock = vi.fn()
+      mockedUseRouter.mockReturnValue({
+        query: { status: 'active', type: 'journeys' },
+        push: pushMock
+      } as unknown as NextRouter)
+
+      const { getByRole } = renderView(true)
+      fireEvent.click(getByRole('tab', { name: 'Team Campaigns' }))
+
+      expect(pushMock).toHaveBeenCalledWith(
+        { query: { status: 'active', type: 'campaigns' } },
+        undefined,
+        { shallow: true }
+      )
+      expect(mockSetActiveEvent).not.toHaveBeenCalled()
+    })
+
+    it('should render the campaign list without the status filter or sort on type=campaigns', () => {
+      mockedUseRouter.mockReturnValue({
+        query: { type: 'campaigns' },
+        push: vi.fn()
+      } as unknown as NextRouter)
+
+      const { getByRole, getByTestId, queryByLabelText } = renderView(true)
+
+      expect(getByRole('tab', { name: 'Team Campaigns' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+      expect(getByTestId('CampaignList')).toBeInTheDocument()
+      expect(queryByLabelText('Filter by status')).not.toBeInTheDocument()
+      expect(queryByLabelText('Sort By')).not.toBeInTheDocument()
+      expect(queryByLabelText('Journey list actions')).not.toBeInTheDocument()
+    })
+
+    it('should send type=campaigns back to journeys when the campaignBuilder flag is off', () => {
+      const pushMock = vi.fn()
+      mockedUseRouter.mockReturnValue({
+        query: { type: 'campaigns' },
+        push: pushMock
+      } as unknown as NextRouter)
+
+      renderView(false)
+
+      expect(pushMock).toHaveBeenCalledWith(
+        { query: { type: 'journeys' } },
+        undefined,
+        { shallow: true }
+      )
+    })
   })
 })

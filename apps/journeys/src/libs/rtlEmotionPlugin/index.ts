@@ -1,0 +1,1 @@
+export { createRtlEmotionPlugin } from './rtlEmotionPlugin'

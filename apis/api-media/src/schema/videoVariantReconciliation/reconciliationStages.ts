@@ -1,3 +1,5 @@
+import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
+
 export type ProcessingStage = {
   state:
     | 'pending'
@@ -10,6 +12,8 @@ export type ProcessingStage = {
   error?: string
   lastAttemptAt?: string
   lastSuccessAt?: string
+  // Set (to false) only when the failure will recur on every retry.
+  retryable?: boolean
 }
 
 export type ProcessingStages = {
@@ -55,7 +59,47 @@ export function failedStage(error: unknown, attempts = 1): ProcessingStage {
     state: 'failed',
     attempts,
     error: error instanceof Error ? error.message : String(error),
-    lastAttemptAt: new Date().toISOString()
+    lastAttemptAt: new Date().toISOString(),
+    ...(isRetryableError(error) ? {} : { retryable: false })
+  }
+}
+
+// Algolia's ApiError carries the HTTP status. A 4xx other than a timeout or
+// rate limit means the request itself was rejected (e.g. a record over the
+// size limit), so retrying the same payload can only fail again.
+export function isRetryableError(error: unknown): boolean {
+  if (error == null || typeof error !== 'object' || !('status' in error)) {
+    return true
+  }
+  const { status } = error
+  if (typeof status !== 'number') return true
+  return status < 400 || status >= 500 || status === 408 || status === 429
+}
+
+// The Video record lives in the videos index (Arclight search), not the
+// variants index Watch reads, so a failure here is recorded and retried but
+// never stops the Variant's own record from being written.
+//
+// `stage` is a single slot shared across every Video record synced during
+// one reconciliation run (a parent container, then the child's own Video,
+// or multiple parent containers). Its `attempts` is pre-incremented once for
+// the whole run by the caller (see the `algoliaVideo` seeds below), so this
+// function stamps that same count on every call rather than adding to it --
+// otherwise a run touching N videoIds would advance the backoff counter by N
+// instead of 1, reaching `retryAtFor`'s cutoff far faster than intended.
+// Likewise, once a failure is recorded in this run a later call's success
+// must not erase it -- doing so would mask a permanently-failing index from
+// ever being retried.
+export async function syncVideoRecordStage(
+  videoId: string,
+  stage: ProcessingStage
+): Promise<ProcessingStage> {
+  const alreadyFailedThisRun = stage.state === 'failed'
+  try {
+    await updateVideoInAlgolia(videoId)
+    return alreadyFailedThisRun ? stage : completedStage(stage.attempts)
+  } catch (error) {
+    return failedStage(error, stage.attempts)
   }
 }
 
@@ -74,7 +118,7 @@ export function generatedParentStages(
     downloads: notApplicableStage(),
     algoliaVideo: {
       state: 'pending',
-      attempts: previousAttempts(processingStages, 'algoliaVideo')
+      attempts: previousAttempts(processingStages, 'algoliaVideo') + 1
     },
     algoliaVariant: {
       state: 'pending',
@@ -125,7 +169,9 @@ export async function persistReconciliationStatus({
       status,
       processingStages: stages,
       retryAt:
-        failedStageValue != null ? retryAtFor(failedStageValue.attempts) : null,
+        failedStageValue != null && failedStageValue.retryable !== false
+          ? retryAtFor(failedStageValue.attempts)
+          : null,
       errorMessage: failedStageValue?.error ?? null
     }
   })
