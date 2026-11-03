@@ -15,6 +15,10 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
+import {
+  addLanguageToVideo,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
@@ -181,8 +185,32 @@ export async function handleParentVariantCreation(
     video.label === 'featureFilm' ||
     !video.published ||
     !childVariant?.published ||
-    containerParents.length === 0
+    parentVideos.length === 0
   ) {
+    return
+  }
+
+  // Cascade the new language to every parent -- including featureFilm
+  // parents, which aggregate their segments' languages but (unlike
+  // collection/series) never get a placeholder Variant -- so
+  // availableLanguages stays correct even when no parent is eligible for
+  // one. Mirrors the unconditional addLanguageToVideo/
+  // updateParentCollectionLanguages calls in reconcileParentVariants.ts.
+  await Promise.allSettled(
+    parentVideos.map(async (parent) => {
+      try {
+        await addLanguageToVideo(parent.id, languageId)
+        await updateParentCollectionLanguages(parent.id)
+      } catch (error) {
+        console.error(
+          `Failed to cascade language to parent ${parent.id}:`,
+          error
+        )
+      }
+    })
+  )
+
+  if (containerParents.length === 0) {
     return
   }
 

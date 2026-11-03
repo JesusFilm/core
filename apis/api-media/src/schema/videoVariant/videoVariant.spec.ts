@@ -2725,6 +2725,52 @@ describe('videoVariant', () => {
             videoId: 'jesus-chapters'
           })
         })
+        // Both parents -- including the feature film, which never gets a
+        // placeholder Variant -- still get their availableLanguages cascaded.
+        expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+          '1_jf-0-0',
+          '19372'
+        )
+        expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+          'jesus-chapters',
+          '19372'
+        )
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          '1_jf-0-0'
+        )
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          'jesus-chapters'
+        )
+      })
+
+      it('cascades availableLanguages to a feature film parent without creating a placeholder Variant', async () => {
+        const { handleParentVariantCreation } = await import(
+          /* webpackChunkName: "videoVariant" */ './videoVariant'
+        )
+        prismaMock.video.findUnique.mockImplementation((async (args: any) =>
+          args.where.id === '1_jf6101-0-0'
+            ? { label: 'segment', published: true }
+            : { slug: args.where.id, availableLanguages: [] }) as any)
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: '1_jf-0-0', label: 'featureFilm' }
+        ] as any)
+        prismaMock.videoVariant.findFirst.mockImplementation((async (
+          args: any
+        ) => {
+          if (args.where.videoId === '1_jf6101-0-0') return { published: true }
+          return null
+        }) as any)
+
+        await handleParentVariantCreation('1_jf6101-0-0', '19372')
+
+        expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+        expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+          '1_jf-0-0',
+          '19372'
+        )
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          '1_jf-0-0'
+        )
       })
 
       it('should have helper functions for managing parent video variants', async () => {
