@@ -70,7 +70,7 @@ export function paletteMock(palette: string[]): SpyMock {
 // Test-only fragments are parsed rather than tagged with gql, so codegen does
 // not generate types for them into the app's __generated__.
 const SECTION_STYLE = parse(`
-  fragment SectionStyle on AddableSectionBlock {
+  fragment SectionStyle on CampaignSectionBlock {
     backgroundKind
     backgroundColor
     headingColor
