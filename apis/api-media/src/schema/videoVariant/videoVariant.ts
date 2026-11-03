@@ -195,12 +195,14 @@ export async function handleParentVariantCreation(
   // collection/series) never get a placeholder Variant -- so
   // availableLanguages stays correct even when no parent is eligible for
   // one. Mirrors the unconditional addLanguageToVideo/
-  // updateParentCollectionLanguages calls in reconcileParentVariants.ts.
+  // updateParentCollectionLanguages/videoCacheReset trio in
+  // reconcileParentVariants.ts.
   await Promise.allSettled(
     parentVideos.map(async (parent) => {
       try {
         await addLanguageToVideo(parent.id, languageId)
         await updateParentCollectionLanguages(parent.id)
+        await videoCacheReset(parent.id)
       } catch (error) {
         console.error(
           `Failed to cascade language to parent ${parent.id}:`,

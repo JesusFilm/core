@@ -2741,6 +2741,8 @@ describe('videoVariant', () => {
         expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
           'jesus-chapters'
         )
+        expect(mockedVideoCacheReset).toHaveBeenCalledWith('1_jf-0-0')
+        expect(mockedVideoCacheReset).toHaveBeenCalledWith('jesus-chapters')
       })
 
       it('cascades availableLanguages to a feature film parent without creating a placeholder Variant', async () => {
@@ -2771,6 +2773,7 @@ describe('videoVariant', () => {
         expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
           '1_jf-0-0'
         )
+        expect(mockedVideoCacheReset).toHaveBeenCalledWith('1_jf-0-0')
       })
 
       it('should have helper functions for managing parent video variants', async () => {
