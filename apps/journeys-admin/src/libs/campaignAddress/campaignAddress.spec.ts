@@ -37,4 +37,16 @@ describe('campaignPublicAddress', () => {
       campaignPublicAddress({ slug: 'outreach', customDomains: [{ name: '' }] })
     ).toBe('https://your.nextstep.is/campaign/outreach')
   })
+
+  it('returns the region page in either form when a region is named', () => {
+    expect(
+      campaignPublicAddress(
+        { slug: 'outreach', customDomains: [{ name: 'outreach.example.com' }] },
+        'eur'
+      )
+    ).toBe('https://outreach.example.com/eur')
+    expect(
+      campaignPublicAddress({ slug: 'outreach', customDomains: [] }, 'eur')
+    ).toBe('https://your.nextstep.is/campaign/outreach/eur')
+  })
 })

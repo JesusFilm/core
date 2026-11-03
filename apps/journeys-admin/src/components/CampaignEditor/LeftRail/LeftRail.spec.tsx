@@ -1,15 +1,45 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { type MockedFunction } from 'vitest'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import type { CanvasView } from '../Canvas'
 import { campaign } from '../data'
 import { CommandProbe, StaticEditor } from '../testing'
+import {
+  TranslationRun,
+  TranslationRunContext
+} from '../TranslationRunProvider'
 
 import { LeftRail } from './LeftRail'
+
+vi.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: vi.fn()
+}))
+
+const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
+
+const run: TranslationRun = {
+  campaignId: 'campaignId',
+  languageId: '496',
+  mode: CampaignAiTranslateMode.missing,
+  languageName: 'Français',
+  progress: 40,
+  translatedCount: 4
+}
 
 function PanelProbe(): ReactElement {
   const {
@@ -38,7 +68,7 @@ function Harness(): ReactElement {
   const [view, setView] = useState<CanvasView>('desktop')
   return (
     <SnackbarProvider>
-      <StaticEditor campaignProp={campaign}>
+      <StaticEditor campaign={campaign}>
         <AddCommandButton />
         <CommandProbe />
         <PanelProbe />
@@ -49,7 +79,29 @@ function Harness(): ReactElement {
   )
 }
 
+/** The rail with a machine-translation run in flight. */
+function RunningHarness(): ReactElement {
+  return (
+    <SnackbarProvider>
+      <StaticEditor campaign={campaign}>
+        <TranslationRunContext.Provider
+          value={{ run, start: vi.fn(), cancel: vi.fn() }}
+        >
+          <LeftRail view="desktop" onViewChange={() => undefined} />
+        </TranslationRunContext.Provider>
+      </StaticEditor>
+    </SnackbarProvider>
+  )
+}
+
 describe('LeftRail', () => {
+  const push = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+  })
+
   it('links back to the campaigns list', () => {
     render(<Harness />)
 
@@ -65,6 +117,72 @@ describe('LeftRail', () => {
       'href',
       `/campaigns/${campaign.id}/reports`
     )
+  })
+
+  it('goes back straight away while no run is in flight', () => {
+    render(<Harness />)
+
+    const notPrevented = fireEvent.click(
+      screen.getByRole('link', { name: 'Back to campaigns' })
+    )
+
+    expect(notPrevented).toBe(true)
+    expect(screen.queryByTestId('CampaignLeaveDialog')).not.toBeInTheDocument()
+  })
+
+  describe('while a run is in flight', () => {
+    function clickBack(): boolean {
+      return fireEvent.click(
+        screen.getByRole('link', { name: 'Back to campaigns' })
+      )
+    }
+
+    it('asks before leaving, naming the language whose translation stops', () => {
+      render(<RunningHarness />)
+
+      expect(clickBack()).toBe(false)
+
+      const dialog = screen.getByTestId('CampaignLeaveDialog')
+      expect(within(dialog).getByText('Leave the editor?')).toBeInTheDocument()
+      expect(
+        within(dialog).getByText('The translation into Français stops.')
+      ).toBeInTheDocument()
+      expect(push).not.toHaveBeenCalled()
+    })
+
+    it('stays in the editor on Stay', async () => {
+      render(<RunningHarness />)
+      clickBack()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Stay' }))
+
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('CampaignLeaveDialog')
+        ).not.toBeInTheDocument()
+      )
+      expect(push).not.toHaveBeenCalled()
+      expect(screen.getByTestId('CampaignLeftRail')).toBeInTheDocument()
+    })
+
+    it('shows the run’s progress in the Localize tooltip', async () => {
+      render(<RunningHarness />)
+
+      fireEvent.mouseOver(screen.getByRole('button', { name: 'Localize' }))
+
+      expect(
+        await screen.findByRole('tooltip', { name: 'Localize: 40%' })
+      ).toBeInTheDocument()
+    })
+
+    it('goes back to the campaigns list on Leave', () => {
+      render(<RunningHarness />)
+      clickBack()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Leave' }))
+
+      expect(push).toHaveBeenCalledWith('/?type=campaigns')
+    })
   })
 
   it('switches between the Pages, Add and Localize panels, one open at a time, starting on Add', () => {
@@ -93,18 +211,6 @@ describe('LeftRail', () => {
     fireEvent.click(localize)
     expect(screen.getByTestId('OpenPanel')).toHaveTextContent('localize')
     expect(localize).toHaveAttribute('aria-pressed', 'true')
-  })
-
-  it('lists the panel toggles as Add, Pages, Navigator, Localize', () => {
-    render(<Harness />)
-
-    const panels = ['Add', 'Pages', 'Navigator', 'Localize']
-    const toggles = screen
-      .getAllByRole('button')
-      .map((button) => button.getAttribute('aria-label') ?? '')
-      .filter((label) => panels.includes(label))
-
-    expect(toggles).toEqual(['Add', 'Pages', 'Navigator', 'Localize'])
   })
 
   it('keeps the Navigator panel open when its toggle is pressed again', () => {

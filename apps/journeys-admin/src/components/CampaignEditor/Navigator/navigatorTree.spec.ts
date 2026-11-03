@@ -1,8 +1,16 @@
 import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
-import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
+import {
+  CampaignPageKind,
+  CampaignTextSource
+} from '../../../../__generated__/globalTypes'
+import {
+  campaign,
+  campaignWithColumns,
+  campaignWithFrenchRegionName,
+  campaignWithRegions
+} from '../data'
 
 import {
   NavigatorNode,
@@ -101,6 +109,29 @@ describe('buildNavigatorTree', () => {
     ])
   })
 
+  it('lists the Header’s and Footer’s Extras in one run, with no divider and no placement', () => {
+    const tree = buildNavigatorTree({
+      campaign,
+      pageKind: CampaignPageKind.landing
+    })
+
+    for (const [hostId, extraIds] of [
+      ['headerId', ['navHomeId', 'navResourcesId']],
+      ['footerId', ['footerCopyrightId', 'footerTermsId', 'footerPrivacyId']]
+    ] as const) {
+      const rows = find(tree, hostId)?.children ?? []
+      expect(rows.map((node) => node.id)).toEqual(extraIds)
+      for (const row of rows) {
+        expect(row.type).not.toBe('SectionContent')
+        expect(row.placement).toBeUndefined()
+        expect(row.reorder).toEqual({
+          group: `${hostId}:children`,
+          kind: 'block'
+        })
+      }
+    }
+  })
+
   it('leaves out the divider when a section has no Extras', () => {
     const tree = buildNavigatorTree({
       campaign,
@@ -172,6 +203,49 @@ describe('buildNavigatorTree', () => {
       'eurLineId'
     ])
     expect(cards?.[1].children).toEqual([])
+  })
+
+  it('names region cards in the Preview Language, by the default name where there is no translation', () => {
+    const tree = buildNavigatorTree({
+      campaign: campaignWithFrenchRegionName,
+      pageKind: CampaignPageKind.landing,
+      previewLanguageId: '496'
+    })
+
+    expect(
+      find(tree, 'landingSwitcherId')
+        ?.children.filter((node) => node.type === 'Region')
+        .map((card) => card.secondaryText)
+    ).toEqual(['L’Europe', 'Africa'])
+  })
+
+  it('reads a block’s text in the Preview Language, by the default text where there is no translation', () => {
+    const withFrenchHeroTitle: Campaign = {
+      ...campaign,
+      blocks: campaign.blocks.map((block) =>
+        block.id === 'heroId' && block.__typename === 'CampaignHeroBlock'
+          ? {
+              ...block,
+              titleTranslations: [
+                {
+                  __typename: 'TranslatedValue',
+                  languageId: '496',
+                  value: 'Partagez l’histoire',
+                  source: CampaignTextSource.human
+                }
+              ]
+            }
+          : block
+      )
+    }
+    const tree = buildNavigatorTree({
+      campaign: withFrenchHeroTitle,
+      pageKind: CampaignPageKind.landing,
+      previewLanguageId: '496'
+    })
+
+    expect(find(tree, 'heroId')?.secondaryText).toBe('Partagez l’histoire')
+    expect(find(tree, 'heroButtonId')?.secondaryText).toBe('Choose your region')
   })
 
   it('leaves the region being rendered out of its own Region Page’s switcher', () => {

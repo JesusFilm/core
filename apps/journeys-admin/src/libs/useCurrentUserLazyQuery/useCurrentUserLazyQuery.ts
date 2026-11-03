@@ -18,18 +18,28 @@ export const GET_CURRENT_USER = gql`
   }
 `
 
+/**
+ * The signed-in user, loaded on demand. Until `me` answers, `data` is a
+ * fallback user with an empty id; `loading` and `error` tell an unanswered
+ * query from a failed one.
+ */
 export function useCurrentUserLazyQuery(): {
   loadUser: useLazyQuery.ExecFunction<GetCurrentUser, OperationVariables>
   data: ApiUser | ApiAnonymousUser
+  loading: boolean
+  error?: Error
 } {
-  const [loadUser, { data }] = useLazyQuery<GetCurrentUser>(GET_CURRENT_USER)
+  const [loadUser, { data, loading, error }] =
+    useLazyQuery<GetCurrentUser>(GET_CURRENT_USER)
 
   if (data?.me != null) {
-    return { loadUser, data: data.me }
+    return { loadUser, data: data.me, loading, error }
   }
 
   return {
     loadUser,
-    data: { __typename: 'AuthenticatedUser', id: '', email: '' }
+    data: { __typename: 'AuthenticatedUser', id: '', email: '' },
+    loading,
+    error
   }
 }
