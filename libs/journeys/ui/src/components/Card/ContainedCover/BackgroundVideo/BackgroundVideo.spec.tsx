@@ -220,6 +220,44 @@ describe('BackgroundVideo', () => {
 
         expect(unloadModule).toHaveBeenCalledWith('captions')
       })
+
+      it('should unload youtube captions whenever youtube loads them', () => {
+        const unloadModule = vi.fn()
+        const addEventListener = vi.fn()
+        let loadedModules = ['captions']
+        vi.mocked(videojs).mockReturnValue({
+          ...playerRefMock,
+          ready: (callback: () => void) => callback(),
+          tech: () => ({
+            ytPlayer: {
+              unloadModule,
+              addEventListener,
+              getOptions: () => loadedModules
+            }
+          })
+        } as unknown as Player)
+
+        render(
+          <BackgroundVideo
+            setLoading={vi.fn()}
+            cardColor="black"
+            {...video}
+            source={VideoBlockSource.youTube}
+            mediaVideo={null}
+          />
+        )
+
+        const handleApiChange = addEventListener.mock.calls.find(
+          ([event]) => event === 'onApiChange'
+        )?.[1]
+        handleApiChange()
+        expect(unloadModule).toHaveBeenCalledTimes(1)
+
+        // Unloading fires onApiChange again, which must not unload again
+        loadedModules = []
+        handleApiChange()
+        expect(unloadModule).toHaveBeenCalledTimes(1)
+      })
     })
   })
 })

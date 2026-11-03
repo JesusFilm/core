@@ -149,6 +149,13 @@ export function VideoBlockEditorSettings({
       onSubmit: noop
     })
 
+  // Shown under whichever Subtitles control the video's source uses
+  const backgroundVideoSubtitlesHint = isBackgroundVideo ? (
+    <Typography variant="caption" sx={{ color: 'action.disabled' }}>
+      {t('Subtitles are turned off for background videos')}
+    </Typography>
+  ) : null
+
   return (
     <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
       <Stack direction="column" spacing={6}>
@@ -176,11 +183,7 @@ export function VideoBlockEditorSettings({
               }}
               disabled={selectedBlock == null || isBackgroundVideo}
             />
-            {isBackgroundVideo && (
-              <Typography variant="caption" sx={{ color: 'action.disabled' }}>
-                {t('Subtitles are turned off for background videos')}
-              </Typography>
-            )}
+            {backgroundVideoSubtitlesHint}
             <Divider />
           </Stack>
         )}
@@ -210,11 +213,7 @@ export function VideoBlockEditorSettings({
                 )
               }}
             />
-            {isBackgroundVideo && (
-              <Typography variant="caption" sx={{ color: 'action.disabled' }}>
-                {t('Subtitles are turned off for background videos')}
-              </Typography>
-            )}
+            {backgroundVideoSubtitlesHint}
             <Divider />
           </Stack>
         )}
