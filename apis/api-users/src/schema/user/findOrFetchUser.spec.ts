@@ -713,7 +713,7 @@ describe('findOrFetchUser', () => {
 
     it('should relink the legacy row instead of creating a duplicate', async () => {
       mockFirebaseUser(true)
-      prismaMock.user.findFirst.mockResolvedValueOnce(legacyRow)
+      prismaMock.$queryRaw.mockResolvedValueOnce([{ email: legacyRow.email }])
       const tx = mockTransaction()
       tx.user.findUnique.mockResolvedValueOnce(legacyRow)
       const relinkedRow = { ...legacyRow, userId: newUid }
@@ -722,9 +722,6 @@ describe('findOrFetchUser', () => {
       const data = await findOrFetchUser({}, newUid, undefined)
 
       expect(data).toEqual(relinkedRow)
-      expect(prismaMock.user.findFirst).toHaveBeenCalledWith({
-        where: { email: { equals: 'amin@email.com', mode: 'insensitive' } }
-      })
       expect(prismaMock.user.create).not.toHaveBeenCalled()
       expect(tx.user.findUnique).toHaveBeenCalledWith({
         where: { email: legacyEmail }
@@ -740,7 +737,7 @@ describe('findOrFetchUser', () => {
 
     it('should refuse to relink the legacy row when Firebase has not verified the email', async () => {
       mockFirebaseUser(false)
-      prismaMock.user.findFirst.mockResolvedValueOnce(legacyRow)
+      prismaMock.$queryRaw.mockResolvedValueOnce([{ email: legacyRow.email }])
 
       await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
         UserEmailConflictError
@@ -751,7 +748,7 @@ describe('findOrFetchUser', () => {
 
     it('should fall through to create when no row matches case-insensitively', async () => {
       mockFirebaseUser(true)
-      prismaMock.user.findFirst.mockResolvedValueOnce(null)
+      prismaMock.$queryRaw.mockResolvedValueOnce([])
       prismaMock.user.create.mockResolvedValueOnce({
         ...legacyRow,
         userId: newUid
@@ -764,10 +761,12 @@ describe('findOrFetchUser', () => {
       })
     })
 
-    it('should escape ILIKE wildcards in the email before the case-insensitive lookup', async () => {
-      // `%` and `_` are valid, unescaped RFC-5322 local-part characters but
-      // are also ILIKE wildcards. Unescaped, 'jane_doe@x.com' would match an
-      // unrelated row like 'janeXdoe@x.com' and relink it by mistake.
+    it('should match the holder by case-insensitive email without wildcard escaping', async () => {
+      // `%` and `_` are valid, unescaped RFC-5322 local-part characters.
+      // They would be ILIKE wildcards, but the lookup is now a plain
+      // LOWER(email) = LOWER($1) equality predicate, which treats them as
+      // literal characters -- no escaping needed, and no risk of
+      // 'jane_doe@x.com' matching an unrelated row like 'janeXdoe@x.com'.
       ;(auth.getUser as Mock).mockReturnValueOnce({
         uid: newUid,
         displayName: 'Jane Doe',
@@ -775,7 +774,7 @@ describe('findOrFetchUser', () => {
         photoURL: 'https://bit.ly/3Gth4',
         emailVerified: true
       })
-      prismaMock.user.findFirst.mockResolvedValueOnce(null)
+      prismaMock.$queryRaw.mockResolvedValueOnce([])
       prismaMock.user.create.mockResolvedValueOnce({
         ...legacyRow,
         userId: newUid,
@@ -784,10 +783,9 @@ describe('findOrFetchUser', () => {
 
       await findOrFetchUser({}, newUid, undefined)
 
-      expect(prismaMock.user.findFirst).toHaveBeenCalledWith({
-        where: {
-          email: { equals: 'jane\\_doe@x.com', mode: 'insensitive' }
-        }
+      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
+      expect(prismaMock.user.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ email: 'jane_doe@x.com' })
       })
     })
   })

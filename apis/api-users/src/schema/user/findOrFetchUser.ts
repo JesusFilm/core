@@ -221,16 +221,17 @@ export async function findOrFetchUser(
   // create and a duplicate row would be created instead of relinking. Check
   // case-insensitively first so legacy rows still relink.
   //
-  // Prisma's `mode: 'insensitive'` on Postgres compiles to ILIKE, which
-  // treats `%` and `_` as wildcards, so an unescaped email containing either
-  // (a valid RFC-5322 local-part character) could match an unrelated row
-  // and relink it onto this verified-but-wrong account.
+  // Raw SQL, not `findFirst` with `mode: 'insensitive'`: on Postgres that
+  // mode compiles to ILIKE (the `~~*` pattern operator), which a plain
+  // btree expression index on LOWER(email) cannot serve, so every lookup
+  // would sequentially scan User. LOWER(email) = LOWER($1) is a plain
+  // equality predicate the index does serve, and being equality rather
+  // than pattern matching, it needs no `%`/`_` wildcard escaping either.
   if (data.email != null) {
-    const escapedEmail = data.email.replace(/[\\%_]/g, '\\$&')
-    const caseInsensitiveHolder = await prisma.user.findFirst({
-      where: { email: { equals: escapedEmail, mode: 'insensitive' } }
-    })
-    const holderEmail = caseInsensitiveHolder?.email
+    const holderRows = await prisma.$queryRaw<
+      Array<{ email: string }>
+    >`SELECT email FROM "User" WHERE LOWER(email) = LOWER(${data.email}) LIMIT 1`
+    const holderEmail = holderRows?.[0]?.email
     if (holderEmail != null) {
       if (!emailVerified) throw new UserEmailConflictError()
       return await relinkUserToFirebaseUid(holderEmail, userId)

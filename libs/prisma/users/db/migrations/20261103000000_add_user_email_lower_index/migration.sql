@@ -1,8 +1,9 @@
--- findOrFetchUser looks up a legacy mixed-case email with `mode: 'insensitive'`
--- (compiled to ILIKE) on every brand-new sign-in. Postgres satisfies that
--- with this functional index instead of a full table scan. Not representable
--- in schema.prisma (Prisma has no expression-index syntax), so this will show
--- as drift on `prisma migrate dev` / introspection -- that's expected.
+-- findOrFetchUser looks up a legacy mixed-case email via raw SQL
+-- (`LOWER(email) = LOWER($1)`) on every brand-new sign-in. Postgres satisfies
+-- that equality predicate with this functional index instead of a full
+-- table scan. Not representable in schema.prisma (Prisma has no
+-- expression-index syntax), so this will show as drift on
+-- `prisma migrate dev` / introspection -- that's expected.
 --
 -- CONCURRENTLY avoids the write-blocking lock a plain CREATE INDEX would
 -- hold on `User` for the build's duration -- every sign-in on the `me` path
