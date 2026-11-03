@@ -87,14 +87,15 @@ psqlp -c "SELECT src, count(*) AS blocks, count(DISTINCT \"journeyId\") AS journ
           GROUP BY src ORDER BY blocks DESC"
 ```
 
-Expect 5 URLs and 488 blocks in total (the figures from the core-ops plan
-`docs/plans/2026-11-03-001-chore-arclight-image-prod-exit-plan.md`). If you see
-more URLs (for example the same key with `?version=2`, or `http://`), each one
-needs its own mapping row; the migration will not commit while any are
-unmapped.
+On the 2026-11-03 prod run this returned 5 URLs and 488 blocks in total; a
+re-run against another environment will see different figures. If you see
+more URLs than mapping.csv has rows for (for example the same key with
+`?version=2`, or `http://`), each one needs its own mapping row; the
+migration will not commit while any are unmapped.
 
 Create `mapping.csv` in `$RUN_DIR` (`$SCRIPTS/mapping.example.csv` shows the
-shape). Take the 5 Cloudflare Images delivery URLs from the plan. Rules:
+shape), one row per d1wl URL from the query above, each mapped to its
+already-uploaded Cloudflare Images delivery URL. Rules:
 
 - Header line exactly `d1wl_url,cloudflare_url`.
 - `d1wl_url` must equal the `Block.src` string character for character (the
@@ -127,9 +128,11 @@ psqlp -f "$SCRIPTS/01-dry-run.sql" | tee dry-run.txt
 It never writes to the database (temp tables only, then the session is set
 read-only). Read it before going on:
 
-- `blocks_to_rewrite` ≈ 488, `journeys` ≈ 270, `journeys_live` ≈ 156,
-  `teams` ≈ 150 (the plan's figures; "live" here means published and not
-  deleted/trashed/archived, which may differ slightly from the plan's definition).
+- On the 2026-11-03 prod run: `blocks_to_rewrite` ≈ 488, `journeys` ≈ 270,
+  `journeys_live` ≈ 156, `teams` ≈ 150 ("live" here means published and not
+  deleted/trashed/archived). A re-run against another environment will see
+  different figures; sanity-check against the live counts the query above
+  reports, not these numbers.
 - Every mapping row has `blocks` > 0.
 - **UNMAPPED section is empty.** If not, add rows to `mapping.csv`.
 - TEMPLATE section lists the template journeys that keep copying these images.
