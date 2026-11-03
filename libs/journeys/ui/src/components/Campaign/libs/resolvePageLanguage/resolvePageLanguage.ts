@@ -30,8 +30,15 @@ export interface ResolvedPageLanguage {
   source: PageLanguageSource
 }
 
-/** The name of the cookie the header's language select writes. */
-export const CAMPAIGN_LANGUAGE_COOKIE = 'campaign-lang'
+/**
+ * The name of the cookie the header's language select writes: one per
+ * campaign, so a language picked on one campaign never applies to another on
+ * the same root domain. Keyed by id, it is the same on `/campaign/<slug>` and
+ * on a Campaign Root, and survives a slug change.
+ */
+export function campaignLanguageCookie(campaignId: string): string {
+  return `campaign-lang-${campaignId}`
+}
 
 /** The query param every in-campaign link carries forward. */
 export const CAMPAIGN_LANGUAGE_PARAM = 'lang'
@@ -106,7 +113,7 @@ function acceptLanguageMatch(
 }
 
 /**
- * The visitor's Page Language (PRD §2): `?lang=<bcp47>` naming a campaign
+ * The visitor's Page Language (glossary: **Page Language resolution**): `?lang=<bcp47>` naming a campaign
  * language, then the saved cookie, then an `Accept-Language` prefix match
  * against the campaign languages, then the campaign default. Pure, so the
  * four routes and the editor preview share one rule.

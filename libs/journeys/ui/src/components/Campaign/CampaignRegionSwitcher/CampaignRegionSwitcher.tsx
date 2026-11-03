@@ -9,17 +9,13 @@ import { Children, MouseEvent, ReactElement, ReactNode } from 'react'
 
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
 import { useCampaignPlausible } from '../../../libs/campaignPlausible'
-import { campaignPageHref, useCampaign } from '../CampaignProvider'
+import { campaignRegionHref, useCampaign } from '../CampaignProvider'
+import { regionLineTexts } from '../CampaignRegionHeader'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
-import { CampaignTypography } from '../CampaignTypography'
+import { campaignCardSx } from '../libs/campaignSx'
+import type { StyleObject } from '../libs/campaignSx'
 import type { CampaignRegion, CampaignTreeOf } from '../types'
-
-/** A plain style object: it spreads into another `sx`, unlike the array and function forms of `SxProps`. */
-type StyleObject = Exclude<
-  SxProps<Theme>,
-  ReadonlyArray<unknown> | ((theme: Theme) => unknown)
->
 
 interface CampaignRegionSwitcherProps {
   block: CampaignTreeOf<'CampaignRegionSwitcherBlock'>
@@ -94,10 +90,9 @@ export function regionFrameSx(variant: CampaignSwitcherVariant): StyleObject {
     // A pill's rounded ends eat into its sides, so its name and flags get more room than a card's content.
     px: pill ? 4 : 3,
     py: pill ? 1.5 : 3,
+    ...campaignCardSx,
     borderRadius: pill ? 999 : 1,
-    textAlign: 'left',
-    backgroundColor: 'var(--campaign-band-card)',
-    border: '1px solid var(--campaign-band-border)'
+    textAlign: 'start'
   }
 }
 
@@ -224,11 +219,7 @@ function CampaignRegionCard({
         {region.name}
       </Typography>
       <CampaignRegionLines variant={variant}>
-        {region.lines.map((line) =>
-          line.__typename === 'CampaignTypographyBlock' ? (
-            <CampaignTypography key={line.id} block={line} />
-          ) : null
-        )}
+        {regionLineTexts(region.lines)}
       </CampaignRegionLines>
       <CampaignRegionCountries region={region} />
     </ButtonBase>
@@ -244,7 +235,7 @@ function CampaignRegionCard({
 export function CampaignRegionSwitcher({
   block
 }: CampaignRegionSwitcherProps): ReactElement {
-  const { campaign, basePath, region: current } = useCampaign()
+  const { campaign, region: current } = useCampaign()
   const regions = switcherRegions(campaign.regions, current)
   const variant = block.switcherVariant ?? CampaignSwitcherVariant.cards
 
@@ -261,7 +252,7 @@ export function CampaignRegionSwitcher({
             key={region.id}
             region={region}
             variant={variant}
-            href={campaignPageHref(`${basePath}/${region.slug}`, campaign)}
+            href={campaignRegionHref(campaign, region.slug)}
           />
         ))}
       </Box>

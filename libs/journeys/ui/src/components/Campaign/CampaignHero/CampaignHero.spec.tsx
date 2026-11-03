@@ -5,6 +5,7 @@ import {
   CampaignPageKind,
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
+import { emotionClass, styleText } from '../../../test/emotionStyles'
 import { shouldRenderSection } from '../CampaignPage/shouldRenderSection'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -25,20 +26,6 @@ vi.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
-}
-
-function emotionClass(element: Element): string {
-  const name = Array.from(element.classList).find((candidate) =>
-    candidate.startsWith('css-')
-  )
-  if (name == null) throw new Error('no emotion class')
-  return name.replace(/[-]/g, '\\-')
-}
 
 /** The element's emotion rule body under the `min-width` media query. */
 function mediaRule(element: Element, minWidth: number): string {
@@ -65,14 +52,18 @@ function heroTree(
   return tree as CampaignTreeOf<'CampaignHeroBlock'>
 }
 
-function renderHero(block: CampaignTreeOf<'CampaignHeroBlock'>) {
+function renderHero(
+  block: CampaignTreeOf<'CampaignHeroBlock'>,
+  pageHeadingBlockId?: string | null
+) {
   return render(
     <ThemeProvider theme={theme}>
       <CampaignProvider
         value={{
           campaign: campaignPublic,
           pageKind: CampaignPageKind.landing,
-          region: null
+          region: null,
+          pageHeadingBlockId
         }}
       >
         <CampaignHero block={block} />
@@ -98,6 +89,26 @@ describe('CampaignHero', () => {
     )
   })
 
+  it('keeps its title an h1 when the page names no heading block, or names this hero', () => {
+    const { unmount } = renderHero(heroTree())
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Share the story of Outreach'
+    )
+    unmount()
+    renderHero(heroTree(), 'heroId')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Share the story of Outreach'
+    )
+  })
+
+  it('renders its title as an h2 with the h1 look when the page heading is another block', () => {
+    renderHero(heroTree(), 'regionHeaderId')
+    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument()
+    const title = screen.getByRole('heading', { level: 2 })
+    expect(title).toHaveTextContent('Share the story of Outreach')
+    expect(title).toHaveClass('MuiTypography-h1')
+  })
+
   it('applies align to the band and the heading', () => {
     renderHero(heroTree({ align: TypographyAlign.center }))
     expect(screen.getByTestId('CampaignSectionBand-heroId')).toHaveStyle({
@@ -119,7 +130,7 @@ describe('CampaignHero', () => {
     expect(screen.queryByTestId('CampaignMediaSplit')).not.toBeInTheDocument()
   })
 
-  it('The hero renders its media slot beside its text', () => {
+  it('The hero renders its media slot beside its text', async () => {
     renderHero(heroTree({ mediaBlockId: heroVideoBlock.id }, [heroVideoBlock]))
     const split = screen.getByTestId('CampaignMediaSplit')
     expect(split).toHaveAttribute('data-media-side', 'right')
@@ -131,7 +142,7 @@ describe('CampaignHero', () => {
       'CampaignMediaSlot'
     )
     expect(
-      within(split.lastElementChild as HTMLElement).getByTestId(
+      await within(split.lastElementChild as HTMLElement).findByTestId(
         'JourneysVideo-heroVideoId'
       )
     ).toBeInTheDocument()
@@ -139,21 +150,31 @@ describe('CampaignHero', () => {
     expect(mediaRule(split, 600)).toContain('grid-template-columns:1fr 1fr;')
   })
 
-  it('renders an image in its media slot', () => {
+  it('renders an image in its media slot, loaded eagerly with high priority', () => {
     const image = {
       ...featuredMediaImageBlock,
       id: 'heroImageId',
       parentBlockId: 'heroId'
     } as CampaignBlock
     renderHero(heroTree({ mediaBlockId: 'heroImageId' }, [image]))
-    expect(
-      within(screen.getByTestId('CampaignMediaSlot')).getByRole('img', {
-        name: 'Children watching a film'
-      })
-    ).toBeInTheDocument()
+    const picture = within(screen.getByTestId('CampaignMediaSlot')).getByRole(
+      'img',
+      { name: 'Children watching a film' }
+    )
+    expect(picture).toHaveAttribute('loading', 'eager')
+    expect(picture).toHaveAttribute('fetchpriority', 'high')
   })
 
-  it('renders the media alone when the hero has only media', () => {
+  it('loads its video’s poster eagerly with high priority', () => {
+    renderHero(heroTree({ mediaBlockId: heroVideoBlock.id }, [heroVideoBlock]))
+    const poster = within(screen.getByTestId('CampaignMediaSlot')).getByTestId(
+      'CampaignImage'
+    )
+    expect(poster).toHaveAttribute('loading', 'eager')
+    expect(poster).toHaveAttribute('fetchpriority', 'high')
+  })
+
+  it('renders the media alone when the hero has only media', async () => {
     const hero = heroTree(
       {
         eyebrow: null,
@@ -167,12 +188,15 @@ describe('CampaignHero', () => {
       shouldRenderSection(hero, {
         pageKind: CampaignPageKind.landing,
         region: null,
-        regions: campaignPublic.regions
+        regions: campaignPublic.regions,
+        strings: campaignPublic.strings
       })
     ).toBe(true)
     renderHero(hero)
     expect(screen.queryByTestId('CampaignMediaSplit')).not.toBeInTheDocument()
     expect(screen.queryByTestId('CampaignTitle')).not.toBeInTheDocument()
-    expect(screen.getByTestId('JourneysVideo-heroVideoId')).toBeInTheDocument()
+    expect(
+      await screen.findByTestId('JourneysVideo-heroVideoId')
+    ).toBeInTheDocument()
   })
 })
