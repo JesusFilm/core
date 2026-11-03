@@ -9,10 +9,13 @@ import {
   splitDisplayName
 } from '@core/yoga/firebaseClient'
 
+import { logger } from '../logger'
+
 import { type AppType } from './enums/app'
 import { verifyUser } from './verifyUser'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
+const ERROR_PSQL_RECORD_NOT_FOUND = 'P2025'
 
 // Thrown when a sign-in's email already belongs to a User row keyed to a
 // different Firebase UID and Firebase has not verified that email, so the
@@ -35,10 +38,17 @@ function isUniqueConstraintError(error: unknown): boolean {
   )
 }
 
+function isRecordNotFoundError(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === ERROR_PSQL_RECORD_NOT_FOUND
+  )
+}
+
 // Moves the row holding this email onto the new Firebase UID. Only `userId`
-// changes, so the row keeps its id and everything on it (superAdmin,
-// createdAt, profile). The `userId` guard on the update makes a concurrent
-// change to the row fail the write instead of being overwritten.
+// changes, so the row keeps its id and the rest of its fields (createdAt,
+// profile). The `userId` guard on the update makes a concurrent change to
+// the row fail the write instead of being overwritten.
 async function relinkUserToFirebaseUid(
   email: string,
   userId: string
@@ -48,15 +58,32 @@ async function relinkUserToFirebaseUid(
     if (holder == null)
       throw new Error('User row holding the email disappeared during re-link')
     if (holder.userId === userId) return holder
+    // A superAdmin row's email can be orphaned (e.g. the admin moved on and
+    // the address was reassigned), so an unrelated person later verifying it
+    // must not inherit the privilege. Surface the same conflict as an
+    // unverified email instead of relinking.
+    if (holder.superAdmin) throw new UserEmailConflictError()
 
-    const relinked = await tx.user.update({
-      where: { id: holder.id, userId: holder.userId },
-      data: { userId, emailVerified: true }
-    })
-    console.warn(
-      `findOrFetchUser: re-linked User ${holder.id} from Firebase UID ${holder.userId} to ${userId} on verified email`
-    )
-    return relinked
+    try {
+      const relinked = await tx.user.update({
+        where: { id: holder.id, userId: holder.userId },
+        data: { userId, emailVerified: true }
+      })
+      logger.warn(
+        { userRowId: holder.id, previousUserId: holder.userId, userId },
+        'findOrFetchUser: re-linked User on verified email'
+      )
+      return relinked
+    } catch (error) {
+      if (!isRecordNotFoundError(error)) throw error
+      // Another concurrent call relinked this row between our read above
+      // and this update, so the userId guard lost the race safely.
+      const relinkedByOtherCall = await tx.user.findUnique({
+        where: { userId }
+      })
+      if (relinkedByOtherCall == null) throw error
+      return relinkedByOtherCall
+    }
   })
 }
 
@@ -70,7 +97,17 @@ async function resolveCreateConflict(
   emailVerified: boolean
 ): Promise<User> {
   const racedUser = await prisma.user.findUnique({ where: { userId } })
-  if (racedUser != null) return racedUser
+  if (racedUser != null) {
+    // The concurrent call that created this row may have read Firebase
+    // before the email was verified; sync it now so `me` does not report a
+    // verified sign-in as unverified.
+    if (!racedUser.emailVerified && emailVerified)
+      return await prisma.user.update({
+        where: { userId },
+        data: { emailVerified: true }
+      })
+    return racedUser
+  }
 
   if (email == null) throw error
   const emailHolder = await prisma.user.findUnique({ where: { email } })
@@ -159,7 +196,7 @@ export async function findOrFetchUser(
     userId,
     firstName: split?.firstName ?? 'Unknown User',
     lastName: split?.lastName ?? '',
-    email: email ?? null,
+    email: email != null ? email.trim().toLowerCase() : null,
     imageUrl,
     emailVerified
   }
