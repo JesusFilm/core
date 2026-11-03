@@ -74,7 +74,7 @@ export async function createEmptyParentVariant(
   const [parentVideo, existingVariantWithLanguage] = await Promise.all([
     prisma.video.findUnique({
       where: { id: parentVideoId },
-      select: { slug: true, availableLanguages: true }
+      select: { slug: true }
     }),
     languageSlug
       ? null
@@ -109,12 +109,10 @@ export async function createEmptyParentVariant(
     )
   }
 
-  // Create empty variant for parent video and update available languages in a single transaction
-  const currentLanguages = parentVideo.availableLanguages || []
-  const updatedLanguages = Array.from(
-    new Set([...currentLanguages, languageId])
-  )
-
+  // Create empty variant for parent video and update available languages in a single transaction.
+  // The language update is a single atomic UPDATE (not a findUnique-then-set)
+  // so it can't lose a concurrent caller's own append to the same array --
+  // see addLanguageToVideo's doc comment in updateAvailableLanguages.ts.
   const newVariant = await prisma.$transaction(async (tx) => {
     const variant = await tx.videoVariant.create({
       data: {
@@ -133,10 +131,12 @@ export async function createEmptyParentVariant(
       }
     })
 
-    await tx.video.update({
-      where: { id: parentVideoId },
-      data: { availableLanguages: updatedLanguages }
-    })
+    await tx.$executeRaw`
+      UPDATE "Video"
+      SET "availableLanguages" = array_append(COALESCE("availableLanguages", ARRAY[]::TEXT[]), ${languageId})
+      WHERE id = ${parentVideoId}
+        AND NOT (${languageId} = ANY(COALESCE("availableLanguages", ARRAY[]::TEXT[])))
+    `
 
     return variant
   })
