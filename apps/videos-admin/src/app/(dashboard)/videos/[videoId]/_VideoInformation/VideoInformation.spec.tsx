@@ -5,7 +5,7 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type MockedFunction } from 'vitest'
 
-import { VideoInformation } from './VideoInformation'
+import { UPDATE_VIDEO_INFORMATION, VideoInformation } from './VideoInformation'
 import { GET_KEYWORDS } from './VideoKeywords'
 
 // Mock useSuspenseQuery hook
@@ -104,18 +104,19 @@ describe('VideoInformation', () => {
       expect(screen.getByLabelText('Title')).toBeInTheDocument()
       const videoUrlInput = screen.getByLabelText('Video URL')
       expect(videoUrlInput).toBeInTheDocument()
-      expect(videoUrlInput).toBeDisabled()
+      expect(videoUrlInput).toBeEnabled()
       expect(screen.getByLabelText('Status')).toBeInTheDocument()
       expect(screen.getByLabelText('Label')).toBeInTheDocument()
     })
 
     // Check that form has the correct values
     expect(screen.getByDisplayValue('Test Video Title')).toBeInTheDocument()
+    expect(screen.getByLabelText('Video URL')).toHaveValue('test-video')
+    expect(screen.getByText('jesusfilm.org/watch/')).toBeInTheDocument()
     expect(
-      screen.getByDisplayValue('jesusfilm.org/watch/test-video')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('URLs cannot be changed after creation')
+      screen.getByText(
+        'Changing the URL keeps the old one working as a redirect.'
+      )
     ).toBeInTheDocument()
   })
 
@@ -415,6 +416,247 @@ describe('VideoInformation', () => {
       ).toBeInTheDocument()
       // Counter should NOT be shown when there is an error
       expect(screen.queryByText('61/60')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Video URL', () => {
+    const publishedVideoData = {
+      adminVideo: {
+        ...mockVideoData.adminVideo,
+        published: true
+      }
+    }
+
+    function mockVideo(data: typeof mockVideoData): void {
+      const mockedUseSuspenseQuery = useSuspenseQuery as MockedFunction<
+        typeof useSuspenseQuery
+      >
+      mockedUseSuspenseQuery.mockReturnValue({
+        data,
+        fetchMore: vi.fn(),
+        subscribeToMore: vi.fn(),
+        client: {} as any,
+        error: undefined,
+        dataState: 'complete' as const,
+        networkStatus: NetworkStatus.ready,
+        refetch: vi.fn().mockResolvedValue({ data })
+      })
+    }
+
+    function updateVideoInformationMock({
+      slug,
+      published,
+      title = 'Test Video Title'
+    }: {
+      slug: string
+      published: boolean
+      title?: string
+    }): MockLink.MockedResponse {
+      return {
+        request: {
+          query: UPDATE_VIDEO_INFORMATION,
+          variables: {
+            infoInput: {
+              id: mockVideoId,
+              slug,
+              published,
+              label: 'featureFilm',
+              keywordIds: []
+            },
+            titleInput: { id: 'title-id', value: title }
+          }
+        },
+        result: vi.fn(() => ({
+          data: {
+            videoTitleUpdate: {
+              __typename: 'VideoTitle',
+              id: 'title-id',
+              value: title
+            },
+            videoUpdate: {
+              __typename: 'Video',
+              id: mockVideoId,
+              label: 'featureFilm',
+              slug,
+              published
+            }
+          }
+        }))
+      }
+    }
+
+    it('sends the edited slug without the URL prefix', async () => {
+      const updateMock = updateVideoInformationMock({
+        slug: 'new-slug',
+        published: false
+      })
+
+      render(
+        <MockedProvider mocks={[keywordsMock, updateMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      fireEvent.change(screen.getByLabelText('Video URL'), {
+        target: { value: 'new-slug' }
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+      await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Successfully updated video information',
+        { variant: 'success' }
+      )
+    })
+
+    it('strips a pasted URL prefix from the submitted slug', async () => {
+      const updateMock = updateVideoInformationMock({
+        slug: 'new-slug',
+        published: false
+      })
+
+      render(
+        <MockedProvider mocks={[keywordsMock, updateMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      fireEvent.change(screen.getByLabelText('Video URL'), {
+        target: { value: 'https://www.jesusfilm.org/watch/new-slug' }
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+      await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+    })
+
+    it('asks for confirmation before changing a published video URL', async () => {
+      mockVideo(publishedVideoData)
+      const updateMock = updateVideoInformationMock({
+        slug: 'new-slug',
+        published: true
+      })
+
+      render(
+        <MockedProvider mocks={[keywordsMock, updateMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      fireEvent.change(screen.getByLabelText('Video URL'), {
+        target: { value: 'new-slug' }
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+      const dialog = await screen.findByRole('dialog')
+      expect(dialog).toHaveTextContent('Change Video URL?')
+      expect(dialog).toHaveTextContent(
+        'from jesusfilm.org/watch/test-video to jesusfilm.org/watch/new-slug'
+      )
+      expect(updateMock.result).not.toHaveBeenCalled()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Change URL' }))
+
+      await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+    })
+
+    it('does not change a published video URL when confirmation is cancelled', async () => {
+      mockVideo(publishedVideoData)
+      const updateMock = updateVideoInformationMock({
+        slug: 'new-slug',
+        published: true
+      })
+
+      render(
+        <MockedProvider mocks={[keywordsMock, updateMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      fireEvent.change(screen.getByLabelText('Video URL'), {
+        target: { value: 'new-slug' }
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+      await screen.findByRole('dialog')
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      await waitFor(() =>
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      )
+      expect(updateMock.result).not.toHaveBeenCalled()
+      expect(screen.getByLabelText('Video URL')).toHaveValue('new-slug')
+    })
+
+    it('saves a published video without confirmation when the URL is unchanged', async () => {
+      mockVideo(publishedVideoData)
+      const updateMock = updateVideoInformationMock({
+        slug: 'test-video',
+        published: true,
+        title: 'New Title'
+      })
+
+      render(
+        <MockedProvider mocks={[keywordsMock, updateMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      fireEvent.change(screen.getByLabelText('Title'), {
+        target: { value: 'New Title' }
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+      await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    it('shows a slug collision error on the URL field', async () => {
+      const slugTakenMock: MockLink.MockedResponse = {
+        request: {
+          query: UPDATE_VIDEO_INFORMATION,
+          variables: {
+            infoInput: {
+              id: mockVideoId,
+              slug: 'taken-slug',
+              published: false,
+              label: 'featureFilm',
+              keywordIds: []
+            },
+            titleInput: { id: 'title-id', value: 'Test Video Title' }
+          }
+        },
+        result: {
+          errors: [
+            {
+              message: 'Video slug already exists',
+              extensions: {
+                code: 'NOT_UNIQUE_ERROR',
+                location: [{ path: ['input', 'slug'], value: 'taken-slug' }]
+              }
+            }
+          ]
+        }
+      }
+
+      render(
+        <MockedProvider mocks={[keywordsMock, slugTakenMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      const urlInput = screen.getByLabelText('Video URL')
+      fireEvent.change(urlInput, { target: { value: 'taken-slug' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+      expect(
+        await screen.findByText('Video slug already exists')
+      ).toBeInTheDocument()
+      expect(urlInput).toHaveAttribute('aria-invalid', 'true')
+      expect(urlInput).toHaveAccessibleDescription('Video slug already exists')
+      expect(mockEnqueueSnackbar).not.toHaveBeenCalledWith(
+        'Failed to update video information',
+        { variant: 'error' }
+      )
     })
   })
 })

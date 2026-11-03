@@ -1,4 +1,5 @@
 'use client'
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import WarningIcon from '@mui/icons-material/Warning'
@@ -8,6 +9,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
+import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -17,13 +19,15 @@ import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { Form, Formik, FormikProps, FormikValues } from 'formik'
+import Typography from '@mui/material/Typography'
+import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
+import { Dialog } from '@core/shared/ui/Dialog'
 
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
@@ -34,6 +38,34 @@ import { VideoKeywords } from './VideoKeywords'
 
 interface VideoInformationProps {
   videoId: string
+}
+
+interface PendingSubmission {
+  values: FormikValues
+  helpers: FormikHelpers<FormikValues>
+}
+
+const jesusFilmUrl = 'jesusfilm.org/watch/'
+const watchUrlPrefix = /^\s*(https?:\/\/)?(www\.)?jesusfilm\.org\/watch\//i
+
+// The field displays the jesusfilm.org/watch/ prefix as an adornment, so a
+// pasted full URL must be reduced to the slug before it reaches the API.
+function stripWatchUrlPrefix(value: string): string {
+  return value.replace(watchUrlPrefix, '')
+}
+
+function getSlugNotUniqueMessage(error: unknown): string | undefined {
+  if (!CombinedGraphQLErrors.is(error)) return undefined
+
+  const slugError = error.errors.find((graphQLError) => {
+    if (graphQLError.extensions?.code !== 'NOT_UNIQUE_ERROR') return false
+    const location = graphQLError.extensions?.location
+    if (!Array.isArray(location)) return false
+    return location.some(
+      (entry) => Array.isArray(entry?.path) && entry.path.includes('slug')
+    )
+  })
+  return slugError?.message
 }
 
 export const GET_VIDEO_INFORMATION = graphql(`
@@ -119,9 +151,10 @@ export function VideoInformation({
   const router = useRouter()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE)
-  const jesusFilmUrl = 'jesusfilm.org/watch/'
   const { enqueueSnackbar } = useSnackbar()
   const [createdTitleId, setCreatedTitleId] = useState<string | null>(null)
+  const [pendingSlugChange, setPendingSlugChange] =
+    useState<PendingSubmission | null>(null)
 
   // State to track validation attempts and errors
   const [validationAttempt, setValidationAttempt] = useState<{
@@ -142,6 +175,7 @@ export function VideoInformation({
       .trim()
       .required('Title is required')
       .max(60, 'Title must be 60 characters or less'),
+    url: string().trim().required('URL is required'),
     published: string().required('Published is required'),
     label: string().required('Label is required')
   })
@@ -330,9 +364,41 @@ export function VideoInformation({
     )
   }
 
+  async function handleSubmit(
+    values: FormikValues,
+    helpers: FormikHelpers<FormikValues>
+  ): Promise<void> {
+    const slugChanged = values.url.trim() !== data.adminVideo.slug
+    // A published video's URL is live on Watch, so renaming it needs an
+    // explicit confirmation before anything is sent.
+    if (data.adminVideo.published === true && slugChanged) {
+      setPendingSlugChange({ values, helpers })
+      return
+    }
+    await handleUpdateVideoInformation(values, helpers)
+  }
+
+  async function handleConfirmSlugChange(): Promise<void> {
+    if (pendingSlugChange == null) return
+    const { values, helpers } = pendingSlugChange
+    setPendingSlugChange(null)
+    // Formik finished its own submit when the dialog opened, so keep Save
+    // disabled while the confirmed update runs.
+    helpers.setSubmitting(true)
+    try {
+      await handleUpdateVideoInformation(values, helpers)
+    } finally {
+      helpers.setSubmitting(false)
+    }
+  }
+
+  function handleCancelSlugChange(): void {
+    setPendingSlugChange(null)
+  }
+
   async function handleUpdateVideoInformation(
     values: FormikValues,
-    { resetForm }: FormikProps<FormikValues>
+    { resetForm, setFieldError }: FormikHelpers<FormikValues>
   ): Promise<void> {
     // If trying to publish, validate required fields first
     if (values.published === 'published') {
@@ -387,33 +453,40 @@ export function VideoInformation({
       return
     }
 
-    await updateVideoInformation({
-      variables: {
-        infoInput: {
-          id: videoId,
-          slug: values.url,
-          published: values.published === 'published',
-          label: values.label,
-          keywordIds: values.keywords.map((k) => k.id)
-        },
-        titleInput: {
-          id: titleId,
-          value: values.title
+    try {
+      await updateVideoInformation({
+        variables: {
+          infoInput: {
+            id: videoId,
+            slug: values.url.trim(),
+            published: values.published === 'published',
+            label: values.label,
+            keywordIds: values.keywords.map((k) => k.id)
+          },
+          titleInput: {
+            id: titleId,
+            value: values.title
+          }
         }
-      },
-      onCompleted: () => {
-        enqueueSnackbar('Successfully updated video information', {
-          variant: 'success'
-        })
-        resetForm({ values })
-        router.push('?', { scroll: false })
-      },
-      onError: () => {
-        enqueueSnackbar('Failed to update video information', {
-          variant: 'error'
-        })
+      })
+    } catch (error) {
+      // Apollo Client 4 rejects the mutate promise on GraphQL errors.
+      const slugNotUniqueMessage = getSlugNotUniqueMessage(error)
+      if (slugNotUniqueMessage != null) {
+        setFieldError('url', slugNotUniqueMessage)
+        return
       }
+      enqueueSnackbar('Failed to update video information', {
+        variant: 'error'
+      })
+      return
+    }
+
+    enqueueSnackbar('Successfully updated video information', {
+      variant: 'success'
     })
+    resetForm({ values: { ...values, url: values.url.trim() } })
+    router.push('?', { scroll: false })
   }
 
   // Handle status change with validation attempt
@@ -454,7 +527,7 @@ export function VideoInformation({
         label: data.adminVideo.label ?? '',
         keywords: data.adminVideo.keywords ?? []
       }}
-      onSubmit={handleUpdateVideoInformation}
+      onSubmit={handleSubmit}
       validationSchema={validationSchema}
     >
       {({
@@ -503,11 +576,27 @@ export function VideoInformation({
                 name="url"
                 label="Video URL"
                 fullWidth
-                value={`${jesusFilmUrl}${values.url}`}
+                value={values.url}
                 variant="outlined"
-                helperText="URLs cannot be changed after creation"
-                disabled
+                error={Boolean(errors.url)}
+                onChange={(event) =>
+                  setFieldValue('url', stripWatchUrlPrefix(event.target.value))
+                }
+                helperText={
+                  errors.url
+                    ? (errors.url as string)
+                    : 'Changing the URL keeps the old one working as a redirect.'
+                }
                 sx={{ flexGrow: 1 }}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {jesusFilmUrl}
+                      </InputAdornment>
+                    )
+                  }
+                }}
               />
             </Stack>
             <Stack
@@ -558,7 +647,7 @@ export function VideoInformation({
                 <Button
                   variant="outlined"
                   color="primary"
-                  href={`${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${values.url}.html/${data.adminVideo.variant?.language.slug}.html`}
+                  href={`${process.env.NEXT_PUBLIC_WATCH_URL ?? ''}/watch/${data.adminVideo.slug}.html/${data.adminVideo.variant?.language.slug}.html`}
                   target="_blank"
                   rel="noopener noreferrer"
                   startIcon={<OpenInNewIcon />}
@@ -605,6 +694,20 @@ export function VideoInformation({
               />
             </Stack>
           </Stack>
+          <Dialog
+            open={pendingSlugChange != null}
+            onClose={handleCancelSlugChange}
+            dialogTitle={{ title: 'Change Video URL?', closeButton: true }}
+            dialogAction={{
+              onSubmit: () => void handleConfirmSlugChange(),
+              submitLabel: 'Change URL',
+              closeLabel: 'Cancel'
+            }}
+          >
+            <Typography variant="body1">
+              {`This video is published. Its URL will change from ${jesusFilmUrl}${data.adminVideo.slug} to ${jesusFilmUrl}${pendingSlugChange?.values.url.trim() ?? ''}. The old URL will keep working as a redirect.`}
+            </Typography>
+          </Dialog>
         </Form>
       )}
     </Formik>
