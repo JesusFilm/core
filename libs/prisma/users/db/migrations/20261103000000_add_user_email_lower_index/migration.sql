@@ -11,4 +11,9 @@
 -- block, so this migration must stay this file's only statement -- do not
 -- add further DDL here.
 -- CreateIndex
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "User_email_lower_idx" ON "User" (LOWER("email"));
+-- Deliberately no IF NOT EXISTS: if a concurrent build fails, Postgres
+-- leaves an INVALID index under this name. IF NOT EXISTS would see the name
+-- and skip rebuilding it on retry, letting the migration record as applied
+-- with no usable index. Without it, the retry fails loudly so the invalid
+-- index gets dropped and the build redone.
+CREATE INDEX CONCURRENTLY "User_email_lower_idx" ON "User" (LOWER("email"));

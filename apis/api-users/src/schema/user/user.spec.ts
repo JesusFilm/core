@@ -359,16 +359,16 @@ describe('api-users', () => {
 
     it('should query user if interop token is valid', async () => {
       getUserFromPayloadMock.mockReturnValueOnce(null)
-      prismaMock.user.findUnique.mockResolvedValue(user)
+      prismaMock.user.findFirst.mockResolvedValue(user)
       const data = await authClient({
         document: USER_QUERY,
         variables: {
           email: 'abc@example.com'
         }
       })
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      expect(prismaMock.user.findFirst).toHaveBeenCalledWith({
         where: {
-          email: 'abc@example.com'
+          email: { equals: 'abc@example.com', mode: 'insensitive' }
         }
       })
       expect(data).toHaveProperty(
@@ -530,18 +530,20 @@ describe('api-users', () => {
     })
 
     it('should impersonate a user', async () => {
-      prismaMock.user.findUnique
-        .mockResolvedValueOnce({ ...user, superAdmin: true })
-        .mockResolvedValueOnce(user)
+      prismaMock.user.findUnique.mockResolvedValueOnce({
+        ...user,
+        superAdmin: true
+      })
+      prismaMock.user.findFirst.mockResolvedValueOnce(user)
       const data = await authClient({
         document: USER_IMPERSONATE_MUTATION,
         variables: {
           email: 'abc@example.com'
         }
       })
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      expect(prismaMock.user.findFirst).toHaveBeenCalledWith({
         where: {
-          email: 'abc@example.com'
+          email: { equals: 'abc@example.com', mode: 'insensitive' }
         }
       })
       expect(data).toHaveProperty('data.userImpersonate', '1234')
@@ -574,7 +576,7 @@ describe('api-users', () => {
     `)
 
     it('should query user if interop token is valid', async () => {
-      prismaMock.user.findUnique.mockResolvedValue(user)
+      prismaMock.user.findFirst.mockResolvedValue(user)
       const data = await client({
         document: VALIDATE_EMAIL_MUTATION,
         variables: {
@@ -582,9 +584,9 @@ describe('api-users', () => {
           token: 'token'
         }
       })
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      expect(prismaMock.user.findFirst).toHaveBeenCalledWith({
         where: {
-          email: 'abc@example.com'
+          email: { equals: 'abc@example.com', mode: 'insensitive' }
         }
       })
       expect(data).toHaveProperty('data.validateEmail', {
@@ -594,7 +596,7 @@ describe('api-users', () => {
     })
 
     it('should throw when user not found', async () => {
-      prismaMock.user.findUnique.mockResolvedValue(null)
+      prismaMock.user.findFirst.mockResolvedValue(null)
       const data = await client({
         document: VALIDATE_EMAIL_MUTATION,
         variables: {

@@ -78,10 +78,27 @@ async function relinkUserToFirebaseUid(
     // unverified email instead of relinking.
     if (holder.superAdmin) throw new UserEmailConflictError()
 
+    const normalizedEmail = email.trim().toLowerCase()
+    if (normalizedEmail !== holder.email) {
+      // The unique index on email is case-sensitive, so a lowercase row can
+      // already coexist with this mixed-case holder. Normalizing the
+      // holder's email would collide with it and raise a raw P2002 instead
+      // of the typed conflict error below.
+      const lowercaseCollision = await tx.user.findUnique({
+        where: { email: normalizedEmail }
+      })
+      if (lowercaseCollision != null) throw new UserEmailConflictError()
+    }
+
     try {
       const relinked = await tx.user.update({
-        where: { id: holder.id, userId: holder.userId, email },
-        data: { userId, emailVerified: true, email: email.trim().toLowerCase() }
+        where: {
+          id: holder.id,
+          userId: holder.userId,
+          email,
+          superAdmin: false
+        },
+        data: { userId, emailVerified: true, email: normalizedEmail }
       })
       logger.warn(
         { userRowId: holder.id, previousUserId: holder.userId, userId },
@@ -116,11 +133,19 @@ async function resolveCreateConflict(
     // before the email was verified or settled on an older email; sync both
     // now, since once emailVerified is true the existing-user sync path
     // (which re-reads Firebase) no longer runs for this row.
-    if (!racedUser.emailVerified && emailVerified)
-      return await prisma.user.update({
-        where: { userId },
-        data: { emailVerified: true, ...(email != null && { email }) }
-      })
+    const emailChanged = email != null && email !== racedUser.email
+    if (emailVerified && (!racedUser.emailVerified || emailChanged)) {
+      try {
+        return await prisma.user.update({
+          where: { userId },
+          data: { emailVerified: true, ...(email != null && { email }) }
+        })
+      } catch (syncError) {
+        // The synced email already belongs to a different row.
+        if (!isUniqueConstraintError(syncError)) throw syncError
+        throw new UserEmailConflictError()
+      }
+    }
     return racedUser
   }
 
@@ -182,20 +207,26 @@ export async function findOrFetchUser(
       if (firebaseUser.emailVerified) {
         const { displayName, photoURL } = resolveProviderProfile(firebaseUser)
         const split = splitDisplayName(displayName)
-        return await prisma.user.update({
-          where: { userId },
-          data: {
-            emailVerified: true,
-            ...(split != null && {
-              firstName: split.firstName,
-              lastName: split.lastName
-            }),
-            ...(firebaseUser.email != null && {
-              email: firebaseUser.email.trim().toLowerCase()
-            }),
-            ...(photoURL != null && { imageUrl: photoURL })
-          }
-        })
+        try {
+          return await prisma.user.update({
+            where: { userId },
+            data: {
+              emailVerified: true,
+              ...(split != null && {
+                firstName: split.firstName,
+                lastName: split.lastName
+              }),
+              ...(firebaseUser.email != null && {
+                email: firebaseUser.email.trim().toLowerCase()
+              }),
+              ...(photoURL != null && { imageUrl: photoURL })
+            }
+          })
+        } catch (error) {
+          // The synced email already belongs to a different row.
+          if (!isUniqueConstraintError(error)) throw error
+          throw new UserEmailConflictError()
+        }
       }
     }
     return existingUser
