@@ -143,3 +143,6 @@ export function resolvePageLanguage({
     source: 'default'
   }
 }
+
+/** Legacy key retained for old route test callers until their migration. */
+export const CAMPAIGN_LANGUAGE_COOKIE = 'campaign-lang'

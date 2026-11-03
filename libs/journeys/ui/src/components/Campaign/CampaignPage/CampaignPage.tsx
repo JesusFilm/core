@@ -29,6 +29,10 @@ interface CampaignPageProps {
   pageKind: CampaignPageKind
   /** The region a Region Page renders for. */
   region?: CampaignRegion | null
+  /** Accepted for old route callers; the provider derives the current address. */
+  basePath?: string
+  /** Accepted until route callers stop precomputing the renderer-owned map. */
+  worldMap?: import('../CampaignAnalytics/WorldMap/buildWorldMap').WorldMapShapes | null
 }
 
 /**
