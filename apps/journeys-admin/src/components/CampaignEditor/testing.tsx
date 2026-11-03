@@ -185,14 +185,12 @@ interface EditorProps {
   /** Rendered inside the editor's providers. */
   children: ReactNode
   initialState?: Partial<CampaignEditorState>
-  mocks?: Array<MockLink.MockedResponse | Record<string, unknown>>
+  mocks?: MockLink.MockedResponse[]
   cache?: InMemoryCache
   /** A custom link (for instance with the DebounceLink); it replaces `mocks`, and for QueriedEditor it must serve GetCampaign itself. */
   link?: ApolloLink
   /** The campaign the editor opens (and `GetCampaign` resolves to); the seeded fixture by default. */
   campaign?: Campaign
-  campaignProp?: Campaign
-  campaignData?: Campaign
 }
 
 interface QueriedProvidersProps {
@@ -229,20 +227,13 @@ export function QueriedEditor({
   mocks = [],
   cache = campaignCache(),
   link,
-  campaignProp,
-  campaignData,
-  campaign = campaignProp ?? campaignData ?? campaignFixture
+  campaign = campaignFixture
 }: EditorProps): ReactElement {
   return (
     <MockedProvider
       {...(link != null
         ? { link }
-        : {
-            mocks: [
-              getCampaignMockFor(campaign),
-              ...mocks
-            ] as MockLink.MockedResponse[]
-          })}
+        : { mocks: [getCampaignMockFor(campaign), ...mocks] })}
       cache={cache}
     >
       <SnackbarProvider>
@@ -261,17 +252,10 @@ export function StaticEditor({
   mocks = [],
   cache = campaignCache(),
   link,
-  campaignProp,
-  campaignData,
-  campaign = campaignProp ?? campaignData ?? campaignFixture
+  campaign = campaignFixture
 }: EditorProps): ReactElement {
   return (
-    <MockedProvider
-      {...(link != null
-        ? { link }
-        : { mocks: mocks as MockLink.MockedResponse[] })}
-      cache={cache}
-    >
+    <MockedProvider {...(link != null ? { link } : { mocks })} cache={cache}>
       <SnackbarProvider>
         <CampaignEditorProviders
           campaign={campaign}

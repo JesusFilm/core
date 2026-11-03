@@ -245,5 +245,3 @@ export function LanguagesPanel({
     </Stack>
   )
 }
-
-export { languageNames } from '../utils/languageNames'

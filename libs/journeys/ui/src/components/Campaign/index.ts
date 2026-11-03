@@ -76,11 +76,6 @@ export type {
 } from './libs/themePresets'
 export type { CampaignTreeBlock } from './libs/transformer'
 
-export { campaignPagePaths } from './libs/campaignPagePaths'
-export type {
-  WorldMapShapes,
-  WorldAtlasTopology
-} from './CampaignAnalytics/WorldMap/buildWorldMap'
 
 // Keep public-route imports usable until the route batch migrates them.
 export { CampaignPage } from './CampaignPage'
