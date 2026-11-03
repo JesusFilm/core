@@ -80,6 +80,7 @@ export function VideoBlockEditorSettings({
   const { languages: availableSubtitles } = useYouTubeClosedCaptions({
     videoId: selectedBlock?.videoId,
     skip:
+      isBackgroundVideo ||
       selectedBlock?.source !== VideoBlockSource.youTube ||
       selectedBlock?.videoId == null
   })

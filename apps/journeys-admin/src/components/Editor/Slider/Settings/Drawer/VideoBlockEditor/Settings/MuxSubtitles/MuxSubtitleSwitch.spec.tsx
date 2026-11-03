@@ -1,6 +1,6 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
 
@@ -60,6 +60,18 @@ const mockVideoBlock: TreeBlock<VideoBlock> = {
   mediaVideo: null
 }
 
+const subtitleTrackReadyResult = {
+  data: {
+    getMyGeneratedMuxSubtitleTrack: {
+      __typename: 'QueryGetMyGeneratedMuxSubtitleTrackSuccess',
+      data: {
+        id: 'subtitle-track-1',
+        status: 'ready'
+      }
+    }
+  }
+}
+
 const mockSubtitleTrackReady: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
@@ -68,17 +80,7 @@ const mockSubtitleTrackReady: MockLink.MockedResponse = {
       bcp47: 'en'
     }
   },
-  result: {
-    data: {
-      getMyGeneratedMuxSubtitleTrack: {
-        __typename: 'QueryGetMyGeneratedMuxSubtitleTrackSuccess',
-        data: {
-          id: 'subtitle-track-1',
-          status: 'ready'
-        }
-      }
-    }
-  }
+  result: subtitleTrackReadyResult
 }
 
 const mockSubtitleTrackProcessing: MockLink.MockedResponse = {
@@ -343,9 +345,41 @@ describe('MuxSubtitleSwitch', () => {
     expect(
       screen.queryByText('Subtitles not available for this video language')
     ).not.toBeInTheDocument()
-    await waitFor(() => {
-      expect(mockOnChange).not.toHaveBeenCalled()
+  })
+
+  it('skips the subtitle status query when disabled', async () => {
+    validateMuxLanguage.mockReturnValue(true)
+    mockOnChange.mockResolvedValue(undefined)
+    const videoBlockWithNullSubtitles: TreeBlock<VideoBlock> = {
+      ...mockVideoBlock,
+      showGeneratedSubtitles: null
+    }
+    const readyResult = vi.fn(() => subtitleTrackReadyResult)
+
+    render(
+      <MockedProvider
+        mocks={[{ ...mockSubtitleTrackReady, result: readyResult }]}
+      >
+        <EditorProvider
+          initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
+        >
+          <MuxSubtitleSwitch
+            videoBlockId="video-1"
+            muxVideoId="mux-video-id"
+            journeyLanguageBcp47="en"
+            onChange={mockOnChange}
+            disabled
+          />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    // Let any in-flight query resolve before asserting it never ran
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
+    expect(readyResult).not.toHaveBeenCalled()
+    expect(mockOnChange).not.toHaveBeenCalled()
   })
 
   it('calls onChange with true when switch is toggled on', async () => {

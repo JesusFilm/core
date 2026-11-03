@@ -503,12 +503,12 @@ describe('VideoBlockEditorSettings', () => {
 
   it('locks YouTube subtitles off for background videos', () => {
     mockUseYouTubeClosedCaptions.mockReturnValue({
-      languages: mockYouTubeLanguages,
+      languages: [],
       loading: false,
       error: undefined
     })
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, queryByText } = render(
       <ThemeProvider>
         <MockedProvider>
           <SnackbarProvider>
@@ -532,12 +532,19 @@ describe('VideoBlockEditorSettings', () => {
       </ThemeProvider>
     )
 
+    expect(mockUseYouTubeClosedCaptions).toHaveBeenCalledWith({
+      videoId: 'test-youtube-id',
+      skip: true
+    })
     const combobox = getByRole('combobox')
     expect(combobox).toHaveClass('Mui-disabled')
     expect(combobox).toHaveTextContent('Off')
     expect(
       getByText('Subtitles are turned off for background videos')
     ).toBeInTheDocument()
+    expect(
+      queryByText('This video does not have any subtitles')
+    ).not.toBeInTheDocument()
   })
 
   it('does not show YouTubeSubtitleSelector for non-YouTube videos', () => {
