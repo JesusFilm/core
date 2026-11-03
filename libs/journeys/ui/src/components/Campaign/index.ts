@@ -77,4 +77,7 @@ export type {
 export type { CampaignTreeBlock } from './libs/transformer'
 
 export { campaignPagePaths } from './libs/campaignPagePaths'
-export type { WorldMapShapes, WorldAtlasTopology } from './CampaignAnalytics/WorldMap/buildWorldMap'
+export type {
+  WorldMapShapes,
+  WorldAtlasTopology
+} from './CampaignAnalytics/WorldMap/buildWorldMap'

@@ -90,5 +90,4 @@ describe('useWorldMap', () => {
     expect(result.current.error).toBeInstanceOf(Error)
     expect(result.current.error?.message).toBe('offline')
   })
-
 })

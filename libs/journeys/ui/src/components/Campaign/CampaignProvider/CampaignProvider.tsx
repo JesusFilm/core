@@ -109,7 +109,14 @@ export function CampaignProvider({
   value,
   children
 }: CampaignProviderProps): ReactElement {
-  const { campaign, pageKind, region, pageBlockIds, pageHeadingBlockId, reportEvents } = value
+  const {
+    campaign,
+    pageKind,
+    region,
+    pageBlockIds,
+    pageHeadingBlockId,
+    reportEvents
+  } = value
   const contextValue = useMemo<CampaignContextValue>(() => {
     const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
     return {
@@ -123,7 +130,14 @@ export function CampaignProvider({
       reportEvents,
       string: (key) => campaignString(campaign.strings, key)
     }
-  }, [campaign, pageKind, region, pageBlockIds, pageHeadingBlockId, reportEvents])
+  }, [
+    campaign,
+    pageKind,
+    region,
+    pageBlockIds,
+    pageHeadingBlockId,
+    reportEvents
+  ])
   return (
     <CampaignContext.Provider value={contextValue}>
       {children}

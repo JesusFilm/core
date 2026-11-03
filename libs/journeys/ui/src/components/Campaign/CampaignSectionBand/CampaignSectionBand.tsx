@@ -118,7 +118,13 @@ export function CampaignSectionBand({
         }}
       >
         {band.cover}
-        {inSlot ? body : <Container maxWidth="lg" data-testid="CampaignSectionBandContainer">{body}</Container>}
+        {inSlot ? (
+          body
+        ) : (
+          <Container maxWidth="lg" data-testid="CampaignSectionBandContainer">
+            {body}
+          </Container>
+        )}
       </Box>
     </CampaignSectionContext.Provider>
   )
