@@ -143,7 +143,9 @@ describe('proxy', () => {
     })
 
     const response = await proxy(
-      new NextRequest('http://localhost/users/sign-in?error=account-check-failed')
+      new NextRequest(
+        'http://localhost/users/sign-in?error=account-check-failed'
+      )
     )
 
     expect(response.headers.get('location')).toBeNull()
