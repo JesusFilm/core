@@ -8,13 +8,13 @@ few d1wl URLs listed in `mapping.csv`. Nothing else is written. The 1,868 media
 `CloudflareImage.uploadUrl` rows are deliberately left alone (not read at
 render time).
 
-| File                | What it does                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------------- |
-| `mapping.csv`       | You create it: one row per d1wl URL → its Cloudflare Images URL (see step 2)                |
-| `01-dry-run.sql`    | Read-only. Lists affected blocks/journeys/templates, unmapped variants, residual d1wl       |
+| File                | What it does                                                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `mapping.csv`       | You create it: one row per d1wl URL → its Cloudflare Images URL (see step 2)                                              |
+| `01-dry-run.sql`    | Read-only. Lists affected blocks/journeys/templates, unmapped variants, residual d1wl                                     |
 | `02-migrate.sql`    | The UPDATE in one transaction. **Rolls back unless `-v commit=1`.** Writes before-state.csv and before-state.identity.csv |
-| `03-revert.sql`     | Restores `Block.src` from before-state.csv, after checking before-state.identity.csv. Rolls back unless `-v commit=1`                 |
-| `_load-mapping.sql` | Shared loader/validator, pulled in by 01 and 02. Not run directly                           |
+| `03-revert.sql`     | Restores `Block.src` from before-state.csv, after checking before-state.identity.csv. Rolls back unless `-v commit=1`     |
+| `_load-mapping.sql` | Shared loader/validator, pulled in by 01 and 02. Not run directly                                                         |
 
 Everything below runs from your own machine. No credentials are in this repo or
 this document; the database URL is fetched from Doppler into a shell variable
