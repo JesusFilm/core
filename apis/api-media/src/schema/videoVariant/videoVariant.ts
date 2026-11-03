@@ -204,9 +204,9 @@ export async function handleParentVariantCreation(
         await updateParentCollectionLanguages(parent.id)
         await videoCacheReset(parent.id)
       } catch (error) {
-        console.error(
-          `Failed to cascade language to parent ${parent.id}:`,
-          error
+        logger.error(
+          { error, parentId: parent.id },
+          'Failed to cascade language to parent'
         )
       }
     })
