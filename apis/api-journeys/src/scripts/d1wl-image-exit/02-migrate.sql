@@ -6,7 +6,9 @@
 --
 -- Inside one transaction it: counts before, writes before-state.csv (the
 -- exact rows about to change, for 03-revert.sql; a rehearsal writes
--- before-state.rehearsal.csv instead), runs the UPDATE, counts
+-- before-state.rehearsal.csv instead) plus before-state.identity.csv (the
+-- target database/schema/address/port, so 03-revert.sql can refuse to run
+-- against a different database), runs the UPDATE, counts
 -- after, then COMMITs only if commit=1 AND every check passed; otherwise it
 -- ROLLBACKs. Only Block.src is written. Block.updatedAt is deliberately left
 -- alone so the revert is exact and nothing sorts differently in the admin.
@@ -79,6 +81,10 @@ SELECT (:pre_unmapped = 0) AS no_unmapped \gset
 \if :commit
   \copy (SELECT * FROM d1wl_affected ORDER BY block_id) TO 'before-state.csv' WITH (FORMAT csv, HEADER true)
   \echo 'wrote before-state.csv'
+  -- Target identity, so 03-revert.sql can refuse to run before-state.csv against a
+  -- different database that happens to share the same block ids.
+  \copy (SELECT current_database() AS database, current_schema() AS schema, coalesce(inet_server_addr()::text, '') AS server_addr, coalesce(inet_server_port()::text, '') AS server_port) TO 'before-state.identity.csv' WITH (FORMAT csv, HEADER true)
+  \echo 'wrote before-state.identity.csv'
 \else
   \copy (SELECT * FROM d1wl_affected ORDER BY block_id) TO 'before-state.rehearsal.csv' WITH (FORMAT csv, HEADER true)
   \echo 'wrote before-state.rehearsal.csv (rehearsal)'

@@ -43,7 +43,7 @@ CREATE TEMP TABLE d1wl_map (
 SELECT count(*) AS map_rows,
        coalesce(
          count(*) > 0
-         AND bool_and(d1wl_url ~ '^https://d1wl257kev7hsz\.cloudfront\.net/[A-Za-z0-9._~%/?=&,+-]+$')
+         AND bool_and(lower(d1wl_url) ~ '^https?://d1wl257kev7hsz\.cloudfront\.net/[A-Za-z0-9._~%/?=&,+-]+$')
          AND bool_and(cloudflare_url ~ '^https://imagedelivery\.net/[A-Za-z0-9_-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._~%/?=&,+-]+$'),
          false
        ) AS map_ok

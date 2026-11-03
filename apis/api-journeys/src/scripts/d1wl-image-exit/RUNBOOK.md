@@ -12,8 +12,8 @@ render time).
 | ------------------- | ------------------------------------------------------------------------------------------- |
 | `mapping.csv`       | You create it: one row per d1wl URL → its Cloudflare Images URL (see step 2)                |
 | `01-dry-run.sql`    | Read-only. Lists affected blocks/journeys/templates, unmapped variants, residual d1wl       |
-| `02-migrate.sql`    | The UPDATE in one transaction. **Rolls back unless `-v commit=1`.** Writes before-state.csv |
-| `03-revert.sql`     | Restores `Block.src` from before-state.csv. Rolls back unless `-v commit=1`                 |
+| `02-migrate.sql`    | The UPDATE in one transaction. **Rolls back unless `-v commit=1`.** Writes before-state.csv and before-state.identity.csv |
+| `03-revert.sql`     | Restores `Block.src` from before-state.csv, after checking before-state.identity.csv. Rolls back unless `-v commit=1`                 |
 | `_load-mapping.sql` | Shared loader/validator, pulled in by 01 and 02. Not run directly                           |
 
 Everything below runs from your own machine. No credentials are in this repo or
@@ -172,8 +172,11 @@ every check passed; otherwise it rolls back whatever you passed. Expect
 `CHECKS PASSED.`, `COMMITTED.`, and STATE NOW `0 | 0`.
 
 It also writes `before-state.csv` (every row it changed: block id, journey id,
-old src, new src). **Keep it.** The script refuses a second `commit=1` run in a
-directory that already has one, so you cannot overwrite it by accident.
+old src, new src) and `before-state.identity.csv` (the target database,
+schema, address and port, so `03-revert.sql` can refuse to run these against a
+different database later). **Keep both.** The script refuses a second
+`commit=1` run in a directory that already has one, so you cannot overwrite
+them by accident.
 
 The UPDATE touches ~488 rows and takes well under a second. It sets
 `lock_timeout` 5s and `statement_timeout` 120s inside the transaction.
@@ -194,12 +197,18 @@ Spot check one live journey in a browser: its images render from
 
 ## 7. Revert (only if needed)
 
+If the step 9 item 3 `next.config` change (removing the d1wl host from
+`remotePatterns`) is already deployed, redeploy the previous config first.
+Otherwise the images this restores to d1wl URLs return 400 from the `next/image`
+optimizer, which no longer allows that host.
+
 ```bash
 psqlp -f "$SCRIPTS/03-revert.sql"                 # rehearsal
 psqlp -v commit=1 -f "$SCRIPTS/03-revert.sql"     # restore
 ```
 
-Run from the directory containing `before-state.csv`. It restores a block only
+Run from the directory containing `before-state.csv` and
+`before-state.identity.csv`. It restores a block only
 if its `src` is still the Cloudflare URL the migration wrote; a block someone
 changed since is skipped and counted (`skipped_changed_since`). After a revert,
 redo step 8.
