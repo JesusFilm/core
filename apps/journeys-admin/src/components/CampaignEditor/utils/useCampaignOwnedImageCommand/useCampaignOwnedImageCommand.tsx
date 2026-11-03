@@ -1,4 +1,3 @@
-import { CampaignStyleCommand, useCampaignStyleCommand } from '../useCampaignStyleCommand'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CampaignImageSlot } from '../../../../../__generated__/globalTypes'
@@ -13,11 +12,18 @@ import {
   CampaignBlockFieldsCommand,
   useCampaignBlockFieldsCommand
 } from '../useCampaignBlockFieldsCommand'
+import {
+  CampaignStyleCommand,
+  useCampaignStyleCommand
+} from '../useCampaignStyleCommand'
 
 export interface AddOwnedImageOptions<B extends CampaignUpdatableBlock> {
   /** The section or chrome block that will own the image. */
   previous?: CampaignBlockUpdateInput<B['__typename']>
-  write?: (block: B, input: CampaignBlockUpdateInput<B['__typename']>) => Promise<unknown>
+  write?: (
+    block: B,
+    input: CampaignBlockUpdateInput<B['__typename']>
+  ) => Promise<unknown>
   owner: B
   slot: CampaignImageSlot
   /** The stored (imagedelivery.net) address the picker returned. */
@@ -30,7 +36,9 @@ export interface AddOwnedImageOptions<B extends CampaignUpdatableBlock> {
   ) => string | null | undefined
 }
 
-export interface CampaignOwnedImageCommand extends CampaignBlockFieldsCommand, Pick<CampaignStyleCommand, 'addStyle'> {
+export interface CampaignOwnedImageCommand
+  extends CampaignBlockFieldsCommand,
+    Pick<CampaignStyleCommand, 'addStyle'> {
   /** Create a cover or logo and point the owner at it as one Command. */
   addOwnedImage: <B extends CampaignUpdatableBlock>(
     options: AddOwnedImageOptions<B>

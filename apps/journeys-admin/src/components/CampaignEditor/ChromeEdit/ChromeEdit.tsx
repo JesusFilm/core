@@ -46,7 +46,8 @@ export function ChromeEdit({ block }: ChromeEditProps): ReactElement {
       src,
       input: (imageId) => ({ logoBlockId: imageId }),
       previous: { logoBlockId: block.logoBlockId },
-      imageIdOf: (fields) => 'logoBlockId' in fields ? fields.logoBlockId : undefined,
+      imageIdOf: (fields) =>
+        'logoBlockId' in fields ? fields.logoBlockId : undefined,
       write: writeLogo
     })
   }

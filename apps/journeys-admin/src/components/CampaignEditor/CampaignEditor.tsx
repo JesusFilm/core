@@ -13,8 +13,6 @@ import { UserTeamRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
-import { CampaignCommandProvider } from './utils/useCampaignCommand'
-
 import { AddPanel } from './AddPanel'
 import {
   CampaignEditorProvider,
@@ -32,6 +30,7 @@ import type { LocalizeTab } from './LocalizePanel'
 import { Navigator, NavigatorHoverProvider } from './Navigator'
 import { PagesPanel } from './PagesPanel'
 import { TranslationRunProvider } from './TranslationRunProvider'
+import { CampaignCommandProvider } from './utils/useCampaignCommand'
 
 /**
  * The editor shell is desktop only: narrower viewports get a message, no
@@ -208,13 +207,16 @@ export function CampaignEditor({
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
         <CampaignCommandProvider>
-        <MuxVideoUploadProvider>
-          <TranslationRunProvider>
-            <NavigatorHoverProvider>
-              <CampaignEditorShell campaign={campaign} isManager={isManager} />
-            </NavigatorHoverProvider>
-          </TranslationRunProvider>
-        </MuxVideoUploadProvider>
+          <MuxVideoUploadProvider>
+            <TranslationRunProvider>
+              <NavigatorHoverProvider>
+                <CampaignEditorShell
+                  campaign={campaign}
+                  isManager={isManager}
+                />
+              </NavigatorHoverProvider>
+            </TranslationRunProvider>
+          </MuxVideoUploadProvider>
         </CampaignCommandProvider>
       </CampaignEditorProvider>
     </CommandProvider>

@@ -1,4 +1,7 @@
-import { isMediaOwner, MEDIA_OWNER_TYPENAMES } from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
+import {
+  MEDIA_OWNER_TYPENAMES,
+  isMediaOwner
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
 import { CAMPAIGN_SECTION_TYPENAMES } from '@core/journeys/ui/Campaign/libs/campaignPossibleTypes'
 
 import {

@@ -1,4 +1,3 @@
-import { CampaignSectionStyleInput, CampaignStyledBlock, SECTION_STYLE_OPERATIONS, campaignSectionStyleRow } from '../../libs/useCampaignSectionStyleMutation'
 import { InMemoryCache } from '@apollo/client'
 import { parse } from 'graphql'
 import { ReactElement } from 'react'
@@ -16,6 +15,12 @@ import {
   campaignBlockUpdateRow
 } from '../../libs/useCampaignBlockUpdateMutation'
 import { CAMPAIGN_PALETTE_UPDATE } from '../../libs/useCampaignPaletteUpdateMutation'
+import {
+  CampaignSectionStyleInput,
+  CampaignStyledBlock,
+  SECTION_STYLE_OPERATIONS,
+  campaignSectionStyleRow
+} from '../../libs/useCampaignSectionStyleMutation'
 import { CAMPAIGN_THEME_UPDATE } from '../../libs/useCampaignThemeUpdateMutation'
 
 import { useCampaignEditor } from './CampaignEditorProvider'
@@ -178,4 +183,3 @@ export function sectionStyleMock(
     }))
   }
 }
-
