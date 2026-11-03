@@ -501,7 +501,7 @@ describe('findOrFetchUser', () => {
       // Only the uid moves: the row keeps its id and the rest of its fields.
       expect(tx.user.update).toHaveBeenCalledWith({
         where: { id: existingRow.id, userId: oldUid, email },
-        data: { userId: newUid, emailVerified: true }
+        data: { userId: newUid, emailVerified: true, email }
       })
       expect(prismaMock.user.update).not.toHaveBeenCalled()
       expect(verifyUser).not.toHaveBeenCalled()
@@ -527,7 +527,7 @@ describe('findOrFetchUser', () => {
       )
       expect(tx.user.update).toHaveBeenCalledWith({
         where: { id: existingRow.id, userId: oldUid, email },
-        data: { userId: newUid, emailVerified: true }
+        data: { userId: newUid, emailVerified: true, email }
       })
     })
 
@@ -686,6 +686,12 @@ describe('findOrFetchUser', () => {
       expect(prismaMock.user.create).not.toHaveBeenCalled()
       expect(tx.user.findUnique).toHaveBeenCalledWith({
         where: { email: legacyEmail }
+      })
+      // The row matched case-insensitively but is still written back
+      // lowercased, so it doesn't keep its legacy casing forever.
+      expect(tx.user.update).toHaveBeenCalledWith({
+        where: { id: legacyRow.id, userId: oldUid, email: legacyEmail },
+        data: { userId: newUid, emailVerified: true, email: 'amin@email.com' }
       })
       expect(verifyUser).not.toHaveBeenCalled()
     })

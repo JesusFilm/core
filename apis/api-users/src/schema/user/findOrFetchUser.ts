@@ -71,7 +71,7 @@ async function relinkUserToFirebaseUid(
     try {
       const relinked = await tx.user.update({
         where: { id: holder.id, userId: holder.userId, email },
-        data: { userId, emailVerified: true }
+        data: { userId, emailVerified: true, email: email.trim().toLowerCase() }
       })
       logger.warn(
         { userRowId: holder.id, previousUserId: holder.userId, userId },
