@@ -54,6 +54,7 @@ interface RegionSwitcherEditProps {
   /** The switcher section this editor sits in. */
   block: Pick<CampaignBlock, 'id'> & {
     switcherVariant?: CampaignSwitcherVariant | null
+    showCountryNames?: boolean
   }
 }
 
@@ -61,13 +62,16 @@ interface RegionCardEditProps {
   region: CampaignRegion
   hostBlockId: string
   variant: CampaignSwitcherVariant
+  /** The switcher section's `showCountryNames`. */
+  showCountryNames: boolean
 }
 
 /**
  * One region card on the canvas: the name (with a "Needs journey" badge
  * while any of its Share Languages is unlinked), its Region Lines as inline
- * text and its country chips. Clicking the card selects the region; clicking
- * a line selects that line, which then edits in place as any typography.
+ * text and its country chips, named as the section's setting says. Clicking
+ * the card selects the region; clicking a line selects that line, which then
+ * edits in place as any typography.
  * The handle on its right edge drags the card onto another card to
  * take that card's place in the region order, one Command through the
  * canvas's drag context.
@@ -75,7 +79,8 @@ interface RegionCardEditProps {
 function RegionCardEdit({
   region,
   hostBlockId,
-  variant
+  variant,
+  showCountryNames
 }: RegionCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -251,7 +256,7 @@ function RegionCardEdit({
           )
         })}
       </CampaignRegionLines>
-      <CampaignRegionCountries region={region} />
+      <CampaignRegionCountries region={region} showNames={showCountryNames} />
     </Box>
   )
 }
@@ -319,6 +324,7 @@ export function RegionSwitcherEdit({
             region={region}
             hostBlockId={block.id}
             variant={variant}
+            showCountryNames={block.showCountryNames ?? true}
           />
         ))}
       </Box>

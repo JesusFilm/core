@@ -1,6 +1,5 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
 import Autocomplete from '@mui/material/Autocomplete'
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
@@ -14,6 +13,8 @@ import {
   useEffect,
   useState
 } from 'react'
+
+import { CampaignCountryFlag } from '@core/journeys/ui/Campaign'
 
 import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
 import { GetCampaignCountries_countries as Country } from '../../../../__generated__/GetCampaignCountries'
@@ -289,11 +290,7 @@ export function RegionSettings({
             <Chip
               key={country.id}
               data-testid={`RegionCountryChip-${country.countryId}`}
-              avatar={
-                country.country.flagPngSrc != null ? (
-                  <Avatar src={country.country.flagPngSrc} alt="" />
-                ) : undefined
-              }
+              avatar={<CampaignCountryFlag src={country.country.flagPngSrc} />}
               label={countryName(country.country)}
               onDelete={() => {
                 void handleRemoveCountry(country)
@@ -313,13 +310,10 @@ export function RegionSettings({
           renderOption={(props, country) => (
             <li {...props} key={country.id}>
               <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-                {country.flagPngSrc != null && (
-                  <Avatar
-                    src={country.flagPngSrc}
-                    alt=""
-                    sx={{ width: 20, height: 20 }}
-                  />
-                )}
+                <CampaignCountryFlag
+                  src={country.flagPngSrc}
+                  sx={{ width: 20, height: 20, fontSize: 14 }}
+                />
                 <span>{countryName(country)}</span>
               </Stack>
             </li>

@@ -73,7 +73,8 @@ function renderSwitcher(
   campaignProp = campaign,
   initialState?: Partial<CampaignEditorState>,
   mocks: Array<Record<string, unknown>> = [createMock, unlistMock, deleteMock],
-  switcherVariant?: CampaignSwitcherVariant
+  switcherVariant?: CampaignSwitcherVariant,
+  showCountryNames?: boolean
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
@@ -86,7 +87,7 @@ function renderSwitcher(
       <CommandProbe />
       <RegionsProbe />
       <RegionSwitcherEdit
-        block={{ id: 'landingSwitcherId', switcherVariant }}
+        block={{ id: 'landingSwitcherId', switcherVariant, showCountryNames }}
       />
     </QueriedEditor>
   )
@@ -171,6 +172,34 @@ describe('RegionSwitcherEdit', () => {
       expect(rounded).toBe(variant === CampaignSwitcherVariant.pills)
       // Every variant keeps its Region Lines on the canvas so they stay editable.
       expect(screen.getByTestId('RegionLineEdit-eurLineId')).toBeInTheDocument()
+    }
+  )
+
+  it.each([
+    [CampaignSwitcherVariant.cards],
+    [CampaignSwitcherVariant.list],
+    [CampaignSwitcherVariant.pills]
+  ])(
+    'previews %s country chips as flags alone, named by their accessible name, while the section hides names',
+    async (variant) => {
+      renderSwitcher(
+        campaignWithRegions,
+        { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+        [],
+        variant,
+        false
+      )
+
+      const card = await screen.findByTestId('RegionCardEdit-eurRegionId')
+      expect(
+        within(card).getByTestId('CampaignRegionCountries')
+      ).toHaveAttribute('data-show-names', 'false')
+      expect(
+        within(card).getByRole('img', { name: 'France' })
+      ).toBeInTheDocument()
+      expect(
+        within(card).getByTestId('CampaignRegionCountries')
+      ).not.toHaveTextContent('France')
     }
   )
 

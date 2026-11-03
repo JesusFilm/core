@@ -1755,5 +1755,7 @@
   "Report dashboard": "Report dashboard",
   "All regions label": "All regions label",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)",
-  "Maximum file size: 10 MB": "Maximum file size: 10 MB"
+  "Maximum file size: 10 MB": "Maximum file size: 10 MB",
+  "Countries": "Countries",
+  "Show country names": "Show country names"
 }
