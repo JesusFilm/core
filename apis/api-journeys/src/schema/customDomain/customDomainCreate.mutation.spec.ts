@@ -5,11 +5,13 @@ import { CustomDomain, Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
-import { campaignFactory } from '../../../test/campaignFactory'
+import { mockAddressSnapshots } from '../../../test/campaignAddressSnapshot'
+import { CampaignFixture, campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { logger } from '../../logger'
+import { CAMPAIGN_ADDRESS_SELECT } from '../campaign/revalidateCampaign'
 
 import {
   createVercelDomain,
@@ -20,6 +22,11 @@ import {
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('../campaign/gatewayClient', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../campaign/gatewayClient')>()),
+  fetchLanguage: vi.fn()
 }))
 
 vi.mock('./service', () => ({
@@ -324,13 +331,19 @@ describe('customDomainCreate', () => {
         apexName: 'example.com'
       })
       prismaMock.customDomain.create.mockResolvedValue(campaignDomain)
-      prismaMock.campaignLanguage.findMany.mockResolvedValue([])
     })
 
+    /** `campaign` before its Campaign Domain is added, and after. */
+    function addDomain(
+      campaign: CampaignFixture
+    ): [CampaignFixture, CampaignFixture] {
+      return [campaign, { ...campaign, customDomains: [campaignDomain] }]
+    }
+
     it('connects the campaign, forces route-all off and queues both forms of its pages', async () => {
-      prismaMock.campaign.findUnique.mockResolvedValue(
-        campaignFixture.published().build()
-      )
+      const published = campaignFixture.published().build()
+      prismaMock.campaign.findUnique.mockResolvedValue(published)
+      mockAddressSnapshots(...addDomain(published))
 
       const result = (await authClient({
         document: MUTATION,
@@ -365,8 +378,38 @@ describe('customDomainCreate', () => {
       expect(mockUpdateTeamShortLinks).not.toHaveBeenCalled()
     })
 
+    it('reads the address inside the transaction, before and after the create', async () => {
+      const published = campaignFixture.published().build()
+      prismaMock.campaign.findUnique.mockResolvedValue(published)
+      mockAddressSnapshots(...addDomain(published))
+
+      await authClient({
+        document: MUTATION,
+        variables: {
+          input: {
+            name: 'www.example.com',
+            teamId: 'teamId',
+            campaignId: 'campaignId'
+          }
+        }
+      })
+
+      const snapshotReads = prismaMock.campaign.findUnique.mock.calls.flatMap(
+        ([args], index) =>
+          args.select === CAMPAIGN_ADDRESS_SELECT
+            ? [prismaMock.campaign.findUnique.mock.invocationCallOrder[index]]
+            : []
+      )
+      const created = prismaMock.customDomain.create.mock.invocationCallOrder[0]
+      expect(snapshotReads).toHaveLength(2)
+      expect(snapshotReads[0]).toBeLessThan(created)
+      expect(snapshotReads[1]).toBeGreaterThan(created)
+    })
+
     it('queues nothing for a draft campaign', async () => {
-      prismaMock.campaign.findUnique.mockResolvedValue(campaignFixture.build())
+      const draft = campaignFixture.build()
+      prismaMock.campaign.findUnique.mockResolvedValue(draft)
+      mockAddressSnapshots(...addDomain(draft))
 
       const result = (await authClient({
         document: MUTATION,

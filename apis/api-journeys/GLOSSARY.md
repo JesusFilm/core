@@ -370,19 +370,23 @@ _Avoid_: translation report, review queue
 ### Campaign delivery & stats
 
 **Campaign Address**:
-Where a Campaign is served: its permanent address on the **Root Domain** (`/campaign/<slug>`, region pages one segment deeper) until it has a **Campaign Domain**, and from then on that domain's root and `/<region slug>` only — the root-domain address is not found, as a journey on a route-all team domain is. Its linked Journeys keep opening on their team's domain or the Root Domain, never on the Campaign Domain.
+Where a Campaign is served: its permanent address on the **Root Domain** (`/campaign/<slug>`, region pages one segment deeper) until it has a **Campaign Domain**, and from then on that domain's root and `/<region slug>` only — the root-domain address is not found, as a journey on a route-all team domain is. A page in a **Page Language** other than the campaign default adds `?lang=<bcp47>` to either form; `_lang/<tag>` is the viewer's internal page path the proxy rewrites that to, never an address. Its linked Journeys keep opening on their team's domain or the Root Domain, never on the Campaign Domain.
 _Avoid_: campaign URL (ambiguous between the two forms), vanity link, permalink
 
 **Campaign Domain**:
 A Custom Domain that belongs to one Campaign (`campaignId` in code), added and removed from the Campaign's Settings by a team manager. It serves only that Campaign's landing page at `/` and its Region Pages at `/<region slug>`; `/<journey slug>` on it is not found, and team journey URLs, QR short links and stats links never use it. One per Campaign, never route-all and never a Journey Collection's; it may be added to a draft (serving nothing until published), and deleting the Campaign deletes it and its Vercel registration. To move one, remove it and add it again.
 _Avoid_: Campaign Root (the retired name), home page, default campaign, primary campaign
 
+**Campaign page set**:
+Every page path a **Campaign Public Page** is served from: the landing page and each region, listed or not, on the Root Domain and on its **Campaign Domain**, each also under every **Page Language** tag. It follows from the Campaign's status, slug, region slugs and listing, domain and Page Languages alone, and a draft or deleted Campaign has none. An edit that changes one of these purges every page of the set before and after it at once: publish, unpublish, delete, a slug change, a Campaign Domain add or remove, a Page Language add or remove, and a region slug, listing or delete change. Everything else, adding, reordering and renaming regions included, waits for the 60 s window; "Refresh and open page" refreshes every page at once for the author.
+_Avoid_: revalidation paths, affected pages
+
 **Campaign Public**:
 The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate and nothing on it leads to the Team, its members or linked-Journey internals. It is read by Campaign slug (only while it has no Campaign Domain) or by the hostname of its Campaign Domain, a draft or unknown key is not found, and every Translated Field arrives already resolved to the requested language.
 _Avoid_: public campaign (as a status), published view, visitor API
 
 **Campaign Public Page**:
-How a Campaign reaches visitors: the two pages served on the Root Domain or, once it has one, on its Campaign Domain, built from the published Campaign in the visitor's Page Language and refreshed within a minute of an edit, sooner when the author publishes or unpublishes. A draft is never served, and empty text or an empty section renders nothing.
+How a Campaign reaches visitors: the two pages served on the Root Domain or, once it has one, on its Campaign Domain, built from the published Campaign in the visitor's Page Language and refreshed within a minute of an edit, at once when the edit changes its **Campaign page set**. A draft is never served, and empty text or an empty section renders nothing.
 _Avoid_: viewer page (the viewer is the app), preview (that is the editor's)
 
 **Campaign Renderer**:

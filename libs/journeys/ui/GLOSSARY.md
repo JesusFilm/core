@@ -39,6 +39,9 @@ One of a Campaign's two pages as built from the public payload: its blocks treed
 **Page Language resolution**:
 How the viewer picks a Campaign's **Page Language**: the `lang` link parameter, then the visitor's saved choice, then their browser language, then the Campaign default. The pages are statically generated per language, so the link parameter picks the page itself, while the saved choice and browser language are applied in the browser, which sends a visitor with no `lang` parameter to their language's page. Every in-campaign link carries the choice whenever the Campaign has more than one language, so it survives a region switch.
 
+**Campaign Address forms**:
+Every form of a **Campaign Address** is built in `Campaign/libs/campaignAddress` (imported by its deep path, so the edge proxy can use it): the base and page paths in the root and domain forms, the absolute address under a passed-in root origin, the `?lang=` link and canonical rules, the `_lang/<tag>` page-language tag, and the viewer page paths behind the proxy rewrite.
+
 **Section Band**:
 The one component every campaign section renders through: it paints the section's background and colours, then orders the Extras placed above, the section body, then the Extras placed below. Typography and buttons inside inherit their colours and alignment from it.
 _Avoid_: section wrapper, card (a card sits inside a band)
