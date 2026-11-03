@@ -1,1 +1,1 @@
-export { useHostBand } from './useHostBand'
+export { useCampaignHostBand as useHostBand } from '../useCampaignHostBand'

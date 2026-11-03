@@ -1,4 +1,6 @@
-import { InMemoryCache, gql } from '@apollo/client'
+import { CampaignSectionStyleInput, CampaignStyledBlock, SECTION_STYLE_OPERATIONS, campaignSectionStyleRow } from '../../libs/useCampaignSectionStyleMutation'
+import { InMemoryCache } from '@apollo/client'
+import { parse } from 'graphql'
 import { ReactElement } from 'react'
 
 import {
@@ -6,45 +8,47 @@ import {
   GetCampaign_campaign_theme as CampaignTheme
 } from '../../../__generated__/GetCampaign'
 import { CampaignThemeUpdateInput } from '../../../__generated__/globalTypes'
-import { CAMPAIGN_PALETTE_UPDATE } from '../../libs/useCampaignPaletteUpdateMutation'
 import {
-  CampaignSectionStyleInput,
-  CampaignStyledBlock,
-  SECTION_STYLE_OPERATIONS,
-  campaignSectionStyleRow
-} from '../../libs/useCampaignSectionStyleMutation'
+  CAMPAIGN_BLOCK_UPDATE_DOCUMENTS,
+  CampaignBlockUpdateInput,
+  CampaignUpdatableBlock,
+  campaignBlockUpdateOperation,
+  campaignBlockUpdateRow
+} from '../../libs/useCampaignBlockUpdateMutation'
+import { CAMPAIGN_PALETTE_UPDATE } from '../../libs/useCampaignPaletteUpdateMutation'
 import { CAMPAIGN_THEME_UPDATE } from '../../libs/useCampaignThemeUpdateMutation'
 
 import { useCampaignEditor } from './CampaignEditorProvider'
 import { campaign } from './data'
+import { SpyMock } from './testing'
 
-/** A type alias, not an interface, so the array is assignable to the editors' `Record<string, unknown>[]` mocks. */
-export type StyleMock = {
-  request: Record<string, unknown>
-  result: ReturnType<typeof vi.fn>
-  delay?: number
-  maxUsageCount?: number
-}
-
-/** A mock for one section style write: the block's row with `input` applied. */
-export function sectionStyleMock(
-  block: CampaignStyledBlock,
-  input: CampaignSectionStyleInput,
-  current: CampaignSectionStyleInput = {}
-): StyleMock {
-  const { document, operation } = SECTION_STYLE_OPERATIONS[block.__typename]
+/**
+ * A mock for one block update through `useCampaignBlockUpdateMutation`:
+ * the block's typename's document, answered with the block's full row
+ * (its fields as `current` overrides them) with `input` applied.
+ */
+export function blockUpdateMock<B extends CampaignUpdatableBlock>(
+  block: B,
+  input: CampaignBlockUpdateInput<B['__typename']>,
+  current: Partial<B> = {}
+): SpyMock {
+  const row: B = { ...block, ...current }
   return {
-    request: { query: document, variables: { id: block.id, input } },
+    request: {
+      query: CAMPAIGN_BLOCK_UPDATE_DOCUMENTS[block.__typename],
+      variables: { id: block.id, input }
+    },
     result: vi.fn(() => ({
       data: {
-        [operation]: campaignSectionStyleRow({ ...block, ...current }, input)
+        [campaignBlockUpdateOperation(block.__typename)]:
+          campaignBlockUpdateRow(row, input) ?? row
       }
     }))
   }
 }
 
 /** A mock for the Palette save `nextPalette` produces for `palette`. */
-export function paletteMock(palette: string[]): StyleMock {
+export function paletteMock(palette: string[]): SpyMock {
   return {
     request: {
       query: CAMPAIGN_PALETTE_UPDATE,
@@ -58,8 +62,10 @@ export function paletteMock(palette: string[]): StyleMock {
   }
 }
 
-const SECTION_STYLE = gql`
-  fragment SectionStyle on CampaignSectionBlock {
+// Test-only fragments are parsed rather than tagged with gql, so codegen does
+// not generate types for them into the app's __generated__.
+const SECTION_STYLE = parse(`
+  fragment SectionStyle on AddableSectionBlock {
     backgroundKind
     backgroundColor
     headingColor
@@ -68,7 +74,7 @@ const SECTION_STYLE = gql`
     buttonTextColor
     accentColor
   }
-`
+`)
 
 /** The nine shared fields of a block as the cache currently holds them (optimistic layer included). */
 export function readSectionStyle(
@@ -112,7 +118,7 @@ export function WithBlock<T extends CampaignBlock['__typename']>({
 export function themeMock(
   input: CampaignThemeUpdateInput,
   current: Partial<CampaignTheme> = {}
-): StyleMock {
+): SpyMock {
   return {
     request: {
       query: CAMPAIGN_THEME_UPDATE,
@@ -124,7 +130,7 @@ export function themeMock(
   }
 }
 
-const THEME_FIELDS = gql`
+const THEME_FIELDS = parse(`
   fragment ThemeFields on CampaignTheme {
     themeMode
     headerFont
@@ -141,7 +147,7 @@ const THEME_FIELDS = gql`
     radius
     buttonRadius
   }
-`
+`)
 
 /** The Campaign Theme as the cache currently holds it (optimistic layer included). */
 export function readTheme(
@@ -153,3 +159,23 @@ export function readTheme(
     optimistic: true
   })
 }
+
+export type StyleMock = SpyMock
+
+/** A mock for one section style write: the block's row with `input` applied. */
+export function sectionStyleMock(
+  block: CampaignStyledBlock,
+  input: CampaignSectionStyleInput,
+  current: CampaignSectionStyleInput = {}
+): StyleMock {
+  const { document, operation } = SECTION_STYLE_OPERATIONS[block.__typename]
+  return {
+    request: { query: document, variables: { id: block.id, input } },
+    result: vi.fn(() => ({
+      data: {
+        [operation]: campaignSectionStyleRow({ ...block, ...current }, input)
+      }
+    }))
+  }
+}
+

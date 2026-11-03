@@ -3,7 +3,6 @@ import { useApolloClient } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import {
-  CampaignFeaturedMediaBlockUpdate,
   CampaignFeaturedMediaBlockUpdateVariables
 } from '../../../__generated__/CampaignFeaturedMediaBlockUpdate'
 import { GetCampaign_campaign_blocks_CampaignFeaturedMediaBlock as CampaignFeaturedMediaBlock } from '../../../__generated__/GetCampaign'
@@ -11,6 +10,8 @@ import {
   CampaignFeaturedMediaLayout,
   CampaignMediaSide
 } from '../../../__generated__/globalTypes'
+
+type CampaignFeaturedMediaBlockUpdate = { campaignFeaturedMediaBlockUpdate: Pick<CampaignFeaturedMediaBlock, '__typename' | 'id' | 'mediaSide' | 'layout' | 'mediaBlockId'> }
 
 export const CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE = gql`
   mutation CampaignFeaturedMediaBlockUpdate(
@@ -50,9 +51,7 @@ export function useCampaignFeaturedMediaBlockUpdateMutation(): CampaignFeaturedM
   const client = useApolloClient()
   return useCallback(
     async (block, input) =>
-      await client.mutate<
-        CampaignFeaturedMediaBlockUpdate,
-        CampaignFeaturedMediaBlockUpdateVariables
+      await client.mutate<CampaignFeaturedMediaBlockUpdate, CampaignFeaturedMediaBlockUpdateVariables
       >({
         mutation: CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE,
         variables: { id: block.id, input },

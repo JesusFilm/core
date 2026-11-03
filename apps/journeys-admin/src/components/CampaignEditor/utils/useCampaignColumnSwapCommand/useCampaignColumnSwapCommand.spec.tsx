@@ -1,15 +1,15 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithColumns } from '../../data'
 import { Inspector } from '../../Inspector'
 import {
   BlocksProbe,
   CommandProbe,
   QueriedEditor,
-  SelectionProbe
+  SelectionProbe,
+  UndoRedo
 } from '../../testing'
 
 function slotRows(order: string[]): Array<Record<string, unknown>> {
@@ -59,7 +59,7 @@ const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderEditor(
   selectedBlockId: string,
-  mocks: Array<Record<string, unknown>> = [
+  mocks: MockLink.MockedResponse[] = [
     swapMock,
     swapBackMock,
     swapAgainMock,
@@ -68,16 +68,15 @@ function renderEditor(
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignData={campaignWithColumns}
+      campaign={campaignWithColumns}
       initialState={{ selectedBlockId, inspectorTab: 'settings' }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector isManager />
     </QueriedEditor>
   )
 }
@@ -86,7 +85,7 @@ function parentOrderOf(id: string): string {
   return screen.getByTestId(`Block-${id}`).textContent?.split('|')[2] ?? ''
 }
 
-describe('useColumnSwapCommand', () => {
+describe('useCampaignColumnSwapCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('swaps the two slots as one Command: order update on the slot, shown at once', async () => {

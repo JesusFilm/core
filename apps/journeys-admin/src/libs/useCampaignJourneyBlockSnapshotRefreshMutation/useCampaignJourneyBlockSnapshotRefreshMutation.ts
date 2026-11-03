@@ -17,7 +17,12 @@ export const CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH = gql`
   }
 `
 
-/** Replace a journey card's default-language title and description with the journey's own; translations are kept. */
+/**
+ * Replace a journey card's default-language title and description with the
+ * journey's own; translations are kept.
+ * It can take seconds, so it skips the app-wide mutation queue (merged into any
+ * context the caller passes) rather than hold every other save behind it.
+ */
 export function useCampaignJourneyBlockSnapshotRefreshMutation(
   options?: useMutation.Options<
     CampaignJourneyBlockSnapshotRefresh,
@@ -30,5 +35,8 @@ export function useCampaignJourneyBlockSnapshotRefreshMutation(
   return useMutation<
     CampaignJourneyBlockSnapshotRefresh,
     CampaignJourneyBlockSnapshotRefreshVariables
-  >(CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH, options)
+  >(CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH, {
+    ...options,
+    context: { ...options?.context, skipQueue: true }
+  })
 }
