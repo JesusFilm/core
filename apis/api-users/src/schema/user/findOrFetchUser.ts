@@ -50,8 +50,9 @@ function isRecordNotFoundError(error: unknown): boolean {
 
 // Moves the row holding this email onto the new Firebase UID. Only `userId`
 // changes, so the row keeps its id and the rest of its fields (createdAt,
-// profile). The `userId` guard on the update makes a concurrent change to
-// the row fail the write instead of being overwritten.
+// profile). The `userId` and `email` guards on the update make a concurrent
+// change to the row (another relink, or the holder's own email changing)
+// fail the write instead of being overwritten.
 async function relinkUserToFirebaseUid(
   email: string,
   userId: string
@@ -69,7 +70,7 @@ async function relinkUserToFirebaseUid(
 
     try {
       const relinked = await tx.user.update({
-        where: { id: holder.id, userId: holder.userId },
+        where: { id: holder.id, userId: holder.userId, email },
         data: { userId, emailVerified: true }
       })
       logger.warn(
@@ -102,12 +103,13 @@ async function resolveCreateConflict(
   const racedUser = await prisma.user.findUnique({ where: { userId } })
   if (racedUser != null) {
     // The concurrent call that created this row may have read Firebase
-    // before the email was verified; sync it now so `me` does not report a
-    // verified sign-in as unverified.
+    // before the email was verified or settled on an older email; sync both
+    // now, since once emailVerified is true the existing-user sync path
+    // (which re-reads Firebase) no longer runs for this row.
     if (!racedUser.emailVerified && emailVerified)
       return await prisma.user.update({
         where: { userId },
-        data: { emailVerified: true }
+        data: { emailVerified: true, ...(email != null && { email }) }
       })
     return racedUser
   }
@@ -202,6 +204,21 @@ export async function findOrFetchUser(
     email: email != null ? email.trim().toLowerCase() : null,
     imageUrl,
     emailVerified
+  }
+
+  // The unique index on email is case-sensitive, so a legacy row stored with
+  // mixed case (predating the lowercasing above) would not collide with this
+  // create and a duplicate row would be created instead of relinking. Check
+  // case-insensitively first so legacy rows still relink.
+  if (data.email != null) {
+    const caseInsensitiveHolder = await prisma.user.findFirst({
+      where: { email: { equals: data.email, mode: 'insensitive' } }
+    })
+    const holderEmail = caseInsensitiveHolder?.email
+    if (holderEmail != null) {
+      if (!emailVerified) throw new UserEmailConflictError()
+      return await relinkUserToFirebaseUid(holderEmail, userId)
+    }
   }
 
   let user: User
