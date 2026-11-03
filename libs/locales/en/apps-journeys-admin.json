@@ -1771,5 +1771,7 @@
   "The report is being set up. Check back in a few minutes.": "The report is being set up. Check back in a few minutes.",
   "Report": "Report",
   "Campaign Report": "Campaign Report",
-  "Report dashboard": "Report dashboard"
+  "Report dashboard": "Report dashboard",
+  "Clip {{start}} to {{end}}": "Clip {{start}} to {{end}}",
+  "end": "end"
 }

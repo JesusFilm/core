@@ -5,19 +5,10 @@
   "seed": "nua1",
   "libraryVideoId": "7_0-nfs0201",
   "language": "English",
-  "welcomeClip": [
-    11,
-    60
-  ],
+  "welcomeClip": [11, 60],
   "watchClips": [
-    [
-      0,
-      133
-    ],
-    [
-      134,
-      306
-    ]
+    [0, 133],
+    [134, 306]
   ],
   "postGenerationEdits": 0,
   "planCorrection": "All trust choices should lead to second watch segment.",
