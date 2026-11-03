@@ -1,7 +1,15 @@
 import { useRedirectParam } from './useRedirectParam'
 
 function isSameOriginPath(path: string): boolean {
-  return path.startsWith('/') && !path.startsWith('//')
+  if (!path.startsWith('/')) return false
+
+  try {
+    return (
+      new URL(path, window.location.origin).origin === window.location.origin
+    )
+  } catch {
+    return false
+  }
 }
 
 export function useRedirectAfterLogin(): () => void {

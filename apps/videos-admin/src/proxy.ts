@@ -129,12 +129,11 @@ export default async function proxy(
         // with no explanation: signed in to Firebase, unable to get further.
         console.error('proxy: me query failed for a signed-in user', error)
 
-        if (req.nextUrl.pathname === authPage) {
+        if (req.nextUrl.searchParams.has(signInErrorParam)) {
           return NextResponse.next({ request: { headers } })
         }
 
         req.nextUrl.pathname = authPage
-        req.nextUrl.search = ''
         req.nextUrl.searchParams.set(signInErrorParam, accountCheckFailed)
         return NextResponse.redirect(req.nextUrl)
       }

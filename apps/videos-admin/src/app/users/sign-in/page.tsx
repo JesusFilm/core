@@ -39,33 +39,43 @@ export default function SignIn(): ReactElement {
     [redirectAfterLogin]
   )
 
-  const [handleLoginWithEmailAndPassword, isEmailLoading, emailPasswordError] =
-    useLoadingCallback(async ({ email, password }: PasswordFormValue) => {
-      setHasLogged(false)
+  const [
+    handleLoginWithEmailAndPassword,
+    isEmailLoading,
+    emailPasswordError,
+    resetEmailPasswordError
+  ] = useLoadingCallback(async ({ email, password }: PasswordFormValue) => {
+    setHasLogged(false)
 
-      const auth = getFirebaseAuth()
-      await handleLogin(await signInWithEmailAndPassword(auth, email, password))
+    const auth = getFirebaseAuth()
+    await handleLogin(await signInWithEmailAndPassword(auth, email, password))
 
-      setHasLogged(true)
-    })
+    setHasLogged(true)
+  })
 
-  const [handleLoginWithGoogle, isGoogleLoading, googleError] =
-    useLoadingCallback(async () => {
-      setHasLogged(false)
+  const [
+    handleLoginWithGoogle,
+    isGoogleLoading,
+    googleError,
+    resetGoogleError
+  ] = useLoadingCallback(async () => {
+    setHasLogged(false)
 
-      const auth = getFirebaseAuth()
-      await handleLogin(await loginWithGoogle(auth))
+    const auth = getFirebaseAuth()
+    await handleLogin(await loginWithGoogle(auth))
 
-      setHasLogged(true)
-    })
+    setHasLogged(true)
+  })
 
   // useLoadingCallback stores the error for display and also rethrows it;
   // swallow the rethrow so a failed login isn't an unhandled rejection.
   function handleEmailAndPasswordSubmit(value: PasswordFormValue): void {
+    resetGoogleError()
     handleLoginWithEmailAndPassword(value).catch(() => undefined)
   }
 
   function handleGoogleClick(): void {
+    resetEmailPasswordError()
     handleLoginWithGoogle().catch(() => undefined)
   }
 

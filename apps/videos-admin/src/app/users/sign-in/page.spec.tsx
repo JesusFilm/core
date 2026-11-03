@@ -1,10 +1,20 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { UserCredential } from 'firebase/auth'
+import { UserCredential, signInWithEmailAndPassword } from 'firebase/auth'
 import { useSearchParams } from 'next/navigation'
 
 import { loginWithGoogle } from '../../../libs/auth/firebase'
 
 import SignIn from './page'
+
+async function fillPasswordForm(): Promise<void> {
+  fireEvent.change(screen.getByLabelText('Email'), {
+    target: { value: 'user@example.com' }
+  })
+  fireEvent.change(screen.getByLabelText('Password'), {
+    target: { value: 'password' }
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+}
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({ push: vi.fn(), refresh: vi.fn() })),
@@ -14,6 +24,10 @@ vi.mock('next/navigation', () => ({
 vi.mock('../../../libs/auth/firebase', () => ({
   getFirebaseAuth: vi.fn(() => ({})),
   loginWithGoogle: vi.fn()
+}))
+
+vi.mock('firebase/auth', () => ({
+  signInWithEmailAndPassword: vi.fn()
 }))
 
 const credential = {
@@ -86,6 +100,16 @@ describe('SignIn', () => {
     await waitFor(() => expect(assignMock).toHaveBeenCalledWith('/'))
   })
 
+  it('ignores a backslash-prefixed off-site redirect param', async () => {
+    mockSearchParams('redirect=%2F%5Cevil.example')
+    fetchMock.mockResolvedValue(new Response(null, { status: 200 }))
+
+    render(<SignIn />)
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in with Google' }))
+
+    await waitFor(() => expect(assignMock).toHaveBeenCalledWith('/'))
+  })
+
   it('explains why the user was sent back when the account check failed', () => {
     mockSearchParams('error=account-check-failed')
 
@@ -97,5 +121,22 @@ describe('SignIn', () => {
     expect(
       screen.getByRole('button', { name: 'Sign in with Google' })
     ).toBeInTheDocument()
+  })
+
+  it('clears a stale password error once a Google attempt fails with its own error', async () => {
+    vi.mocked(signInWithEmailAndPassword).mockRejectedValue(
+      new Error('Wrong password')
+    )
+    vi.mocked(loginWithGoogle).mockRejectedValue(new Error('Google failed'))
+
+    render(<SignIn />)
+
+    await fillPasswordForm()
+    expect(await screen.findByText('Wrong password')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in with Google' }))
+
+    expect(await screen.findByText('Google failed')).toBeInTheDocument()
+    expect(screen.queryByText('Wrong password')).not.toBeInTheDocument()
   })
 })

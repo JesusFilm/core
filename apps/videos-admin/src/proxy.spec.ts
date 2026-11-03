@@ -152,6 +152,34 @@ describe('proxy', () => {
     expect(response.headers.get('x-middleware-next')).toBe('1')
   })
 
+  it('adds an explicit error when visiting sign-in directly with a failed me query', async () => {
+    mockMeQuery(async () => {
+      throw new Error('gateway unavailable')
+    })
+
+    const response = await proxy(
+      new NextRequest('http://localhost/users/sign-in')
+    )
+
+    expect(response.headers.get('location')).toBe(
+      'http://localhost/users/sign-in?error=account-check-failed'
+    )
+  })
+
+  it('preserves the query string when redirecting to sign-in after a failed me query', async () => {
+    mockMeQuery(async () => {
+      throw new Error('gateway unavailable')
+    })
+
+    const response = await proxy(
+      new NextRequest('http://localhost/languages?redirect=%2Flanguages')
+    )
+
+    expect(response.headers.get('location')).toBe(
+      'http://localhost/users/sign-in?redirect=%2Flanguages&error=account-check-failed'
+    )
+  })
+
   it('keeps using the library error handler for non-me failures', async () => {
     vi.mocked(authMiddleware).mockImplementationOnce(
       async (_req, options) =>
