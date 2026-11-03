@@ -134,7 +134,9 @@ and `api-journeys` stats fail.
 
 ## What to watch
 
-- ECS: one task, `ARM64`, no restarts; the ALB target healthy on `/api/health`.
+- ECS: one task, `ARM64`, no restarts; the ALB target healthy on `/login`
+  (not `/api/health`: that endpoint queries ClickHouse, and a 10 s probe
+  would keep the idle-scaled ClickHouse Cloud service awake).
 - Datadog logs for the task: ClickHouse or Postgres errors, slow queries.
   `Ch.Connection ... disconnected: the connection is closed` every few
   minutes is Cloud closing idle connections; the pool reconnects.
