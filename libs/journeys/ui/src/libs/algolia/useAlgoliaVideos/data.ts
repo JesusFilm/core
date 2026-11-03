@@ -56,7 +56,7 @@ export const algoliaVideos = [
     slug: 'jesus/english',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'JESUS',
     childrenCount: 61,
     objectID: '1_529-jf-0-0'
@@ -79,7 +79,7 @@ export const algoliaVideos = [
     slug: 'life-of-jesus-gospel-of-john/english',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Life of Jesus (Gospel of John)',
     childrenCount: 49,
     objectID: '2_529-GOJ-0-0'
@@ -139,7 +139,7 @@ export const algoliaVideos = [
     slug: 'jesus-calms-the-storm/english',
     label: 'segment',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Jesus Calms the Storm',
     childrenCount: 0,
     objectID: '1_529-jf6119-0-0'
@@ -194,7 +194,7 @@ export const algoliaVideos = [
     slug: 'the-woman-with-the-issue-of-blood/english',
     label: 'segment',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'The Woman with the Issue of Blood',
     childrenCount: 0,
     objectID: '1_529-wl604423-0-0'
@@ -249,7 +249,7 @@ export const algoliaVideos = [
     slug: 'magdalena/english',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/high_mag_collection_640x300br.jpg',
     imageAlt: 'Magdalena',
     childrenCount: 46,
     objectID: '1_529-wl60-0-0'
@@ -272,7 +272,7 @@ export const algoliaVideos = [
     slug: 'reflections-of-hope/english',
     label: 'series',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/ROH.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/ROH.mobileCinematicHigh.jpg',
     imageAlt: 'Reflections of Hope',
     childrenCount: 7,
     objectID: '1_529-wl7-0-0'
@@ -295,7 +295,7 @@ export const algoliaVideos = [
     slug: 'day-6-jesus-died-for-me/english',
     label: 'episode',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Day 6: Jesus Died for Me',
     childrenCount: 0,
     objectID: '3_529-0-8DWJ-WIJ_06-0-0'
@@ -318,7 +318,7 @@ export const algoliaVideos = [
     slug: 'book-of-acts/english',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Book of Acts',
     childrenCount: 73,
     objectID: '2_529-Acts-0-0'
@@ -341,7 +341,7 @@ export const algoliaVideos = [
     slug: 'wedding-in-cana/english',
     label: 'segment',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ4904-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_GOJ4904-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Wedding in Cana',
     childrenCount: 0,
     objectID: '2_529-GOJ4904-0-0'
@@ -362,7 +362,7 @@ export const algoliaVideos = [
     slug: 'peter-miraculous-escape-from-prison/english',
     label: 'segment',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7331-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts7331-0-0.mobileCinematicHigh.jpg',
     imageAlt: "Peter's Miraculous Escape From Prison",
     childrenCount: 0,
     objectID: '2_529-Acts7331-0-0'
@@ -385,7 +385,7 @@ export const algoliaVideos = [
     slug: '8-days-with-jesus-who-is-jesus/english',
     label: 'series',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/3_0-8DWJ-WIJ.mobileCinematicHigh.jpg',
     imageAlt: '8 Days with Jesus: Who is Jesus?',
     childrenCount: 8,
     objectID: '3_529-0-8DWJ-WIJ'
@@ -408,7 +408,7 @@ export const algoliaVideos = [
     slug: 'chosen-witness/english',
     label: 'shortFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_ChosenWitness.mobileCinematicHigh.jpg?version=2',
+      'https://imagedelivery.net/testAccount/cinematics/2_ChosenWitness.mobileCinematicHigh.jpg?version=2',
     imageAlt: 'Chosen Witness',
     childrenCount: 0,
     objectID: '2_529-ChosenWitness'
@@ -431,7 +431,7 @@ export const algoliaVideos = [
     slug: 'lumo-the-gospel-of-matthew/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOMattCollection.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GOMattCollection.mobileCinematicHigh.jpg',
     imageAlt: 'LUMO - The Gospel of Matthew',
     childrenCount: 25,
     objectID: '529-GOMattCollection'
@@ -454,7 +454,7 @@ export const algoliaVideos = [
     slug: 'lumo-the-gospel-of-mark/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOMarkCollection.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GOMarkCollection.mobileCinematicHigh.jpg',
     imageAlt: 'LUMO - The Gospel of Mark',
     childrenCount: 15,
     objectID: '529-GOMarkCollection'
@@ -477,7 +477,7 @@ export const algoliaVideos = [
     slug: 'lumo-the-gospel-of-luke/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOLukeCollection.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GOLukeCollection.mobileCinematicHigh.jpg',
     imageAlt: 'LUMO - The Gospel of Luke',
     childrenCount: 26,
     objectID: '529-GOLukeCollection'
@@ -500,7 +500,7 @@ export const algoliaVideos = [
     slug: 'lumo-the-gospel-of-john/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOJohnCollection.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GOJohnCollection.mobileCinematicHigh.jpg',
     imageAlt: 'LUMO - The Gospel of John',
     childrenCount: 22,
     objectID: '529-GOJohnCollection'
@@ -523,7 +523,7 @@ export const algoliaVideos = [
     slug: 'is-it-worth-it/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/IsItWorthIt.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/IsItWorthIt.mobileCinematicHigh.jpg',
     imageAlt: 'Is it Worth it?',
     childrenCount: 6,
     objectID: '529-IsItWorthIt'
@@ -546,7 +546,7 @@ export const algoliaVideos = [
     slug: 'new-believer-course/english',
     label: 'series',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/8_NBC.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/8_NBC.mobileCinematicHigh.jpg',
     imageAlt: 'New Believer Course',
     childrenCount: 10,
     objectID: '8_529-NBC'
@@ -569,7 +569,7 @@ export const algoliaVideos = [
     slug: 'storyclubs-jesus-and-zacchaeus/english',
     label: 'episode',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1309-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_cl1309-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'StoryClubs: Jesus and Zacchaeus',
     childrenCount: 0,
     objectID: '1_529-cl1309-0-0'
@@ -629,7 +629,7 @@ export const algoliaVideos = [
     slug: 'birth-of-jesus/english',
     label: 'segment',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6102-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf6102-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Birth of Jesus',
     childrenCount: 0,
     objectID: '1_529-jf6102-0-0'
@@ -714,7 +714,7 @@ export const algoliaVideos = [
     slug: 'fallingplates/english',
     label: 'shortFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
     imageAlt: '#FallingPlates',
     childrenCount: 0,
     objectID: '2_529-0-FallingPlates'
@@ -737,7 +737,7 @@ export const algoliaVideos = [
     slug: 'paul-and-silas-in-prison/english',
     label: 'segment',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7345-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts7345-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Paul and Silas in Prison',
     childrenCount: 0,
     objectID: '2_529-Acts7345-0-0'
@@ -760,7 +760,7 @@ export const algoliaVideos = [
     slug: 'my-last-day/english',
     label: 'shortFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_mld-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_mld-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'My Last Day',
     childrenCount: 1,
     objectID: '1_529-mld-0-0'
@@ -820,7 +820,7 @@ export const algoliaVideos = [
     slug: 'the-beginning/english',
     label: 'segment',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'The Beginning',
     childrenCount: 0,
     objectID: '1_529-jf6101-0-0'
@@ -838,7 +838,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'JESUS'
@@ -864,7 +864,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Life of Jesus (Gospel of John)'
@@ -890,7 +890,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Jesus Calms the Storm'
@@ -916,7 +916,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'The Woman with the Issue of Blood'
@@ -942,7 +942,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/high_mag_collection_640x300br.jpg',
     imageAlt: [
       {
         value: 'Magdalena'
@@ -968,7 +968,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/ROH.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/ROH.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Reflections of Hope'
@@ -994,7 +994,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Day 6: Jesus Died for Me'
@@ -1020,7 +1020,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Book of Acts'
@@ -1046,7 +1046,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ4904-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_GOJ4904-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Wedding in Cana'
@@ -1072,7 +1072,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7331-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts7331-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: "Peter's Miraculous Escape From Prison"
@@ -1098,7 +1098,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/3_0-8DWJ-WIJ.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: '8 Days with Jesus: Who is Jesus?'
@@ -1124,7 +1124,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_ChosenWitness.mobileCinematicHigh.jpg?version=2',
+      'https://imagedelivery.net/testAccount/cinematics/2_ChosenWitness.mobileCinematicHigh.jpg?version=2',
     imageAlt: [
       {
         value: 'Chosen Witness'
@@ -1150,7 +1150,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOMattCollection.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GOMattCollection.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'LUMO - The Gospel of Matthew'
@@ -1176,7 +1176,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOMarkCollection.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GOMarkCollection.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'LUMO - The Gospel of Mark'
@@ -1202,7 +1202,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOLukeCollection.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GOLukeCollection.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'LUMO - The Gospel of Luke'
@@ -1228,7 +1228,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOJohnCollection.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GOJohnCollection.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'LUMO - The Gospel of John'
@@ -1254,7 +1254,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/IsItWorthIt.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/IsItWorthIt.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Is it Worth it?'
@@ -1280,7 +1280,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/8_NBC.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/8_NBC.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'New Believer Course'
@@ -1306,7 +1306,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1309-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_cl1309-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'StoryClubs: Jesus and Zacchaeus'
@@ -1332,7 +1332,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6102-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf6102-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Birth of Jesus'
@@ -1358,7 +1358,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: '#FallingPlates'
@@ -1384,7 +1384,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7345-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts7345-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'Paul and Silas in Prison'
@@ -1410,7 +1410,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_mld-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_mld-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'My Last Day'
@@ -1436,7 +1436,7 @@ export const transformedAlgoliaVideos = [
       }
     ],
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
         value: 'The Beginning'
@@ -1469,7 +1469,7 @@ export const algoliaVideosNonEnglish = [
     slug: 'the-savior/spanish-latin-american',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
     imageAlt: 'The Savior',
     childrenCount: 55,
     objectID: '9_21028-0-TheSavior'
@@ -1488,7 +1488,7 @@ export const algoliaVideosNonEnglish = [
     slug: 'the-savior/chinese-mandarin',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/9_0-The_Savior.mobileCinematicHigh.jpg',
     imageAlt: 'The Savior',
     childrenCount: 55,
     objectID: '9_20615-0-TheSavior'
@@ -1507,7 +1507,7 @@ export const algoliaVideosNonEnglish = [
     slug: 'lumo-matthew-end-credits/cantonese',
     label: 'segment',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/6_GOMatt2525.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/6_GOMatt2525.mobileCinematicHigh.jpg',
     imageAlt: 'LUMO - Matthew End Credits',
     childrenCount: 0,
     objectID: '6_20601-GOMatt2525'
@@ -1526,7 +1526,7 @@ export const algoliaVideosNonEnglish = [
     slug: 'how-can-i-tell-others-episode-10/spanish-castilian',
     label: 'shortFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/7_0-nfs10.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/7_0-nfs10.mobileCinematicHigh.jpg',
     imageAlt: 'How Can I Tell Others? (Episode 10)',
     childrenCount: 0,
     objectID: '7_21046-0-nfs10'
@@ -1545,7 +1545,7 @@ export const algoliaVideosNonEnglish = [
     slug: '10-church/chinese-simplified',
     label: 'episode',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/8_NBC10.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/8_NBC10.mobileCinematicHigh.jpg',
     imageAlt: '10. Church',
     childrenCount: 0,
     objectID: '8_21754-NBC10'
@@ -1564,7 +1564,7 @@ export const algoliaVideosNonEnglish = [
     slug: '3-god-path/chinese-traditional',
     label: 'episode',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/4_Win3GodPath.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/4_Win3GodPath.mobileCinematicHigh.jpg',
     imageAlt: "3. God's Path",
     childrenCount: 0,
     objectID: '4_21753-Win3GodPath'
@@ -1578,7 +1578,7 @@ export const transformedItems = [
     duration: 7674,
     id: '1_jf-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
     source: 'internal',
     title: 'JESUS'
   },
@@ -1588,7 +1588,7 @@ export const transformedItems = [
     duration: 10994,
     id: '2_GOJ-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
     source: 'internal',
     title: 'Life of Jesus (Gospel of John)'
   },
@@ -1598,7 +1598,7 @@ export const transformedItems = [
     duration: 119,
     id: '1_jf6119-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
     source: 'internal',
     title: 'Jesus Calms the Storm'
   },
@@ -1608,7 +1608,7 @@ export const transformedItems = [
     duration: 190,
     id: '1_wl604423-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
     source: 'internal',
     title: 'The Woman with the Issue of Blood'
   },
@@ -1618,7 +1618,7 @@ export const transformedItems = [
     duration: 3658,
     id: 'MAG1',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/high_mag_collection_640x300br.jpg',
     source: 'internal',
     title: 'Magdalena'
   },
@@ -1628,7 +1628,7 @@ export const transformedItems = [
     duration: 0,
     id: '1_wl7-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/ROH.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/ROH.mobileCinematicHigh.jpg',
     source: 'internal',
     title: 'Reflections of Hope'
   },
@@ -1638,7 +1638,7 @@ export const transformedItems = [
     duration: 488,
     id: '3_0-8DWJ-WIJ_06-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
     source: 'internal',
     title: 'Day 6: Jesus Died for Me'
   },
@@ -1648,7 +1648,7 @@ export const transformedItems = [
     duration: 11530,
     id: '2_Acts-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
     source: 'internal',
     title: 'Book of Acts'
   }
@@ -1660,7 +1660,7 @@ export const customTransformedItems = [
     childrenCount: 61,
     id: '1_jf-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
     imageAlt: [{ value: 'JESUS' }],
     label: 'featureFilm',
     slug: 'jesus/english',
@@ -1678,7 +1678,7 @@ export const customTransformedItems = [
     childrenCount: 49,
     id: '2_GOJ-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
     imageAlt: [{ value: 'Life of Jesus (Gospel of John)' }],
     label: 'featureFilm',
     slug: 'life-of-jesus-gospel-of-john/english',
@@ -1696,7 +1696,7 @@ export const customTransformedItems = [
     childrenCount: 0,
     id: '1_jf6119-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
     imageAlt: [{ value: 'Jesus Calms the Storm' }],
     label: 'segment',
     slug: 'jesus-calms-the-storm/english',
@@ -1714,7 +1714,7 @@ export const customTransformedItems = [
     childrenCount: 0,
     id: '1_wl604423-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
     imageAlt: [{ value: 'The Woman with the Issue of Blood' }],
     label: 'segment',
     slug: 'the-woman-with-the-issue-of-blood/english',
@@ -1732,7 +1732,7 @@ export const customTransformedItems = [
     childrenCount: 46,
     id: 'MAG1',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/high_mag_collection_640x300br.jpg',
     imageAlt: [{ value: 'Magdalena' }],
     label: 'featureFilm',
     slug: 'magdalena/english',
@@ -1750,7 +1750,7 @@ export const customTransformedItems = [
     childrenCount: 7,
     id: '1_wl7-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/ROH.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/ROH.mobileCinematicHigh.jpg',
     imageAlt: [{ value: 'Reflections of Hope' }],
     label: 'series',
     slug: 'reflections-of-hope/english',
@@ -1768,7 +1768,7 @@ export const customTransformedItems = [
     childrenCount: 0,
     id: '3_0-8DWJ-WIJ_06-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
     imageAlt: [{ value: 'Day 6: Jesus Died for Me' }],
     label: 'episode',
     slug: 'day-6-jesus-died-for-me/english',
@@ -1786,7 +1786,7 @@ export const customTransformedItems = [
     childrenCount: 73,
     id: '2_Acts-0-0',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
     imageAlt: [{ value: 'Book of Acts' }],
     label: 'featureFilm',
     slug: 'book-of-acts/english',
