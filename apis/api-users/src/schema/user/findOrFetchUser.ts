@@ -21,12 +21,15 @@ const ERROR_PSQL_RECORD_NOT_FOUND = 'P2025'
 // different Firebase UID and Firebase has not verified that email, so the
 // row cannot safely be re-linked to the new UID. Re-linking on an unverified
 // email would hand an existing account to whoever registered the address.
+//
+// The message intentionally doesn't tell the user to "verify the email" —
+// no frontend flow does that yet for this error. Callers should key off
+// extensions.code, not this text.
 export class UserEmailConflictError extends GraphQLError {
   constructor() {
-    super(
-      'This email is already linked to another account. Verify the email address to sign in with it.',
-      { extensions: { code: 'USER_EMAIL_CONFLICT' } }
-    )
+    super('This email is already linked to another account.', {
+      extensions: { code: 'USER_EMAIL_CONFLICT' }
+    })
     this.name = 'UserEmailConflictError'
   }
 }
