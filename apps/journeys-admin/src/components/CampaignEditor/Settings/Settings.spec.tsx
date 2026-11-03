@@ -1,4 +1,3 @@
-import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
@@ -18,6 +17,7 @@ import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
 import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_DELETE } from '../../../libs/useCampaignDeleteMutation'
 import { GET_CAMPAIGN } from '../../../libs/useCampaignQuery'
 import { CAMPAIGN_UPDATE } from '../../../libs/useCampaignUpdateMutation'

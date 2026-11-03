@@ -8,6 +8,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import { CampaignAiTranslateVariables } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { useCampaignQuery } from '../../../libs/useCampaignQuery'
 import { CAMPAIGN_UPDATE } from '../../../libs/useCampaignUpdateMutation'
 import {
@@ -18,7 +19,6 @@ import {
   holdRequests,
   landRequests
 } from '../testing'
-import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 
 import { TranslationRunProvider, useTranslationRun } from '.'
 
