@@ -21,6 +21,12 @@ export const CampaignRegionSwitcherBlock = builder.prismaObject(
         type: CampaignSwitcherVariant,
         nullable: false,
         resolve: (block) => block.switcherVariant ?? 'cards'
+      }),
+      showCountryNames: t.boolean({
+        nullable: false,
+        description:
+          'Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.',
+        resolve: (block) => block.showCountryNames ?? true
       })
     })
   }

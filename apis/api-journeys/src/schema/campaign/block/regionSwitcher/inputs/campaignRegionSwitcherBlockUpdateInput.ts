@@ -12,6 +12,7 @@ export const CampaignRegionSwitcherBlockUpdateInput = builder.inputType(
         description: `At most ${TEXT_CAPS.title} characters.`
       }),
       variant: t.field({ type: CampaignSwitcherVariant, required: false }),
+      showCountryNames: t.boolean({ required: false }),
       ...sectionStyleInputFields(t)
     })
   }
