@@ -129,13 +129,30 @@ describe('CampaignPageWrapper', () => {
   })
 
   it('tags landing page views with the campaign and Page Language', () => {
-    render(<CampaignPageWrapper campaign={campaignPublic} pageKind={CampaignPageKind.landing} />)
-    expect(plausibleProps[0].pageviewProps).toEqual({ campaign_id: campaignPublic.id, language: 'en' })
+    render(
+      <CampaignPageWrapper
+        campaign={campaignPublic}
+        pageKind={CampaignPageKind.landing}
+      />
+    )
+    expect(plausibleProps[0].pageviewProps).toEqual({
+      campaign_id: campaignPublic.id,
+      language: 'en'
+    })
   })
 
   it('tags Region Page views with the region slug', () => {
-    render(<CampaignPageWrapper campaign={campaignPublic} pageKind={CampaignPageKind.regionTemplate} region={eurRegion} />)
-    expect(plausibleProps[0].pageviewProps).toEqual({ campaign_id: campaignPublic.id, region: eurRegion.slug, language: 'en' })
+    render(
+      <CampaignPageWrapper
+        campaign={campaignPublic}
+        pageKind={CampaignPageKind.regionTemplate}
+        region={eurRegion}
+      />
+    )
+    expect(plausibleProps[0].pageviewProps).toEqual({
+      campaign_id: campaignPublic.id,
+      region: eurRegion.slug,
+      language: 'en'
+    })
   })
-
 })
