@@ -3,7 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
 
 import { TreeBlock, transformer } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -60,6 +60,12 @@ export function AiBuilderPreview({
   useEffect(() => {
     if (index >= steps.length) setIndex(Math.max(0, steps.length - 1))
   }, [index, steps.length])
+
+  // Block activation before it reaches a block, without covering its scroll area.
+  function handlePreviewInteraction(event: SyntheticEvent): void {
+    event.preventDefault()
+    event.stopPropagation()
+  }
 
   const step = steps[index]
   if (step == null)
@@ -121,7 +127,6 @@ export function AiBuilderPreview({
         }}
         data-testid="AiBuilderPreviewCard"
       >
-        <Box sx={{ position: 'absolute', inset: 0, zIndex: 2 }} aria-hidden />
         <FramePortal
           sx={{ width: FRAME_WIDTH, height: FRAME_HEIGHT }}
           dir="ltr"
@@ -133,7 +138,12 @@ export function AiBuilderPreview({
               rtl={false}
               locale="en"
             >
-              <Box sx={{ position: 'relative', height: '100%' }}>
+              <Box
+                sx={{ position: 'relative', height: '100%' }}
+                onClickCapture={handlePreviewInteraction}
+                onAuxClickCapture={handlePreviewInteraction}
+                onSubmitCapture={handlePreviewInteraction}
+              >
                 <StepHeader
                   steps={steps}
                   selectedStep={step}
