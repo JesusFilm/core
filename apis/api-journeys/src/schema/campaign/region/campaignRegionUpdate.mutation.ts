@@ -52,19 +52,25 @@ builder.mutationField('campaignRegionUpdate', (t) =>
       }
       if (listed !== undefined) data.listed = listed
 
+      const updatesAddress = rawSlug !== undefined || listed !== undefined
+
       try {
         return await campaignWrite(
           region.campaignId,
           {},
           async ({ tx, afterCommit }) => {
-            const before = await snapshotCampaignAddress(tx, region.campaignId)
+            const before = updatesAddress
+              ? await snapshotCampaignAddress(tx, region.campaignId)
+              : null
             const updated = await tx.campaignRegion.update({
               ...query,
               where: { id },
               data
             })
-            const after = await snapshotCampaignAddress(tx, region.campaignId)
-            afterCommit(async () => await queuePageSetChange(before, after))
+            if (updatesAddress) {
+              const after = await snapshotCampaignAddress(tx, region.campaignId)
+              afterCommit(async () => await queuePageSetChange(before, after))
+            }
             return updated
           }
         )

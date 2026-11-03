@@ -112,7 +112,8 @@ describe('campaignLanguageAdd', () => {
       {
         campaignId: 'campaignId',
         declaration: { languageRows: true, campaignRow: true },
-        jobs: [],
+        options: undefined,
+        jobs: [expect.any(Function)],
         touched: true
       }
     ])

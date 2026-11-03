@@ -92,6 +92,7 @@ describe('campaignRegionUpdate', () => {
       where: { id: 'campaignId' },
       data: { updatedAt: expect.any(Date) }
     })
+    expect(prismaMock.campaign.findUnique).not.toHaveBeenCalled()
   })
 
   it('requires a name (BAD_USER_INPUT, field name)', async () => {

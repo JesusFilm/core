@@ -129,6 +129,9 @@ export function pageLanguageTag(
   return tag
 }
 
+/** The path segment ahead of the tag in a Page Language's page path. */
+export const LANGUAGE_PAGE_SEGMENT = '_lang'
+
 /**
  * The viewer's page path of a campaign page in a Page Language: the pages
  * are statically generated, so the language is part of the path, as
@@ -142,7 +145,7 @@ export function languagePagePath(
   segments: readonly string[],
   tag: string
 ): string {
-  return [prefix, '_lang', tag, ...segments].join('/')
+  return [prefix, LANGUAGE_PAGE_SEGMENT, tag, ...segments].join('/')
 }
 
 /**

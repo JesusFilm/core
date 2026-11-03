@@ -180,7 +180,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ slug: 'xmas-2026' })
 
-    expect(result.errors[0].message).toBe('write failed')
+    expect(result.errors?.[0]?.message).toBe('write failed')
     expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
