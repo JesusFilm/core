@@ -1,3 +1,4 @@
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { CombinedGraphQLErrors } from '@apollo/client'
 import { useApolloClient } from '@apollo/client/react'
 import Button from '@mui/material/Button'
@@ -128,7 +129,7 @@ export function DefaultLanguageDialog({
   function handleMachineTranslate(): void {
     if (languageId == null) return
     setError(undefined)
-    setSweep({ campaignId: campaign.id, languageId, mode: 'missing' })
+    setSweep({ campaignId: campaign.id, languageId, mode: CampaignAiTranslateMode.missing })
   }
 
   return (

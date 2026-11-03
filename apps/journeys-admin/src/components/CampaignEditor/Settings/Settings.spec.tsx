@@ -1,3 +1,4 @@
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
@@ -561,7 +562,7 @@ describe('Settings', () => {
               variables: {
                 campaignId: 'campaignId',
                 languageId: FRENCH,
-                mode: 'missing'
+                mode: CampaignAiTranslateMode.missing
               }
             },
             delay: 20,
@@ -617,7 +618,7 @@ describe('Settings', () => {
         run: {
           campaignId: 'campaignId',
           languageId: FRENCH,
-          mode: 'missing',
+          mode: CampaignAiTranslateMode.missing,
           languageName: 'Français',
           progress: 40,
           translatedCount: 4

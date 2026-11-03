@@ -5,7 +5,7 @@ import {
   CampaignTranslationSet,
   CampaignTranslationSetVariables
 } from '../../../__generated__/CampaignTranslationSet'
-import { TRANSLATED_VALUE_FIELDS } from '../useCampaignQuery/campaignFields'
+import { TRANSLATED_VALUE_FIELDS } from '../useCampaignQuery'
 
 /**
  * The set-one translation write (PRD §2): one field of one target in one
