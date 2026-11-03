@@ -406,6 +406,39 @@ describe('customDomainCreate', () => {
       expect(snapshotReads[1]).toBeGreaterThan(created)
     })
 
+    it('removes its Vercel registration when the address read after the create fails', async () => {
+      const published = campaignFixture.published().build()
+      prismaMock.campaign.findUnique.mockResolvedValue(published)
+      mockAddressSnapshots(published)
+      const findUnique = prismaMock.campaign.findUnique.getMockImplementation()
+      let snapshotReads = 0
+      prismaMock.campaign.findUnique.mockImplementation(((
+        args: Prisma.CampaignFindUniqueArgs
+      ) => {
+        if (args.select === CAMPAIGN_ADDRESS_SELECT && ++snapshotReads === 2)
+          return Promise.reject(new Error('connection lost'))
+        return findUnique?.(args)
+      }) as never)
+      prismaMock.customDomain.findUnique.mockResolvedValue(null)
+      mockDeleteVercelDomain.mockResolvedValue(true)
+
+      const result = (await authClient({
+        document: MUTATION,
+        variables: {
+          input: {
+            name: 'www.example.com',
+            teamId: 'teamId',
+            campaignId: 'campaignId'
+          }
+        }
+      })) as ExecutionResult
+
+      expect(result.errors).toBeDefined()
+      expect(snapshotReads).toBe(2)
+      expect(mockDeleteVercelDomain).toHaveBeenCalledWith('www.example.com')
+      expect(mockQueueAdd).not.toHaveBeenCalled()
+    })
+
     it('queues nothing for a draft campaign', async () => {
       const draft = campaignFixture.build()
       prismaMock.campaign.findUnique.mockResolvedValue(draft)
@@ -562,7 +595,7 @@ describe('customDomainCreate', () => {
         )
         expect(errorSpy).toHaveBeenCalledWith(
           expect.objectContaining({ name: 'www.example.com' }),
-          'Failed to remove campaign domain from Vercel after a lost race'
+          'Failed to remove custom domain from Vercel after a failed create'
         )
         errorSpy.mockRestore()
       })
