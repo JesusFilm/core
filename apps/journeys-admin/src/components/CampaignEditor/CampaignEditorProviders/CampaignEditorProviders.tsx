@@ -1,5 +1,3 @@
-import { TranslationRunProvider } from '../TranslationRunProvider'
-import { NavigatorHoverProvider } from '../Navigator'
 import { ReactElement, ReactNode } from 'react'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -10,6 +8,8 @@ import {
   CampaignEditorProvider,
   CampaignEditorState
 } from '../CampaignEditorProvider'
+import { NavigatorHoverProvider } from '../Navigator'
+import { TranslationRunProvider } from '../TranslationRunProvider'
 import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 interface CampaignEditorProvidersProps {
@@ -37,7 +37,9 @@ export function CampaignEditorProviders({
       <CampaignEditorProvider campaign={campaign} initialState={initialState}>
         <CampaignCommandProvider>
           <MuxVideoUploadProvider>
-            <TranslationRunProvider><NavigatorHoverProvider>{children}</NavigatorHoverProvider></TranslationRunProvider>
+            <TranslationRunProvider>
+              <NavigatorHoverProvider>{children}</NavigatorHoverProvider>
+            </TranslationRunProvider>
           </MuxVideoUploadProvider>
         </CampaignCommandProvider>
       </CampaignEditorProvider>

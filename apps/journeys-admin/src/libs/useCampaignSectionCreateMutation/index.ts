@@ -21,4 +21,7 @@ export type {
 } from './useCampaignSectionCreateMutation'
 
 export { ADDABLE_SECTION_TYPENAMES as CAMPAIGN_SECTION_TYPENAMES } from './useCampaignSectionCreateMutation'
-export type { AddableSectionTypename as CampaignSectionTypename, AddableSectionBlock as CampaignSectionBlock } from './useCampaignSectionCreateMutation'
+export type {
+  AddableSectionTypename as CampaignSectionTypename,
+  AddableSectionBlock as CampaignSectionBlock
+} from './useCampaignSectionCreateMutation'

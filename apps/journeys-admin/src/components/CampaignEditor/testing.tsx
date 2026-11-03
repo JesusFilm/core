@@ -237,7 +237,12 @@ export function QueriedEditor({
     <MockedProvider
       {...(link != null
         ? { link }
-        : { mocks: [getCampaignMockFor(campaign), ...mocks] as MockLink.MockedResponse[] })}
+        : {
+            mocks: [
+              getCampaignMockFor(campaign),
+              ...mocks
+            ] as MockLink.MockedResponse[]
+          })}
       cache={cache}
     >
       <SnackbarProvider>
@@ -261,7 +266,12 @@ export function StaticEditor({
   campaign = campaignProp ?? campaignData ?? campaignFixture
 }: EditorProps): ReactElement {
   return (
-    <MockedProvider {...(link != null ? { link } : { mocks: mocks as MockLink.MockedResponse[] })} cache={cache}>
+    <MockedProvider
+      {...(link != null
+        ? { link }
+        : { mocks: mocks as MockLink.MockedResponse[] })}
+      cache={cache}
+    >
       <SnackbarProvider>
         <CampaignEditorProviders
           campaign={campaign}

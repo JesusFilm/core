@@ -1,4 +1,3 @@
-import { CampaignStyleCommand, useCampaignStyleCommand } from '../useCampaignStyleCommand'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CampaignImageSlot } from '../../../../../__generated__/globalTypes'
@@ -14,8 +13,14 @@ import {
   CampaignBlockFieldsCommand,
   useCampaignBlockFieldsCommand
 } from '../useCampaignBlockFieldsCommand'
+import {
+  CampaignStyleCommand,
+  useCampaignStyleCommand
+} from '../useCampaignStyleCommand'
 
-export interface CampaignMediaCommand extends CampaignBlockFieldsCommand, Pick<CampaignStyleCommand, 'addStyle'> {
+export interface CampaignMediaCommand
+  extends CampaignBlockFieldsCommand,
+    Pick<CampaignStyleCommand, 'addStyle'> {
   /** Fill (or replace) the owner's Media Slot with a picked video or image as one Command. */
   addMediaPick: (owner: CampaignMediaOwner, pick: CampaignMediaPick) => void
   /** Empty the owner's Media Slot as one Command. */
