@@ -556,7 +556,9 @@ describe('Canvas', () => {
         maxHeight: '324px'
       })
 
-      fireEvent.click(screen.getByRole('button', { name: 'Rotate to portrait' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Rotate to portrait' })
+      )
       expect(screen.getByTestId('CanvasContainer')).toHaveStyle({
         width: '324px',
         maxHeight: '674px'
