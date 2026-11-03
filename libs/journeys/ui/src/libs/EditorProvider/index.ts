@@ -3,7 +3,8 @@ export {
   EditorProvider,
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveSlide
+  ActiveSlide,
+  CanvasOrientation
 } from './EditorProvider'
 export type {
   EditorState,

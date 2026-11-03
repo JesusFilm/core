@@ -10,6 +10,7 @@ import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveSlide,
+  CanvasOrientation,
   EditorProvider,
   EditorState
 } from '.'
@@ -899,6 +900,65 @@ describe('EditorContext', () => {
           ...state,
           showAnalytics: true
         })
+      })
+    })
+
+    describe('SetCanvasOrientationAction', () => {
+      const state: EditorState = {
+        steps: [],
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeSlide: ActiveSlide.Content,
+        activeContent: ActiveContent.Canvas
+      }
+
+      it('should set canvasOrientation to landscape', () => {
+        expect(
+          reducer(state, {
+            type: 'SetCanvasOrientationAction',
+            canvasOrientation: CanvasOrientation.Landscape
+          })
+        ).toEqual({
+          ...state,
+          canvasOrientation: CanvasOrientation.Landscape
+        })
+      })
+
+      it('should set canvasOrientation back to portrait', () => {
+        expect(
+          reducer(
+            { ...state, canvasOrientation: CanvasOrientation.Landscape },
+            {
+              type: 'SetCanvasOrientationAction',
+              canvasOrientation: CanvasOrientation.Portrait
+            }
+          )
+        ).toEqual({
+          ...state,
+          canvasOrientation: CanvasOrientation.Portrait
+        })
+      })
+
+      it('should keep canvasOrientation when the selected step changes', () => {
+        const step: TreeBlock = {
+          id: 'step1.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: null,
+          children: []
+        }
+
+        expect(
+          reducer(
+            { ...state, canvasOrientation: CanvasOrientation.Landscape },
+            {
+              type: 'SetSelectedStepAction',
+              selectedStep: step
+            }
+          ).canvasOrientation
+        ).toBe(CanvasOrientation.Landscape)
       })
     })
 

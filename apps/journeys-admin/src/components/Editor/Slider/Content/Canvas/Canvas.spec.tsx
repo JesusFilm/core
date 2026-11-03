@@ -8,6 +8,7 @@ import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveSlide,
+  CanvasOrientation,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
@@ -495,5 +496,99 @@ describe('Canvas', () => {
     )
 
     expect(screen.getByDisplayValue('my-card-slug')).toBeInTheDocument()
+  })
+
+  describe('canvas orientation', () => {
+    function renderCanvas(
+      layout: 'layered' | 'slider',
+      state: EditorState = initialState
+    ): void {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <JourneyProvider
+                value={{
+                  journey: {
+                    id: 'journeyId',
+                    themeMode: ThemeMode.dark,
+                    themeName: ThemeName.base,
+                    language: {
+                      __typename: 'Language',
+                      id: '529',
+                      bcp47: 'en',
+                      iso3: 'eng'
+                    }
+                  } as unknown as Journey,
+                  renderMode: 'admin'
+                }}
+              >
+                <EditorProvider initialState={state}>
+                  <EditorLayoutProvider value={layout}>
+                    <TestEditorState />
+                    <Canvas />
+                  </EditorLayoutProvider>
+                </EditorProvider>
+              </JourneyProvider>
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    }
+
+    it('should frame the card in portrait by default', () => {
+      renderCanvas('layered')
+
+      expect(screen.getByTestId('CanvasContainer')).toHaveStyle({
+        width: '324px',
+        maxHeight: '674px'
+      })
+    })
+
+    it('should rotate the frame to landscape and back in the layered view', () => {
+      renderCanvas('layered')
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Rotate to landscape' })
+      )
+      expect(screen.getByTestId('CanvasContainer')).toHaveStyle({
+        width: '674px',
+        maxHeight: '324px'
+      })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Rotate to portrait' }))
+      expect(screen.getByTestId('CanvasContainer')).toHaveStyle({
+        width: '324px',
+        maxHeight: '674px'
+      })
+    })
+
+    it('should keep the selected block when rotating', () => {
+      renderCanvas('layered', {
+        ...initialState,
+        selectedBlock: step0.children[0]
+      })
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Rotate to landscape' })
+      )
+
+      expect(screen.getByText('selectedBlock: heading3')).toBeInTheDocument()
+    })
+
+    it('should not show the rotate button in the slider view', () => {
+      renderCanvas('slider', {
+        ...initialState,
+        canvasOrientation: CanvasOrientation.Landscape
+      })
+
+      expect(
+        screen.queryByRole('button', { name: /Rotate to/ })
+      ).not.toBeInTheDocument()
+      // the slider always frames a portrait card
+      expect(screen.getByTestId('CanvasContainer')).toHaveStyle({
+        width: '324px'
+      })
+    })
   })
 })

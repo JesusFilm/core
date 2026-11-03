@@ -26,6 +26,7 @@ import { useEditorLayout } from '../../../EditorLayoutContext'
 import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
+import { CanvasOrientationButton } from './CanvasOrientationButton'
 import { CardSlugEdit } from './CardSlugEdit'
 import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
@@ -34,11 +35,10 @@ import { InlineEditWrapper } from './InlineEditWrapper'
 import { JourneyLocaleProvider } from './JourneyLocaleProvider'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
-  CARD_HEIGHT,
-  CARD_WIDTH,
   calculateLayeredScale,
   calculateScale,
-  calculateScaledMargin
+  calculateScaledMargin,
+  getCardDimensions
 } from './utils/calculateDimensions'
 
 const fadeIn = keyframes`
@@ -63,7 +63,8 @@ export function Canvas(): ReactElement {
       selectedBlock,
       activeSlide,
       activeCanvasDetailsDrawer,
-      showAnalytics
+      showAnalytics,
+      canvasOrientation
     },
     dispatch
   } = useEditor()
@@ -71,6 +72,11 @@ export function Canvas(): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
   const { isLayered } = useEditorLayout()
+  // Canvas orientation is a layered-view choice; the slider always shows a
+  // portrait Card
+  const orientation = isLayered ? canvasOrientation : undefined
+  const { width: cardWidth, height: cardHeight } =
+    getCardDimensions(orientation)
 
   const showSlugEdit =
     journey?.website === true &&
@@ -84,7 +90,7 @@ export function Canvas(): ReactElement {
     const handleResize = (): void =>
       setScale(
         isLayered
-          ? calculateLayeredScale(containerRef)
+          ? calculateLayeredScale(containerRef, orientation)
           : calculateScale(containerRef)
       )
     handleResize()
@@ -92,7 +98,7 @@ export function Canvas(): ReactElement {
     return () => window.removeEventListener('resize', handleResize)
     // recalculate when the slide changes as the canvas container resizes
     // without a window resize (e.g. the layered view drawer opening)
-  }, [activeSlide, isLayered])
+  }, [activeSlide, isLayered, orientation])
 
   function handleJourneyAppearanceClick(): void {
     dispatch({
@@ -224,8 +230,19 @@ export function Canvas(): ReactElement {
             pointerEvents: isLayered ? 'auto' : undefined
           }}
         >
-          <CardSlugEdit visible={showSlugEdit} />
+          <Stack
+            direction="row"
+            sx={{ width: '100%', alignItems: 'flex-start', gap: 1 }}
+          >
+            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+              <CardSlugEdit visible={showSlugEdit} />
+            </Box>
+            {isLayered && <CanvasOrientationButton />}
+          </Stack>
           <Box
+            // remount on rotate so the frame replays its fade-in rather than
+            // jumping between layouts
+            key={orientation}
             data-testId="CanvasContainer"
             sx={{
               // the layered view's card starts entering immediately (no
@@ -236,8 +253,8 @@ export function Canvas(): ReactElement {
                   ? `${fadeIn} 500ms ${theme.transitions.easing.easeInOut} 0s backwards`
                   : `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
               position: 'relative',
-              maxHeight: CARD_HEIGHT,
-              width: CARD_WIDTH,
+              maxHeight: cardHeight,
+              width: cardWidth,
               transform: `scale(${scale})`,
               transformOrigin: {
                 xs: 'center',
@@ -246,8 +263,8 @@ export function Canvas(): ReactElement {
                     ? 'right'
                     : 'center'
               },
-              my: `${calculateScaledMargin(CARD_HEIGHT, scale)}`,
-              mx: `${calculateScaledMargin(CARD_WIDTH, scale)}`,
+              my: `${calculateScaledMargin(cardHeight, scale)}`,
+              mx: `${calculateScaledMargin(cardWidth, scale)}`,
               borderRadius: 8,
               pointerEvents: showAnalytics === true ? 'none' : 'auto',
               transition: (theme) =>
@@ -265,7 +282,7 @@ export function Canvas(): ReactElement {
                 theme.themeMode === ThemeMode.light
                   ? 'secondary.main'
                   : 'secondary.dark',
-              aspectRatio: 6 / 13
+              aspectRatio: cardWidth / cardHeight
             }}
           >
             <FramePortal

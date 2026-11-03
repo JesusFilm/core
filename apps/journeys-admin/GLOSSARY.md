@@ -22,6 +22,10 @@ _Avoid_: map, graph, diagram, canvas (Canvas is the other Slide)
 The WYSIWYG rendering of the selected Step's Card where blocks are added, dragged, and edited inline. One of three contents of the Content Slide, alongside **Social Preview** and **Goals**.
 _Avoid_: preview (that's the published-journey preview), WYSIWYG editor
 
+**Canvas orientation**:
+How the Canvas frames the selected Step's Card: Portrait (the default) or Landscape, a phone held sideways, showing the Card as a Visitor on that phone sees it. A view choice for the Editor session, never a Command, and never saved to the Journey.
+_Avoid_: preview mode, rotate preview, device view
+
 **Properties**:
 The panel editing the selected block's settings as collapsible accordions, inside the Settings Drawer. Editor state calls the expanded accordion an "attribute", but the canonical name for the panel and its contents is Properties.
 _Avoid_: attributes, inspector, block settings
