@@ -3,7 +3,13 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
+import {
+  ReactElement,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 
 import { TreeBlock, transformer } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
