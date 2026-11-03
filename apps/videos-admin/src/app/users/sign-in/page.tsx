@@ -1,16 +1,22 @@
 'use client'
 
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import { UserCredential, signInWithEmailAndPassword } from 'firebase/auth'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import { ReactElement, useCallback, useState } from 'react'
 import { useLoadingCallback } from 'react-loading-hook'
 
 import minimalLogo from '../../../assets/minimal-logo.png'
 import { CenterPage } from '../../../components/CenterPage'
 import { getFirebaseAuth, loginWithGoogle } from '../../../libs/auth/firebase'
+import {
+  getSignInErrorMessage,
+  signInErrorParam
+} from '../../../libs/auth/signInError'
 import { useRedirectAfterLogin } from '../../../libs/auth/useRedirectAfterLogin'
 import { loginWithCredential } from '../../api'
 
@@ -20,6 +26,10 @@ import { PasswordForm, PasswordFormValue } from './_PasswordForm'
 export default function SignIn(): ReactElement {
   const [hasLogged, setHasLogged] = useState(false)
   const redirectAfterLogin = useRedirectAfterLogin()
+  const searchParams = useSearchParams()
+  const redirectedErrorMessage = getSignInErrorMessage(
+    searchParams?.get(signInErrorParam) ?? null
+  )
 
   const handleLogin = useCallback(
     async function (credential: UserCredential): Promise<void> {
@@ -49,6 +59,18 @@ export default function SignIn(): ReactElement {
       setHasLogged(true)
     })
 
+  // useLoadingCallback stores the error for display and also rethrows it;
+  // swallow the rethrow so a failed login isn't an unhandled rejection.
+  function handleEmailAndPasswordSubmit(value: PasswordFormValue): void {
+    handleLoginWithEmailAndPassword(value).catch(() => undefined)
+  }
+
+  function handleGoogleClick(): void {
+    handleLoginWithGoogle().catch(() => undefined)
+  }
+
+  const loginError: Error | undefined = emailPasswordError ?? googleError
+
   return (
     <CenterPage>
       <Image
@@ -69,17 +91,22 @@ export default function SignIn(): ReactElement {
           <CircularProgress />
         </Box>
       )}
+      {!hasLogged && loginError == null && redirectedErrorMessage != null && (
+        <Alert severity="error" sx={{ width: '100%' }}>
+          {redirectedErrorMessage}
+        </Alert>
+      )}
       {!hasLogged && (
         <PasswordForm
           loading={isEmailLoading}
-          onSubmit={handleLoginWithEmailAndPassword}
-          error={emailPasswordError ?? googleError}
+          onSubmit={handleEmailAndPasswordSubmit}
+          error={loginError}
         >
           <Button
             variant="outlined"
             loading={isGoogleLoading}
             disabled={isGoogleLoading}
-            onClick={handleLoginWithGoogle}
+            onClick={handleGoogleClick}
             startIcon={<GoogleIcon />}
             fullWidth
           >
