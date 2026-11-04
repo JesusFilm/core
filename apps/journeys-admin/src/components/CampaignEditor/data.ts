@@ -1,4 +1,8 @@
 import {
+  CAMPAIGN_STRING_KEYS,
+  campaignStringWording
+} from '@core/journeys/ui/Campaign/libs/campaignStrings'
+import {
   CAMPAIGN_ID,
   LANDING_PAGE_ID,
   REGION_PAGE_ID,
@@ -54,34 +58,15 @@ export function withEmptyTranslations(block: {
   return { ...block, ...translations, ...snapshot } as CampaignBlock
 }
 
-const STRING_SEED: Array<[CampaignStringKey, string]> = [
-  [CampaignStringKey.allRegions, 'All regions'],
-  [CampaignStringKey.step1, 'Pick a language your friend understands.'],
-  [CampaignStringKey.step2, 'Preview what they will see.'],
-  [CampaignStringKey.step2help, 'Tap through the preview like they would.'],
-  [CampaignStringKey.step3, 'Share this link with them.'],
-  [CampaignStringKey.step4, 'Or download a QR code for print.'],
-  [CampaignStringKey.copy, 'Copy link'],
-  [CampaignStringKey.copied, 'Link copied'],
-  [CampaignStringKey.downloadQr, 'Download QR code'],
-  [CampaignStringKey.open, 'Open'],
-  [CampaignStringKey.watch, 'Watch'],
-  [CampaignStringKey.openTemplate, 'Open journey'],
-  [CampaignStringKey.youtube, 'Watch on YouTube'],
-  [CampaignStringKey.totalVisitors, 'Total visitors'],
-  [CampaignStringKey.topCountry, 'Top country'],
-  [CampaignStringKey.seeAllOnWatch, 'See all on Watch'],
-  [CampaignStringKey.videos, 'videos'],
-  [CampaignStringKey.noJourneys, 'Journeys for this region are coming soon']
-]
+const STRING_WORDING = campaignStringWording((english) => english)
 
-/** The eighteen seeded Campaign Strings, untranslated. */
-export const campaignStrings: CampaignString[] = STRING_SEED.map(
-  ([key, value]) => ({
+/** The eighteen seeded Campaign Strings in seed order, in the registry's English, untranslated. */
+export const campaignStrings: CampaignString[] = CAMPAIGN_STRING_KEYS.map(
+  (key) => ({
     __typename: 'CampaignString',
     id: `string-${key}`,
-    key,
-    value,
+    key: CampaignStringKey[key],
+    value: STRING_WORDING[key],
     valueTranslations: []
   })
 )

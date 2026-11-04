@@ -334,7 +334,7 @@ The one link a Campaign Region hands out per language: a **short link** that red
 _Avoid_: journey link (the long address nobody hands out), campaign link (that is the Campaign Address), deep link
 
 **Campaign QR Code**:
-A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working; a Share Language that holds one cannot be removed. It is deleted with its Campaign Region or Campaign, with its target Journey (`QrCode.journey` cascades), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
+A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working, and a linked Share Language cannot be removed: the author unlinks it first. It is deleted with its Share Language when that language, unlinked, is removed (the editor confirms first, as printed copies stop redirecting; a re-added language mints a new one on its next link), with its Campaign Region or Campaign, with its target Journey (`QrCode.journey` cascades), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:
@@ -352,7 +352,7 @@ The language a visitor reads a Campaign in: one of the Campaign's own languages,
 _Avoid_: locale (that is the admin chrome's word), display language, UI language
 
 **Translated Field**:
-A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty.
+A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty. A length is counted in Unicode code points after trimming. An empty entry (or one whose value is not text) counts as missing everywhere, and an entry that does not say the machine wrote it counts as a person's. These rules, with each target's fields and caps, live in one shared module in `libs/journeys/ui` (`translatedField`) that the API reads. The editor keeps its own copies until it adopts the module.
 _Avoid_: localised string, i18n key, label
 
 **Campaign String**:

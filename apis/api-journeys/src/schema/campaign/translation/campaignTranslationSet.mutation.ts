@@ -1,3 +1,9 @@
+import {
+  type CampaignLanguages,
+  isCampaignLanguage,
+  isTranslationLanguage,
+  withHumanTranslation
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import { prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
@@ -10,7 +16,6 @@ import {
   TranslatedValueRef,
   TranslatedValueShape,
   TranslationsJson,
-  parseTranslations,
   toTranslatedValues
 } from '../translatedValue'
 import { assertLength } from '../validation'
@@ -76,42 +81,19 @@ async function loadTarget({
 }
 
 /**
- * The next `<field>Translations` JSON: `value` as a human entry for
- * `languageId`, or the entry removed when `value` is empty.
- */
-export function withTranslation(
-  current: unknown,
-  languageId: string,
-  value: string
-): TranslationsJson {
-  const json = parseTranslations(current)
-  if (value === '') {
-    delete json[languageId]
-    return json
-  }
-  json[languageId] = { value, source: 'human' }
-  return json
-}
-
-/**
  * Refuse `languageId` unless it is a campaign language other than the
  * default: `BAD_USER_INPUT`, field `languageId`.
  */
 function assertTranslationLanguage(
-  campaign: {
-    defaultLanguageId: string
-    languages: Array<{ languageId: string }>
-  },
+  campaign: CampaignLanguages,
   languageId: string
 ): void {
-  if (
-    !campaign.languages.some((language) => language.languageId === languageId)
-  )
+  if (!isCampaignLanguage(campaign, languageId))
     throw badUserInput(
       'languageId must be one of the campaign languages',
       'languageId'
     )
-  if (languageId === campaign.defaultLanguageId)
+  if (!isTranslationLanguage(campaign, languageId))
     throw badUserInput(
       'languageId must not be the default language; edit the field itself instead',
       'languageId'
@@ -151,7 +133,7 @@ async function writeTranslation(
       })
       if (campaign == null) throw notFound('campaign not found')
       assertTranslationLanguage(campaign, languageId)
-      const json = withTranslation(current[column], languageId, value)
+      const json = withHumanTranslation(current[column], languageId, value)
       await model.update(tx, target.id, { [column]: json })
       return json
     }
