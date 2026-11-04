@@ -190,8 +190,11 @@ module "plausible" {
       # /api/health queries Postgres and ClickHouse on every probe, which
       # kept waking the idle-scaled ClickHouse Cloud service every 10 s.
       # /api/health stays the manual smoke test (modules/plausible/README.md).
-      health_check_path = "/login"
-      health_check_port = "8000"
+      # 302: until the first account exists, Plausible's FirstLaunchPlug
+      # redirects /login to /register. Still a serving container.
+      health_check_path    = "/login"
+      health_check_port    = "8000"
+      health_check_matcher = "200,302"
     })
   })
   env              = "prod"
