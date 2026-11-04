@@ -225,7 +225,7 @@ describe('campaignRegionCreate', () => {
       prismaMock.campaignRegion.findUnique.mockResolvedValue({
         id: CLIENT_ID,
         campaignId: 'otherCampaignId'
-      })
+      } as never)
 
       const result = await create(CLIENT_ID)
 
