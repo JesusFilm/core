@@ -1,14 +1,24 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
+import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import { CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_SHOW_COUNTRY_NAMES } from '../../../libs/useCampaignRegionSwitcherBlockShowCountryNamesMutation'
 import { CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_VARIANT } from '../../../libs/useCampaignRegionSwitcherBlockVariantMutation'
+import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { campaign } from '../data'
+import { campaign, campaignWithRegions } from '../data'
+import { Inspector } from '../Inspector'
+import { RegionSwitcherEdit } from '../RegionSwitcherEdit'
 import {
   CommandProbe,
   QueriedEditor,
@@ -77,16 +87,16 @@ function CachedSettings({
   return <RegionSwitcherSettings block={block} />
 }
 
-/** Every switcher section's `showCountryNames` as the cache holds it. */
-function ShowCountryNamesProbe(): ReactElement {
+/** Render both switchers from the cache so edits flow back to their canvas previews. */
+function SwitcherPreviews(): ReactElement {
   const { campaign: current } = useCampaignEditor()
   return (
     <>
       {current.blocks.map((block) =>
         block.__typename === 'CampaignRegionSwitcherBlock' ? (
-          <span key={block.id} data-testid={`ShowCountryNames-${block.id}`}>
-            {String(block.showCountryNames)}
-          </span>
+          <section key={block.id} aria-label={block.id}>
+            <RegionSwitcherEdit block={block} />
+          </section>
         ) : null
       )}
     </>
@@ -192,35 +202,61 @@ describe('RegionSwitcherSettings', () => {
     )
   })
 
-  it('changes only the section it belongs to', async () => {
-    const hide = showCountryNamesMock(false)
+  it('keeps the region and section switches in sync through edits, undo and redo', async () => {
+    const hostId = 'regionSwitcherId'
+    const hide = showCountryNamesMock(false, hostId)
+    const show = showCountryNamesMock(true, hostId)
+    const undo = showCountryNamesMock(false, hostId)
+    const redo = showCountryNamesMock(true, hostId)
+    const countries = {
+      request: { query: GET_CAMPAIGN_COUNTRIES },
+      result: { data: { countries: [] } }
+    }
     render(
-      <QueriedEditor mocks={[hide]}>
-        <ShowCountryNamesProbe />
-        <CachedSettings />
+      <QueriedEditor
+        campaignProp={campaignWithRegions}
+        initialState={{ selectedBlockId: hostId, inspectorTab: 'settings' }}
+        mocks={[countries, hide, show, undo, redo]}
+      >
+        <Inspector isManager={false} />
+        <SwitcherPreviews />
+        <CommandUndoItem variant="button" />
+        <CommandRedoItem variant="button" />
       </QueriedEditor>
     )
-    const toggle = await screen.findByRole('switch', {
-      name: 'Show country names'
-    })
-    expect(
-      screen.getByTestId('ShowCountryNames-regionSwitcherId')
-    ).toHaveTextContent('true')
-
-    fireEvent.click(toggle)
-
-    await waitFor(() => expect(hide.result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(
-        screen.getByRole('switch', { name: 'Show country names' })
-      ).not.toBeChecked()
+    const toggle = () =>
+      screen.getByRole('switch', { name: 'Show country names' })
+    const host = within(await screen.findByRole('region', { name: hostId }))
+    const landing = within(
+      screen.getByRole('region', { name: 'landingSwitcherId' })
     )
-    expect(
-      screen.getByTestId('ShowCountryNames-landingSwitcherId')
-    ).toHaveTextContent('false')
-    expect(
-      screen.getByTestId('ShowCountryNames-regionSwitcherId')
-    ).toHaveTextContent('true')
+    const region = host.getByTestId('RegionCardEdit-eurRegionId')
+    fireEvent.click(region)
+    fireEvent.click(toggle())
+    await waitFor(() => expect(hide.result).toHaveBeenCalledOnce())
+    expect(screen.getByTestId('RegionCountryChip-FR')).toHaveTextContent(
+      'France'
+    )
+    expect(host.getByTestId('CampaignRegionCountries')).not.toHaveTextContent(
+      'France'
+    )
+    expect(landing.getByTestId('CampaignRegionCountries')).toHaveTextContent(
+      'France'
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Region switcher' }))
+    expect(toggle()).not.toBeChecked()
+    fireEvent.click(toggle())
+    await waitFor(() => expect(show.result).toHaveBeenCalledOnce())
+    fireEvent.click(region)
+    expect(toggle()).toBeChecked()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undo.result).toHaveBeenCalledOnce())
+    expect(toggle()).not.toBeChecked()
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(redo.result).toHaveBeenCalledOnce())
+    expect(toggle()).toBeChecked()
   })
 
   it.each([[CampaignSwitcherVariant.list], [CampaignSwitcherVariant.pills]])(

@@ -16,7 +16,10 @@ import {
 
 import { CampaignCountryFlag } from '@core/journeys/ui/Campaign'
 
-import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign_regions as CampaignRegion,
+  GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock
+} from '../../../../__generated__/GetCampaign'
 import { GetCampaignCountries_countries as Country } from '../../../../__generated__/GetCampaignCountries'
 import { CampaignTextField } from '../../../../__generated__/globalTypes'
 import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
@@ -26,6 +29,7 @@ import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaig
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
 import { textLength } from '../Canvas/InlineText'
 import { shapeSlug } from '../Settings'
+import { ShowCountryNamesSwitch } from '../ShowCountryNamesSwitch'
 import { useCampaignTranslationWrite } from '../utils/useCampaignTranslationWrite'
 
 export const REGION_NAME_MAX_LENGTH = 60
@@ -35,6 +39,7 @@ type RegionField = 'name' | 'slug' | 'countryId'
 
 interface RegionSettingsProps {
   region: CampaignRegion
+  hostSwitcher?: CampaignRegionSwitcherBlock
   /**
    * The non-default campaign language being previewed: the name then reads
    * and writes that language's translation. Absent for the default language.
@@ -65,12 +70,12 @@ function fieldErrorOf(
  * as each field commits (the name through `campaignTranslationSet` while
  * previewing a non-default language, where clearing it falls back to the
  * default name), and the country chips picked from api-languages'
- * countries, added and removed one row at a time. Never Commands, so undo
- * does not touch them; the only pre-validation is the pure length rule and
- * the API's own messages are shown verbatim under the field that failed.
+ * countries, added and removed one row at a time. The section's display
+ * switch is undoable. Region fields and country membership save directly.
  */
 export function RegionSettings({
   region,
+  hostSwitcher,
   translationLanguageId
 }: RegionSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -281,6 +286,9 @@ export function RegionSettings({
         slotProps={{ htmlInput: { 'aria-label': t('Slug') } }}
       />
       <Stack spacing={2}>
+        {hostSwitcher != null && (
+          <ShowCountryNamesSwitch key={hostSwitcher.id} block={hostSwitcher} />
+        )}
         <Stack
           direction="row"
           data-testid="RegionSettingsCountries"
