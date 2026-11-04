@@ -12,12 +12,14 @@ import {
   CampaignSwitcherVariant,
   CampaignTextSource
 } from '../../../../__generated__/globalTypes'
+import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import { CAMPAIGN_REGION_CREATE } from '../../../libs/useCampaignRegionCreateMutation'
 import { CAMPAIGN_REGION_DELETE } from '../../../libs/useCampaignRegionDeleteMutation'
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import { campaign, campaignWithRegions } from '../data'
 import { Hotkeys } from '../Hotkeys'
+import { PagesPanel } from '../PagesPanel'
 import {
   CommandProbe,
   QueriedEditor,
@@ -200,6 +202,70 @@ describe('RegionSwitcherEdit', () => {
       expect(
         within(card).getByTestId('CampaignRegionCountries')
       ).not.toHaveTextContent('France')
+    }
+  )
+
+  it.each([true, false])(
+    'updates country labels when the preview language changes (names shown: %s)',
+    async (showCountryNames) => {
+      const country = campaignWithRegions.regions[0].countries[0].country
+      function countryNamesMock(languageId: string, names: string[]) {
+        return {
+          request: {
+            query: GET_CAMPAIGN_COUNTRIES,
+            variables: { ids: [country.id], languageId }
+          },
+          result: {
+            data: {
+              countries: [
+                {
+                  ...country,
+                  name: names.map((value) => ({
+                    __typename: 'CountryName',
+                    value
+                  }))
+                }
+              ]
+            }
+          }
+        }
+      }
+      render(
+        <QueriedEditor
+          campaignProp={campaignWithRegions}
+          mocks={[
+            countryNamesMock('529', ['France']),
+            countryNamesMock('496', ['France', 'République française'])
+          ]}
+        >
+          <PagesPanel />
+          <RegionSwitcherEdit
+            block={{ id: 'landingSwitcherId', showCountryNames }}
+          />
+        </QueriedEditor>
+      )
+      const cards = within(
+        await screen.findByTestId('RegionCardEdit-eurRegionId')
+      )
+      if (showCountryNames) expect(cards.getByText('France')).toBeVisible()
+      else expect(cards.getByRole('img', { name: 'France' })).toBeVisible()
+
+      fireEvent.mouseDown(
+        screen.getByRole('combobox', { name: 'Preview language' })
+      )
+      fireEvent.click(screen.getByRole('option', { name: 'Français' }))
+
+      if (showCountryNames) {
+        expect(await cards.findByText('République française')).toBeVisible()
+      } else {
+        const flag = await cards.findByRole('img', {
+          name: 'République française'
+        })
+        fireEvent.mouseOver(flag)
+        expect(await screen.findByRole('tooltip')).toHaveTextContent(
+          'République française'
+        )
+      }
     }
   )
 

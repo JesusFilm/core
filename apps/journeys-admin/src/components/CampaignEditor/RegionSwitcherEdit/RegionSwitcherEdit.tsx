@@ -28,6 +28,7 @@ import {
   CampaignSwitcherVariant,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
+import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQuery'
 import { regionCardLabel, regionLineLabel } from '../blockLabel'
 import {
   regionLines,
@@ -274,11 +275,30 @@ export function RegionSwitcherEdit({
   block
 }: RegionSwitcherEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, currentRegion } = useCampaignEditor()
+  const {
+    campaign,
+    currentRegion,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const variant = block.switcherVariant ?? CampaignSwitcherVariant.cards
   const { addRegion } = useCampaignRegionCommand()
   const regions = sortedRegions(campaign.regions).filter(
     (region) => region.id !== currentRegion?.id
+  )
+
+  const countryIds = [
+    ...new Set(
+      regions.flatMap((region) =>
+        region.countries.map(({ countryId }) => countryId)
+      )
+    )
+  ].sort()
+  const { data } = useCampaignCountriesQuery({
+    ids: countryIds,
+    languageId: previewLanguageId
+  })
+  const previewCountries = new Map(
+    data?.countries.map((country) => [country.id, country])
   )
 
   function handleAdd(event: MouseEvent<HTMLButtonElement>): void {
@@ -321,7 +341,13 @@ export function RegionSwitcherEdit({
         {regions.map((region) => (
           <RegionCardEdit
             key={region.id}
-            region={region}
+            region={{
+              ...region,
+              countries: region.countries.map((entry) => ({
+                ...entry,
+                country: previewCountries.get(entry.countryId) ?? entry.country
+              }))
+            }}
             hostBlockId={block.id}
             variant={variant}
             showCountryNames={block.showCountryNames ?? true}

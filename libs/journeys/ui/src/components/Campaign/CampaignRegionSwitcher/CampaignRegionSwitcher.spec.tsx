@@ -6,6 +6,7 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import {
   CampaignPageKind,
@@ -371,6 +372,35 @@ describe('CampaignRegionSwitcher country names', () => {
       expect(await screen.findByRole('tooltip')).toHaveTextContent('France')
     }
   )
+
+  it('shows all country names while their region link has keyboard focus', async () => {
+    const user = userEvent.setup()
+    const region = {
+      ...eurRegion,
+      countries: [
+        regionCountry('FR', null, 'France'),
+        regionCountry('DE', null, 'Allemagne')
+      ]
+    }
+    renderSwitcher(switcherTree({ showCountryNames: false }), {
+      campaign: { ...campaignPublic, regions: [region, afrRegion] }
+    })
+    const [first, next] = screen.getAllByRole('link')
+    const countries = within(first).getByTestId('CampaignRegionCountries')
+    expect(countries).not.toHaveTextContent('Allemagne')
+
+    await user.tab()
+    expect(first).toHaveFocus()
+    expect(within(countries).getByText('France')).toBeVisible()
+    expect(within(countries).getByText('Allemagne')).toBeVisible()
+
+    await user.tab()
+    expect(next).toHaveFocus()
+    expect(countries).not.toHaveTextContent('France')
+    expect(
+      within(countries).getByRole('img', { name: 'Allemagne' })
+    ).toBeVisible()
+  })
 
   it('applies each section its own setting for the same regions', () => {
     render(

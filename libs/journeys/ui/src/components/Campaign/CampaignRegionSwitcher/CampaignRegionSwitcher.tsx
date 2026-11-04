@@ -277,6 +277,7 @@ function CampaignRegionCard({
   href
 }: CampaignRegionCardProps): ReactElement {
   const track = useCampaignPlausible()
+  const [keyboardFocused, setKeyboardFocused] = useState(false)
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     track('campaignRegionClick', { targetRegion: region }, event)
@@ -286,6 +287,8 @@ function CampaignRegionCard({
     <ButtonBase
       href={href}
       onClick={handleClick}
+      onFocusVisible={() => setKeyboardFocused(true)}
+      onBlur={() => setKeyboardFocused(false)}
       data-testid={`CampaignRegionCard-${region.id}`}
       sx={regionFrameSx(variant)}
     >
@@ -304,7 +307,10 @@ function CampaignRegionCard({
           ) : null
         )}
       </CampaignRegionLines>
-      <CampaignRegionCountries region={region} showNames={showCountryNames} />
+      <CampaignRegionCountries
+        region={region}
+        showNames={showCountryNames || keyboardFocused}
+      />
     </ButtonBase>
   )
 }
