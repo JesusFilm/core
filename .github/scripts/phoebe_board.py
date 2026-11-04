@@ -76,7 +76,10 @@ def issue_links(pr, policy):
         r"(?im)^\s*(?:closes|fixes|resolves)\s+#([1-9][0-9]*)\s*[.]?\s*$",
         pr.get("body") or "",
     )
-    return sorted(set(map(int, lines)) | {i["number"] for i in pr.get("closingIssuesReferences", [])})
+    prefix = f"https://github.com/{policy['repo']}/issues/".lower()
+    native = {i["number"] for i in pr.get("closingIssuesReferences", [])
+              if i.get("url", "").lower().startswith(prefix)}
+    return sorted(set(map(int, lines)) | native)
 
 
 def feedback(gh, repo, number, review_decision=None):
@@ -145,6 +148,11 @@ def field_values(item):
             for value in item.get("fieldValues", {}).get("nodes", []) if value.get("field")}
 
 
+def read_item(gh, item_id):
+    query = """query($id:ID!){node(id:$id){...on ProjectV2Item{id content{...on Issue{number labels(first:100){nodes{name}}} ...on PullRequest{number labels(first:100){nodes{name}}}} fieldValues(first:100){nodes{...on ProjectV2ItemFieldSingleSelectValue{name field{...on ProjectV2SingleSelectField{name}}} ...on ProjectV2ItemFieldTextValue{text field{...on ProjectV2Field{name}}}}}}}}"""
+    return gh.query(query, id=item_id)["node"]
+
+
 def activity_key(prs, gate=None):
     fields = ["number", "headRefOid", "baseRefName", "state", "isDraft", "reviewDecision", "updatedAt"]
     evidence = [[pr.get(field) for field in fields] + [bool(pr.get("feedback"))]
@@ -178,12 +186,12 @@ def collect(gh, policy):
         pages = gh.call("api", "--paginate", "--slurp", f"repos/{policy['repo']}/issues?state=all&labels={label}&per_page=100")
         rows.update({row["number"]: row for page in pages for row in page})
     pulls = {}
-    fields = "number,id,body,state,isDraft,headRefOid,headRefName,baseRefName,updatedAt,labels,reviewDecision,closingIssuesReferences"
+    fields = "number,id,body,state,isDraft,isCrossRepository,headRefOid,headRefName,baseRefName,updatedAt,labels,reviewDecision,closingIssuesReferences"
     for number, row in rows.items():
         if "pull_request" not in row or not owner(row):
             continue
         pr = gh.call("pr", "view", str(number), "--repo", policy["repo"], "--json", fields)
-        if not owner(pr):
+        if not owner(pr) or pr.get("isCrossRepository"):
             continue
         if pr["state"] == "OPEN":
             pr["feedback"] = feedback(gh, policy["repo"], number, pr.get("reviewDecision"))
@@ -230,7 +238,11 @@ def update_board(gh, policy, apply=False, release=None):
         # Re-read each item immediately before writing, including its durable
         # state. A human move during the API scan takes precedence.
         if apply:
-            item = gh.query("""query($id:ID!){node(id:$id){...on ProjectV2Item{id fieldValues(first:100){nodes{...on ProjectV2ItemFieldSingleSelectValue{name field{...on ProjectV2SingleSelectField{name}}} ...on ProjectV2ItemFieldTextValue{text field{...on ProjectV2Field{name}}}}}}}}""", id=item["id"])["node"]
+            item = read_item(gh, item["id"])
+            content = (item or {}).get("content") or {}
+            if not owner({"number": number, "labels": content.get("labels", {}).get("nodes", [])}):
+                print(f"#{number}: ownership removed; preserve board position")
+                continue
         values = field_values(item)
         state = json.loads(values.get(STATE_FIELD) or "{}")
         if not state and str(number) in policy.get("manual_overrides", {}):
@@ -249,6 +261,14 @@ def update_board(gh, policy, apply=False, release=None):
             state["last"] = have
             state["pending"] = want
             gh.query("""mutation($p:ID!,$i:ID!,$f:ID!,$text:String!){updateProjectV2ItemFieldValue(input:{projectId:$p,itemId:$i,fieldId:$f,value:{text:$text}}){projectV2Item{id}}}""", p=project["id"], i=item["id"], f=state_field["id"], text=json.dumps(state, sort_keys=True))
+            latest = field_values(read_item(gh, item["id"])).get("Status")
+            if latest != have:
+                state.update(last=latest, manual=latest)
+                state.pop("pending", None)
+                state.pop("until_activity", None)
+                gh.query("""mutation($p:ID!,$i:ID!,$f:ID!,$text:String!){updateProjectV2ItemFieldValue(input:{projectId:$p,itemId:$i,fieldId:$f,value:{text:$text}}){projectV2Item{id}}}""", p=project["id"], i=item["id"], f=state_field["id"], text=json.dumps(state, sort_keys=True))
+                print(f"#{number}: preserved concurrent manual move to {latest}")
+                continue
         if have != want:
             if apply:
                 gh.query("""mutation($p:ID!,$i:ID!,$f:ID!,$option:String!){updateProjectV2ItemFieldValue(input:{projectId:$p,itemId:$i,fieldId:$f,value:{singleSelectOptionId:$option}}){projectV2Item{id}}}""", p=project["id"], i=item["id"], f=status_field["id"], option=options[want])

@@ -6,16 +6,16 @@ Next Steps project 8. It applies to PRs carrying exactly one of
 The workflow is disabled for automatic writes until the repository variable
 `PHOEBE_BOARD_WRITER` is `github-actions`.
 
-| PR evidence | Board Status |
-| --- | --- |
-| Draft | In progress |
-| Ready, waiting for review | In review |
-| Actionable review feedback | Changes requested |
-| Feedback handled, awaiting another review | In review |
-| GitHub's approval requirement satisfied | Approved |
-| Merged into main | Done |
-| Merged into a stack's parent branch | In review |
-| Closed without merging | Needs Human |
+| PR evidence                               | Board Status      |
+| ----------------------------------------- | ----------------- |
+| Draft                                     | In progress       |
+| Ready, waiting for review                 | In review         |
+| Actionable review feedback                | Changes requested |
+| Feedback handled, awaiting another review | In review         |
+| GitHub's approval requirement satisfied   | Approved          |
+| Merged into main                          | Done              |
+| Merged into a stack's parent branch       | In review         |
+| Closed without merging                    | Needs Human       |
 
 The workflow reads current API state for all owned PRs on each event. It does
 not trust the event's older status snapshot. This allows serialized runs to

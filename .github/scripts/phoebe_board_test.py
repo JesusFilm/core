@@ -43,6 +43,9 @@ class StateTests(unittest.TestCase):
         self.assertEqual(board.issue_links(pr(body="Closes #20"), POLICY), [10])
         self.assertEqual(board.issue_links(pr(2, body="Closes #20\nSource #30\nFixes other/repo#99"), POLICY), [20])
         self.assertEqual(board.issue_links(pr(2, body="Reference #30"), POLICY), [])
+        references = [{"number": 20, "url": "https://github.com/JesusFilm/core/issues/20"},
+                      {"number": 99, "url": "https://github.com/other/repo/issues/99"}]
+        self.assertEqual(board.issue_links(pr(2, closingIssuesReferences=references), POLICY), [20])
 
     def test_exclusive_ownership(self):
         for label in board.OWNERS:
@@ -78,6 +81,8 @@ class Project:
         self.status = {1: "In progress", 10: "In progress"}
         self.state = {}
         self.fail_status = False
+        self.concurrent_move = False
+        self.unowned = set()
         self.mutations = []
         names = ["In progress", "In review", "Changes requested", "Approved", "Done", "Needs Human", "QA"]
         self.project = {"id": "project", "fields": {"nodes": [
@@ -89,7 +94,8 @@ class Project:
         nodes = [{"name": self.status[number], "field": {"name": "Status"}}]
         if number in self.state:
             nodes.append({"text": self.state[number], "field": {"name": board.STATE_FIELD}})
-        return {"id": str(number), "fieldValues": {"nodes": nodes}}
+        labels = [] if number in self.unowned else [{"name": "phoebe-siyang-vm"}]
+        return {"id": str(number), "content": {"labels": {"nodes": labels}}, "fieldValues": {"nodes": nodes}}
 
     def snapshot(self, *args):
         return self.project, {n: self.item(n) for n in self.status}
@@ -101,6 +107,9 @@ class Project:
         number = int(variables["i"])
         if variables["f"] == "state":
             self.state[number] = variables["text"]
+            if self.concurrent_move and "pending" in json.loads(variables["text"]):
+                self.concurrent_move = False
+                self.status[number] = "QA"
         elif self.fail_status:
             self.fail_status = False
             raise RuntimeError("temporary project failure")
@@ -150,6 +159,19 @@ class WriterTests(unittest.TestCase):
         self.run_update(project, {1: pr()})
         self.assertEqual(project.status, {1: "In review", 10: "In review"})
         self.assertNotIn("manual", json.loads(project.state[1]))
+
+    def test_concurrent_manual_move_is_not_overwritten(self):
+        project = Project()
+        project.concurrent_move = True
+        self.run_update(project, {1: pr()})
+        self.assertEqual(project.status[1], "QA")
+        self.assertEqual(json.loads(project.state[1])["manual"], "QA")
+
+    def test_removed_ownership_is_respected_before_writing(self):
+        project = Project()
+        project.unowned.add(1)
+        self.run_update(project, {1: pr()})
+        self.assertEqual(project.status[1], "In progress")
 
     def test_manual_override_is_preserved_and_can_be_released(self):
         project = Project()
