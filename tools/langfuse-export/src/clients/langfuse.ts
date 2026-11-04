@@ -296,15 +296,7 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
   // Backfilled trace roots can coexist with legacy parentless generations.
   // Prefer the trace root; multiple generation-only roots still need the
   // consistent-context validation below rather than an arbitrary selection.
-  const nonGenerationRoots = rootCandidates.filter(
-    (row) => row.type !== 'GENERATION'
-  )
-  const roots =
-    nonGenerationRoots.length > 0
-      ? nonGenerationRoots
-      : rootCandidates.length === 1
-        ? rootCandidates
-        : []
+  const roots = rootCandidates.filter((row) => row.type !== 'GENERATION')
   // Without verified ancestry, choosing any one of several roots could apply
   // another journey's context and silently bypass its exclusion rules.
   if (roots.length > 1) {
@@ -313,9 +305,9 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
     )
   }
   const root = roots[0]
-  // A recovered root is authoritative even when its metadata is empty: that
-  // is known untagged history, not a failed recovery. Rootless current Core
-  // traces can use the context copied consistently to their generations.
+  // A recovered non-generation root is authoritative even with empty metadata.
+  // A parentless legacy generation can lack the old trace's attribution, so it
+  // must pass the same consistent-context checks as other rootless generations.
   const generations = ordered.filter((row) => row.type === 'GENERATION')
   const generationContext = generations[0]
   const generationMetadata = parseRecord(generationContext?.metadata)

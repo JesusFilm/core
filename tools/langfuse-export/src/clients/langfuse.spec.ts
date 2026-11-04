@@ -368,7 +368,7 @@ describe('v4 observations HTTP contract', () => {
     ).toBe(true)
   })
 
-  it('retains an untagged generation when it is the sole root', async () => {
+  it('rejects a lone parentless legacy generation without recovered trace attribution', async () => {
     const root = {
       ...generation,
       parentObservationId: null,
@@ -376,9 +376,9 @@ describe('v4 observations HTTP contract', () => {
       tags: []
     }
     fetchMock.mockImplementation(async () => page([root]))
-    const data = await fetchTraceData(client, window, { throttleMs: 0 })
-    expect(data.traces[0].journeyId).toBeUndefined()
-    expect(data.observations).toHaveLength(1)
+    await expect(
+      fetchTraceData(client, window, { throttleMs: 0 })
+    ).rejects.toThrow('no recoverable root or consistent generation context')
   })
 
   it('recovers consistent context across multiple parentless generations', async () => {

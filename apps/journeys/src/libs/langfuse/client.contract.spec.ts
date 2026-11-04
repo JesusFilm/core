@@ -32,6 +32,7 @@ describe('Langfuse v4 wire contract', () => {
       body: string
     }> = []
     let exportStatus = 200
+    let exportAcknowledgement: Promise<void> | undefined
     const server = createServer(async (req, res) => {
       const chunks: Buffer[] = []
       for await (const chunk of req) chunks.push(Buffer.from(chunk))
@@ -56,6 +57,15 @@ describe('Langfuse v4 wire contract', () => {
         )
         return
       }
+      if (exportAcknowledgement != null) {
+        const batch: WireBatch = JSON.parse(Buffer.concat(chunks).toString())
+        const hasRoot = batch.resourceSpans.some(({ scopeSpans }) =>
+          scopeSpans.some(({ spans }) =>
+            spans.some(({ name }) => name === 'apologist-chat')
+          )
+        )
+        if (hasRoot) await exportAcknowledgement
+      }
       res.statusCode = exportStatus
       res.end('{}')
     })
@@ -67,6 +77,7 @@ describe('Langfuse v4 wire contract', () => {
     vi.stubEnv('LANGFUSE_TRACING_ENVIRONMENT', 'offline-contract')
     vi.stubEnv('LANGFUSE_RELEASE', 'offline-release')
     vi.stubEnv('LANGFUSE_OTEL_COMPRESSION', 'none')
+    vi.stubEnv('LANGFUSE_FLUSH_AT', '1')
     try {
       const globalProvider = trace.getTracerProvider()
       const client = getLangfuse()
@@ -103,21 +114,29 @@ describe('Langfuse v4 wire contract', () => {
       operation.end({ output: 'must not overwrite', level: 'ERROR' })
       await flushLangfuse()
       await flushLangfuse()
-      const exports = requests.filter(({ method }) => method === 'POST')
-      expect(exports).toHaveLength(1)
-      expect(exports[0]).toMatchObject({
-        url: '/api/public/otel/v1/traces',
-        headers: {
-          authorization: `Basic ${Buffer.from('pk-offline:sk-offline').toString('base64')}`,
-          'x-langfuse-ingestion-version': '4',
-          'x-langfuse-sdk-name': 'javascript'
-        }
-      })
-      expect(exports[0].headers['x-langfuse-sdk-version']).toMatch(/^5\./)
-      const batch: WireBatch = JSON.parse(exports[0].body)
-      const spans = batch.resourceSpans.flatMap(({ scopeSpans }) =>
-        scopeSpans.flatMap(({ spans }) => spans)
+      await vi.waitFor(() =>
+        expect(requests.filter(({ method }) => method === 'POST')).toHaveLength(
+          2
+        )
       )
+      const exports = requests.filter(({ method }) => method === 'POST')
+      expect(exports).toHaveLength(2)
+      for (const request of exports)
+        expect(request).toMatchObject({
+          url: '/api/public/otel/v1/traces',
+          headers: {
+            authorization: `Basic ${Buffer.from('pk-offline:sk-offline').toString('base64')}`,
+            'x-langfuse-ingestion-version': '4',
+            'x-langfuse-sdk-name': 'javascript'
+          }
+        })
+      expect(exports[0].headers['x-langfuse-sdk-version']).toMatch(/^5\./)
+      const spans = exports.flatMap(({ body }) => {
+        const batch: WireBatch = JSON.parse(body)
+        return batch.resourceSpans.flatMap(({ scopeSpans }) =>
+          scopeSpans.flatMap(({ spans }) => spans)
+        )
+      })
       expect(spans).toHaveLength(2)
       const root = spans.find(({ name }) => name === 'apologist-chat')!
       const generation = spans.find(
@@ -231,6 +250,35 @@ describe('Langfuse v4 wire contract', () => {
         }
       }
 
+      // Exports may start on end() before forceFlush(). A queue that has
+      // already drained must not let the serverless handler return before
+      // those HTTP deliveries finish (including LANGFUSE_FLUSH_AT=1).
+      requests.length = 0
+      let acknowledge!: () => void
+      exportAcknowledgement = new Promise<void>((resolve) => {
+        acknowledge = resolve
+      })
+      const pending = startChatGeneration({
+        metadata: { journeyId: 'synthetic-held-acknowledgement' },
+        input: 'synthetic question'
+      })!
+      pending.end({ output: 'synthetic answer' })
+      try {
+        await vi.waitFor(() => expect(requests).toHaveLength(2))
+        let flushed = false
+        const flushing = flushLangfuse().then(() => {
+          flushed = true
+        })
+        await new Promise<void>((resolve) => setTimeout(resolve, 25))
+        expect(flushed).toBe(false)
+        acknowledge()
+        await flushing
+        expect(flushed).toBe(true)
+      } finally {
+        acknowledge()
+        exportAcknowledgement = undefined
+      }
+
       // A real non-retryable collector rejection must not reject the chat's
       // final flush or accidentally export an operation twice on retry.
       requests.length = 0
@@ -241,11 +289,12 @@ describe('Langfuse v4 wire contract', () => {
       })!
       rejected.end({ output: 'answer survives telemetry outage' })
       await expect(flushLangfuse()).resolves.toBeUndefined()
-      expect(requests).toHaveLength(1)
+      expect(requests).toHaveLength(2)
       await expect(flushLangfuse()).resolves.toBeUndefined()
-      expect(requests).toHaveLength(1)
+      expect(requests).toHaveLength(2)
     } finally {
       vi.unstubAllEnvs()
+      server.closeAllConnections()
       await new Promise<void>((resolve, reject) =>
         server.close((error) => (error ? reject(error) : resolve()))
       )

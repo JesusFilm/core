@@ -55,13 +55,19 @@ of unscoped `langfuse`.
   are exported once. The supported SDK sends OTLP/HTTP with the explicit
   `x-langfuse-ingestion-version: 4` header.
 - HTTP export and the provider's entire `forceFlush` are bounded at five seconds.
-  Delivery errors/timeouts are logged without replacing the chat response.
+  Flush errors/timeouts are logged without replacing the chat response; SDK
+  transport errors use OpenTelemetry's existing diagnostic handler.
   The timeout regression uses a processor that never resolves; it proves the
   handler's awaited flush can release without waiting for that processor.
   Terminal/disconnect callbacks share one request-local flush promise. This
   prevents a second flush from returning on an empty queue while the first
   still exports that request's spans; the closed-socket regression asserts
   exactly one flush and that the handler waits for it.
+  The SDK's immediate processor tracks in-flight exports, including ones started
+  before `forceFlush`. A real HTTP regression holds the root acknowledgement
+  after its sibling export completes with `LANGFUSE_FLUSH_AT=1`: batching returned
+  early (reproduced failure); immediate mode waits until acknowledgement. Each
+  completed root/generation is sent once in its own OTLP request.
 - A response-socket close aborts the model signal and finalizes warning spans.
   Racing piping against disconnect handles the actual Node closed-socket/drain
   stall even when neither SDK terminal callback fires. Normal completion does
@@ -76,7 +82,9 @@ Explicit field groups and metadata expansion preserve session, attribution,
 tags, I/O, model, usage and cost. JSON-shaped replies remain text when their
 decoded shape is not a supported assistant-message shape.
 
-A single valid migrated root is preferred. Missing/malformed root metadata
+A single valid migrated non-generation root is preferred. A parentless generation
+is not evidence that legacy trace attribution was recovered; even a lone one
+must pass generation-context validation. Missing/malformed root metadata
 requires consistent generation context; competing roots or missing/conflicting
 attribution stop the export with the trace ID. Known untagged root metadata
 remains valid. Journey/load-test exclusions and the existing PII scrub pipeline
@@ -122,14 +130,32 @@ shared-dev-hosts, shared-ui and shared-ui-dynamic). This sparse graph does not
 substitute for full-repository CI. Independent review and PR delivery are recorded
 below when complete.
 
+## Independent review
+
+Standards review: no actionable documented-standard or maintainability findings.
+Spec review found two correctness gaps in the restored migration: empty metadata
+on a lone parentless legacy generation could bypass journey exclusions, and an
+automatic batch export could remain in flight after `forceFlush` returned.
+Both are addressed with the stricter generation-context rule and SDK immediate
+processor, with regressions as described above. Independent re-review reports no
+remaining actionable findings; the parent reran both suites and type checks.
+
 ## Live verification and remaining coverage
 
 Read-only credential discovery used Core's Doppler `journeys` project only.
 Both `stg` and `stg_dev` Langfuse credentials return **401**. `dev` authenticates
 to the US-region project named `journeys`, which contains production traces;
 this is not established as an isolated non-production destination. No synthetic
-telemetry was written using those keys. A private ignored verification env file
-was prepared and the intended non-production configuration requested.
+telemetry was written using those keys. Jaco clarified that deployed verification
+should use the normal Doppler-backed PR preview rather than a local env file;
+the unused blank verification env was removed.
+
+A fresh `doppler run --project journeys --config stg` check confirmed that
+`GET https://us.cloud.langfuse.com/api/public/projects` returns 401 with
+"Invalid credentials. Confirm that you've configured the correct host."
+This is a direct Langfuse API authentication response using staging's own key
+pair, not developer credentials sent to the Core stage application. Read-only
+EU/Japan host checks also returned 401. No Doppler values were changed.
 
 The regional project MCP dynamically lists `getV4MigrationData` as read-only,
 with an empty-object schema. Its initial result for the accessible `dev`
@@ -147,8 +173,9 @@ with object metadata and a journey ID through v2. No message I/O was read or
 exported in this sample. This confirms root-context recovery for those three
 traces only, not backfill completion for every period an operator may need.
 
-Actual live trace delivery, managed prompt success/fallback, provider failure,
+Actual live trace delivery, deployed managed prompt success/fallback, provider failure,
 disconnect, field-level observations-v2 validation, historical root coverage,
-and Migration Assistant coverage require the intended non-production credentials.
+and Migration Assistant coverage will be checked through the PR preview where
+available; local credential checks do not establish the deployed destination.
 Normal PR CI and preview deployments are authorized. This change does not merge,
 push shared stage, change production, or bypass CI/protections.

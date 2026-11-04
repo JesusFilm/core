@@ -50,7 +50,9 @@ export function getLangfuse(): LangfuseClient | null {
         secretKey,
         baseUrl,
         environment: resolveTracingEnvironment(),
-        exportMode: 'batched',
+        // SimpleSpanProcessor tracks in-flight deliveries in forceFlush(); a
+        // batch processor can already have drained its queue on an auto-flush.
+        exportMode: 'immediate',
         timeout: FLUSH_TIMEOUT_MS / 1000,
         additionalHeaders: { 'x-langfuse-ingestion-version': '4' }
       })
