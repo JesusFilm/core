@@ -288,12 +288,6 @@ resource "aws_alb_target_group" "alb_target_group" {
     protocol            = var.service_config.alb_target_group.protocol
     matcher             = var.service_config.alb_target_group.health_check_matcher
   }
-
-  lifecycle {
-    ignore_changes = [
-      health_check,
-    ]
-  }
 }
 
 resource "aws_alb_listener_rule" "alb_listener_rule" {
