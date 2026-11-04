@@ -2210,7 +2210,7 @@ describe('videoVariant', () => {
           })
           vi.mocked(findContainerParentIds).mockResolvedValue(['collectionId'])
           prismaMock.video.findMany.mockResolvedValue([
-            { id: 'collectionId', slug: 'collection-slug' }
+            { id: 'collectionId', slug: 'collection-slug', label: 'collection' }
           ] as any)
           prismaMock.videoVariant.findFirst.mockResolvedValue(null)
           prismaMock.$transaction.mockImplementation(
@@ -2256,6 +2256,44 @@ describe('videoVariant', () => {
             'languageId'
           )
           expect(mockedVideoCacheReset).toHaveBeenCalledWith('collectionId')
+        })
+
+        it('does not create a placeholder Variant for a feature film parent when publishing inline', async () => {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: false,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: 'hls',
+            share: 'share',
+            muxVideo: { readyToStream: true }
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            slug: 'videoSlug/english',
+            published: true
+          })
+          vi.mocked(findContainerParentIds).mockResolvedValue(['filmId'])
+          prismaMock.video.findMany.mockResolvedValue([
+            { id: 'filmId', slug: 'film-slug', label: 'featureFilm' }
+          ] as any)
+          prismaMock.videoVariant.findFirst.mockResolvedValue(null)
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: true } }
+          })
+
+          expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+          expect(
+            prismaMock.videoVariantReconciliation.create
+          ).not.toHaveBeenCalled()
+          // The feature film's own availableLanguages still cascades.
+          expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+            'filmId',
+            'languageId'
+          )
+          expect(mockedVideoCacheReset).toHaveBeenCalledWith('filmId')
         })
 
         it('should request reconciliation for an explicit unpublish even when the published column is already false', async () => {

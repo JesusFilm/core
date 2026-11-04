@@ -260,14 +260,14 @@ export async function publishParentVariants(
 
   const parentVideos = await prisma.video.findMany({
     where: { id: { in: parentIds } },
-    select: { id: true, slug: true }
+    select: { id: true, slug: true, label: true }
   })
   for (const parentVideo of parentVideos) {
     const parentVariant = await prisma.videoVariant.findFirst({
       where: { videoId: parentVideo.id, languageId: variant.languageId },
       select: { id: true }
     })
-    if (parentVariant == null) {
+    if (parentVariant == null && canHavePlaceholderVariant(parentVideo.label)) {
       await createGeneratedParentVariant({
         parentVideo,
         variant,
