@@ -17,8 +17,8 @@ import {
 import { CampaignCountryFlag } from '@core/journeys/ui/Campaign'
 
 import {
-  GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock,
-  GetCampaign_campaign_regions as CampaignRegion
+  GetCampaign_campaign_regions as CampaignRegion,
+  GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock
 } from '../../../../__generated__/GetCampaign'
 import { GetCampaignCountries_countries as Country } from '../../../../__generated__/GetCampaignCountries'
 import { CampaignTextField } from '../../../../__generated__/globalTypes'
