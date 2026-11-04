@@ -46,7 +46,7 @@ new MultiStepCheck('watch-pages-keywords-singapore-api-uDWZ3vYK', {
   runParallel: false,
   tags: ['watch'],
   doubleCheck: false,
-  useGlobalAlertSettings: true,
+  // No local escalation policy: continue using account-global alert settings.
   alertChannels: [167086, 194069, 197137, 266287].map((id) =>
     AlertChannel.fromId(id)
   ),
