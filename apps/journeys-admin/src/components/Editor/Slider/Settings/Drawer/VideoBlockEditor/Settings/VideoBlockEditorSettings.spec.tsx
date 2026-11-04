@@ -502,13 +502,15 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   it('locks YouTube subtitles off for background videos', () => {
+    // Languages are supplied so the saved English subtitle would show if the
+    // background lock did not force the selection off
     mockUseYouTubeClosedCaptions.mockReturnValue({
-      languages: [],
+      languages: mockYouTubeLanguages,
       loading: false,
       error: undefined
     })
 
-    const { getByRole, getByText, queryByText } = render(
+    const { getByRole, getByText } = render(
       <ThemeProvider>
         <MockedProvider>
           <SnackbarProvider>
@@ -542,9 +544,6 @@ describe('VideoBlockEditorSettings', () => {
     expect(
       getByText('Subtitles are turned off for background videos')
     ).toBeInTheDocument()
-    expect(
-      queryByText('This video does not have any subtitles')
-    ).not.toBeInTheDocument()
   })
 
   it('does not show YouTubeSubtitleSelector for non-YouTube videos', () => {
