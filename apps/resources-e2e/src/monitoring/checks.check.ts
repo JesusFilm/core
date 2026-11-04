@@ -1,0 +1,26 @@
+import path from 'node:path'
+
+import { BrowserCheck, RetryStrategyBuilder } from 'checkly/constructs'
+
+// Keep the deployed logical IDs when source directories move, preserving history.
+new BrowserCheck('apps/watch-e2e/src/monitoring/watch.monitor.ts', {
+  name: 'watch.monitor.ts',
+  code: { entrypoint: path.join(__dirname, 'watch.monitor.ts') },
+  retryStrategy: RetryStrategyBuilder.fixedStrategy({
+    maxRetries: 1,
+    baseBackoffSeconds: 30,
+    maxDurationSeconds: 120,
+    sameRegion: false
+  })
+})
+
+new BrowserCheck('apps/watch-e2e/src/monitoring/watch-redirection.monitor.ts', {
+  name: 'watch-redirection.monitor.ts',
+  code: { entrypoint: path.join(__dirname, 'watch-redirection.monitor.ts') },
+  retryStrategy: RetryStrategyBuilder.fixedStrategy({
+    maxRetries: 8,
+    baseBackoffSeconds: 10,
+    maxDurationSeconds: 600,
+    sameRegion: false
+  })
+})
