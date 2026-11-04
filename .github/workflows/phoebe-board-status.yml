@@ -1,0 +1,85 @@
+name: Phoebe board status
+
+on:
+  pull_request:
+    paths:
+      - '.github/scripts/phoebe_board*'
+      - '.github/workflows/phoebe-board-status.yml'
+      - '.github/phoebe-board-policy.json'
+  pull_request_target:
+    types: [opened, reopened, edited, synchronize, ready_for_review, converted_to_draft, closed, labeled, unlabeled]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Write statuses after the VM board writer has been disabled
+        type: boolean
+        default: false
+      release_override:
+        description: Optional issue or PR number whose manual Status override should be released
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+# Every event reconciles all owned PRs using current API state. Coalescing
+# pending runs is safe even when simultaneous events concern different issues.
+concurrency:
+  group: phoebe-board-${{ github.repository }}-${{ github.event_name == 'pull_request' && github.ref || 'writer' }}
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s .github/scripts -p 'phoebe_board_test.py' -v
+
+  update-project:
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.event_name == 'workflow_dispatch' || vars.PHOEBE_BOARD_WRITER == 'github-actions') &&
+      (github.event_name == 'workflow_dispatch' ||
+        (github.event.pull_request.head.repo.full_name == github.repository &&
+          (contains(github.event.pull_request.labels.*.name, 'phoebe-siyang-vm') ||
+           contains(github.event.pull_request.labels.*.name, 'phoebe-siyang-local'))))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Never execute a PR checkout in this job, including on review events.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Create project-writer token
+        id: app
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.CI_BOT_APP_ID }}
+          private-key: ${{ secrets.CI_BOT_PRIVATE_KEY }}
+          owner: JesusFilm
+          repositories: core
+          permission-issues: read
+          permission-pull-requests: read
+          permission-organization-projects: write
+      - name: Update PR and linked issue statuses
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          APPLY_BOARD: ${{ vars.PHOEBE_BOARD_WRITER == 'github-actions' && (github.event_name != 'workflow_dispatch' || inputs.apply) }}
+          RELEASE_OVERRIDE: ${{ inputs.release_override }}
+        shell: bash
+        run: |
+          args=()
+          if [ "$APPLY_BOARD" = 'true' ]; then
+            args+=(--apply)
+          fi
+          if [ -n "$RELEASE_OVERRIDE" ]; then
+            [[ "$RELEASE_OVERRIDE" =~ ^[1-9][0-9]*$ ]] || exit 1
+            args+=(--release "$RELEASE_OVERRIDE")
+          fi
+          python3 .github/scripts/phoebe_board.py "${args[@]}"
