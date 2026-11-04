@@ -2,6 +2,8 @@ import { expect, test } from '@playwright/test'
 
 import { assertPlaybackProgress } from '../monitoring/watch-playback'
 
+// assertPlaybackProgress contains the observable media assertions.
+// eslint-disable-next-line playwright/expect-expect
 test('accepts a video whose playback clock advances', async ({ page }) => {
   await page.setContent(
     '<canvas width="32" height="32"></canvas><video></video>'
@@ -36,7 +38,7 @@ test('rejects a loaded video whose playback clock is frozen', async ({
     Object.defineProperties(video, {
       readyState: { get: () => HTMLMediaElement.HAVE_ENOUGH_DATA },
       paused: { get: () => false },
-      play: { value: async () => {} }
+      play: { value: async () => undefined }
     })
   })
 

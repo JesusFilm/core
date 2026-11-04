@@ -8,7 +8,7 @@ test.setTimeout(60000)
 test('Watch video can be opened and played', async ({ page }) => {
   const response = await page.goto('https://www.jesusfilm.org/watch')
   expect(response?.status()).toBe(200)
-  await expect(page).toHaveTitle('Watch | Jesus Film Project')
+  await expect(page).toHaveTitle('Watch Free Jesus Movies & Bible Videos | Jesus Film Project')
 
   await page
     .getByRole('button', {

@@ -1,4 +1,4 @@
-import { expect, type Locator } from '@playwright/test'
+import { type Locator, expect } from '@playwright/test'
 
 export async function assertPlaybackProgress(
   video: Locator,
@@ -9,7 +9,7 @@ export async function assertPlaybackProgress(
     element.muted = true
     // Playback can stay pending indefinitely when no media source is available.
     // The bounded poll below reports both rejected playback and stalled media.
-    void element.play().catch(() => {})
+    void element.play().catch(() => undefined)
   })
   const initialTime = await video.evaluate(
     (element: HTMLVideoElement) => element.currentTime
