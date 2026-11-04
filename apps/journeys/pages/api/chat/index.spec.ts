@@ -1,3 +1,5 @@
+import { EventEmitter } from 'node:events'
+
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { convertToModelMessages, streamText } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -6,8 +8,10 @@ import { type Mock, type MockedFunction } from 'vitest'
 import { getCardChatEnabled } from '../../../src/libs/getCardChatEnabled'
 import { getFlags } from '../../../src/libs/getFlags'
 import {
+  flushLangfuse,
   getActivePromptLabel,
-  getLangfuse
+  getLangfuse,
+  startChatGeneration
 } from '../../../src/libs/langfuse/client'
 
 import handler from './index'
@@ -33,9 +37,6 @@ vi.mock('ai', () => ({
   convertToModelMessages: vi.fn((messages) => messages),
   streamText: vi.fn()
 }))
-vi.mock('langfuse', () => ({
-  Langfuse: vi.fn()
-}))
 vi.mock('../../../src/libs/getFlags', () => ({
   getFlags: vi.fn()
 }))
@@ -45,7 +46,9 @@ vi.mock('../../../src/libs/getCardChatEnabled', () => ({
 vi.mock('../../../src/libs/langfuse/client', () => ({
   APOLOGIST_PROMPT_NAME: 'apologist-world-cup-chat',
   getActivePromptLabel: vi.fn(() => 'development'),
-  getLangfuse: vi.fn(() => null)
+  getLangfuse: vi.fn(() => null),
+  startChatGeneration: vi.fn(),
+  flushLangfuse: vi.fn().mockResolvedValue(undefined)
 }))
 vi.mock('../../../src/libs/logger', () => ({
   logger: { error: mockLoggerError, warn: mockLoggerWarn, info: mockLoggerInfo }
@@ -81,13 +84,13 @@ function makeRes(headersSent = false): CapturedRes {
   const json = vi.fn().mockReturnThis()
   const setHeader = vi.fn().mockReturnThis()
   return {
-    res: {
+    res: Object.assign(new EventEmitter(), {
       status,
       end,
       json,
       setHeader,
       headersSent
-    } as unknown as NextApiResponse,
+    }) as unknown as NextApiResponse,
     status,
     end,
     json,
@@ -96,11 +99,11 @@ function makeRes(headersSent = false): CapturedRes {
 }
 
 interface FakeLangfuse {
-  trace: Mock
   generation: Mock
   generationEnd: Mock
   flushAsync: Mock
   getPrompt: Mock
+  prompt: { get: Mock }
   compile: Mock
 }
 
@@ -111,26 +114,37 @@ function makeFakeLangfuse(
   } = {}
 ): FakeLangfuse {
   const generationEnd = vi.fn()
-  const generation = vi.fn(() => ({ end: generationEnd }))
-  const trace = vi.fn(() => ({ generation }))
+  const generation: Mock = vi.fn(() => ({ end: generationEnd }))
   const flushAsync = vi.fn().mockResolvedValue(undefined)
   const compile = vi.fn(
     (vars: { language?: string }) =>
       `compiled-system[lang=${vars.language ?? ''}]`
   )
-  const getPrompt = vi.fn(async () => {
-    if (opts.promptError != null) throw opts.promptError
-    return (
+  const getPrompt = vi.fn(() => {
+    if (opts.promptError != null) return Promise.reject(opts.promptError)
+    return Promise.resolve(
       opts.promptResult ?? {
         type: 'text',
         compile
       }
     )
   })
-  return { trace, generation, generationEnd, flushAsync, getPrompt, compile }
+  vi.mocked(startChatGeneration).mockImplementation((attributes) =>
+    generation(attributes)
+  )
+  vi.mocked(flushLangfuse).mockImplementation(flushAsync)
+  return {
+    generation,
+    generationEnd,
+    flushAsync,
+    getPrompt,
+    prompt: { get: getPrompt },
+    compile
+  }
 }
 
 let lastStreamConfig: {
+  onAbort?: () => Promise<void> | void
   onError?: (args: { error: unknown }) => Promise<void> | void
   onFinish?: (args: {
     text: string
@@ -301,7 +315,7 @@ describe('/api/chat handler', () => {
         baseURL: 'https://apologist.test',
         apiKey: 'apologist-test-key'
       })
-      expect(fake.trace.mock.calls[0][0].metadata).toMatchObject({
+      expect(fake.generation.mock.calls[0][0].metadata).toMatchObject({
         provider: 'apologist',
         modelId: 'openai/gpt/4o-mini'
       })
@@ -314,7 +328,7 @@ describe('/api/chat handler', () => {
 
       await handler(postReq(), makeRes().res)
 
-      expect(fake.trace.mock.calls[0][0].metadata).toMatchObject({
+      expect(fake.generation.mock.calls[0][0].metadata).toMatchObject({
         provider: 'gemini',
         modelId: 'gemini-2.0-flash'
       })
@@ -327,7 +341,7 @@ describe('/api/chat handler', () => {
 
       await handler(postReq(), makeRes().res)
 
-      expect(fake.trace.mock.calls[0][0].metadata).toMatchObject({
+      expect(fake.generation.mock.calls[0][0].metadata).toMatchObject({
         provider: 'openai',
         modelId: 'gpt-4o'
       })
@@ -346,7 +360,7 @@ describe('/api/chat handler', () => {
         baseURL: 'https://openrouter.ai/api/v1',
         apiKey: 'or-test'
       })
-      expect(fake.trace.mock.calls[0][0].metadata).toMatchObject({
+      expect(fake.generation.mock.calls[0][0].metadata).toMatchObject({
         provider: 'openrouter',
         modelId: 'google/gemini-3-flash-preview'
       })
@@ -361,7 +375,7 @@ describe('/api/chat handler', () => {
 
       await handler(postReq(), makeRes().res)
 
-      expect(fake.trace.mock.calls[0][0].metadata).toMatchObject({
+      expect(fake.generation.mock.calls[0][0].metadata).toMatchObject({
         provider: 'openrouter',
         modelId: 'anthropic/claude-3.5-sonnet'
       })
@@ -487,11 +501,9 @@ describe('/api/chat handler', () => {
 
       await handler(postReq('French'), makeRes().res)
 
-      expect(fake.getPrompt).toHaveBeenCalledWith(
-        'apologist-world-cup-chat',
-        undefined,
-        { label: 'development' }
-      )
+      expect(fake.getPrompt).toHaveBeenCalledWith('apologist-world-cup-chat', {
+        label: 'development'
+      })
       expect(fake.compile).toHaveBeenCalledWith({
         language: 'French',
         translation: 'ESV'
@@ -543,11 +555,9 @@ describe('/api/chat handler', () => {
 
       await handler(postReq(), makeRes().res)
 
-      expect(fake.getPrompt).toHaveBeenCalledWith(
-        'apologist-world-cup-chat',
-        undefined,
-        { label: 'production' }
-      )
+      expect(fake.getPrompt).toHaveBeenCalledWith('apologist-world-cup-chat', {
+        label: 'production'
+      })
     })
   })
 
@@ -596,20 +606,20 @@ describe('/api/chat handler', () => {
         makeRes().res
       )
 
-      expect(fake.trace).toHaveBeenCalledWith({
-        name: 'apologist-chat',
-        sessionId: 'sess-1',
-        metadata: {
-          journeyId: 'journey-1',
-          language: 'es',
-          ipCountry: 'NZ',
-          provider: 'apologist',
-          modelId: 'openai/gpt/4o-mini'
-        }
-      })
       expect(fake.generation).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: 'apologist-generation',
+          sessionId: 'sess-1',
+          metadata: {
+            journeyId: 'journey-1',
+            language: 'es',
+            ipCountry: 'NZ',
+            provider: 'apologist',
+            modelId: 'openai/gpt/4o-mini'
+          }
+        })
+      )
+      expect(fake.generation).toHaveBeenCalledWith(
+        expect.objectContaining({
           model: 'openai/gpt/4o-mini',
           input: [{ role: 'user', content: 'hi' }],
           prompt: expect.objectContaining({ type: 'text' })
@@ -650,6 +660,23 @@ describe('/api/chat handler', () => {
       ).resolves.not.toThrow()
     })
 
+    it('closes and flushes an aborted generation once, even if a late finish arrives', async () => {
+      const fake = makeFakeLangfuse()
+      mockGetLangfuse.mockReturnValue(fake as never)
+      await handler(postReq(), makeRes().res)
+      await lastStreamConfig?.onAbort?.()
+      await lastStreamConfig?.onFinish?.({
+        text: 'late reply',
+        finishReason: 'stop'
+      })
+      expect(fake.generationEnd).toHaveBeenCalledTimes(1)
+      expect(fake.generationEnd).toHaveBeenCalledWith({
+        level: 'WARNING',
+        statusMessage: 'stream aborted'
+      })
+      expect(fake.flushAsync).toHaveBeenCalled()
+    })
+
     it('ends the generation with output + usage on a successful onFinish', async () => {
       const fake = makeFakeLangfuse()
       mockGetLangfuse.mockReturnValue(fake as never)
@@ -665,7 +692,7 @@ describe('/api/chat handler', () => {
       expect(fake.generationEnd).toHaveBeenCalledTimes(1)
       expect(fake.generationEnd).toHaveBeenCalledWith({
         output: 'hello back',
-        usage: { input: 11, output: 7, unit: 'TOKENS' },
+        usageDetails: { input: 11, output: 7 },
         level: 'DEFAULT'
       })
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
@@ -736,7 +763,7 @@ describe('/api/chat handler', () => {
 
       expect(fake.generationEnd).toHaveBeenCalledWith({
         output: 'no usage path',
-        usage: undefined,
+        usageDetails: undefined,
         level: 'DEFAULT'
       })
     })
@@ -848,7 +875,7 @@ describe('/api/chat handler', () => {
       expect(fake.generationEnd).toHaveBeenCalledTimes(1)
       expect(fake.generationEnd).toHaveBeenCalledWith({
         output: 'good',
-        usage: { input: 2, output: 3, unit: 'TOKENS' },
+        usageDetails: { input: 2, output: 3 },
         level: 'DEFAULT'
       })
     })
