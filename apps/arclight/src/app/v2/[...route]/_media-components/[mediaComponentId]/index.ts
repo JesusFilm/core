@@ -73,6 +73,7 @@ const GET_VIDEO = graphql(`
       availableLanguages
       variant {
         hls
+        dash
         lengthInMilliseconds
         language {
           bcp47
@@ -272,7 +273,10 @@ mediaComponent.openapi(route, async (c) => {
         return { data: descriptorsonlyResponse, statusCode: 200 }
       }
 
-      const componentType = getComponentType(video.variant?.hls)
+      const componentType = getComponentType(
+        video.variant?.hls,
+        video.variant?.dash
+      )
 
       const responseData = {
         mediaComponentId,

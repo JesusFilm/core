@@ -123,4 +123,33 @@ describe('GET /media-components/:mediaComponentId', () => {
       contentType: 'video'
     })
   })
+
+  it('reports a DASH-only Variant as content', async () => {
+    queryMock.mockResolvedValue({
+      data: {
+        video: baseVideo({
+          id: '1_jf-dash-only',
+          label: 'featureFilm',
+          variant: {
+            hls: '',
+            dash: 'https://example.com/jf.mpd',
+            lengthInMilliseconds: 7673728,
+            language: { bcp47: 'en' },
+            downloadable: true,
+            downloads: []
+          }
+        })
+      }
+    })
+
+    const res = await app.request('/media-components/1_jf-dash-only')
+
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body).toMatchObject({
+      mediaComponentId: '1_jf-dash-only',
+      componentType: 'content',
+      contentType: 'video'
+    })
+  })
 })

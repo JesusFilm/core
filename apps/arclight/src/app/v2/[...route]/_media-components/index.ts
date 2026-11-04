@@ -224,6 +224,7 @@ mediaComponents.openapi(route, async (c) => {
             variants: {
               select: {
                 hls: true,
+                dash: true,
                 lengthInMilliseconds: true,
                 languageId: true,
                 downloadable: true,
@@ -362,7 +363,7 @@ mediaComponents.openapi(route, async (c) => {
       )
 
       const variant = video.variants[0]
-      const componentType = getComponentType(variant?.hls)
+      const componentType = getComponentType(variant?.hls, variant?.dash)
       const isDownloadable =
         video.label === 'collection' || video.label === 'series'
           ? false

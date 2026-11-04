@@ -53,6 +53,7 @@ type FakeVariant = {
   languageId: string
   published: boolean
   hls: string | null
+  dash: string | null
   lengthInMilliseconds: number
   downloadable: boolean
   downloads: Array<{ quality: string; size: number }>
@@ -65,6 +66,7 @@ const jesusVariants: FakeVariant[] = [
     languageId: '20615',
     published: false,
     hls: 'https://example.com/jf-20615.m3u8',
+    dash: null,
     lengthInMilliseconds: 0,
     downloadable: false,
     downloads: []
@@ -73,6 +75,7 @@ const jesusVariants: FakeVariant[] = [
     languageId: '529',
     published: true,
     hls: 'https://example.com/jf.m3u8',
+    dash: null,
     lengthInMilliseconds: 7673728,
     downloadable: true,
     downloads: [
@@ -177,6 +180,7 @@ describe('GET /media-components', () => {
             languageId: '529',
             published: true,
             hls: '',
+            dash: '',
             lengthInMilliseconds: 0,
             downloadable: false,
             downloads: []
@@ -192,6 +196,35 @@ describe('GET /media-components', () => {
       mediaComponentId: '16_Influencers',
       componentType: 'container',
       contentType: 'none'
+    })
+  })
+
+  it('reports a DASH-only Variant as content', async () => {
+    mediaPrismaMock.video.findMany.mockResolvedValue([
+      {
+        ...jesusVideo(undefined),
+        id: '1_jf-dash-only',
+        variants: [
+          {
+            languageId: '529',
+            published: true,
+            hls: '',
+            dash: 'https://example.com/jf.mpd',
+            lengthInMilliseconds: 7673728,
+            downloadable: true,
+            downloads: []
+          }
+        ]
+      }
+    ] as never)
+
+    const res = await app.request('/media-components?ids=1_jf-dash-only')
+
+    const [jesus] = (await res.json())._embedded.mediaComponents
+    expect(jesus).toMatchObject({
+      mediaComponentId: '1_jf-dash-only',
+      componentType: 'content',
+      contentType: 'video'
     })
   })
 })
