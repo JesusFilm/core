@@ -310,10 +310,15 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
 
 #Create services for app services
 resource "aws_ecs_service" "ecs_service" {
-  name                              = "${local.service_config_name_env}-service"
-  cluster                           = var.ecs_config.cluster.id
-  task_definition                   = aws_ecs_task_definition.ecs_task_definition.arn
-  launch_type                       = "FARGATE"
+  name            = "${local.service_config_name_env}-service"
+  cluster         = var.ecs_config.cluster.id
+  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
+  # One or the other: ECS rejects a launch type alongside a capacity
+  # provider strategy, and changing between them replaces the service.
+  launch_type = var.capacity_provider == null ? "FARGATE" : null
+  # The provider updates a launch-type service to a capacity provider
+  # strategy in place, but only as a forced deployment.
+  force_new_deployment              = var.capacity_provider != null
   desired_count                     = var.service_config.desired_count
   enable_execute_command            = true
   health_check_grace_period_seconds = var.service_config.health_check_grace_period_seconds
@@ -322,6 +327,15 @@ resource "aws_ecs_service" "ecs_service" {
   # service already has in state.
   deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
   deployment_maximum_percent         = var.deployment_maximum_percent
+
+  dynamic "capacity_provider_strategy" {
+    for_each = var.capacity_provider == null ? [] : [var.capacity_provider]
+    content {
+      capacity_provider = capacity_provider_strategy.value
+      weight            = 1
+      base              = 0
+    }
+  }
 
   network_configuration {
     subnets          = var.ecs_config.subnets

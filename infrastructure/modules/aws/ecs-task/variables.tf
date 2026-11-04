@@ -177,3 +177,19 @@ variable "deployment_maximum_percent" {
     error_message = "deployment_maximum_percent must be between 100 and 200."
   }
 }
+
+variable "capacity_provider" {
+  type        = string
+  default     = null
+  description = "Fargate capacity provider for the service. FARGATE_SPOT runs it on interruptible capacity (about 70% cheaper; ECS replaces an interrupted task after a two-minute warning). null keeps the FARGATE launch type the existing services were created with. x86 only: Spot does not offer ARM64. Switching an existing service replaces it."
+
+  validation {
+    condition     = var.capacity_provider == null || contains(["FARGATE", "FARGATE_SPOT"], var.capacity_provider)
+    error_message = "capacity_provider must be FARGATE, FARGATE_SPOT or null."
+  }
+
+  validation {
+    condition     = !(var.capacity_provider == "FARGATE_SPOT" && var.cpu_architecture == "ARM64")
+    error_message = "FARGATE_SPOT is not available for ARM64 tasks."
+  }
+}
