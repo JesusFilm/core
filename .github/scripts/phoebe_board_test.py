@@ -104,6 +104,11 @@ class Project:
         if query.startswith("query"):
             return {"node": self.item(int(variables["id"]))}
         self.mutations.append(variables)
+        if "addProjectV2ItemById" in query:
+            assert variables["c"].startswith("I"), "Only issue nodes may be added"
+            number = int(variables["c"][1:])
+            self.status[number] = None
+            return {"addProjectV2ItemById": {"item": {"id": str(number)}}}
         number = int(variables["i"])
         if variables["f"] == "state":
             self.state[number] = variables["text"]
@@ -123,7 +128,7 @@ class WriterTests(unittest.TestCase):
         with patch.object(board, "collect", return_value=(rows, pulls)), patch.object(board, "snapshot", side_effect=project.snapshot):
             return board.update_board(project, policy or POLICY, apply, release)
 
-    def test_both_cards_follow_repeated_review_cycle_and_merge(self):
+    def test_only_issue_follows_repeated_review_cycle_and_merge(self):
         for owner in board.OWNERS:
             project = Project()
             view = pr(labels=[{"name": owner}])
@@ -137,11 +142,12 @@ class WriterTests(unittest.TestCase):
             ]:
                 view.update(changes)
                 self.run_update(project, {1: view})
-                self.assertEqual(project.status, {1: expected, 10: expected})
+                self.assertEqual(project.status, {1: "In progress", 10: expected})
+                self.assertNotIn(1, project.state)
 
     def test_dry_run_never_writes(self):
         project = Project()
-        self.assertEqual(self.run_update(project, {1: pr()}, apply=False), [1, 10])
+        self.assertEqual(self.run_update(project, {1: pr()}, apply=False), [10])
         self.assertEqual(project.mutations, [])
 
     def test_unchanged_event_does_not_write(self):
@@ -157,21 +163,36 @@ class WriterTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.run_update(project, {1: pr()})
         self.run_update(project, {1: pr()})
-        self.assertEqual(project.status, {1: "In review", 10: "In review"})
-        self.assertNotIn("manual", json.loads(project.state[1]))
+        self.assertEqual(project.status, {1: "In progress", 10: "In review"})
+        self.assertNotIn("manual", json.loads(project.state[10]))
 
     def test_concurrent_manual_move_is_not_overwritten(self):
         project = Project()
         project.concurrent_move = True
         self.run_update(project, {1: pr()})
-        self.assertEqual(project.status[1], "QA")
-        self.assertEqual(json.loads(project.state[1])["manual"], "QA")
+        self.assertEqual(project.status[10], "QA")
+        self.assertEqual(json.loads(project.state[10])["manual"], "QA")
 
     def test_removed_ownership_is_respected_before_writing(self):
         project = Project()
-        project.unowned.add(1)
+        project.unowned.add(10)
         self.run_update(project, {1: pr()})
-        self.assertEqual(project.status[1], "In progress")
+        self.assertEqual(project.status[10], "In progress")
+
+    def test_missing_pr_card_is_never_recreated(self):
+        project = Project()
+        project.status.pop(1)
+        self.run_update(project, {1: pr()})
+        self.assertNotIn(1, project.status)
+        self.assertEqual(project.status[10], "In review")
+
+    def test_missing_issue_card_is_added_using_the_issue_node(self):
+        project = Project()
+        project.status.pop(10)
+        self.run_update(project, {1: pr()})
+        added = [m["c"] for m in project.mutations if "c" in m]
+        self.assertEqual(added, ["I10"])
+        self.assertEqual(project.status, {1: "In progress", 10: "In review"})
 
     def test_manual_override_is_preserved_and_can_be_released(self):
         project = Project()

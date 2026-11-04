@@ -210,8 +210,8 @@ def update_board(gh, policy, apply=False, release=None):
         result = gh.query("""mutation($p:ID!,$name:String!){createProjectV2Field(input:{projectId:$p,dataType:TEXT,name:$name}){projectV2Field{...on ProjectV2Field{id name}}}}""", p=project["id"], name=STATE_FIELD)
         state_field = result["createProjectV2Field"]["projectV2Field"]
     links = {n: issue_links(pr, policy) for n, pr in pulls.items()}
-    wants = {n: pr_status(pr, policy["default_branch"]) for n, pr in pulls.items()}
-    fingerprints = {n: activity_key([pr]) for n, pr in pulls.items()}
+    # PRs provide evidence only. Never add or update PR project cards.
+    wants, fingerprints = {}, {}
     # A missing, de-authorized or excluded required PR cannot imply delivery.
     required_links = {int(n): targets for n, targets in policy.get("links", {}).items()}
     required_links.update(links)
@@ -232,7 +232,7 @@ def update_board(gh, policy, apply=False, release=None):
             if not apply:
                 print(f"#{number}: add project card -> {proposed}")
                 continue
-            node = pulls[number]["id"] if number in pulls else rows[number]["node_id"]
+            node = rows[number]["node_id"]
             result = gh.query("""mutation($p:ID!,$c:ID!){addProjectV2ItemById(input:{projectId:$p,contentId:$c}){item{id}}}""", p=project["id"], c=node)
             item = {"id": result["addProjectV2ItemById"]["item"]["id"]}
         # Re-read each item immediately before writing, including its durable

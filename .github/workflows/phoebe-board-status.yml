@@ -34,7 +34,7 @@ on:
         type: boolean
         default: false
       release_override:
-        description: Optional issue or PR number whose manual Status override should be released
+        description: Optional issue number whose manual Status override should be released
         type: string
         required: false
 
@@ -87,7 +87,7 @@ jobs:
           permission-issues: read
           permission-pull-requests: read
           permission-organization-projects: write
-      - name: Update PR and linked issue statuses
+      - name: Update linked issue statuses
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           APPLY_BOARD: ${{ vars.PHOEBE_BOARD_WRITER == 'github-actions' && (github.event_name != 'workflow_dispatch' || inputs.apply) }}

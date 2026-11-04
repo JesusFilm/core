@@ -2,7 +2,7 @@
 
 The `Phoebe board status` workflow can replace the VM's board writer for
 Next Steps project 8. It applies to PRs carrying exactly one of
-`phoebe-siyang-vm` or `phoebe-siyang-local`. Both runners use the same workflow.
+`phoebe-siyang-vm` or `phoebe-siyang-local`. Both runners use the same workflow. Only issues are added to the project or have their fields updated. PRs supply evidence through links; PR project cards are never created or updated.
 The workflow is disabled for automatic writes until the repository variable
 `PHOEBE_BOARD_WRITER` is `github-actions`.
 
@@ -48,7 +48,7 @@ A later manual board move takes precedence over automatic proposals. A manual
 override can be released with the workflow's `release_override` input and
 `apply: true`. QA, Needs Human and Done positions are preserved during bootstrap.
 
-The six restored cards are imported from the VM with a PR activity fingerprint.
+The three restored issue positions are imported from the VM with a PR activity fingerprint.
 Siyang explicitly requested that those positions expire on their own PR's next
 activity. An unrelated PR event does not release them. New commits, review
 activity or a changed PR state allow their normal automatic updates to resume.
