@@ -68,6 +68,31 @@ describe('checkStartupEnvironment', () => {
     )
   })
 
+  it('rejects a non-loopback http GraphQL endpoint', () => {
+    const failures = checkStartupEnvironment({
+      ...validEnv,
+      GRAPHQL_ENDPOINT: 'http://api-gateway.example.com/graphql'
+    })
+
+    assert.deepEqual(
+      failures.find((failure) => failure.variable === 'GRAPHQL_ENDPOINT'),
+      {
+        variable: 'GRAPHQL_ENDPOINT',
+        message: 'must use https:// (http:// is only allowed for localhost)'
+      }
+    )
+  })
+
+  it('accepts an https GraphQL endpoint', () => {
+    assert.deepEqual(
+      checkStartupEnvironment({
+        ...validEnv,
+        GRAPHQL_ENDPOINT: 'https://api-gateway.example.com/graphql'
+      }),
+      []
+    )
+  })
+
   it('uses a friendly message for invalid URLs', () => {
     const failures = checkStartupEnvironment({
       ...validEnv,

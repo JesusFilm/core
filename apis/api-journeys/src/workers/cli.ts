@@ -2,9 +2,7 @@ import { Queue } from 'bullmq'
 import chalk from 'chalk'
 
 import { connection } from './lib/connection'
-
-const ONE_HOUR = 3600
-const ONE_DAY = 86_400
+import { ONE_DAY, ONE_HOUR } from './lib/jobAge'
 
 export async function cli(argv = process.argv): Promise<void> {
   let queue: Queue, jobName: string, queueName: string

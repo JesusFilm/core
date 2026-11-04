@@ -4,6 +4,7 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { UserJourneyRole } from '@core/prisma/journeys/client'
 
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { collectMediaFromJourneys, deleteUnusedMedia } from './mediaCleanup'
@@ -46,6 +47,7 @@ describe('anonymousJourneyCleanup service', () => {
       error: vi.fn()
     } as any
 
+    prismaMock.qrCode.findMany.mockResolvedValue([])
     mockCollectMediaFromJourneys.mockResolvedValue({
       muxVideoIds: new Set(),
       cloudflareImageIds: new Set()
@@ -178,6 +180,45 @@ describe('anonymousJourneyCleanup service', () => {
     )
     expect(prismaMock.journey.delete).toHaveBeenCalledTimes(2)
     expect(mockPrismaUsers.user.delete).toHaveBeenCalled()
+  })
+
+  it("enqueues a deleted journey's QR short links, and none for a journey whose delete fails", async () => {
+    mockPrismaUsers.user.findMany.mockResolvedValue([
+      { id: 'user-db-1', userId: 'user-1' }
+    ])
+    prismaMock.journey.findMany.mockResolvedValue([
+      { id: 'journey-1', title: 'Failing Journey' },
+      { id: 'journey-2', title: 'Good Journey' }
+    ] as any)
+    prismaMock.qrCode.findMany.mockImplementation((async ({ where }: any) =>
+      where.journeyId.in[0] === 'journey-1'
+        ? [{ shortLinkId: 'shortLink-1' }]
+        : [
+            { shortLinkId: 'shortLink-2-a' },
+            { shortLinkId: 'shortLink-2-b' }
+          ]) as never)
+    prismaMock.journey.delete
+      .mockRejectedValueOnce(new Error('delete failed'))
+      .mockResolvedValueOnce({} as any)
+    prismaMock.journey.count.mockResolvedValue(1)
+
+    await service(mockJob, mockLogger)
+
+    expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({
+      where: { journeyId: { in: ['journey-2'] } },
+      select: { shortLinkId: true }
+    })
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data)).toEqual([
+      { shortLinkId: 'shortLink-2-a' },
+      { shortLinkId: 'shortLink-2-b' }
+    ])
+    expect(mockQueueAdd.mock.calls.map(([, , opts]) => opts.jobId)).toEqual([
+      'shortlink-delete-shortLink-2-a',
+      'shortlink-delete-shortLink-2-b'
+    ])
+    expect(prismaMock.qrCode.findMany.mock.invocationCallOrder[1]).toBeLessThan(
+      prismaMock.journey.delete.mock.invocationCallOrder[1]
+    )
   })
 
   it('should continue processing when user deletion fails', async () => {

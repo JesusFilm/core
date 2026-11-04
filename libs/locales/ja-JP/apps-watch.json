@@ -110,7 +110,7 @@
   "Unmute": "ミュート解除",
   "Mute": "ミュート",
   "Latest videos": "最新ビデオ",
-  "Latest videos in {{language}}": "Latest videos in {{language}}",
+  "Latest videos in {{language}}": "{{language}} хэл дээрх хамгийн сүүлийн үеийн видеонууд",
   "Latest videos in {{languages}}": "{{languages}}の最新ビデオ",
   "No catch here—try the other side of the boat.": "ここでは釣れない。",
   "Try another search": "別の検索を試す",

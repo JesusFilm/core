@@ -33,7 +33,7 @@ permissions:
 jobs:
   deploy-and-test:
     if: inputs.TargetTests == 'all-e2e' || github.event_name == 'schedule'
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     strategy:
       fail-fast: false
       matrix:
@@ -183,7 +183,7 @@ jobs:
   E2E_Tests:
     if: inputs.TargetTests != 'all-e2e' && github.event_name != 'schedule'
     timeout-minutes: 60
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     strategy:
       matrix:
         test-suite: ${{ fromJSON(format('["{0}"]', inputs.TargetTests)) }}

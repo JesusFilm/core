@@ -1,0 +1,18 @@
+import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
+import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
+
+/**
+ * The region's name in the language being previewed: that language's
+ * translation, or the default name where there is none, as the public page
+ * shows it.
+ */
+export function regionDisplayName(
+  region: Pick<CampaignRegion, 'name' | 'nameTranslations'>,
+  previewLanguageId: string,
+  defaultLanguageId: string
+): string {
+  if (previewLanguageId === defaultLanguageId) return region.name
+  return (
+    translationValue(region.nameTranslations, previewLanguageId) || region.name
+  )
+}

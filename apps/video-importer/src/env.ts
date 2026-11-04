@@ -3,6 +3,8 @@ import './loadEnv'
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
+import { graphqlEndpointSchema } from './utils/graphqlEndpoint'
+
 export const env = createEnv({
   runtimeEnv: process.env,
   skipValidation: process.env.SKIP_ENV_VALIDATION === '1',
@@ -11,7 +13,7 @@ export const env = createEnv({
     throw new Error('[video-importer] Invalid environment variables')
   },
   server: {
-    GRAPHQL_ENDPOINT: z.url().trim().min(1),
+    GRAPHQL_ENDPOINT: graphqlEndpointSchema,
     FIREBASE_EMAIL: z.string().trim().min(1),
     FIREBASE_PASSWORD: z.string().trim().min(1),
     FIREBASE_API_KEY: z.string().trim().min(1),

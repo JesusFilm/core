@@ -10,6 +10,7 @@ import { builder } from '../builder'
 import { JourneyCreateInput } from './inputs'
 import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
+import { isReservedJourneySlug } from './reservedJourneySlugs/reservedJourneySlugs'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -33,6 +34,8 @@ builder.mutationField('journeyCreate', (t) =>
           strict: true
         })
         const id = input.id ?? uuidv4()
+        if (isReservedJourneySlug(slug))
+          slug = slugify(`${slug}-${id}`, { lower: true, strict: true })
 
         while (retry) {
           try {

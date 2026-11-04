@@ -1,0 +1,128 @@
+# Backing services for local development. Used two ways:
+#
+#   - Included by .devcontainer/docker-compose.yml for the dev container.
+#   - Run directly on a host checkout:
+#       pnpm services:up        (all services, --profile analytics)
+#       pnpm services:up:base   (without clickhouse + plausible)
+#
+# clickhouse and plausible are behind the `analytics` profile so they can be
+# left out; `pnpm services:up` includes them by default, and the dev container
+# always starts them (see `runServices` in .devcontainer/devcontainer.json).
+# Pinned to the dev container's compose project so a host checkout and the dev
+# container share the same containers and volumes (one set of databases, no
+# port clashes). Ignored when this file is pulled in via `include:`.
+#
+# Because the project is shared, `app` and `bootstrap` show up as orphans when
+# this file is run directly. Never pass `--remove-orphans`, and prefer `stop`
+# over `down` — both would take services away from a running dev container.
+name: core_devcontainer
+services:
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    # db anchors a single network namespace that every other service joins
+    # (`network_mode: service:db`), so all of them are reachable as
+    # `localhost` from each other, from the host, and from the dev container.
+    # That is why every published port lives here.
+    # Bound to loopback: redis is unauthenticated and the postgres
+    # credentials are committed, so never expose them on a shared network.
+    ports:
+      - 127.0.0.1:5432:5432 # db
+      - 127.0.0.1:6379:6379 # redis
+      - 127.0.0.1:8079:80 # serverless-redis-http
+      - 127.0.0.1:1080:1080 # maildev web
+      - 127.0.0.1:1025:1025 # maildev smtp
+      - 127.0.0.1:8000:8000 # plausible
+    # Shared with every service that joins this namespace (they inherit
+    # db's /etc/hosts). host.docker.internal is used by
+    # tools/scripts/db-backup-restore.sh. The service-name aliases are a
+    # compatibility shim: since the services share one namespace they are no
+    # longer separate DNS entries, so config that still says `redis`,
+    # `maildev`, `plausible`... (e.g. Doppler dev configs) keeps resolving
+    # inside the dev container. Prefer `localhost`; the aliases do not exist
+    # on a host checkout.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+      - 'redis:127.0.0.1'
+      - 'serverless-redis-http:127.0.0.1'
+      - 'maildev:127.0.0.1'
+      - 'clickhouse:127.0.0.1'
+      - 'plausible:127.0.0.1'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    network_mode: service:db
+    command:
+      [
+        'redis-server',
+        '--appendonly',
+        'no',
+        '--maxmemory',
+        '500mb',
+        '--maxmemory-policy',
+        'noeviction'
+      ]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  serverless-redis-http:
+    image: hiett/serverless-redis-http:latest
+    restart: unless-stopped
+    network_mode: service:db
+    depends_on:
+      - redis
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: example_token
+      SRH_CONNECTION_STRING: redis://localhost:6379
+  maildev:
+    image: 'maildev/maildev:latest'
+    restart: unless-stopped
+    network_mode: service:db
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.3.7.5-alpine
+    profiles: ['analytics']
+    restart: always
+    network_mode: service:db
+    volumes:
+      - event-data:/var/lib/clickhouse
+      - event-logs:/var/log/clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+  plausible:
+    image: ghcr.io/plausible/community-edition:v2.1.1
+    profiles: ['analytics']
+    restart: always
+    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
+    network_mode: service:db
+    depends_on:
+      - db
+      - clickhouse
+    environment:
+      BASE_URL: http://localhost:8000
+      SECRET_KEY_BASE: LG7O7gVu6xg82I3mx/txm0VeTapsBOBl2Fb40+jgfL+OlKBsOOtwYQUus8Hm51mJ
+      TOTP_VAULT_KEY: GDaE8fBhEKJUveTDKv1DFPXIqf6EjVtcNwdUiy2i/MA=
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/plausible_db
+      CLICKHOUSE_DATABASE_URL: http://localhost:8123/plausible_events_db
+volumes:
+  postgres-data:
+  redis-data:
+  event-data:
+  event-logs:

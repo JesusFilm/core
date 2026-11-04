@@ -7,8 +7,14 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { updateTeamShortLinks } from './service'
+
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('./service', () => ({
+  updateTeamShortLinks: vi.fn().mockResolvedValue(undefined)
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -40,6 +46,7 @@ describe('customDomainUpdate', () => {
     name: 'example.com',
     apexName: 'example.com',
     journeyCollectionId: null,
+    campaignId: null,
     routeAllTeamJourneys: true,
     team: {
       id: 'teamId',
@@ -100,6 +107,90 @@ describe('customDomainUpdate', () => {
         }
       })
     )
+  })
+
+  describe('short link rewrite', () => {
+    it('rewrites the team short links when routeAllTeamJourneys changes', async () => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+      prismaMock.customDomain.update.mockResolvedValue({
+        ...mockCustomDomain,
+        routeAllTeamJourneys: false
+      })
+
+      await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: {
+          id: 'customDomainId',
+          input: { routeAllTeamJourneys: false }
+        }
+      })
+
+      expect(updateTeamShortLinks).toHaveBeenCalledTimes(1)
+      expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
+    })
+
+    it('does not fail when the short link rewrite rejects after the update is committed', async () => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+      prismaMock.customDomain.update.mockResolvedValue({
+        ...mockCustomDomain,
+        routeAllTeamJourneys: false
+      })
+      vi.mocked(updateTeamShortLinks).mockRejectedValueOnce(
+        new Error('gateway down')
+      )
+
+      const result = (await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: {
+          id: 'customDomainId',
+          input: { routeAllTeamJourneys: false }
+        }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.customDomainUpdate).toMatchObject({
+        id: 'customDomainId',
+        routeAllTeamJourneys: false
+      })
+      expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
+    })
+
+    it('rewrites the team short links when the journey collection changes', async () => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+      prismaMock.journeyCollection.findFirst.mockResolvedValue({
+        id: 'collectionId',
+        teamId: 'teamId'
+      } as any)
+      prismaMock.customDomain.update.mockResolvedValue({
+        ...mockCustomDomain,
+        journeyCollectionId: 'collectionId'
+      })
+
+      await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: {
+          id: 'customDomainId',
+          input: { journeyCollectionId: 'collectionId' }
+        }
+      })
+
+      expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
+    })
+
+    it('does not rewrite when the submitted values match the stored ones', async () => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+      prismaMock.customDomain.update.mockResolvedValue(mockCustomDomain)
+
+      await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: {
+          id: 'customDomainId',
+          input: { routeAllTeamJourneys: true, journeyCollectionId: null }
+        }
+      })
+
+      expect(updateTeamShortLinks).not.toHaveBeenCalled()
+    })
   })
 
   it('should update journeyCollectionId', async () => {
@@ -199,7 +290,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'journey collection not found for this custom domain team'
+          message: 'journey collection not found for this custom domain team',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })
@@ -225,7 +317,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'custom domain not found'
+          message: 'custom domain not found',
+          extensions: { code: 'NOT_FOUND' }
         })
       ]
     })
@@ -265,7 +358,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'user is not allowed to update custom domain'
+          message: 'user is not allowed to update custom domain',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })
@@ -296,11 +390,77 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'user is not allowed to update custom domain'
+          message: 'user is not allowed to update custom domain',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })
 
     expect(prismaMock.customDomain.update).not.toHaveBeenCalled()
+  })
+
+  describe('on a Campaign Domain', () => {
+    const campaignDomain = {
+      ...mockCustomDomain,
+      campaignId: 'campaignId',
+      routeAllTeamJourneys: false
+    }
+
+    it.each([
+      { input: { routeAllTeamJourneys: true } },
+      { input: { journeyCollectionId: 'collectionId' } },
+      { input: { journeyCollectionId: null } },
+      { input: {} }
+    ])('refuses any update $input on the domain id', async ({ input }) => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(campaignDomain)
+
+      const result = await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: { id: 'customDomainId', input }
+      })
+
+      expect(result).toEqual({
+        data: null,
+        errors: [
+          expect.objectContaining({
+            message:
+              'a campaign domain serves only its campaign and cannot be rerouted',
+            extensions: { code: 'BAD_USER_INPUT', field: 'id' }
+          })
+        ]
+      })
+      expect(prismaMock.customDomain.update).not.toHaveBeenCalled()
+      expect(updateTeamShortLinks).not.toHaveBeenCalled()
+    })
+
+    it('is FORBIDDEN, not BAD_USER_INPUT, for a team member', async () => {
+      const memberCampaignDomain = {
+        ...campaignDomain,
+        team: {
+          ...campaignDomain.team,
+          userTeams: [
+            { ...campaignDomain.team.userTeams[0], role: UserTeamRole.member }
+          ]
+        }
+      }
+      prismaMock.customDomain.findUnique.mockResolvedValue(memberCampaignDomain)
+
+      const result = await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: {
+          id: 'customDomainId',
+          input: { routeAllTeamJourneys: true }
+        }
+      })
+
+      expect(result).toEqual({
+        data: null,
+        errors: [
+          expect.objectContaining({
+            extensions: expect.objectContaining({ code: 'FORBIDDEN' })
+          })
+        ]
+      })
+    })
   })
 })

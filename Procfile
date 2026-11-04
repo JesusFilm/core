@@ -1,7 +1,7 @@
-analytics: nx serve api-analytics
-journeys: nx serve api-journeys
-languages: nx serve api-languages
-media: nx serve api-media
-users: nx serve api-users
-gateway: nx serve api-gateway
-gateway-watcher: nx generate-graphql api-gateway --watch
+analytics: pnpm exec nx serve api-analytics
+journeys: pnpm exec nx serve api-journeys
+languages: pnpm exec nx serve api-languages
+media: pnpm exec nx serve api-media
+users: pnpm exec nx serve api-users
+gateway: pnpm exec nx serve api-gateway
+gateway-watcher: pnpm exec nx generate-graphql api-gateway --watch

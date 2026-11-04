@@ -11,8 +11,10 @@ vi.mock('./utils', () => ({
 }))
 
 const init = vi.fn()
+const addResourceBundle = vi.fn()
 const mockI18nInstance = {
   init,
+  addResourceBundle,
   language: 'en',
   isInitialized: true,
   t: vi.fn((key) => key)
@@ -38,6 +40,34 @@ const mockedCreateInstance = createInstance as MockedFunction<
 describe('JourneyLocaleProvider', () => {
   const TestChildComponent = () => <div>Test Child</div>
   const defaultNamespaces = ['libs-journeys-ui', 'apps-journeys-admin']
+
+  // The bundles are handed over deep-merged and overwriting, so every
+  // assertion below carries the same trailing `true, true`.
+  const expectBundleAdded = (
+    locale: string,
+    namespace: string,
+    testKey: string
+  ) =>
+    expect(mockI18nInstance.addResourceBundle).toHaveBeenCalledWith(
+      locale,
+      namespace,
+      { testKey },
+      true,
+      true
+    )
+
+  const expectBundleAddedLast = (
+    locale: string,
+    namespace: string,
+    testKey: string
+  ) =>
+    expect(mockI18nInstance.addResourceBundle).toHaveBeenLastCalledWith(
+      locale,
+      namespace,
+      { testKey },
+      true,
+      true
+    )
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -73,23 +103,27 @@ describe('JourneyLocaleProvider', () => {
       )
     })
 
-    // Check i18next instance creation and initialization
+    // The instance is created before its resources exist, so it initialises
+    // empty and is handed the bundles once they arrive.
     expect(mockedCreateInstance).toHaveBeenCalled()
-    await waitFor(() => {
-      expect(mockI18nInstance.init).toHaveBeenCalledWith({
-        lng: locale,
-        fallbackLng: 'en',
-        interpolation: { escapeValue: false },
-        defaultNS: 'libs-journeys-ui',
-        ns: defaultNamespaces,
-        resources: {
-          [locale]: {
-            'libs-journeys-ui': { testKey: `ui loaded for ${locale}` },
-            'apps-journeys-admin': { testKey: `admin loaded for ${locale}` }
-          }
-        }
-      })
+    expect(mockI18nInstance.init).toHaveBeenCalledWith({
+      lng: locale,
+      fallbackLng: 'en',
+      interpolation: { escapeValue: false },
+      defaultNS: 'libs-journeys-ui',
+      ns: defaultNamespaces,
+      resources: {},
+      react: { bindI18nStore: 'added' }
     })
+
+    await waitFor(() =>
+      expectBundleAdded(locale, 'libs-journeys-ui', `ui loaded for ${locale}`)
+    )
+    expectBundleAdded(
+      locale,
+      'apps-journeys-admin',
+      `admin loaded for ${locale}`
+    )
   })
 
   test('should load resources once and key the i18n instance by the locale', async () => {
@@ -109,19 +143,17 @@ describe('JourneyLocaleProvider', () => {
       )
     })
 
-    await waitFor(() => {
-      expect(mockI18nInstance.init).toHaveBeenCalledWith(
-        expect.objectContaining({
-          lng: locale,
-          resources: {
-            [locale]: {
-              'libs-journeys-ui': { testKey: `ui loaded for ${locale}` },
-              'apps-journeys-admin': { testKey: `admin loaded for ${locale}` }
-            }
-          }
-        })
-      )
-    })
+    // Resources arriving must not re-init the instance: consumers keep the `t`
+    // they were handed, so a replacement instance would strand them on the
+    // empty one.
+    expect(mockI18nInstance.init).toHaveBeenCalledTimes(1)
+    expect(mockI18nInstance.init).toHaveBeenCalledWith(
+      expect.objectContaining({ lng: locale })
+    )
+
+    await waitFor(() =>
+      expectBundleAdded(locale, 'libs-journeys-ui', `ui loaded for ${locale}`)
+    )
   })
 
   test('should reload resources and reinitialize i18n when locale prop changes', async () => {
@@ -158,20 +190,16 @@ describe('JourneyLocaleProvider', () => {
       )
     })
 
-    await waitFor(() => {
-      expect(mockI18nInstance.init).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          lng: newLocale,
-          resources: {
-            [newLocale]: {
-              'libs-journeys-ui': { testKey: `ui loaded for ${newLocale}` },
-              'apps-journeys-admin': {
-                testKey: `admin loaded for ${newLocale}`
-              }
-            }
-          }
-        })
+    expect(mockI18nInstance.init).toHaveBeenLastCalledWith(
+      expect.objectContaining({ lng: newLocale, resources: {} })
+    )
+
+    await waitFor(() =>
+      expectBundleAddedLast(
+        newLocale,
+        'apps-journeys-admin',
+        `admin loaded for ${newLocale}`
       )
-    })
+    )
   })
 })

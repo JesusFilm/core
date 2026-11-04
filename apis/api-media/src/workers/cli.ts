@@ -100,6 +100,16 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'short-link-health': {
+      const config = await import(
+        /* webpackChunkName: "short-link-health" */
+        './shortLinkHealth'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     default:
       throw new Error('unknown queue')
   }

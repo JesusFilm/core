@@ -49,11 +49,22 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   memory                   = var.service_config.memory
   cpu                      = var.service_config.cpu
 
+  # Only rendered for ARM64 (Graviton). Omitting the block for X86_64 keeps
+  # every existing task definition byte-identical to before this input existed.
+  dynamic "runtime_platform" {
+    for_each = var.cpu_architecture == "ARM64" ? [1] : []
+    content {
+      operating_system_family = "LINUX"
+      cpu_architecture        = var.cpu_architecture
+    }
+  }
+
   container_definitions = jsonencode([
-    # app container
-    {
+    # app container. `command` is merged in only when set, so the definition
+    # has no "command" key (and the image's CMD applies) by default.
+    merge({
       name      = "${local.ecs_task_definition_family}-app"
-      image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
+      image     = coalesce(var.image, "${aws_ecr_repository.ecr_repository.repository_url}:latest")
       essential = true
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
@@ -135,7 +146,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       ] : [])
       mountPoints = []
       volumesFrom = []
-    },
+    }, var.command == null ? {} : { command = var.command }),
     # datadog agent container
     {
       name              = "${local.ecs_task_definition_family}-datadog-agent"
@@ -312,6 +323,11 @@ resource "aws_ecs_service" "ecs_service" {
   desired_count                     = var.service_config.desired_count
   enable_execute_command            = true
   health_check_grace_period_seconds = var.service_config.health_check_grace_period_seconds
+
+  # null = the provider's defaults (100 / 200), which is what every existing
+  # service already has in state.
+  deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
+  deployment_maximum_percent         = var.deployment_maximum_percent
 
   network_configuration {
     subnets          = var.ecs_config.subnets

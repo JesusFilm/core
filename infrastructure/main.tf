@@ -21,12 +21,20 @@ module "acm_central_jesusfilm_org" {
 
 module "prod" {
   source                       = "./environments/prod"
+  allow_aurora_major_upgrade   = var.allow_prod_aurora_major_upgrade
   datadog_forwarder_lambda_arn = module.datadog.log_forwarder_lambda_arn
+  versions = {
+    aurora = local.upgrade.prod_pg
+  }
 }
 
 module "stage" {
   source                       = "./environments/stage"
+  allow_aurora_major_upgrade   = var.allow_stage_aurora_major_upgrade
   datadog_forwarder_lambda_arn = module.datadog.log_forwarder_lambda_arn
+  versions = {
+    aurora = local.upgrade.stage_pg
+  }
 }
 
 module "datadog" {
