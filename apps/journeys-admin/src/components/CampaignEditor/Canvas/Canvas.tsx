@@ -302,7 +302,8 @@ export function Canvas({
   const [stageRef, stageSize] = useStageSize()
   const frameWidth = frameWidthOf(view)
   const scale = stageSize == null ? 1 : canvasScale(stageSize.width, frameWidth)
-  const frameHeight = stageSize == null ? '100%' : stageSize.height / scale
+  // Horizontal fitting must not change viewport units or height-based breakpoints.
+  const frameHeight = stageSize == null ? '100%' : stageSize.height
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
     useSensor(TouchSensor, {
@@ -400,7 +401,7 @@ export function Canvas({
           data-scale={scale}
           sx={{
             width: frameWidth * scale,
-            height: '100%',
+            height: stageSize == null ? '100%' : stageSize.height * scale,
             flexShrink: 0,
             bgcolor: 'background.paper',
             borderRadius: FRAME_RADIUS,

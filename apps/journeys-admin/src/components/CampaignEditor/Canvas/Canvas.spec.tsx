@@ -1,5 +1,5 @@
 import Button from '@mui/material/Button'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
 import { GET_CAMPAIGN_STATS } from '@core/journeys/ui/Campaign'
@@ -791,6 +791,7 @@ describe('Canvas', () => {
 describe('Canvas scaled to fit', () => {
   /** The size the stage reports to the canvas's ResizeObserver. */
   const stage = { width: 900, height: 600 }
+  let resizeStage: () => void
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -804,7 +805,9 @@ describe('Canvas scaled to fit', () => {
         constructor(private readonly callback: ResizeObserverCallback) {}
 
         observe(): void {
-          this.callback([{ contentRect: stage } as ResizeObserverEntry], this)
+          resizeStage = () =>
+            this.callback([{ contentRect: stage } as ResizeObserverEntry], this)
+          resizeStage()
         }
 
         disconnect = vi.fn()
@@ -816,6 +819,7 @@ describe('Canvas scaled to fit', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     stage.width = 900
+    stage.height = 600
   })
 
   it('keeps the Desktop frame 1200 px wide and scales a wrapper outside it to the stage', async () => {
@@ -833,8 +837,44 @@ describe('Canvas scaled to fit', () => {
       transform: `scale(${900 / 1200})`,
       transformOrigin: 'top left'
     })
-    expect(scaled).toHaveStyle({ height: '800px' })
+    expect(scaled).toHaveStyle({ height: '600px' })
+    expect(wrapper).toHaveStyle({ height: '450px' })
   })
+
+  it.each<CanvasView>(['desktop', 'phone'])(
+    'keeps the %s viewport height stable through horizontal resizes and follows vertical resizes',
+    async (view) => {
+      stage.width = 692
+      stage.height = 536
+      const { baseElement } = renderCanvas(CampaignPageKind.landing, view)
+      await frameBody(baseElement, 'CanvasSection-heroId')
+      const iframe = baseElement.getElementsByTagName('iframe')[0]
+      const scaled = iframe.parentElement as HTMLElement
+      const wrapper = screen.getByTestId('CampaignCanvasScale')
+      const frameWidth = view === 'desktop' ? 1200 : 390
+
+      expect(iframe).toHaveAttribute('width', String(frameWidth))
+      expect(scaled).toHaveStyle({ height: '536px' })
+
+      act(() => {
+        stage.width = 1172
+        resizeStage()
+      })
+
+      expect(scaled).toHaveStyle({ height: '536px' })
+      const scale = view === 'desktop' ? 1172 / 1200 : 1
+      expect(wrapper).toHaveAttribute('data-scale', String(scale))
+      expect(wrapper).toHaveStyle({ height: `${536 * scale}px` })
+
+      act(() => {
+        stage.height = 700
+        resizeStage()
+      })
+
+      expect(scaled).toHaveStyle({ height: '700px' })
+      expect(wrapper).toHaveStyle({ height: `${700 * scale}px` })
+    }
+  )
 
   it('never scales below 0.5', async () => {
     stage.width = 400
