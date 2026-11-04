@@ -314,10 +314,10 @@ resource "aws_ecs_service" "ecs_service" {
   cluster         = var.ecs_config.cluster.id
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   # One or the other: ECS rejects a launch type alongside a capacity
-  # provider strategy, and changing between them replaces the service.
-  launch_type = var.capacity_provider == null ? "FARGATE" : null
-  # The provider updates a launch-type service to a capacity provider
-  # strategy in place, but only as a forced deployment.
+  # provider strategy. The provider moves a launch-type service onto a
+  # strategy in place, but only as a forced deployment; going back to a
+  # launch type replaces the service.
+  launch_type                       = var.capacity_provider == null ? "FARGATE" : null
   force_new_deployment              = var.capacity_provider != null
   desired_count                     = var.service_config.desired_count
   enable_execute_command            = true
