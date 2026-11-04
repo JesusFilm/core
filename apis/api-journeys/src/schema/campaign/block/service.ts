@@ -965,6 +965,7 @@ export const COPIED_COLUMNS = [
   'mediaSide',
   'layout',
   'switcherVariant',
+  'showCountryNames',
   'display',
   'showMap',
   'ratio',

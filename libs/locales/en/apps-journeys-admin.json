@@ -1690,7 +1690,6 @@
   "Open journey": "Open journey",
   "There was an error loading campaigns.": "There was an error loading campaigns.",
   "There was an error refreshing the campaign.": "There was an error refreshing the campaign.",
-  "This language has a QR code. Unlink it instead.": "This language has a QR code. Unlink it instead.",
   "Remove {{language}}?": "Remove {{language}}?",
   "Every translation into {{language}} is deleted.": "Every translation into {{language}} is deleted.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "No campaigns yet. Create one to build a landing page with a page for every region.",
@@ -1755,5 +1754,8 @@
   "Report dashboard": "Report dashboard",
   "All regions label": "All regions label",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)",
-  "Maximum file size: 10 MB": "Maximum file size: 10 MB"
+  "Maximum file size: 10 MB": "Maximum file size: 10 MB",
+  "Unlink the journey before removing this language.": "Unlink the journey before removing this language.",
+  "Delete {{language}}?": "Delete {{language}}?",
+  "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up."
 }

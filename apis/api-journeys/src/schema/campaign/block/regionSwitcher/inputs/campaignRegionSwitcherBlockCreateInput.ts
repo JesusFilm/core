@@ -16,6 +16,10 @@ export const CampaignRegionSwitcherBlockCreateInput = builder.inputType(
         type: CampaignSwitcherVariant,
         required: false,
         description: 'Defaults to cards.'
+      }),
+      showCountryNames: t.boolean({
+        required: false,
+        description: 'Defaults to true.'
       })
     })
   }
