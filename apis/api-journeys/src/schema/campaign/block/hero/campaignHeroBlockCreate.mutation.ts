@@ -18,7 +18,7 @@ builder.mutationField('campaignHeroBlockCreate', (t) =>
     },
     resolve: async (_parent, { input }, context) =>
       await createSection(input, 'CampaignHeroBlock', context.user, () => ({
-        ...validateSectionText(input, ['eyebrow', 'title', 'description']),
+        ...validateSectionText('CampaignHeroBlock', input),
         align: assertEnumOrNull(input.align, 'align', CAMPAIGN_ALIGNS)
       }))
   })
