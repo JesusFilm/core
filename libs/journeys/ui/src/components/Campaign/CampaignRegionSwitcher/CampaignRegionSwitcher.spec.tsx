@@ -304,6 +304,33 @@ describe('CampaignRegionSwitcher country names', () => {
     return screen.getByTestId('CampaignRegionCountry')
   }
 
+  it.each([
+    ['small', '18px'],
+    ['medium', '24px']
+  ] as const)(
+    'keeps %s flags compact with names on or off',
+    (size, expected) => {
+      const { rerender } = render(
+        <CampaignRegionCountries region={eurRegion} size={size} />
+      )
+      const flag = () => screen.getByTestId('CampaignCountryFlag')
+      expect(flag()).toHaveClass('MuiChip-avatar')
+
+      rerender(
+        <CampaignRegionCountries
+          region={eurRegion}
+          size={size}
+          showNames={false}
+        />
+      )
+      expect(flag()).toHaveStyle({
+        boxSizing: 'border-box',
+        width: expected,
+        height: expected
+      })
+    }
+  )
+
   it('shows each country as a flag with its name by default', () => {
     renderSwitcher(switcherTree())
 

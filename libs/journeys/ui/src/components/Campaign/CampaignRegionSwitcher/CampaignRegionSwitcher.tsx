@@ -153,6 +153,7 @@ export function CampaignRegionLines({
 export const FALLBACK_FLAG = '⛳️'
 
 interface CampaignCountryFlagProps {
+  className?: string
   src: string | null | undefined
   sx?: StyleObject
 }
@@ -163,6 +164,7 @@ interface CampaignCountryFlagProps {
  * beside it, visibly or as the accessible name, so the flag stays silent.
  */
 export function CampaignCountryFlag({
+  className,
   src,
   sx
 }: CampaignCountryFlagProps): ReactElement {
@@ -171,6 +173,7 @@ export function CampaignCountryFlag({
     src == null || src === '' || src === failedSrc ? undefined : src
   return (
     <Avatar
+      className={className}
       src={flagSrc}
       alt=""
       data-testid="CampaignCountryFlag"
@@ -205,7 +208,8 @@ export function CampaignRegionCountries({
 }: CampaignRegionCountriesProps): ReactElement | null {
   const countries = [...region.countries].sort((a, b) => a.order - b.order)
   if (countries.length === 0) return null
-  const flagSize = size === 'small' ? 24 : 32
+  // Match the avatar MUI gives a named Chip of the same size.
+  const flagSize = size === 'small' ? 18 : 24
   return (
     <Stack
       direction="row"
@@ -229,6 +233,7 @@ export function CampaignRegionCountries({
                 <CampaignCountryFlag
                   src={country.country.flagPngSrc}
                   sx={{
+                    boxSizing: 'border-box',
                     width: flagSize,
                     height: flagSize,
                     fontSize: flagSize * 0.6,
