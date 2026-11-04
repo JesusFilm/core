@@ -1,1 +1,1 @@
-export { LanguagesPanel, languageNames } from './LanguagesPanel'
+export { LanguagesPanel } from './LanguagesPanel'

@@ -1,2 +1,1 @@
-export { useAddSection } from './useAddSection'
-export type { SectionInsert } from './useAddSection'
+export { useCampaignSectionAdd as useAddSection } from '../useCampaignSectionAdd'
