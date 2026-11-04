@@ -334,7 +334,7 @@ The one link a Campaign Region hands out per language: a **short link** that red
 _Avoid_: journey link (the long address nobody hands out), campaign link (that is the Campaign Address), deep link
 
 **Campaign QR Code**:
-A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working; a Share Language that holds one cannot be removed. It is deleted with its Campaign Region or Campaign, with its target Journey (`QrCode.journey` cascades), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
+A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working, and a linked Share Language cannot be removed: the author unlinks it first. It is deleted with its Share Language when that language, unlinked, is removed (the editor confirms first, as printed copies stop redirecting; a re-added language mints a new one on its next link), with its Campaign Region or Campaign, with its target Journey (`QrCode.journey` cascades), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:

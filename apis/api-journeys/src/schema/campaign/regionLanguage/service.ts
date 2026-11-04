@@ -27,9 +27,10 @@ import { INCLUDE_CAMPAIGN_REGION_ACL } from '../region/service'
  * Update on the region's campaign, authorised through the Campaign as
  * aggregate root; the Campaign QR Code is created and retargeted here, inside
  * the same mutation as the link it belongs to (GLOSSARY.md: Campaign QR Code).
- * Unlinking keeps it; it goes only with its region or campaign, with its
- * target journey (`QrCode.journey` cascades), or with its team when an
- * account deletion removes the team.
+ * Unlinking keeps it; it goes only with its Share Language once that is
+ * unlinked and deleted, with its region or campaign, with its target journey
+ * (`QrCode.journey` cascades), or with its team when an account deletion
+ * removes the team.
  */
 
 export const INCLUDE_CAMPAIGN_REGION_LANGUAGE_ACL = {
