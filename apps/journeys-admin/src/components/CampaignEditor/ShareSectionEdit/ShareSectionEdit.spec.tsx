@@ -322,6 +322,17 @@ const unlinkMock = {
   }))
 }
 
+/** English after an unlink: no journey, the Campaign QR Code kept. */
+const unlinkedEnglish = {
+  ...eurEnglish,
+  journeyId: null,
+  journeyUrl: null,
+  title: null,
+  description: null,
+  snapshotEdited: false,
+  journey: null
+}
+
 /** The English snapshot reworded by the author; the journey reads differently now. */
 const editedEnglish = {
   ...eurEnglish,
@@ -588,7 +599,7 @@ describe('ShareSectionEdit', () => {
     ).toBeInTheDocument()
   })
 
-  it('disables the bin on a Share Language with a QR code, pointing at Unlink, and sends nothing', async () => {
+  it('disables the bin on a linked Share Language, pointing at Unlink, and sends nothing', async () => {
     renderShare()
 
     const english = await screen.findByTestId('ShareLanguageRow-529')
@@ -598,7 +609,7 @@ describe('ShareSectionEdit', () => {
     fireEvent.mouseOver(bin.parentElement as HTMLElement)
     expect(
       await screen.findByRole('tooltip', {
-        name: 'This language has a QR code. Unlink it instead.'
+        name: 'Unlink the journey before removing this language.'
       })
     ).toBeInTheDocument()
 
@@ -623,6 +634,51 @@ describe('ShareSectionEdit', () => {
         screen.queryByTestId('ShareLanguageRow-496')
       ).not.toBeInTheDocument()
     )
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('confirms before removing an unlinked Share Language that kept its QR code, then removes it outside undo', async () => {
+    renderShare(withEnglish(unlinkedEnglish))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Remove language' })
+    )
+
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('Delete English?')).toBeInTheDocument()
+    expect(dialog).toHaveTextContent(
+      'This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.'
+    )
+    expect(dialog).toHaveTextContent('This cannot be undone.')
+    expect(englishDeleteMock.result).not.toHaveBeenCalled()
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+    await waitFor(() => expect(englishDeleteMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('ShareLanguageRow-529')
+      ).not.toBeInTheDocument()
+    )
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('cancelling the removal of a Share Language with a QR code changes nothing', async () => {
+    renderShare(withEnglish(unlinkedEnglish))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Remove language' })
+    )
+    const dialog = await screen.findByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(englishDeleteMock.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('ShareLanguageRow-529')).toBeInTheDocument()
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
   it('links a pasted journey from the "Pick a journey" call to action, showing the resolved journey first, then the snapshot', async () => {
@@ -877,7 +933,7 @@ describe('ShareSectionEdit', () => {
     ).toBeNull()
   })
 
-  it('unlinks a journey with no dialog, keeping the QR code so the bin stays disabled', async () => {
+  it('unlinks a journey with no dialog, keeping the QR code, after which the bin confirms the removal', async () => {
     renderShare()
 
     const english = await screen.findByTestId('ShareLanguageRow-529')
@@ -892,11 +948,16 @@ describe('ShareSectionEdit', () => {
         )
       ).toBeInTheDocument()
     )
-    expect(
-      within(screen.getByTestId('ShareLanguageRow-529')).getByRole('button', {
-        name: 'Remove language'
-      })
-    ).toBeDisabled()
+    const bin = within(screen.getByTestId('ShareLanguageRow-529')).getByRole(
+      'button',
+      { name: 'Remove language' }
+    )
+    expect(bin).toBeEnabled()
+
+    fireEvent.click(bin)
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    expect(englishDeleteMock.result).not.toHaveBeenCalled()
   })
 
   it('shows the "journey unpublished" warning in the frame instead of the pick call to action, copy and download disabled', async () => {

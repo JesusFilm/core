@@ -286,6 +286,10 @@ jobs:
         env:
           PLAYWRIGHT_BROWSER: ${{ steps.playwright-browser.outputs.name }}
         run: pnpm exec playwright install --with-deps "$PLAYWRIGHT_BROWSER"
+      - name: Install Playwright video support
+        if: steps.playwright-browser.outputs.name == 'chrome'
+        # Chrome is preinstalled on the runner, but retry videos need Playwright's ffmpeg.
+        run: pnpm exec playwright install ffmpeg
       - name: Run Playwright tests
         run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:

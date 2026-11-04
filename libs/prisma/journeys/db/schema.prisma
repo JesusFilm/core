@@ -1119,6 +1119,8 @@ model CampaignBlock {
   mediaBlockId            String?                      @unique
   logoBlockId             String?                      @unique
   switcherVariant         CampaignSwitcherVariant?     @default(cards)
+  /// CampaignRegionSwitcherBlock: whether each country chip shows its name beside the flag; null reads as true.
+  showCountryNames        Boolean?                     @default(true)
   display                 CampaignJourneyListDisplay?  @default(grid)
   showMap                 Boolean?                     @default(false)
   ratio                   CampaignColumnsRatio?        @default(equal)

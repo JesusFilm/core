@@ -359,7 +359,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title and variant.
+  Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title, variant and whether country names show.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -375,7 +375,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the region switcher’s default-language title or its variant (cards, list, pills), or its Section Background and colour overrides. Only the given fields change.
+  Update the region switcher’s default-language title, its variant (cards, list, pills), whether its country chips show names, or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -384,6 +384,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title`): over 150 characters.
   - BAD_USER_INPUT (field: `variant`): not cards, list or pills.
+  - BAD_USER_INPUT (field: `showCountryNames`): null.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
@@ -404,7 +405,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
-  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   """
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -1030,14 +1031,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionLanguageSnapshotRefresh(id: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Remove a Share Language from a Campaign Region. A language that holds a Campaign QR Code cannot be removed, so printed codes keep working: unlink it instead, or delete its region or campaign. The linked journey is untouched. The remaining languages are renumbered. Returns the deleted row; only its scalar fields are readable.
+  Remove an unlinked Share Language from a Campaign Region; a linked one must be unlinked first. A Campaign QR Code the language kept from an earlier link goes with it: its `QrCode` row is deleted in the same transaction and its short link queued for deletion once it commits, so printed copies stop redirecting; a QR code another Share Language still holds is kept. There is no restore, so the editor confirms first when the language has a QR code; a later link of a re-added language mints a new one. The journey and its own QR codes are untouched. The remaining languages are renumbered. Returns the deleted row; only its scalar fields are readable.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `id`): "This language has a QR code. Unlink it instead."
+  - BAD_USER_INPUT (field: `id`): "Unlink the journey before removing this language."
   """
   campaignRegionLanguageDelete(id: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -2679,6 +2680,10 @@ type CampaignRegionSwitcherBlock implements CampaignBlock & CampaignSectionBlock
   title: String
   titleTranslations: [TranslatedValue!]!
   variant: CampaignSwitcherVariant!
+  """
+  Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+  """
+  showCountryNames: Boolean!
 }
 
 """
@@ -5840,6 +5845,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   """
   version: Int!
   video: Video
+  reconciliation: VideoVariantReconciliation
 }
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {
@@ -8029,6 +8035,10 @@ input CampaignRegionSwitcherBlockCreateInput @join__type(graph: API_JOURNEYS_MOD
   Defaults to cards.
   """
   variant: CampaignSwitcherVariant
+  """
+  Defaults to true.
+  """
+  showCountryNames: Boolean
 }
 
 input CampaignRegionSwitcherBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -8037,6 +8047,7 @@ input CampaignRegionSwitcherBlockUpdateInput @join__type(graph: API_JOURNEYS_MOD
   """
   title: String
   variant: CampaignSwitcherVariant
+  showCountryNames: Boolean
   """
   The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
   """
@@ -8386,6 +8397,10 @@ input CampaignVideoCarouselBlockCreateInput @join__type(graph: API_JOURNEYS_MODE
   At most 150 characters.
   """
   title: String
+  """
+  At most 500 characters.
+  """
+  description: String
 }
 
 input CampaignVideoCarouselBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
