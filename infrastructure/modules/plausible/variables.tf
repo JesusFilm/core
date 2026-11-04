@@ -12,9 +12,10 @@ variable "ecs_config" {
       port              = number
       protocol          = string
       path_pattern      = list(string)
-      health_check_path = string
-      health_check_port = optional(number)
-      priority          = number
+      health_check_path    = string
+      health_check_port    = optional(number)
+      health_check_matcher = optional(string)
+      priority             = number
     })
     security_group_id       = string
     task_execution_role_arn = string

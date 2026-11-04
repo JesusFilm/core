@@ -183,6 +183,10 @@ _Avoid_: live/offline (use published/draft), visibility, state
 How a Campaign is edited: every edit saves in place as its own change, with no working copy, snapshot or Save step, so a published Campaign changes under its visitors as the author works. Undo is the Editor's in-memory **Command** history, not a saved version.
 _Avoid_: autosave (as a feature name — it is the only mode), draft mode, preview mode, versioning
 
+**Campaign Write**:
+One edit of one Campaign, saved as one transaction: it locks what it will write in the one order every edit shares (so two edits never deadlock), ends by bumping the Campaign's `updatedAt` (the touch), and runs what lives outside the database (short-link deletes, revalidation, Vercel removals) only after the commit, or undoes its one gateway call when the commit fails. Every change to an existing Campaign is one, publish, settings and delete included; creating a Campaign is not, as there is nothing to lock yet.
+_Avoid_: transaction (the mechanism, not the edit), save, mutation (a mutation may make one, or none)
+
 **Campaign Settings**:
 The parts of a Campaign that are not content: the default-language title, the slug, the default language (changed by a **Default-language swap**) and the **Palette**, all saved outside the Editor's Command history. The slug never follows a title change.
 _Avoid_: metadata, properties, campaign info
@@ -254,7 +258,7 @@ What a Campaign Button does when pressed: open a web link, scroll to a block on 
 _Avoid_: link (bare), href, navigation
 
 **Campaign Chrome**:
-The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. Both take the same Extras as any section; the header's nav links are Button Extras.
+The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. The header accepts the same Extras as any section, but for now the editor offers and the public header shows only its Button Extras (its nav links); the footer takes and shows both kinds. The **Campaign Block grammar** records both facts (`acceptsChild`, `shownExtras`).
 _Avoid_: nav bar, site header/footer, layout, shell
 
 **Brand Mark**:
@@ -330,7 +334,7 @@ The one link a Campaign Region hands out per language: a **short link** that red
 _Avoid_: journey link (the long address nobody hands out), campaign link (that is the Campaign Address), deep link
 
 **Campaign QR Code**:
-A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language, or later from the editor's `Create QR code` on a linked language that has none. It survives an unlink, so printed codes keep working; a Share Language that holds one cannot be removed. It is deleted with its Campaign Region or Campaign, with its target Journey when that Journey is hard-deleted (`QrCode.journey` cascades; deleting a Journey from the app is a soft delete and keeps it), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
+A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language, or later from the editor's `Create QR code` on a linked language that has none. It survives an unlink, so printed codes keep working, and a linked Share Language cannot be removed: the author unlinks it first. It is deleted with its Share Language when that language, unlinked, is removed (the editor confirms first, as printed copies stop redirecting; a re-added language mints a new one on its next link), with its Campaign Region or Campaign, with its target Journey when that Journey is hard-deleted (`QrCode.journey` cascades; deleting a Journey from the app is a soft delete and keeps it), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:
@@ -348,11 +352,11 @@ The language a visitor reads a Campaign in: one of the Campaign's own languages,
 _Avoid_: locale (that is the admin chrome's word), display language, UI language
 
 **Translated Field**:
-A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty.
+A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty. A length is counted in Unicode code points after trimming. An empty entry (or one whose value is not text) counts as missing everywhere, and an entry that does not say the machine wrote it counts as a person's. These rules, with each target's fields and caps, live in one shared module in `libs/journeys/ui` (`translatedField`) that the API reads. The editor keeps its own copies until it adopts the module.
 _Avoid_: localised string, i18n key, label
 
 **Campaign String**:
-One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Distinct from the editor's own chrome, which is admin i18n.
+One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Each string names the sections that show it; the wording, keys and hosts live in one registry in `libs/journeys/ui`, which the API seed reads. Distinct from the editor's own chrome, which is admin i18n.
 _Avoid_: UI string, i18n string, interface key
 
 **Machine Translation**:

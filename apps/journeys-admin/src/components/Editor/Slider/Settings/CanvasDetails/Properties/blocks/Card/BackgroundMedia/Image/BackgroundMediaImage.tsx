@@ -225,9 +225,12 @@ export function BackgroundMediaImage({
     })
   }
 
+  // undoBlock defaults to the current cover; pass the pre-preview block when
+  // the cache already holds previewed values.
   function updateImageBlock(
     input: ImageBlockUpdateInput,
-    shouldFocus = true
+    shouldFocus = true,
+    undoBlock?: ImageBlock
   ): void {
     if (
       journey == null ||
@@ -273,7 +276,7 @@ export function BackgroundMediaImage({
     add({
       parameters: {
         execute: block,
-        undo: coverBlock
+        undo: undoBlock ?? coverBlock
       },
       execute: (block) => update(block, shouldFocus),
       undo: (block) => update(block, true),

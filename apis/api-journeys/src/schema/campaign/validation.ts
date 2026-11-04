@@ -1,6 +1,13 @@
 import { validate as isUuid } from 'uuid'
 import type { ZodType } from 'zod'
 
+import {
+  LINK_URL_MAX_LENGTH,
+  TEXT_CAPS,
+  textLength,
+  truncate,
+  urlLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import { Prisma } from '@core/prisma/journeys/client'
 import { FONT_FAMILIES } from '@core/shared/ui/fontFamilies'
 
@@ -9,6 +16,10 @@ import { assertHttpsUrl } from '../templateGalleryPage/assertHttpsUrl'
 import { badUserInput } from './errors'
 
 export { assertHttpsUrl }
+
+// The Translated Field caps and counting live in the shared module, so the
+// editor counts the same way; re-exported for this API's importers.
+export { LINK_URL_MAX_LENGTH, TEXT_CAPS, truncate }
 
 // Every campaign mutation validates through these helpers before Prisma. Each
 // throws `badUserInput` with the offending column as `field`.
@@ -121,26 +132,6 @@ export function assertFontFamily<T extends string | null>(
   return value
 }
 
-export const TEXT_CAPS = {
-  campaignTitle: 100,
-  regionName: 60,
-  eyebrow: 80,
-  title: 150,
-  description: 500,
-  intro: 500,
-  bullets: 1000,
-  richTextContent: 5000,
-  typographyContent: 2000,
-  buttonLabel: 60,
-  stringValue: 200,
-  imageAlt: 500,
-  videoTitle: 200,
-  videoDescription: 1000,
-  journeyTitle: 200,
-  journeyDescription: 1000
-} as const
-
-export const LINK_URL_MAX_LENGTH = 2048
 export const PALETTE_MAX_LENGTH = 8
 export const REGION_COUNTRIES_MAX = 250
 
@@ -153,17 +144,9 @@ export const REGION_SHARE_LANGUAGES_MAX = 20
 export const CAMPAIGN_BLOCKS_MAX = 500
 
 /**
- * Cut to at most `max` Unicode code points: for text copied in from a source
- * (YouTube, Mux, a linked journey) so a later save of it passes the cap.
- */
-export function truncate(value: string, max: number): string {
-  const characters = [...value]
-  return characters.length <= max ? value : characters.slice(0, max).join('')
-}
-
-/**
- * Trim and count Unicode code points. Empty is allowed unless `required`;
- * over-length is `BAD_USER_INPUT` / `field`. Returns the trimmed value.
+ * Trim and count Unicode code points (`textLength`). Empty is allowed unless
+ * `required`; over-length is `BAD_USER_INPUT` / `field`. Returns the trimmed
+ * value.
  */
 export function assertLength(
   value: string,
@@ -174,7 +157,7 @@ export function assertLength(
   const trimmed = value.trim()
   if (options.required === true && trimmed === '')
     throw badUserInput(`${field} is required`, field)
-  if ([...trimmed].length > max)
+  if (textLength(trimmed) > max)
     throw badUserInput(`${field} must be at most ${max} characters`, field)
   return trimmed
 }
@@ -200,11 +183,11 @@ export function assertLengthOrNull<T extends string | null | undefined>(
   return assertLength(value, field, max) as T extends string ? string : T
 }
 
-/** `LinkAction.url`: https and at most 2048 characters. */
+/** `LinkAction.url`: https and at most 2048 characters (`urlLength`). */
 export function assertLinkUrl(url: string, field = 'url'): string {
   const trimmed = url.trim()
   assertHttpsUrl(trimmed, field)
-  if (trimmed.length > LINK_URL_MAX_LENGTH)
+  if (urlLength(trimmed) > LINK_URL_MAX_LENGTH)
     throw badUserInput(
       `${field} must be at most ${LINK_URL_MAX_LENGTH} characters`,
       field

@@ -11,6 +11,7 @@ import {
   LIGHT_PALETTE,
   campaignFactory
 } from '../../../test/campaignFactory'
+import { mockTransaction } from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import {
   UNIQUE_VIOLATION_SHAPES,
@@ -224,9 +225,7 @@ describe('campaignCreate', () => {
     prismaMock.team.findUnique.mockResolvedValue(fixture.team)
     mockFetchLanguage.mockResolvedValue({ id: '529', bcp47: 'en' })
     prismaMock.campaign.findMany.mockResolvedValue([])
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(fixture)
   })
 
@@ -881,7 +880,7 @@ describe('campaignCreate', () => {
 
         const result = await create()
 
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'CONFLICT',
           field: 'slug'
         })

@@ -9,6 +9,10 @@ import {
   mockUser
 } from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { fetchLanguage } from '../gatewayClient'
@@ -17,6 +21,8 @@ import { CAMPAIGN_LANGUAGES_MAX } from '../validation'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 vi.mock('../gatewayClient', () => ({ fetchLanguage: vi.fn() }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -59,6 +65,8 @@ describe('campaignLanguageAdd', () => {
     })
   }
 
+  let writes: CampaignWriteCall[]
+
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
@@ -67,9 +75,7 @@ describe('campaignLanguageAdd', () => {
       userId: mockUser.id,
       roles: []
     })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    writes = fakeCampaignWrite(prismaMock)
     mockFetchLanguage.mockResolvedValue({ id: FRENCH, bcp47: 'fr' })
     prismaMock.campaignLanguage.findMany.mockResolvedValue(
       languageRows(['529'])
@@ -101,13 +107,18 @@ describe('campaignLanguageAdd', () => {
     expect(prismaMock.campaignLanguage.create).toHaveBeenCalledWith({
       data: { campaignId: 'campaignId', languageId: FRENCH, order: 1 }
     })
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 'campaignId' } })
-    )
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { languageRows: true, campaignRow: true },
+        jobs: [],
+        touched: true
+      }
+    ])
     expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
-  it('locks the language rows, then the campaign, before it re-reads the languages and appends after them', async () => {
+  it('declares the language rows and the campaign row, then re-reads the languages and appends after them', async () => {
     prismaMock.campaign.findUnique.mockResolvedValue(
       campaignFactory({ role: 'member' }).build()
     )
@@ -120,19 +131,9 @@ describe('campaignLanguageAdd', () => {
 
     await add(FRENCH)
 
-    const lockSql = prismaMock.$queryRaw.mock.calls.map(([strings]) =>
-      (strings as unknown as readonly string[]).join('')
-    )
-    expect(lockSql.every((sql) => sql.includes('FOR UPDATE'))).toBe(true)
-    expect(lockSql.map((sql) => sql.match(/"(\w+)"/)?.[1])).toEqual([
-      'CampaignLanguage',
-      'Campaign'
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { languageRows: true, campaignRow: true }
     ])
-    expect(
-      Math.max(...prismaMock.$queryRaw.mock.invocationCallOrder)
-    ).toBeLessThan(
-      prismaMock.campaignLanguage.findMany.mock.invocationCallOrder[0]
-    )
     expect(prismaMock.campaignLanguage.findMany).toHaveBeenCalledWith({
       where: { campaignId: 'campaignId' },
       orderBy: { order: 'asc' }
@@ -152,7 +153,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId is already a language of this campaign',
       extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
     })
@@ -173,7 +174,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: `a campaign has at most ${CAMPAIGN_LANGUAGES_MAX} languages`,
       extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
     })
@@ -253,7 +254,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add('nope')
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId must be an existing language',
       extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
     })
@@ -267,7 +268,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId is already a language of this campaign',
       extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
     })
@@ -282,7 +283,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'user is not allowed to update campaign',
       extensions: expect.objectContaining({ code: 'FORBIDDEN' })
     })
@@ -294,7 +295,7 @@ describe('campaignLanguageAdd', () => {
 
     const result = await add(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'campaign not found',
       extensions: expect.objectContaining({ code: 'NOT_FOUND' })
     })

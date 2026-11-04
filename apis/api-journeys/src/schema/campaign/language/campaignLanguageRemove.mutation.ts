@@ -1,13 +1,7 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../builder'
 import { authorizeCampaign } from '../authorizeCampaign'
 import { CampaignRef } from '../campaign'
-import {
-  lockCampaign,
-  lockCampaignLanguageRows,
-  touchCampaign
-} from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { conflict, notFound } from '../errors'
 import { renumber } from '../order'
 import { enqueueLanguageRevalidation } from '../revalidateCampaign'
@@ -35,53 +29,54 @@ builder.mutationField('campaignLanguageRemove', (t) =>
         }
       )
 
-      const updated = await prisma.$transaction(async (tx) => {
-        // A concurrent default-language swap or removal can move the default
-        // or the language list after the read above: lock the campaign row and
-        // judge the removal against what is committed now.
-        await lockCampaignLanguageRows(tx, campaignId)
-        await lockCampaign(tx, campaignId)
-        const current = await tx.campaign.findUnique({
-          where: { id: campaignId },
-          select: {
-            defaultLanguageId: true,
-            languages: { orderBy: { order: 'asc' } }
-          }
-        })
-        if (current == null) throw notFound('campaign not found')
-        const row = current.languages.find(
-          (language) => language.languageId === languageId
-        )
-        if (row == null) throw notFound('language not found')
-        if (languageId === current.defaultLanguageId)
-          throw conflict(
-            'languageId is the default language and cannot be removed',
-            'languageId'
+      // A concurrent default-language swap or removal can move the default
+      // or the language list after the read above: lock the campaign row and
+      // judge the removal against what is committed now.
+      const updated = await campaignWrite(
+        campaignId,
+        { languageRows: true, campaignRow: true },
+        async ({ tx }) => {
+          const current = await tx.campaign.findUnique({
+            where: { id: campaignId },
+            select: {
+              defaultLanguageId: true,
+              languages: { orderBy: { order: 'asc' } }
+            }
+          })
+          if (current == null) throw notFound('campaign not found')
+          const row = current.languages.find(
+            (language) => language.languageId === languageId
           )
-        if (current.languages.length === 1)
-          throw conflict(
-            'languageId is the last language and cannot be removed',
-            'languageId'
-          )
+          if (row == null) throw notFound('language not found')
+          if (languageId === current.defaultLanguageId)
+            throw conflict(
+              'languageId is the default language and cannot be removed',
+              'languageId'
+            )
+          if (current.languages.length === 1)
+            throw conflict(
+              'languageId is the last language and cannot be removed',
+              'languageId'
+            )
 
-        await tx.campaignLanguage.delete({ where: { id: row.id } })
-        const remaining = current.languages.filter(
-          (language) => language.id !== row.id
-        )
-        await renumber(remaining, async (language, order) =>
-          language.order === order
-            ? undefined
-            : await tx.campaignLanguage.update({
-                where: { id: language.id },
-                data: { order }
-              })
-        )
-        await touchCampaign(tx, campaignId)
-        return await tx.campaign.findUniqueOrThrow({
-          ...query,
-          where: { id: campaignId }
-        })
-      })
+          await tx.campaignLanguage.delete({ where: { id: row.id } })
+          const remaining = current.languages.filter(
+            (language) => language.id !== row.id
+          )
+          await renumber(remaining, async (language, order) =>
+            language.order === order
+              ? undefined
+              : await tx.campaignLanguage.update({
+                  where: { id: language.id },
+                  data: { order }
+                })
+          )
+          return await tx.campaign.findUniqueOrThrow({
+            ...query,
+            where: { id: campaignId }
+          })
+        }
+      )
       await enqueueLanguageRevalidation(campaign, languageId)
       return updated
     }

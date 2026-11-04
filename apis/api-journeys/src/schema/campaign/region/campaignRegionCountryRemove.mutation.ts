@@ -2,7 +2,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { CampaignRegionCountryRef } from '../campaignRegionCountry'
-import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { notFound } from '../errors'
 import { renumber } from '../order'
 
@@ -26,26 +26,28 @@ builder.mutationField('campaignRegionCountryRemove', (t) =>
       if (row == null) throw notFound('region country not found')
       const region = await authorizeRegionUpdate(row.regionId, context.user)
 
-      return await prisma.$transaction(async (tx) => {
-        await lockCampaignStructure(tx, region.campaignId)
-        const deleted = await tx.campaignRegionCountry.delete({
-          where: { id }
-        })
-        const remaining = await tx.campaignRegionCountry.findMany({
-          where: { regionId: row.regionId },
-          orderBy: { order: 'asc' }
-        })
-        await renumber(
-          remaining,
-          async (country, order) =>
-            await tx.campaignRegionCountry.update({
-              where: { id: country.id },
-              data: { order }
-            })
-        )
-        await touchCampaign(tx, region.campaignId)
-        return deleted
-      })
+      return await campaignWrite(
+        region.campaignId,
+        { structure: true },
+        async ({ tx }) => {
+          const deleted = await tx.campaignRegionCountry.delete({
+            where: { id }
+          })
+          const remaining = await tx.campaignRegionCountry.findMany({
+            where: { regionId: row.regionId },
+            orderBy: { order: 'asc' }
+          })
+          await renumber(
+            remaining,
+            async (country, order) =>
+              await tx.campaignRegionCountry.update({
+                where: { id: country.id },
+                data: { order }
+              })
+          )
+          return deleted
+        }
+      )
     }
   })
 )

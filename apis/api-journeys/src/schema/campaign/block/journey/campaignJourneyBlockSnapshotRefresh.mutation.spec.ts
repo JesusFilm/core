@@ -130,10 +130,10 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
 
     const result = await refresh()
 
-    expect(result.errors[0].message).toBe(
+    expect(result.errors?.[0].message).toBe(
       'Journey not found, or not published or archived'
     )
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'id'
     })
@@ -147,7 +147,7 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
 
     const result = await refresh('heroId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -161,7 +161,7 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
 
     const result = await refresh()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

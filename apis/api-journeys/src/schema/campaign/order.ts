@@ -2,8 +2,8 @@
  * Renumber an ordered list contiguously from zero in the order given:
  * `write` stores one row's new `order`. The writes run one after another in
  * id order, whatever the list order, so every renumber locks its rows in the
- * same order as `lockCampaignTextRows` and the translation batch and cannot
- * deadlock with them. Returns what each write returns, in the list order.
+ * same order as a Campaign Write that declares `textRows` or `targets`, and
+ * cannot deadlock with it. Returns what each write returns, in the list order.
  */
 export async function renumber<Row extends { id: string }, Result>(
   rows: readonly Row[],

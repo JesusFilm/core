@@ -30,11 +30,7 @@ builder.mutationField('campaignVideoCarouselBlockUpdate', (t) =>
         context.user,
         'CampaignVideoCarouselBlock'
       )
-      const text = validateSectionText(input, [
-        'eyebrow',
-        'title',
-        'description'
-      ])
+      const text = validateSectionText('CampaignVideoCarouselBlock', input)
       const style = sectionStyleColumns(input)
       const video = await validateCarouselVideo(
         input,

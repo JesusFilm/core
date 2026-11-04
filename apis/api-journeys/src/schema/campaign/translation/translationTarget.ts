@@ -1,18 +1,16 @@
+import {
+  type TranslatedFieldTargetKind,
+  translatedFieldsOf
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import { Prisma } from '@core/prisma/journeys/client'
 
 import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
 import { TranslationsJson } from '../translatedValue'
 
-import {
-  CAMPAIGN_BLOCK_TEXT_FIELDS,
-  CAMPAIGN_REGION_TEXT_FIELDS,
-  CAMPAIGN_STRING_TEXT_FIELDS,
-  CAMPAIGN_TITLE_TEXT_FIELDS,
-  CampaignTextFieldCaps
-} from './textFields'
+import { CampaignTextFieldCaps } from './textFields'
 
 /** The four rows a Translated Field lives on. */
-export type TranslationTargetKind = 'block' | 'region' | 'string' | 'campaign'
+export type TranslationTargetKind = TranslatedFieldTargetKind
 
 export const INCLUDE_TARGET_CAMPAIGN = {
   ...INCLUDE_CAMPAIGN_ACL,
@@ -26,8 +24,6 @@ export type TranslationTargetCampaign = Prisma.CampaignGetPayload<{
 type Row = Record<string, unknown>
 
 interface TranslationTargetModel {
-  /** Row-lock the targets by id, in id order, inside the caller's transaction. */
-  lock: (tx: Prisma.TransactionClient, ids: string[]) => Promise<void>
   /** The live target row with every column, or null. */
   find: (db: Prisma.TransactionClient, id: string) => Promise<Row | null>
   /** The live target row and its campaign (ACL and languages), or null. */
@@ -41,11 +37,11 @@ interface TranslationTargetModel {
     id: string,
     select: Record<string, true>
   ) => Promise<Row | null>
-  /** Write `<field>Translations` columns of the target row. */
+  /** Write text columns or their `<field>Translations` siblings on the target row. */
   update: (
     db: Prisma.TransactionClient,
     id: string,
-    data: Record<string, TranslationsJson>
+    data: Record<string, string | TranslationsJson>
   ) => Promise<void>
   /** The target's translatable fields and their caps; a block's follow its typename. */
   caps: (row: Row) => CampaignTextFieldCaps
@@ -53,17 +49,15 @@ interface TranslationTargetModel {
 
 /**
  * Each translation target kind's Prisma model, reads, write and text caps:
- * the one place `campaignTranslationSet` and the machine-translation sweep
- * turn a kind into a table.
+ * the one place `campaignTranslationSet`, the machine-translation sweep and
+ * the default-language swap turn a kind into a table for a write. Reads of a
+ * whole Campaign walk its targets through `forEachTextTarget`.
  */
 export const TRANSLATION_TARGETS: Record<
   TranslationTargetKind,
   TranslationTargetModel
 > = {
   block: {
-    lock: async (tx, ids) => {
-      await tx.$queryRaw`SELECT 1 FROM "CampaignBlock" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`
-    },
     find: async (db, id) =>
       await db.campaignBlock.findFirst({ where: { id, deletedAt: null } }),
     findWithCampaign: async (db, id) => {
@@ -78,12 +72,10 @@ export const TRANSLATION_TARGETS: Record<
     update: async (db, id, data) => {
       await db.campaignBlock.update({ where: { id }, data })
     },
-    caps: (row) => CAMPAIGN_BLOCK_TEXT_FIELDS[String(row.typename)] ?? {}
+    caps: (row) =>
+      translatedFieldsOf({ kind: 'block', typename: String(row.typename) })
   },
   region: {
-    lock: async (tx, ids) => {
-      await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`
-    },
     find: async (db, id) =>
       await db.campaignRegion.findUnique({ where: { id } }),
     findWithCampaign: async (db, id) => {
@@ -98,12 +90,9 @@ export const TRANSLATION_TARGETS: Record<
     update: async (db, id, data) => {
       await db.campaignRegion.update({ where: { id }, data })
     },
-    caps: () => CAMPAIGN_REGION_TEXT_FIELDS
+    caps: () => translatedFieldsOf({ kind: 'region' })
   },
   string: {
-    lock: async (tx, ids) => {
-      await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`
-    },
     find: async (db, id) =>
       await db.campaignString.findUnique({ where: { id } }),
     findWithCampaign: async (db, id) => {
@@ -118,12 +107,9 @@ export const TRANSLATION_TARGETS: Record<
     update: async (db, id, data) => {
       await db.campaignString.update({ where: { id }, data })
     },
-    caps: () => CAMPAIGN_STRING_TEXT_FIELDS
+    caps: () => translatedFieldsOf({ kind: 'string' })
   },
   campaign: {
-    lock: async (tx, ids) => {
-      await tx.$queryRaw`SELECT 1 FROM "Campaign" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`
-    },
     find: async (db, id) => await db.campaign.findUnique({ where: { id } }),
     findWithCampaign: async (db, id) => {
       const campaign = await db.campaign.findUnique({
@@ -137,6 +123,6 @@ export const TRANSLATION_TARGETS: Record<
     update: async (db, id, data) => {
       await db.campaign.update({ where: { id }, data })
     },
-    caps: () => CAMPAIGN_TITLE_TEXT_FIELDS
+    caps: () => translatedFieldsOf({ kind: 'campaign' })
   }
 }
