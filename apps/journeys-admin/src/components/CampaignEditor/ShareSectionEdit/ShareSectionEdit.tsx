@@ -208,6 +208,7 @@ interface ShareLanguageRowProps {
   campaign: Campaign
   region: CampaignRegion
   regionLanguage: CampaignRegionLanguage
+  /** Remove the row; the section confirms first when it holds a Campaign QR Code. */
   onRemove: () => void
   onLink: (url: string) => Promise<void>
   onUnlink: () => Promise<void>
@@ -288,13 +289,14 @@ function ShareLanguageRow({
     )
   }
 
-  // A row holding a QR code is never deleted from the editor: the API
-  // refuses it, so the bin is disabled and points at Unlink instead.
+  // A linked row is never deleted from the editor: the API refuses it, so
+  // the bin is disabled and points at Unlink first.
+  const linked = regionLanguage.journeyId != null
   const removeButton = (
     <IconButton
       size="small"
       aria-label={t('Remove language')}
-      disabled={regionLanguage.qrCode != null}
+      disabled={linked}
       onClick={(event: MouseEvent<HTMLButtonElement>) => {
         stop(event)
         onRemove()
@@ -354,8 +356,10 @@ function ShareLanguageRow({
             data-testid="ShareLanguageUnpublished"
           />
         )}
-        {regionLanguage.qrCode != null ? (
-          <Tooltip title={t('This language has a QR code. Unlink it instead.')}>
+        {linked ? (
+          <Tooltip
+            title={t('Unlink the journey before removing this language.')}
+          >
             <span>{removeButton}</span>
           </Tooltip>
         ) : (
@@ -614,7 +618,9 @@ function ShareLanguageRow({
  * linked), then every language of the region being rendered as the visitor
  * will see it, and "Add language" offering the full catalogue through the
  * same language autocomplete as everywhere else. Add, remove and
- * unlink are plain saves; linking and swapping a journey are Commands
+ * unlink are plain saves, outside undo; removing a language that kept a
+ * Campaign QR Code from an earlier link confirms first, as its printed
+ * copies stop redirecting and there is no restore. Linking and swapping a journey are Commands
  * (a swap retargets the same short link, so undo is safe), and so is "Refresh
  * from journey", confirmed only when the author edited the snapshot.
  */
@@ -638,6 +644,10 @@ export function ShareSectionEdit({
   const { link } = useShareLanguageLinkCommand()
   const { requestRefresh, pending, confirmRefresh, cancelRefresh } =
     useSnapshotRefreshCommand()
+  // The row stays set while the dialog closes, so its name does not vanish
+  // mid-transition.
+  const [pendingRemoval, setPendingRemoval] = useState<CampaignRegionLanguage>()
+  const [removalOpen, setRemovalOpen] = useState(false)
   const regionLanguages = useMemo(
     () =>
       currentRegion == null
@@ -693,6 +703,21 @@ export function ShareSectionEdit({
     } catch (error) {
       notify(error, t('Could not remove language'))
     }
+  }
+
+  function requestRemove(regionLanguage: CampaignRegionLanguage): void {
+    if (regionLanguage.qrCode == null) {
+      void handleRemove(regionLanguage)
+      return
+    }
+    setPendingRemoval(regionLanguage)
+    setRemovalOpen(true)
+  }
+
+  function handleConfirmRemove(): void {
+    setRemovalOpen(false)
+    if (pendingRemoval == null) return
+    void handleRemove(pendingRemoval)
   }
 
   async function handleUnlink(
@@ -784,9 +809,7 @@ export function ShareSectionEdit({
             campaign={campaign}
             region={region}
             regionLanguage={regionLanguage}
-            onRemove={() => {
-              void handleRemove(regionLanguage)
-            }}
+            onRemove={() => requestRemove(regionLanguage)}
             onLink={(url) => link(regionLanguage, url)}
             onUnlink={() => handleUnlink(regionLanguage)}
             onRefresh={() => requestRefresh(regionLanguage)}
@@ -825,6 +848,30 @@ export function ShareSectionEdit({
           )}
         </Typography>
         <Typography>{t('You can undo this afterwards.')}</Typography>
+      </Dialog>
+      <Dialog
+        open={removalOpen}
+        onClose={() => setRemovalOpen(false)}
+        dialogTitle={{
+          title: t('Delete {{language}}?', {
+            language:
+              pendingRemoval == null ? '' : regionLanguageLabel(pendingRemoval)
+          }),
+          closeButton: true
+        }}
+        dialogAction={{
+          onSubmit: handleConfirmRemove,
+          submitLabel: t('Delete'),
+          closeLabel: t('Cancel')
+        }}
+        testId="ShareLanguageDeleteDialog"
+      >
+        <Typography gutterBottom>
+          {t(
+            'This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.'
+          )}
+        </Typography>
+        <Typography>{t('This cannot be undone.')}</Typography>
       </Dialog>
     </Box>
   )
