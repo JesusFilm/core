@@ -75,3 +75,10 @@ export type {
   CampaignThemePresetName
 } from './libs/themePresets'
 export type { CampaignTreeBlock } from './libs/transformer'
+
+// Retain the old editor import surface until its shell migration lands.
+export { campaignPagePaths } from './libs/campaignPagePaths'
+export type {
+  WorldMapShapes,
+  WorldAtlasTopology
+} from './CampaignAnalytics/WorldMap/buildWorldMap'
