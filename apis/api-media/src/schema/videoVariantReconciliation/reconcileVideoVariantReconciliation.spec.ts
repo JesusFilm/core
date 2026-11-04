@@ -798,10 +798,7 @@ describe('reconcileVideoVariantReconciliation', () => {
       expect(
         prismaMock.videoVariantReconciliation.create
       ).not.toHaveBeenCalled()
-      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-        where: { id: '1_19372-jf6101-0-0' },
-        data: { published: true }
-      })
+      expectAtomicPublish('1_19372-jf6101-0-0')
       expect(result).toMatchObject({
         publicationReady: true,
         status: 'complete'
@@ -822,10 +819,7 @@ describe('reconcileVideoVariantReconciliation', () => {
       expect(prismaMock.videoVariant.update).not.toHaveBeenCalledWith(
         expect.objectContaining({ where: { id: '1_19372-jf-0-0' } })
       )
-      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-        where: { id: '1_19372-jf6101-0-0' },
-        data: { published: true }
-      })
+      expectAtomicPublish('1_19372-jf6101-0-0')
       expect(result).toMatchObject({
         publicationReady: true,
         status: 'complete'
