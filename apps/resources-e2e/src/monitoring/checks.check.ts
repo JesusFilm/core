@@ -5,6 +5,8 @@ import { BrowserCheck, RetryStrategyBuilder } from 'checkly/constructs'
 // Keep the deployed logical IDs when source directories move, preserving history.
 new BrowserCheck('apps/watch-e2e/src/monitoring/watch.monitor.ts', {
   name: 'watch.monitor.ts',
+  // Runtime 2024.02 lacks the H.264/AAC codecs needed for real playback.
+  runtimeId: '2026.04',
   code: { entrypoint: path.join(__dirname, 'watch.monitor.ts') },
   retryStrategy: RetryStrategyBuilder.fixedStrategy({
     maxRetries: 1,
