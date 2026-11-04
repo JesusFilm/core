@@ -61,7 +61,7 @@ export interface CampaignRegionSwitcherBlockCreate_campaignRegionSwitcherBlockCr
 
 export interface CampaignRegionSwitcherBlockCreate {
   /**
-   * Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title and variant.
+   * Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title, variant and whether country names show.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
