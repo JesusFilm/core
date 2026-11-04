@@ -337,7 +337,7 @@ async function createGeneratedParentVariant({
 // cascades the change to any further-up container (nested collections);
 // videoCacheReset is what actually revalidates the watch-app language menu
 // for this parent's own page (VMT-318).
-async function syncParentLanguage(
+export async function syncParentLanguage(
   parentVideoId: string,
   languageId: string
 ): Promise<void> {

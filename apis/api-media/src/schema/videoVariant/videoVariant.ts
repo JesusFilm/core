@@ -15,12 +15,9 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
-import {
-  addLanguageToVideo,
-  updateParentCollectionLanguages
-} from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
+import { syncParentLanguage } from '../videoVariantReconciliation/reconcileParentVariants'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 import { videoVariantAwaitsMux } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
 
@@ -196,15 +193,11 @@ export async function handleParentVariantCreation(
   // parents, which aggregate their segments' languages but (unlike
   // collection/series) never get a placeholder Variant -- so
   // availableLanguages stays correct even when no parent is eligible for
-  // one. Mirrors the unconditional addLanguageToVideo/
-  // updateParentCollectionLanguages/videoCacheReset trio in
-  // reconcileParentVariants.ts.
+  // one.
   await Promise.allSettled(
     parentVideos.map(async (parent) => {
       try {
-        await addLanguageToVideo(parent.id, languageId)
-        await updateParentCollectionLanguages(parent.id)
-        await videoCacheReset(parent.id)
+        await syncParentLanguage(parent.id, languageId)
       } catch (error) {
         logger.error(
           { error, parentId: parent.id },
