@@ -13,7 +13,7 @@ import {
 } from '../../../__generated__/globalTypes'
 
 export const CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE = gql`
-  mutation LegacyCampaignFeaturedMediaBlockUpdate(
+  mutation CampaignFeaturedMediaBlockUpdate(
     $id: ID!
     $input: CampaignFeaturedMediaBlockUpdateInput!
   ) {
