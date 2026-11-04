@@ -231,7 +231,9 @@ export function ShareLanguageRow({
           />
         )}
         {linked ? (
-          <Tooltip title={t('Unlink the journey before removing this language.')}>
+          <Tooltip
+            title={t('Unlink the journey before removing this language.')}
+          >
             <span>{removeButton}</span>
           </Tooltip>
         ) : (
