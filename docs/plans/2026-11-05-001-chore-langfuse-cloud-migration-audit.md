@@ -58,6 +58,10 @@ of unscoped `langfuse`.
   Delivery errors/timeouts are logged without replacing the chat response.
   The timeout regression uses a processor that never resolves; it proves the
   handler's awaited flush can release without waiting for that processor.
+  Terminal/disconnect callbacks share one request-local flush promise. This
+  prevents a second flush from returning on an empty queue while the first
+  still exports that request's spans; the closed-socket regression asserts
+  exactly one flush and that the handler waits for it.
 - A response-socket close aborts the model signal and finalizes warning spans.
   Racing piping against disconnect handles the actual Node closed-socket/drain
   stall even when neither SDK terminal callback fires. Normal completion does
@@ -110,8 +114,13 @@ unchanged global provider, duplicate completion, and HTTP 400 export rejection.
 The separate real Node HTTP test covers normal completion and disconnect while
 more model chunks are pending. Fixture Run produces 12 Conversations from 13
 traces/20 generations, excludes one load-test turn, and creates 32 facets.
-Changed-file lint, affected type checks, independent review and PR delivery are
-recorded below when complete.
+`lint:changed --fix` passes formatting, Journeys ESLint and translation extraction;
+export tooling has no workspace ESLint config, so its changed files are formatted,
+type-checked and tested. `nx affected --target=type-check --base=origin/main` passes
+for seven materialized projects (journeys, journeys-admin, journeys-ui, shared-ai,
+shared-dev-hosts, shared-ui and shared-ui-dynamic). This sparse graph does not
+substitute for full-repository CI. Independent review and PR delivery are recorded
+below when complete.
 
 ## Live verification and remaining coverage
 
@@ -129,6 +138,14 @@ migration requirement, but **its SDK usage series and API usage list are empty**
 That coverage cannot establish Core's compatibility, particularly while the
 current code demonstrably uses a legacy SDK and trace API. Bounded observations
 queries found no stage/development/preview rows in that destination in 30 days.
+
+Additional **read-only** checks against that destination retrieved the exact
+managed prompt, development label, text type, **version 9**, with language and
+translation variables compiling successfully. Three historical legacy-ID traces
+from 28 October each expose one generation and one migrated non-generation root
+with object metadata and a journey ID through v2. No message I/O was read or
+exported in this sample. This confirms root-context recovery for those three
+traces only, not backfill completion for every period an operator may need.
 
 Actual live trace delivery, managed prompt success/fallback, provider failure,
 disconnect, field-level observations-v2 validation, historical root coverage,

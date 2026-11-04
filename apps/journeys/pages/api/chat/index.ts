@@ -363,6 +363,12 @@ export default async function handler(
     generationEnded = true
     generation?.end(args)
   }
+  // Disconnect and terminal callbacks can overlap. They must await the same
+  // delivery: a second provider flush can see an empty queue while the first
+  // is still exporting this request's observations.
+  let generationFlush: Promise<void> | undefined
+  const flushGeneration = (): Promise<void> =>
+    (generationFlush ??= flushLangfuse())
 
   const abortController = new AbortController()
   let handleDisconnect: () => void
@@ -383,7 +389,7 @@ export default async function handler(
     // The browser may have left while prompt/model preparation was pending.
     if (res.destroyed) {
       handleDisconnect!()
-      await flushLangfuse()
+      await flushGeneration()
       return
     }
     const result = streamText({
@@ -397,7 +403,7 @@ export default async function handler(
           level: 'WARNING',
           statusMessage: 'stream aborted'
         })
-        await flushLangfuse()
+        await flushGeneration()
       },
       onError: async ({ error }) => {
         const err = error as Error
@@ -417,7 +423,7 @@ export default async function handler(
           level: 'ERROR',
           statusMessage: err?.message ?? 'stream error'
         })
-        await flushLangfuse()
+        await flushGeneration()
       },
       onFinish: async ({ text, usage, finishReason }) => {
         if (finishReason === 'error') {
@@ -465,7 +471,7 @@ export default async function handler(
             '[chat] completed'
           )
         }
-        await flushLangfuse()
+        await flushGeneration()
       }
     })
 
@@ -495,7 +501,7 @@ export default async function handler(
     // The SDK can wait forever for drain on a closed socket. A close must
     // release the handler and flush ended spans even without an SDK callback.
     await Promise.race([piping, disconnected])
-    if (abortController.signal.aborted) await flushLangfuse()
+    if (abortController.signal.aborted) await flushGeneration()
   } catch (error) {
     const err = error as Error
     logger.error(
@@ -515,7 +521,7 @@ export default async function handler(
       level: 'ERROR',
       statusMessage: err?.message ?? 'sync throw'
     })
-    await flushLangfuse()
+    await flushGeneration()
     if (!res.headersSent) {
       res.status(500).json({ error: 'upstream streamText failed' })
     } else {

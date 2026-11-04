@@ -256,14 +256,18 @@ describe('v4 observations HTTP contract', () => {
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify({ data: [generation], meta: { cursor: 42 } }))
     )
-    await expect(fetchTraceData(client, window)).rejects.toThrow('invalid cursor')
+    await expect(fetchTraceData(client, window)).rejects.toThrow(
+      'invalid cursor'
+    )
   })
 
   it('stops when expanded trace detail omits a discovered generation', async () => {
     fetchMock
       .mockResolvedValueOnce(page([generation]))
       .mockResolvedValueOnce(
-        page([{ ...generation, id: 'root', type: 'SPAN', parentObservationId: null }])
+        page([
+          { ...generation, id: 'root', type: 'SPAN', parentObservationId: null }
+        ])
       )
     await expect(
       fetchTraceData(client, window, { throttleMs: 0 })

@@ -163,7 +163,9 @@ describe('Langfuse v4 wire contract', () => {
       const promptVersion = generation.attributes.find(
         ({ key }) => key === 'langfuse.observation.prompt.version'
       )?.value
-      expect(Number(promptVersion?.intValue ?? promptVersion?.stringValue)).toBe(7)
+      expect(
+        Number(promptVersion?.intValue ?? promptVersion?.stringValue)
+      ).toBe(7)
       expect(requests[0].url).toContain(
         '/api/public/v2/prompts/apologist-world-cup-chat?'
       )

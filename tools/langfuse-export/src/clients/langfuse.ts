@@ -262,7 +262,9 @@ async function listObservations(
         typeof raw.type !== 'string' ||
         raw.type.length === 0
       ) {
-        throw new Error('Langfuse observations response has invalid core fields')
+        throw new Error(
+          'Langfuse observations response has invalid core fields'
+        )
       }
       rows.set(raw.id, raw)
     }
@@ -377,9 +379,7 @@ export async function fetchTraceData(
       row.traceId &&
       (options.environment == null || row.environment === options.environment)
   )
-  const traceIds = new Set(
-    discoveredGenerations.map((row) => row.traceId!)
-  )
+  const traceIds = new Set(discoveredGenerations.map((row) => row.traceId!))
   const traces: TraceRecord[] = []
   const observations: ObservationRecord[] = []
   for (const traceId of traceIds) {

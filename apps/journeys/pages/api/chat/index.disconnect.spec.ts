@@ -154,7 +154,7 @@ describe('chat HTTP stream lifecycle', () => {
         expect(handlerFinished).toBe(false)
         flushed.resolve()
         await handled.promise
-        expect(mocks.flush).toHaveBeenCalled()
+        expect(mocks.flush).toHaveBeenCalledTimes(1)
         expect(mocks.end).toHaveBeenCalledTimes(1)
       } finally {
         release.resolve()

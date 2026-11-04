@@ -674,7 +674,7 @@ describe('/api/chat handler', () => {
         level: 'WARNING',
         statusMessage: 'stream aborted'
       })
-      expect(fake.flushAsync).toHaveBeenCalled()
+      expect(fake.flushAsync).toHaveBeenCalledTimes(1)
     })
 
     it('ends the generation with output + usage on a successful onFinish', async () => {
@@ -857,6 +857,7 @@ describe('/api/chat handler', () => {
         level: 'ERROR',
         statusMessage: 'first'
       })
+      expect(fake.flushAsync).toHaveBeenCalledTimes(1)
     })
 
     it('ends the generation exactly once when onFinish fires before onError', async () => {
@@ -878,6 +879,7 @@ describe('/api/chat handler', () => {
         usageDetails: { input: 2, output: 3 },
         level: 'DEFAULT'
       })
+      expect(fake.flushAsync).toHaveBeenCalledTimes(1)
     })
 
     it('responds 500 + ends the generation when streamText throws synchronously', async () => {
