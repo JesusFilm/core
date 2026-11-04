@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-test('Arclight HTTP redirects reach the expected Watch page', async ({ request }) => {
+test('Arclight HTTP redirects reach the expected Watch page', async ({
+  request
+}) => {
   let url = new URL('https://arc.gt/s/1_jf-0-0/529')
   const destination = 'https://www.jesusfilm.org/watch/jesus.html/english.html'
   const visited = new Set<string>()
