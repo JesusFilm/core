@@ -96,6 +96,30 @@ describe('GET /media-components/:mediaComponentId', () => {
     })
   })
 
+  it('does not report a container as downloadable, even if its parent Variant is flagged downloadable', async () => {
+    queryMock.mockResolvedValue({
+      data: {
+        video: baseVideo({
+          variant: {
+            hls: '',
+            lengthInMilliseconds: 0,
+            language: { bcp47: 'en' },
+            downloadable: true,
+            downloads: []
+          }
+        })
+      }
+    })
+
+    const res = await app.request('/media-components/16_Influencers')
+
+    expect(res.status).toBe(200)
+    expect(await res.json()).toMatchObject({
+      componentType: 'container',
+      isDownloadable: false
+    })
+  })
+
   it('reports a Variant with a stream URL as content', async () => {
     queryMock.mockResolvedValue({
       data: {
@@ -120,7 +144,8 @@ describe('GET /media-components/:mediaComponentId', () => {
     expect(body).toMatchObject({
       mediaComponentId: '1_jf-0-0',
       componentType: 'content',
-      contentType: 'video'
+      contentType: 'video',
+      isDownloadable: true
     })
   })
 

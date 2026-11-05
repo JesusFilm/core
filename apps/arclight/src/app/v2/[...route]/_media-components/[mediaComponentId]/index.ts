@@ -302,7 +302,8 @@ mediaComponent.openapi(route, async (c) => {
         },
         lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
         containsCount: video.childrenCount,
-        isDownloadable: video.variant?.downloadable ?? false,
+        isDownloadable:
+          componentType === 'content' && (video.variant?.downloadable ?? false),
         downloadSizes: {
           approximateSmallDownloadSizeInBytes:
             video.variant?.downloads.find((d) => d.quality === 'low')?.size ??

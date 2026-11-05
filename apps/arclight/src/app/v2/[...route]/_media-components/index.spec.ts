@@ -249,7 +249,7 @@ describe('GET /media-components', () => {
       }
     }
 
-    it('is downloadable when its Variant is, as the detail endpoint reports', async () => {
+    it('is not downloadable even when its parent Variant is flagged downloadable, because it has no video file', async () => {
       mediaPrismaMock.video.findMany.mockResolvedValue([
         containerVideo(true)
       ] as never)
@@ -263,7 +263,7 @@ describe('GET /media-components', () => {
         componentType: 'container',
         contentType: 'none',
         containsCount: 2,
-        isDownloadable: true,
+        isDownloadable: false,
         lengthInMilliseconds: 0,
         downloadSizes: {
           approximateSmallDownloadSizeInBytes: 0,
