@@ -5,6 +5,7 @@ module "stage" {
   internal_url_name            = "stage.internal"
   certificate_arn              = aws_acm_certificate.stage.arn
   datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
+  s3_gateway_endpoint          = true
 }
 
 module "route53_stage_central_jesusfilm_org" {
