@@ -2,6 +2,7 @@
 import { createServer, get } from 'node:http'
 import type { AddressInfo } from 'node:net'
 
+import { streamText } from 'ai'
 import { MockLanguageModelV4 } from 'ai/test'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -9,9 +10,18 @@ import handler from './index'
 
 const mocks = vi.hoisted(() => ({
   model: vi.fn(),
+  prompt: vi.fn(),
+  keepAlive: vi.fn(),
   end: vi.fn(),
   flush: vi.fn().mockResolvedValue(undefined)
 }))
+
+vi.mock('ai', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('ai')>()
+  return { ...actual, streamText: vi.fn(actual.streamText) }
+})
+
+vi.mock('@vercel/functions', () => ({ waitUntil: mocks.keepAlive }))
 
 vi.mock('@ai-sdk/google', () => ({ google: mocks.model }))
 vi.mock('../../../src/libs/getFlags', () => ({
@@ -28,7 +38,7 @@ vi.mock('../../../src/libs/langfuse/client', () => ({
   getActivePromptLabel: () => 'development',
   getLangfuse: () => ({
     prompt: {
-      get: () => Promise.resolve({ type: 'text', compile: () => 'synthetic' })
+      get: mocks.prompt
     }
   }),
   startChatGeneration: () => ({ end: mocks.end }),
@@ -50,12 +60,80 @@ function deferred(): {
 }
 
 describe('chat HTTP stream lifecycle', () => {
+  beforeEach(() => {
+    mocks.prompt.mockResolvedValue({ type: 'text', compile: () => 'synthetic' })
+    mocks.flush.mockResolvedValue(undefined)
+  })
+
   afterEach(() => {
     vi.unstubAllEnvs()
     vi.clearAllMocks()
   })
 
-  it.each([true, false])(
+  it.each(['socket', 'request-error'])(
+    'skips generation when cancellation happens during prompt retrieval (%s)',
+    async (kind) => {
+      vi.stubEnv('CHAT_PROVIDER', 'gemini')
+      const requested = deferred()
+      const release = deferred()
+      const handled = deferred()
+      const closed = deferred()
+      let incoming: import('node:http').IncomingMessage
+      mocks.prompt.mockImplementation(async () => {
+        requested.resolve()
+        await release.promise
+        return { type: 'text', compile: () => 'synthetic' }
+      })
+      const server = createServer((req, res) => {
+        incoming = req
+        const request = req as NextApiRequest
+        request.method = 'POST'
+        request.body = {
+          messages: [
+            { role: 'user', parts: [{ type: 'text', text: 'synthetic' }] }
+          ],
+          journeyId: 'synthetic',
+          cardId: 'synthetic'
+        }
+        res.once('close', closed.resolve)
+        void handler(request, res as NextApiResponse).then(
+          handled.resolve,
+          handled.reject
+        )
+      })
+      await new Promise<void>((resolve) =>
+        server.listen(0, '127.0.0.1', resolve)
+      )
+      const client = get(
+        `http://127.0.0.1:${(server.address() as AddressInfo).port}`
+      )
+      client.on('error', () => undefined)
+      try {
+        await requested.promise
+        if (kind === 'socket') {
+          client.destroy()
+          await closed.promise
+        } else {
+          incoming!.emit('error', new Error('aborted'))
+        }
+        release.resolve()
+        await handled.promise
+        expect(streamText).not.toHaveBeenCalled()
+        expect(mocks.end).toHaveBeenCalledWith(
+          expect.objectContaining({ level: 'WARNING' })
+        )
+        expect(mocks.flush).toHaveBeenCalledTimes(1)
+        expect(incoming!.listenerCount('error')).toBe(0)
+      } finally {
+        release.resolve()
+        client.destroy()
+        server.closeAllConnections()
+        await new Promise<void>((resolve) => server.close(() => resolve()))
+      }
+    }
+  )
+
+  it.each([true, false, 'request-error'])(
     'ends and flushes the generation with client disconnect=%s',
     async (disconnect) => {
       vi.stubEnv('CHAT_PROVIDER', 'gemini')
@@ -110,7 +188,9 @@ describe('chat HTTP stream lifecycle', () => {
           }
         })
       )
+      let activeRequest: import('node:http').IncomingMessage
       const server = createServer((req, res) => {
+        activeRequest = req
         const request = req as NextApiRequest
         request.method = 'POST'
         request.body = {
@@ -130,6 +210,7 @@ describe('chat HTTP stream lifecycle', () => {
         server.listen(0, '127.0.0.1', resolve)
       )
       let handlerFinished = false
+      let lifecycleFinished = false
       void handled.promise.then(() => {
         handlerFinished = true
       })
@@ -139,21 +220,30 @@ describe('chat HTTP stream lifecycle', () => {
             `http://127.0.0.1:${(server.address() as AddressInfo).port}`,
             (res) => {
               res.once('data', () => {
-                if (disconnect) res.destroy()
+                if (disconnect === 'request-error') {
+                  activeRequest!.emit('error', new Error('aborted'))
+                  release.resolve()
+                } else if (disconnect) res.destroy()
                 else release.resolve()
                 resolve()
               })
             }
           ).on('error', reject)
         })
+        expect(mocks.keepAlive).toHaveBeenCalledTimes(1)
+        void mocks.keepAlive.mock.calls[0][0].then(() => {
+          lifecycleFinished = true
+        })
         await vi.waitFor(() => expect(mocks.end).toHaveBeenCalledTimes(1))
         expect(mocks.end).toHaveBeenCalledWith(
           expect.objectContaining({ level: disconnect ? 'WARNING' : 'DEFAULT' })
         )
-        expect(providerSignal?.aborted ?? false).toBe(disconnect)
+        expect(providerSignal?.aborted ?? false).toBe(Boolean(disconnect))
         expect(handlerFinished).toBe(false)
+        expect(lifecycleFinished).toBe(false)
         flushed.resolve()
         await handled.promise
+        expect(lifecycleFinished).toBe(true)
         expect(mocks.flush).toHaveBeenCalledTimes(1)
         expect(mocks.end).toHaveBeenCalledTimes(1)
       } finally {

@@ -321,11 +321,24 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
     )
   }
   const root = roots[0]
-  // A recovered non-generation root is authoritative even with empty metadata.
+  // A root without a journey ID cannot override attributed generation data.
   // A parentless legacy generation can lack the old trace's attribution, so it
   // must pass the same consistent-context checks as other rootless generations.
   let context =
     root != null && parseRecord(root.metadata) != null ? root : undefined
+  if (
+    context != null &&
+    metaJourneyId(asRecord(context.metadata)) == null &&
+    ordered.some(
+      (row) =>
+        row.type === 'GENERATION' &&
+        metaJourneyId(asRecord(row.metadata)) != null
+    )
+  ) {
+    throw new Error(
+      `Langfuse trace ${traceId} has generation journey attribution missing from its root; export stopped to preserve journey exclusions.`
+    )
+  }
   if (context == null) {
     const generations = ordered.filter((row) => row.type === 'GENERATION')
     const generationContext = generations[0]
@@ -349,7 +362,7 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
             JSON.stringify(asStringArray(generationContext.tags).sort())
         )
       })
-    if (consistentGenerationContext) context = generationContext
+    context = consistentGenerationContext ? generationContext : undefined
   }
   if (context == null) {
     // Legacy children can lose trace metadata during migration. Refuse an
@@ -431,7 +444,14 @@ export async function fetchTraceData(
       continue
     traces.push(context)
     observations.push(
-      ...rows.filter((row) => row.type === 'GENERATION').map(mapObservation)
+      ...rows
+        .filter(
+          (row) =>
+            row.type === 'GENERATION' &&
+            (options.environment == null ||
+              row.environment === options.environment)
+        )
+        .map(mapObservation)
     )
   }
   return { traces, observations }

@@ -131,6 +131,7 @@
     "@types/mailchimp__mailchimp_marketing": "^3.0.19",
     "@types/node-fetch": "^2.6.13",
     "@upstash/redis": "^1.35.3",
+    "@vercel/functions": "3.10.6",
     "@xyflow/react": "^12.4.4",
     "ai": "^7.0.49",
     "algoliasearch": "^5.0.0",

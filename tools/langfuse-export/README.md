@@ -178,3 +178,7 @@ npx tsc -p tools/langfuse-export/tsconfig.json --noEmit
 - **`country` is IP-geolocation.** The `country` facet is the trace's `ipCountry` (a rough proxy: VPNs, travel, and server egress can skew it), not a declared region.
 - **Anonymity grain is the session.** Sessions are labelled `Session 001…` in the viewer; the pseudonymous Langfuse `sessionId` is retained in `dataset.json` for traceability. Cross-session "user" identity is not reconstructed (no persistent id is captured today).
 - **Single-page size.** The whole corpus is inlined into one HTML file. That is fine at report scale; a very large window (many thousands of sessions) would produce a heavy page — narrow the window or add pagination before then.
+
+If a recovered root lacks journey attribution but its generations contain it,
+the export stops with the trace ID rather than bypassing journey exclusions.
+Roots and generations that are genuinely unattributed remain supported.

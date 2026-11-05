@@ -2,6 +2,7 @@ import { google } from '@ai-sdk/google'
 import { openai } from '@ai-sdk/openai'
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { type LangfuseClient, type TextPromptClient } from '@langfuse/client'
+import { waitUntil } from '@vercel/functions'
 import {
   type LanguageModel,
   UIMessage,
@@ -189,9 +190,27 @@ function resolveChatModel():
   }
 }
 
-export default async function handler(
+export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
+): Promise<void> {
+  const cancellation = new AbortController()
+  const handleRequestError = (error: Error): void => {
+    if (error.message === 'aborted') cancellation.abort()
+  }
+  req.on?.('error', handleRequestError)
+  const handling = handleChat(req, res, cancellation.signal).finally(() => {
+    req.off?.('error', handleRequestError)
+  })
+  // Vercel may otherwise freeze a cancelled request before telemetry finishes.
+  waitUntil(handling)
+  return handling
+}
+
+async function handleChat(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  requestSignal: AbortSignal
 ): Promise<void> {
   const startedAt = Date.now()
   const flags = await getFlags()
@@ -380,14 +399,16 @@ export default async function handler(
         statusMessage: 'client disconnected'
       })
       abortController.abort()
+      if (requestSignal.aborted && !res.destroyed) res.end()
       resolve()
     }
     res.once('close', handleDisconnect)
+    requestSignal.addEventListener('abort', handleDisconnect, { once: true })
   })
 
   try {
     // The browser may have left while prompt/model preparation was pending.
-    if (res.destroyed) {
+    if (res.destroyed || requestSignal.aborted) {
       handleDisconnect!()
       await flushGeneration()
       return
@@ -426,6 +447,10 @@ export default async function handler(
         await flushGeneration()
       },
       onFinish: async ({ text, usage, finishReason }) => {
+        if (generationEnded) {
+          await flushGeneration()
+          return
+        }
         if (finishReason === 'error') {
           endGenerationIfPending({
             level: 'ERROR',
@@ -529,6 +554,7 @@ export default async function handler(
     }
   } finally {
     res.off('close', handleDisconnect!)
+    requestSignal.removeEventListener('abort', handleDisconnect!)
   }
 }
 

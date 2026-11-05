@@ -476,6 +476,42 @@ describe('v4 observations HTTP contract', () => {
     expect(excluded.excludedTurnCount).toBe(2)
   })
 
+  it('refuses an unattributed root when generations have journey attribution', async () => {
+    const root = {
+      ...generation,
+      id: 'root',
+      type: 'SPAN',
+      parentObservationId: null,
+      metadata: {}
+    }
+    const child = { ...generation, parentObservationId: root.id }
+    fetchMock
+      .mockResolvedValueOnce(page([child]))
+      .mockResolvedValueOnce(page([root, child]))
+    await expect(
+      fetchTraceData(client, window, { throttleMs: 0 })
+    ).rejects.toThrow('generation journey attribution missing from its root')
+  })
+
+  it('excludes foreign-environment generations from a selected production trace', async () => {
+    const root = {
+      ...generation,
+      id: 'root',
+      type: 'SPAN',
+      parentObservationId: null
+    }
+    const child = { ...generation, parentObservationId: root.id }
+    const foreign = { ...child, id: 'preview-child', environment: 'preview' }
+    fetchMock
+      .mockResolvedValueOnce(page([child]))
+      .mockResolvedValueOnce(page([root, child, foreign]))
+    const data = await fetchTraceData(client, window, {
+      throttleMs: 0,
+      environment: 'production'
+    })
+    expect(data.observations.map(({ id }) => id)).toEqual(['g1'])
+  })
+
   it('allows a recovered, genuinely untagged historical root with empty metadata', async () => {
     const root = {
       ...generation,

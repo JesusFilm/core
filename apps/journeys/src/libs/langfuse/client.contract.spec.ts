@@ -31,6 +31,9 @@ describe('Langfuse v4 wire contract', () => {
       headers: IncomingHttpHeaders
       body: string
     }> = []
+    let activeExports = 0
+    let maximumActiveExports = 0
+    let exportDelay = 0
     let exportStatus = 200
     let exportAcknowledgement: Promise<void> | undefined
     const server = createServer(async (req, res) => {
@@ -57,6 +60,11 @@ describe('Langfuse v4 wire contract', () => {
         )
         return
       }
+      activeExports++
+      maximumActiveExports = Math.max(maximumActiveExports, activeExports)
+      res.once('finish', () => {
+        activeExports--
+      })
       if (exportAcknowledgement != null) {
         const batch: WireBatch = JSON.parse(Buffer.concat(chunks).toString())
         const hasRoot = batch.resourceSpans.some(({ scopeSpans }) =>
@@ -66,6 +74,8 @@ describe('Langfuse v4 wire contract', () => {
         )
         if (hasRoot) await exportAcknowledgement
       }
+      if (exportDelay > 0)
+        await new Promise((resolve) => setTimeout(resolve, exportDelay))
       res.statusCode = exportStatus
       res.end('{}')
     })
@@ -248,6 +258,42 @@ describe('Langfuse v4 wire contract', () => {
             'langfuse.observation.metadata.journeyId': `journey-${suffix}`
           })
         }
+      }
+
+      // Reproduce the collector's default 30-request concurrency limit.
+      requests.length = 0
+      maximumActiveExports = 0
+      exportDelay = 300
+      const burst = Array.from(
+        { length: 20 },
+        (_, index) =>
+          startChatGeneration({
+            sessionId: `burst-${index}`,
+            metadata: { journeyId: 'burst' },
+            input: 'synthetic'
+          })!
+      )
+      burst.forEach((operation) =>
+        operation.end({ output: 'synthetic answer' })
+      )
+      await flushLangfuse()
+      exportDelay = 0
+      const burstSpans = exportedSpans()
+      expect(burstSpans).toHaveLength(40)
+      expect(maximumActiveExports).toBeLessThanOrEqual(20)
+      expect(new Set(burstSpans.map(({ spanId }) => spanId)).size).toBe(40)
+      for (let index = 0; index < 20; index++) {
+        const pair = burstSpans.filter((span) =>
+          span.attributes.some(
+            ({ key, value }) =>
+              key === 'session.id' && value.stringValue === `burst-${index}`
+          )
+        )
+        expect(pair).toHaveLength(2)
+        const root = pair.find(({ name }) => name === 'apologist-chat')!
+        expect(
+          pair.find(({ name }) => name === 'apologist-generation')?.parentSpanId
+        ).toBe(root.spanId)
       }
 
       // Exports may start on end() before forceFlush(). A queue that has

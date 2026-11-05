@@ -675,6 +675,7 @@ describe('/api/chat handler', () => {
         statusMessage: 'stream aborted'
       })
       expect(fake.flushAsync).toHaveBeenCalledTimes(1)
+      expect(mockLoggerInfo).not.toHaveBeenCalled()
     })
 
     it('ends the generation with output + usage on a successful onFinish', async () => {

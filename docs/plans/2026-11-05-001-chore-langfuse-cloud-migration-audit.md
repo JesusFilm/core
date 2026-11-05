@@ -255,3 +255,41 @@ traces in this same destination confirmed recovered roots, not complete backfill
 for all history an operator may export. Browser control remains unavailable;
 published page data and real HTTP streaming were checked. Live provider failure
 was not induced by changing model configuration; regressions cover it locally.
+
+## PR review corrections — 5 November 2026
+
+Siyang and CodeRabbit identified overlapping-export loss at the OTLP exporter's
+30-request limit. A real HTTP collector delaying acknowledgements for 300 ms
+reproduced missing spans from 20 completed chats before correction. A dedicated
+queue now admits at most 20 span deliveries at a time, waiting for each SDK
+processor flush before admitting another. The SDK still owns masking, headers,
+payload-size limits and immediate export. Provider flush includes queued and
+active work and remains bounded at five seconds. The same HTTP regression now
+receives all 40 distinct observations with valid parentage and no more than 20
+active collector requests.
+
+The chat route opts into Vercel cancellation through a Journeys-specific config
+used by its deploy target. The rule uses the Next.js-relative `pages/api/chat/index.ts` path.
+An initial glob-only check missed Vercel CLI's separate unused-function
+validation, which rejects patterns beginning with `**/`. A regression replay
+through the installed CLI's actual builder detector reproduced `unused_function`
+for the original rule and passes with the exact Next.js path. After each build,
+`verifyChatFunction.ts` checks the emitted chat function's `.vc-config.json`
+and refuses deployment unless `supportsCancellation` is true. The handler captures
+request errors with message `aborted` from the start of the request, forwards
+cancellation to the existing disconnect path, ends the response and registers
+the entire handling promise with `waitUntil`. This follows the documented
+[Vercel cancellation/lifecycle contract](https://vercel.com/docs/functions/functions-api-reference).
+Real HTTP regressions cover socket close and request abort during prompt retrieval,
+request abort during streaming, provider cancellation, a single awaited trace
+flush, and listener cleanup. A late finish after abort no longer emits a misleading
+completed-chat event.
+
+Export detail reads now re-check each generation's environment. An untagged root
+whose children provide journey attribution stops export rather than bypassing
+journey exclusions; genuinely unattributed roots/children remain supported.
+Contract regressions cover both review findings. The updated local results are
+**77 chat/client tests** and **250 exporter tests**, plus direct type checks and
+a frozen install retaining all nine workspace importers. All corrections are
+collected into one review-fix commit; subsequent CI and preview evidence is
+recorded on the PR to avoid triggering another build for verification prose.

@@ -8,6 +8,8 @@ import {
 import { ROOT_CONTEXT, trace } from '@opentelemetry/api'
 import { BasicTracerProvider } from '@opentelemetry/sdk-trace-base'
 
+import { QueuedSpanProcessor } from './queuedSpanProcessor'
+
 let cached: LangfuseClient | null | undefined
 let provider: BasicTracerProvider | undefined
 let warned = false
@@ -45,17 +47,19 @@ export function getLangfuse(): LangfuseClient | null {
     // Includes processor work before HTTP export, so a stalled flush is bounded.
     forceFlushTimeoutMillis: FLUSH_TIMEOUT_MS,
     spanProcessors: [
-      new LangfuseSpanProcessor({
-        publicKey,
-        secretKey,
-        baseUrl,
-        environment: resolveTracingEnvironment(),
-        // SimpleSpanProcessor tracks in-flight deliveries in forceFlush(); a
-        // batch processor can already have drained its queue on an auto-flush.
-        exportMode: 'immediate',
-        timeout: FLUSH_TIMEOUT_MS / 1000,
-        additionalHeaders: { 'x-langfuse-ingestion-version': '4' }
-      })
+      new QueuedSpanProcessor(
+        new LangfuseSpanProcessor({
+          publicKey,
+          secretKey,
+          baseUrl,
+          environment: resolveTracingEnvironment(),
+          // SimpleSpanProcessor tracks in-flight deliveries in forceFlush(); a
+          // batch processor can already have drained its queue on an auto-flush.
+          exportMode: 'immediate',
+          timeout: FLUSH_TIMEOUT_MS / 1000,
+          additionalHeaders: { 'x-langfuse-ingestion-version': '4' }
+        })
+      )
     ]
   })
   cached = new LangfuseClient({ publicKey, secretKey, baseUrl })
