@@ -331,7 +331,8 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     pageId: LANDING_PAGE_ID,
     parentOrder: 1,
     title: 'Choose your region',
-    switcherVariant: CampaignSwitcherVariant.cards
+    switcherVariant: CampaignSwitcherVariant.cards,
+    showCountryNames: true
   }),
   button({
     id: 'switcherEuropeButtonId',
@@ -443,7 +444,8 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     pageId: REGION_PAGE_ID,
     parentOrder: 4,
     title: 'Other regions',
-    switcherVariant: CampaignSwitcherVariant.cards
+    switcherVariant: CampaignSwitcherVariant.cards,
+    showCountryNames: true
   })
 ]
 

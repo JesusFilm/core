@@ -67,6 +67,8 @@ Editor-level additional providers:
 10. `MuxVideoUploadProvider` — video upload handling
 11. `HotkeysProvider` — keyboard shortcuts
 
+Campaign editor providers (`src/components/CampaignEditor/CampaignEditor.tsx`): `CommandProvider` > `CampaignEditorProvider` > `MuxVideoUploadProvider` > `TranslationRunProvider` > `NavigatorHoverProvider`.
+
 Tests must wrap components in the required providers:
 
 ```tsx
@@ -103,7 +105,7 @@ Editor/
 
 ## Custom hooks
 
-60+ custom mutation/query hooks in `src/libs/`:
+120+ custom mutation/query hooks in `src/libs/`:
 
 ```text
 src/libs/
@@ -145,8 +147,9 @@ Pattern: `use{Action}{Resource}{Suffix}` — e.g., `useJourneyCreateMutation`, `
 
 Pages Router with server-side rendering:
 
-- `/` — dashboard
+- `/` — dashboard; `/?type=campaigns` is the Team Campaigns tab (`/campaigns` redirects there, `next.config.js`)
 - `/journeys/[journeyId]` — journey editor
+- `/campaigns/[campaignId]` — campaign editor
 - `/templates/` — template browsing
 - `/teams/` — team management
 - `/reports/` — analytics
@@ -172,7 +175,8 @@ pnpm dlx nx run journeys-admin:type-check
 pnpm dlx nx run journeys-admin:test
 pnpm dlx nx run journeys-admin:codegen               # after GraphQL changes
 pnpm dlx nx run journeys-admin:extract-translations   # after i18n changes
-pnpm dlx nx run journeys-admin-e2e:e2e                # end-to-end tests
+pnpm dlx nx run journeys-admin-e2e:e2e                # end-to-end smoke set
+pnpm dlx nx run journeys-admin-e2e:e2e-full           # full end-to-end suite
 ```
 
 ## Imports
