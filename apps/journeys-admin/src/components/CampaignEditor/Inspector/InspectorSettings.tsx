@@ -182,6 +182,11 @@ export function InspectorSettings({
           <RegionSettings
             key={region.id}
             region={region}
+            hostSwitcher={
+              selection.host?.__typename === 'CampaignRegionSwitcherBlock'
+                ? selection.host
+                : undefined
+            }
             translationLanguageId={
               previewLanguageId === campaign.defaultLanguageId
                 ? undefined

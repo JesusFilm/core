@@ -82,6 +82,9 @@ jobs:
           args: --c=production
 
       # ECS Deployment
+      - name: Set up AWS CLI
+        uses: ./.github/actions/setup-aws-cli
+
       - name: Configure ECS AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

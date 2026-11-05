@@ -17,8 +17,13 @@ export {
   qrCodeFileName
 } from './CampaignRegionShare'
 export {
+  CampaignCountryFlag,
   CampaignRegionCountries,
   CampaignRegionLines,
+  CampaignRegionSwitcher,
+  countryLabel,
+  FALLBACK_FLAG,
+  listedRegions,
   regionFrameSx,
   regionNameVariant,
   switcherLayoutSx
