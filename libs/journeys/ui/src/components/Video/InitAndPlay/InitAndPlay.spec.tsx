@@ -1,4 +1,4 @@
-import { act, cleanup, render } from '@testing-library/react'
+import { act, cleanup, render, waitFor } from '@testing-library/react'
 import { ComponentProps } from 'react'
 import videojs from 'video.js'
 import { type MockInstance } from 'vitest'
@@ -13,6 +13,7 @@ import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__genera
 import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
 import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
+import { reapplyUnhandledSource } from '../utils/reapplyUnhandledSource'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import { InitAndPlay } from '.'
@@ -29,11 +30,16 @@ vi.mock('../utils/extractYouTubeCaptionsAndAddTextTracks', () => ({
   extractYouTubeCaptionsAndAddTextTracks: vi.fn()
 }))
 
+vi.mock('../utils/reapplyUnhandledSource', () => ({
+  reapplyUnhandledSource: vi.fn()
+}))
+
 const mockGetMuxMetadata = getMuxMetadata
 const mockGetCaptionsAndSubtitleTracks = vi.mocked(getCaptionsAndSubtitleTracks)
 const mockExtractYouTubeCaptionsAndAddTextTracks = vi.mocked(
   extractYouTubeCaptionsAndAddTextTracks
 )
+const mockReapplyUnhandledSource = vi.mocked(reapplyUnhandledSource)
 
 describe('InitAndPlay', () => {
   let defaultProps: ComponentProps<typeof InitAndPlay>
@@ -47,6 +53,7 @@ describe('InitAndPlay', () => {
   } as unknown as TreeBlock<StepBlock>
 
   beforeEach(() => {
+    mockReapplyUnhandledSource.mockClear()
     const video = document.createElement('video')
     document.body.appendChild(video)
     player = videojs(video, {
@@ -123,6 +130,58 @@ describe('InitAndPlay', () => {
         videoVariantLanguageId: 'languageId'
       }
     })
+  })
+
+  it("leaves a journey video's source alone once ready", async () => {
+    blockHistoryVar([defaultStepBlock])
+    const ready = vi.fn()
+    player.ready(ready)
+
+    render(<InitAndPlay {...defaultProps} />)
+
+    await waitFor(() => expect(ready).toHaveBeenCalled())
+    expect(mockReapplyUnhandledSource).not.toHaveBeenCalled()
+  })
+
+  it('re-sets a server-rendered source once ready when asked to', async () => {
+    blockHistoryVar([defaultStepBlock])
+
+    render(<InitAndPlay {...defaultProps} reapplyServerSource />)
+
+    await waitFor(() =>
+      expect(mockReapplyUnhandledSource).toHaveBeenCalledWith(player)
+    )
+  })
+
+  it('offers the given subtitle files as hidden text tracks', () => {
+    blockHistoryVar([defaultStepBlock])
+    const addRemoteTextTrack = vi.spyOn(player, 'addRemoteTextTrack')
+
+    render(
+      <InitAndPlay
+        {...defaultProps}
+        subtitleTracks={[
+          {
+            id: 'subtitleId',
+            src: 'https://files.example.org/jesus-es.vtt',
+            language: 'es',
+            label: 'Spanish'
+          }
+        ]}
+      />
+    )
+
+    expect(addRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'subtitleId',
+        kind: 'subtitles',
+        src: 'https://files.example.org/jesus-es.vtt',
+        srclang: 'es',
+        label: 'Spanish',
+        mode: 'hidden'
+      },
+      true
+    )
   })
 
   it('should listen for player ready', () => {

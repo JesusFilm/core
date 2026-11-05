@@ -16,7 +16,14 @@
     "e2e-full": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["playwright test"],
+        "commands": ["playwright test --grep-invert @manual"],
+        "cwd": "apps/journeys-admin-e2e"
+      }
+    },
+    "e2e-campaign": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test --grep @manual"],
         "cwd": "apps/journeys-admin-e2e"
       }
     },

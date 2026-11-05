@@ -52,7 +52,7 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       DOPPLER_CONFIG: ${{ inputs.env == 'prod' && 'prd' || 'stg' }}
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -106,6 +106,9 @@ jobs:
         with:
           targets: upload-sourcemaps
           projects: ${{ inputs.name }}
+      - name: Set up AWS CLI
+        uses: ./.github/actions/setup-aws-cli
+
       - name: Configure ECS AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

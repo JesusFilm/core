@@ -5,12 +5,13 @@ import { ReactElement, SyntheticEvent } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
-import type { ContentType } from '../../JourneyListView'
+import { CampaignList } from '../../../../CampaignList'
+import type { ContentTab } from '../../JourneyListView'
 import { MenuControl, SortControl, StatusFilterControl } from '../Controls'
 import type { SharedModeProps } from '../shared'
 
 export interface ContentTypeOption {
-  queryParam: ContentType
+  queryParam: ContentTab
   displayValue: string
   tabIndex: number
 }
@@ -62,6 +63,15 @@ export const TeamMode = ({
   // sitting in this shared row. The status filter is unaffected.
   const hideListControls = listControlsOwnedByContent
 
+  // Team Campaigns (campaignBuilder flag, team mode only) — present only when
+  // JourneyListView adds its option. Campaigns have no status, so its tab
+  // drops the status filter, sort and bulk-actions menu entirely.
+  const campaignsOption = contentTypeOptions.find(
+    (option) => option.queryParam === 'campaigns'
+  )
+  const campaignsTabActive =
+    campaignsOption != null && activeContentTypeTab === campaignsOption.tabIndex
+
   return (
     <>
       <Tabs
@@ -98,19 +108,30 @@ export const TeamMode = ({
             contentTypeOptions[1].tabIndex
           )}
         />
-        <StatusFilterControl
-          selectedStatus={selectedStatus}
-          handleStatusChange={handleStatusChange}
-          menuMarginRight={
-            hideListControls
-              ? { xs: 1, sm: infoPanelActive ? -2 : -12 }
-              : undefined
-          }
-        />
-        {!hideListControls && (
+        {campaignsOption != null && (
+          <Tab
+            label={campaignsOption.displayValue}
+            {...tabA11yProps(
+              'campaigns-content-panel',
+              campaignsOption.tabIndex
+            )}
+          />
+        )}
+        {!campaignsTabActive && (
+          <StatusFilterControl
+            selectedStatus={selectedStatus}
+            handleStatusChange={handleStatusChange}
+            menuMarginRight={
+              hideListControls
+                ? { xs: 1, sm: infoPanelActive ? -2 : -12 }
+                : undefined
+            }
+          />
+        )}
+        {!campaignsTabActive && !hideListControls && (
           <SortControl sortOrder={sortOrder} setSortOrder={setSortOrder} />
         )}
-        {!hideListControls && (
+        {!campaignsTabActive && !hideListControls && (
           <MenuControl
             setActiveEvent={setActiveEvent}
             menuMarginRight={{
@@ -149,6 +170,17 @@ export const TeamMode = ({
       >
         {renderList('templates', selectedStatus)}
       </TabPanel>
+      {/* Campaigns tab panel */}
+      {campaignsOption != null && (
+        <TabPanel
+          name="campaigns-content-panel"
+          value={activeContentTypeTab}
+          index={campaignsOption.tabIndex}
+          unmountUntilVisible={router?.query?.type !== 'campaigns'}
+        >
+          <CampaignList />
+        </TabPanel>
+      )}
     </>
   )
 }

@@ -48,6 +48,7 @@ describe('customDomain', () => {
     name: 'example.com',
     apexName: 'example.com',
     journeyCollectionId: null,
+    campaignId: null,
     routeAllTeamJourneys: true
   }
 

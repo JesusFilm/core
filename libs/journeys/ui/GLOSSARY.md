@@ -27,6 +27,42 @@ _Avoid_: page, screen, slide (a Slide is an editor panel — see traps)
 **Action Block**:
 A block that can carry an Action (button, radio option, sign-up, video). Only Action Blocks participate in goal/target analysis.
 
+### Campaign rendering (viewer-side)
+
+**Campaign Renderer**:
+The campaign counterpart of the Block Renderer: one component per Campaign Block typename behind a single switch, with no Wrappers. The editor canvas paints with its own components and shares only the pure helpers (theme, background bands, block tree, fonts).
+_Avoid_: block renderer (the journey one), wrapper (there are none here)
+
+**Campaign Page**:
+One of a Campaign's two pages as built from the public payload: its blocks treed, empty sections skipped, and the survivors rendered between the header and footer. It also stamps the document's language and text direction from the Page Language.
+
+**Page Language resolution**:
+How the viewer picks a Campaign's **Page Language**: the `lang` link parameter, then the visitor's saved choice, then their browser language, then the Campaign default. The pages are statically generated per language, so the link parameter picks the page itself, while the saved choice and browser language are applied in the browser, which sends a visitor with no `lang` parameter to their language's page. Every in-campaign link carries the choice whenever the Campaign has more than one language, so it survives a region switch.
+
+**Section Band**:
+The one component every campaign section renders through: it paints the section's background and colours, then orders the Extras placed above, the section body, then the Extras placed below. Typography and buttons inside inherit their colours and alignment from it.
+_Avoid_: section wrapper, card (a card sits inside a band)
+
+**Campaign Block grammar**:
+The one set of rules about which campaign blocks go where (`Campaign/libs/campaignBlockGrammar`): which typenames are page sections, bands, Extras, chrome, Column Slots or Media Slot owners, which sections each page kind and a Column Slot offer, and which Extras a host accepts (`acceptsChild`, the API rule) versus shows (`shownExtras`, the editor and renderer rule; the header shows only its Buttons). Pure, so api-journeys imports it for its block validators.
+_Avoid_: block rules, schema (the GraphQL one)
+
+**Inert button**:
+A campaign button whose action target is missing (a scroll target on another page or a section the page skips, a deleted region, no action at all): rendered static with the same look and never hidden.
+
+**Analytics Panel**:
+The body of the Analytics section, shared by the public page and the editor canvas: the Top country and visitors tiles and a ranked, numbered list of top countries whose rows animate when the ranking changes. The landing page has a tab per region plus an all-regions tab that follow the WAI-ARIA tabs pattern, a Region Page is fixed to its region, and the **World Map** is optional.
+
+**World Map**:
+The Analytics Panel's optional map: the selected tab's Region Countries are shaded by visitors and the view zooms to them with the whole atlas kept in view (letterboxed). Countries join the map by country code, never by name, so any the map lacks stay in the ranked list only.
+
+**Campaign events**:
+What a Campaign Public Page sends to Plausible besides its automatic page views: `campaignJourneyClick` (a journey card's Open, or the Share section's open-link, told apart by `source`), `campaignRegionClick` (a Region Switcher card; `targetRegion` is the region clicked), `campaignQrDownload` and `campaignShareLinkCopy`. Every view and event carries `campaign_id`, the Region Page's `region` slug (the region the visitor is on; none on the landing page) and the Page Language's `language` tag; share events add `shareLanguage`. A language prop is the BCP 47 tag, left out when the language has none, and `journey` is the last path segment of the journey's address, left out when there is none. Call sites hand over domain objects and `campaignEventProps` builds every event's props. Only the public page reports (`reportEvents`, set by Campaign Page), never the editor canvas, and a same-tab link waits up to a second for the event before it navigates.
+_Avoid_: journey events, Event Mutations (the journey playback events; campaign names always carry the `campaign` prefix)
+
+**Campaign image**:
+Every campaign image (cover, logo, Image section, poster, journey card) renders as a plain `<img>` through `campaignImageSource`, never `NextImage`. The same components paint the public page and the editor canvas; the sources are author-supplied URLs (uploaded to Cloudflare, a Watch banner, a YouTube or Mux poster) that are already delivered at a sized variant, and `next/image` would only admit the hosts in the viewer's `remotePatterns` and fail the rest.
+
 ### Playback (viewer-side)
 
 **Block History**:

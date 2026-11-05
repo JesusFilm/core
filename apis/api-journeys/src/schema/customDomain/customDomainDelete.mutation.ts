@@ -3,14 +3,13 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
+import { logger } from '../../logger'
 import { builder } from '../builder'
+import { enqueueCampaignDomainRevalidation } from '../campaign/revalidateCampaign'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
-import {
-  deleteVercelDomain,
-  updateTeamShortLinks
-} from './customDomain.service'
+import { deleteVercelDomain, updateTeamShortLinks } from './service'
 
 builder.mutationField('customDomainDelete', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
@@ -24,7 +23,10 @@ builder.mutationField('customDomainDelete', (t) =>
 
       const customDomain = await prisma.customDomain.findUnique({
         where: { id },
-        include: { team: { include: { userTeams: true } } }
+        include: {
+          team: { include: { userTeams: true } },
+          campaign: { include: { regions: true } }
+        }
       })
 
       if (customDomain == null) {
@@ -40,10 +42,29 @@ builder.mutationField('customDomainDelete', (t) =>
       }
 
       await prisma.$transaction(async (tx) => {
-        await updateTeamShortLinks(customDomain.teamId, customDomain.name)
         await tx.customDomain.delete({ where: { id } })
-        await deleteVercelDomain(customDomain)
+        await deleteVercelDomain(customDomain.name)
       })
+
+      // A Campaign Domain's pages stop resolving and the Campaign Address
+      // is back on the Root Domain. It routed no team journey, so no short
+      // link moves.
+      if (customDomain.campaign != null) {
+        await enqueueCampaignDomainRevalidation(
+          [customDomain.campaign],
+          customDomain.name
+        )
+        return customDomain
+      }
+
+      try {
+        await updateTeamShortLinks(customDomain.teamId)
+      } catch (error) {
+        logger.error(
+          { teamId: customDomain.teamId, error },
+          'Failed to update team QR code short links'
+        )
+      }
 
       return customDomain
     }

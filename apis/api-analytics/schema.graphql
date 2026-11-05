@@ -13,6 +13,11 @@ type Error implements BaseError
 
 type Mutation {
   siteCreate(input: SiteCreateInput!): MutationSiteCreateResult!
+
+  """
+  Adds `props` to the allowed custom properties of every site the caller owns under `domainPrefix` that lacks any of them, keeping the props each already allows. One query finds the sites to change, so a caller can keep a whole family of sites in step without visiting each. Returns how many sites changed.
+  """
+  sitesAllowEventProps(input: SitesAllowEventPropsInput!): Int!
 }
 
 union MutationSiteCreateResult = Error | MutationSiteCreateSuccess
@@ -33,6 +38,11 @@ input SiteCreateInput {
   domain: String!
   goals: [String!]
   disableSharedLinks: Boolean
+
+  """
+  Custom properties the dashboard shows; Plausible hides any not listed. Called again for a site the caller owns, missing ones are added and none removed.
+  """
+  allowedEventProps: [String!]
 }
 
 type SiteGoal {
@@ -48,4 +58,14 @@ type SiteMembership {
 type SiteSharedLink {
   id: String!
   slug: String!
+}
+
+input SitesAllowEventPropsInput {
+  """
+  Only sites whose domain starts with this, e.g. `api-journeys-campaign-`.
+  """
+  domainPrefix: String!
+
+  """The custom properties every matching site should allow."""
+  props: [String!]!
 }

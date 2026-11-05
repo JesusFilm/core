@@ -28,7 +28,8 @@ export default defineConfig({
     reporters: ['default'],
     setupFiles: [
       resolve(__dirname, 'test/reactEmailRenderMock.ts'),
-      resolve(__dirname, 'test/prismaMock.ts')
+      resolve(__dirname, 'test/prismaMock.ts'),
+      resolve(__dirname, 'test/bullmqMock.ts')
     ],
     coverage: {
       enabled: true,
