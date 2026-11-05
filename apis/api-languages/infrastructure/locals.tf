@@ -17,13 +17,15 @@ locals {
     "WESS_API_TOKEN",
     "GATEWAY_HMAC_SECRET"
   ]
+  # Stage peaked at 0.65 GiB of memory and a few percent of one vCPU over
+  # 14 days, so it runs on half the task size prod gets.
   service_config = {
     name                              = "api-languages"
     is_public                         = false
     container_port                    = local.port
     host_port                         = local.port
-    cpu                               = 1024
-    memory                            = 2048
+    cpu                               = var.env == "stage" ? 512 : 1024
+    memory                            = var.env == "stage" ? 1024 : 2048
     desired_count                     = var.env == "stage" ? 1 : 1
     zone_id                           = var.ecs_config.zone_id
     health_check_grace_period_seconds = 60

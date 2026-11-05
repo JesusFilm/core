@@ -176,7 +176,7 @@ One of the two pages a Campaign has: the landing page, or the **Region Page** th
 _Avoid_: screen, view, region's page (a region has no page of its own)
 
 **Campaign Status**:
-Whether a Campaign is `draft` or `published`, the only public gate: a draft is never served, and nothing on a Campaign is locked by its status. `publishedAt` records the first publish and unpublishing never clears it, so it means "first went live"; publish and unpublish are explicit actions any member or manager of the Team takes, never undo steps.
+Whether a Campaign is `draft` or `published`, the only public gate: a draft is never served, and nothing on a Campaign is locked by its status. `publishedAt` means "last published; kept after unpublish": every move from draft to published stamps it and unpublishing never clears it; publish and unpublish are explicit actions any member or manager of the Team takes, never undo steps.
 _Avoid_: live/offline (use published/draft), visibility, state
 
 **Live Editing**:
@@ -286,8 +286,8 @@ How a Campaign shows a Watch Video that has children: the Video Carousel (or a *
 _Avoid_: collection mode (any Video expands, not only collections), playlist (that is YouTube's word)
 
 **Media paste**:
-The only way media and Journeys enter a Campaign: paste a Watch, YouTube or Journey link, or upload an image or video. There is no browsing or searching; the editor shows what a link resolved to before it is kept, and the server resolves it again on save.
-_Avoid_: picker (implies browsing), library, search
+How media and Journeys enter a Campaign: paste a Watch, YouTube or Journey link, or upload an image or video. Media enter only by paste or upload, with no browsing or searching; a Journey can also be found by search in the editor's Journey Picker, which offers the published or archived Journeys the author can open and links the one picked by its admin link. The editor shows what a link resolved to before it is kept, and the server resolves it again on save.
+_Avoid_: picker (for media: there is no media browsing), library
 
 ### Campaign theme
 
@@ -334,7 +334,7 @@ The one link a Campaign Region hands out per language: a **short link** that red
 _Avoid_: journey link (the long address nobody hands out), campaign link (that is the Campaign Address), deep link
 
 **Campaign QR Code**:
-A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working, and a linked Share Language cannot be removed: the author unlinks it first. It is deleted with its Share Language when that language, unlinked, is removed (the editor confirms first, as printed copies stop redirecting; a re-added language mints a new one on its next link), with its Campaign Region or Campaign, with its target Journey (`QrCode.journey` cascades), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
+A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language, or later from the editor's `Create QR code` on a linked language that has none. It survives an unlink, so printed codes keep working, and a linked Share Language cannot be removed: the author unlinks it first. It is deleted with its Share Language when that language, unlinked, is removed (the editor confirms first, as printed copies stop redirecting; a re-added language mints a new one on its next link), with its Campaign Region or Campaign, with its target Journey when that Journey is hard-deleted (`QrCode.journey` cascades; deleting a Journey from the app is a soft delete and keeps it), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:
@@ -382,7 +382,7 @@ Every page path a **Campaign Public Page** is served from, or that the system re
 _Avoid_: revalidation paths, affected pages
 
 **Campaign Public**:
-The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate and nothing on it leads to the Team, its members or linked-Journey internals. It is read by Campaign slug (only while it has no Campaign Domain) or by the hostname of its Campaign Domain, a draft or unknown key is not found, and every Translated Field arrives already resolved to the requested language.
+The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate, and only the opaque Team id is exposed, for the Team's Plausible site: the Team itself, its members and linked-Journey internals are not reachable. It is read by Campaign slug (only while it has no Campaign Domain) or by the hostname of its Campaign Domain, a draft or unknown key is not found, and every Translated Field arrives already resolved to the requested language.
 _Avoid_: public campaign (as a status), published view, visitor API
 
 **Campaign Public Page**:
