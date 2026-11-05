@@ -336,6 +336,10 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBloc
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  /**
+   * Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+   */
+  showCountryNames: boolean;
   titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock_titleTranslations[];
 }
 

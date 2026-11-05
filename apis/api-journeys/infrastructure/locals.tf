@@ -59,13 +59,15 @@ locals {
     "VERCEL_TEAM_ID",
     "VERCEL_TOKEN"
   ]
+  # Stage peaked at 0.8 GiB of memory and a few percent of one vCPU over
+  # 14 days, so it runs on half the task size prod gets.
   service_config = {
     name                              = "api-journeys-modern"
     doppler_project_name              = "api-journeys"
     is_public                         = false
     container_port                    = local.port
     host_port                         = local.port
-    cpu                               = 1024
+    cpu                               = var.env == "stage" ? 512 : 1024
     memory                            = 2048
     desired_count                     = var.env == "stage" ? 1 : 1
     zone_id                           = var.ecs_config.zone_id
