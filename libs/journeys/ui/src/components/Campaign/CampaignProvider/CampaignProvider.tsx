@@ -155,8 +155,3 @@ export function useCampaign(): CampaignContextValue {
 export function useOptionalCampaign(): CampaignContextValue | null {
   return useContext(CampaignContext)
 }
-
-/** Compatibility for the root-domain routes until their address migration. */
-export function legacyCampaignBasePath(slug: string): string {
-  return campaignBasePath({ slug, domainName: null })
-}
