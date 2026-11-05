@@ -9,9 +9,9 @@ variable "ecs_config" {
       dns_name = string
     })
     alb_target_group = object({
-      port              = number
-      protocol          = string
-      path_pattern      = list(string)
+      port                 = number
+      protocol             = string
+      path_pattern         = list(string)
       health_check_path    = string
       health_check_port    = optional(number)
       health_check_matcher = optional(string)
