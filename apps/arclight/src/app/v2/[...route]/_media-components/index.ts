@@ -365,11 +365,12 @@ mediaComponents.openapi(route, async (c) => {
       const variant = video.variants[0]
       const componentType = getComponentType(variant?.hls, variant?.dash)
       // Same rule as the detail route: the published English Variant's flag,
-      // but only for content. A container has no video file of its own, so
-      // its (possibly generated) parent Variant must not offer a download
-      // whose URL would 404.
+      // for content or for any variant that actually has download files. A
+      // container's generated parent Variant has neither, so it still can't
+      // offer a download whose URL would 404.
       const isDownloadable =
-        componentType === 'content' && (variant?.downloadable ?? false)
+        (componentType === 'content' || variant?.downloads.length > 0) &&
+        (variant?.downloadable ?? false)
 
       const titleContent = getPreferredContent(video.title, metadataLanguages)
       const shortDescriptionContent = getPreferredContent(

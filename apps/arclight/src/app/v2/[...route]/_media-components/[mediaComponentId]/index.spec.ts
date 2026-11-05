@@ -149,6 +149,30 @@ describe('GET /media-components/:mediaComponentId', () => {
     })
   })
 
+  it('reports a container Variant as downloadable when it has download files, even without a stream URL', async () => {
+    queryMock.mockResolvedValue({
+      data: {
+        video: baseVideo({
+          variant: {
+            hls: '',
+            lengthInMilliseconds: 0,
+            language: { bcp47: 'en' },
+            downloadable: true,
+            downloads: [{ quality: 'high', size: 123 }]
+          }
+        })
+      }
+    })
+
+    const res = await app.request('/media-components/16_Influencers')
+
+    expect(res.status).toBe(200)
+    expect(await res.json()).toMatchObject({
+      componentType: 'container',
+      isDownloadable: true
+    })
+  })
+
   it('reports a DASH-only Variant as content', async () => {
     queryMock.mockResolvedValue({
       data: {
