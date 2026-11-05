@@ -359,7 +359,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title and variant.
+  Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title, variant and whether country names show.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -375,7 +375,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the region switcher’s default-language title or its variant (cards, list, pills), or its Section Background and colour overrides. Only the given fields change.
+  Update the region switcher’s default-language title, its variant (cards, list, pills), whether its country chips show names, or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -384,6 +384,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title`): over 150 characters.
   - BAD_USER_INPUT (field: `variant`): not cards, list or pills.
+  - BAD_USER_INPUT (field: `showCountryNames`): null.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
@@ -2679,6 +2680,10 @@ type CampaignRegionSwitcherBlock implements CampaignBlock & CampaignSectionBlock
   title: String
   titleTranslations: [TranslatedValue!]!
   variant: CampaignSwitcherVariant!
+  """
+  Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+  """
+  showCountryNames: Boolean!
 }
 
 """
@@ -8030,6 +8035,10 @@ input CampaignRegionSwitcherBlockCreateInput @join__type(graph: API_JOURNEYS_MOD
   Defaults to cards.
   """
   variant: CampaignSwitcherVariant
+  """
+  Defaults to true.
+  """
+  showCountryNames: Boolean
 }
 
 input CampaignRegionSwitcherBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -8038,6 +8047,7 @@ input CampaignRegionSwitcherBlockUpdateInput @join__type(graph: API_JOURNEYS_MOD
   """
   title: String
   variant: CampaignSwitcherVariant
+  showCountryNames: Boolean
   """
   The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
   """

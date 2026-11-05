@@ -193,12 +193,14 @@ module "datadog_aurora" {
   }]
 }
 
+# Stage peaks at 36 MB of cache and under 1% CPU over 14 days; a t4g.micro's
+# 0.5 GiB covers that with room, at a quarter of the t2.medium's price.
 module "redis" {
   source            = "../../modules/aws/elasticache"
   cluster_id        = "redis-stage"
   subnet_ids        = module.stage.vpc.internal_subnets
   env               = "stage"
-  node_type         = "cache.t2.medium"
+  node_type         = "cache.t4g.micro"
   apply_immediately = true
   security_group_id = module.stage.ecs.internal_ecs_security_group_id
   cidr              = module.stage.cidr
@@ -226,8 +228,15 @@ module "plausible" {
   source = "../../modules/plausible"
   ecs_config = merge(local.public_ecs_config, {
     alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/api/health"
-      health_check_port = "8000"
+      # /login proves the container serves without touching ClickHouse.
+      # /api/health queries Postgres and ClickHouse on every probe, which
+      # kept waking the idle-scaled ClickHouse Cloud service every 10 s.
+      # /api/health stays the manual smoke test (modules/plausible/README.md).
+      # 302: until the first account exists, Plausible's FirstLaunchPlug
+      # redirects /login to /register. Still a serving container.
+      health_check_path    = "/login"
+      health_check_port    = "8000"
+      health_check_matcher = "200,302"
     })
   })
   env              = "stage"

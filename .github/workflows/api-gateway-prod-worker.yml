@@ -21,6 +21,9 @@ jobs:
       - name: Checkout current branch
         uses: actions/checkout@v4
       #ECS Deployment
+      - name: Set up AWS CLI
+        uses: ./.github/actions/setup-aws-cli
+
       - name: Configure ECS AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
