@@ -49,7 +49,7 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       SKIP_ENV_VALIDATION: 1
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -82,6 +82,9 @@ jobs:
           args: --c=production
 
       # ECS Deployment
+      - name: Set up AWS CLI
+        uses: ./.github/actions/setup-aws-cli
+
       - name: Configure ECS AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

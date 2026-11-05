@@ -21,6 +21,8 @@ import { MediaRole, prisma } from '@core/prisma/media/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 
+import { contextIsSuperAdmin } from '../lib/superAdmin'
+
 const PrismaPlugin = pluginName
 
 interface BaseContext {
@@ -44,6 +46,30 @@ interface LocalInteropContext extends BaseContext, InteropContext {
 
 export type Context = LocalInteropContext | PublicContext | AuthenticatedContext
 
+const SHORT_LINK_ADMIN_ROLES: MediaRole[] = ['shortLinkAdmin', 'publisher']
+const SHORT_LINK_EDITOR_ROLES: MediaRole[] = [
+  'shortLinkEditor',
+  ...SHORT_LINK_ADMIN_ROLES
+]
+
+/** shortLinkAdmin or publisher: protected links, global links, republishing */
+export function isShortLinkAdmin(roles: MediaRole[]): boolean {
+  return roles.some((role) => SHORT_LINK_ADMIN_ROLES.includes(role))
+}
+
+/**
+ * The shortLinkAdmin role itself, not publisher: with superAdmin, adds domains
+ * and changes their settings.
+ */
+export function isShortLinkDomainAdmin(roles: MediaRole[]): boolean {
+  return roles.includes('shortLinkAdmin')
+}
+
+/** shortLinkEditor, shortLinkAdmin or publisher: links, campaigns, QR codes */
+export function isShortLinkEditor(roles: MediaRole[]): boolean {
+  return roles.some((role) => SHORT_LINK_EDITOR_ROLES.includes(role))
+}
+
 const createSpan = createOpenTelemetryWrapper(tracer, {
   includeSource: true
 })
@@ -55,12 +81,20 @@ export const builder = new SchemaBuilder<{
     isAnonymous: boolean
     isPublisher: boolean
     isYoutubeAdmin: boolean
+    isShortLinkEditor: boolean
+    isShortLinkAdmin: boolean
+    isShortLinkDomainAdmin: boolean
+    isSuperAdmin: boolean
   }
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
     isAnonymous: Extract<Context, { type: 'authenticated' }>
     isPublisher: Extract<Context, { type: 'authenticated' }>
     isYoutubeAdmin: Extract<Context, { type: 'authenticated' }>
+    isShortLinkEditor: Extract<Context, { type: 'authenticated' }>
+    isShortLinkAdmin: Extract<Context, { type: 'authenticated' }>
+    isShortLinkDomainAdmin: Extract<Context, { type: 'authenticated' }>
+    isSuperAdmin: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
   PrismaTypes: PrismaTypes
@@ -96,6 +130,14 @@ export const builder = new SchemaBuilder<{
             isAnonymous: context.user.email == null,
             isPublisher: context.currentRoles.includes('publisher'),
             isYoutubeAdmin: context.currentRoles.includes('youtubeAdmin'),
+            isShortLinkEditor: isShortLinkEditor(context.currentRoles),
+            isShortLinkAdmin: isShortLinkAdmin(context.currentRoles),
+            isShortLinkDomainAdmin: isShortLinkDomainAdmin(
+              context.currentRoles
+            ),
+            // Lazy: the users database is only queried when a resolver checks
+            // this scope, and only after the boolean scopes in an `$any`.
+            isSuperAdmin: async () => await contextIsSuperAdmin(context),
             isValidInterop: false
           }
         case 'interop':
@@ -104,6 +146,10 @@ export const builder = new SchemaBuilder<{
             isAnonymous: false,
             isPublisher: false,
             isYoutubeAdmin: false,
+            isShortLinkEditor: false,
+            isShortLinkAdmin: false,
+            isShortLinkDomainAdmin: false,
+            isSuperAdmin: false,
             isValidInterop: true
           }
         default:
@@ -112,6 +158,10 @@ export const builder = new SchemaBuilder<{
             isAnonymous: false,
             isPublisher: false,
             isYoutubeAdmin: false,
+            isShortLinkEditor: false,
+            isShortLinkAdmin: false,
+            isShortLinkDomainAdmin: false,
+            isSuperAdmin: false,
             isValidInterop: false
           }
       }

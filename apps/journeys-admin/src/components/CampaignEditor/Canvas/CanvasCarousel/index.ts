@@ -1,0 +1,1 @@
+export { CanvasCarousel } from './CanvasCarousel'

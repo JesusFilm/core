@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 
+import { createWatchProxyFetch } from './proxyDiagnostics'
 import { resolveWatchRedirect } from './resolveWatchRedirect'
 
 const CACHE_MAX_AGE = 86400 // 24 hours
@@ -116,6 +117,7 @@ app.all('*', async (c) => {
   const headers = new Headers(c.req.raw.headers)
   headers.set('x-forwarded-host', publicUrl.host)
   headers.set('x-forwarded-proto', publicUrl.protocol.slice(0, -1))
+  const proxyFetch = createWatchProxyFetch(c.req.raw)
 
   try {
     const normalizedUpstreamUrl = upstreamUrl
@@ -126,7 +128,8 @@ app.all('*', async (c) => {
         ? undefined
         : c.req.raw.body
 
-    response = await fetch(
+    response = await proxyFetch(
+      'upstream',
       new Request(normalizedUpstreamUrl, {
         method: c.req.method,
         headers,
@@ -147,7 +150,7 @@ app.all('*', async (c) => {
     const notFoundUrl = new URL(c.req.url)
     notFoundUrl.pathname = '/not-found.html'
     try {
-      response = await fetch(notFoundUrl.toString(), {
+      response = await proxyFetch('fallback', notFoundUrl.toString(), {
         method: c.req.method,
         headers,
         redirect: 'manual'

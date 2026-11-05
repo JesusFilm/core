@@ -1,0 +1,52 @@
+import { VideoBlockSource } from '@core/prisma/journeys/client'
+
+import { builder } from '../../builder'
+import { Video } from '../../mediaVideo/mediaVideo'
+
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
+import { CampaignSectionBlock } from './campaignSectionBlock'
+import { translationsField } from './translationsField'
+
+export const CampaignVideoCarouselBlock = builder.prismaObject(
+  'CampaignBlock',
+  {
+    variant: 'CampaignVideoCarouselBlock',
+    interfaces: [CampaignBlock, CampaignSectionBlock],
+    isTypeOf: (block: unknown) =>
+      isCampaignBlockOfType(block, 'CampaignVideoCarouselBlock'),
+    description:
+      'A shelf of video cards. `videoId` set means Watch expansion of that Video at read time and explicit children are ignored; null means the ordered CampaignVideoBlock children are the items.',
+    fields: (t) => ({
+      eyebrow: t.exposeString('eyebrow', { nullable: true }),
+      eyebrowTranslations: translationsField(t, 'eyebrow'),
+      title: t.exposeString('title', { nullable: true }),
+      titleTranslations: translationsField(t, 'title'),
+      description: t.exposeString('description', { nullable: true }),
+      descriptionTranslations: translationsField(t, 'description'),
+      videoId: t.exposeID('videoId', {
+        nullable: true,
+        description: 'The Watch Video to expand; null for explicit children.'
+      }),
+      videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
+        nullable: true,
+        description:
+          'The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.'
+      }),
+      video: t.field({
+        type: Video,
+        nullable: true,
+        description:
+          'Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.',
+        resolve: (block) => {
+          if (block.videoId == null || block.videoVariantLanguageId == null)
+            return null
+          return {
+            id: block.videoId,
+            primaryLanguageId: block.videoVariantLanguageId,
+            source: VideoBlockSource.internal
+          }
+        }
+      })
+    })
+  }
+)
