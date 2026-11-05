@@ -3,6 +3,12 @@ import { normalize } from '../pipeline/normalize'
 import { fetchTraceData, mapObservation, mapTrace } from './langfuse'
 
 describe('mapTrace', () => {
+  it('refuses unsafe numeric journey IDs rather than losing exclusion attribution', () => {
+    expect(() =>
+      mapTrace({ metadata: { journeyId: Number.MAX_SAFE_INTEGER + 1 } })
+    ).toThrow('unsafe numeric journeyId')
+  })
+
   it('extracts ipCountry/journeyId/language from metadata and keeps string tags', () => {
     const result = mapTrace({
       id: 't1',
@@ -135,6 +141,81 @@ describe('v4 observations HTTP contract', () => {
   function page(data: unknown[], cursor: string | null = null): Response {
     return new Response(JSON.stringify({ data, meta: { cursor } }))
   }
+
+  it.each([true, false])(
+    'retains numeric expanded journey IDs through fetching and exclusions (root: %s)',
+    async (hasRoot) => {
+      const child = {
+        ...generation,
+        parentObservationId: hasRoot ? 'root' : undefined,
+        metadata: { ...generation.metadata, journeyId: 1 }
+      }
+      const root = {
+        ...child,
+        id: 'root',
+        type: 'SPAN',
+        parentObservationId: null,
+        isRootObservation: true
+      }
+      fetchMock
+        .mockResolvedValueOnce(page([child]))
+        .mockResolvedValueOnce(page(hasRoot ? [root, child] : [child]))
+      const data = await fetchTraceData(client, window, { throttleMs: 0 })
+      expect(data.traces[0].journeyId).toBe('1')
+      const result = normalize(data.traces, data.observations, {
+        excludeJourneyIds: new Set(['1'])
+      })
+      expect(result.excludedTurnCount).toBe(1)
+      expect(result.conversations).toEqual([])
+    }
+  )
+
+  it('keeps a valid root authoritative despite an unsafe numeric child journey ID', async () => {
+    const root = {
+      ...generation,
+      id: 'root',
+      type: 'SPAN',
+      parentObservationId: null,
+      isRootObservation: true
+    }
+    const child = {
+      ...generation,
+      parentObservationId: root.id,
+      metadata: { journeyId: Number.MAX_SAFE_INTEGER + 1 }
+    }
+    fetchMock
+      .mockResolvedValueOnce(page([child]))
+      .mockResolvedValueOnce(page([root, child]))
+    const data = await fetchTraceData(client, window, { throttleMs: 0 })
+    expect(data.traces[0].journeyId).toBe('j1')
+    expect(
+      normalize(data.traces, data.observations, {
+        excludeJourneyIds: new Set(['j1'])
+      }).conversations
+    ).toEqual([])
+  })
+
+  it('matches equivalent numeric and string journey IDs in rootless generations', async () => {
+    const numeric = {
+      ...generation,
+      metadata: { ...generation.metadata, journeyId: 1 }
+    }
+    const string = {
+      ...generation,
+      id: 'g2',
+      metadata: { ...generation.metadata, journeyId: '1' }
+    }
+    fetchMock
+      .mockResolvedValueOnce(page([numeric, string]))
+      .mockResolvedValueOnce(page([numeric, string]))
+    const data = await fetchTraceData(client, window, { throttleMs: 0 })
+    expect(data.traces[0].journeyId).toBe('1')
+    const excluded = normalize(data.traces, data.observations, {
+      excludeJourneyIds: new Set(['1'])
+    })
+    expect(excluded.excludedTurnCount).toBe(2)
+    expect(excluded.conversations).toEqual([])
+  })
 
   it('requests all required fields, follows cursors and reconstructs session context without legacy reads', async () => {
     fetchMock

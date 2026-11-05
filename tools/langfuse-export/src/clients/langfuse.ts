@@ -169,6 +169,22 @@ function metaString(
   return typeof value === 'string' && value.length > 0 ? value : undefined
 }
 
+function metaJourneyId(metadata: Record<string, unknown>): string | undefined {
+  const value = metadata.journeyId
+  // Observations-v2 metadata expansion can decode the string ID "1" as 1.
+  // Keep its string identity so journey exclusions still match. Rounded IDs
+  // cannot be recovered safely and must not silently bypass those exclusions.
+  if (typeof value === 'number') {
+    if (!Number.isSafeInteger(value)) {
+      throw new Error(
+        'Langfuse metadata has an unsafe numeric journeyId; export stopped to preserve attribution and journey exclusions.'
+      )
+    }
+    return String(value)
+  }
+  return metaString(metadata, 'journeyId')
+}
+
 function numberOrNull(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
 }
@@ -189,7 +205,7 @@ export function mapTrace(raw: RawTrace): TraceRecord {
     metadata,
     tags: asStringArray(raw.tags),
     ipCountry: metaString(metadata, 'ipCountry'),
-    journeyId: metaString(metadata, 'journeyId'),
+    journeyId: metaJourneyId(metadata),
     language: metaString(metadata, 'language')
   }
 }
@@ -308,30 +324,33 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
   // A recovered non-generation root is authoritative even with empty metadata.
   // A parentless legacy generation can lack the old trace's attribution, so it
   // must pass the same consistent-context checks as other rootless generations.
-  const generations = ordered.filter((row) => row.type === 'GENERATION')
-  const generationContext = generations[0]
-  const generationMetadata = parseRecord(generationContext?.metadata)
-  const consistentGenerationContext =
-    generationContext != null &&
-    generationMetadata != null &&
-    metaString(generationMetadata, 'journeyId') != null &&
-    generations.every(
-      (row) =>
-        parseRecord(row.metadata) != null &&
-        CONTEXT_KEYS.every(
-          (key) => asRecord(row.metadata)[key] === generationMetadata[key]
-        ) &&
-        row.sessionId === generationContext.sessionId &&
-        row.environment === generationContext.environment &&
-        JSON.stringify(asStringArray(row.tags).sort()) ===
-          JSON.stringify(asStringArray(generationContext.tags).sort())
-    )
-  const context =
-    root != null && parseRecord(root.metadata) != null
-      ? root
-      : consistentGenerationContext
-        ? generationContext
-        : undefined
+  let context =
+    root != null && parseRecord(root.metadata) != null ? root : undefined
+  if (context == null) {
+    const generations = ordered.filter((row) => row.type === 'GENERATION')
+    const generationContext = generations[0]
+    const generationMetadata = parseRecord(generationContext?.metadata)
+    const consistentGenerationContext =
+      generationContext != null &&
+      generationMetadata != null &&
+      metaJourneyId(generationMetadata) != null &&
+      generations.every((row) => {
+        const metadata = parseRecord(row.metadata)
+        return (
+          metadata != null &&
+          CONTEXT_KEYS.every((key) =>
+            key === 'journeyId'
+              ? metaJourneyId(metadata) === metaJourneyId(generationMetadata)
+              : metadata[key] === generationMetadata[key]
+          ) &&
+          row.sessionId === generationContext.sessionId &&
+          row.environment === generationContext.environment &&
+          JSON.stringify(asStringArray(row.tags).sort()) ===
+            JSON.stringify(asStringArray(generationContext.tags).sort())
+        )
+      })
+    if (consistentGenerationContext) context = generationContext
+  }
   if (context == null) {
     // Legacy children can lose trace metadata during migration. Refuse an
     // unattributed export or silently bypassed journey/tag exclusion; an

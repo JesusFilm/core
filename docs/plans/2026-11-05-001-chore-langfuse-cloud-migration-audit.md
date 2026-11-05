@@ -115,7 +115,7 @@ pnpm exec tsc -p tools/langfuse-export/tsconfig.json --noEmit
 pnpm exec tsx tools/langfuse-export/run.ts --fixture tools/langfuse-export/fixtures/sample.json
 ```
 
-Results: **74 chat/client tests** and **243 exporter tests** pass; both direct
+Results: **74 chat/client tests** and **248 exporter tests** pass; both direct
 type checks pass. The wire test uses a real loopback HTTP collector and prompt
 server, checks prompt linkage, complete spans, overlapping request isolation,
 unchanged global provider, duplicate completion, and HTTP 400 export rejection.
@@ -140,7 +140,7 @@ Both are addressed with the stricter generation-context rule and SDK immediate
 processor, with regressions as described above. Independent re-review reports no
 remaining actionable findings; the parent reran both suites and type checks.
 
-## Live verification and remaining coverage
+## Initial live verification and remaining coverage
 
 Read-only credential discovery used Core's Doppler `journeys` project only.
 Both `stg` and `stg_dev` Langfuse credentials return **401**. `dev` authenticates
@@ -179,3 +179,79 @@ and Migration Assistant coverage will be checked through the PR preview where
 available; local credential checks do not establish the deployed destination.
 Normal PR CI and preview deployments are authorized. This change does not merge,
 push shared stage, change production, or bypass CI/protections.
+
+## Staging key recovery and deployed verification — 5 November 2026
+
+The earlier authentication blocker is resolved. Jaco recovered the rotated
+Langfuse key pair and saved it to Doppler `journeys/stg`. Read-only checks
+confirmed that `stg_dev` and the `jesusfilm/journeys-stage` Vercel preview
+configuration match, and `GET /api/public/projects` now returns 200 for US
+project `journeys` (`cmf3b99n30168ad07z05e7k98`). No local env file or credential
+change was needed. The customary `on stage` label was added to
+[PR #10163](https://github.com/JesusFilm/core/pull/10163).
+
+An authorized empty rebuild commit `9d0c85517` triggered normal CI. Main build,
+all three test shards, schema checks, CodeQL, autofix/type checks and all eight
+preview deployments passed. Main build initially hit an upstream GraphQL
+"Unexpected error" while prerendering Journeys Admin `/fr/templates`; rerunning
+that failed job passed. Danger still requests assignee/reviewer metadata.
+[Journeys deployment logs](https://github.com/JesusFilm/core/actions/runs/41935940402/job/126946156107)
+verify checkout/build `edd2d791063d87ceb4548a80efe1b56af1afdbea`, merging
+`9d0c855172995d55f3c506301c901a43a8b0b3de` into
+`af4e1fd5533df6954d781ea7ccbf7154b178b541`, a fresh pull of Vercel **preview**
+variables for **`jesusfilm/journeys-stage`**, and deployment
+`journeys-stage-ptic3j8zl-jesusfilm.vercel.app` behind the PR alias. Production
+was skipped. Subsequent exporter-only changes do not alter the deployed chat.
+
+After that workflow completed, synthetic HTTP probes used the default
+[Fact or Fiction Journey](https://journeys-10163-jesusfilm.vercel.app/fact-or-fiction),
+Journey `1`, enabled Assistant card `f5fd44f2-3f51-43da-ac13-069a5d55398e`:
+
+- `core-lf-10163-9d0c85517-success-20261105T005925Z` streamed HTTP 200 through
+  completion. Trace `56681f08ff0353a1e7d58c9d33df4256` contains exactly one ended
+  root and one ended generation with matching output and correct parentage.
+  Model `anthropic/claude-haiku-4.5` through OpenRouter recorded
+  2620 input / 59 output / 2679 total tokens.
+- `core-lf-10163-9d0c85517-disconnect-20261105T005947Z` closed the client after
+  its first text delta. Trace `0d686daf98d6745a562c9987d1d5ae3e` also contains
+  exactly one ended root and generation, with 2613 / 512 / 3125 tokens.
+  Both observations have DEFAULT level and the server logged completion after
+  client close: this proves delivery after a hosted disconnect, **not** that
+  Vercel propagated cancellation or stopped the provider immediately. Local
+  real-HTTP regressions separately prove abort/finalization when Node receives
+  the response-close event.
+
+Both traces have `preview` environment, the exact synthetic session, Journey
+context, English language, NZ country, provider/model metadata on root and child,
+root I/O, and managed prompt **`apologist-world-cup-chat` version 9**. The bounded
+runtime log window contains both completions and no Langfuse/warn/error entry.
+Observations appeared promptly. Langfuse returns null cost and no matching
+internal pricing model for this OpenRouter model ID; live monetary cost could
+not be confirmed. Token usage and null cost survive export; fixture regressions
+separately cover non-null cost preservation.
+
+The actual v2 export client, restricted to each synthetic session for discovery
+and then expanded by exact trace ID, returns one trace/generation/conversation.
+Journey exclusion removes each conversation, and sanitization removes the fake
+email from the completed-chat user turn. This live check found an additional
+bug: v2 expanded metadata represents the default Journey ID as number `1`.
+The string-only mapper dropped it, bypassing a string-ID journey exclusion.
+A minimized offline mapper-to-normalizer replay and new rooted/rootless HTTP
+contract regressions failed before the fix. Safe numeric IDs now retain their
+string identity in both paths; unsafe numeric IDs stop export. Focused Spec
+review also found eager generation validation despite a valid root, and raw
+numeric/string comparisons in rootless context. Both were reproduced with
+failing contract tests and corrected: authoritative roots bypass fallback
+validation, and fallback compares canonical journey IDs. All **248**
+exporter tests and the original real-data replay pass with this correction.
+
+The project-specific read-only Migration Assistant now attributes **four OTEL
+observations** from the two canaries to JavaScript SDK **5.14.0**, realtime
+ingestion, `v4MigrationStatus=compatible`, `actionLevel=none`. It reports no
+legacy integrations, trace-level evaluators or experiment migration requirement.
+Its SDK coverage is this canary window; it is not evidence about every other
+historical client. Earlier metadata-only checks of three October 28 legacy
+traces in this same destination confirmed recovered roots, not complete backfill
+for all history an operator may export. Browser control remains unavailable;
+published page data and real HTTP streaming were checked. Live provider failure
+was not induced by changing model configuration; regressions cover it locally.
