@@ -4,8 +4,10 @@ import { ReactElement, ReactNode } from 'react'
 import type { StyleObject } from '../libs/campaignSx'
 
 interface CampaignVideoFrameProps {
-  /** A poster URL drawn lazily to fill the frame. */
+  /** A poster URL drawn to fill the frame. */
   poster?: string | null
+  /** Load the Hero's poster at once with high priority; lazy by default. */
+  eager?: boolean
   sx?: StyleObject
   /** Drawn over the frame: a badge, or the poster picture and player. */
   children?: ReactNode
@@ -18,6 +20,7 @@ interface CampaignVideoFrameProps {
  */
 export function CampaignVideoFrame({
   poster,
+  eager = false,
   sx,
   children
 }: CampaignVideoFrameProps): ReactElement {
@@ -35,7 +38,8 @@ export function CampaignVideoFrame({
           component="img"
           src={poster}
           alt=""
-          loading="lazy"
+          loading={eager ? 'eager' : 'lazy'}
+          fetchPriority={eager ? 'high' : undefined}
           sx={{
             display: 'block',
             width: '100%',
