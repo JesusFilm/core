@@ -33,7 +33,7 @@ describe('FormLanguageSelect', () => {
     // Select a language
     await user.click(languageSelect)
     await act(async () => {
-      await user.click(screen.getByRole('option', { name: 'English' }))
+      await user.click(screen.getByRole('option', { name: 'English ID 529' }))
     })
 
     // Submit the form
@@ -70,7 +70,7 @@ describe('FormLanguageSelect', () => {
 
     // Check that the initial language is selected
     const languageSelect = screen.getByRole('combobox', { name: 'Language' })
-    expect(languageSelect).toHaveValue('English')
+    expect(languageSelect).toHaveValue('English (529)')
   })
 
   it('should filter out existing languages', async () => {
@@ -101,15 +101,15 @@ describe('FormLanguageSelect', () => {
     await act(async () => {
       // English should be in the dropdown
       expect(
-        screen.getByRole('option', { name: 'English' })
+        screen.getByRole('option', { name: 'English ID 529' })
       ).toBeInTheDocument()
       // Spanish should not be in the dropdown because it's in existingLanguages
       expect(
-        screen.queryByRole('option', { name: 'Spanish' })
+        screen.queryByRole('option', { name: 'Spanish ID 528' })
       ).not.toBeInTheDocument()
       // French should be in the dropdown
       expect(
-        screen.getByRole('option', { name: 'French Français' })
+        screen.getByRole('option', { name: 'French Français ID 496' })
       ).toBeInTheDocument()
     })
   })
@@ -149,15 +149,15 @@ describe('FormLanguageSelect', () => {
     await act(async () => {
       // English should be in the dropdown because it's the parent object's language
       expect(
-        screen.getByRole('option', { name: 'English' })
+        screen.getByRole('option', { name: 'English ID 529' })
       ).toBeInTheDocument()
       // Spanish should not be in the dropdown because it's in existingLanguages
       expect(
-        screen.queryByRole('option', { name: 'Spanish' })
+        screen.queryByRole('option', { name: 'Spanish ID 528' })
       ).not.toBeInTheDocument()
       // French should be in the dropdown
       expect(
-        screen.getByRole('option', { name: 'French Français' })
+        screen.getByRole('option', { name: 'French Français ID 496' })
       ).toBeInTheDocument()
     })
   })
