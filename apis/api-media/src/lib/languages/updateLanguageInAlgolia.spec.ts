@@ -8,14 +8,19 @@ import {
 import {
   buildAlgoliaLanguageRecord,
   reindexLanguagesWithVideosInAlgolia,
+  removeLanguagesFromAlgolia,
   updateLanguageInAlgoliaFromMedia
 } from './updateLanguageInAlgolia'
 
 const saveObjectsSpy = vi.fn()
+const deleteObjectSpy = vi.fn()
+const deleteObjectsSpy = vi.fn()
 
 vi.mock('algoliasearch', () => ({
   algoliasearch: () => ({
-    saveObjects: saveObjectsSpy
+    saveObjects: saveObjectsSpy,
+    deleteObject: deleteObjectSpy,
+    deleteObjects: deleteObjectsSpy
   })
 }))
 
@@ -36,8 +41,17 @@ type AlgoliaLanguageInput = Parameters<typeof buildAlgoliaLanguageRecord>[0]
 // comes back is the narrower AlgoliaLanguageInput. These two helpers keep that
 // one unavoidable widening in a single named place instead of `any` at every
 // fixture.
-function mockFindUnique(language: AlgoliaLanguageInput | null): void {
-  languagesPrismaMock.language.findUnique.mockResolvedValue(language as never)
+// updateLanguageInAlgoliaFromMedia additionally selects the two visibility
+// flags, both of which default to true in the schema, so fixtures opt out
+// rather than opt in.
+function mockFindUnique(
+  language: AlgoliaLanguageInput | null,
+  visibility: { hasVideos?: boolean; searchable?: boolean } = {}
+): void {
+  const { hasVideos = true, searchable = true } = visibility
+  languagesPrismaMock.language.findUnique.mockResolvedValue(
+    (language == null ? null : { ...language, hasVideos, searchable }) as never
+  )
 }
 
 function mockFindManyOnce(languages: AlgoliaLanguageInput[]): void {
@@ -94,6 +108,8 @@ describe('updateLanguageInAlgolia', () => {
     process.env.ALGOLIA_API_KEY = 'api-key'
     process.env.ALGOLIA_INDEX_LANGUAGES = 'languages-index'
     saveObjectsSpy.mockResolvedValue([{ taskID: 'task-1' }])
+    deleteObjectSpy.mockResolvedValue({ taskID: 'task-2' })
+    deleteObjectsSpy.mockResolvedValue([{ taskID: 'task-3' }])
   })
 
   describe('buildAlgoliaLanguageRecord', () => {
@@ -102,7 +118,7 @@ describe('updateLanguageInAlgolia', () => {
 
       expect(record).toEqual({
         objectID: '1234',
-        languageId: '1234',
+        languageId: 1234,
         bcp47: 'plu',
         iso3: 'plu',
         nameNative: 'Parikwaki',
@@ -113,6 +129,18 @@ describe('updateLanguageInAlgolia', () => {
           { value: 'Parikwaki', languageId: '1234', bcp47: 'plu' }
         ]
       })
+    })
+
+    it('emits languageId as a number while objectID stays a string', () => {
+      const record = buildAlgoliaLanguageRecord(
+        createLanguage({ id: '143846' })
+      )
+
+      // The rest of the index stores languageId numerically and arclight's
+      // AlgoliaLanguageHit types it as a number, so a string here would make
+      // the index heterogeneous.
+      expect(record.languageId).toBe(143846)
+      expect(record.objectID).toBe('143846')
     })
 
     it('only counts speakers from non-suggested country languages', () => {
@@ -143,12 +171,53 @@ describe('updateLanguageInAlgolia', () => {
       })
     })
 
-    it('does not save when the language is not found', async () => {
+    it('removes the record instead of saving when the language is not found', async () => {
       mockFindUnique(null)
 
       await updateLanguageInAlgoliaFromMedia('missing')
 
       expect(saveObjectsSpy).not.toHaveBeenCalled()
+      expect(deleteObjectSpy).toHaveBeenCalledWith({
+        indexName: 'languages-index',
+        objectID: 'missing'
+      })
+    })
+
+    it('removes the record when hasVideos is false', async () => {
+      // The sync is otherwise upsert-only, so skipping the write here would
+      // leave an already-indexed language searchable forever.
+      mockFindUnique(createLanguage(), { hasVideos: false })
+
+      await updateLanguageInAlgoliaFromMedia('1234')
+
+      expect(saveObjectsSpy).not.toHaveBeenCalled()
+      expect(deleteObjectSpy).toHaveBeenCalledWith({
+        indexName: 'languages-index',
+        objectID: '1234'
+      })
+    })
+
+    it('removes the record when an operator has hidden the language', async () => {
+      // searchable: false is the operator's decision and outranks content:
+      // the language has videos, but must not be publicly visible.
+      mockFindUnique(createLanguage(), { searchable: false })
+
+      await updateLanguageInAlgoliaFromMedia('1234')
+
+      expect(saveObjectsSpy).not.toHaveBeenCalled()
+      expect(deleteObjectSpy).toHaveBeenCalledWith({
+        indexName: 'languages-index',
+        objectID: '1234'
+      })
+    })
+
+    it('saves when both flags are true', async () => {
+      mockFindUnique(createLanguage(), { hasVideos: true, searchable: true })
+
+      await updateLanguageInAlgoliaFromMedia('1234')
+
+      expect(deleteObjectSpy).not.toHaveBeenCalled()
+      expect(saveObjectsSpy).toHaveBeenCalled()
     })
   })
 
@@ -167,7 +236,10 @@ describe('updateLanguageInAlgolia', () => {
       // first page: no cursor
       expect(languagesPrismaMock.language.findMany).toHaveBeenNthCalledWith(
         1,
-        expect.objectContaining({ where: { hasVideos: true }, take: 1000 })
+        expect.objectContaining({
+          where: { hasVideos: true, searchable: true },
+          take: 1000
+        })
       )
       // second page: continues from the last id of the previous batch
       expect(languagesPrismaMock.language.findMany).toHaveBeenNthCalledWith(
@@ -207,6 +279,47 @@ describe('updateLanguageInAlgolia', () => {
       saveObjectsSpy.mockRejectedValueOnce(new Error('algolia unavailable'))
 
       await expect(reindexLanguagesWithVideosInAlgolia()).rejects.toThrow(
+        'algolia unavailable'
+      )
+    })
+  })
+
+  describe('removeLanguagesFromAlgolia', () => {
+    it('deletes the given object ids from the languages index', async () => {
+      const result = await removeLanguagesFromAlgolia(['20525', '117014'])
+
+      expect(result).toEqual({ removed: 2 })
+      expect(deleteObjectsSpy).toHaveBeenCalledWith({
+        indexName: 'languages-index',
+        objectIDs: ['20525', '117014'],
+        waitForTasks: true
+      })
+    })
+
+    it('does nothing and touches no client when there is nothing to remove', async () => {
+      const result = await removeLanguagesFromAlgolia([])
+
+      expect(result).toEqual({ removed: 0 })
+      expect(deleteObjectsSpy).not.toHaveBeenCalled()
+    })
+
+    it('splits removals into batches', async () => {
+      const ids = Array.from({ length: 1001 }, (_, index) => `id-${index}`)
+
+      const result = await removeLanguagesFromAlgolia(ids)
+
+      expect(result).toEqual({ removed: 1001 })
+      expect(deleteObjectsSpy).toHaveBeenCalledTimes(2)
+      expect(deleteObjectsSpy).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ objectIDs: ['id-1000'] })
+      )
+    })
+
+    it('propagates a delete failure so the caller exits non-zero', async () => {
+      deleteObjectsSpy.mockRejectedValueOnce(new Error('algolia unavailable'))
+
+      await expect(removeLanguagesFromAlgolia(['20525'])).rejects.toThrow(
         'algolia unavailable'
       )
     })

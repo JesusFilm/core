@@ -66,7 +66,7 @@ type AlgoliaLanguage = Prisma.LanguageGetPayload<{
 // stays assignable to Algolia's `Record<string, unknown>` object type.
 type AlgoliaLanguageRecord = {
   objectID: string
-  languageId: string
+  languageId: number
   bcp47: string | null
   iso3: string | null
   nameNative: string
@@ -107,7 +107,12 @@ export function buildAlgoliaLanguageRecord(
 
   return {
     objectID: language.id,
-    languageId: language.id,
+    // Numeric to match every other record in the index and the `languageId:
+    // number` contract arclight declares in _resources/index.ts. Prisma types
+    // Language.id as a String, so it needs coercing here. Every id in the index
+    // is a numeric string, and arclight already relies on that via
+    // `Number(hit.objectID)`, so this cannot produce NaN in practice.
+    languageId: Number(language.id),
     bcp47: language.bcp47,
     iso3: language.iso3,
     nameNative,
@@ -117,6 +122,23 @@ export function buildAlgoliaLanguageRecord(
   }
 }
 
+/**
+ * A language is publicly visible only when it has content *and* an operator has
+ * not hidden it. `hasVideos` is derived and written automatically; `searchable`
+ * is operator-owned and nothing automated may write it.
+ */
+function isPubliclyVisible(language: {
+  hasVideos: boolean
+  searchable: boolean
+}): boolean {
+  return language.hasVideos && language.searchable
+}
+
+export const publiclyVisibleLanguageWhere = {
+  hasVideos: true,
+  searchable: true
+} satisfies Prisma.LanguageWhereInput
+
 export async function updateLanguageInAlgoliaFromMedia(
   languageId: string,
   logger?: Logger
@@ -125,11 +147,21 @@ export async function updateLanguageInAlgoliaFromMedia(
     const { client, languagesIndex } = getAlgoliaLanguagesClient()
     const language = await languagesPrisma.language.findUnique({
       where: { id: languageId },
-      select: languageAlgoliaSelect
+      select: { ...languageAlgoliaSelect, hasVideos: true, searchable: true }
     })
 
-    if (language == null) {
-      logger?.warn(`language ${languageId} not found`)
+    // A language that is gone, has no content, or has been hidden by an
+    // operator has to be removed rather than skipped. The sync is otherwise
+    // upsert-only, so anything indexed while it was visible would stay
+    // searchable forever after being turned off.
+    if (language == null || !isPubliclyVisible(language)) {
+      logger?.info(
+        `removing language ${languageId} from algolia (${language == null ? 'not found' : 'not publicly visible'})`
+      )
+      await client.deleteObject({
+        indexName: languagesIndex,
+        objectID: languageId
+      })
       return
     }
 
@@ -150,7 +182,7 @@ interface ReindexLanguagesResult {
 }
 
 /**
- * Pushes every language that has videos into the Algolia languages index.
+ * Pushes every publicly visible language into the Algolia languages index.
  *
  * The incremental sync only fires on a hasVideos false -> true transition, so
  * languages that were already marked hasVideos: true (the schema default) never
@@ -167,7 +199,7 @@ export async function reindexLanguagesWithVideosInAlgolia(
 
   for (;;) {
     const languages = await languagesPrisma.language.findMany({
-      where: { hasVideos: true },
+      where: publiclyVisibleLanguageWhere,
       select: languageAlgoliaSelect,
       orderBy: { id: 'asc' },
       take: REINDEX_BATCH_SIZE,
@@ -190,4 +222,40 @@ export async function reindexLanguagesWithVideosInAlgolia(
   }
 
   return { count }
+}
+
+interface RemoveLanguagesResult {
+  removed: number
+}
+
+/**
+ * Removes the given languages from the Algolia languages index.
+ *
+ * Deleting an objectID that is not in the index is a no-op, so callers can pass
+ * every candidate rather than first working out which are actually indexed --
+ * the api-media Algolia key cannot browse, so that check is not available.
+ */
+export async function removeLanguagesFromAlgolia(
+  languageIds: string[],
+  logger?: Logger
+): Promise<RemoveLanguagesResult> {
+  if (languageIds.length === 0) return { removed: 0 }
+
+  const { client, languagesIndex } = getAlgoliaLanguagesClient()
+
+  for (let i = 0; i < languageIds.length; i += REINDEX_BATCH_SIZE) {
+    const batch = languageIds.slice(i, i + REINDEX_BATCH_SIZE)
+
+    await client.deleteObjects({
+      indexName: languagesIndex,
+      objectIDs: batch,
+      waitForTasks: true
+    })
+
+    logger?.info(
+      `removed ${Math.min(i + REINDEX_BATCH_SIZE, languageIds.length)} of ${languageIds.length} languages from algolia`
+    )
+  }
+
+  return { removed: languageIds.length }
 }

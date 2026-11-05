@@ -179,7 +179,10 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { offset, limit, where, term }) => {
       const filter: Prisma.LanguageWhereInput = {
-        hasVideos: true
+        // Publicly visible only: hasVideos is the derived content fact,
+        // searchable is the operator-owned visibility switch.
+        hasVideos: true,
+        searchable: true
       }
       if (where?.ids != null) filter.id = { in: where.ids }
       if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
@@ -213,7 +216,10 @@ builder.queryFields((t) => ({
     },
     resolve: async (_parent, { where, term }) => {
       const filter: Prisma.LanguageWhereInput = {
-        hasVideos: true
+        // Publicly visible only: hasVideos is the derived content fact,
+        // searchable is the operator-owned visibility switch.
+        hasVideos: true,
+        searchable: true
       }
       if (where?.ids != null) filter.id = { in: where.ids }
       if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
