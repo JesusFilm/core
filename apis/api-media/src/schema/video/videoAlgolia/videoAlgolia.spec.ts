@@ -309,9 +309,7 @@ describe('videoAlgolia', () => {
           label: 'collection',
           restrictViewPlatforms: [],
           keywords: [],
-          variants: [
-            { hls: null, lengthInMilliseconds: 0, downloadable: true }
-          ]
+          variants: [{ hls: null, lengthInMilliseconds: 0, downloadable: true }]
         } as any)
 
         getObjectSpy.mockResolvedValue({
