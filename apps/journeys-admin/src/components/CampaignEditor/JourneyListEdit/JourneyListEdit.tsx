@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -14,7 +14,6 @@ import {
   journeyCardFrameSx,
   journeyCardImageSx
 } from '@core/journeys/ui/Campaign'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../__generated__/GetCampaignJourneyByLink'
@@ -24,23 +23,17 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { EditorNote } from '../Canvas/EditorNote'
-import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
+import { HOVER_OUTLINE_SX, SELECTED_OUTLINE } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { selectableProps } from '../Canvas/selectable'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
-import { campaignStringText } from '../ShareSectionEdit/ShareSectionEdit'
+import { blockLabel } from '../utils/blockLabel'
+import { campaignStringText } from '../utils/campaignStringText'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
-
-const SELECTED_OUTLINE = {
-  outline: `2px solid ${adminPrimary.main}`,
-  outlineOffset: -2
-}
 
 type JourneyCardBlock = Extract<
   CampaignBlock,
@@ -99,18 +92,17 @@ function JourneyCardEdit({
   const { t } = useTranslation('apps-journeys-admin')
   const live = isJourneyCardVisible(card.journeyStatus)
 
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    event.stopPropagation()
-    onSelect('title')
-  }
-
   return (
     <Stack
       id={card.id}
       data-testid={`JourneyCard-${card.id}`}
       data-selected={selected}
       data-hoverable
-      onClick={handleClick}
+      role="button"
+      {...selectableProps(
+        () => onSelect('title'),
+        blockLabel(t, card.__typename)
+      )}
       sx={{
         ...journeyCardFrameSx(display),
         position: 'relative',
@@ -180,7 +172,9 @@ function JourneyCardEdit({
  * the journeys the author can read, and beneath it a smaller paste field for
  * a journey outside that list (an admin link or a public URL). Adding is one create Command: the card
  * shows at once from the journey picked or resolved, and the server
- * snapshots the journey's title and description when it answers.
+ * snapshots the journey's title and description when it answers. With no
+ * card it shows the campaign's `noJourneys` string, as the public page
+ * does, above the hint or the picker; that wording is edited in Settings.
  */
 export function JourneyListEdit({
   block,
@@ -206,6 +200,13 @@ export function JourneyListEdit({
     previewLanguageId,
     t('Open journey')
   )
+  // Blank on the public page renders nothing, so it has no fallback here.
+  const noJourneysLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.noJourneys,
+    previewLanguageId,
+    ''
+  )
 
   async function handleAdd(
     url: string,
@@ -220,7 +221,10 @@ export function JourneyListEdit({
       pageId: list?.pageId ?? null,
       regionId: list?.regionId ?? null,
       parentBlockId: block.id,
-      parentOrder: cards.length,
+      // The API numbers every ordered child of the list in one sequence,
+      // Extras above and below the cards included: the card lands last.
+      parentOrder: block.children.filter((child) => child.parentOrder != null)
+        .length,
       title: journey.title,
       description: journey.description,
       titleTranslations: [],
@@ -274,14 +278,19 @@ export function JourneyListEdit({
           ))}
         </CampaignJourneyCards>
       )}
+      {cards.length === 0 && noJourneysLabel.trim() !== '' && (
+        <Typography
+          variant="body1"
+          data-testid="JourneyListNoJourneys"
+          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
+        >
+          {noJourneysLabel}
+        </Typography>
+      )}
       {active || adding ? (
         <Stack spacing={1.5} sx={{ maxWidth: 720 }}>
           <JourneyPicker label={t('Add a journey')} onLink={handleAdd} />
-          <JourneyPasteField
-            label={t('or paste a link')}
-            compact
-            onLink={handleAdd}
-          />
+          <JourneyPasteField label={t('or paste a link')} onLink={handleAdd} />
         </Stack>
       ) : (
         cards.length === 0 && (

@@ -5,7 +5,6 @@ export {
 } from './useCampaignImageBlockCreateMutation'
 export type {
   CampaignImageBlock,
-  CampaignImageOwner,
   CreateOwnedImage,
   CreateOwnedImageOptions
 } from './useCampaignImageBlockCreateMutation'

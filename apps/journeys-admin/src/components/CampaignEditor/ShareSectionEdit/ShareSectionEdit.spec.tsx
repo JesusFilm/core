@@ -23,16 +23,17 @@ import { CAMPAIGN_REGION_LANGUAGE_CREATE } from '../../../libs/useCampaignRegion
 import { CAMPAIGN_REGION_LANGUAGE_DELETE } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH } from '../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
-import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../data'
-import { CommandProbe, QueriedEditor } from '../testing'
-
 import {
-  ShareSectionEdit,
-  addLanguageOptions,
-  shareLanguageState
-} from './ShareSectionEdit'
+  CommandProbe,
+  QueriedEditor,
+  UndoRedo,
+  holdRequests,
+  landRequests
+} from '../testing'
+
+import { shareLanguageState } from './shareLanguage'
+import { ShareSectionEdit, addLanguageOptions } from './ShareSectionEdit'
 
 const languagesMock = {
   request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
@@ -302,6 +303,34 @@ const resolveBySlugMock = {
   result: vi.fn(() => ({ data: { journey } }))
 }
 
+/** Undo of the first link: unlink, keeping the QR code the link minted. */
+const firstUnlinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: 'eurRegionId-496', input: { journeyId: null } }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageUpdate: {
+        ...linkMock.result().data.campaignRegionLanguageUpdate,
+        journeyId: null,
+        title: null,
+        description: null,
+        journey: null
+      }
+    }
+  }))
+}
+
+/** Redo of the first link: the same journey, by id. */
+const firstRelinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: 'eurRegionId-496', input: { journeyId: 'frJourneyId' } }
+  },
+  result: vi.fn(() => linkMock.result())
+}
+
 const unlinkMock = {
   request: {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
@@ -385,7 +414,7 @@ function renderShare(
   return render(
     <SnackbarProvider>
       <QueriedEditor
-        campaignProp={campaignProp}
+        campaign={campaignProp}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
@@ -402,6 +431,8 @@ function renderShare(
           resolveBySlugMock,
           linkMock,
           linkFailureMock,
+          firstUnlinkMock,
+          firstRelinkMock,
           unlinkMock,
           swapMock,
           swapRelinkMock,
@@ -410,8 +441,7 @@ function renderShare(
           refreshMock
         ]}
       >
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
+        <UndoRedo />
         <CommandProbe />
         <ShareSectionEdit block={{ id: 'regionShareId' }} />
       </QueriedEditor>
@@ -613,8 +643,8 @@ describe('ShareSectionEdit', () => {
       })
     ).toBeInTheDocument()
 
-    fireEvent.click(bin)
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await holdRequests(() => fireEvent.click(bin))
+    await landRequests()
     expect(englishDeleteMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('ShareLanguageRow-529')).toBeInTheDocument()
   })
@@ -770,7 +800,7 @@ describe('ShareSectionEdit', () => {
     ).toBeNull()
   })
 
-  it('links the first journey as a plain save, so there is nothing to undo', async () => {
+  it('links the first journey as one Command: undo unlinks it and redo links the same journey by id', async () => {
     renderShare()
 
     const french = await screen.findByTestId('ShareLanguageRow-496')
@@ -792,7 +822,29 @@ describe('ShareSectionEdit', () => {
       ).toHaveTextContent('Campagne en Europe')
     )
     expect(linkMock.result).toHaveBeenCalledTimes(1)
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(firstUnlinkMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).queryByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toBeNull()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(firstRelinkMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toHaveTextContent('Campagne en Europe')
+    )
   })
 
   it('swaps as one Command: undo links the previous journey again and puts back the snapshot the author edited', async () => {
@@ -1042,11 +1094,24 @@ describe('ShareSectionEdit', () => {
     expect(await screen.findByText('Link copied')).toBeInTheDocument()
 
     fireEvent.click(within(english).getByTestId('ShareLanguageDownload'))
-    expect(toDataURL).toHaveBeenCalledWith('image/png')
+    await waitFor(() => expect(toDataURL).toHaveBeenCalledWith('image/png'))
     const clicked = click.mock.contexts[0] as HTMLAnchorElement
     expect(clicked.download).toBe('outreach-2026-eur-en.png')
     toDataURL.mockRestore()
     click.mockRestore()
+  })
+
+  it('says the link could not be copied when the clipboard refuses it', async () => {
+    vi.mocked(navigator.clipboard.writeText).mockRejectedValue(
+      new Error('Write permission denied')
+    )
+    renderShare()
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(within(english).getByTestId('ShareLanguageCopy'))
+
+    expect(await screen.findByText("Couldn't copy link")).toBeInTheDocument()
+    expect(screen.queryByText('Link copied')).not.toBeInTheDocument()
   })
 
   it('marks an Unlinked Language hidden in the selector preview and disables its copy and download', async () => {
@@ -1111,7 +1176,7 @@ describe('ShareSectionEdit', () => {
     render(
       <SnackbarProvider>
         <QueriedEditor
-          campaignProp={campaignWithRegions}
+          campaign={campaignWithRegions}
           initialState={{ pageKind: CampaignPageKind.landing }}
           mocks={[languagesMock]}
         >

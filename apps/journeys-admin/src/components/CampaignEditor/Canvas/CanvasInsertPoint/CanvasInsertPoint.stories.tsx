@@ -10,6 +10,7 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { CampaignEditorProvider } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
+import { CampaignCommandProvider } from '../../utils/useCampaignCommand'
 
 import { CanvasInsertPoint } from '.'
 
@@ -35,11 +36,13 @@ function CanvasInsertPointStory(): ReactElement {
     <MockedProvider>
       <CommandProvider>
         <CampaignEditorProvider campaign={campaign}>
-          <Box sx={{ width: 480, bgcolor: 'background.default' }}>
-            <SectionStand label="Hero" />
-            <CanvasInsertPoint pageId="landingPageId" parentOrder={1} />
-            <SectionStand label="Region switcher" />
-          </Box>
+          <CampaignCommandProvider>
+            <Box sx={{ width: 480, bgcolor: 'background.default' }}>
+              <SectionStand label="Hero" />
+              <CanvasInsertPoint pageId="landingPageId" parentOrder={1} />
+              <SectionStand label="Region switcher" />
+            </Box>
+          </CampaignCommandProvider>
         </CampaignEditorProvider>
       </CommandProvider>
     </MockedProvider>

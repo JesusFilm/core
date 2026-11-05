@@ -1,1 +1,0 @@
-export { useHostBand } from './useHostBand'

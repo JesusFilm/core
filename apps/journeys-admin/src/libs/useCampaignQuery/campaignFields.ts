@@ -223,6 +223,26 @@ export const CAMPAIGN_REGION_FIELDS = gql`
 `
 
 /**
+ * A Page Language as the editor reads it, in selector order: the language
+ * with its autonym and English name.
+ */
+export const CAMPAIGN_LANGUAGE_FIELDS = gql`
+  fragment CampaignLanguageFields on CampaignLanguage {
+    id
+    languageId
+    order
+    language {
+      id
+      bcp47
+      name(languageId: "529", primary: true) {
+        value
+        primary
+      }
+    }
+  }
+`
+
+/**
  * The admin shape of a Campaign the editor opens with: settings, the team
  * roles that decide Manage and Delete, the languages for the preview select
  * and the Languages panel (autonym plus the English name),
@@ -234,6 +254,7 @@ export const CAMPAIGN_FIELDS = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
   ${CAMPAIGN_REGION_FIELDS}
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
+  ${CAMPAIGN_LANGUAGE_FIELDS}
   fragment CampaignFields on Campaign {
     __typename
     id
@@ -268,17 +289,7 @@ export const CAMPAIGN_FIELDS = gql`
       }
     }
     languages {
-      id
-      languageId
-      order
-      language {
-        id
-        bcp47
-        name(languageId: "529", primary: true) {
-          value
-          primary
-        }
-      }
+      ...CampaignLanguageFields
     }
     theme {
       id
@@ -296,11 +307,6 @@ export const CAMPAIGN_FIELDS = gql`
       contrastTextColor
       radius
       buttonRadius
-    }
-    strings {
-      id
-      key
-      value
     }
     pages {
       id
