@@ -86,8 +86,12 @@ export async function updateVideoInAlgolia(
               }
             }
           },
+          // Published English variant only, matching the arclight detail and
+          // list routes, so the indexed record never reflects an unpublished
+          // variant.
           where: {
-            languageId: '529'
+            languageId: '529',
+            published: true
           },
           take: 1
         }
@@ -112,10 +116,7 @@ export async function updateVideoInAlgolia(
       `Found video: ${video.label} with ${video.variants.length} variants`
     )
 
-    const isDownloadable =
-      video.label === 'collection' || video.label === 'series'
-        ? false
-        : (video.variants[0]?.downloadable ?? false)
+    const isDownloadable = video.variants[0]?.downloadable ?? false
 
     const titles = video.title.map((title) => ({
       value: title.value,

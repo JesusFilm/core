@@ -224,7 +224,7 @@ describe('algoliaVideoUpdate', () => {
       availableLanguages: [],
       variants: [
         {
-          published: false,
+          published: true,
           hls: null,
           lengthInMilliseconds: 0,
           downloadable: false,
@@ -266,6 +266,103 @@ describe('algoliaVideoUpdate', () => {
             mobileCinematicLow: null,
             mobileCinematicVeryLow: null
           }
+        })
+      ],
+      waitForTasks: true
+    })
+  })
+
+  it.each(['collection', 'series'])(
+    'reports a %s as downloadable when its published English variant is downloadable',
+    async (label) => {
+      prismaMock.video.findUnique.mockResolvedValueOnce({
+        id: 'container-id',
+        label,
+        primaryLanguageId: '529',
+        childIds: ['child1'],
+        restrictDownloadPlatforms: [],
+        published: true,
+        restrictViewPlatforms: [],
+        title: [{ value: 'Test Container', languageId: '529' }],
+        description: [],
+        studyQuestions: [],
+        bibleCitation: [],
+        keywords: [],
+        images: [],
+        availableLanguages: [],
+        variants: [
+          {
+            published: true,
+            hls: null,
+            lengthInMilliseconds: 0,
+            downloadable: true,
+            downloads: [
+              { quality: 'low', size: 1000 },
+              { quality: 'high', size: 5000 }
+            ]
+          }
+        ]
+      } as any)
+
+      await updateVideoInAlgolia('container-id', mockLogger)
+
+      expect(saveObjectsSpy).toHaveBeenCalledWith({
+        indexName: 'test-videos',
+        objects: [
+          expect.objectContaining({
+            objectID: 'container-id',
+            subType: label,
+            isDownloadable: true,
+            downloadSizes: {
+              approximateSmallDownloadSizeInBytes: 1000,
+              approximateLargeDownloadSizeInBytes: 5000
+            }
+          })
+        ],
+        waitForTasks: true
+      })
+    }
+  )
+
+  it('selects only the published English variant', async () => {
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      id: 'test-video-id',
+      label: 'featureFilm',
+      primaryLanguageId: '529',
+      childIds: [],
+      restrictDownloadPlatforms: [],
+      published: true,
+      restrictViewPlatforms: [],
+      title: [],
+      description: [],
+      studyQuestions: [],
+      bibleCitation: [],
+      keywords: [],
+      images: [],
+      availableLanguages: [],
+      variants: []
+    } as any)
+
+    await updateVideoInAlgolia('test-video-id', mockLogger)
+
+    expect(prismaMock.video.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          variants: expect.objectContaining({
+            where: { languageId: '529', published: true },
+            take: 1
+          })
+        })
+      })
+    )
+    // No published English variant: not downloadable, no sizes.
+    expect(saveObjectsSpy).toHaveBeenCalledWith({
+      indexName: 'test-videos',
+      objects: [
+        expect.objectContaining({
+          isDownloadable: false,
+          downloadSizes: {},
+          componentType: 'container'
         })
       ],
       waitForTasks: true

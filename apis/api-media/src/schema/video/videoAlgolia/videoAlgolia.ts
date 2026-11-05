@@ -644,7 +644,7 @@ builder.queryFields((t) => ({
               lengthInMilliseconds: true,
               downloadable: true
             },
-            where: { languageId: '529' },
+            where: { languageId: '529', published: true },
             take: 1
           }
         }
@@ -656,10 +656,7 @@ builder.queryFields((t) => ({
 
       const primaryVariant = video.variants[0]
       const isVideoContent = primaryVariant?.hls != null
-      const isDownloadable =
-        video.label === 'collection' || video.label === 'series'
-          ? false
-          : (primaryVariant?.downloadable ?? false)
+      const isDownloadable = primaryVariant?.downloadable ?? false
       const expected = {
         objectID: video.id,
         mediaComponentId: video.id,
