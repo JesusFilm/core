@@ -188,11 +188,6 @@ export async function reconcileVideoVariantReconciliation(
     await persistStatus('degraded', stages.parentSync)
     return { publicationReady: false, status: 'degraded' }
   }
-  stages.algoliaVideo = await syncVideoRecordStage(
-    variant.videoId,
-    stages.algoliaVideo
-  )
-
   const downloadCount = await prisma.videoVariantDownload.count({
     where: { videoVariantId: variant.id }
   })
@@ -219,6 +214,14 @@ export async function reconcileVideoVariantReconciliation(
         )
     `
   }
+
+  // Sync the Video record only after the variant's own publish write above:
+  // updateVideoInAlgolia's select now filters variants on published=true, so
+  // syncing before that write would index the Video without this variant.
+  stages.algoliaVideo = await syncVideoRecordStage(
+    variant.videoId,
+    stages.algoliaVideo
+  )
   try {
     await updateVideoVariantInAlgolia(variant.id)
     stages.algoliaVariant = completedStage(stages.algoliaVariant.attempts + 1)

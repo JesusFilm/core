@@ -384,11 +384,6 @@ export async function reconcileGeneratedParentVariant({
 }): Promise<ReasonSpecificReconciliationResult> {
   const stages = generatedParentStages(reconciliation.processingStages)
 
-  stages.algoliaVideo = await syncVideoRecordStage(
-    variant.videoId,
-    stages.algoliaVideo
-  )
-
   try {
     if (!variant.published) {
       await prisma.videoVariant.update({
@@ -430,6 +425,14 @@ export async function reconcileGeneratedParentVariant({
       }
     }
   }
+
+  // Sync the Video record only after the variant publish above: updateVideoInAlgolia's
+  // select now filters variants on published=true, so syncing before that write
+  // would index the Video without this variant.
+  stages.algoliaVideo = await syncVideoRecordStage(
+    variant.videoId,
+    stages.algoliaVideo
+  )
 
   const videoRecordFailure = await persistVideoRecordFailure({
     store,
