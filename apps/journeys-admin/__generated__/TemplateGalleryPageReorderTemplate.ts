@@ -104,7 +104,7 @@ export interface TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTe
 
 export interface TemplateGalleryPageReorderTemplate {
   /**
-   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
+   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageLinkJourney`).
    * 
    * Idempotent: when the journey is already at the requested display index, the call is a no-op.
    * 

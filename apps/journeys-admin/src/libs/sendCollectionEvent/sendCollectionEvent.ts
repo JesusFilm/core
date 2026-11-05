@@ -41,6 +41,22 @@ interface CollectionTemplateEvent {
   templateId: string
 }
 
+/**
+ * What a drop into a collection did: `add` from the All Templates pool,
+ * `move` from another collection, `link` into a second collection while
+ * keeping the first.
+ */
+export type CollectionTemplateDragMode = 'add' | 'move' | 'link'
+
+interface CollectionTemplateDragEvent extends CollectionTemplateEvent {
+  mode: CollectionTemplateDragMode
+}
+
+interface CollectionTemplateRemoveEvent extends CollectionTemplateEvent {
+  /** `menu` from the card's "Remove from collection", `drag` to All Templates. */
+  via: 'menu' | 'drag'
+}
+
 interface CollectionMoreDetailsClickEvent {
   collectionId: string
 }
@@ -141,12 +157,27 @@ export function sendCollectionPublishEvent({
 
 export function sendCollectionTemplateDragEvent({
   collectionId,
-  templateId
-}: CollectionTemplateEvent): void {
+  templateId,
+  mode
+}: CollectionTemplateDragEvent): void {
   sendGTMEvent({
     event: 'team_collection_template_added_via_drag',
     collectionId,
-    templateId
+    templateId,
+    mode
+  })
+}
+
+export function sendCollectionTemplateRemoveEvent({
+  collectionId,
+  templateId,
+  via
+}: CollectionTemplateRemoveEvent): void {
+  sendGTMEvent({
+    event: 'team_collection_template_removed',
+    collectionId,
+    templateId,
+    via
   })
 }
 

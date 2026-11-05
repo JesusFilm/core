@@ -104,7 +104,7 @@ export interface TemplateGalleryPageUpdate_templateGalleryPageUpdate {
 
 export interface TemplateGalleryPageUpdate {
   /**
-   * Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced — existing assignments are deleted and recreated in the given order. Single-membership is enforced: if any supplied journey id is currently a member of another TemplateGalleryPage, the call fails before any write. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
+   * Update editable fields of a TemplateGalleryPage. All input fields are optional: a field omitted leaves the existing value alone, a field set to `null` clears it (where the field is nullable). When `input.journeyIds` is provided, the page's template list is replaced: journeys no longer listed are removed (promoting the oldest link elsewhere when the removed row was the journey's home), newly listed journeys are added (as the journey's home when it has none, otherwise as a link), and the page is reordered to the given order. A journey may belong to many pages. Allowed on both `draft` and `published` pages (publishers can correct typos and curate the template list while live).
    * 
    * Auth: caller must be a member of the page's team.
    * 
@@ -113,7 +113,6 @@ export interface TemplateGalleryPageUpdate {
    * - FORBIDDEN: caller is not in the page's team.
    * - BAD_USER_INPUT (field: `slug`): user-supplied slug fails shape, length, reserved-word, or uniqueness checks — including the concurrent-Update race where two callers pass the same slug and the second one trips the DB unique constraint at commit time.
    * - BAD_USER_INPUT (field: `mediaUrl` / `creatorImageSrc`): URL is not https.
-   * - CONFLICT (field: `journeyIds`; extension `journeyId` carries the offending id): one of the supplied journeys is already a member of another TemplateGalleryPage.
    */
   templateGalleryPageUpdate: TemplateGalleryPageUpdate_templateGalleryPageUpdate;
 }

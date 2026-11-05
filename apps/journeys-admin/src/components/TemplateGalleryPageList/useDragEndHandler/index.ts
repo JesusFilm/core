@@ -1,2 +1,5 @@
 export { useDragEndHandler } from './useDragEndHandler'
-export type { UseDragEndHandlerParams } from './useDragEndHandler'
+export type {
+  JourneyMembership,
+  UseDragEndHandlerParams
+} from './useDragEndHandler'

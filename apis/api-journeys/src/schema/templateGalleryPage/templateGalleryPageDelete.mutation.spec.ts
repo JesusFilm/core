@@ -50,6 +50,10 @@ describe('templateGalleryPageDelete', () => {
       teamId: 'team-1',
       userId: mockUser.id
     } as any)
+    prismaMock.$transaction.mockImplementation(
+      async (callback: any) => await callback(prismaMock)
+    )
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([])
   })
 
   it('deletes a page when caller is in the team', async () => {
@@ -70,6 +74,43 @@ describe('templateGalleryPageDelete', () => {
     expect(prismaMock.templateGalleryPage.delete).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'p1' } })
     )
+  })
+
+  it('promotes the oldest link of every home on the page before deleting', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as any)
+    prismaMock.templateGalleryPage.delete.mockResolvedValue({ id: 'p1' } as any)
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+      { journeyId: 'j1' },
+      { journeyId: 'j2' }
+    ] as any)
+    // j1 has a link on p2; j2 has none.
+    prismaMock.templateGalleryPageTemplate.findFirst
+      .mockResolvedValueOnce({
+        id: 'tpt-j1-link',
+        templateGalleryPageId: 'p2'
+      } as any)
+      .mockResolvedValueOnce(null)
+
+    await authClient({
+      document: TEMPLATE_GALLERY_PAGE_DELETE,
+      variables: { id: 'p1' }
+    })
+
+    expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenCalledTimes(
+      1
+    )
+    expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenCalledWith({
+      where: { id: 'tpt-j1-link' },
+      data: { isHome: true }
+    })
+    const promoteOrder =
+      prismaMock.templateGalleryPageTemplate.update.mock.invocationCallOrder[0]
+    const deleteOrder =
+      prismaMock.templateGalleryPage.delete.mock.invocationCallOrder[0]
+    expect(promoteOrder).toBeLessThan(deleteOrder)
   })
 
   it('throws NOT_FOUND when page does not exist', async () => {

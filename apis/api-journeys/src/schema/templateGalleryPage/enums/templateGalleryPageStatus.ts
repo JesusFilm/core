@@ -15,7 +15,7 @@ export const TemplateGalleryPageStatus = builder.enumType(
       },
       published: {
         description:
-          'Reachable at `/collections/<slug>`. `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney` remain allowed (publishers can fix typos and curate the template list while live); `templateGalleryPageReorderTemplate` is rejected with CONFLICT — unpublish first to reorder.'
+          'Reachable at `/collections/<slug>`. `templateGalleryPageUpdate`, `templateGalleryPageLinkJourney`, `templateGalleryPageMoveJourney` and `templateGalleryPageRemoveJourney` remain allowed (publishers can fix typos and curate the template list while live); `templateGalleryPageReorderTemplate` is rejected with CONFLICT — unpublish first to reorder.'
       }
     }
   }

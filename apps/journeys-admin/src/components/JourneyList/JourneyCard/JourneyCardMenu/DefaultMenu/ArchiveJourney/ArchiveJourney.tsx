@@ -14,7 +14,7 @@ import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
 import { evictFromTemplateGalleryPages } from '../../../../../../libs/evictFromTemplateGalleryPages'
-import { useTemplateGalleryPageAssignJourneyMutation } from '../../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
+import { useTemplateGalleryPageRemoveJourneyMutation } from '../../../../../../libs/useTemplateGalleryPageRemoveJourneyMutation'
 import { MenuItem } from '../../../../../MenuItem'
 
 export const JOURNEY_ARCHIVE = gql`
@@ -86,10 +86,10 @@ export function ArchiveJourney({
     }
   })
 
-  // Best-effort unassign so that unarchiving returns the journey to the
-  // flat template list rather than its prior collection slot. Idempotent
-  // no-op server-side when the journey isn't in any collection.
-  const [unassignFromCollection] = useTemplateGalleryPageAssignJourneyMutation()
+  // Best-effort removal from every collection so that unarchiving returns
+  // the journey to the flat template list rather than its prior collection
+  // slots. Idempotent no-op server-side when the journey isn't in any.
+  const [removeFromCollections] = useTemplateGalleryPageRemoveJourneyMutation()
   const [unarchiveJourney] = useMutation<JourneyUnarchive>(JOURNEY_UNARCHIVE, {
     variables: {
       ids: [id]
@@ -128,12 +128,12 @@ export function ArchiveJourney({
         // on a ~1s round-trip the user doesn't care about (Mike review,
         // NES-1644). Failure mode is identical to pre-fix: stale join
         // row server-side, surfaces only on restore.
-        void unassignFromCollection({
-          variables: { journeyId: id, pageId: null }
-        }).catch((unassignError) => {
+        void removeFromCollections({
+          variables: { journeyId: id }
+        }).catch((removeError) => {
           console.warn(
-            '[ArchiveJourney] failed to unassign archived journey from its collection',
-            { journeyId: id, error: unassignError }
+            '[ArchiveJourney] failed to remove archived journey from its collections',
+            { journeyId: id, error: removeError }
           )
         })
         enqueueSnackbar(t('Journey Archived'), {
