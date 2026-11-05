@@ -176,7 +176,9 @@ describe('campaignRegionUpdate', () => {
   })
 
   it('rejects the slug of a journey in the campaign’s team, naming the journey', async () => {
-    vi.mocked(prismaMock.journey.findFirst, { partial: true }).mockResolvedValue({
+    vi.mocked(prismaMock.journey.findFirst, {
+      partial: true
+    }).mockResolvedValue({
       id: 'journeyId',
       title: 'Outreach Europe'
     })
