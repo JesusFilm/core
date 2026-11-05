@@ -31,7 +31,10 @@ const featuredImage = newOwnedImageBlock('featuredImageId', featured, SRC)
 function updateMock(input: CampaignFeaturedMediaInput) {
   return {
     request: {
-      query: 'mediaBlockId' in input ? CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_FIELDS : CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE,
+      query:
+        'mediaBlockId' in input
+          ? CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_FIELDS
+          : CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE,
       variables: { id: 'featuredId', input }
     },
     result: vi.fn(() => ({

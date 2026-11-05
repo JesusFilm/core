@@ -26,11 +26,16 @@ function refusal(message: string): CombinedGraphQLErrors {
 describe('useCommittedField', () => {
   it('ignores a refusal from the previous Preview Language', async () => {
     let rejectSave: (error: unknown) => void = () => undefined
-    const pending = new Promise<void>((_, reject) => { rejectSave = reject })
+    const pending = new Promise<void>((_, reject) => {
+      rejectSave = reject
+    })
     const save = vi.fn(() => pending)
     const onRefused = vi.fn(() => 'French save refused')
     const { result, rerender } = renderField({
-      committed: 'Europe', resetKey: 'fr', save, onRefused
+      committed: 'Europe',
+      resetKey: 'fr',
+      save,
+      onRefused
     })
 
     act(() => result.current.onChange('Europe en français'))
@@ -50,10 +55,21 @@ describe('useCommittedField', () => {
   it('releases the old save on reset and ignores its completion during a new save', async () => {
     let resolveOld: () => void = () => undefined
     let resolveNew: () => void = () => undefined
-    const oldPending = new Promise<void>((resolve) => { resolveOld = resolve })
-    const newPending = new Promise<void>((resolve) => { resolveNew = resolve })
-    const save = vi.fn().mockReturnValueOnce(oldPending).mockReturnValueOnce(newPending)
-    const { result, rerender } = renderField({ committed: 'French', resetKey: 'fr', save })
+    const oldPending = new Promise<void>((resolve) => {
+      resolveOld = resolve
+    })
+    const newPending = new Promise<void>((resolve) => {
+      resolveNew = resolve
+    })
+    const save = vi
+      .fn()
+      .mockReturnValueOnce(oldPending)
+      .mockReturnValueOnce(newPending)
+    const { result, rerender } = renderField({
+      committed: 'French',
+      resetKey: 'fr',
+      save
+    })
     act(() => result.current.onChange('French draft'))
     act(() => result.current.onBlur())
     rerender({ committed: 'English', resetKey: 'en', save })
@@ -63,10 +79,16 @@ describe('useCommittedField', () => {
     act(() => result.current.onChange('English draft'))
     act(() => result.current.onBlur())
     rerender({ committed: 'English server value', resetKey: 'en', save })
-    await act(async () => { resolveOld(); await oldPending })
+    await act(async () => {
+      resolveOld()
+      await oldPending
+    })
     expect(result.current.value).toBe('English draft')
 
-    await act(async () => { resolveNew(); await newPending })
+    await act(async () => {
+      resolveNew()
+      await newPending
+    })
     expect(result.current.value).toBe('English server value')
   })
 
