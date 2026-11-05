@@ -1,6 +1,6 @@
 import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
 import { MockLink } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { parse } from 'graphql'
 import { ReactElement, useState } from 'react'
 
@@ -48,6 +48,7 @@ import {
 import { blockOf, blockUpdateMock } from '../../styleTesting'
 import {
   CommandProbe,
+  PreviewLanguageSwitch,
   QueriedEditor,
   SelectionProbe,
   SpyMock,
@@ -454,7 +455,7 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
   }: {
     string: (typeof campaignStrings)[number]
   }): ReactElement {
-    const { value, fallback, handleChange, handleFocus, handleBlur } =
+    const { value, fallback, error, handleChange, handleFocus, handleBlur } =
       useCampaignTextCommand({ string })
     return (
       <>
@@ -466,6 +467,7 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
+        {error != null && <span role="alert">{error}</span>}
       </>
     )
   }
@@ -542,6 +544,158 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     } = useCampaignEditor()
     return <span data-testid="PreviewLanguage">{previewLanguageId}</span>
   }
+
+  it.each([
+    { target: 'block', refused: false },
+    { target: 'block', refused: true },
+    { target: 'string', refused: false },
+    { target: 'string', refused: true }
+  ])(
+    'switches $target text to English during a pending French save, refused=$refused',
+    async ({ target, refused }) => {
+      const isBlock = target === 'block'
+      const french = {
+        ...translationMock(
+          isBlock ? { blockId: 'heroId' } : { stringId: copy.id },
+          isBlock ? 'title' : 'value',
+          'Campagne',
+          [{ languageId: '496', value: 'Campagne' }]
+        ),
+        delay: 100,
+        ...(refused
+          ? {
+              result: vi.fn(() => ({
+                errors: [{ message: 'French save refused' }]
+              }))
+            }
+          : {})
+      }
+      const english = {
+        ...(isBlock ? heroMock('English draft') : stringMock('English draft')),
+        delay: 1000
+      }
+      renderWith(
+        [french, english],
+        <>
+          <PreviewLanguageSwitch languageIds={['529', '496']} />
+          {isBlock ? (
+            <Field blockId="heroId" field="title" />
+          ) : (
+            <StringField stringKey="copy" />
+          )}
+        </>,
+        { previewLanguageId: '496' }
+      )
+      const input = await screen.findByRole('textbox', {
+        name: isBlock ? 'title' : 'copy'
+      })
+      vi.useFakeTimers()
+      try {
+        fireEvent.focus(input)
+        fireEvent.change(input, { target: { value: 'Campagne' } })
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(500)
+        })
+        expect(french.result).not.toHaveBeenCalled()
+
+        fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+        expect(input).toHaveValue(
+          isBlock ? 'Share the story of Outreach' : 'Copy link'
+        )
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+        fireEvent.change(input, { target: { value: 'English draft' } })
+        expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(100)
+        })
+        expect(french.result).toHaveBeenCalled()
+        expect(english.result).not.toHaveBeenCalled()
+        expect(input).toHaveValue('English draft')
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1500)
+        })
+        expect(english.result).toHaveBeenCalled()
+        expect(input).toHaveValue('English draft')
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      } finally {
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it('adopts new English cache data while the French save is still debounced', async () => {
+    const save = translationMock({ blockId: 'heroId' }, 'title', 'Campagne', [
+      { languageId: '496', value: 'Campagne' }
+    ])
+    const link = ApolloLink.from([new DebounceLink(500), new MockLink([save])])
+    const cache = campaignCache()
+    function editorWithTitle(title: string): ReactElement {
+      return (
+        <StaticEditor
+          link={link}
+          cache={cache}
+          campaign={{
+            ...campaign,
+            blocks: campaign.blocks.map((block) =>
+              block.id === 'heroId' ? { ...block, title } : block
+            )
+          }}
+          initialState={{ previewLanguageId: '496' }}
+        >
+          <PreviewLanguageSwitch languageIds={['529']} />
+          <Field blockId="heroId" field="title" />
+        </StaticEditor>
+      )
+    }
+    const { rerender } = render(editorWithTitle('English'))
+    const input = screen.getByRole('textbox', { name: 'title' })
+    vi.useFakeTimers()
+    try {
+      fireEvent.change(input, { target: { value: 'Campagne' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+      expect(input).toHaveValue('English')
+
+      rerender(editorWithTitle('Updated English'))
+
+      expect(save.result).not.toHaveBeenCalled()
+      expect(input).toHaveValue('Updated English')
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000)
+      })
+      expect(save.result).toHaveBeenCalled()
+      expect(input).toHaveValue('Updated English')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('clears an existing French refusal when switching to English', async () => {
+    const refused = {
+      ...translationMock({ blockId: 'heroId' }, 'title', 'Campagne', []),
+      result: vi.fn(() => ({ errors: [{ message: 'French save refused' }] }))
+    }
+    renderWith(
+      [refused],
+      <>
+        <PreviewLanguageSwitch languageIds={['529']} />
+        <Field blockId="heroId" field="title" />
+      </>,
+      { previewLanguageId: '496' }
+    )
+    const input = await screen.findByRole('textbox', { name: 'title' })
+    fireEvent.change(input, { target: { value: 'Campagne' } })
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'French save refused'
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+
+    expect(input).toHaveValue('Share the story of Outreach')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
 
   it('edits a Campaign String in the default language as one Command through campaignStringUpdate', async () => {
     const mocks = [stringMock('Copy the link'), stringMock('Copy link')]
