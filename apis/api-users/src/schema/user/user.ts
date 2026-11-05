@@ -191,9 +191,9 @@ builder.queryFields((t) => ({
       email: t.arg.string({ required: true })
     },
     resolve: async (query, _parent, { email }) => {
-      return await prisma.user.findUnique({
+      return await prisma.user.findFirst({
         ...query,
-        where: { email }
+        where: { email: { equals: email, mode: 'insensitive' } }
       })
     }
   })
@@ -207,9 +207,9 @@ builder.mutationFields((t) => ({
     },
     nullable: true,
     resolve: async (_parent, { email }) => {
-      const userToImpersonate = await prisma.user.findUnique({
+      const userToImpersonate = await prisma.user.findFirst({
         where: {
-          email
+          email: { equals: email, mode: 'insensitive' }
         }
       })
       if (userToImpersonate?.userId == null)
@@ -251,9 +251,9 @@ builder.mutationFields((t) => ({
     },
     nullable: true,
     resolve: async (_parent, { token, email }) => {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.user.findFirst({
         where: {
-          email
+          email: { equals: email, mode: 'insensitive' }
         }
       })
       if (user == null)

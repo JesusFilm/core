@@ -1,0 +1,19 @@
+-- findOrFetchUser looks up a legacy mixed-case email via raw SQL
+-- (`LOWER(email) = LOWER($1)`) on every brand-new sign-in. Postgres satisfies
+-- that equality predicate with this functional index instead of a full
+-- table scan. Not representable in schema.prisma (Prisma has no
+-- expression-index syntax), so this will show as drift on
+-- `prisma migrate dev` / introspection -- that's expected.
+--
+-- CONCURRENTLY avoids the write-blocking lock a plain CREATE INDEX would
+-- hold on `User` for the build's duration -- every sign-in on the `me` path
+-- writes to this table. Postgres rejects CONCURRENTLY inside a transaction
+-- block, so this migration must stay this file's only statement -- do not
+-- add further DDL here.
+-- CreateIndex
+-- Deliberately no IF NOT EXISTS: if a concurrent build fails, Postgres
+-- leaves an INVALID index under this name. IF NOT EXISTS would see the name
+-- and skip rebuilding it on retry, letting the migration record as applied
+-- with no usable index. Without it, the retry fails loudly so the invalid
+-- index gets dropped and the build redone.
+CREATE INDEX CONCURRENTLY "User_email_lower_idx" ON "User" (LOWER("email"));
