@@ -595,6 +595,45 @@ describe('campaignPublic', () => {
     })
   })
 
+  it('returns each region switcher’s own showCountryNames, reading a legacy null as true', async () => {
+    const CAMPAIGN_PUBLIC_SWITCHERS = graphql(`
+      query CampaignPublicSwitchers($slug: String) {
+        campaignPublic(slug: $slug) {
+          pages {
+            blocks {
+              __typename
+              id
+              parentBlockId
+              parentOrder
+              ... on CampaignRegionSwitcherBlock {
+                showCountryNames
+              }
+            }
+          }
+        }
+      }
+    `)
+    const fixture = publishedFixture()
+    fixture.blocks = fixture.blocks.map((block) =>
+      block.id === 'landingSwitcherId'
+        ? { ...block, showCountryNames: false }
+        : block
+    )
+    prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+
+    const result = (await publicClient({
+      document: CAMPAIGN_PUBLIC_SWITCHERS,
+      variables: { slug: 'outreach-2026' }
+    })) as PublicCampaignResponse
+
+    expect(result.errors).toBeUndefined()
+    const blocks = result.data.campaignPublic.pages.flatMap(
+      (page) => page.blocks
+    )
+    expect(blockById(blocks, 'landingSwitcherId').showCountryNames).toBe(false)
+    expect(blockById(blocks, 'regionSwitcherId').showCountryNames).toBe(true)
+  })
+
   describe('the Video Carousel', () => {
     const CAMPAIGN_PUBLIC_CAROUSEL = graphql(`
       query CampaignPublicCarousel($slug: String) {
