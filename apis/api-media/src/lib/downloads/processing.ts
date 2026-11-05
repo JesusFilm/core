@@ -9,6 +9,21 @@ import {
 
 const MUX_STREAM_BASE_URL = 'https://stream.mux.com/'
 
+// The origin server predating the Mux migration. This function also runs on
+// every live ingest pass (processVideoDownloads), not just the backfill, so
+// it must not treat every non-Mux URL as replaceable -- a publisher can set
+// an arbitrary download URL via videoVariantDownloadUpdate, and that should
+// survive reprocessing. Only this known legacy host is stale-by-definition.
+const LEGACY_DOWNLOAD_URL_HOST = 'api-media-core.jesusfilm.org'
+
+function isLegacyDownloadUrl(url: string): boolean {
+  try {
+    return new URL(url).hostname === LEGACY_DOWNLOAD_URL_HOST
+  } catch {
+    return false
+  }
+}
+
 function hasMissingDownloadMetadata(download: {
   size?: number | null
   bitrate?: number | null
@@ -358,7 +373,7 @@ export async function createDownloadsFromMuxAsset({
   }
 
   // Create downloads individually to handle duplicates gracefully
-  let createdCount = 0
+  let changedCount = 0
   for (const download of data) {
     try {
       const existingDownload = await prisma.videoVariantDownload.findUnique({
@@ -374,13 +389,21 @@ export async function createDownloadsFromMuxAsset({
         await prisma.videoVariantDownload.create({
           data: download
         })
-        createdCount++
+        changedCount++
         continue
       }
 
+      const isExistingMuxDownload =
+        existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+
+      // Replace a broken Mux row, or a known-legacy row in this quality
+      // slot: the legacy origin URL is stale data blocking the Mux-hosted
+      // download from landing, not a deliberate alternative the way distro*
+      // rows are (a separate quality enum this function never touches) or
+      // any other non-Mux URL a publisher may have set deliberately.
       if (
-        existingDownload.url.startsWith(MUX_STREAM_BASE_URL) &&
-        hasMissingDownloadMetadata(existingDownload)
+        isLegacyDownloadUrl(existingDownload.url) ||
+        (isExistingMuxDownload && hasMissingDownloadMetadata(existingDownload))
       ) {
         await prisma.videoVariantDownload.update({
           where: { id: existingDownload.id },
@@ -390,22 +413,28 @@ export async function createDownloadsFromMuxAsset({
             height: download.height,
             width: download.width,
             bitrate: download.bitrate,
-            url: download.url
+            url: download.url,
+            // A legacy row can carry an assetId pointing at a CloudflareR2
+            // record from the pre-Mux migration (download-migrate-r2.ts).
+            // That asset is no longer associated with this download once
+            // the url is replaced with Mux data, so clear the FK rather
+            // than leave it dangling/misleading on the publisher-facing
+            // `asset` field.
+            assetId: null
           }
         })
-        createdCount++
+        changedCount++
         continue
       }
 
       logger?.info(
         {
           videoVariantId: variantId,
-          quality: download.quality,
-          isMuxDownload: existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+          quality: download.quality
         },
-        'Existing download does not need Mux metadata refresh'
+        'Existing Mux download is already complete, no refresh needed'
       )
-    } catch (error: any) {
+    } catch (error) {
       logger?.error(
         {
           error,
@@ -417,5 +446,5 @@ export async function createDownloadsFromMuxAsset({
     }
   }
 
-  return createdCount
+  return changedCount
 }
