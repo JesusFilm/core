@@ -56,12 +56,16 @@ export interface CampaignRegionSwitcherBlockCreate_campaignRegionSwitcherBlockCr
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  /**
+   * Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+   */
+  showCountryNames: boolean;
   titleTranslations: CampaignRegionSwitcherBlockCreate_campaignRegionSwitcherBlockCreate_titleTranslations[];
 }
 
 export interface CampaignRegionSwitcherBlockCreate {
   /**
-   * Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title and variant.
+   * Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title, variant and whether country names show.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
