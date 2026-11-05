@@ -63,15 +63,17 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
   const createOwnedImage = useCampaignImageBlockCreateMutation(campaign.id)
   const { update } = useCampaignBlockUpdateMutation()
   const fieldsCommand = useCampaignBlockFieldsCommand()
-  const { addStyle } = useCampaignStyleCommand()
+  const styleCommand = useCampaignStyleCommand()
 
   function addOwnedImage<B extends CampaignUpdatableBlock>({
     owner,
     slot,
     src,
     input,
-    imageIdOf
+    imageIdOf,
+    write = update
   }: AddOwnedImageOptions<B>): void {
+    styleCommand.clearError()
     const imageId = uuidv4()
     let created = false
     fieldsCommand.addFields(owner, input(imageId), async (next) => {
@@ -84,9 +86,23 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
           throw error
         }
       }
-      return await update(owner, next)
+      return await write(owner, next)
     })
   }
 
-  return { addStyle, ...fieldsCommand, addOwnedImage }
+  const addStyle: CampaignStyleCommand['addStyle'] = (options) => {
+    fieldsCommand.clearError()
+    styleCommand.addStyle(options)
+  }
+
+  return {
+    ...fieldsCommand,
+    addStyle,
+    addOwnedImage,
+    error: fieldsCommand.error ?? styleCommand.error,
+    clearError: () => {
+      fieldsCommand.clearError()
+      styleCommand.clearError()
+    }
+  }
 }

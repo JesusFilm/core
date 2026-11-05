@@ -1,10 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 
-import {
-  CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
-  CampaignTextBlock
-} from '../../../../libs/useCampaignBlockTextMutation'
+import { CampaignTextBlock } from '../../../../libs/useCampaignBlockTextMutation'
+import { CAMPAIGN_HERO_BLOCK_UPDATE } from '../../../../libs/useCampaignBlockUpdateMutation'
 import { CampaignEditorState } from '../../CampaignEditorProvider'
 import { campaign, campaignStrings } from '../../data'
 import { StaticEditor } from '../../testing'
@@ -19,7 +17,7 @@ const hero = campaign.blocks.find(
 function heroMock(title: string, errors?: GraphQLError[]) {
   return {
     request: {
-      query: CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
+      query: CAMPAIGN_HERO_BLOCK_UPDATE,
       variables: { id: 'heroId', input: { title } }
     },
     result: vi.fn(() =>
@@ -28,6 +26,7 @@ function heroMock(title: string, errors?: GraphQLError[]) {
         : {
             data: {
               campaignHeroBlockUpdate: {
+                ...hero,
                 __typename: 'CampaignHeroBlock',
                 id: 'heroId',
                 eyebrow: 'Outreach 2026',
