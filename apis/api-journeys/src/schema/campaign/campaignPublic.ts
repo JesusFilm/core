@@ -27,8 +27,9 @@ import { CampaignPageKind } from './enums'
  * Built by `campaignPublic` from one Prisma read: every Translated Field is
  * resolved to the requested language server-side (translation lists arrive
  * empty), blocks are partitioned into the two pages and the chrome as flat
- * lists, and nothing on it leads to the team, its members or linked-journey
- * internals. The admin `Campaign` type keeps the full shape behind Read.
+ * lists, and only the opaque team id is exposed, for Plausible: the team
+ * itself, its members and linked-journey internals are not reachable. The
+ * admin `Campaign` type keeps the full shape behind Read.
  */
 export type CampaignPublicBlock = Prisma.CampaignBlockGetPayload<{
   include: { action: true }
@@ -196,7 +197,7 @@ export const CampaignPublicRef =
 
 builder.objectType(CampaignPublicRef, {
   description:
-    'The narrowed read of a published Campaign served to anonymous visitors by `campaignPublic`. Every Translated Field arrives resolved to the requested language (translation lists are empty); blocks come as flat lists per page plus the chrome. Nothing here leads to the team, its members or linked-journey internals; the admin `Campaign` type keeps the full shape behind campaign Read.',
+    'The narrowed read of a published Campaign served to anonymous visitors by `campaignPublic`. Every Translated Field arrives resolved to the requested language (translation lists are empty); blocks come as flat lists per page plus the chrome. Only the opaque team id is exposed, for Plausible: the team itself, its members and linked-journey internals are not reachable; the admin `Campaign` type keeps the full shape behind campaign Read.',
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     teamId: t.exposeID('teamId', {
