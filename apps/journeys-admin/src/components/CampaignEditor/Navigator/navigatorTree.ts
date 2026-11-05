@@ -1,8 +1,4 @@
-import {
-  carouselCards,
-  isExtra,
-  transformCampaignBlocks
-} from '@core/journeys/ui/Campaign'
+import { carouselCards, isExtra } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 
 import {
@@ -14,17 +10,32 @@ import {
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
 import {
+  blockTranslations,
+  textFieldValue
+} from '../../../libs/useCampaignBlockTextMutation'
+import {
   CampaignSelection,
   regionLines,
   regionNeedsJourney,
   sortedRegions
 } from '../CampaignEditorProvider'
+import { pageBlocks } from '../utils/pageBlocks'
+import { regionCardId } from '../utils/regionCardId'
+import { regionDisplayName } from '../utils/regionDisplayName'
+import { previewFieldText } from '../utils/useTranslatedField/readPreviewField'
 
 /** What a row is called: a block's typename, a region card, or the divider between a section's above and below Extras. */
 export type NavigatorNodeType =
   | CampaignBlock['__typename']
   | 'Region'
   | 'SectionContent'
+
+/** The divider row between a section's above and below Extras: a drop target, never selected or dragged. */
+export function isSectionContent(
+  type: NavigatorNodeType
+): type is 'SectionContent' {
+  return type === 'SectionContent'
+}
 
 export type NavigatorExtraPlacement = 'above' | 'below'
 
@@ -70,6 +81,14 @@ interface BuildNavigatorTreeParams {
   pageKind: CampaignPageKind
   /** The region the Region Page is rendered for; its own card is left out of the switcher. */
   currentRegionId?: string
+  /** The language the rows' text is read in; the default language when absent. */
+  previewLanguageId?: string
+}
+
+/** What a row's text is read in: the Preview Language, falling back to the default text. */
+interface NavigatorLanguages {
+  previewLanguageId: string
+  defaultLanguageId: string
 }
 
 const SECONDARY_TEXT_FIELDS = [
@@ -80,21 +99,42 @@ const SECONDARY_TEXT_FIELDS = [
   'intro'
 ] as const
 
-/** The block's own title text: its first non-empty title-like field. */
-export function secondaryTextOf(block: CampaignBlock): string | undefined {
-  const fields = block as unknown as Record<string, unknown>
+/**
+ * The block's own title text in the Preview Language: its first non-empty
+ * title-like field, the default text where a field is not translated.
+ */
+export function secondaryTextOf(
+  block: CampaignBlock,
+  { previewLanguageId, defaultLanguageId }: NavigatorLanguages
+): string | undefined {
   for (const field of SECONDARY_TEXT_FIELDS) {
-    const value = fields[field]
-    if (typeof value === 'string' && value.trim() !== '') return value.trim()
+    const value = previewFieldText({
+      field: textFieldValue(block, field),
+      translations: blockTranslations(block, field),
+      previewLanguageId,
+      defaultLanguageId
+    }).trim()
+    if (value !== '') return value
   }
   return undefined
+}
+
+/**
+ * The Header and Footer lay their Extras out in one run, whatever their
+ * placement, on the canvas and the public page alike.
+ */
+function isChromeHost(block: CampaignBlock): boolean {
+  return (
+    block.__typename === 'CampaignHeaderBlock' ||
+    block.__typename === 'CampaignFooterBlock'
+  )
 }
 
 function placementOf(
   block: CampaignBlock,
   parent: CampaignBlock | undefined
 ): NavigatorExtraPlacement | undefined {
-  if (parent == null) return undefined
+  if (parent == null || isChromeHost(parent)) return undefined
   if (!isExtra(block)) return undefined
   return block.placement === CampaignChildPlacement.above ? 'above' : 'below'
 }
@@ -123,12 +163,15 @@ function inGroup(
  * A node's children as the canvas orders them: the Extras placed above, the
  * body (cards, slots, region cards), then the Extras placed below. When there
  * are Extras a divider row stands where the body starts, so an Extra can be
- * dragged across it to change its placement.
+ * dragged across it to change its placement. A Header or Footer has no
+ * placement to change: its Extras are one sibling group, with no divider.
  */
 function childRows(
   block: CampaignBlock,
   nodes: NavigatorNode[]
 ): NavigatorNode[] {
+  if (isChromeHost(block))
+    return inGroup(nodes, `${block.id}:children`, 'block')
   const body = nodes.filter((node) => node.placement == null)
   const regrouped = new Map<string, NavigatorNode>()
   for (const [parentType, type, kind] of BODY_REORDER_KINDS) {
@@ -157,7 +200,7 @@ function childRows(
   )
   return [
     ...extraRows.filter((node) => node.placement === 'above'),
-    ...extraRows.filter((node) => node.type === 'SectionContent'),
+    ...extraRows.filter((node) => isSectionContent(node.type)),
     ...bodyRows,
     ...extraRows.filter((node) => node.placement === 'below')
   ]
@@ -184,19 +227,22 @@ function blockNode(
   block: CampaignTreeBlock<CampaignBlock>,
   parent: CampaignBlock | undefined,
   campaign: BuildNavigatorTreeParams['campaign'],
-  currentRegionId: string | undefined
+  currentRegionId: string | undefined,
+  languages: NavigatorLanguages
 ): NavigatorNode {
   const children = shownChildren(block, campaign.defaultLanguageId).map(
-    (child) => blockNode(child, block, campaign, currentRegionId)
+    (child) => blockNode(child, block, campaign, currentRegionId, languages)
   )
   if (block.__typename === 'CampaignRegionSwitcherBlock')
-    children.push(...regionNodes(campaign, block.id, currentRegionId))
+    children.push(
+      ...regionNodes(campaign, block.id, currentRegionId, languages)
+    )
   return {
     id: block.id,
     domId: block.id,
     type: block.__typename,
     blockId: block.id,
-    secondaryText: secondaryTextOf(block),
+    secondaryText: secondaryTextOf(block, languages),
     placement: placementOf(block, parent),
     needsJourney: false,
     unlisted: false,
@@ -212,19 +258,24 @@ function blockNode(
 function regionNodes(
   campaign: BuildNavigatorTreeParams['campaign'],
   hostBlockId: string,
-  currentRegionId: string | undefined
+  currentRegionId: string | undefined,
+  languages: NavigatorLanguages
 ): NavigatorNode[] {
   return sortedRegions(campaign.regions)
     .filter((region) => region.id !== currentRegionId)
     .map((region) => {
-      const id = `${hostBlockId}__${region.id}`
+      const id = regionCardId(hostBlockId, region.id)
       return {
         id,
         domId: id,
         type: 'Region' as const,
         regionId: region.id,
         hostBlockId,
-        secondaryText: region.name,
+        secondaryText: regionDisplayName(
+          region,
+          languages.previewLanguageId,
+          languages.defaultLanguageId
+        ),
         needsJourney: regionNeedsJourney(region),
         unlisted: !region.listed,
         children: inGroup(
@@ -236,7 +287,7 @@ function regionNodes(
               type: line.__typename,
               blockId: line.id,
               regionLine: true as const,
-              secondaryText: secondaryTextOf(line),
+              secondaryText: secondaryTextOf(line, languages),
               needsJourney: false,
               unlisted: false,
               children: []
@@ -258,34 +309,25 @@ function regionNodes(
 export function buildNavigatorTree({
   campaign,
   pageKind,
-  currentRegionId
+  currentRegionId,
+  previewLanguageId = campaign.defaultLanguageId
 }: BuildNavigatorTreeParams): NavigatorNode[] {
-  const pageId = campaign.pages.find((page) => page.kind === pageKind)?.id
-  const sections = transformCampaignBlocks(
-    campaign.blocks.filter((block) => block.pageId === pageId)
-  )
-  const chrome = transformCampaignBlocks(
-    campaign.blocks.filter(
-      (block) => block.pageId == null && block.regionId == null
-    )
-  )
-  const header = chrome.find(
-    (block) => block.__typename === 'CampaignHeaderBlock'
-  )
-  const footer = chrome.find(
-    (block) => block.__typename === 'CampaignFooterBlock'
-  )
+  const languages: NavigatorLanguages = {
+    previewLanguageId,
+    defaultLanguageId: campaign.defaultLanguageId
+  }
+  const { header, sections, footer } = pageBlocks(campaign, pageKind)
   const sectionNodes = inGroup(
     sections.map((section) =>
-      blockNode(section, undefined, campaign, currentRegionId)
+      blockNode(section, undefined, campaign, currentRegionId, languages)
     ),
     'root:sections',
     'block'
   )
-  const chromeNode = (block: (typeof chrome)[number] | undefined) =>
+  const chromeNode = (block: (typeof sections)[number] | undefined) =>
     block == null
       ? []
-      : [blockNode(block, undefined, campaign, currentRegionId)]
+      : [blockNode(block, undefined, campaign, currentRegionId, languages)]
   return [...chromeNode(header), ...sectionNodes, ...chromeNode(footer)]
 }
 

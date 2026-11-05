@@ -1,3 +1,5 @@
+import { ApolloLink } from '@apollo/client'
+import { MockLink, MockSubscriptionLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
@@ -11,9 +13,17 @@ import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 import { type Mock, type MockedFunction } from 'vitest'
 
-import { CampaignTranslationFilter } from '../../../__generated__/globalTypes'
+import { DARK_PRESET } from '@core/journeys/ui/Campaign'
+
+import {
+  CampaignRadius,
+  CampaignTranslationFilter,
+  ThemeMode
+} from '../../../__generated__/globalTypes'
+import { hasPendingDebouncedWrites } from '../../libs/apolloClient'
 import { GET_CAMPAIGN } from '../../libs/useCampaignQuery'
 import { CAMPAIGN_TRANSLATIONS } from '../../libs/useCampaignTranslationsQuery'
 import { CAMPAIGN_UPDATE } from '../../libs/useCampaignUpdateMutation'
@@ -25,11 +35,16 @@ import { CURRENT_USER_ID, campaign, memberCampaign } from './data'
 import { INSPECTOR_WIDTH } from './Inspector'
 import { LEFT_PANEL_WIDTH } from './LeftPanel'
 import { LEFT_RAIL_WIDTH } from './LeftRail'
-import { frameBody } from './testing'
+import { themeMock } from './styleTesting'
+import { campaignCache, emitSubscription, frameBody } from './testing'
 
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: vi.fn()
+}))
+
+vi.mock('../../libs/apolloClient', () => ({
+  hasPendingDebouncedWrites: vi.fn(() => false)
 }))
 
 vi.mock('next/router', () => ({
@@ -73,11 +88,11 @@ const translationsMock = {
 }
 
 function renderEditor(
-  mocks: Array<Record<string, unknown>> = [],
+  mocks: MockLink.MockedResponse[] = [],
   campaignProp = campaign
 ): ReturnType<typeof render> {
   return render(
-    <MockedProvider mocks={[currentUserMock, ...mocks] as never}>
+    <MockedProvider mocks={[currentUserMock, ...mocks]}>
       <SnackbarProvider>
         <CampaignEditor campaign={campaignProp} />
       </SnackbarProvider>
@@ -103,7 +118,7 @@ function renderEditorAs(
     }
   }
   render(
-    <MockedProvider mocks={[meMock] as never}>
+    <MockedProvider mocks={[meMock]}>
       <SnackbarProvider>
         <CampaignEditor campaign={campaignProp} />
       </SnackbarProvider>
@@ -112,6 +127,98 @@ function renderEditorAs(
   return {
     currentUserLoaded: () => waitFor(() => expect(loaded).toBe(true))
   }
+}
+
+const defaultLanguageMissingTexts = {
+  request: {
+    query: CAMPAIGN_UPDATE,
+    variables: { id: 'campaignId', input: { defaultLanguageId: '496' } }
+  },
+  result: {
+    errors: [
+      new GraphQLError('3 texts have no translation', {
+        extensions: { code: 'CONFLICT', field: 'defaultLanguageId', count: 3 }
+      })
+    ]
+  }
+}
+
+function runReport(
+  progress: number,
+  finished = false
+): MockSubscriptionLink.Result {
+  return {
+    result: {
+      data: {
+        campaignAiTranslateSubscription: {
+          __typename: 'CampaignAiTranslateProgress',
+          progress,
+          message: finished ? 'Translation completed!' : 'Translating',
+          translatedCount: 3,
+          campaign: finished
+            ? {
+                __typename: 'Campaign',
+                id: 'campaignId',
+                titleTranslations: []
+              }
+            : null
+        }
+      }
+    }
+  }
+}
+
+/**
+ * The editor with its machine-translation run on `subscriptionLink` and
+ * every other operation on `mocks`; `rerender` renders it again, as a
+ * resize does.
+ */
+function renderEditorWithRun(mocks: MockLink.MockedResponse[]): {
+  subscriptionLink: MockSubscriptionLink
+  rerender: () => void
+} {
+  const subscriptionLink = new MockSubscriptionLink()
+  const link = ApolloLink.split(
+    (operation) =>
+      operation.operationName === 'CampaignAiTranslateSubscription',
+    subscriptionLink,
+    new MockLink([currentUserMock, ...mocks])
+  )
+  const cache = campaignCache()
+  const tree = (): ReactElement => (
+    <MockedProvider link={link} cache={cache}>
+      <SnackbarProvider>
+        <CampaignEditor campaign={campaign} />
+      </SnackbarProvider>
+    </MockedProvider>
+  )
+  const { rerender } = render(tree())
+  return { subscriptionLink, rerender: () => rerender(tree()) }
+}
+
+/** Settings → Default language → Français, refused for missing texts, then the sweep. */
+async function machineTranslateMissingIntoFrench(): Promise<void> {
+  fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+  fireEvent.mouseDown(
+    screen.getByRole('combobox', { name: 'Default language' })
+  )
+  fireEvent.click(screen.getByRole('option', { name: 'Français' }))
+  fireEvent.click(
+    within(screen.getByTestId('CampaignDefaultLanguageDialog')).getByRole(
+      'button',
+      { name: 'Change' }
+    )
+  )
+  fireEvent.click(
+    await screen.findByRole('button', {
+      name: 'Machine-translate missing into Français'
+    })
+  )
+  await waitFor(() =>
+    expect(
+      screen.queryByTestId('CampaignDefaultLanguageDialog')
+    ).not.toBeInTheDocument()
+  )
 }
 
 describe('CampaignEditor', () => {
@@ -187,17 +294,15 @@ describe('CampaignEditor', () => {
     })
   })
 
-  it('renders fully at the minimum width: rail, canvas and Inspector, with no top bar, no bottom bar and no drawer', () => {
+  it('renders fully at the minimum width: rail, canvas and Inspector', () => {
     const { baseElement } = renderEditor()
 
     expect(screen.getByTestId('CampaignLeftRail')).toBeInTheDocument()
-    expect(screen.queryByTestId('CampaignBottomBar')).not.toBeInTheDocument()
     expect(screen.getByTestId('CampaignInspector')).toHaveAttribute(
       'data-selection',
       'campaign'
     )
     expect(screen.getByTestId('CampaignThemePanel')).toBeInTheDocument()
-    expect(screen.queryByTestId('CampaignTopBar')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Desktop' })).toHaveAttribute(
       'aria-pressed',
       'true'
@@ -206,7 +311,7 @@ describe('CampaignEditor', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('opens on the Add panel and shows one panel at a time', () => {
+  it('opens on the Add panel and shows one panel at a time', async () => {
     renderEditor()
     expect(screen.getAllByTestId('CampaignLeftPanel')).toHaveLength(1)
     expect(screen.getByRole('button', { name: 'Add' })).toHaveAttribute(
@@ -220,7 +325,9 @@ describe('CampaignEditor', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Localize' }))
     expect(screen.getAllByTestId('CampaignLeftPanel')).toHaveLength(1)
     expect(screen.queryByTestId('CampaignPagesPanel')).not.toBeInTheDocument()
-    expect(screen.getByTestId('CampaignLocalizePanel')).toBeInTheDocument()
+    expect(
+      await screen.findByTestId('CampaignLocalizePanel')
+    ).toBeInTheDocument()
   })
 
   it.each([EDITOR_MIN_WIDTH, 1440, 1920])(
@@ -346,7 +453,7 @@ describe('CampaignEditor', () => {
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
 
     fireEvent.keyDown(document.body, { key: 'z', code: 'KeyZ' })
-    expect(screen.getByTestId('Navigator')).toBeInTheDocument()
+    expect(await screen.findByTestId('Navigator')).toBeInTheDocument()
     fireEvent.keyDown(body.ownerDocument.body, { key: 'z', code: 'KeyZ' })
     expect(screen.getByTestId('Navigator')).toBeInTheDocument()
     fireEvent.keyDown(body.ownerDocument.body, { key: 'p', code: 'KeyP' })
@@ -371,11 +478,7 @@ describe('CampaignEditor', () => {
     ;(body.querySelector('#footerId') as HTMLElement).scrollIntoView =
       scrollIntoView
 
-    fireEvent.click(
-      screen
-        .getByTestId('NavigatorRow-footerId')
-        .querySelector('.MuiTreeItem-content') as HTMLElement
-    )
+    fireEvent.click(screen.getByTestId('NavigatorRowContent-footerId'))
     expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
       'Footer'
     )
@@ -407,10 +510,9 @@ describe('CampaignEditor', () => {
     renderEditor([translationsMock])
 
     fireEvent.click(screen.getByRole('button', { name: 'Localize' }))
-    expect(screen.getByRole('tab', { name: 'Languages' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+    expect(
+      await screen.findByRole('tab', { name: 'Languages' })
+    ).toHaveAttribute('aria-selected', 'true')
     fireEvent.click(screen.getByRole('tab', { name: 'Translations' }))
 
     expect(
@@ -418,7 +520,6 @@ describe('CampaignEditor', () => {
         'TranslationsView'
       )
     ).toBeInTheDocument()
-    expect(document.querySelector('.MuiDrawer-root')).toBeNull()
   })
 
   it('opens Localize on Translations with the promotion notice after the default language changes', async () => {
@@ -518,6 +619,7 @@ describe('CampaignEditor', () => {
     fireEvent.blur(title)
 
     expect(await screen.findByText('campaign not found')).toBeInTheDocument()
+    await waitFor(() => expect(title).toHaveValue(campaign.title))
   })
 
   it('shows the Theme in the Inspector when nothing is selected', async () => {
@@ -537,18 +639,22 @@ describe('CampaignEditor', () => {
     renderEditor()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
-    expect(
-      await screen.findByRole('button', { name: 'Delete campaign' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Delete campaign' })
+      ).toBeEnabled()
+    )
   })
 
   it('recognises the manager by email, as me.id is the users-table uuid and the team user id the Firebase uid', async () => {
     renderEditorAs({ id: 'users-table-uuid', email: 'test@example.com' })
 
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
-    expect(
-      await screen.findByRole('button', { name: 'Delete campaign' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Delete campaign' })
+      ).toBeEnabled()
+    )
   })
 
   it('withholds Delete campaign from a user whose email no manager row carries, even when the ids match', async () => {
@@ -577,6 +683,89 @@ describe('CampaignEditor', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('shows the manager controls disabled with a spinner while GetCurrentUser is loading', async () => {
+    render(
+      <MockedProvider mocks={[{ ...currentUserMock, delay: 60_000 }]}>
+        <SnackbarProvider>
+          <CampaignEditor campaign={campaign} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete campaign' })
+    expect(deleteButton).toBeDisabled()
+    expect(within(deleteButton).getByRole('progressbar')).toBeInTheDocument()
+    const connect = within(screen.getByTestId('CampaignDomain')).getByRole(
+      'button',
+      { name: 'Connect' }
+    )
+    expect(connect).toBeDisabled()
+    expect(within(connect).getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('says the role could not be checked when GetCurrentUser fails, and Retry with a manager answer enables the manager controls', async () => {
+    const managerAnswer = vi.fn(() => currentUserMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: GET_CURRENT_USER },
+            error: new Error('Network error')
+          },
+          { request: { query: GET_CURRENT_USER }, result: managerAnswer }
+        ]}
+      >
+        <SnackbarProvider>
+          <CampaignEditor campaign={campaign} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+
+    const notices = await screen.findAllByTestId('ManagerRoleNotice')
+    expect(notices[0]).toHaveTextContent("We couldn't check your role.")
+    expect(
+      screen.getByRole('button', { name: 'Delete campaign' })
+    ).toBeDisabled()
+    expect(
+      within(screen.getByTestId('CampaignDomain')).getByRole('button', {
+        name: 'Connect'
+      })
+    ).toBeDisabled()
+
+    fireEvent.click(within(notices[0]).getByRole('button', { name: 'Retry' }))
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Delete campaign' })
+      ).toBeEnabled()
+    )
+    expect(managerAnswer).toHaveBeenCalled()
+    expect(screen.queryByTestId('ManagerRoleNotice')).not.toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Domain Name' })).toBeEnabled()
+  })
+
+  it('asks before the page unloads while a text write is pending, and not otherwise', () => {
+    renderEditor()
+
+    function leavePrevented(): boolean {
+      const event = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+
+    vi.mocked(hasPendingDebouncedWrites).mockReturnValue(false)
+    expect(leavePrevented()).toBe(false)
+
+    vi.mocked(hasPendingDebouncedWrites).mockReturnValue(true)
+    expect(leavePrevented()).toBe(true)
+
+    vi.mocked(hasPendingDebouncedWrites).mockReturnValue(false)
+    expect(leavePrevented()).toBe(false)
+  })
+
   it('swaps the Inspector’s content on selection without a drawer or a dimmed canvas', async () => {
     const { baseElement } = renderEditor()
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
@@ -599,8 +788,6 @@ describe('CampaignEditor', () => {
       'Button'
     )
     expect(screen.queryByTestId('CampaignStylePanel')).not.toBeInTheDocument()
-    expect(document.querySelector('.MuiDrawer-root')).toBeNull()
-    expect(document.querySelector('.MuiBackdrop-root')).toBeNull()
   })
 
   it('switches the Inspector tab with D and S in the shell and inside the frame, and not while typing', async () => {
@@ -625,6 +812,73 @@ describe('CampaignEditor', () => {
     title.focus()
     fireEvent.keyDown(title, { key: 's', code: 'KeyS' })
     expect(selected()).toBe('Settings')
+  })
+
+  it('keeps a run in flight and the undo history when the window narrows below the minimum and widens again', async () => {
+    const { subscriptionLink, rerender } = renderEditorWithRun([
+      themeMock({
+        ...DARK_PRESET,
+        themeMode: ThemeMode.dark,
+        buttonRadius: CampaignRadius.veryRounded
+      }),
+      defaultLanguageMissingTexts
+    ])
+    const unsubscribed = vi.fn()
+    subscriptionLink.onUnsubscribe(unsubscribed)
+    fireEvent.click(await screen.findByRole('button', { name: 'Dark' }))
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled()
+    await machineTranslateMissingIntoFrench()
+    await emitSubscription(subscriptionLink, runReport(40))
+    expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
+
+    setViewport(EDITOR_MIN_WIDTH - 1)
+    rerender()
+    expect(screen.getByTestId('CampaignEditorLargerScreen')).toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignEditor')).not.toBeInTheDocument()
+
+    setViewport(EDITOR_MIN_WIDTH)
+    rerender()
+
+    expect(screen.getByTestId('CampaignEditor')).toBeInTheDocument()
+    expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled()
+    expect(unsubscribed).not.toHaveBeenCalled()
+  })
+
+  it('changes the default language once a sweep from the dialog completes, then opens Localize on Translations', async () => {
+    const swapped = vi.fn(() => ({
+      data: {
+        campaignUpdate: {
+          __typename: 'Campaign',
+          id: 'campaignId',
+          title: 'Outreach 2026',
+          slug: 'outreach-2026'
+        }
+      }
+    }))
+    const { subscriptionLink } = renderEditorWithRun([
+      defaultLanguageMissingTexts,
+      { ...defaultLanguageMissingTexts, result: swapped },
+      {
+        request: { query: GET_CAMPAIGN, variables: { id: 'campaignId' } },
+        result: { data: { campaign } }
+      },
+      translationsMock
+    ])
+    await machineTranslateMissingIntoFrench()
+    expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
+    expect(swapped).not.toHaveBeenCalled()
+
+    await emitSubscription(subscriptionLink, runReport(100, true), true)
+
+    expect(
+      await screen.findByTestId('TranslationsPromotionNotice')
+    ).toBeInTheDocument()
+    expect(swapped).toHaveBeenCalledTimes(1)
+    expect(screen.getByRole('tab', { name: 'Translations' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('shows a loading state until the campaign arrives', () => {

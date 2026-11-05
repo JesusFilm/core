@@ -1,3 +1,5 @@
+import { fetchYouTube } from '../fetchYouTube'
+
 /** A YouTube playlist as the media paste field previews it. */
 export interface YouTubePlaylist {
   title: string
@@ -6,7 +8,6 @@ export interface YouTubePlaylist {
 }
 
 interface YouTubePlaylistsData {
-  error?: { message?: string }
   items?: Array<{
     snippet: {
       title: string
@@ -26,19 +27,10 @@ interface YouTubePlaylistsData {
 export async function fetchYouTubePlaylist(
   id: string
 ): Promise<YouTubePlaylist | undefined> {
-  const query = new URLSearchParams({
+  const data = await fetchYouTube<YouTubePlaylistsData>('playlists', {
     part: 'snippet,contentDetails',
-    key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
     id
-  }).toString()
-  const response = await fetch(
-    `https://www.googleapis.com/youtube/v3/playlists?${query}`
-  )
-  const data: YouTubePlaylistsData = await response.json()
-  if (!response.ok)
-    throw new Error(
-      data.error?.message ?? `YouTube request failed (${response.status})`
-    )
+  })
   const playlist = data.items?.[0]
   if (playlist == null) return undefined
   return {

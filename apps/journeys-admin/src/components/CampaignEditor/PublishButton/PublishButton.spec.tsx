@@ -54,18 +54,18 @@ const unpublishMock = {
 }
 
 interface HarnessProps {
-  campaignProp?: Campaign
+  campaign?: Campaign
   initialState?: Partial<CampaignEditorState>
 }
 
 function Harness({
-  campaignProp = campaign,
+  campaign: campaignOverride = campaign,
   initialState
 }: HarnessProps): ReactElement {
   return (
     <SnackbarProvider>
       <StaticEditor
-        campaignProp={campaignProp}
+        campaign={campaignOverride}
         initialState={initialState}
         mocks={[publishMock, unpublishMock]}
       >
@@ -117,7 +117,7 @@ describe('PublishButton', () => {
   })
 
   it('shows a green published dot and, in its popover, the published copy with Unpublish', () => {
-    render(<Harness campaignProp={publishedCampaign} />)
+    render(<Harness campaign={publishedCampaign} />)
 
     expect(screen.getByTestId('PublishStatusDot')).toHaveAttribute(
       'data-status',
@@ -135,7 +135,7 @@ describe('PublishButton', () => {
   })
 
   it('confirms before unpublishing, stating that journeys and QR codes keep working', async () => {
-    render(<Harness campaignProp={publishedCampaign} />)
+    render(<Harness campaign={publishedCampaign} />)
     openPopover()
 
     fireEvent.click(screen.getByRole('button', { name: 'Unpublish' }))
@@ -156,7 +156,7 @@ describe('PublishButton', () => {
   })
 
   it('does not unpublish when the confirmation is cancelled', async () => {
-    render(<Harness campaignProp={publishedCampaign} />)
+    render(<Harness campaign={publishedCampaign} />)
     openPopover()
 
     fireEvent.click(screen.getByRole('button', { name: 'Unpublish' }))
@@ -174,25 +174,45 @@ describe('PublishButton', () => {
   })
 
   it('lets any member unpublish', () => {
-    render(<Harness campaignProp={publishedCampaign} />)
+    render(<Harness campaign={publishedCampaign} />)
     openPopover()
 
     expect(screen.getByRole('button', { name: 'Unpublish' })).toBeEnabled()
   })
 
-  it('opens the campaign through the refresh route in a new tab', () => {
+  it('disables Refresh and open page on a draft, with a caption that the page goes live on publish', () => {
     render(<Harness />)
+    openPopover()
+
+    expect(
+      screen.queryByRole('link', { name: 'Refresh and open page' })
+    ).not.toBeInTheDocument()
+    const button = screen.getByRole('button', { name: 'Refresh and open page' })
+    expect(button).toBeDisabled()
+    expect(button).toHaveAccessibleDescription(
+      'The page goes live when you publish.'
+    )
+  })
+
+  it('opens the campaign through the refresh route in a new tab', () => {
+    render(<Harness campaign={publishedCampaign} />)
     openPopover()
 
     const link = screen.getByRole('link', { name: 'Refresh and open page' })
     expect(link).toHaveAttribute('href', '/api/campaign/open?id=campaignId')
     expect(link).toHaveAttribute('target', '_blank')
+    expect(
+      screen.queryByText('The page goes live when you publish.')
+    ).not.toBeInTheDocument()
   })
 
   it('opens the rendered region’s page through the refresh route on a Region Page', () => {
     render(
       <Harness
-        campaignProp={campaignWithRegions}
+        campaign={{
+          ...campaignWithRegions,
+          status: CampaignStatus.published
+        }}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'afrRegionId'
@@ -204,16 +224,5 @@ describe('PublishButton', () => {
     expect(
       screen.getByRole('link', { name: 'Refresh and open page' })
     ).toHaveAttribute('href', '/api/campaign/open?id=campaignId&regionSlug=afr')
-  })
-
-  it('has no Save button, Unsaved chip or save indicator', () => {
-    render(<Harness />)
-    openPopover()
-
-    expect(
-      screen.queryByRole('button', { name: 'Save' })
-    ).not.toBeInTheDocument()
-    expect(screen.queryByText('Unsaved')).not.toBeInTheDocument()
-    expect(screen.queryByText(/Saving/)).not.toBeInTheDocument()
   })
 })

@@ -2,12 +2,12 @@ import { Meta } from '@storybook/nextjs-vite'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FontFamily } from '@core/shared/ui/fontFamilies'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
 
 import { ThemeBuilderDialog } from './ThemeBuilderDialog'
-import { FontFamily } from './ThemeSettings'
 
 const ThemeBuilderDialogStory: Meta<typeof ThemeBuilderDialog> = {
   ...journeysAdminConfig,

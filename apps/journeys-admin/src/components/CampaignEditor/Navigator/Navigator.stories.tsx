@@ -13,10 +13,12 @@ import {
   CampaignEditorProvider,
   CampaignEditorState
 } from '../CampaignEditorProvider'
+import { CampaignHoverProvider } from '../CampaignHoverProvider'
 import { campaignWithColumns, campaignWithRegions } from '../data'
 import { LEFT_PANEL_WIDTH } from '../LeftPanel'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
-import { Navigator, NavigatorHoverProvider } from '.'
+import { Navigator } from '.'
 
 interface NavigatorStoryProps {
   initialState?: Partial<CampaignEditorState>
@@ -35,19 +37,21 @@ function NavigatorStory({
           campaign={campaignProp}
           initialState={initialState}
         >
-          <NavigatorHoverProvider>
-            <Paper
-              square
-              sx={{
-                width: LEFT_PANEL_WIDTH,
-                height: 520,
-                display: 'flex',
-                flexDirection: 'column'
-              }}
-            >
-              <Navigator />
-            </Paper>
-          </NavigatorHoverProvider>
+          <CampaignCommandProvider>
+            <CampaignHoverProvider>
+              <Paper
+                square
+                sx={{
+                  width: LEFT_PANEL_WIDTH,
+                  height: 520,
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                <Navigator />
+              </Paper>
+            </CampaignHoverProvider>
+          </CampaignCommandProvider>
         </CampaignEditorProvider>
       </CommandProvider>
     </MockedProvider>
