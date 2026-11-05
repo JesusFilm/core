@@ -8,6 +8,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  HEIF_FILE_BYTES,
+  PNG_FILE_BYTES,
+  WEBP_FILE_BYTES
+} from '../../../../../../../../libs/prepareImageUpload/prepareImageUpload.mock'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
 import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
 
@@ -116,7 +121,7 @@ describe('ImageUpload', () => {
     )
     window.URL.createObjectURL = vi.fn().mockImplementation(() => 'url')
     const input = screen.getByTestId('drop zone')
-    const file = new File(['file'], 'testFile.png', {
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
       type: 'image/png'
     })
     Object.defineProperty(input, 'files', {
@@ -127,10 +132,10 @@ describe('ImageUpload', () => {
   })
 
   it.each([
-    ['webp', 'testFile.webp', 'image/webp'],
-    ['heif', 'testFile.heif', 'image/heif'],
-    ['heif with no reported type', 'testFile.heif', '']
-  ])('should accept %s files', async (_label, fileName, fileType) => {
+    ['webp', WEBP_FILE_BYTES, 'testFile.webp', 'image/webp'],
+    ['heif', HEIF_FILE_BYTES, 'testFile.heif', 'image/heif'],
+    ['heif with no reported type', HEIF_FILE_BYTES, 'testFile.heif', '']
+  ])('should accept %s files', async (_label, bytes, fileName, fileType) => {
     const result = vi.fn(() => ({
       data: {
         createCloudflareUploadByFile: {
@@ -160,7 +165,7 @@ describe('ImageUpload', () => {
     )
     window.URL.createObjectURL = vi.fn().mockImplementation(() => 'url')
     const input = screen.getByTestId('drop zone')
-    const file = new File(['file'], fileName, { type: fileType })
+    const file = new File([bytes], fileName, { type: fileType })
     Object.defineProperty(input, 'files', {
       value: [file]
     })
@@ -207,7 +212,9 @@ describe('ImageUpload', () => {
       </MockedProvider>
     )
     const input = screen.getByTestId('drop zone')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
     Object.defineProperty(input, 'files', { value: [file] })
     fireEvent.drop(input)
     // The mock only matches when journeyId is sent, so being called proves it threaded
@@ -251,7 +258,7 @@ describe('ImageUpload', () => {
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
       value: [
-        new File([new Blob(['file'])], 'testFile.png', {
+        new File([PNG_FILE_BYTES], 'testFile.png', {
           type: 'image/png'
         })
       ]
@@ -305,7 +312,7 @@ describe('ImageUpload', () => {
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
       value: [
-        new File([new Blob(['file'])], 'testFile.png', {
+        new File([PNG_FILE_BYTES], 'testFile.png', {
           type: 'image/png'
         })
       ]
@@ -414,7 +421,7 @@ describe('ImageUpload', () => {
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
       value: [
-        new File([new Blob(['file'])], 'testFile.png', {
+        new File([PNG_FILE_BYTES], 'testFile.png', {
           type: 'image/png'
         })
       ]
@@ -554,7 +561,7 @@ describe('ImageUpload', () => {
 
     const inputEl = screen.getByTestId('drop zone')
     const justUnderLimit = new File(
-      [new ArrayBuffer(9_999_999)],
+      [PNG_FILE_BYTES, new ArrayBuffer(9_999_999 - PNG_FILE_BYTES.length)],
       'just-under.png',
       { type: 'image/png' }
     )
@@ -608,6 +615,93 @@ describe('ImageUpload', () => {
 
     expect(setUploading).toHaveBeenCalledWith(false)
     expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('should reject a text file named like an image without uploading it', async () => {
+    const onChange = vi.fn()
+    const setUploading = vi.fn()
+    const result = vi.fn(() => ({
+      data: {
+        createCloudflareUploadByFile: {
+          id: 'uploadId',
+          uploadUrl: 'uploadUrl',
+          __typename: 'CloudflareImage'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
+              variables: { journeyId: undefined }
+            },
+            result
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={onChange}
+          setUploading={setUploading}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+    const textFile = new File(['just some notes'], 'notes.png', {
+      type: 'image/png'
+    })
+    Object.defineProperty(inputEl, 'files', { value: [textFile] })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => {
+      expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
+        )
+      ).toBeInTheDocument()
+    })
+
+    expect(result).not.toHaveBeenCalled()
+    expect(setUploading).toHaveBeenCalledWith(false)
+    expect(onChange).not.toHaveBeenCalled()
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileSize: textFile.size,
+        fileType: 'image/png',
+        errorCode: 'file-invalid-type',
+        detectedFileType: 'text'
+      })
+    )
+  })
+
+  it('should report what a renamed non-image file really is', async () => {
+    render(
+      <MockedProvider>
+        <ImageUpload onChange={vi.fn()} loading={false} />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+    const pdfFile = new File(['%PDF-1.7\n'], 'scan.png', { type: 'image/png' })
+    Object.defineProperty(inputEl, 'files', { value: [pdfFile] })
+    fireEvent.drop(inputEl)
+
+    await waitFor(() =>
+      expect(mockSendGTMEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fileType: 'image/png',
+          errorCode: 'file-invalid-type',
+          detectedFileType: 'pdf'
+        })
+      )
+    )
   })
 
   it('should handle Cloudflare error response', async () => {
@@ -666,7 +760,7 @@ describe('ImageUpload', () => {
 
     Object.defineProperty(inputEl, 'files', {
       value: [
-        new File([new Blob(['file'])], 'testFile.png', {
+        new File([PNG_FILE_BYTES], 'testFile.png', {
           type: 'image/png'
         })
       ]
@@ -746,7 +840,7 @@ describe('ImageUpload', () => {
       ).toBeInTheDocument()
     })
 
-    const validFile = new File([new Blob(['file'])], 'valid-image.png', {
+    const validFile = new File([PNG_FILE_BYTES], 'valid-image.png', {
       type: 'image/png'
     })
 
@@ -808,9 +902,7 @@ describe('ImageUpload', () => {
     )
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
-      value: [
-        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
-      ]
+      value: [new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })]
     })
     fireEvent.drop(inputEl)
 
@@ -889,9 +981,7 @@ describe('ImageUpload', () => {
     )
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
-      value: [
-        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
-      ]
+      value: [new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })]
     })
     fireEvent.drop(inputEl)
 
@@ -935,9 +1025,7 @@ describe('ImageUpload', () => {
     )
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
-      value: [
-        new File([new Blob(['file'])], 'testFile.png', { type: 'image/png' })
-      ]
+      value: [new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })]
     })
     fireEvent.drop(inputEl)
 

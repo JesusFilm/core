@@ -7,6 +7,7 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey as Journey
 } from '../../../../../../../../__generated__/GetJourney'
+import { JPEG_FILE_BYTES } from '../../../../../../../libs/prepareImageUpload/prepareImageUpload.mock'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
 
 import { IMAGE_BLOCK_UPDATE, ImagesSection } from './ImagesSection'
@@ -236,7 +237,7 @@ describe('ImagesSection', () => {
       </MockedProvider>
     )
 
-    const file = new File([''], 'test.jpg', { type: 'image/jpeg' })
+    const file = new File([JPEG_FILE_BYTES], 'test.jpg', { type: 'image/jpeg' })
     const input = screen.getByTestId('ImagesSection-file-input-image1.id')
     await user.upload(input, file)
 
@@ -298,7 +299,7 @@ describe('ImagesSection', () => {
       </MockedProvider>
     )
 
-    const file = new File([''], 'test.jpg', { type: 'image/jpeg' })
+    const file = new File([JPEG_FILE_BYTES], 'test.jpg', { type: 'image/jpeg' })
     const input = screen.getByTestId('ImagesSection-file-input-image1.id')
     await user.upload(input, file)
 

@@ -44,7 +44,8 @@ describe('sendImageUploadEvent', () => {
         event: 'image_upload_failure',
         fileSize: 11000000,
         fileType: 'image/png',
-        errorCode: 'file-too-large'
+        errorCode: 'file-too-large',
+        detectedFileType: undefined
       })
     })
 
@@ -58,7 +59,25 @@ describe('sendImageUploadEvent', () => {
         event: 'image_upload_failure',
         fileSize: 1024,
         fileType: 'image/png',
-        errorCode: undefined
+        errorCode: undefined,
+        detectedFileType: undefined
+      })
+    })
+
+    it('should send the detected file type when provided', () => {
+      sendImageUploadFailureEvent({
+        fileSize: 2048,
+        fileType: 'image/png',
+        errorCode: 'file-invalid-type',
+        detectedFileType: 'pdf'
+      })
+
+      expect(mockSendGTMEvent).toHaveBeenCalledWith({
+        event: 'image_upload_failure',
+        fileSize: 2048,
+        fileType: 'image/png',
+        errorCode: 'file-invalid-type',
+        detectedFileType: 'pdf'
       })
     })
   })

@@ -17,6 +17,11 @@ import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../..
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { useAuth } from '../../../../../../../../libs/auth'
 import {
+  ImageUploadFileError,
+  describeFileContents,
+  prepareImageUpload
+} from '../../../../../../../../libs/prepareImageUpload'
+import {
   sendImageUploadFailureEvent,
   sendImageUploadSuccessEvent
 } from '../../../../../../../../libs/sendImageUploadEvent'
@@ -24,6 +29,20 @@ import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/
 import { MAX_IMAGE_UPLOAD_BYTES } from '../../../../../../../../libs/useImageUpload'
 import { UploadDropZoneShell } from '../../../UploadDropZoneShell'
 import { prependCloudflareImage } from '../../MediaLibrary/prependCloudflareImage'
+
+// Labels a wrong-type file by its contents for the failure event. Analytics
+// must never break the upload UI, so a file that can't be read goes unlabelled.
+async function detectRejectedFileType(
+  file: File,
+  errorCode: string | undefined
+): Promise<string | undefined> {
+  if (errorCode !== ErrorCode.FileInvalidType) return
+  try {
+    return await describeFileContents(file)
+  } catch {
+    return undefined
+  }
+}
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -78,10 +97,39 @@ export function ImageUpload({
       sendImageUploadFailureEvent({
         fileSize: rejection.file.size,
         fileType: rejection.file.type,
-        errorCode: rejectionCode
+        errorCode: rejectionCode,
+        detectedFileType: await detectRejectedFileType(
+          rejection.file,
+          rejectionCode
+        )
       })
       return
     }
+
+    const droppedFile = acceptedFiles[0]
+    let file: File
+    try {
+      file = await prepareImageUpload(droppedFile)
+    } catch (prepareError) {
+      const prepareErrorCode =
+        prepareError instanceof ImageUploadFileError
+          ? prepareError.code
+          : undefined
+      setErrorCode(prepareErrorCode)
+      setUploading?.(false)
+      setSuccess(false)
+      sendImageUploadFailureEvent({
+        fileSize: droppedFile.size,
+        fileType: droppedFile.type,
+        errorCode: prepareErrorCode ?? 'upload-prepare-failed',
+        detectedFileType: await detectRejectedFileType(
+          droppedFile,
+          prepareErrorCode
+        )
+      })
+      return
+    }
+
     const { data } = await createCloudflareUploadByFile({
       variables: { journeyId: journey?.id }
     })
@@ -90,7 +138,6 @@ export function ImageUpload({
     setErrorCode(undefined)
 
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
-      const file = acceptedFiles[0]
       const formData = new FormData()
       formData.append('file', file)
 
@@ -110,8 +157,8 @@ export function ImageUpload({
           setUploading?.(false)
           setErrorCode(cloudflareError as ErrorCode)
           sendImageUploadFailureEvent({
-            fileSize: file.size,
-            fileType: file.type,
+            fileSize: droppedFile.size,
+            fileType: droppedFile.type,
             errorCode: String(cloudflareError)
           })
           return
@@ -128,8 +175,8 @@ export function ImageUpload({
           setSuccess(false)
           setUploading?.(false)
           sendImageUploadFailureEvent({
-            fileSize: file.size,
-            fileType: file.type,
+            fileSize: droppedFile.size,
+            fileType: droppedFile.type,
             errorCode: 'upload-invalid-response'
           })
           return
@@ -161,15 +208,15 @@ export function ImageUpload({
         )
         setUploading?.(undefined)
         sendImageUploadSuccessEvent({
-          fileSize: file.size,
-          fileType: file.type
+          fileSize: droppedFile.size,
+          fileType: droppedFile.type
         })
       } catch {
         setSuccess(false)
         setUploading?.(false)
         sendImageUploadFailureEvent({
-          fileSize: file.size,
-          fileType: file.type,
+          fileSize: droppedFile.size,
+          fileType: droppedFile.type,
           errorCode: 'upload-exception'
         })
       }
