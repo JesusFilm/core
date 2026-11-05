@@ -386,7 +386,7 @@ The narrowed read of a published Campaign served to anonymous visitors, like the
 _Avoid_: public campaign (as a status), published view, visitor API
 
 **Campaign Public Page**:
-How a Campaign reaches visitors: the two pages served on the Root Domain or, once it has one, on its Campaign Domain, built from the published Campaign in the visitor's Page Language and refreshed within a minute of an edit, at once for the edits that purge its **Campaign page set**. A draft is never served, and empty text or an empty section renders nothing.
+How a Campaign reaches visitors: the two pages served on the Root Domain or, once it has one, on its Campaign Domain, built from the published Campaign in the visitor's Page Language and refreshed within a minute of an edit, at once when the author publishes, unpublishes or deletes it, or, while it is published, changes its slug, adds or removes a Page Language, changes a Campaign Region's slug or listing, deletes a Campaign Region, or adds or removes its Campaign Domain. These edits purge its **Campaign page set**. A draft is never served, and empty text or an empty section renders nothing.
 _Avoid_: viewer page (the viewer is the app), preview (that is the editor's)
 
 **Campaign Renderer**:
