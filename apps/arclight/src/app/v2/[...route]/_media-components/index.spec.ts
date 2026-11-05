@@ -227,4 +227,127 @@ describe('GET /media-components', () => {
       contentType: 'video'
     })
   })
+
+  describe.each(['collection', 'series'])('a %s', (label) => {
+    function containerVideo(downloadable: boolean) {
+      return {
+        ...jesusVideo(undefined),
+        id: `16_${label}`,
+        label,
+        children: [{}, {}],
+        variants: [
+          {
+            languageId: '529',
+            published: true,
+            hls: '',
+            dash: '',
+            lengthInMilliseconds: 0,
+            downloadable,
+            downloads: []
+          }
+        ]
+      }
+    }
+
+    it('is downloadable when its Variant is, as the detail endpoint reports', async () => {
+      mediaPrismaMock.video.findMany.mockResolvedValue([
+        containerVideo(true)
+      ] as never)
+
+      const res = await app.request(`/media-components?ids=16_${label}`)
+
+      const [container] = (await res.json())._embedded.mediaComponents
+      expect(container).toMatchObject({
+        mediaComponentId: `16_${label}`,
+        subType: label,
+        componentType: 'container',
+        contentType: 'none',
+        containsCount: 2,
+        isDownloadable: true,
+        lengthInMilliseconds: 0,
+        downloadSizes: {
+          approximateSmallDownloadSizeInBytes: 0,
+          approximateLargeDownloadSizeInBytes: 0
+        }
+      })
+    })
+
+    it('is not downloadable when its Variant is not', async () => {
+      mediaPrismaMock.video.findMany.mockResolvedValue([
+        containerVideo(false)
+      ] as never)
+
+      const res = await app.request(`/media-components?ids=16_${label}`)
+
+      const [container] = (await res.json())._embedded.mediaComponents
+      expect(container).toMatchObject({
+        subType: label,
+        isDownloadable: false
+      })
+    })
+  })
+
+  it('reports a series that has a real stream with its own length and sizes', async () => {
+    mediaPrismaMock.video.findMany.mockResolvedValue([
+      {
+        ...jesusVideo(undefined),
+        id: '1_series-with-stream',
+        label: 'series',
+        variants: jesusVariants.filter(({ languageId }) => languageId === '529')
+      }
+    ] as never)
+
+    const res = await app.request('/media-components?ids=1_series-with-stream')
+
+    const [series] = (await res.json())._embedded.mediaComponents
+    expect(series).toMatchObject({
+      componentType: 'content',
+      isDownloadable: true,
+      lengthInMilliseconds: 7673728,
+      downloadSizes: {
+        approximateSmallDownloadSizeInBytes: 585287114,
+        approximateLargeDownloadSizeInBytes: 2962849007
+      }
+    })
+  })
+
+  it('reports download sizes from the Variant even when it is not downloadable, as the detail endpoint does', async () => {
+    mediaPrismaMock.video.findMany.mockResolvedValue([
+      {
+        ...jesusVideo(undefined),
+        id: '1_not-downloadable',
+        variants: [{ ...jesusVariants[1], downloadable: false }]
+      }
+    ] as never)
+
+    const res = await app.request('/media-components?ids=1_not-downloadable')
+
+    const [video] = (await res.json())._embedded.mediaComponents
+    expect(video).toMatchObject({
+      isDownloadable: false,
+      downloadSizes: {
+        approximateSmallDownloadSizeInBytes: 585287114,
+        approximateLargeDownloadSizeInBytes: 2962849007
+      }
+    })
+  })
+
+  it('is not downloadable when there is no published English Variant', async () => {
+    mediaPrismaMock.video.findMany.mockResolvedValue([
+      { ...jesusVideo(undefined), id: '1_no-english', variants: [] }
+    ] as never)
+
+    const res = await app.request('/media-components?ids=1_no-english')
+
+    const [video] = (await res.json())._embedded.mediaComponents
+    expect(video).toMatchObject({
+      componentType: 'container',
+      isDownloadable: false,
+      lengthInMilliseconds: 0,
+      downloadSizes: {
+        approximateSmallDownloadSizeInBytes: 0,
+        approximateLargeDownloadSizeInBytes: 0
+      }
+    })
+  })
 })

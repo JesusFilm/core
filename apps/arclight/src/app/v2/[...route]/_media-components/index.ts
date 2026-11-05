@@ -364,10 +364,10 @@ mediaComponents.openapi(route, async (c) => {
 
       const variant = video.variants[0]
       const componentType = getComponentType(variant?.hls, variant?.dash)
-      const isDownloadable =
-        video.label === 'collection' || video.label === 'series'
-          ? false
-          : (variant?.downloadable ?? false)
+      // Same source as the detail route: the published English Variant, for
+      // every label. A collection or series is not special-cased; its
+      // (possibly generated) parent Variant says whether it is downloadable.
+      const isDownloadable = variant?.downloadable ?? false
 
       const titleContent = getPreferredContent(video.title, metadataLanguages)
       const shortDescriptionContent = getPreferredContent(
@@ -404,12 +404,10 @@ mediaComponents.openapi(route, async (c) => {
         containsCount: video.children.length,
         isDownloadable,
         downloadSizes: {
-          approximateSmallDownloadSizeInBytes: isDownloadable
-            ? (variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0)
-            : 0,
-          approximateLargeDownloadSizeInBytes: isDownloadable
-            ? (variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0)
-            : 0
+          approximateSmallDownloadSizeInBytes:
+            variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0,
+          approximateLargeDownloadSizeInBytes:
+            variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0
         },
         bibleCitations: video.bibleCitation.map((citation) => ({
           osisBibleBook: citation.osisId,
