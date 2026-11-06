@@ -285,29 +285,6 @@ describe('GET /media-components', () => {
         isDownloadable: false
       })
     })
-
-    it('is downloadable when its Variant has download files, even without a stream URL', async () => {
-      mediaPrismaMock.video.findMany.mockResolvedValue([
-        {
-          ...containerVideo(true),
-          variants: [
-            {
-              ...containerVideo(true).variants[0],
-              downloads: [{ quality: 'high', size: 123 }]
-            }
-          ]
-        }
-      ] as never)
-
-      const res = await app.request(`/media-components?ids=16_${label}`)
-
-      const [container] = (await res.json())._embedded.mediaComponents
-      expect(container).toMatchObject({
-        subType: label,
-        componentType: 'container',
-        isDownloadable: true
-      })
-    })
   })
 
   it('reports a series that has a real stream with its own length and sizes', async () => {
