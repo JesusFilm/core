@@ -3,9 +3,11 @@ import { useSuspenseQuery } from '@apollo/client/react'
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import type { FormattedExecutionResult } from 'graphql'
 import { type MockedFunction } from 'vitest'
 
-import { VideoInformation } from './VideoInformation'
+import { UPDATE_VIDEO_INFORMATION, VideoInformation } from './VideoInformation'
 import { GET_KEYWORDS } from './VideoKeywords'
 
 // Mock useSuspenseQuery hook
@@ -57,6 +59,7 @@ const mockVideoData = {
     publishedAt: null,
     slug: 'test-video',
     primaryLanguageId: '529',
+    parents: [] as Array<{ id: string; label: string }>,
     keywords: [],
     title: [{ id: 'title-id', value: 'Test Video Title' }],
     snippet: [{ id: 'snippet-id', value: 'Test video snippet' }],
@@ -415,6 +418,206 @@ describe('VideoInformation', () => {
       ).toBeInTheDocument()
       // Counter should NOT be shown when there is an error
       expect(screen.queryByText('61/60')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('label', () => {
+    function mockVideo(overrides: Partial<typeof mockVideoData.adminVideo>) {
+      const videoData = {
+        adminVideo: { ...mockVideoData.adminVideo, ...overrides }
+      }
+      ;(
+        useSuspenseQuery as MockedFunction<typeof useSuspenseQuery>
+      ).mockReturnValue({
+        data: videoData,
+        fetchMore: vi.fn(),
+        subscribeToMore: vi.fn(),
+        client: {} as any,
+        error: undefined,
+        dataState: 'complete' as const,
+        networkStatus: NetworkStatus.ready,
+        refetch: vi.fn().mockResolvedValue({ data: videoData })
+      })
+    }
+
+    async function openLabelOptions(): Promise<string[]> {
+      const user = userEvent.setup()
+      await user.click(await screen.findByLabelText('Label'))
+      return screen.getAllByRole('option').map((option) => option.textContent)
+    }
+
+    it('offers every label when the video has no parent', async () => {
+      mockVideo({ parents: [] })
+      render(
+        <MockedProvider mocks={[keywordsMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      expect(await openLabelOptions()).toHaveLength(8)
+    })
+
+    it('offers only the labels valid under the parent', async () => {
+      mockVideo({
+        label: 'episode',
+        parents: [{ id: 'parent-id', label: 'series' }]
+      })
+      render(
+        <MockedProvider mocks={[keywordsMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      expect(await openLabelOptions()).toEqual([
+        'Episode',
+        'Trailer/Preview',
+        'Behind The Scenes'
+      ])
+    })
+
+    it('offers only labels valid under every parent', async () => {
+      mockVideo({
+        label: 'episode',
+        parents: [
+          { id: 'collection-id', label: 'collection' },
+          { id: 'series-id', label: 'series' }
+        ]
+      })
+      render(
+        <MockedProvider mocks={[keywordsMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      expect(await openLabelOptions()).toEqual(['Episode'])
+    })
+
+    it('keeps a saved label that is not valid under the parent selectable', async () => {
+      mockVideo({
+        label: 'collection',
+        parents: [{ id: 'parent-id', label: 'series' }]
+      })
+      render(
+        <MockedProvider mocks={[keywordsMock]}>
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      expect(await openLabelOptions()).toEqual([
+        'Collection',
+        'Episode',
+        'Trailer/Preview',
+        'Behind The Scenes'
+      ])
+    })
+
+    function updateMock(
+      infoInput: Record<string, unknown>,
+      result: () => FormattedExecutionResult
+    ): MockLink.MockedResponse {
+      return {
+        request: {
+          query: UPDATE_VIDEO_INFORMATION,
+          variables: {
+            infoInput,
+            titleInput: { id: 'title-id', value: 'Renamed Title' }
+          }
+        },
+        result
+      }
+    }
+
+    it('does not send the label when saving an unrelated change', async () => {
+      mockVideo({ label: 'series' })
+      const result = vi.fn(() => ({
+        data: {
+          videoTitleUpdate: {
+            __typename: 'VideoTitle',
+            id: 'title-id',
+            value: 'Renamed Title'
+          },
+          videoUpdate: {
+            __typename: 'Video',
+            id: mockVideoId,
+            label: 'series',
+            slug: 'test-video',
+            published: false
+          }
+        }
+      }))
+      render(
+        <MockedProvider
+          mocks={[
+            keywordsMock,
+            updateMock(
+              {
+                id: mockVideoId,
+                slug: 'test-video',
+                published: false,
+                keywordIds: []
+              },
+              result
+            )
+          ]}
+        >
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      const titleInput = await screen.findByLabelText('Title')
+      fireEvent.change(titleInput, { target: { value: 'Renamed Title' } })
+      fireEvent.click(screen.getByRole('button', { name: /save/i }))
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('sends the label when the user changes it', async () => {
+      mockVideo({ label: 'series' })
+      const result = vi.fn(() => ({
+        data: {
+          videoTitleUpdate: {
+            __typename: 'VideoTitle',
+            id: 'title-id',
+            value: 'Renamed Title'
+          },
+          videoUpdate: {
+            __typename: 'Video',
+            id: mockVideoId,
+            label: 'episode',
+            slug: 'test-video',
+            published: false
+          }
+        }
+      }))
+      render(
+        <MockedProvider
+          mocks={[
+            keywordsMock,
+            updateMock(
+              {
+                id: mockVideoId,
+                slug: 'test-video',
+                published: false,
+                label: 'episode',
+                keywordIds: []
+              },
+              result
+            )
+          ]}
+        >
+          <VideoInformation videoId={mockVideoId} />
+        </MockedProvider>
+      )
+
+      const user = userEvent.setup()
+      await user.click(await screen.findByLabelText('Label'))
+      await user.click(screen.getByRole('option', { name: 'Episode' }))
+      fireEvent.change(screen.getByLabelText('Title'), {
+        target: { value: 'Renamed Title' }
+      })
+      fireEvent.click(screen.getByRole('button', { name: /save/i }))
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
     })
   })
 })
