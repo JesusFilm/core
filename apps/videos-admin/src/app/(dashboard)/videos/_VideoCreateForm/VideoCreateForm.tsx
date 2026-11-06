@@ -2,10 +2,11 @@
 
 import { CombinedGraphQLErrors } from '@apollo/client'
 import { useMutation, useQuery } from '@apollo/client/react'
+import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Form, Formik } from 'formik'
+import { Form, Formik, useFormikContext } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useMemo, useState } from 'react'
@@ -15,11 +16,8 @@ import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
 import { FormSelectField } from '../../../../components/FormSelectField'
 import { FormTextField } from '../../../../components/FormTextField'
-import {
-  VideoLabelValue,
-  videoLabelValues,
-  videoLabels
-} from '../../../../constants'
+import { VideoLabelValue, videoLabelValues } from '../../../../constants'
+import { getValidChildLabels } from '../../../../libs/getValidChildLabels'
 
 export const CREATE_VIDEO = graphql(`
   mutation CreateVideo($input: VideoCreateInput!) {
@@ -79,6 +77,20 @@ interface VideoCreateFormProps {
   onCreateSuccess?: (videoId: string) => void
 }
 
+function ContainerLabelWarning(): ReactElement | null {
+  const { values } = useFormikContext<{ label: string }>()
+  if (values.label !== 'series' && values.label !== 'collection') return null
+
+  return (
+    <Alert severity="warning">
+      This video will have no children when it is created. Series and
+      collections are containers for other videos. If this is a single
+      playable video, choose Episode, Feature Film, Short Film or Clip
+      instead.
+    </Alert>
+  )
+}
+
 export function VideoCreateForm({
   parentId,
   onCreateSuccess
@@ -133,46 +145,10 @@ export function VideoCreateForm({
   const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
 
   // Determine valid child labels and suggested label based on parent label
-  const { validChildLabels, suggestedLabel } = useMemo(() => {
-    if (!parentId || !parentData?.adminVideo?.label) {
-      return { validChildLabels: videoLabels, suggestedLabel: undefined }
-    }
-
-    const parentLabel = parentData.adminVideo.label
-
-    switch (parentLabel) {
-      case 'collection':
-        return {
-          validChildLabels: videoLabels.filter((vl) =>
-            ['episode', 'featureFilm', 'shortFilm', 'series'].includes(vl.value)
-          ),
-          suggestedLabel: 'episode' as const
-        }
-      case 'featureFilm':
-        return {
-          validChildLabels: videoLabels.filter((vl) =>
-            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
-          ),
-          suggestedLabel: 'segment' as const
-        }
-      case 'series':
-        return {
-          validChildLabels: videoLabels.filter((vl) =>
-            ['episode', 'trailer', 'behindTheScenes'].includes(vl.value)
-          ),
-          suggestedLabel: 'episode' as const
-        }
-      case 'episode':
-        return {
-          validChildLabels: videoLabels.filter((vl) =>
-            ['segment', 'trailer', 'behindTheScenes'].includes(vl.value)
-          ),
-          suggestedLabel: 'segment' as const
-        }
-      default:
-        return { validChildLabels: videoLabels, suggestedLabel: undefined }
-    }
-  }, [parentId, parentData])
+  const { validChildLabels, suggestedLabel } = useMemo(
+    () => getValidChildLabels(parentData?.adminVideo?.label),
+    [parentData]
+  )
 
   // Format origins for dropdown
   const originOptions = useMemo(() => {
@@ -358,6 +334,7 @@ export function VideoCreateForm({
             options={validChildLabels}
             fullWidth
           />
+          {!parentId && <ContainerLabelWarning />}
           {parentId && (
             <Typography
               variant="caption"
