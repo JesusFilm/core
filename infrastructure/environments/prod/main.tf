@@ -5,6 +5,7 @@ module "prod" {
   cidr                         = "10.10.0.0/16"
   internal_url_name            = "service.internal"
   datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
+  s3_gateway_endpoint          = true
 }
 
 locals {
@@ -186,8 +187,15 @@ module "plausible" {
   source = "../../modules/plausible"
   ecs_config = merge(local.public_ecs_config, {
     alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/api/health"
-      health_check_port = "8000"
+      # /login proves the container serves without touching ClickHouse.
+      # /api/health queries Postgres and ClickHouse on every probe, which
+      # kept waking the idle-scaled ClickHouse Cloud service every 10 s.
+      # /api/health stays the manual smoke test (modules/plausible/README.md).
+      # 302: until the first account exists, Plausible's FirstLaunchPlug
+      # redirects /login to /register. Still a serving container.
+      health_check_path    = "/login"
+      health_check_port    = "8000"
+      health_check_matcher = "200,302"
     })
   })
   env              = "prod"
