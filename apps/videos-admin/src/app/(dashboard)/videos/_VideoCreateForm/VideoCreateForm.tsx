@@ -333,15 +333,7 @@ export function VideoCreateForm({
             options={validChildLabels}
             fullWidth
           />
-          {!parentId && <ContainerLabelWarning />}
-          {parentId && (
-            <Typography
-              variant="caption"
-              sx={{
-                color: 'text.secondary'
-              }}
-            ></Typography>
-          )}
+          <ContainerLabelWarning />
           {parentId && (
             <Typography
               variant="caption"
