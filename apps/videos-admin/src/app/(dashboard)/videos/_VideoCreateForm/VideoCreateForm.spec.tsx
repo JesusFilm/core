@@ -201,6 +201,39 @@ describe('VideoCreateForm', () => {
       })
     })
 
+    it('starts with no label selected and no container warning', async () => {
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
+      })
+
+      expect(screen.queryByDisplayValue('series')).not.toBeInTheDocument()
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+
+    it.each(['Series', 'Collection'])(
+      'warns that a %s will have no children',
+      async (optionName) => {
+        const user = userEvent.setup()
+        await user.click(screen.getByLabelText(/Label/i))
+        await user.click(screen.getByRole('option', { name: optionName }))
+
+        expect(await screen.findByRole('alert')).toHaveTextContent(
+          /no children/i
+        )
+      }
+    )
+
+    it('does not warn when a non-container label is chosen', async () => {
+      const user = userEvent.setup()
+      await user.click(screen.getByLabelText(/Label/i))
+      await user.click(screen.getByRole('option', { name: 'Episode' }))
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('episode')).toBeInTheDocument()
+      })
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+
     it('navigates to videos list when Cancel button is clicked', () => {
       fireEvent.click(screen.getByText('Cancel'))
       expect(mockRouterPush).toHaveBeenCalledWith('/videos')
