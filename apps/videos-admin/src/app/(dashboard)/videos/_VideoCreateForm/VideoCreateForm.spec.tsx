@@ -368,9 +368,7 @@ describe('VideoCreateForm', () => {
 
       await user.click(screen.getByRole('option', { name: 'Series' }))
 
-      expect(await screen.findByRole('alert')).toHaveTextContent(
-        /no children/i
-      )
+      expect(await screen.findByRole('alert')).toHaveTextContent(/no children/i)
     })
 
     it('pre-selects clip for a feature film parent', async () => {
