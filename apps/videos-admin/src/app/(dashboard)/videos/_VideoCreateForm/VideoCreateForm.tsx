@@ -84,9 +84,8 @@ function ContainerLabelWarning(): ReactElement | null {
   return (
     <Alert severity="warning">
       This video will have no children when it is created. Series and
-      collections are containers for other videos. If this is a single
-      playable video, choose Episode, Feature Film, Short Film or Clip
-      instead.
+      collections are containers for other videos. If this is a single playable
+      video, choose Episode, Feature Film, Short Film or Clip instead.
     </Alert>
   )
 }

@@ -1,12 +1,11 @@
 import { NetworkStatus } from '@apollo/client'
-import type { FormattedExecutionResult } from 'graphql'
 import { useSuspenseQuery } from '@apollo/client/react'
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { type MockedFunction } from 'vitest'
-
 import userEvent from '@testing-library/user-event'
+import type { FormattedExecutionResult } from 'graphql'
+import { type MockedFunction } from 'vitest'
 
 import { UPDATE_VIDEO_INFORMATION, VideoInformation } from './VideoInformation'
 import { GET_KEYWORDS } from './VideoKeywords'
@@ -427,17 +426,18 @@ describe('VideoInformation', () => {
       const videoData = {
         adminVideo: { ...mockVideoData.adminVideo, ...overrides }
       }
-      ;(useSuspenseQuery as MockedFunction<typeof useSuspenseQuery>)
-        .mockReturnValue({
-          data: videoData,
-          fetchMore: vi.fn(),
-          subscribeToMore: vi.fn(),
-          client: {} as any,
-          error: undefined,
-          dataState: 'complete' as const,
-          networkStatus: NetworkStatus.ready,
-          refetch: vi.fn().mockResolvedValue({ data: videoData })
-        })
+      ;(
+        useSuspenseQuery as MockedFunction<typeof useSuspenseQuery>
+      ).mockReturnValue({
+        data: videoData,
+        fetchMore: vi.fn(),
+        subscribeToMore: vi.fn(),
+        client: {} as any,
+        error: undefined,
+        dataState: 'complete' as const,
+        networkStatus: NetworkStatus.ready,
+        refetch: vi.fn().mockResolvedValue({ data: videoData })
+      })
     }
 
     async function openLabelOptions(): Promise<string[]> {
@@ -531,7 +531,11 @@ describe('VideoInformation', () => {
       mockVideo({ label: 'series' })
       const result = vi.fn(() => ({
         data: {
-          videoTitleUpdate: { __typename: 'VideoTitle', id: 'title-id', value: 'Renamed Title' },
+          videoTitleUpdate: {
+            __typename: 'VideoTitle',
+            id: 'title-id',
+            value: 'Renamed Title'
+          },
           videoUpdate: {
             __typename: 'Video',
             id: mockVideoId,
@@ -571,7 +575,11 @@ describe('VideoInformation', () => {
       mockVideo({ label: 'series' })
       const result = vi.fn(() => ({
         data: {
-          videoTitleUpdate: { __typename: 'VideoTitle', id: 'title-id', value: 'Renamed Title' },
+          videoTitleUpdate: {
+            __typename: 'VideoTitle',
+            id: 'title-id',
+            value: 'Renamed Title'
+          },
           videoUpdate: {
             __typename: 'Video',
             id: mockVideoId,
