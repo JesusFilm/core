@@ -362,6 +362,17 @@ describe('VideoCreateForm', () => {
       expect(await renderWithParent('segment')).toHaveLength(8)
     })
 
+    it('warns when choosing a container label under a parent', async () => {
+      const user = userEvent.setup()
+      await renderWithParent('collection')
+
+      await user.click(screen.getByRole('option', { name: 'Series' }))
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        /no children/i
+      )
+    })
+
     it('pre-selects clip for a feature film parent', async () => {
       render(
         <MockedProvider
