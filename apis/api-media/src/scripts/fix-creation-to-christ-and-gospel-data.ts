@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { logger } from '../logger'
 import { videoCacheReset, videoVariantCacheReset } from '../lib/videoCacheReset'
+import { logger } from '../logger'
 import { enqueueVideoAlgoliaSync } from '../workers/videoAlgoliaSync'
 import { queue } from '../workers/videoAlgoliaSync/queue'
 
