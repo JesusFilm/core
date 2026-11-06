@@ -14,12 +14,13 @@ const ALLOWED_CHILD_LABELS: Partial<Record<VideoLabel, readonly VideoLabel[]>> =
 
 const CONTAINER_LABELS: readonly VideoLabel[] = ['collection', 'series']
 
-// A variant a viewer can actually stream. The empty English variant the
-// create form adds to series and collections has none of these.
+// A variant a viewer can actually stream. Neither the empty English variant
+// the create form adds to series and collections (no hls, dash or mux) nor the
+// placeholder parent variants (hls and dash set to '') count.
 const PLAYABLE_VARIANT_WHERE: Prisma.VideoVariantWhereInput = {
   OR: [
-    { hls: { not: null } },
-    { dash: { not: null } },
+    { AND: [{ hls: { not: null } }, { hls: { not: '' } }] },
+    { AND: [{ dash: { not: null } }, { dash: { not: '' } }] },
     { muxVideoId: { not: null } }
   ]
 }

@@ -3795,6 +3795,35 @@ describe('video', () => {
           expect(prismaMock.video.update).not.toHaveBeenCalled()
         })
 
+        it('does not count empty-string placeholder variants as playable', async () => {
+          mockStoredVideo({
+            label: VideoLabel.series,
+            childIds: ['child'],
+            playable: false
+          })
+          mockRelatedVideos({ labelsById: { child: VideoLabel.episode } })
+
+          await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', childIds: [] } }
+          })
+
+          const playableWhere = {
+            OR: [
+              { AND: [{ hls: { not: null } }, { hls: { not: '' } }] },
+              { AND: [{ dash: { not: null } }, { dash: { not: '' } }] },
+              { muxVideoId: { not: null } }
+            ]
+          }
+          expect(prismaMock.video.findUnique).toHaveBeenCalledWith(
+            expect.objectContaining({
+              select: expect.objectContaining({
+                variants: expect.objectContaining({ where: playableWhere })
+              })
+            })
+          )
+        })
+
         it('rejects relabelling as collection the same way', async () => {
           mockStoredVideo({
             label: VideoLabel.episode,
