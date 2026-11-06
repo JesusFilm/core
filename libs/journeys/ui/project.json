@@ -40,8 +40,25 @@
         }
       }
     },
+    "codegen-clean": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "outputs": [],
+      "options": {
+        "parallel": false,
+        "commands": [
+          {
+            "command": "rm -rf libs/journeys/ui/__generated__"
+          },
+          {
+            "command": "find libs/journeys/ui/src -type d -name __generated__ -prune -exec rm -rf {} +"
+          }
+        ]
+      }
+    },
     "codegen": {
       "executor": "nx:run-commands",
+      "dependsOn": ["codegen-clean"],
       "outputs": [
         "{projectRoot}/__generated__",
         "{projectRoot}/src/**/__generated__/**/*"
@@ -51,12 +68,6 @@
         "commands": [
           {
             "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
-          },
-          {
-            "command": "rm -rf libs/journeys/ui/__generated__"
-          },
-          {
-            "command": "find libs/journeys/ui/src -type d -name __generated__ -prune -exec rm -rf {} +"
           },
           {
             "command": "npx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
