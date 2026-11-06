@@ -3064,6 +3064,7 @@ describe('video', () => {
           restrictTranslations: false,
           variants: []
         } as unknown as Video)
+        prismaMock.video.findMany.mockResolvedValue([])
         prismaMock.video.update.mockRejectedValue(
           new Prisma.PrismaClientKnownRequestError('No Video found', {
             code: 'P2025',
@@ -3678,6 +3679,351 @@ describe('video', () => {
           },
           expect.anything()
         )
+      })
+    })
+
+    describe('video label validation', () => {
+      const publisherRole = {
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+
+      const CREATE_MUTATION = graphql(`
+        mutation CreateVideoForLabel($input: VideoCreateInput!) {
+          videoCreate(input: $input) {
+            id
+          }
+        }
+      `)
+      const UPDATE_MUTATION = graphql(`
+        mutation UpdateVideoForLabel($input: VideoUpdateInput!) {
+          videoUpdate(input: $input) {
+            id
+          }
+        }
+      `)
+
+      const createInput = {
+        id: 'id',
+        label: VideoLabel.series,
+        primaryLanguageId: '529',
+        published: false,
+        slug: 'slug',
+        noIndex: false,
+        childIds: ['child'],
+        originId: 'originId'
+      }
+
+      // Existing video as stored. `playable` stands for the single
+      // playable variant the validation query selects (hls, dash or mux).
+      function mockStoredVideo({
+        label,
+        childIds,
+        playable
+      }: {
+        label: VideoLabel
+        childIds: string[]
+        playable: boolean
+      }): void {
+        prismaMock.video.findUnique.mockResolvedValue({
+          label,
+          childIds,
+          published: false,
+          publishedAt: null,
+          slug: 'slug',
+          variants: playable ? [{ id: 'playable', languageId: '529' }] : []
+        } as any)
+      }
+
+      // Routes video.findMany by query shape: every video id (existing
+      // child filter), labels of the requested ids, or parents of a video.
+      function mockRelatedVideos({
+        labelsById = {},
+        parents = []
+      }: {
+        labelsById?: Record<string, VideoLabel>
+        parents?: Array<{ id: string; label: VideoLabel }>
+      }): void {
+        prismaMock.video.findMany.mockImplementation(((args: any) => {
+          if (args?.where?.childIds != null) return Promise.resolve(parents)
+          if (args?.where?.id?.in != null)
+            return Promise.resolve(
+              (args.where.id.in as string[]).map((id) => ({
+                id,
+                label: labelsById[id]
+              }))
+            )
+          return Promise.resolve([
+            { id: 'id' },
+            ...Object.keys(labelsById).map((id) => ({ id }))
+          ])
+        }) as any)
+      }
+
+      beforeEach(() => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue(
+          publisherRole as any
+        )
+        prismaMock.video.update.mockResolvedValue({ id: 'id' } as any)
+        prismaMock.video.create.mockResolvedValue({ id: 'id' } as any)
+      })
+
+      describe('videoUpdate', () => {
+        it('rejects relabelling a childless video with playable variants as series', async () => {
+          mockStoredVideo({
+            label: VideoLabel.episode,
+            childIds: [],
+            playable: true
+          })
+          mockRelatedVideos({})
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', label: VideoLabel.series } }
+          })
+
+          expect(result).toHaveProperty('errors.0.message')
+          expect((result as any).errors[0].message).toContain(
+            'series with no children cannot have playable variants'
+          )
+          expect((result as any).errors[0].extensions.code).toBe(
+            'BAD_USER_INPUT'
+          )
+          expect(prismaMock.video.update).not.toHaveBeenCalled()
+        })
+
+        it('rejects relabelling as collection the same way', async () => {
+          mockStoredVideo({
+            label: VideoLabel.episode,
+            childIds: [],
+            playable: true
+          })
+          mockRelatedVideos({})
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', label: VideoLabel.collection } }
+          })
+
+          expect((result as any).errors[0].message).toContain(
+            'collection with no children cannot have playable variants'
+          )
+          expect(prismaMock.video.update).not.toHaveBeenCalled()
+        })
+
+        it('allows series with no children when no variant is playable', async () => {
+          mockStoredVideo({
+            label: VideoLabel.episode,
+            childIds: [],
+            playable: false
+          })
+          mockRelatedVideos({})
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', label: VideoLabel.series } }
+          })
+
+          expect(result).toHaveProperty('data.videoUpdate.id', 'id')
+          expect(prismaMock.video.update).toHaveBeenCalled()
+        })
+
+        it('allows series with playable variants when it has children', async () => {
+          mockStoredVideo({
+            label: VideoLabel.episode,
+            childIds: ['child'],
+            playable: true
+          })
+          mockRelatedVideos({})
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', label: VideoLabel.series } }
+          })
+
+          expect(result).toHaveProperty('data.videoUpdate.id', 'id')
+        })
+
+        it('rejects removing the last child from a series with playable variants', async () => {
+          mockStoredVideo({
+            label: VideoLabel.series,
+            childIds: ['child'],
+            playable: true
+          })
+          mockRelatedVideos({ labelsById: { child: VideoLabel.episode } })
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', childIds: [] } }
+          })
+
+          expect((result as any).errors[0].message).toContain(
+            'series with no children cannot have playable variants'
+          )
+          expect(prismaMock.video.update).not.toHaveBeenCalled()
+        })
+
+        it('does not block an unrelated save of an already mislabelled video', async () => {
+          mockStoredVideo({
+            label: VideoLabel.series,
+            childIds: [],
+            playable: true
+          })
+          mockRelatedVideos({})
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: {
+              input: { id: 'id', label: VideoLabel.series, noIndex: true }
+            }
+          })
+
+          expect(result).toHaveProperty('data.videoUpdate.id', 'id')
+        })
+
+        it('rejects adding a child whose label is not allowed under the parent', async () => {
+          mockStoredVideo({
+            label: VideoLabel.series,
+            childIds: [],
+            playable: false
+          })
+          mockRelatedVideos({ labelsById: { child: VideoLabel.featureFilm } })
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', childIds: ['child'] } }
+          })
+
+          expect((result as any).errors[0].message).toContain(
+            'featureFilm video "child" cannot be a child of a series'
+          )
+          expect(prismaMock.video.update).not.toHaveBeenCalled()
+        })
+
+        it('allows adding a child whose label is allowed under the parent', async () => {
+          mockStoredVideo({
+            label: VideoLabel.series,
+            childIds: [],
+            playable: false
+          })
+          mockRelatedVideos({ labelsById: { child: VideoLabel.episode } })
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', childIds: ['child'] } }
+          })
+
+          expect(result).toHaveProperty('data.videoUpdate.id', 'id')
+        })
+
+        it('does not re-check children that were already attached', async () => {
+          mockStoredVideo({
+            label: VideoLabel.series,
+            childIds: ['legacy'],
+            playable: true
+          })
+          mockRelatedVideos({
+            labelsById: {
+              legacy: VideoLabel.featureFilm,
+              child: VideoLabel.episode
+            }
+          })
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', childIds: ['legacy', 'child'] } }
+          })
+
+          expect(result).toHaveProperty('data.videoUpdate.id', 'id')
+        })
+
+        it('rejects a label that is not allowed under the existing parent', async () => {
+          mockStoredVideo({
+            label: VideoLabel.episode,
+            childIds: [],
+            playable: false
+          })
+          mockRelatedVideos({
+            parents: [{ id: 'parent', label: VideoLabel.collection }]
+          })
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', label: VideoLabel.segment } }
+          })
+
+          expect((result as any).errors[0].message).toContain(
+            'segment video "id" cannot be a child of a collection'
+          )
+          expect(prismaMock.video.update).not.toHaveBeenCalled()
+        })
+
+        it('allows a label that is allowed under the existing parent', async () => {
+          mockStoredVideo({
+            label: VideoLabel.episode,
+            childIds: [],
+            playable: false
+          })
+          mockRelatedVideos({
+            parents: [{ id: 'parent', label: VideoLabel.collection }]
+          })
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', label: VideoLabel.series } }
+          })
+
+          expect(result).toHaveProperty('data.videoUpdate.id', 'id')
+        })
+
+        it('does not restrict children of labels the create form leaves open', async () => {
+          mockStoredVideo({
+            label: VideoLabel.shortFilm,
+            childIds: [],
+            playable: false
+          })
+          mockRelatedVideos({ labelsById: { child: VideoLabel.collection } })
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', childIds: ['child'] } }
+          })
+
+          expect(result).toHaveProperty('data.videoUpdate.id', 'id')
+        })
+      })
+
+      describe('videoCreate', () => {
+        it('rejects children whose labels are not allowed under the new label', async () => {
+          mockRelatedVideos({ labelsById: { child: VideoLabel.featureFilm } })
+
+          const result = await authClient({
+            document: CREATE_MUTATION,
+            variables: { input: createInput }
+          })
+
+          expect((result as any).errors[0].message).toContain(
+            'featureFilm video "child" cannot be a child of a series'
+          )
+          expect((result as any).errors[0].extensions.code).toBe(
+            'BAD_USER_INPUT'
+          )
+          expect(prismaMock.video.create).not.toHaveBeenCalled()
+        })
+
+        it('creates a video whose children have allowed labels', async () => {
+          mockRelatedVideos({ labelsById: { child: VideoLabel.episode } })
+
+          const result = await authClient({
+            document: CREATE_MUTATION,
+            variables: { input: createInput }
+          })
+
+          expect(result).toHaveProperty('data.videoCreate.id', 'id')
+        })
       })
     })
 
