@@ -258,3 +258,34 @@ The script includes comprehensive error handling for:
 - Network connectivity issues
 
 If any error occurs, the script will log the error and continue processing other items when possible.
+
+## Creation to Christ / Gospel Data Fix Script
+
+One-off production fix for JesusFilm/core#10167. Does exactly two things, and
+only if both records still hold the expected values:
+
+- sets the English (529) Variant of `9_CreationtoChristFull` to
+  `downloadable = true` (expected current value: `false`)
+- changes the label of `13_0-RPGospel0401` from `series` to `episode`
+  (expected current value: `series`; aborts if the video has any children)
+
+Dry-run by default: it prints the before and planned after values. With
+`--apply` it writes both changes in one transaction (guarded by the expected
+values, so a concurrent edit makes it roll back), then enqueues the same
+Algolia sync and cache resets that `videoVariantUpdate` and `videoUpdate` do.
+
+### Usage
+
+```bash
+# Load prod env (needs Doppler access), VPN/WARP on for RDS and Redis
+DOPPLER_CONFIG=prd pnpm nx run api-media:fetch-secrets
+
+# Dry run (default)
+pnpm nx run api-media:fix-creation-to-christ-and-gospel-data
+
+# Apply
+pnpm nx run api-media:fix-creation-to-christ-and-gospel-data -- --apply
+```
+
+Delete `apis/api-media/.env` afterwards. Remove this script once it has been
+run.
