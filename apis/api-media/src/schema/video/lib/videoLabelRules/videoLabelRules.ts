@@ -62,6 +62,42 @@ export async function assertChildIdsAllowedUnderLabel(
 }
 
 /**
+ * Throws if a Variant write would give a childless collection or series a
+ * playable variant - the same state assertVideoUpdateLabelsValid rejects
+ * when relabelling an equivalent video.
+ */
+export async function assertVariantWriteAllowedForContainer({
+  videoId,
+  hls,
+  dash,
+  muxVideoId
+}: {
+  videoId: string
+  hls?: string | null
+  dash?: string | null
+  muxVideoId?: string | null
+}): Promise<void> {
+  const playable =
+    (hls != null && hls !== '') ||
+    (dash != null && dash !== '') ||
+    muxVideoId != null
+  if (!playable) return
+
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    select: { label: true, childIds: true }
+  })
+  if (video == null) return
+  if (!CONTAINER_LABELS.includes(video.label) || video.childIds.length > 0)
+    return
+
+  throw invalidLabelError(
+    `Video "${videoId}" cannot have a playable variant: a ${video.label} with no children cannot have playable variants. ` +
+      `Add children to the video, or use a label such as episode or featureFilm.`
+  )
+}
+
+/**
  * Validates a videoUpdate against the label rules. Only what the update
  * changes is checked (a new label, or children added or removed), so saving
  * an unrelated field on an already mislabelled video still works.
@@ -109,7 +145,9 @@ export async function assertVideoUpdateLabelsValid({
     )
   }
 
-  if (childrenChanged) {
+  if (labelChanged) {
+    await assertChildIdsAllowedUnderLabel(nextLabel, nextChildIds)
+  } else if (childrenChanged) {
     await assertChildIdsAllowedUnderLabel(nextLabel, childIds.added)
   }
 

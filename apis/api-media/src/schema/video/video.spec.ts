@@ -3058,6 +3058,8 @@ describe('video', () => {
           updatedAt: new Date()
         })
         prismaMock.video.findUnique.mockResolvedValue({
+          label: VideoLabel.episode,
+          childIds: [],
           published: true,
           publishedAt: null,
           slug: 'slug',
@@ -3866,7 +3868,7 @@ describe('video', () => {
             childIds: ['child'],
             playable: true
           })
-          mockRelatedVideos({})
+          mockRelatedVideos({ labelsById: { child: VideoLabel.episode } })
 
           const result = await authClient({
             document: UPDATE_MUTATION,
@@ -3967,6 +3969,25 @@ describe('video', () => {
           })
 
           expect(result).toHaveProperty('data.videoUpdate.id', 'id')
+        })
+
+        it('rejects retained children that are not allowed under the new label', async () => {
+          mockStoredVideo({
+            label: VideoLabel.collection,
+            childIds: ['legacy'],
+            playable: false
+          })
+          mockRelatedVideos({ labelsById: { legacy: VideoLabel.featureFilm } })
+
+          const result = await authClient({
+            document: UPDATE_MUTATION,
+            variables: { input: { id: 'id', label: VideoLabel.series } }
+          })
+
+          expect((result as any).errors[0].message).toContain(
+            'featureFilm video "legacy" cannot be a child of a series'
+          )
+          expect(prismaMock.video.update).not.toHaveBeenCalled()
         })
 
         it('rejects a label that is not allowed under the existing parent', async () => {
