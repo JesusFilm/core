@@ -223,6 +223,16 @@ describe('VideoCreateForm', () => {
       }
     )
 
+    it('lists every non-container label as an alternative when there is no parent', async () => {
+      const user = userEvent.setup()
+      await user.click(screen.getByLabelText(/Label/i))
+      await user.click(screen.getByRole('option', { name: 'Series' }))
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'Episode, Feature Film, Clip, Short Film, Trailer/Preview or Behind The Scenes'
+      )
+    })
+
     it('does not warn when a non-container label is chosen', async () => {
       const user = userEvent.setup()
       await user.click(screen.getByLabelText(/Label/i))
@@ -369,6 +379,17 @@ describe('VideoCreateForm', () => {
       await user.click(screen.getByRole('option', { name: 'Series' }))
 
       expect(await screen.findByRole('alert')).toHaveTextContent(/no children/i)
+    })
+
+    it('only suggests labels selectable under this parent, omitting Clip under a collection', async () => {
+      const user = userEvent.setup()
+      await renderWithParent('collection')
+
+      await user.click(screen.getByRole('option', { name: 'Series' }))
+
+      const alert = await screen.findByRole('alert')
+      expect(alert).toHaveTextContent('Episode, Feature Film or Short Film')
+      expect(alert).not.toHaveTextContent('Clip')
     })
 
     it('pre-selects clip for a feature film parent', async () => {

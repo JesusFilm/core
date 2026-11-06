@@ -77,15 +77,33 @@ interface VideoCreateFormProps {
   onCreateSuccess?: (videoId: string) => void
 }
 
-function ContainerLabelWarning(): ReactElement | null {
+// Joins display labels into a grammatical "a, b or c" list.
+function formatLabelList(labels: string[]): string {
+  if (labels.length <= 1) return labels.join('')
+  return `${labels.slice(0, -1).join(', ')} or ${labels[labels.length - 1]}`
+}
+
+interface ContainerLabelWarningProps {
+  validChildLabels: ReadonlyArray<{ label: string; value: VideoLabelValue }>
+}
+
+function ContainerLabelWarning({
+  validChildLabels
+}: ContainerLabelWarningProps): ReactElement | null {
   const { values } = useFormikContext<{ label: string }>()
   if (values.label !== 'series' && values.label !== 'collection') return null
+
+  const alternativeLabels = formatLabelList(
+    validChildLabels
+      .filter(({ value }) => value !== 'series' && value !== 'collection')
+      .map(({ label }) => label)
+  )
 
   return (
     <Alert severity="warning">
       This video will have no children when it is created. Series and
       collections are containers for other videos. If this is a single playable
-      video, choose Episode, Feature Film, Short Film or Clip instead.
+      video, choose {alternativeLabels} instead.
     </Alert>
   )
 }
@@ -333,7 +351,7 @@ export function VideoCreateForm({
             options={validChildLabels}
             fullWidth
           />
-          <ContainerLabelWarning />
+          <ContainerLabelWarning validChildLabels={validChildLabels} />
           {parentId && (
             <Typography
               variant="caption"

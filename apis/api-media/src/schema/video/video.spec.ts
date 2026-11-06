@@ -1582,15 +1582,23 @@ describe('video', () => {
       ])
     })
 
-    it('should include unpublished/incomplete children for videos-admin client', async () => {
+    it('should include unpublished/incomplete children for an authenticated publisher on videos-admin', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userMediaRoleId',
+        userId: 'testUserId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
 
       const videosAdminClient = getClient({
         headers: {
+          authorization: 'token',
           'x-graphql-client-name': 'videos-admin'
         }
       })
@@ -1613,15 +1621,23 @@ describe('video', () => {
       )
     })
 
-    it('should include unpublished/incomplete parents for videos-admin client', async () => {
+    it('should include unpublished/incomplete parents for an authenticated publisher on videos-admin', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userMediaRoleId',
+        userId: 'testUserId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
 
       const videosAdminClient = getClient({
         headers: {
+          authorization: 'token',
           'x-graphql-client-name': 'videos-admin'
         }
       })
@@ -1638,6 +1654,43 @@ describe('video', () => {
                 published: true,
                 availableLanguages: { isEmpty: false }
               })
+            }
+          })
+        })
+      )
+    })
+
+    it('should not spoof videos-admin access via the client-name header alone, without publisher auth', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
+
+      const spoofedClient = getClient({
+        headers: {
+          'x-graphql-client-name': 'videos-admin'
+        }
+      })
+
+      await spoofedClient({
+        document: VIDEOS_QUERY
+      })
+
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: expect.objectContaining({
+            children: {
+              where: {
+                published: true,
+                availableLanguages: { isEmpty: false }
+              }
+            },
+            parents: {
+              where: {
+                published: true,
+                availableLanguages: { isEmpty: false }
+              }
             }
           })
         })
