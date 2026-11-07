@@ -12,6 +12,11 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
+import { disableAllSubtitles } from '../../../Video/utils/disableAllSubtitles'
+import { getYouTubePlayer } from '../../../Video/utils/getYouTubePlayer'
+import { unloadYouTubeCaptions } from '../../../Video/utils/unloadYouTubeCaptions'
+import VideoJsPlayer from '../../../Video/utils/videoJsTypes'
+import { YoutubeTech } from '../../../Video/utils/videoJsTypes/YoutubeTech'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
@@ -116,6 +121,51 @@ export function BackgroundVideo({
       })
     }
   }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
+
+  // Background videos never show captions, whatever the source or subtitle
+  // setting: like muted and autoplay, they have no controls to change it
+  useEffect(() => {
+    const player = playerRef.current as VideoJsPlayer | null
+    if (player == null) return
+
+    // Streams bring their own tracks (e.g. iOS Safari auto-selects the
+    // AUTOSELECT=YES track in Mux and library HLS manifests), so turn every
+    // track off as it arrives and whenever the browser switches one on
+    const textTracks = player.textTracks?.()
+    const handleTextTracksChange = (): void => disableAllSubtitles(player)
+    handleTextTracksChange()
+    textTracks?.addEventListener('addtrack', handleTextTracksChange)
+    textTracks?.addEventListener('change', handleTextTracksChange)
+
+    // YouTube draws captions inside its iframe, outside video.js text tracks,
+    // and can load its captions module at any point (signalled by
+    // onApiChange), e.g. for a viewer whose account always shows captions
+    let isCleanedUp = false
+    let ytPlayer: YoutubeTech['ytPlayer'] | null = null
+    const handleYouTubeCaptions = (): void => {
+      const currentYtPlayer = getYouTubePlayer(player)
+      // Unloading fires onApiChange again, so stop once captions are gone
+      const loadedModules = currentYtPlayer?.getOptions?.()
+      if (loadedModules != null && !loadedModules.includes('captions')) return
+      unloadYouTubeCaptions(currentYtPlayer)
+    }
+    if (isYouTube) {
+      player.ready(() => {
+        if (isCleanedUp) return
+        ytPlayer = getYouTubePlayer(player)
+        ytPlayer?.addEventListener?.('onApiChange', handleYouTubeCaptions)
+      })
+      player.on('playing', handleYouTubeCaptions)
+    }
+
+    return () => {
+      isCleanedUp = true
+      textTracks?.removeEventListener('addtrack', handleTextTracksChange)
+      textTracks?.removeEventListener('change', handleTextTracksChange)
+      ytPlayer?.removeEventListener?.('onApiChange', handleYouTubeCaptions)
+      player.off('playing', handleYouTubeCaptions)
+    }
+  }, [isYouTube])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()

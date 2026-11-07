@@ -70,12 +70,17 @@ export function VideoBlockEditorSettings({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const isWebsite = journey?.website === true
+  // A card's background video has no parent order. Its player always mutes,
+  // autoplays and hides captions, so those settings are locked here.
+  const isBackgroundVideo =
+    selectedBlock != null && selectedBlock.parentOrder == null
   const { enqueueSnackbar } = useSnackbar()
 
   // Fetch closed captions using custom hook
   const { languages: availableSubtitles } = useYouTubeClosedCaptions({
     videoId: selectedBlock?.videoId,
     skip:
+      isBackgroundVideo ||
       selectedBlock?.source !== VideoBlockSource.youTube ||
       selectedBlock?.videoId == null
   })
@@ -145,6 +150,13 @@ export function VideoBlockEditorSettings({
       onSubmit: noop
     })
 
+  // Shown under whichever Subtitles control the video's source uses
+  const backgroundVideoSubtitlesHint = isBackgroundVideo ? (
+    <Typography variant="caption" sx={{ color: 'action.disabled' }}>
+      {t('Subtitles are turned off for background videos')}
+    </Typography>
+  ) : null
+
   return (
     <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
       <Stack direction="column" spacing={6}>
@@ -154,19 +166,25 @@ export function VideoBlockEditorSettings({
             <Typography
               variant="subtitle2"
               sx={{
-                color: selectedBlock == null ? 'action.disabled' : undefined
+                color:
+                  selectedBlock == null || isBackgroundVideo
+                    ? 'action.disabled'
+                    : undefined
               }}
             >
               {t('Subtitles')}
             </Typography>
             <YouTubeSubtitleSelector
-              selectedSubtitleId={values.subtitleLanguageId}
+              selectedSubtitleId={
+                isBackgroundVideo ? null : values.subtitleLanguageId
+              }
               availableLanguages={availableSubtitles}
               onChange={async (subtitleLanguageId) => {
                 await setFieldValue('subtitleLanguageId', subtitleLanguageId)
               }}
-              disabled={selectedBlock == null}
+              disabled={selectedBlock == null || isBackgroundVideo}
             />
+            {backgroundVideoSubtitlesHint}
             <Divider />
           </Stack>
         )}
@@ -182,6 +200,7 @@ export function VideoBlockEditorSettings({
                   : null
               }
               journeyLanguageBcp47={journey?.language.bcp47}
+              disabled={isBackgroundVideo}
               onChange={async (showGeneratedSubtitles) => {
                 await setValues(
                   {
@@ -195,6 +214,7 @@ export function VideoBlockEditorSettings({
                 )
               }}
             />
+            {backgroundVideoSubtitlesHint}
             <Divider />
           </Stack>
         )}
