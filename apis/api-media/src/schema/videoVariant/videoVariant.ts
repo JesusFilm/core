@@ -17,9 +17,11 @@ import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
+import { syncParentLanguage } from '../videoVariantReconciliation/reconcileParentVariants'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 import { videoVariantAwaitsMux } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
 
+import { canHavePlaceholderVariant } from './canHavePlaceholderVariant'
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
@@ -71,7 +73,7 @@ export async function createEmptyParentVariant(
   const [parentVideo, existingVariantWithLanguage] = await Promise.all([
     prisma.video.findUnique({
       where: { id: parentVideoId },
-      select: { slug: true, availableLanguages: true }
+      select: { slug: true }
     }),
     languageSlug
       ? null
@@ -106,12 +108,10 @@ export async function createEmptyParentVariant(
     )
   }
 
-  // Create empty variant for parent video and update available languages in a single transaction
-  const currentLanguages = parentVideo.availableLanguages || []
-  const updatedLanguages = Array.from(
-    new Set([...currentLanguages, languageId])
-  )
-
+  // Create empty variant for parent video and update available languages in a single transaction.
+  // The language update is a single atomic UPDATE (not a findUnique-then-set)
+  // so it can't lose a concurrent caller's own append to the same array --
+  // see addLanguageToVideo's doc comment in updateAvailableLanguages.ts.
   const newVariant = await prisma.$transaction(async (tx) => {
     const variant = await tx.videoVariant.create({
       data: {
@@ -130,10 +130,12 @@ export async function createEmptyParentVariant(
       }
     })
 
-    await tx.video.update({
-      where: { id: parentVideoId },
-      data: { availableLanguages: updatedLanguages }
-    })
+    await tx.$executeRaw`
+      UPDATE "Video"
+      SET "availableLanguages" = array_append(COALESCE("availableLanguages", ARRAY[]::TEXT[]), ${languageId})
+      WHERE id = ${parentVideoId}
+        AND NOT (${languageId} = ANY(COALESCE("availableLanguages", ARRAY[]::TEXT[])))
+    `
 
     return variant
   })
@@ -158,7 +160,7 @@ export async function handleParentVariantCreation(
           has: videoId
         }
       },
-      select: { id: true }
+      select: { id: true, label: true }
     }),
     prisma.videoVariant.findFirst({
       where: {
@@ -168,6 +170,9 @@ export async function handleParentVariantCreation(
       select: { published: true }
     })
   ])
+  const containerParents = parentVideos.filter((parent) =>
+    canHavePlaceholderVariant(parent.label)
+  )
 
   // Only create parent variants if:
   // 1. Video exists and is not a feature film
@@ -181,6 +186,28 @@ export async function handleParentVariantCreation(
     !childVariant?.published ||
     parentVideos.length === 0
   ) {
+    return
+  }
+
+  // Cascade the new language to every parent -- including featureFilm
+  // parents, which aggregate their segments' languages but (unlike
+  // collection/series) never get a placeholder Variant -- so
+  // availableLanguages stays correct even when no parent is eligible for
+  // one.
+  await Promise.allSettled(
+    parentVideos.map(async (parent) => {
+      try {
+        await syncParentLanguage(parent.id, languageId)
+      } catch (error) {
+        logger.error(
+          { error, parentId: parent.id },
+          'Failed to cascade language to parent'
+        )
+      }
+    })
+  )
+
+  if (containerParents.length === 0) {
     return
   }
 
@@ -209,7 +236,7 @@ export async function handleParentVariantCreation(
   }
 
   // Create empty variants for all parent videos in parallel
-  const promises = parentVideos.map((parent) =>
+  const promises = containerParents.map((parent) =>
     createEmptyParentVariant(parent.id, languageId, languageSlug).catch(
       (error) => {
         console.error(

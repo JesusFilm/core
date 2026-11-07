@@ -2210,7 +2210,7 @@ describe('videoVariant', () => {
           })
           vi.mocked(findContainerParentIds).mockResolvedValue(['collectionId'])
           prismaMock.video.findMany.mockResolvedValue([
-            { id: 'collectionId', slug: 'collection-slug' }
+            { id: 'collectionId', slug: 'collection-slug', label: 'collection' }
           ] as any)
           prismaMock.videoVariant.findFirst.mockResolvedValue(null)
           prismaMock.$transaction.mockImplementation(
@@ -2256,6 +2256,44 @@ describe('videoVariant', () => {
             'languageId'
           )
           expect(mockedVideoCacheReset).toHaveBeenCalledWith('collectionId')
+        })
+
+        it('does not create a placeholder Variant for a feature film parent when publishing inline', async () => {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: false,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: 'hls',
+            share: 'share',
+            muxVideo: { readyToStream: true }
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            slug: 'videoSlug/english',
+            published: true
+          })
+          vi.mocked(findContainerParentIds).mockResolvedValue(['filmId'])
+          prismaMock.video.findMany.mockResolvedValue([
+            { id: 'filmId', slug: 'film-slug', label: 'featureFilm' }
+          ] as any)
+          prismaMock.videoVariant.findFirst.mockResolvedValue(null)
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: true } }
+          })
+
+          expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+          expect(
+            prismaMock.videoVariantReconciliation.create
+          ).not.toHaveBeenCalled()
+          // The feature film's own availableLanguages still cascades.
+          expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+            'filmId',
+            'languageId'
+          )
+          expect(mockedVideoCacheReset).toHaveBeenCalledWith('filmId')
         })
 
         it('should request reconciliation for an explicit unpublish even when the published column is already false', async () => {
@@ -3160,6 +3198,90 @@ describe('videoVariant', () => {
     })
 
     describe('parent variant management', () => {
+      it('creates placeholder Variants only for container parents, never a feature film', async () => {
+        const { handleParentVariantCreation } = await import(
+          /* webpackChunkName: "videoVariant" */ './videoVariant'
+        )
+        prismaMock.video.findUnique.mockImplementation((async (args: any) =>
+          args.where.id === '1_jf6101-0-0'
+            ? { label: 'segment', published: true }
+            : { slug: args.where.id, availableLanguages: [] }) as any)
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: '1_jf-0-0', label: 'featureFilm' },
+          { id: 'jesus-chapters', label: 'collection' }
+        ] as any)
+        prismaMock.videoVariant.findFirst.mockImplementation((async (
+          args: any
+        ) => {
+          if (args.where.videoId === '1_jf6101-0-0') return { published: true }
+          if (args.where.videoId != null) return null
+          return { slug: 'jesus/19372-language' }
+        }) as any)
+        prismaMock.$transaction.mockImplementation(
+          (async (callback: any) => await callback(prismaMock)) as any
+        )
+        prismaMock.videoVariant.create.mockResolvedValue({ id: 'x' } as any)
+
+        await handleParentVariantCreation('1_jf6101-0-0', '19372')
+
+        expect(prismaMock.videoVariant.create).toHaveBeenCalledTimes(1)
+        expect(prismaMock.videoVariant.create).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            id: '19372_jesus-chapters',
+            videoId: 'jesus-chapters'
+          })
+        })
+        // Both parents -- including the feature film, which never gets a
+        // placeholder Variant -- still get their availableLanguages cascaded.
+        expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+          '1_jf-0-0',
+          '19372'
+        )
+        expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+          'jesus-chapters',
+          '19372'
+        )
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          '1_jf-0-0'
+        )
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          'jesus-chapters'
+        )
+        expect(mockedVideoCacheReset).toHaveBeenCalledWith('1_jf-0-0')
+        expect(mockedVideoCacheReset).toHaveBeenCalledWith('jesus-chapters')
+      })
+
+      it('cascades availableLanguages to a feature film parent without creating a placeholder Variant', async () => {
+        const { handleParentVariantCreation } = await import(
+          /* webpackChunkName: "videoVariant" */ './videoVariant'
+        )
+        prismaMock.video.findUnique.mockImplementation((async (args: any) =>
+          args.where.id === '1_jf6101-0-0'
+            ? { label: 'segment', published: true }
+            : { slug: args.where.id, availableLanguages: [] }) as any)
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: '1_jf-0-0', label: 'featureFilm' }
+        ] as any)
+        prismaMock.videoVariant.findFirst.mockImplementation((async (
+          args: any
+        ) => {
+          if (args.where.videoId === '1_jf6101-0-0') return { published: true }
+          return null
+        }) as any)
+
+        await handleParentVariantCreation('1_jf6101-0-0', '19372')
+
+        expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+        expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+          '1_jf-0-0',
+          '19372'
+        )
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          '1_jf-0-0'
+        )
+        expect(mockedVideoCacheReset).toHaveBeenCalledWith('1_jf-0-0')
+      })
+
       it('should have helper functions for managing parent video variants', async () => {
         // Test that the helper functions exist and are exported
         const { handleParentVariantCreation, handleParentVariantCleanup } =
