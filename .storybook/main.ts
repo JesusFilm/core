@@ -51,6 +51,15 @@ const config: StorybookConfig = {
 
   viteFinal: async (config) => {
     const __dirname = dirname(fileURLToPath(import.meta.url))
+    // The app imports its CommonJS i18n config into stories. Transform it as
+    // well as dependencies so Vite can expose its default export in previews.
+    config.build = {
+      ...config.build,
+      commonjsOptions: {
+        ...config.build?.commonjsOptions,
+        include: [/node_modules/, /next-i18next\.config\.js$/]
+      }
+    }
     config.resolve = config.resolve ?? {}
     config.resolve.alias = {
       ...config.resolve.alias,
