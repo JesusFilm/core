@@ -15,6 +15,8 @@ import {
 import ChevronLeft from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
+import { scrollBehavior } from '../libs/scrollBehavior'
+
 /** Sub-pixel scroll positions would otherwise leave the end arrow enabled. */
 const SCROLL_EDGE_TOLERANCE_PX = 1
 
@@ -78,7 +80,10 @@ export function useCarouselScroll(cardCount: number): CarouselScroll {
     if (row == null) return
     const step = pageStep(row)
     const towardRight = towardEnd === (direction !== 'rtl')
-    row.scrollBy({ left: towardRight ? step : -step, behavior: 'smooth' })
+    row.scrollBy({
+      left: towardRight ? step : -step,
+      behavior: scrollBehavior()
+    })
   }
 
   return {
@@ -130,7 +135,8 @@ export function CampaignCarouselArrows({
   const { direction, breakpoints } = useTheme()
   const rtl = direction === 'rtl'
 
-  function stopPropagation(event: MouseEvent<HTMLElement>): void {
+  /** A click on an arrow stops at the row, so it never reaches the card or section around it. */
+  function handleArrowsClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
   }
 
@@ -139,7 +145,7 @@ export function CampaignCarouselArrows({
       direction="row"
       spacing={1}
       data-testid="CampaignCarouselArrows"
-      onClick={stopPropagation}
+      onClick={handleArrowsClick}
       sx={{
         justifyContent: 'flex-end',
         [breakpoints.down('md')]: { display: 'none' }
