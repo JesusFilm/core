@@ -1,5 +1,7 @@
 data "aws_availability_zones" "current" {}
 
+data "aws_region" "current" {}
+
 resource "aws_vpc" "vpc" {
   cidr_block           = var.cidr
   enable_dns_hostnames = true
@@ -26,10 +28,9 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "jfp-public-subnet-${count.index}-${var.env}"
-    Env                      = var.env
-    Tier                     = "Public"
-    "kubernetes.io/role/elb" = "1"
+    Name = "jfp-public-subnet-${count.index}-${var.env}"
+    Env  = var.env
+    Tier = "Public"
   }
 }
 
@@ -60,10 +61,9 @@ resource "aws_subnet" "internal_subnet" {
   availability_zone = data.aws_availability_zones.current.names[count.index]
 
   tags = {
-    Name                              = "jfp-internal-subnet-${count.index}-${var.env}"
-    Env                               = var.env
-    Tier                              = "Internal"
-    "kubernetes.io/role/internal-elb" = "1"
+    Name = "jfp-internal-subnet-${count.index}-${var.env}"
+    Env  = var.env
+    Tier = "Internal"
   }
 }
 
@@ -101,6 +101,24 @@ resource "aws_eip" "eip" {
   domain = "vpc"
   tags = {
     Name = "jfp-eip-${var.env}"
+    Env  = var.env
+  }
+}
+
+# Gateway endpoints are free and keep same-region S3 traffic off the NAT
+# gateway, which otherwise bills every byte of it. ECR pulls image layers
+# from S3, so every task start goes this way.
+resource "aws_vpc_endpoint" "s3" {
+  count             = var.s3_gateway_endpoint ? 1 : 0
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = "com.amazonaws.${data.aws_region.current.id}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids = [
+    aws_route_table.internal_route_table.id,
+    aws_route_table.public_route_table.id,
+  ]
+  tags = {
+    Name = "jfp-s3-endpoint-${var.env}"
     Env  = var.env
   }
 }

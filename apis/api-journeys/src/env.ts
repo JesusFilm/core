@@ -24,6 +24,9 @@ export const env = createEnv({
     INTEROP_TOKEN: z.string().trim().min(1),
     JOURNEYS_ADMIN_URL: z.string().trim().min(1),
     JOURNEYS_REVALIDATE_ACCESS_TOKEN: z.string().trim().min(1),
+    // Not `z.url()` like PLAUSIBLE_URL: a malformed value only breaks the
+    // journey and embed links built from it, so `warnOnInvalidJourneysUrl`
+    // warns at start-up instead of failing boot.
     JOURNEYS_URL: z.string().trim().min(1),
     PLAUSIBLE_API_KEY: z.string().trim().min(1),
     PLAUSIBLE_URL: z.url().refine((url) => !url.endsWith('/'), {

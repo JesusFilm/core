@@ -5,6 +5,7 @@ module "prod" {
   cidr                         = "10.10.0.0/16"
   internal_url_name            = "service.internal"
   datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
+  s3_gateway_endpoint          = true
 }
 
 locals {
@@ -133,7 +134,6 @@ module "bastion" {
   instance_type      = "t3.medium"
 }
 
-
 module "cloudflared" {
   source             = "../../modules/aws/ec2-cloudflared"
   name               = "cloudflared"
@@ -177,18 +177,25 @@ module "short_links_clickhouse" {
   doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
 }
 
-# Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
-# EKS Platform Cluster. Serves plausible.central.jesusfilm.org (the module's
-# own record) for smoke tests; analytics.jesusfilm.org moves here in the
-# cutover step (modules/plausible/README.md). Apply only once its Doppler
-# token for the prd_ecs branch config is in SSM; the task then needs the EKS
-# ClickHouse NLB (README.md, "Prerequisites").
+# Plausible Analytics on ECS (arm64 Fargate). Serves analytics.jesusfilm.org
+# (a Cloudflare CNAME to the public ALB, by hand) and plausible.central.jesusfilm.org
+# (the module's own record, for smoke tests). Its events are in
+# short_links_clickhouse above, reached by the CLICKHOUSE_DATABASE_URL of the
+# prd_ecs Doppler branch config; that config's token must be in SSM before the
+# first apply (modules/plausible/README.md, "Prerequisites").
 module "plausible" {
   source = "../../modules/plausible"
   ecs_config = merge(local.public_ecs_config, {
     alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/api/health"
-      health_check_port = "8000"
+      # /login proves the container serves without touching ClickHouse.
+      # /api/health queries Postgres and ClickHouse on every probe, which
+      # kept waking the idle-scaled ClickHouse Cloud service every 10 s.
+      # /api/health stays the manual smoke test (modules/plausible/README.md).
+      # 302: until the first account exists, Plausible's FirstLaunchPlug
+      # redirects /login to /register. Still a serving container.
+      health_check_path    = "/login"
+      health_check_port    = "8000"
+      health_check_matcher = "200,302"
     })
   })
   env              = "prod"
@@ -254,113 +261,4 @@ module "postgresql" {
   subnet_group_name       = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id   = module.prod.private_rds_security_group_id
   PG_DATABASE_URL_ENV_VAR = "PRIVATE_DATABASE_URL"
-}
-
-module "eks" {
-  source                     = "../../modules/aws/eks"
-  env                        = "prod"
-  cluster_version            = var.versions.eks_cluster
-  node_version               = var.versions.eks_nodes
-  node_max_unavailable       = 1
-  node_ami_type              = "AL2023_x86_64_STANDARD"
-  enforce_sequential_upgrade = true
-  addons = {
-    for name, version in var.eks_addon_versions : name => {
-      version              = version
-      existing             = name == "eks-node-monitoring-agent"
-      configuration_values = lookup(local.eks_addon_configuration, name, null)
-    }
-  }
-  node_scaling_config = {
-    desired_size = 3
-    min_size     = 3
-    max_size     = 5
-  }
-  name               = "jfp-eks"
-  subnet_ids         = concat(module.prod.vpc.internal_subnets, module.prod.vpc.public_subnets)
-  security_group_ids = [module.prod.ecs.internal_ecs_security_group_id, module.prod.ecs.public_ecs_security_group_id]
-  vpc_id             = module.prod.vpc.id
-  subnet_ids_2a      = ["subnet-0b7c1e14af0ffb3ea", "subnet-036663ddfdb3b94b0"]
-  subnet_ids_2b      = ["subnet-05c389158df4b940a", "subnet-01aa708571a3e499c"]
-  subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
-}
-
-# Bounded EBS snapshot retention for the Plausible ClickHouse volumes: 7 daily
-# plus 4 weekly snapshots, replacing the former SnapScheduler schedule,
-# whose EBS snapshots were never deleted (the VolumeSnapshotClass uses
-# deletionPolicy: Retain).
-module "plausible_clickhouse_snapshots" {
-  source       = "../../modules/aws/ebs-snapshot-policy"
-  env          = "prod"
-  name         = "plausible-clickhouse"
-  cluster_name = module.eks.cluster_name
-  pvc_names = [
-    "plausible-analytics-clickhouse-data-plausible-analytics-clickhouse-0",
-    "plausible-analytics-clickhouse-replica-data-plausible-analytics-clickhouse-replica-0"
-  ]
-  schedules = [
-    { name = "daily", cron_expression = "cron(0 1 * * ? *)", retain_count = 7 },
-    { name = "weekly", cron_expression = "cron(0 2 ? * SUN *)", retain_count = 4 }
-  ]
-}
-
-locals {
-  # Preserve existing networking, fixed DNS replicas and resource requests
-  # while adopting the EKS bootstrap add-ons into Terraform.
-  eks_addon_configuration = {
-    "vpc-cni" = jsonencode({
-      "env" = {
-        "ADDITIONAL_ENI_TAGS"                   = "{}"
-        "ANNOTATE_POD_IP"                       = "false"
-        "AWS_VPC_CNI_NODE_PORT_SUPPORT"         = "true"
-        "AWS_VPC_ENI_MTU"                       = "9001"
-        "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG"    = "false"
-        "AWS_VPC_K8S_CNI_EXTERNALSNAT"          = "false"
-        "AWS_VPC_K8S_CNI_LOGLEVEL"              = "DEBUG"
-        "AWS_VPC_K8S_CNI_LOG_FILE"              = "/host/var/log/aws-routed-eni/ipamd.log"
-        "AWS_VPC_K8S_CNI_RANDOMIZESNAT"         = "prng"
-        "AWS_VPC_K8S_CNI_VETHPREFIX"            = "eni"
-        "AWS_VPC_K8S_PLUGIN_LOG_FILE"           = "/var/log/aws-routed-eni/plugin.log"
-        "AWS_VPC_K8S_PLUGIN_LOG_LEVEL"          = "DEBUG"
-        "DISABLE_INTROSPECTION"                 = "false"
-        "DISABLE_METRICS"                       = "false"
-        "DISABLE_NETWORK_RESOURCE_PROVISIONING" = "false"
-        "ENABLE_POD_ENI"                        = "false"
-        "ENABLE_PREFIX_DELEGATION"              = "false"
-        "ENABLE_SUBNET_DISCOVERY"               = "true"
-        "NETWORK_POLICY_ENFORCING_MODE"         = "standard"
-        "WARM_ENI_TARGET"                       = "1"
-        "WARM_PREFIX_TARGET"                    = "1"
-      }
-      "resources" = {
-        "requests" = {
-          "cpu" = "25m"
-        }
-      }
-      "nodeAgent" = {
-        "resources" = {
-          "requests" = {
-            "cpu" = "25m"
-          }
-        }
-      }
-    })
-    "coredns" = jsonencode({
-      corefile       = ".:53 {\n    errors\n    health {\n        lameduck 5s\n      }\n    ready\n    kubernetes cluster.local in-addr.arpa ip6.arpa {\n      pods insecure\n      fallthrough in-addr.arpa ip6.arpa\n    }\n    prometheus :9153\n    forward . /etc/resolv.conf\n    cache 30\n    loop\n    reload\n    loadbalance\n}\n"
-      "replicaCount" = 2
-      "resources" = {
-        "limits" = {
-          "memory" = "170Mi"
-        }
-        "requests" = {
-          "cpu"    = "100m"
-          "memory" = "70Mi"
-        }
-      }
-      "podDisruptionBudget" = {
-        "enabled"        = true
-        "maxUnavailable" = 1
-      }
-    })
-  }
 }

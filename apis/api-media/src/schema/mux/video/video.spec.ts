@@ -8,7 +8,7 @@ import { journeysPrismaMock } from '../../../../test/journeysPrismaMock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 
-import { enableDownload } from './service'
+import { enableDownload, getUpload, getVideo } from './service'
 
 // Mock the processVideoDownloads queue
 
@@ -604,7 +604,7 @@ describe('mux/video', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        ;(prismaMock.muxVideo.findFirstOrThrow as Mock).mockResolvedValue({
+        ;(prismaMock.muxVideo.findFirst as Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -632,6 +632,23 @@ describe('mux/video', () => {
           userId: 'userId',
           readyToStream: true
         })
+      })
+
+      it('should return null for an id with no video', async () => {
+        ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        ;(prismaMock.muxVideo.findFirst as Mock).mockResolvedValue(null)
+        const data = await authClient({
+          document: GET_MUX_VIDEO,
+          variables: { id: 'unknownId' }
+        })
+        expect(data).toHaveProperty('data.getMuxVideo', null)
+        expect(data).not.toHaveProperty('errors')
+        expect(getUpload).not.toHaveBeenCalled()
+        expect(getVideo).not.toHaveBeenCalled()
       })
     })
   })

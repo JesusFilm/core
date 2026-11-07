@@ -1,0 +1,1 @@
+export { LinkSettings } from './LinkSettings'

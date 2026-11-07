@@ -11,6 +11,7 @@ import {
   getPreferredItems
 } from '../../../../lib/getLanguageIdsFromTags'
 import { getImageUrl } from '../../../../lib/imageHelper'
+import { getComponentType } from '../../../../lib/mediaComponentType'
 
 import { mediaComponent } from './[mediaComponentId]'
 
@@ -216,9 +217,14 @@ mediaComponents.openapi(route, async (c) => {
             },
             children: true,
             availableLanguages: true,
+            // Must match the Variant the detail route reports (the
+            // `video.variant` GraphQL field): the published one in English.
+            // An unfiltered `take: 1` returns whichever Variant row Postgres
+            // reads first, which for a Video in many languages is arbitrary.
             variants: {
               select: {
                 hls: true,
+                dash: true,
                 lengthInMilliseconds: true,
                 languageId: true,
                 downloadable: true,
@@ -229,6 +235,7 @@ mediaComponents.openapi(route, async (c) => {
                   }
                 }
               },
+              where: { languageId: '529', published: true },
               take: 1
             }
           },
@@ -356,10 +363,13 @@ mediaComponents.openapi(route, async (c) => {
       )
 
       const variant = video.variants[0]
+      const componentType = getComponentType(variant?.hls, variant?.dash)
+      // Same rule as the detail route: the published English Variant's flag,
+      // but only for content. A container has no video file of its own, so
+      // its (possibly generated) parent Variant must not offer a download
+      // whose URL would 404.
       const isDownloadable =
-        video.label === 'collection' || video.label === 'series'
-          ? false
-          : (variant?.downloadable ?? false)
+        componentType === 'content' && (variant?.downloadable ?? false)
 
       const titleContent = getPreferredContent(video.title, metadataLanguages)
       const shortDescriptionContent = getPreferredContent(
@@ -373,9 +383,9 @@ mediaComponents.openapi(route, async (c) => {
 
       return {
         mediaComponentId: video.id,
-        componentType: variant?.hls != null ? 'content' : 'container',
+        componentType,
         subType: video.label,
-        contentType: variant?.hls != null ? 'video' : 'none',
+        contentType: componentType === 'content' ? 'video' : 'none',
         imageUrls: {
           thumbnail: getImageUrl(hdImage?.id, 'thumbnail'),
           videoStill: getImageUrl(hdImage?.id, 'videoStill'),
@@ -396,12 +406,10 @@ mediaComponents.openapi(route, async (c) => {
         containsCount: video.children.length,
         isDownloadable,
         downloadSizes: {
-          approximateSmallDownloadSizeInBytes: isDownloadable
-            ? (variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0)
-            : 0,
-          approximateLargeDownloadSizeInBytes: isDownloadable
-            ? (variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0)
-            : 0
+          approximateSmallDownloadSizeInBytes:
+            variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0,
+          approximateLargeDownloadSizeInBytes:
+            variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0
         },
         bibleCitations: video.bibleCitation.map((citation) => ({
           osisBibleBook: citation.osisId,

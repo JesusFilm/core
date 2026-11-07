@@ -373,8 +373,25 @@ enum MediaRole {
 }
 
 type Mutation {
-  createCloudflareUploadByFile(input: ImageInput, journeyId: ID): CloudflareImage!
-  createCloudflareUploadByUrl(url: String!, input: ImageInput, journeyId: ID): CloudflareImage!
+  createCloudflareUploadByFile(
+    input: ImageInput
+    journeyId: ID
+
+    """
+    The team the upload belongs to when no journey is given; the caller must be a member. Takes precedence over journeyId.
+    """
+    teamId: ID
+  ): CloudflareImage!
+  createCloudflareUploadByUrl(
+    url: String!
+    input: ImageInput
+    journeyId: ID
+
+    """
+    The team the upload belongs to when no journey is given; the caller must be a member. Takes precedence over journeyId.
+    """
+    teamId: ID
+  ): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput, journeyId: ID): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
@@ -2125,6 +2142,7 @@ type VideoVariant {
   """version control for master video file"""
   version: Int!
   video: Video
+  reconciliation: VideoVariantReconciliation
 }
 
 input VideoVariantCreateInput {
