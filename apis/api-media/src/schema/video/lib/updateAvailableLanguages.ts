@@ -99,7 +99,12 @@ export async function updateVideoAvailableLanguages(
 // lost-update race: both transactions read the same array and the second
 // write clobbers the first. Instead, do the read-modify-write as a single
 // atomic UPDATE so Postgres serializes concurrent callers on the row.
-// COALESCE handles the nullable column so array_append always has a base array.
+// The column is NOT NULL DEFAULT '{}' at the database level, but COALESCE
+// stays as cheap insurance against a NULL row surviving if this code path
+// deploys before the NOT NULL migration finishes applying (or a rollback
+// briefly reintroduces it mid-migration): without it, a NULL row would make
+// the WHERE clause evaluate to NULL and silently no-op instead of adding
+// the language.
 export async function addLanguageToVideo(
   videoId: string,
   languageId: string

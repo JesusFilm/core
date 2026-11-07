@@ -53,6 +53,7 @@ tools/langfuse-export/output/
 
 # nx generated files
 migrations.json
+.nx-native-tmp/
 
 # Generated Docusaurus files
 .docusaurus/
