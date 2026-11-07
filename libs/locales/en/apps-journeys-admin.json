@@ -1759,5 +1759,7 @@
   "Delete {{language}}?": "Delete {{language}}?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.",
   "Show country names": "Show country names",
-  "Countries": "Countries"
+  "Countries": "Countries",
+  "Rotate to portrait": "Rotate to portrait",
+  "Rotate to landscape": "Rotate to landscape"
 }

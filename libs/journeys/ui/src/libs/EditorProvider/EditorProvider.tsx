@@ -31,6 +31,10 @@ export enum ActiveCanvasDetailsDrawer {
   JourneyAppearance = 1,
   AddBlock = 2
 }
+export enum CanvasOrientation {
+  Portrait = 'portrait',
+  Landscape = 'landscape'
+}
 export interface EditorState {
   /**
    * activeCanvasDetailsDrawer indicates which drawer is currently visible on
@@ -52,6 +56,12 @@ export interface EditorState {
    * showAnalytics indicates if the analytics should be shown.
    * */
   showAnalytics?: boolean
+  /**
+   * canvasOrientation indicates how the Canvas frames the selected Step's
+   * Card: as a phone held upright (Portrait, the default when unset) or
+   * sideways (Landscape). A view choice for the Editor session only.
+   * */
+  canvasOrientation?: CanvasOrientation
   /**
    * store the result of the transformed GetJourneyAnalytics query.
    * */
@@ -151,6 +161,10 @@ interface SetShowAnalyticsAction {
   type: 'SetShowAnalyticsAction'
   showAnalytics: boolean
 }
+interface SetCanvasOrientationAction {
+  type: 'SetCanvasOrientationAction'
+  canvasOrientation: CanvasOrientation
+}
 interface SetAnalyticsAction {
   type: 'SetAnalyticsAction'
   analytics?: JourneyAnalytics
@@ -194,6 +208,7 @@ export type EditorAction =
   | SetSelectedStepByIdAction
   | SetStepsAction
   | SetShowAnalyticsAction
+  | SetCanvasOrientationAction
   | SetAnalyticsAction
   | SetHoveredStepAction
   | SetShowCardTemplatesAction
@@ -314,6 +329,11 @@ export const reducer = (
       return {
         ...state,
         showAnalytics: action.showAnalytics
+      }
+    case 'SetCanvasOrientationAction':
+      return {
+        ...state,
+        canvasOrientation: action.canvasOrientation
       }
     case 'SetAnalyticsAction':
       return {
