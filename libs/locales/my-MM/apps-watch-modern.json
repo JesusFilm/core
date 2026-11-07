@@ -1,17 +1,35 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} ယေရှုရုပ်ရှင်စီမံကိန်း"
   },
   "RootIndexPage": {
     "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
-    "description": "Watch, learn and share the gospel in over 2000 languages"
+    "title": "အခမဲ့ သမ္မာကျမ်းဗီဒီယို <underline>ထုတ်လွှင့်စာ</underline> ကြည့်တိုက်",
+    "description": "2000 гаруй хэлээр сайн мэдээг үзэж, сурч, хуваалцаарай"
+  },
+  "ModernTestPage": {
+    "pageTitle": "ခေတ်မီ စမ်းသပ်မှု",
+    "title": "ခေတ်မီ စမ်းသပ်စာမျက်နှာ",
+    "description": "ဤသည်မှာ ခေတ်မီနာရီအက်ပ်လီကေးရှင်းအတွက် စမ်းသပ်စာမျက်နှာဖြစ်သည်။ ၎င်းသည် လမ်းကြောင်းသတ်မှတ်ခြင်းနှင့် ကိုယ်စားပြုဆောင်ရွက်မှုအသစ်များကို ပြသသည်။",
+    "feature1": {
+      "title": "ခေတ်မီဗိသုကာ",
+      "description": "အကောင်းဆုံး စွမ်းဆောင်ရည်နှင့် ဖွံ့ဖြိုးသူအတွေ့အကြုံအတွက် Next.js App Router နှင့် ခေတ်မီ React ပုံစံများဖြင့် တည်ဆောက်ထားသည်။"
+    },
+    "feature2": {
+      "title": "ဉာဏ်ရည်ထက်မြက်သော လမ်းကြောင်းသတ်မှတ်ခြင်း",
+      "description": "အဆင့်မြင့် ပရောက်စီ လမ်းကြောင်းညွှန်ပြခြင်းသည် သင့်တော်သော နောက်ခံဝန်ဆောင်မှုများသို့ လိုအပ်သည့် ဒေတာပို့ဆောင်မှုများကို ဉာဏ်ပညာဖြင့် ညွှန်ပြပေးသည်။"
+    },
+    "feature3": {
+      "title": "တုံ့ပြန်နိုင်သော ဒီဇိုင်း",
+      "description": "စက်ပစ္စည်းနှင့် မည်သည့် မျက်နှာပြင်အရွယ်အစားတွင်မဆို ပြတ်သားစွာ လိုက်လျောညီထွေ လည်ပတ်နိုင်သည့် ပြည့်စုံသော တုံ့ပြန်နိုင်သော ဒီဇိုင်း။"
+    },
+    "footer": "ဤစာမျက်နှာကို ခေတ်မီ Watch အက်ပ်လီကေးရှင်းမှ ထက်မြက်သော proxy လမ်းကြောင်းညွှန်ပြမှုဖြင့် ပံ့ပိုးပေးထားသည်။"
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Something went wrong",
-    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
-    "errorDetails": "Error details",
-    "tryAgain": "Try again",
-    "unknownError": "Unknown error"
+    "somethingWentWrong": "တစ်ခုခုမှားသွားပြီ။",
+    "anErrorOccurred": "ဤစာမျက်နှာကို တင်စဉ် အမှားတစ်ခု ဖြစ်ပေါ်ခဲ့ပါသည်။ ပြန်လည်တင်ကြည့်ပါ။",
+    "errorDetails": "အမှားအသေးစိတ်",
+    "tryAgain": "ထပ်ကြိုးစားပါ",
+    "unknownError": "မသိသောအမှား"
   }
 }
