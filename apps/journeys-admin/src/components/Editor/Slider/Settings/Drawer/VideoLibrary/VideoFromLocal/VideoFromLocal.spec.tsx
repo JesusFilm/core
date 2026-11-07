@@ -39,7 +39,7 @@ describe('VideoFromLocal', () => {
       slug: 'video-slug/english',
       label: 'featureFilm',
       image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+        'https://imagedelivery.net/testAccount/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
       imageAlt: 'Life of Jesus (Gospel of John)',
       childrenCount: 49,
       objectID: '2_529-GOJ-0-0'

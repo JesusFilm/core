@@ -6,7 +6,7 @@ describe('MediaListItem', () => {
   it('should render content', async () => {
     const { getByRole } = render(
       <MediaListItem
-        image="https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
+        image="https://imagedelivery.net/testAccount/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
         title="Heading"
         description="Description"
         overline="Overline"
@@ -20,7 +20,7 @@ describe('MediaListItem', () => {
   it('should have link', () => {
     const { getByRole } = render(
       <MediaListItem
-        image="https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
+        image="https://imagedelivery.net/testAccount/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg"
         title="Heading"
         description="Description"
         href="/href"

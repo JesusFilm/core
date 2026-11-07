@@ -115,7 +115,7 @@ const Template: StoryObj<
               video: {
                 id: '2_Acts7302-0-0',
                 image:
-                  'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+                  'https://imagedelivery.net/testAccount/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
                 primaryLanguageId: '529',
                 title: [
                   {
