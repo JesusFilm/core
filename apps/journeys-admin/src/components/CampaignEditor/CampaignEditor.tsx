@@ -30,6 +30,7 @@ import type { LocalizeTab } from './LocalizePanel'
 import { Navigator, NavigatorHoverProvider } from './Navigator'
 import { PagesPanel } from './PagesPanel'
 import { TranslationRunProvider } from './TranslationRunProvider'
+import { CampaignCommandProvider } from './utils/useCampaignCommand'
 
 /**
  * The editor shell is desktop only: narrower viewports get a message, no
@@ -205,13 +206,18 @@ export function CampaignEditor({
   return (
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
-        <MuxVideoUploadProvider>
-          <TranslationRunProvider>
-            <NavigatorHoverProvider>
-              <CampaignEditorShell campaign={campaign} isManager={isManager} />
-            </NavigatorHoverProvider>
-          </TranslationRunProvider>
-        </MuxVideoUploadProvider>
+        <CampaignCommandProvider>
+          <MuxVideoUploadProvider>
+            <TranslationRunProvider>
+              <NavigatorHoverProvider>
+                <CampaignEditorShell
+                  campaign={campaign}
+                  isManager={isManager}
+                />
+              </NavigatorHoverProvider>
+            </TranslationRunProvider>
+          </MuxVideoUploadProvider>
+        </CampaignCommandProvider>
       </CampaignEditorProvider>
     </CommandProvider>
   )

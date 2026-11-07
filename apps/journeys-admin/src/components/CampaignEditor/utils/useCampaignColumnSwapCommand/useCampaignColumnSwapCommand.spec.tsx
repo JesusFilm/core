@@ -1,15 +1,17 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithColumns } from '../../data'
 import { Inspector } from '../../Inspector'
 import {
   BlocksProbe,
   CommandProbe,
   QueriedEditor,
-  SelectionProbe
+  SelectionProbe,
+  UndoRedo,
+  holdRequests,
+  landRequests
 } from '../../testing'
 
 function slotRows(order: string[]): Array<Record<string, unknown>> {
@@ -59,7 +61,7 @@ const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderEditor(
   selectedBlockId: string,
-  mocks: Array<Record<string, unknown>> = [
+  mocks: MockLink.MockedResponse[] = [
     swapMock,
     swapBackMock,
     swapAgainMock,
@@ -68,16 +70,15 @@ function renderEditor(
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignData={campaignWithColumns}
+      campaign={campaignWithColumns}
       initialState={{ selectedBlockId, inspectorTab: 'settings' }}
       mocks={mocks}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector isManager />
     </QueriedEditor>
   )
 }
@@ -86,28 +87,33 @@ function parentOrderOf(id: string): string {
   return screen.getByTestId(`Block-${id}`).textContent?.split('|')[2] ?? ''
 }
 
-describe('useColumnSwapCommand', () => {
+describe('useCampaignColumnSwapCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('swaps the two slots as one Command: order update on the slot, shown at once', async () => {
-    renderEditor('slotRichTextId')
+    renderEditor('slotRichTextId', [{ ...swapMock, delay: 0 }])
     await waitFor(() =>
       expect(screen.getByTestId('Block-slotLeftId')).toBeInTheDocument()
     )
     expect(parentOrderOf('slotLeftId')).toBe('0')
     expect(parentOrderOf('slotRightId')).toBe('1')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Swap columns' }))
-
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
-    // Optimistic: renumbered before the request returns.
-    await waitFor(() => expect(parentOrderOf('slotLeftId')).toBe('1'))
-    expect(parentOrderOf('slotRightId')).toBe('0')
-    expect(swapMock.result).not.toHaveBeenCalled()
-    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
-      'slotRichTextId'
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Swap columns' }))
     )
-    await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+    try {
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+      // Optimistic: renumbered before the held request returns.
+      expect(parentOrderOf('slotLeftId')).toBe('1')
+      expect(parentOrderOf('slotRightId')).toBe('0')
+      expect(swapMock.result).not.toHaveBeenCalled()
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'slotRichTextId'
+      )
+    } finally {
+      await landRequests()
+    }
+    expect(swapMock.result).toHaveBeenCalled()
     expect(parentOrderOf('slotLeftId')).toBe('1')
     expect(parentOrderOf('slotRightId')).toBe('0')
   })
