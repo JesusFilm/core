@@ -150,6 +150,27 @@ describe('reconcileVideoVariantReconciliation', () => {
     expect(sqlParts.join(' ')).toContain('EXISTS')
     expect(values).toEqual(['variant-1', 'variant-1'])
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
+    // Regression guard: updateVideoInAlgolia's Video select now filters its
+    // variants on published=true, so each Video record sync above must run
+    // after its own Variant's publish write, not before it.
+    const episodeSyncOrder =
+      vi.mocked(updateVideoInAlgolia).mock.invocationCallOrder[
+        vi
+          .mocked(updateVideoInAlgolia)
+          .mock.calls.findIndex(([videoId]) => videoId === 'episode-1')
+      ]
+    const seriesSyncOrder =
+      vi.mocked(updateVideoInAlgolia).mock.invocationCallOrder[
+        vi
+          .mocked(updateVideoInAlgolia)
+          .mock.calls.findIndex(([videoId]) => videoId === 'series-1')
+      ]
+    expect(episodeSyncOrder).toBeGreaterThan(
+      prismaMock.$executeRaw.mock.invocationCallOrder[0]
+    )
+    expect(seriesSyncOrder).toBeGreaterThan(
+      prismaMock.videoVariant.update.mock.invocationCallOrder[0]
+    )
     expect(result).toMatchObject({ publicationReady: true, status: 'complete' })
   })
 

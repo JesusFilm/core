@@ -247,7 +247,7 @@ describe('videoAlgolia', () => {
         })
       })
 
-      it('should handle container videos (collection/series) correctly', async () => {
+      it('should not force collection/series to not downloadable', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -265,7 +265,7 @@ describe('videoAlgolia', () => {
             {
               hls: null, // No HLS for container
               lengthInMilliseconds: 0,
-              downloadable: true // Should be forced to false for collection
+              downloadable: true
             }
           ]
         } as any)
@@ -277,7 +277,7 @@ describe('videoAlgolia', () => {
           componentType: 'container',
           contentType: 'none',
           lengthInMilliseconds: 0,
-          isDownloadable: false,
+          isDownloadable: true,
           restrictViewArclight: false,
           keywords: []
         })
@@ -293,6 +293,95 @@ describe('videoAlgolia', () => {
           recordUrl:
             'https://www.algolia.com/apps/test-app-id/explorer/browse/test-videos-index?query=collectionId'
         })
+      })
+
+      it('should flag a collection still indexed with the old forced false', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'collectionId',
+          label: 'collection',
+          restrictViewPlatforms: [],
+          keywords: [],
+          variants: [{ hls: null, lengthInMilliseconds: 0, downloadable: true }]
+        } as any)
+
+        getObjectSpy.mockResolvedValue({
+          objectID: 'collectionId',
+          mediaComponentId: 'collectionId',
+          subType: 'collection',
+          componentType: 'container',
+          contentType: 'none',
+          lengthInMilliseconds: 0,
+          isDownloadable: false, // stale record from before the override was dropped
+          restrictViewArclight: false,
+          keywords: []
+        })
+
+        const result = await authClient({
+          document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
+          variables: { videoId: 'collectionId' }
+        })
+
+        expect(result).toHaveProperty('data.checkVideoInAlgolia.ok', false)
+        expect(
+          (result as any).data.checkVideoInAlgolia.mismatches
+        ).toContainEqual({
+          field: 'isDownloadable',
+          expected: 'true',
+          actual: 'false'
+        })
+      })
+
+      it('should compare against the published English variant only', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          label: 'featureFilm',
+          restrictViewPlatforms: [],
+          keywords: [],
+          variants: []
+        } as any)
+
+        getObjectSpy.mockResolvedValue({
+          objectID: 'videoId',
+          mediaComponentId: 'videoId',
+          subType: 'featureFilm',
+          componentType: 'container',
+          contentType: 'none',
+          lengthInMilliseconds: 0,
+          isDownloadable: false,
+          restrictViewArclight: false,
+          keywords: []
+        })
+
+        await authClient({
+          document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
+          variables: { videoId: 'videoId' }
+        })
+
+        expect(prismaMock.video.findUnique).toHaveBeenCalledWith(
+          expect.objectContaining({
+            select: expect.objectContaining({
+              variants: expect.objectContaining({
+                where: { languageId: '529', published: true }
+              })
+            })
+          })
+        )
       })
 
       it('should handle arclight restriction correctly', async () => {
