@@ -622,12 +622,23 @@ builder.mutationFields((t) => ({
         throw new Error(`VideoVariant with id ${input.id} not found`)
       }
 
-      await assertVariantWriteAllowedForContainer({
-        videoId: input.videoId ?? currentVariant.videoId,
-        hls: input.hls ?? currentVariant.hls,
-        dash: input.dash ?? currentVariant.dash,
-        muxVideoId: input.muxVideoId ?? currentVariant.muxVideoId
-      })
+      // Only re-check the childless-container guard when this write actually
+      // touches a field the guard cares about. Otherwise a legacy variant
+      // that already sits on a childless container (predating the guard)
+      // can never be unpublished, or have unrelated fields edited, again.
+      const touchesContainerOrMedia =
+        input.videoId != null ||
+        input.hls != null ||
+        input.dash != null ||
+        input.muxVideoId != null
+      if (touchesContainerOrMedia) {
+        await assertVariantWriteAllowedForContainer({
+          videoId: input.videoId ?? currentVariant.videoId,
+          hls: input.hls ?? currentVariant.hls,
+          dash: input.dash ?? currentVariant.dash,
+          muxVideoId: input.muxVideoId ?? currentVariant.muxVideoId
+        })
+      }
 
       const nextLanguageId = input.languageId ?? currentVariant.languageId
       const languageChanged = nextLanguageId !== currentVariant.languageId

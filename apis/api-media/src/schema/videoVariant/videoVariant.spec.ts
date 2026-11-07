@@ -2452,6 +2452,54 @@ describe('videoVariant', () => {
         )
         expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
       })
+
+      it('allows unpublishing a legacy playable variant on a childless series or collection', async () => {
+        // Simulates data that predates the childless-container guard: the
+        // guard must not block an unpublish that doesn't touch video/media
+        // fields just because the existing row is already playable.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          published: true,
+          videoId: 'videoId',
+          languageId: 'languageId',
+          edition: 'base',
+          hls: 'hls',
+          dash: null,
+          muxVideoId: null,
+          share: 'share',
+          muxVideo: { readyToStream: true }
+        } as any)
+        prismaMock.videoVariant.update.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          dash: null,
+          muxVideoId: null,
+          videoId: 'videoId',
+          languageId: 'languageId',
+          edition: 'base',
+          share: 'share',
+          published: false
+        } as any)
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_UPDATE_MUTATION,
+          variables: { input: { id: 'id', published: false } }
+        })
+
+        expect(result).not.toHaveProperty('errors')
+        expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
+        expect(prismaMock.videoVariant.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ published: false })
+          })
+        )
+      })
     })
 
     describe('videoVariantDelete', () => {
