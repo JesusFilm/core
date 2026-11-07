@@ -1,10 +1,12 @@
 import { Mock, vi } from 'vitest'
+import { mockDeep } from 'vitest-mock-extended'
 
+import { Prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
 import { prismaMock } from '../../../test/prismaMock'
 
-import { findOrFetchUser } from './findOrFetchUser'
+import { UserEmailConflictError, findOrFetchUser } from './findOrFetchUser'
 import { user } from './user.mock'
 import { verifyUser } from './verifyUser'
 
@@ -52,6 +54,25 @@ describe('findOrFetchUser', () => {
       where: { userId: 'userId' },
       data: { emailVerified: true }
     })
+  })
+
+  it('should throw a typed conflict when syncing an existing user onto an email another row already holds', async () => {
+    ;(auth.getUser as Mock).mockReturnValueOnce({
+      emailVerified: true,
+      email: 'taken@email.com'
+    })
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    prismaMock.user.update.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+        code: 'P2002',
+        clientVersion: '',
+        meta: { target: ['email'] }
+      })
+    )
+
+    await expect(findOrFetchUser({}, 'userId', undefined)).rejects.toThrow(
+      UserEmailConflictError
+    )
   })
 
   it('should update profile fields when emailVerified transitions to true', async () => {
@@ -235,10 +256,13 @@ describe('findOrFetchUser', () => {
   })
 
   it('should create new user', async () => {
+    vi.mocked(verifyUser).mockClear()
     prismaMock.user.findUnique.mockResolvedValueOnce(null)
     prismaMock.user.create.mockResolvedValueOnce(user)
     const data = await findOrFetchUser({}, 'userId', undefined)
     expect(data).toEqual(user)
+    expect(prismaMock.user.update).not.toHaveBeenCalled()
+    expect(prismaMock.$transaction).not.toHaveBeenCalled()
     expect(prismaMock.user.create).toHaveBeenCalledWith({
       data: {
         email: 'amin@email.com',
@@ -255,6 +279,26 @@ describe('findOrFetchUser', () => {
       undefined,
       undefined
     )
+  })
+
+  it('should normalize a mixed-case Firebase email before create', async () => {
+    ;(auth.getUser as Mock).mockReturnValueOnce({
+      id: '1',
+      userId: '1',
+      createdAt: new Date('2021-01-01T00:00:00.000Z'),
+      displayName: 'Amin One',
+      email: 'Amin@Email.com',
+      photoURL: 'https://bit.ly/3Gth4',
+      emailVerified: false
+    })
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockResolvedValueOnce(user)
+
+    await findOrFetchUser({}, 'userId', undefined)
+
+    expect(prismaMock.user.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ email: 'amin@email.com' })
+    })
   })
 
   it('should create anonymous user with null email', async () => {
@@ -328,5 +372,533 @@ describe('findOrFetchUser', () => {
       undefined,
       'NextSteps'
     )
+  })
+
+  describe('when create hits a unique constraint', () => {
+    // A user whose Firebase uid changed (e.g. re-created by the January 2026
+    // Okta bulk load) has no row for the new uid, while an older row with a
+    // different uid still holds the same email.
+    const newUid = 'newFirebaseUid'
+    const oldUid = 'oldFirebaseUid'
+    const email = 'amin@email.com'
+    const existingRow = {
+      ...user,
+      id: 'userRecordId',
+      userId: oldUid,
+      email,
+      emailVerified: true,
+      superAdmin: false
+    }
+
+    const uniqueConstraintError = new Prisma.PrismaClientKnownRequestError(
+      'Unique constraint failed',
+      { code: 'P2002', clientVersion: '', meta: { target: ['email'] } }
+    )
+    const recordNotFoundError = new Prisma.PrismaClientKnownRequestError(
+      'Record to update not found',
+      { code: 'P2025', clientVersion: '' }
+    )
+
+    function mockFirebaseUser(emailVerified: boolean): void {
+      ;(auth.getUser as Mock).mockReturnValueOnce({
+        uid: newUid,
+        displayName: 'Amin One',
+        email,
+        photoURL: 'https://bit.ly/3Gth4',
+        emailVerified
+      })
+    }
+
+    // Mirrors the database: there is no row keyed to the new uid, so an
+    // update by that uid fails exactly as it does in production.
+    function mockNoRowForNewUid(): void {
+      prismaMock.user.update.mockImplementation((args) => {
+        if (args.where.userId === newUid) throw recordNotFoundError
+        return undefined as never
+      })
+    }
+
+    function mockTransaction(): ReturnType<
+      typeof mockDeep<Prisma.TransactionClient>
+    > {
+      const tx = mockDeep<Prisma.TransactionClient>()
+      prismaMock.$transaction.mockImplementation(
+        async (callback: unknown) =>
+          await (callback as (tx: Prisma.TransactionClient) => unknown)(tx)
+      )
+      return tx
+    }
+
+    beforeEach(() => {
+      vi.mocked(verifyUser).mockClear()
+      prismaMock.user.create.mockRejectedValue(uniqueConstraintError)
+      mockNoRowForNewUid()
+    })
+
+    it('should return the row a concurrent call created for the same uid', async () => {
+      mockFirebaseUser(false)
+      const racedRow = { ...user, userId: newUid }
+      // The concurrent call's row exists, so an update by uid would succeed;
+      // re-reading it is what we want, not overwriting it.
+      prismaMock.user.update.mockReset()
+      prismaMock.user.update.mockResolvedValue(racedRow)
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(racedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(racedRow)
+      expect(prismaMock.user.findUnique).toHaveBeenLastCalledWith({
+        where: { userId: newUid }
+      })
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
+    it('should mark the raced row verified when Firebase confirms verification', async () => {
+      mockFirebaseUser(true)
+      const racedRow = { ...user, userId: newUid, emailVerified: false }
+      const verifiedRacedRow = { ...racedRow, emailVerified: true }
+      prismaMock.user.update.mockReset()
+      prismaMock.user.update.mockResolvedValueOnce(verifiedRacedRow)
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(racedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(verifiedRacedRow)
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: { userId: newUid },
+        data: { emailVerified: true, email }
+      })
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    })
+
+    it('should not overwrite the raced row email when Firebase has none', async () => {
+      ;(auth.getUser as Mock).mockReturnValueOnce({
+        uid: newUid,
+        displayName: 'Amin One',
+        email: null,
+        photoURL: 'https://bit.ly/3Gth4',
+        emailVerified: true
+      })
+      const racedRow = { ...user, userId: newUid, emailVerified: false }
+      const verifiedRacedRow = { ...racedRow, emailVerified: true }
+      prismaMock.user.update.mockReset()
+      prismaMock.user.update.mockResolvedValueOnce(verifiedRacedRow)
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(racedRow)
+
+      await findOrFetchUser({}, newUid, undefined)
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: { userId: newUid },
+        data: { emailVerified: true }
+      })
+    })
+
+    it('should sync the email on an already-verified raced row when the email changed', async () => {
+      mockFirebaseUser(true)
+      const racedRow = {
+        ...user,
+        userId: newUid,
+        emailVerified: true,
+        email: 'old@email.com'
+      }
+      const syncedRow = { ...racedRow, email }
+      prismaMock.user.update.mockReset()
+      prismaMock.user.update.mockResolvedValueOnce(syncedRow)
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(racedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(syncedRow)
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: { userId: newUid },
+        data: { emailVerified: true, email }
+      })
+    })
+
+    it('should return the raced row unchanged when already verified and the email matches', async () => {
+      mockFirebaseUser(true)
+      const racedRow = { ...user, userId: newUid, emailVerified: true, email }
+      prismaMock.user.update.mockReset()
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(racedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(racedRow)
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+    })
+
+    it('should throw a typed conflict when the raced row email sync collides with another row', async () => {
+      mockFirebaseUser(true)
+      const racedRow = { ...user, userId: newUid, emailVerified: false }
+      prismaMock.user.update.mockReset()
+      prismaMock.user.update.mockRejectedValueOnce(uniqueConstraintError)
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(racedRow)
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        UserEmailConflictError
+      )
+    })
+
+    it('should re-link the row holding a verified email to the new uid', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      tx.user.findUnique.mockResolvedValueOnce(existingRow)
+      const relinkedRow = { ...existingRow, userId: newUid }
+      tx.user.update.mockResolvedValueOnce(relinkedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(relinkedRow)
+      expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
+      expect(tx.user.findUnique).toHaveBeenCalledWith({ where: { email } })
+      // Only the uid moves: the row keeps its id and the rest of its fields.
+      expect(tx.user.update).toHaveBeenCalledWith({
+        where: { id: existingRow.id, userId: oldUid, email, superAdmin: false },
+        data: { userId: newUid, emailVerified: true, email }
+      })
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
+    it('should guard the relink against the holder email changing between read and write', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      // The holder's own sync (e.g. a later Firebase read) changes this
+      // row's email between our read and the relink write, so the `email`
+      // guard on the update must lose the race rather than overwrite it.
+      tx.user.findUnique
+        .mockResolvedValueOnce(existingRow)
+        .mockResolvedValueOnce(null)
+      tx.user.update.mockRejectedValueOnce(recordNotFoundError)
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toBe(
+        recordNotFoundError
+      )
+      expect(tx.user.update).toHaveBeenCalledWith({
+        where: { id: existingRow.id, userId: oldUid, email, superAdmin: false },
+        data: { userId: newUid, emailVerified: true, email }
+      })
+    })
+
+    it('should return the already re-linked row when the holder lookup races a concurrent relink', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      const relinkedRow = { ...existingRow, userId: newUid }
+      // A concurrent call already relinked this exact email and normalized
+      // the row's email to lowercase as part of that write, so this lookup
+      // by the original (pre-normalization) string finds nothing.
+      tx.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(relinkedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(relinkedRow)
+      expect(tx.user.findUnique).toHaveBeenNthCalledWith(1, {
+        where: { email }
+      })
+      expect(tx.user.findUnique).toHaveBeenNthCalledWith(2, {
+        where: { userId: newUid }
+      })
+      expect(tx.user.update).not.toHaveBeenCalled()
+    })
+
+    it('should rethrow when the holder email disappeared and no row was relinked for this uid', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      tx.user.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(null)
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        'User row holding the email disappeared during re-link'
+      )
+      expect(tx.user.update).not.toHaveBeenCalled()
+    })
+
+    it('should refuse to re-link a superAdmin row', async () => {
+      mockFirebaseUser(true)
+      const superAdminRow = { ...existingRow, superAdmin: true }
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return superAdminRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      tx.user.findUnique.mockResolvedValueOnce(superAdminRow)
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        UserEmailConflictError
+      )
+      expect(tx.user.update).not.toHaveBeenCalled()
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
+    it('should return the already re-linked row when a parallel relink wins the race', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      const relinkedRow = { ...existingRow, userId: newUid }
+      // This call still sees the row on oldUid, but a parallel relink
+      // commits first, so our own guarded update matches no row.
+      tx.user.findUnique
+        .mockResolvedValueOnce(existingRow)
+        .mockResolvedValueOnce(relinkedRow)
+      tx.user.update.mockRejectedValueOnce(recordNotFoundError)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(relinkedRow)
+      expect(tx.user.update).toHaveBeenCalledTimes(1)
+      expect(tx.user.findUnique).toHaveBeenLastCalledWith({
+        where: { userId: newUid }
+      })
+    })
+
+    it('should return the row unchanged when a concurrent call already re-linked it', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+      const tx = mockTransaction()
+      const relinkedRow = { ...existingRow, userId: newUid }
+      tx.user.findUnique.mockResolvedValueOnce(relinkedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(relinkedRow)
+      expect(tx.user.update).not.toHaveBeenCalled()
+    })
+
+    it('should refuse to re-link when the Firebase email is not verified', async () => {
+      mockFirebaseUser(false)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        UserEmailConflictError
+      )
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
+    it('should expose the conflict as a typed GraphQL error code', async () => {
+      mockFirebaseUser(false)
+      prismaMock.user.findUnique.mockImplementation((args) => {
+        if (args.where.email === email) return existingRow as never
+        return null as never
+      })
+
+      await expect(
+        findOrFetchUser({}, newUid, undefined)
+      ).rejects.toMatchObject({ extensions: { code: 'USER_EMAIL_CONFLICT' } })
+    })
+
+    it('should rethrow the constraint error when no row explains it', async () => {
+      mockFirebaseUser(true)
+      prismaMock.user.findUnique.mockResolvedValue(null)
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toBe(
+        uniqueConstraintError
+      )
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('when a legacy row has a different email case', () => {
+    // The create path lowercases the email, but the unique index is
+    // case-sensitive: a legacy row stored as 'Amin@Email.com' would not
+    // collide with a create for 'amin@email.com', producing a duplicate row
+    // instead of relinking.
+    const newUid = 'newFirebaseUid'
+    const oldUid = 'oldFirebaseUid'
+    const legacyEmail = 'Amin@Email.com'
+    const legacyRow = {
+      ...user,
+      id: 'legacyRowId',
+      userId: oldUid,
+      email: legacyEmail,
+      emailVerified: true,
+      superAdmin: false
+    }
+
+    function mockFirebaseUser(emailVerified: boolean): void {
+      ;(auth.getUser as Mock).mockReturnValueOnce({
+        uid: newUid,
+        displayName: 'Amin One',
+        email: legacyEmail,
+        photoURL: 'https://bit.ly/3Gth4',
+        emailVerified
+      })
+    }
+
+    function mockTransaction(): ReturnType<
+      typeof mockDeep<Prisma.TransactionClient>
+    > {
+      const tx = mockDeep<Prisma.TransactionClient>()
+      prismaMock.$transaction.mockImplementation(
+        async (callback: unknown) =>
+          await (callback as (tx: Prisma.TransactionClient) => unknown)(tx)
+      )
+      return tx
+    }
+
+    beforeEach(() => {
+      vi.mocked(verifyUser).mockClear()
+      prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    })
+
+    it('should relink the legacy row instead of creating a duplicate', async () => {
+      mockFirebaseUser(true)
+      prismaMock.$queryRaw.mockResolvedValueOnce([{ email: legacyRow.email }])
+      const tx = mockTransaction()
+      tx.user.findUnique.mockResolvedValueOnce(legacyRow)
+      const relinkedRow = {
+        ...legacyRow,
+        userId: newUid,
+        email: 'amin@email.com'
+      }
+      tx.user.update.mockResolvedValueOnce(relinkedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(relinkedRow)
+      expect(data?.email).toBe('amin@email.com')
+      expect(prismaMock.user.create).not.toHaveBeenCalled()
+      expect(tx.user.findUnique).toHaveBeenCalledWith({
+        where: { email: legacyEmail }
+      })
+      // The row matched case-insensitively but is still written back
+      // lowercased, so it doesn't keep its legacy casing forever.
+      expect(tx.user.update).toHaveBeenCalledWith({
+        where: {
+          id: legacyRow.id,
+          userId: oldUid,
+          email: legacyEmail,
+          superAdmin: false
+        },
+        data: { userId: newUid, emailVerified: true, email: 'amin@email.com' }
+      })
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
+    it('should refuse to relink when a lowercase row already holds the normalized email', async () => {
+      mockFirebaseUser(true)
+      prismaMock.$queryRaw.mockResolvedValueOnce([{ email: legacyRow.email }])
+      const tx = mockTransaction()
+      const lowercaseHolder = {
+        ...legacyRow,
+        id: 'otherRowId',
+        userId: 'otherUid',
+        email: 'amin@email.com'
+      }
+      tx.user.findUnique
+        .mockResolvedValueOnce(legacyRow)
+        .mockResolvedValueOnce(lowercaseHolder)
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        UserEmailConflictError
+      )
+      expect(tx.user.update).not.toHaveBeenCalled()
+    })
+
+    it('should refuse to relink the legacy row when Firebase has not verified the email', async () => {
+      mockFirebaseUser(false)
+      prismaMock.$queryRaw.mockResolvedValueOnce([{ email: legacyRow.email }])
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        UserEmailConflictError
+      )
+      expect(prismaMock.user.create).not.toHaveBeenCalled()
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
+    it('should fall through to create when no row matches case-insensitively', async () => {
+      mockFirebaseUser(true)
+      prismaMock.$queryRaw.mockResolvedValueOnce([])
+      prismaMock.user.create.mockResolvedValueOnce({
+        ...legacyRow,
+        userId: newUid
+      })
+
+      await findOrFetchUser({}, newUid, undefined)
+
+      expect(prismaMock.user.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ email: 'amin@email.com' })
+      })
+    })
+
+    it('should match the holder by case-insensitive email without wildcard escaping', async () => {
+      // `%` and `_` are valid, unescaped RFC-5322 local-part characters.
+      // They would be ILIKE wildcards, but the lookup is now a plain
+      // LOWER(email) = LOWER($1) equality predicate, which treats them as
+      // literal characters -- no escaping needed, and no risk of
+      // 'jane_doe@x.com' matching an unrelated row like 'janeXdoe@x.com'.
+      ;(auth.getUser as Mock).mockReturnValueOnce({
+        uid: newUid,
+        displayName: 'Jane Doe',
+        email: 'jane_doe@x.com',
+        photoURL: 'https://bit.ly/3Gth4',
+        emailVerified: true
+      })
+      prismaMock.$queryRaw.mockResolvedValueOnce([])
+      prismaMock.user.create.mockResolvedValueOnce({
+        ...legacyRow,
+        userId: newUid,
+        email: 'jane_doe@x.com'
+      })
+
+      await findOrFetchUser({}, newUid, undefined)
+
+      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
+      expect(prismaMock.user.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ email: 'jane_doe@x.com' })
+      })
+    })
+  })
+
+  it('should rethrow errors from create that are not unique-constraint errors', async () => {
+    const connectionError = new Error('connection refused')
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockRejectedValueOnce(connectionError)
+
+    await expect(findOrFetchUser({}, 'userId', undefined)).rejects.toBe(
+      connectionError
+    )
+    expect(prismaMock.user.update).not.toHaveBeenCalled()
   })
 })
