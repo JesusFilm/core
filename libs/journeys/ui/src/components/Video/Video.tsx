@@ -37,6 +37,7 @@ import { InitAndPlay } from './InitAndPlay'
 import type { SubtitleTrack } from './InitAndPlay'
 import VideoJsPlayer from './utils/videoJsTypes'
 import { VideoControls } from './VideoControls'
+import { CAPTIONS_ABOVE_CONTROLS_CLASS } from './VideoControls/useCaptionOffset'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
@@ -270,7 +271,21 @@ export function Video({
                   backgroundColor: VIDEO_BACKGROUND_COLOR,
                   backgroundSize: 'cover',
                   transform: 'scale(1.1)'
-                }
+                },
+                // Keep captions clear of the mobile controls (see
+                // useCaptionOffset). !important beats the inset video.js
+                // writes inline when it fits captions to the video.
+                [`&.${CAPTIONS_ABOVE_CONTROLS_CLASS} > .vjs-text-track-display`]:
+                  {
+                    insetBlockEnd: 'var(--caption-bottom) !important',
+                    insetInline: 'var(--caption-inline) !important'
+                  },
+                // Safari draws captions natively, e.g. on iOS
+                [`&.${CAPTIONS_ABOVE_CONTROLS_CLASS} > .vjs-tech::-webkit-media-text-track-container`]:
+                  {
+                    transform: 'translateY(calc(-1 * var(--caption-bottom)))',
+                    paddingInline: 'var(--caption-inline)'
+                  }
               }}
             >
               {mediaVideo?.__typename == 'Video' &&
