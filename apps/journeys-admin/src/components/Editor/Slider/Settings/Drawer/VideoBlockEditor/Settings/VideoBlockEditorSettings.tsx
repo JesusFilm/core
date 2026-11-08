@@ -150,12 +150,10 @@ export function VideoBlockEditorSettings({
       onSubmit: noop
     })
 
-  // Shown under whichever Subtitles control the video's source uses
-  const backgroundVideoSubtitlesHint = isBackgroundVideo ? (
-    <Typography variant="caption" sx={{ color: 'action.disabled' }}>
-      {t('Subtitles are turned off for background videos')}
-    </Typography>
-  ) : null
+  // Shown under the Subtitles title, whichever control the source uses
+  const backgroundVideoSubtitlesHint = isBackgroundVideo
+    ? t('Subtitles are turned off for background videos')
+    : undefined
 
   return (
     <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
@@ -163,17 +161,24 @@ export function VideoBlockEditorSettings({
         {/* Youtube Subtitles */}
         {selectedBlock?.source === VideoBlockSource.youTube && (
           <Stack direction="column" spacing={4}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color:
-                  selectedBlock == null || isBackgroundVideo
-                    ? 'action.disabled'
-                    : undefined
-              }}
-            >
-              {t('Subtitles')}
-            </Typography>
+            <Stack>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color:
+                    selectedBlock == null || isBackgroundVideo
+                      ? 'action.disabled'
+                      : undefined
+                }}
+              >
+                {t('Subtitles')}
+              </Typography>
+              {backgroundVideoSubtitlesHint != null && (
+                <Typography variant="caption" sx={{ color: 'action.disabled' }}>
+                  {backgroundVideoSubtitlesHint}
+                </Typography>
+              )}
+            </Stack>
             <YouTubeSubtitleSelector
               selectedSubtitleId={
                 isBackgroundVideo ? null : values.subtitleLanguageId
@@ -184,7 +189,6 @@ export function VideoBlockEditorSettings({
               }}
               disabled={selectedBlock == null || isBackgroundVideo}
             />
-            {backgroundVideoSubtitlesHint}
             <Divider />
           </Stack>
         )}
@@ -201,6 +205,7 @@ export function VideoBlockEditorSettings({
               }
               journeyLanguageBcp47={journey?.language.bcp47}
               disabled={isBackgroundVideo}
+              hint={backgroundVideoSubtitlesHint}
               onChange={async (showGeneratedSubtitles) => {
                 await setValues(
                   {
@@ -214,7 +219,6 @@ export function VideoBlockEditorSettings({
                 )
               }}
             />
-            {backgroundVideoSubtitlesHint}
             <Divider />
           </Stack>
         )}
