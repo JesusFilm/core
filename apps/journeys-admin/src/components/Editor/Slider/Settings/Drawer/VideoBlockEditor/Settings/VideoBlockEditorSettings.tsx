@@ -152,7 +152,7 @@ export function VideoBlockEditorSettings({
 
   // Shown under the Subtitles title, whichever control the source uses
   const backgroundVideoSubtitlesHint = isBackgroundVideo
-    ? t('Subtitles are turned off for background videos')
+    ? t('Always turned off for background videos')
     : undefined
 
   return (
