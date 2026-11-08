@@ -54,8 +54,26 @@ export const JOURNEY_VISITOR_UPDATE = gql`
 // Safari on a phone only hides its toolbar when the page itself scrolls. In
 // landscape the page is made a little taller than the screen so a swipe up
 // can hide it, and the journey is pinned so the extra height never shows.
+// 500px is taller than any phone on its side but shorter than a tablet.
 const PHONE_LANDSCAPE =
   '@media (orientation: landscape) and (pointer: coarse) and (max-height: 500px)'
+
+// The two halves only work together: the page scrolls, the journey stays put
+const toolbarCollapseStyles = {
+  page: {
+    // 100px of scroll is enough for Safari to treat a swipe up as a page scroll
+    [PHONE_LANDSCAPE]: { height: 'calc(100lvh + 100px)' }
+  },
+  journey: {
+    [PHONE_LANDSCAPE]: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '100dvh'
+    }
+  }
+} as const
 
 interface ConductorProps {
   blocks: TreeBlock[]
@@ -214,7 +232,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const stepTheme = getStepTheme(activeBlock, journey)
 
   // Embeds are left alone: scrolling inside an iframe cannot hide the toolbar
-  const collapsibleToolbar = renderMode === 'default'
+  const canCollapseToolbar = renderMode === 'default'
 
   return (
     <HotkeysProvider>
@@ -237,9 +255,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             height: '100dvh',
             background: theme.palette.grey[900],
             overflow: 'hidden',
-            ...(collapsibleToolbar && {
-              [PHONE_LANDSCAPE]: { height: 'calc(100lvh + 100px)' }
-            })
+            ...(canCollapseToolbar && toolbarCollapseStyles.page)
           }}
         >
           <Stack
@@ -254,15 +270,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 lg: 'calc(54.25vw + 102px)'
               },
               px: { lg: 6 },
-              ...(collapsibleToolbar && {
-                [PHONE_LANDSCAPE]: {
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '100dvh'
-                }
-              })
+              ...(canCollapseToolbar && toolbarCollapseStyles.journey)
             }}
           >
             <StepHeader
