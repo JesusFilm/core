@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Dispatch, JSX, Ref, SetStateAction } from 'react'
+import { Dispatch, JSX, SetStateAction } from 'react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import VideoJsPlayer from '../../utils/videoJsTypes'
@@ -29,8 +29,6 @@ interface MobileControlsProps {
   source: VideoBlockSource
   visible: boolean
   setActive: Dispatch<SetStateAction<boolean>>
-  // The row captions are positioned against
-  buttonRowRef?: Ref<HTMLDivElement>
 }
 
 export function MobileControls({
@@ -49,8 +47,7 @@ export function MobileControls({
   player,
   source,
   visible,
-  setActive,
-  buttonRowRef
+  setActive
 }: MobileControlsProps): JSX.Element {
   return (
     <Container
@@ -64,7 +61,6 @@ export function MobileControls({
     >
       {/* Time Label and Fullscreen Button */}
       <Stack
-        ref={buttonRowRef}
         direction="row"
         sx={{
           gap: 5,
