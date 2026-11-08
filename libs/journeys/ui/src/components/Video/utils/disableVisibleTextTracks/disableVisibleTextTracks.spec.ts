@@ -1,8 +1,8 @@
 import VideoJsPlayer from '../videoJsTypes'
 
-import { disableAllSubtitles } from './disableAllSubtitles'
+import { disableVisibleTextTracks } from './disableVisibleTextTracks'
 
-describe('disableAllSubtitles', () => {
+describe('disableVisibleTextTracks', () => {
   function mockPlayer(tracks: Array<{ kind: string; mode: string }>): {
     player: VideoJsPlayer
     tracks: typeof tracks
@@ -19,7 +19,7 @@ describe('disableAllSubtitles', () => {
       { kind: 'captions', mode: 'hidden' }
     ])
 
-    disableAllSubtitles(player)
+    disableVisibleTextTracks(player)
 
     expect(tracks.map(({ mode }) => mode)).toEqual(['disabled', 'disabled'])
   })
@@ -30,7 +30,7 @@ describe('disableAllSubtitles', () => {
       { kind: 'descriptions', mode: 'showing' }
     ])
 
-    disableAllSubtitles(player)
+    disableVisibleTextTracks(player)
 
     expect(tracks.map(({ mode }) => mode)).toEqual(['disabled', 'disabled'])
   })
@@ -41,7 +41,7 @@ describe('disableAllSubtitles', () => {
       { kind: 'chapters', mode: 'showing' }
     ])
 
-    disableAllSubtitles(player)
+    disableVisibleTextTracks(player)
 
     expect(tracks.map(({ mode }) => mode)).toEqual(['hidden', 'showing'])
   })
@@ -51,6 +51,6 @@ describe('disableAllSubtitles', () => {
       textTracks: vi.fn(() => undefined)
     } as unknown as VideoJsPlayer
 
-    expect(() => disableAllSubtitles(player)).not.toThrow()
+    expect(() => disableVisibleTextTracks(player)).not.toThrow()
   })
 })

@@ -201,7 +201,8 @@ describe('BackgroundVideo', () => {
         vi.mocked(videojs).mockReturnValue({
           ...playerRefMock,
           on,
-          tech: () => ({ ytPlayer: { unloadModule } })
+          // Playing always unloads, even if YouTube reports no captions module
+          tech: () => ({ ytPlayer: { unloadModule, getOptions: () => [] } })
         } as unknown as Player)
 
         render(
@@ -257,6 +258,105 @@ describe('BackgroundVideo', () => {
         loadedModules = []
         handleApiChange()
         expect(unloadModule).toHaveBeenCalledTimes(1)
+      })
+
+      it('should leave unloading to playing when youtube cannot list its modules', () => {
+        const unloadModule = vi.fn()
+        const addEventListener = vi.fn()
+        vi.mocked(videojs).mockReturnValue({
+          ...playerRefMock,
+          ready: (callback: () => void) => callback(),
+          tech: () => ({ ytPlayer: { unloadModule, addEventListener } })
+        } as unknown as Player)
+
+        render(
+          <BackgroundVideo
+            setLoading={vi.fn()}
+            cardColor="black"
+            {...video}
+            source={VideoBlockSource.youTube}
+            mediaVideo={null}
+          />
+        )
+
+        const handleApiChange = addEventListener.mock.calls.find(
+          ([event]) => event === 'onApiChange'
+        )?.[1]
+        handleApiChange()
+        expect(unloadModule).not.toHaveBeenCalled()
+      })
+
+      it('should remove every caption listener when unmounted', () => {
+        const textTracks = Object.assign([], {
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn()
+        })
+        const off = vi.fn()
+        const addEventListener = vi.fn()
+        const removeEventListener = vi.fn()
+        vi.mocked(videojs).mockReturnValue({
+          ...playerRefMock,
+          off,
+          textTracks: () => textTracks,
+          ready: (callback: () => void) => callback(),
+          tech: () => ({
+            ytPlayer: {
+              unloadModule: vi.fn(),
+              addEventListener,
+              removeEventListener
+            }
+          })
+        } as unknown as Player)
+
+        const { unmount } = render(
+          <BackgroundVideo
+            setLoading={vi.fn()}
+            cardColor="black"
+            {...video}
+            source={VideoBlockSource.youTube}
+            mediaVideo={null}
+          />
+        )
+        unmount()
+
+        const removedTrackEvents =
+          textTracks.removeEventListener.mock.calls.map(([event]) => event)
+        expect(removedTrackEvents).toEqual(
+          expect.arrayContaining(['addtrack', 'change'])
+        )
+        expect(off).toHaveBeenCalledWith('playing', expect.any(Function))
+        expect(removeEventListener).toHaveBeenCalledWith(
+          'onApiChange',
+          addEventListener.mock.calls[0][1]
+        )
+      })
+
+      it('should not listen to youtube once unmounted before the player is ready', () => {
+        let handleReady: () => void = () => undefined
+        const addEventListener = vi.fn()
+        vi.mocked(videojs).mockReturnValue({
+          ...playerRefMock,
+          ready: (callback: () => void) => {
+            handleReady = callback
+          },
+          tech: () => ({
+            ytPlayer: { unloadModule: vi.fn(), addEventListener }
+          })
+        } as unknown as Player)
+
+        const { unmount } = render(
+          <BackgroundVideo
+            setLoading={vi.fn()}
+            cardColor="black"
+            {...video}
+            source={VideoBlockSource.youTube}
+            mediaVideo={null}
+          />
+        )
+        unmount()
+        handleReady()
+
+        expect(addEventListener).not.toHaveBeenCalled()
       })
     })
   })
