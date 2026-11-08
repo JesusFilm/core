@@ -304,11 +304,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               }}
             />
             {/* Mobile chat drawer. Rendered alongside (not instead of)
-                  the StepFooter: closed it sits off-screen and the
-                  footer's chat-button row — including the AiChatButton
-                  that opens it — stays visible; open it slides up over
-                  the footer. Stays mounted so the conversation survives
-                  close → reopen. */}
+                the StepFooter: closed it sits off-screen and the
+                footer's chat-button row — including the AiChatButton
+                that opens it — stays visible; open it slides up over
+                the footer. Stays mounted so the conversation survives
+                close → reopen. */}
             {showPinnedChat && (
               <PinnedChatBar
                 sx={{
