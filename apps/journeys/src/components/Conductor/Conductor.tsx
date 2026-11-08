@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 import { useMutation } from '@apollo/client/react'
+import GlobalStyles from '@mui/material/GlobalStyles'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
@@ -217,6 +218,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   return (
     <HotkeysProvider>
+      {/* Safari tints the areas around its toolbars from the page background */}
+      <GlobalStyles
+        styles={{ body: { backgroundColor: theme.palette.common.black } }}
+      />
       <HotkeyNavigation rtl={rtl} />
       <ThemeProvider
         themeName={ThemeName.journeyUi}
