@@ -7,6 +7,7 @@ import {
   CampaignPageKind,
   CampaignStringKey
 } from '../../../../__generated__/globalTypes'
+import { emotionClass, styleText } from '../../../test/emotionStyles'
 import { campaignChromeTrees } from '../CampaignPage/campaignChromeTrees'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -71,35 +72,23 @@ function renderHeader(
   {
     pageKind = CampaignPageKind.landing,
     region = null,
-    basePath
+    rtl = false
   }: {
     pageKind?: CampaignPageKind
     region?: CampaignRegion | null
-    basePath?: string
+    rtl?: boolean
   } = {}
 ) {
   const { header } = campaignChromeTrees(campaign)
   return render(
-    <ThemeProvider theme={theme}>
-      <CampaignProvider value={{ campaign, pageKind, region, basePath }}>
+    <ThemeProvider
+      theme={rtl ? createCampaignTheme(campaignPublic.theme, true) : theme}
+    >
+      <CampaignProvider value={{ campaign, pageKind, region }}>
         <CampaignHeader block={header} />
       </CampaignProvider>
     </ThemeProvider>
   )
-}
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
-}
-
-function emotionClass(element: Element): string {
-  const name = Array.from(element.classList).find((candidate) =>
-    candidate.startsWith('css-')
-  )
-  if (name == null) throw new Error('no emotion class')
-  return name.replace(/[-]/g, '\\-')
 }
 
 /** The element's base emotion rule body. */
@@ -189,7 +178,10 @@ describe('CampaignHeader', () => {
     })
 
     it('links to the domain root on a Campaign Domain', () => {
-      renderHeader(campaignPublic, { basePath: '' })
+      renderHeader({
+        ...campaignPublic,
+        customDomainNames: ['outreach.example.org']
+      })
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
         '/?lang=en'
@@ -222,6 +214,31 @@ describe('CampaignHeader', () => {
         )
       ).toBeInTheDocument()
       expect(chip).toHaveAttribute('href', '/campaign/outreach-2026?lang=en')
+    })
+
+    it("points the chip's arrow back in the reading direction", () => {
+      const { unmount } = renderHeader(campaignPublic, {
+        pageKind: CampaignPageKind.regionTemplate,
+        region: eurRegion
+      })
+      expect(
+        within(screen.getByTestId('CampaignAllRegionsChip')).getByTestId(
+          'ChevronLeftIcon'
+        )
+      ).toBeInTheDocument()
+      unmount()
+
+      renderHeader(campaignPublic, {
+        pageKind: CampaignPageKind.regionTemplate,
+        region: eurRegion,
+        rtl: true
+      })
+      const chip = screen.getByTestId('CampaignAllRegionsChip')
+      expect(within(chip).getByTestId('ChevronRightIcon')).toBeInTheDocument()
+      expect(
+        within(chip).queryByTestId('ChevronLeftIcon')
+      ).not.toBeInTheDocument()
+      expect(chip).toHaveAccessibleName('All regions')
     })
 
     it('leaves a blank allRegions string blank, keeping All regions as the accessible name', () => {
@@ -315,10 +332,11 @@ describe('CampaignHeader', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('writes the language cookie and reloads the page with the chosen language as the lang param', () => {
+    it("writes the campaign's own language cookie and reloads the page with the chosen language as the lang param", () => {
       const assign = vi.fn()
       const location = window.location
-      document.cookie = 'campaign-lang=en; path=/'
+      // jsdom may drop a Secure cookie on http://localhost, so the attributes are read off the setter.
+      const cookieSetter = vi.spyOn(document, 'cookie', 'set')
       Object.defineProperty(window, 'location', {
         configurable: true,
         value: {
@@ -333,7 +351,10 @@ describe('CampaignHeader', () => {
       expect(assign).toHaveBeenCalledWith(
         'http://localhost/campaign/outreach-2026?lang=fr#heroId'
       )
-      expect(document.cookie).toContain('campaign-lang=fr')
+      expect(cookieSetter).toHaveBeenCalledWith(
+        `campaign-lang-${campaignPublic.id}=fr; path=/; max-age=31536000; Secure; SameSite=Lax`
+      )
+      cookieSetter.mockRestore()
       Object.defineProperty(window, 'location', {
         configurable: true,
         value: location
@@ -345,6 +366,9 @@ describe('CampaignHeader', () => {
     it("renders the header's button children as the nav links", () => {
       renderHeader()
       const nav = screen.getByTestId('CampaignHeaderNav')
+      expect(screen.getByRole('navigation', { name: 'Page sections' })).toBe(
+        nav
+      )
       const links = within(nav).getAllByRole('link')
       expect(links.map((link) => link.textContent)).toEqual([
         'Home',
@@ -394,6 +418,28 @@ describe('CampaignHeader', () => {
       expect(resources).not.toHaveAttribute('href')
     })
 
+    it('renders no Typography child of the header, which shows only its Buttons', () => {
+      const footerLine = chromeBlocks.find(
+        (block) => block.__typename === 'CampaignTypographyBlock'
+      )
+      if (footerLine == null) throw new Error('no footer line')
+      const headerLine = {
+        ...footerLine,
+        id: 'headerLineId',
+        parentBlockId: 'headerId',
+        parentOrder: 2,
+        content: 'Header tagline'
+      }
+      renderHeader(withHeader({}, [...chromeBlocks, headerLine]))
+      expect(screen.queryByText('Header tagline')).not.toBeInTheDocument()
+      const nav = screen.getByTestId('CampaignHeaderNav')
+      expect(
+        within(nav)
+          .getAllByRole('link')
+          .map((link) => link.textContent)
+      ).toEqual(['Home', 'Resources'])
+    })
+
     it('renders no nav and no menu icon when the header has no button children', () => {
       renderHeader(withHeader({}, [headerBlock, footerBlock]))
       expect(screen.queryByTestId('CampaignHeaderNav')).not.toBeInTheDocument()
@@ -429,6 +475,15 @@ describe('CampaignHeader', () => {
         band.accent
       )
       expect(band.background).toBe('#26262E')
+    })
+
+    it('draws its bottom border inside the header height, so a scrolled-to band is not under it', () => {
+      renderHeader()
+      const rule = baseRule(screen.getByTestId('CampaignHeader'))
+      expect(rule).toContain(
+        'box-shadow:inset 0 -1px 0 var(--campaign-band-border)'
+      )
+      expect(rule).not.toContain('border-bottom')
     })
 
     it('rule 1: fixed elements take the band text and accent colours; nav buttons follow the button fallback chain', () => {

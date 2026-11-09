@@ -1,4 +1,5 @@
 export {
   CampaignRegionHeader,
-  CampaignRegionName
+  CampaignRegionName,
+  regionLineTexts
 } from './CampaignRegionHeader'
