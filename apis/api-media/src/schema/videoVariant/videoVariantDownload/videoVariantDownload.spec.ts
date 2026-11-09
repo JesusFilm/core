@@ -204,7 +204,8 @@ describe('videoVariantDownload', () => {
         })
         expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
           'videoId',
-          expect.objectContaining({ syncVideoRecord: true })
+          expect.objectContaining({ syncVideoRecord: true }),
+          expect.anything()
         )
         expect(result).toHaveProperty('data.videoVariantDownloadCreate', {
           id: 'id'
@@ -249,6 +250,21 @@ describe('videoVariantDownload', () => {
           createdAt: new Date(),
           updatedAt: new Date()
         })
+        prismaMock.videoVariantDownload.findUnique.mockResolvedValue({
+          id: 'id',
+          videoVariantId: 'videoVariantId',
+          quality: VideoVariantDownloadQuality.high,
+          size: 1024,
+          height: 1024,
+          width: 1024,
+          bitrate: 1024,
+          url: 'url',
+          assetId: null,
+          version: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          videoVariant: { videoId: 'videoId' }
+        } as any)
         prismaMock.videoVariantDownload.update.mockResolvedValue({
           id: 'id',
           videoVariantId: 'videoVariantId',
@@ -290,9 +306,79 @@ describe('videoVariantDownload', () => {
           },
           include: { videoVariant: { select: { videoId: true } } }
         })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledTimes(1)
         expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
           'videoId',
-          expect.objectContaining({ syncVideoRecord: true })
+          expect.objectContaining({ syncVideoRecord: true }),
+          expect.anything()
+        )
+        expect(result).toHaveProperty('data.videoVariantDownloadUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should sync both Videos when the download moves to a variant on a different Video', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariantDownload.findUnique.mockResolvedValue({
+          id: 'id',
+          videoVariantId: 'oldVariantId',
+          quality: VideoVariantDownloadQuality.high,
+          size: 1024,
+          height: 1024,
+          width: 1024,
+          bitrate: 1024,
+          url: 'url',
+          assetId: null,
+          version: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          videoVariant: { videoId: 'oldVideoId' }
+        } as any)
+        prismaMock.videoVariantDownload.update.mockResolvedValue({
+          id: 'id',
+          videoVariantId: 'newVariantId',
+          quality: VideoVariantDownloadQuality.high,
+          size: 1024,
+          height: 1024,
+          width: 1024,
+          bitrate: 1024,
+          url: 'url',
+          assetId: null,
+          version: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          videoVariant: { videoId: 'newVideoId' }
+        } as any)
+        const result = await authClient({
+          document: VIDEO_VARIANT_DOWNLOAD_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              videoVariantId: 'newVariantId',
+              quality: VideoVariantDownloadQuality.high,
+              size: 1024,
+              height: 1024,
+              width: 1024,
+              url: 'url'
+            }
+          }
+        })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledTimes(2)
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'oldVideoId',
+          expect.objectContaining({ syncVideoRecord: true }),
+          expect.anything()
+        )
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'newVideoId',
+          expect.objectContaining({ syncVideoRecord: true }),
+          expect.anything()
         )
         expect(result).toHaveProperty('data.videoVariantDownloadUpdate', {
           id: 'id'
@@ -362,7 +448,8 @@ describe('videoVariantDownload', () => {
         })
         expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
           'videoId',
-          expect.objectContaining({ syncVideoRecord: true })
+          expect.objectContaining({ syncVideoRecord: true }),
+          expect.anything()
         )
         expect(result).toHaveProperty('data.videoVariantDownloadDelete', {
           id: 'id'
