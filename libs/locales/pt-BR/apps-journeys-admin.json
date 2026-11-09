@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Isso remove definitivamente o texto, junto com o código QR da campanha e o link para compartilhar. As cópias do código QR que já foram impressas ou compartilhadas vão parar de redirecionar assim que o link for removido.",
   "Show country names": "Mostrar nomes de países",
   "Countries": "Países",
+  "Always turned off for background videos": "Sempre desativado para vídeos em segundo plano",
   "Appears on <0>{{count}}</0> card_one": "Aparece no <0>{{count}}</0> cartão",
   "Appears on <0>{{count}}</0> card_other": "Aparece no <0>{{count}}</0> cartão",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>cartão</1>",
