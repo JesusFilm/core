@@ -90,7 +90,7 @@ describe('campaignFooterBlockUpdate', () => {
   it('rejects a bad colour with the column as field (BAD_USER_INPUT)', async () => {
     const result = await update({ textColor: 'red' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'textColor'
     })
@@ -104,7 +104,7 @@ describe('campaignFooterBlockUpdate', () => {
 
     const result = await update({ backgroundKind: 'surface' }, 'headerId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -118,7 +118,7 @@ describe('campaignFooterBlockUpdate', () => {
 
     const result = await update({ backgroundKind: 'surface' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

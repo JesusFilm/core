@@ -64,7 +64,7 @@ fi
 if command -v apollo >/dev/null; then
   ok "apollo CLI (GraphQL codegen)"
 else
-  warn "apollo CLI not found — 'nx codegen <project>' will not work locally; install with 'npm i -g apollo graphql' (see AGENTS.md)."
+  warn "apollo CLI not found — 'nx codegen <project>' will not work locally; install with 'npm i -g apollo@2.34.0 graphql@16.10.0', the same pins as autofix.ci (see AGENTS.md)."
 fi
 
 # --- backing services --------------------------------------------------------

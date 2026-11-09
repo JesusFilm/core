@@ -1,5 +1,6 @@
 module "ecs-task" {
   source                = "../../../infrastructure/modules/aws/ecs-task"
+  capacity_provider     = var.env == "stage" ? "FARGATE_SPOT" : null
   ecs_config            = var.ecs_config
   service_config        = local.service_config
   env                   = var.env

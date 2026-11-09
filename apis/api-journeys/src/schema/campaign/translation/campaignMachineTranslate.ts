@@ -2,6 +2,12 @@ import { Output, streamText } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
+import {
+  isTranslationLanguage,
+  textLength,
+  truncate,
+  withMachineTranslation
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import { Campaign, prisma } from '@core/prisma/journeys/client'
 import {
   AiRequestTimeoutError,
@@ -19,7 +25,7 @@ import { campaignWrite } from '../campaignWrite'
 import { type CampaignMachineTranslateModeValue } from '../enums'
 import { badUserInput, conflict } from '../errors'
 import { fetchLanguageName } from '../gatewayClient'
-import { TranslationsJson, parseTranslations } from '../translatedValue'
+import { TranslationsJson } from '../translatedValue'
 
 import { CampaignMachineTranslateInput } from './inputs'
 import { CAMPAIGN_TEXT_FIELD_VALUES, translationsColumn } from './textFields'
@@ -174,13 +180,13 @@ function withinCap(
   cap: number,
   context: { targetId: string; field: string }
 ): string {
-  const characters = [...value]
-  if (characters.length <= cap) return value
+  const length = textLength(value)
+  if (length <= cap) return value
   logger.warn(
-    { ...context, length: characters.length, cap },
+    { ...context, length, cap },
     'Translated text exceeds the field cap and was truncated'
   )
-  return characters.slice(0, cap).join('').trim()
+  return truncate(value, cap).trim()
 }
 
 /**
@@ -230,13 +236,7 @@ async function writeBatch({
         where: { id: campaignId },
         select: { defaultLanguageId: true, languages: true }
       })
-      if (
-        campaign == null ||
-        campaign.defaultLanguageId === languageId ||
-        !campaign.languages.some(
-          (language) => language.languageId === languageId
-        )
-      ) {
+      if (campaign == null || !isTranslationLanguage(campaign, languageId)) {
         logger.warn(
           { campaignId, languageId, batch: batch.label },
           'Language is no longer a non-default campaign language; batch skipped'
@@ -255,22 +255,22 @@ async function writeBatch({
         const data: Record<string, TranslationsJson> = {}
         for (const row of rows) {
           const column = translationsColumn(row.field)
-          const json = data[column] ?? parseTranslations(record[column])
-          const existing = json[languageId]
-          const hasEntry = existing != null && existing.value !== ''
-          if (hasEntry && (mode === 'missing' || existing.source === 'human'))
-            continue
           const machine = translated.get(
             rowKey(targetId, row.field)
           ) as MachineTranslation
-          json[languageId] = {
-            value: withinCap(machine.value, row.maxLength, {
-              targetId,
-              field: row.field
-            }),
-            source: 'machine',
-            ...(machine.uncertain ? { uncertain: true } : {})
-          }
+          const json = withMachineTranslation(
+            data[column] ?? record[column],
+            languageId,
+            {
+              value: withinCap(machine.value, row.maxLength, {
+                targetId,
+                field: row.field
+              }),
+              uncertain: machine.uncertain
+            },
+            mode
+          )
+          if (json == null) continue
           data[column] = json
           written++
         }
@@ -393,10 +393,7 @@ export async function* campaignMachineTranslate(
       user,
       INCLUDE_TRANSLATIONS_CAMPAIGN
     )
-    if (
-      languageId === campaign.defaultLanguageId ||
-      !campaign.languages.some((language) => language.languageId === languageId)
-    )
+    if (!isTranslationLanguage(campaign, languageId))
       throw badUserInput(
         'languageId must be a campaign language other than the default',
         'languageId'

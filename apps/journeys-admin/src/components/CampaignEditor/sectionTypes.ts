@@ -99,6 +99,7 @@ export function newSectionBlock(
         ...shared,
         title: null,
         switcherVariant: CampaignSwitcherVariant.cards,
+        showCountryNames: true,
         titleTranslations: []
       }
     case 'CampaignVideoCarouselBlock':

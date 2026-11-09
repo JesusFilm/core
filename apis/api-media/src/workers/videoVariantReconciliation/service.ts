@@ -7,6 +7,7 @@ import {
   slackChatPostMessage
 } from '../../lib/slack'
 import { reconcileVideoVariantReconciliation } from '../../schema/videoVariantReconciliation/reconcileVideoVariantReconciliation'
+import type { ProcessingStages } from '../../schema/videoVariantReconciliation/reconciliationStages'
 import { logger as defaultLogger } from '../lib/logger'
 
 import { findDueReconciliations } from './dueRecords'
@@ -20,6 +21,38 @@ const SWEEP_BATCH_SIZE = 200
 // not-yet-due and skips it rather than double-processing it. Must comfortably
 // exceed one record's expected processing time (Prisma + Algolia calls).
 const CLAIM_DURATION_MS = 5 * 60 * 1000
+
+// The Video record lives in the videos index (Arclight search), a backup for
+// Watch, so a Variant blocked only on that write is left `degraded` for the
+// Algolia troubleshooter in videos-admin rather than paged to Slack. The
+// Variant index is not in this set: a failed write there rolls a publish
+// back, so the editor's change is lost and nothing else will flag it. Mux,
+// parent-sync and Downloads failures alert too: those mean the Variant
+// itself isn't right.
+const QUIET_STAGES: ReadonlySet<keyof ProcessingStages> = new Set([
+  'algoliaVideo'
+])
+
+export function failedStageNames(processingStages: unknown): string[] {
+  if (processingStages == null || typeof processingStages !== 'object') {
+    return []
+  }
+  return Object.entries(processingStages as Record<string, unknown>)
+    .filter(
+      ([, stage]) =>
+        stage != null &&
+        typeof stage === 'object' &&
+        (stage as { state?: unknown }).state === 'failed'
+    )
+    .map(([name]) => name)
+}
+
+export function shouldAlertOnBlockedStages(failedStages: string[]): boolean {
+  if (failedStages.length === 0) return true
+  return failedStages.some(
+    (stage) => !QUIET_STAGES.has(stage as keyof ProcessingStages)
+  )
+}
 
 function dueRecordWhere() {
   return {
@@ -62,13 +95,28 @@ export async function service(logger: Logger = defaultLogger): Promise<void> {
             videoVariantId: true,
             status: true,
             retryAt: true,
-            errorMessage: true
+            errorMessage: true,
+            processingStages: true
           }
         })
       if (
         currentStatus.retryAt != null ||
         currentStatus.status === 'processing'
       ) {
+        continue
+      }
+
+      const failedStages = failedStageNames(currentStatus.processingStages)
+      if (!shouldAlertOnBlockedStages(failedStages)) {
+        logger.warn(
+          {
+            videoVariantReconciliationId: currentStatus.id,
+            videoVariantId: currentStatus.videoVariantId,
+            failedStages,
+            errorMessage: currentStatus.errorMessage
+          },
+          'Variant blocked on Video record indexing only; left degraded without Slack alert'
+        )
         continue
       }
 

@@ -1,4 +1,5 @@
 import { mockQueueAdd } from '../../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../../test/campaignAddressSnapshot'
 import {
   CampaignSpecResult,
   authClient,
@@ -9,13 +10,23 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
-import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { deleteShortLink } from '../../qrCode/qrCode.service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
+
+vi.mock('../gatewayClient', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../gatewayClient')>()),
+  fetchLanguage: vi.fn()
 }))
 
 vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
@@ -34,9 +45,11 @@ describe('campaignRegionDelete', () => {
   `)
 
   let fixture: CampaignFixture
+  let writes: CampaignWriteCall[]
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     fixture = campaignFactory().withRegion('EUR').withRegion('AFR').build()
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
       campaignRegionWithAcl(fixture, 'eurRegionId', { listed: false })
@@ -118,10 +131,15 @@ describe('campaignRegionDelete', () => {
       where: { id: 'afrRegionId' },
       data: { order: 0 }
     })
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-      where: { id: 'campaignId' },
-      data: { updatedAt: expect.any(Date) }
-    })
+    // The short link deletes and the revalidation wait for the commit.
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { structure: true, textRows: true },
+        jobs: [expect.any(Function), expect.any(Function)],
+        touched: true
+      }
+    ])
   })
 
   it('refuses a listed region (CONFLICT, field regionId)', async () => {
@@ -131,50 +149,23 @@ describe('campaignRegionDelete', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'regionId'
     })
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
   })
 
-  it('takes the structure lock, then every block, region and string row of the campaign in id order, then re-reads listed before it deletes', async () => {
+  it('declares the structure lock and every block, region and string row of the campaign, then re-reads listed in the write', async () => {
     await remove()
 
-    const statements = prismaMock.$queryRaw.mock.calls.map(
-      ([strings, ...values]) => ({
-        sql: (strings as unknown as string[]).join('?'),
-        values
-      })
-    )
-    expectStructureLockFirst()
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.$queryRaw.mock.invocationCallOrder[0]
-    )
-    expect(statements).toEqual([
-      {
-        sql: 'SELECT 1 FROM "CampaignBlock" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
-        values: ['campaignId']
-      },
-      {
-        sql: 'SELECT 1 FROM "CampaignRegion" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
-        values: ['campaignId']
-      },
-      {
-        sql: 'SELECT 1 FROM "CampaignString" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
-        values: ['campaignId']
-      }
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { structure: true, textRows: true }
     ])
     expect(prismaMock.campaignRegion.findUnique).toHaveBeenLastCalledWith({
       where: { id: 'eurRegionId' },
       select: { listed: true }
     })
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[2]).toBeLessThan(
-      prismaMock.campaignRegion.findUnique.mock.invocationCallOrder[1]
-    )
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[2]).toBeLessThan(
-      prismaMock.campaignRegion.delete.mock.invocationCallOrder[0]
-    )
   })
 
   it('refuses a region a concurrent update listed after it was authorised (CONFLICT, field regionId)', async () => {
@@ -182,17 +173,18 @@ describe('campaignRegionDelete', () => {
       .mockResolvedValueOnce(
         campaignRegionWithAcl(fixture, 'eurRegionId', { listed: false })
       )
-      .mockResolvedValueOnce({ listed: true } as never)
+      .mockResolvedValueOnce({ ...fixture.regions[0], listed: true })
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'regionId'
     })
     expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
     expect(mockQueueAdd).not.toHaveBeenCalled()
+    expect(writes[0].jobs).toEqual([])
   })
 
   it('is NOT_FOUND for the Region Page itself, which is not a region', async () => {
@@ -200,7 +192,7 @@ describe('campaignRegionDelete', () => {
 
     const result = await remove('regionPageId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
     expect(prismaMock.campaignPage.delete).not.toHaveBeenCalled()
   })
@@ -216,41 +208,58 @@ describe('campaignRegionDelete', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
   })
 
-  it('revalidates the landing page and the deleted path of a published campaign', async () => {
+  /** `campaign` with EUR unlisted, before the delete, and without it, after. */
+  function deleteEur(
+    campaign: CampaignFixture
+  ): [CampaignFixture, CampaignFixture] {
+    const unlisted = {
+      ...campaign,
+      regions: campaign.regions.map((region) =>
+        region.id === 'eurRegionId' ? { ...region, listed: false } : region
+      )
+    }
+    return [
+      unlisted,
+      {
+        ...unlisted,
+        regions: unlisted.regions.filter(({ id }) => id !== 'eurRegionId')
+      }
+    ]
+  }
+
+  it('queues every page of a published campaign, the deleted path included', async () => {
     const published = campaignFactory()
       .withRegion('EUR')
       .withRegion('AFR')
       .published()
       .build()
-    prismaMock.campaignRegion.findUnique.mockResolvedValue(
-      campaignRegionWithAcl(published, 'eurRegionId', { listed: false })
-    )
+    mockAddressSnapshots(...deleteEur(published))
 
     await remove()
 
     const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
     expect(paths).toEqual([
       '/home/campaign/outreach-2026',
-      '/home/campaign/outreach-2026/eur'
+      '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/afr'
     ])
   })
 
-  it('revalidates the domain form of the deleted path for its Campaign Domain', async () => {
+  it('queues the domain form of every page for its Campaign Domain', async () => {
     const published = campaignFactory()
       .withRegion('EUR')
       .withRegion('AFR')
       .published()
       .build()
-    prismaMock.campaignRegion.findUnique.mockResolvedValue(
-      campaignRegionWithAcl(
-        { ...published, customDomains: [{ name: 'gifts.org' } as never] },
-        'eurRegionId',
-        { listed: false }
-      )
+    mockAddressSnapshots(
+      ...deleteEur({
+        ...published,
+        customDomains: [{ name: 'gifts.org' } as never]
+      })
     )
 
     await remove()
@@ -259,12 +268,16 @@ describe('campaignRegionDelete', () => {
     expect(paths).toEqual([
       '/home/campaign/outreach-2026',
       '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/afr',
       '/gifts.org',
-      '/gifts.org/eur'
+      '/gifts.org/eur',
+      '/gifts.org/afr'
     ])
   })
 
   it('queues no revalidation for a draft campaign', async () => {
+    mockAddressSnapshots(...deleteEur(fixture))
+
     await remove()
 
     expect(mockQueueAdd).not.toHaveBeenCalled()

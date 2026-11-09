@@ -45,8 +45,12 @@ A Custom Domain that belongs to one Campaign, owned by the [Journeys](../../apis
 _Avoid_: Campaign Root (the retired name), home page, default campaign
 
 **Reserved Segment**:
-A first path segment the viewer owns on a domain root (such as `embed`, `legal`, `campaign` and `template-gallery`), so no Journey or Region slug may take it. The viewer owns the concept; one list in the Journeys API backs both Journey and Region slug validation.
+A first path segment the viewer owns on a domain root (such as `embed`, `legal`, `campaign` and `template-gallery`), so no Journey or Region slug may take it. The viewer owns the concept and the list: `VIEWER_RESERVED_SEGMENTS` in `libs/journeys/ui`, which the Journeys API imports to validate both Journey and Region slugs, and which the viewer's own region matcher (`matchRegionSlug`) also refuses.
 _Avoid_: reserved word, blocked slug
+
+**Campaign language**:
+How the viewer picks the **Page Language** (owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context) a visitor reads a Campaign in, by the shared kernel's **Page Language resolution** ([Journeys UI](../../libs/journeys/ui/GLOSSARY.md)): a `?lang=<tag>` naming one of the Campaign's languages, then the `campaign-lang` cookie (`CAMPAIGN_LANGUAGE_COOKIE`) that the header's language select writes, then the browser's `Accept-Language`, then the Campaign default. The pages are statically generated, so `proxy.ts` rewrites `?lang=<tag>` to a `_lang/<tag>` path, and the cookie and browser steps run in the browser, which sends the visitor on to their language's page. An empty or blank `lang=` counts as no choice when the language is resolved (`normalise` in `resolvePageLanguage`).
+_Avoid_: locale (that is the i18n locale of the viewer's own chrome), site language
 
 **Embed**:
 The iframe presentation of a Journey — shown as a clickable preview card that expands to fullscreen playback. A Journey page that detects it is inside an iframe redirects itself to its embed form; an oEmbed endpoint hands out the iframe HTML to third-party sites.

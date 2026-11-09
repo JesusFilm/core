@@ -30,7 +30,7 @@ builder.mutationField('campaignRegionShareBlockUpdate', (t) =>
         'CampaignRegionShareBlock'
       )
       return await updateBlock(block, {
-        ...validateSectionText(input, ['title', 'intro']),
+        ...validateSectionText('CampaignRegionShareBlock', input),
         ...sectionStyleColumns(input)
       })
     }
