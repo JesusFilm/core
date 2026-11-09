@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Энэ нь кампанит ажлын QR код болон Share холбоосыг агуулсан уг текстийг байнгын журмаар устгана. Өмнө нь хэвлэгдсэн эсвэл хуваалцсан QR кодын хуулбарууд холбоосыг цэвэрлэсний дараа чиглүүлэлтийг зогсооно.",
   "Show country names": "Улсын нэрсийг харуулах",
   "Countries": "Улс орнууд",
+  "Always turned off for background videos": "Арын видеонуудыг үргэлж унтраасан",
   "Appears on <0>{{count}}</0> card_one": "<0>{{count}}</0> карт дээр харагдана",
   "Appears on <0>{{count}}</0> card_other": "<0>{{count}}</0> карт дээр харагдана",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>карт</1>",
