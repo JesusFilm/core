@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "ဤသည်သည် ၎င်း၏ ကမ်ပိန်း QR ကုဒ်နှင့် Share Link ပါဝင်သည့် စာသားကို အမြဲတမ်း ဖယ်ရှားပစ်သည်။ ယခင်က ပုံနှိပ်ထား သို့မဟုတ် မျှဝေထားသော QR ကုဒ် မိတ္တူများသည် လင့်ခ်ကို သန့်ရှင်းပြီးနောက် ပြန်လည်ညွှန်ပြခြင်း ရပ်သွားမည်။",
   "Show country names": "နိုင်ငံအမည်များကို ပြပါ။",
   "Countries": "နိုင်ငံများ",
+  "Always turned off for background videos": "နောက်ခံဗီဒီယိုများအတွက် အမြဲပိတ်ထားသည်။",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cards</1>",
   "{{count}} visitors_other": "လာရောက်ကြည့်ရှုသူ {{count}} ဦး",
