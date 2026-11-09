@@ -40,6 +40,10 @@ import {
   findContainerParentIds,
   updateVideoAvailableLanguages
 } from './lib/updateAvailableLanguages'
+import {
+  assertChildIdsAllowedUnderLabel,
+  assertVideoUpdateLabelsValid
+} from './lib/videoLabelRules/videoLabelRules'
 import { videosFilter } from './lib/videosFilter'
 
 // Helper function to check if video viewing is restricted for the current platform
@@ -676,6 +680,8 @@ builder.mutationFields((t) => ({
           existingVideoIds.has(id)
         )
 
+        await assertChildIdsAllowedUnderLabel(input.label, validChildIds)
+
         // Update the children relation
         childRelationData = {
           children: {
@@ -787,6 +793,8 @@ builder.mutationFields((t) => ({
       // Handle child relation synchronization if childIds is being updated
       let childRelationUpdate = {}
       let affectedChildIds: string[] = []
+      let addedChildIds: string[] = []
+      let nextValidChildIds: string[] | undefined
       if (input.childIds !== undefined) {
         const existingParent = await prisma.video.findUnique({
           where: { id: input.id },
@@ -814,6 +822,9 @@ builder.mutationFields((t) => ({
           ...validChildIds.filter((id) => !previousChildIds.has(id))
         ]
 
+        addedChildIds = validChildIds.filter((id) => !previousChildIds.has(id))
+        nextValidChildIds = validChildIds
+
         // Update the children relation
         childRelationUpdate = {
           children: {
@@ -821,6 +832,19 @@ builder.mutationFields((t) => ({
           }
         }
       }
+
+      await assertVideoUpdateLabelsValid({
+        videoId: input.id,
+        label: input.label,
+        childIds:
+          nextValidChildIds == null
+            ? undefined
+            : {
+                next: nextValidChildIds,
+                added: addedChildIds,
+                changed: affectedChildIds.length > 0
+              }
+      })
 
       const videoWhere: Prisma.VideoWhereUniqueInput =
         input.restrictTranslations === false

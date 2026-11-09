@@ -1624,6 +1624,57 @@ describe('videoVariant', () => {
           id: 'unpublished-id'
         })
       })
+
+      it('rejects a playable variant on a childless series or collection', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          published: true,
+          slug: 'video-slug',
+          label: 'series',
+          primaryLanguageId: 'en',
+          noIndex: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          childIds: [],
+          locked: false,
+          availableLanguages: ['en'],
+          originId: null,
+          restrictDownloadPlatforms: [],
+          restrictViewPlatforms: [],
+          restrictTranslations: false,
+          publishedAt: null
+        })
+
+        const result = (await authClient({
+          document: VIDEO_VARIANT_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              duration: 1024,
+              lengthInMilliseconds: 123456,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'videoSlug',
+              videoId: 'videoId',
+              share: 'share',
+              downloadable: true
+            }
+          }
+        })) as { errors?: { message: string }[] }
+
+        expect(result.errors?.[0].message).toContain(
+          'series with no children cannot have playable variants'
+        )
+        expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+      })
     })
 
     describe('videoVariantUpdate', () => {
@@ -2352,6 +2403,102 @@ describe('videoVariant', () => {
 
         // Verify cache reset function was not called
         expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
+      })
+
+      it('rejects making a variant playable on a childless series or collection', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          published: false,
+          videoId: 'videoId',
+          languageId: 'languageId',
+          hls: null,
+          dash: null,
+          muxVideoId: null
+        } as any)
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          published: true,
+          slug: 'video-slug',
+          label: 'collection',
+          primaryLanguageId: 'en',
+          noIndex: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          childIds: [],
+          locked: false,
+          availableLanguages: ['en'],
+          originId: null,
+          restrictDownloadPlatforms: [],
+          restrictViewPlatforms: [],
+          restrictTranslations: false,
+          publishedAt: null
+        })
+
+        const result = (await authClient({
+          document: VIDEO_VARIANT_UPDATE_MUTATION,
+          variables: {
+            input: { id: 'id', hls: 'hls' }
+          }
+        })) as { errors?: { message: string }[] }
+
+        expect(result.errors?.[0].message).toContain(
+          'collection with no children cannot have playable variants'
+        )
+        expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+      })
+
+      it('allows unpublishing a legacy playable variant on a childless series or collection', async () => {
+        // Simulates data that predates the childless-container guard: the
+        // guard must not block an unpublish that doesn't touch video/media
+        // fields just because the existing row is already playable.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          published: true,
+          videoId: 'videoId',
+          languageId: 'languageId',
+          edition: 'base',
+          hls: 'hls',
+          dash: null,
+          muxVideoId: null,
+          share: 'share',
+          muxVideo: { readyToStream: true }
+        } as any)
+        prismaMock.videoVariant.update.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          dash: null,
+          muxVideoId: null,
+          videoId: 'videoId',
+          languageId: 'languageId',
+          edition: 'base',
+          share: 'share',
+          published: false
+        } as any)
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_UPDATE_MUTATION,
+          variables: { input: { id: 'id', published: false } }
+        })
+
+        expect(result).not.toHaveProperty('errors')
+        expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
+        expect(prismaMock.videoVariant.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ published: false })
+          })
+        )
       })
     })
 
