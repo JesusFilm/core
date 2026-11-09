@@ -541,9 +541,10 @@ describe('VideoBlockEditorSettings', () => {
     const combobox = getByRole('combobox')
     expect(combobox).toHaveClass('Mui-disabled')
     expect(combobox).toHaveTextContent('Off')
-    expect(
+    // The note sits under the Subtitles title, not below the select
+    expect(getByText('Subtitles').parentElement).toContainElement(
       getByText('Always turned off for background videos')
-    ).toBeInTheDocument()
+    )
   })
 
   it('does not show YouTubeSubtitleSelector for non-YouTube videos', () => {
@@ -869,9 +870,10 @@ describe('VideoBlockEditorSettings', () => {
         getByTestId('MuxSubtitleSwitch').querySelector('input')
       expect(switchInput).toBeDisabled()
       expect(switchInput).not.toBeChecked()
-      expect(
+      // The note sits under the Subtitles title, beside the switch
+      expect(getByText('Subtitles').parentElement).toContainElement(
         getByText('Always turned off for background videos')
-      ).toBeInTheDocument()
+      )
     })
 
     it('should not render MuxSubtitleSwitch for non-Mux videos', () => {

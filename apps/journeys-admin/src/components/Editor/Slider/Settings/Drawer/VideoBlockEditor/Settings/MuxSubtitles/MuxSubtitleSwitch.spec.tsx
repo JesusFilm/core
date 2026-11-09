@@ -347,6 +347,47 @@ describe('MuxSubtitleSwitch', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('shows why the switch is locked under the Subtitles title', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <EditorProvider initialState={{ selectedBlock: mockVideoBlock }}>
+          <MuxSubtitleSwitch
+            videoBlockId="video-1"
+            muxVideoId="mux-video-id"
+            journeyLanguageBcp47="en"
+            onChange={mockOnChange}
+            disabled
+            disabledReason="Always turned off for background videos"
+          />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Subtitles').parentElement).toContainElement(
+      screen.getByText('Always turned off for background videos')
+    )
+  })
+
+  it('hides the disabled reason while the switch is enabled', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <EditorProvider initialState={{ selectedBlock: mockVideoBlock }}>
+          <MuxSubtitleSwitch
+            videoBlockId="video-1"
+            muxVideoId="mux-video-id"
+            journeyLanguageBcp47="en"
+            onChange={mockOnChange}
+            disabledReason="Always turned off for background videos"
+          />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.queryByText('Always turned off for background videos')
+    ).not.toBeInTheDocument()
+  })
+
   it('skips the subtitle status query when disabled', async () => {
     validateMuxLanguage.mockReturnValue(true)
     mockOnChange.mockResolvedValue(undefined)

@@ -35,8 +35,8 @@ interface MuxSubtitleSwitchProps {
   onChange: (showGeneratedSubtitles: boolean) => Promise<void>
   // Locks the switch off, e.g. for background videos that never show subtitles
   disabled?: boolean
-  // Shown under the Subtitles title, e.g. why the switch is locked
-  hint?: string
+  // Shown under the Subtitles title to say why the switch is locked
+  disabledReason?: string
 }
 
 export function MuxSubtitleSwitch({
@@ -45,7 +45,7 @@ export function MuxSubtitleSwitch({
   journeyLanguageBcp47: journeyLanguageCode,
   onChange,
   disabled = false,
-  hint
+  disabledReason
 }: MuxSubtitleSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -194,12 +194,9 @@ export function MuxSubtitleSwitch({
           >
             {t('Subtitles')}
           </Typography>
-          {hint != null && (
-            <Typography
-              variant="caption"
-              sx={{ color: disabled ? 'action.disabled' : 'text.secondary' }}
-            >
-              {hint}
+          {disabled && disabledReason != null && (
+            <Typography variant="caption" sx={{ color: 'action.disabled' }}>
+              {disabledReason}
             </Typography>
           )}
         </Stack>

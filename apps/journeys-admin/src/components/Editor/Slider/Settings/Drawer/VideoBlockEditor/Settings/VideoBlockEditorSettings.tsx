@@ -205,7 +205,7 @@ export function VideoBlockEditorSettings({
               }
               journeyLanguageBcp47={journey?.language.bcp47}
               disabled={isBackgroundVideo}
-              hint={backgroundVideoSubtitlesHint}
+              disabledReason={backgroundVideoSubtitlesHint}
               onChange={async (showGeneratedSubtitles) => {
                 await setValues(
                   {
