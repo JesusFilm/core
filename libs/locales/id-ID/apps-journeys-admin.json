@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Tindakan ini akan menghapus secara permanen teks tersebut beserta kode QR kampanye dan Tautan Bagikan-nya. Salinan kode QR yang sudah dicetak atau dibagikan tidak akan lagi mengarahkan ke tautan tersebut setelah tautan tersebut dihapus.",
   "Show country names": "Tampilkan nama negara",
   "Countries": "Negara",
+  "Always turned off for background videos": "Selalu dinonaktifkan untuk video latar belakang",
   "Appears on <0>{{count}}</0> card_other": "Muncul di <0>{{count}}</0> kartu",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>kartu</1>",
   "{{count}} visitors_other": "{{count}} pengunjung",
