@@ -31,6 +31,7 @@ vi.mock('@apollo/client', async () => {
 
 interface MutateOptions {
   mutation: unknown
+  variables?: { domains: string[] }
 }
 
 type CleanupJob = Job<{ __typename: 'plausibleSiteCleanup'; dryRun?: boolean }>
@@ -285,6 +286,46 @@ describe('plausibleSiteCleanup service', () => {
     )
     expect(logger.info).toHaveBeenCalledWith(
       expect.objectContaining({ deleted: 20, failedBatches: 1 }),
+      'plausible site cleanup finished'
+    )
+  })
+
+  it('does not delete sites whose preparation failed', async () => {
+    const page = sitesPage(
+      ...Array.from(
+        { length: 600 },
+        (_, index) => `api-journeys-journey-gone-${index}`
+      )
+    )
+    querySpy.mockResolvedValueOnce(page).mockResolvedValueOnce(page)
+    prismaMock.journey.findMany.mockResolvedValue([])
+    mutateSpy
+      .mockRejectedValueOnce(new Error('Received status code 504'))
+      .mockResolvedValueOnce(prepared(100))
+      .mockResolvedValue(deleted(20))
+
+    await service(job(), logger)
+
+    const failed = new Set(
+      Array.from(
+        { length: 500 },
+        (_, index) => `api-journeys-journey-gone-${index}`
+      )
+    )
+    const calls: MutateOptions[] = mutateSpy.mock.calls.map(
+      (args: unknown[]) => args[0] as MutateOptions
+    )
+    const deletedDomains = calls
+      .filter(({ mutation }) => mutation === SITES_DELETE)
+      .flatMap(({ variables }) => variables?.domains ?? [])
+    expect(deletedDomains).toHaveLength(100)
+    expect(deletedDomains.some((domain) => failed.has(domain))).toBe(false)
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ pass: 'prepare', size: 500 }),
+      'plausible site cleanup batch failed'
+    )
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.objectContaining({ deleted: 100, failedBatches: 1 }),
       'plausible site cleanup finished'
     )
   })
