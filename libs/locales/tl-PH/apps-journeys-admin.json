@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Permanentlyeng tinatanggal nito ang teksto kasama ang QR code ng kampanya at ang Share Link. Ang mga kopya ng QR code na naimprenta o naibahagi na ay titigil sa pag-redirect kapag naayos na ang link.",
   "Show country names": "Ipakita ang mga pangalan ng mga bansa",
   "Countries": "Mga bansa",
+  "Always turned off for background videos": "Palaging naka-off para sa mga background na video",
   "Appears on <0>{{count}}</0> card_one": "Lumalabas sa <0>{{count}}</0> na card",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>card</1>",
