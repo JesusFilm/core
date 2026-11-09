@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Bu işlem, ilgili dil seçeneğini, kampanya QR kodunu ve Paylaşım Bağlantısını kalıcı olarak siler. Daha önce basılmış veya paylaşılmış QR kodlarının kopyaları, bağlantı temizlendikten sonra artık yönlendirme yapmayacaktır.",
   "Show country names": "Ülke adlarını göster",
   "Countries": "Ülkeler",
+  "Always turned off for background videos": "Arka plan videoları için her zaman kapalıdır",
   "Appears on <0>{{count}}</0> card_one": "Üzerinde görünür <0>{{count}}</0> kart",
   "Appears on <0>{{count}}</0> card_other": "Üzerinde görünür <0>{{count}}</0> kartlar",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>kart</1>",
