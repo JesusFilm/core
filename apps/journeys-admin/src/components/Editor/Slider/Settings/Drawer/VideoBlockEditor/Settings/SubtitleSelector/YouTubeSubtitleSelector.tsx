@@ -155,7 +155,7 @@ export function YouTubeSubtitleSelector({
           )
         })}
       </Select>
-      {hasNoSubtitles && (
+      {hasNoSubtitles && !disabled && (
         <Typography
           variant="caption"
           sx={{

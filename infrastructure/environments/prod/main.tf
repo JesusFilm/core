@@ -5,6 +5,7 @@ module "prod" {
   cidr                         = "10.10.0.0/16"
   internal_url_name            = "service.internal"
   datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
+  s3_gateway_endpoint          = true
 }
 
 locals {

@@ -162,8 +162,9 @@ describe('campaignRegionUpdate', () => {
 
   it('rejects a slug another region of the campaign already has', async () => {
     prismaMock.campaignRegion.findFirst.mockResolvedValue({
+      ...fixture.regions[1],
       id: 'afrRegionId'
-    } as never)
+    })
 
     const result = await update({ slug: 'afr' })
 
@@ -175,10 +176,12 @@ describe('campaignRegionUpdate', () => {
   })
 
   it('rejects the slug of a journey in the campaign’s team, naming the journey', async () => {
-    prismaMock.journey.findFirst.mockResolvedValue({
+    vi.mocked(prismaMock.journey.findFirst, {
+      partial: true
+    }).mockResolvedValue({
       id: 'journeyId',
       title: 'Outreach Europe'
-    } as never)
+    })
 
     const result = await update({ slug: 'outreach-europe' })
 

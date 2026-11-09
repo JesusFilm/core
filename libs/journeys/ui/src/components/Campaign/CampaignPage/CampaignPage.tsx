@@ -29,6 +29,12 @@ interface CampaignPageProps {
   pageKind: CampaignPageKind
   /** The region a Region Page renders for. */
   region?: CampaignRegion | null
+  /** Accepted for old route callers; the provider derives the current address. */
+  basePath?: string
+  /** Accepted until route callers stop precomputing the renderer-owned map. */
+  worldMap?:
+    | import('../CampaignAnalytics/WorldMap/buildWorldMap').WorldMapShapes
+    | null
 }
 
 /**
@@ -37,9 +43,9 @@ interface CampaignPageProps {
  * empty-state matrix, each rendered through `CampaignRenderer`, then the
  * chrome footer. Only the sections it renders are same-page scroll targets,
  * so a button aimed at a skipped one renders inert. The page has one `h1`:
- * the Region Header's region name when one renders, else the first rendered
- * Hero's title (`pageHeadingBlockId`). Header and footer always render, the
- * same rows the same way on both pages; the page kind decides only the
+ * the Region Header's region name when one renders, else the first nonblank
+ * title of a rendered Hero (`pageHeadingBlockId`). Header and footer always
+ * render the same rows the same way on both pages; the page kind decides only the
  * header's back-chip slot. Single column below `md`; the authored layout
  * from `md` up. Same-page anchors scroll smoothly unless the visitor asks for
  * reduced motion. The document's `lang` is the Page Language's bcp47 and
