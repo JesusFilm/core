@@ -961,4 +961,62 @@ describe('templateFamilyStatsBreakdown', () => {
       })
     )
   })
+
+  it('preserves all historical responses after reset while keeping explicit dates for Plausible', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'template-id',
+      deletedAt: null
+    } as JourneyWithAcl)
+    const journey = {
+      id: 'child-id',
+      title: 'Child',
+      status: 'published',
+      team: { title: 'Team', userTeams: [] },
+      userJourneys: []
+    } as unknown as JourneyWithAcl
+    prismaMock.journey.findMany.mockResolvedValue([journey])
+    vi.mocked(prismaMock.journeyVisitor.groupBy).mockResolvedValue([
+      { journeyId: 'child-id', _count: { journeyId: 5 } }
+    ] as Awaited<ReturnType<typeof prismaMock.journeyVisitor.groupBy>>)
+    mockAxios.get.mockResolvedValue({ data: { results: [] } })
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-id',
+        events: ['journeyVisitors', 'journeyResponses'],
+        where: {
+          property: 'event:props:templateKey',
+          period: 'all',
+          date: '2024-06-01,2025-12-24'
+        }
+      }
+    })
+    expect(result).toMatchObject({
+      data: {
+        templateFamilyStatsBreakdown: [
+          {
+            journeyId: 'child-id',
+            stats: [
+              { event: 'journeyVisitors', visitors: 0 },
+              { event: 'journeyResponses', visitors: 5 }
+            ]
+          }
+        ]
+      }
+    })
+    expect(prismaMock.journeyVisitor.groupBy).toHaveBeenCalledWith({
+      by: ['journeyId'],
+      where: {
+        journeyId: { in: ['child-id'] },
+        lastTextResponse: { not: null }
+      },
+      _count: { journeyId: true }
+    })
+    for (const [, options] of mockAxios.get.mock.calls) {
+      expect(options?.params).toMatchObject({
+        period: 'custom',
+        date: '2024-06-01,2025-12-24'
+      })
+    }
+  })
 })

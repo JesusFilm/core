@@ -86,7 +86,7 @@ export function TemplateBreakdownAnalyticsDialog({
       idType: IdType.databaseId,
       where: {
         property: 'event:props:templateKey',
-        period: 'custom',
+        period: appliedDateRange == null ? 'all' : 'custom',
         date:
           appliedDateRange ??
           `${earliestStatsCollected},${formatISO(today, {

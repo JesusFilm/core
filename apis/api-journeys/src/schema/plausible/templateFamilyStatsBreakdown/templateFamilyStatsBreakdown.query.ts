@@ -98,6 +98,12 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       }
 
       const templateSiteId = `api-journeys-template-${templateJourney.id}`
+      // The app marks reset as all-time. Plausible still needs explicit collection
+      // dates, while database response history must remain unrestricted.
+      const plausibleFilter = {
+        ...where,
+        period: where.period === 'all' ? 'custom' : where.period
+      }
 
       // This report aggregates every journey in the family, so it must read the
       // full breakdown. paginate: true pages through all rows (and ignores any
@@ -105,7 +111,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
         {
-          ...where,
+          ...plausibleFilter,
           property: 'event:props:templateKey',
           metrics: 'visitors'
         },
@@ -182,7 +188,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
           ? getJourneyStatsBreakdown(
               templateJourney.id,
               {
-                ...where,
+                ...plausibleFilter,
                 property: 'event:page',
                 metrics: 'visitors'
               },

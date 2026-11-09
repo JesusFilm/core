@@ -54,7 +54,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         idType: IdType.databaseId,
         where: {
           property: 'event:props:templateKey',
-          period: 'custom',
+          period: date === expectedDate ? 'all' : 'custom',
           date
         },
         events: [
@@ -155,7 +155,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
           idType: IdType.databaseId,
           where: {
             property: 'event:props:templateKey',
-            period: 'custom',
+            period: 'all',
             date: expectedDate
           },
           events: [
@@ -206,7 +206,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
           idType: IdType.databaseId,
           where: {
             property: 'event:props:templateKey',
-            period: 'custom',
+            period: 'all',
             date: expectedDate
           },
           events: [
