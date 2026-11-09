@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "これにより、キャンペーンのQRコードおよび共有リンクを含むテキストが完全に削除されます。すでに印刷または共有済みのQRコードは、リンクが削除されると、それ以降リダイレクトされなくなります。",
   "Show country names": "国名を表示する",
   "Countries": "国",
+  "Always turned off for background videos": "バックグラウンド動画の再生中は常にオフになっている",
   "Appears on <0>{{count}}</0> card_other": "カード <0>{{count}}</0>カード",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>カード</1>",
   "{{count}} visitors_other": "{{count}} 入場者",
