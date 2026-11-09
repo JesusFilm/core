@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "此操作將永久移除該語言內容及其活動 QR 碼與分享連結。一旦連結被清理，先前已列印或分享的 QR 碼副本將不再進行轉址。",
   "Show country names": "顯示國家名稱",
   "Countries": "國家",
+  "Always turned off for background videos": "背景影片始終處於關閉狀態",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cards</1>",
   "{{count}} visitors_other": "{{count}} 訪客",
