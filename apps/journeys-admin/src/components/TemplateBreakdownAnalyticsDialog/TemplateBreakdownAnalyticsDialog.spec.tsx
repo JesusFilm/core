@@ -1,9 +1,7 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { formatISO } from 'date-fns'
-import { type MockedFunction } from 'vitest'
 
 import {
   GetTemplateFamilyStatsBreakdown,
@@ -26,15 +24,6 @@ vi.mock('@mui/material/useMediaQuery', () => {
   return { __esModule: true, default: vi.fn(() => false) }
 })
 
-vi.mock('date-fns', async () => {
-  return {
-    ...(await vi.importActual('date-fns')),
-    formatISO: vi.fn()
-  }
-})
-
-const mockFormatISO = formatISO as MockedFunction<typeof formatISO>
-
 describe('TemplateBreakdownAnalyticsDialog', () => {
   const mockHandleClose = vi.fn()
   const journeyId = 'test-journey-id'
@@ -43,11 +32,17 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockFormatISO.mockReturnValue(mockCurrentDate)
+    vi.setSystemTime(new Date(2025, 11, 24, 12))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   const createMock = (
-    status: JourneyStatus[]
+    status: JourneyStatus[],
+    date = expectedDate,
+    data: GetTemplateFamilyStatsBreakdown = mockSingleRowData
   ): MockLink.MockedResponse<
     GetTemplateFamilyStatsBreakdown,
     GetTemplateFamilyStatsBreakdownVariables
@@ -60,7 +55,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         where: {
           property: 'event:props:templateKey',
           period: 'custom',
-          date: expectedDate
+          date
         },
         events: [
           PlausibleEvent.journeyVisitors,
@@ -80,7 +75,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       }
     },
     result: {
-      data: mockSingleRowData
+      data
     }
   })
 
@@ -152,6 +147,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       GetTemplateFamilyStatsBreakdown,
       GetTemplateFamilyStatsBreakdownVariables
     > = {
+      delay: Infinity,
       request: {
         query: GET_TEMPLATE_FAMILY_STATS_BREAKDOWN,
         variables: {
@@ -254,6 +250,175 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     })
 
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('template-breakdown-analytics-table')
+    ).not.toBeInTheDocument()
+  })
+
+  const selectRange = (start: string, end: string): void => {
+    // MUI keeps the complete date value in an input alongside its editable sections.
+    fireEvent.change(screen.getByLabelText('From', { selector: 'input' }), {
+      target: { value: start }
+    })
+    fireEvent.change(screen.getByLabelText('To', { selector: 'input' }), {
+      target: { value: end }
+    })
+  }
+
+  it('applies a date range to all metrics and preserves it when toggling archived projects', async () => {
+    const user = userEvent.setup()
+    const filteredData: GetTemplateFamilyStatsBreakdown = {
+      templateFamilyStatsBreakdown:
+        mockSingleRowData.templateFamilyStatsBreakdown!.map((row) => ({
+          ...row,
+          stats: row.stats.map((stat) => ({ ...stat, visitors: 7 }))
+        }))
+    }
+    const withArchived = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    const filteredMock = createMock(
+      withArchived,
+      '2025-12-01,2025-12-10',
+      filteredData
+    )
+    const filteredResult = vi.fn(() => ({ data: filteredData }))
+    filteredMock.result = filteredResult
+    const withoutArchivedMock = createMock(
+      [JourneyStatus.published, JourneyStatus.draft],
+      '2025-12-01,2025-12-10',
+      filteredData
+    )
+    const withoutArchivedResult = vi.fn(() => ({ data: filteredData }))
+    withoutArchivedMock.result = withoutArchivedResult
+
+    render(
+      <MockedProvider
+        mocks={[
+          getTemplateFamilyStatsBreakdownMockWithArchived,
+          filteredMock,
+          withoutArchivedMock,
+          getTemplateFamilyStatsBreakdownMockWithoutArchived
+        ]}
+      >
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('template-breakdown-analytics-table')
+    expect(screen.getByRole('status')).toHaveTextContent('All time')
+    selectRange('01-12-2025', '10-12-2025')
+    await user.click(screen.getByRole('button', { name: 'Apply' }))
+    await waitFor(() => expect(filteredResult).toHaveBeenCalledOnce())
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Date range: 2025-12-01 to 2025-12-10'
+    )
+    await waitFor(() =>
+      expect(screen.queryByText('100')).not.toBeInTheDocument()
+    )
+    expect(screen.getAllByText('7')).toHaveLength(4)
+    await user.click(screen.getByRole('switch'))
+    await waitFor(() => expect(withoutArchivedResult).toHaveBeenCalledOnce())
+
+    await user.click(screen.getByRole('button', { name: 'Clear' }))
+    expect(screen.getByRole('status')).toHaveTextContent('All time')
+    await screen.findByTestId('template-breakdown-analytics-table')
+    expect(screen.getAllByText('100')).toHaveLength(2)
+    expect(screen.getByRole('switch')).not.toBeChecked()
+  })
+
+  it('clears a range back to explicit all-time analytics', async () => {
+    const user = userEvent.setup()
+    const withArchived = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    render(
+      <MockedProvider
+        mocks={[
+          getTemplateFamilyStatsBreakdownMockWithArchived,
+          createMock(withArchived, '2025-12-01,2025-12-10', {
+            templateFamilyStatsBreakdown: []
+          })
+        ]}
+      >
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('template-breakdown-analytics-table')
+    selectRange('01-12-2025', '10-12-2025')
+    await user.click(screen.getByRole('button', { name: 'Apply' }))
+    await screen.findByText('No template breakdown analytics data available')
+    await user.click(screen.getByRole('button', { name: 'Clear' }))
+    await screen.findByTestId('template-breakdown-analytics-table')
+    expect(screen.getByRole('status')).toHaveTextContent('All time')
+    expect(screen.getByRole('button', { name: 'Apply' })).toBeDisabled()
+  })
+
+  it.each([
+    ['10-12-2025', '01-12-2025'],
+    ['01-01-2024', '10-12-2025'],
+    ['01-12-2025', '31-12-2025'],
+    ['01-12-2025', '']
+  ])('prevents applying an invalid range %s to %s', async (start, end) => {
+    render(
+      <MockedProvider mocks={[getTemplateFamilyStatsBreakdownMockWithArchived]}>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('template-breakdown-analytics-table')
+    selectRange(start, end)
+    expect(screen.getByRole('button', { name: 'Apply' })).toBeDisabled()
+    expect(screen.getByRole('status')).toHaveTextContent('All time')
+    expect(
+      screen.getByTestId('template-breakdown-analytics-table')
+    ).toBeInTheDocument()
+  })
+
+  it('shows an empty state when all journeys have zero activity', async () => {
+    const zeroData: GetTemplateFamilyStatsBreakdown = {
+      templateFamilyStatsBreakdown:
+        mockSingleRowData.templateFamilyStatsBreakdown!.map((row) => ({
+          ...row,
+          stats: row.stats.map((stat) => ({ ...stat, visitors: 0 }))
+        }))
+    }
+    render(
+      <MockedProvider
+        mocks={[
+          createMock(
+            [
+              JourneyStatus.published,
+              JourneyStatus.draft,
+              JourneyStatus.archived
+            ],
+            expectedDate,
+            zeroData
+          )
+        ]}
+      >
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByText('No template breakdown analytics data available')
     expect(
       screen.queryByTestId('template-breakdown-analytics-table')
     ).not.toBeInTheDocument()
