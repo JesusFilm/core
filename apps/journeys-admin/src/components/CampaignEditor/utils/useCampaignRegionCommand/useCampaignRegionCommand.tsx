@@ -1,10 +1,13 @@
+import { useApolloClient } from '@apollo/client/react'
 import { useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
   GetCampaign_campaign as Campaign,
-  GetCampaign_campaign_regions as CampaignRegion
+  GetCampaign_campaign_regions as CampaignRegion,
+  GetCampaign
 } from '../../../../../__generated__/GetCampaign'
+import { GET_CAMPAIGN } from '../../../../libs/useCampaignQuery'
 import { useCampaignRegionCreateMutation } from '../../../../libs/useCampaignRegionCreateMutation'
 import { useCampaignRegionDeleteMutation } from '../../../../libs/useCampaignRegionDeleteMutation'
 import { useCampaignRegionOrderUpdateMutation } from '../../../../libs/useCampaignRegionOrderUpdateMutation'
@@ -144,7 +147,8 @@ interface AddRegionOptions {
  * linked a journey or renamed it; redo recreates the same row, unless undo
  * left the region in place. List/unlist is a one-field Command with no
  * confirmation, and reorder writes the new order with every region
- * renumbered at once; undo reverses each through the same mutation. Delete
+ * renumbered at once; undo restores its first-execution position using the
+ * current regions for the optimistic rows. Delete
  * is not a Command: see `OrphanPageBar`.
  */
 export function useCampaignRegionCommand(): {
@@ -156,6 +160,7 @@ export function useCampaignRegionCommand(): {
   const { campaign } = useCampaignEditor()
   const campaignRef = useRef(campaign)
   campaignRef.current = campaign
+  const { cache } = useApolloClient()
   const [regionCreate] = useCampaignRegionCreateMutation(campaign.id)
   const [regionUpdate] = useCampaignRegionUpdateMutation()
   const [regionDelete] = useCampaignRegionDeleteMutation(campaign.id)
@@ -227,22 +232,41 @@ export function useCampaignRegionCommand(): {
   }
 
   function reorderRegion(region: CampaignRegion, order: number): void {
+    let previousOrder: number | undefined
+
+    function currentRegions(): CampaignRegion[] {
+      return (
+        cache.readQuery<GetCampaign>({
+          query: GET_CAMPAIGN,
+          variables: { id: campaign.id },
+          optimistic: true
+        })?.campaign ?? campaignRef.current
+      ).regions
+    }
+
     async function write(next: number): Promise<unknown> {
+      const regions = currentRegions()
+      const current =
+        regions.find((candidate) => candidate.id === region.id) ?? region
       return await orderUpdate({
         variables: { id: region.id, order: next },
         optimisticResponse: {
-          campaignRegionOrderUpdate: reorderedRegions(
-            campaign.regions,
-            region,
-            next
-          )
+          campaignRegionOrderUpdate: reorderedRegions(regions, current, next)
         }
       })
     }
 
     addCampaignCommand({
-      execute: async () => await write(order),
-      undo: async () => await write(region.order)
+      async execute() {
+        previousOrder ??=
+          currentRegions().find((candidate) => candidate.id === region.id)
+            ?.order ?? region.order
+        return await write(order)
+      },
+      async undo() {
+        if (previousOrder == null) return
+        return await write(previousOrder)
+      }
     }).catch((error: unknown) => reportFailure(error))
   }
 
