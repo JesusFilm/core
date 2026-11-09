@@ -87,10 +87,16 @@ export function useCampaignThemeCommand(): CampaignThemeCommand {
   }
 
   function addTheme(input: CampaignThemeUpdateInput): void {
-    const previous = previousTheme(campaign.theme, input)
+    let previous: CampaignThemeUpdateInput | undefined
     addCampaignCommand({
-      execute: async () => await write(input),
-      undo: async () => await write(previous)
+      execute: async () => {
+        previous ??= previousTheme(themeRef.current, input)
+        return await write(input)
+      },
+      undo: async () => {
+        if (previous == null) return
+        return await write(previous)
+      }
     }).catch((error: unknown) => reportFailure(error))
   }
 

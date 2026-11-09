@@ -29,7 +29,7 @@ export interface CampaignBlockFieldsCommand {
 /**
  * Every field edit of a Campaign Block, Style or Settings, is one Command:
  * execute writes the given fields through the block's update; undo writes
- * the values the cache held when the Command was added back; redo writes the
+ * the values the cache held when the Command first executed back; redo writes the
  * change again. A refused execute shows in `error`; the Campaign Command
  * module refocuses undo and redo and reports their refusals.
  */
@@ -47,10 +47,16 @@ export function useCampaignBlockFieldsCommand(): CampaignBlockFieldsCommand {
     > = async (fields) => await update(block, fields)
   ): void {
     setError(undefined)
-    const previous = previousFields(block, input)
+    let previous: CampaignBlockUpdateInput<B['__typename']> | undefined
     addCampaignCommand({
-      execute: async () => await send(input),
-      undo: async () => await send(previous)
+      execute: async () => {
+        previous ??= previousFields(block, input)
+        return await send(input)
+      },
+      undo: async () => {
+        if (previous == null) return
+        return await send(previous)
+      }
     }).catch((mutationError: unknown) => setError(messageOf(mutationError)))
   }
 
