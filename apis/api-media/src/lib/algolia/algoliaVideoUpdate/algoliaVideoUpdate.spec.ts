@@ -273,7 +273,7 @@ describe('algoliaVideoUpdate', () => {
   })
 
   it.each(['collection', 'series'])(
-    'reports a %s as downloadable when its published English variant is downloadable',
+    'reports a %s as downloadable only when its own variant has playable media and downloads',
     async (label) => {
       prismaMock.video.findUnique.mockResolvedValueOnce({
         id: 'container-id',
@@ -293,8 +293,9 @@ describe('algoliaVideoUpdate', () => {
         variants: [
           {
             published: true,
-            hls: null,
-            lengthInMilliseconds: 0,
+            hls: 'https://example.com/container.m3u8',
+            dash: '',
+            lengthInMilliseconds: 1000,
             downloadable: true,
             downloads: [
               { quality: 'low', size: 1000 },
@@ -317,6 +318,53 @@ describe('algoliaVideoUpdate', () => {
               approximateSmallDownloadSizeInBytes: 1000,
               approximateLargeDownloadSizeInBytes: 5000
             }
+          })
+        ],
+        waitForTasks: true
+      })
+    }
+  )
+
+  it.each(['collection', 'series'])(
+    'never reports an empty %s (generated parent variant) as downloadable, even when its flag is true',
+    async (label) => {
+      prismaMock.video.findUnique.mockResolvedValueOnce({
+        id: 'empty-container-id',
+        label,
+        primaryLanguageId: '529',
+        childIds: ['child1'],
+        restrictDownloadPlatforms: [],
+        published: true,
+        restrictViewPlatforms: [],
+        title: [{ value: 'Empty Container', languageId: '529' }],
+        description: [],
+        studyQuestions: [],
+        bibleCitation: [],
+        keywords: [],
+        images: [],
+        availableLanguages: [],
+        variants: [
+          {
+            published: true,
+            hls: '',
+            dash: '',
+            lengthInMilliseconds: 0,
+            downloadable: true,
+            downloads: []
+          }
+        ]
+      } as any)
+
+      await updateVideoInAlgolia('empty-container-id', mockLogger)
+
+      expect(saveObjectsSpy).toHaveBeenCalledWith({
+        indexName: 'test-videos',
+        objects: [
+          expect.objectContaining({
+            objectID: 'empty-container-id',
+            subType: label,
+            isDownloadable: false,
+            downloadSizes: {}
           })
         ],
         waitForTasks: true

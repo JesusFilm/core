@@ -247,7 +247,7 @@ describe('videoAlgolia', () => {
         })
       })
 
-      it('should not force collection/series to not downloadable', async () => {
+      it('should keep a collection/series with its own media and downloads downloadable', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -263,9 +263,11 @@ describe('videoAlgolia', () => {
           keywords: [],
           variants: [
             {
-              hls: null, // No HLS for container
-              lengthInMilliseconds: 0,
-              downloadable: true
+              hls: 'https://example.com/collection.m3u8',
+              dash: '',
+              lengthInMilliseconds: 1000,
+              downloadable: true,
+              downloads: [{ quality: 'low' }]
             }
           ]
         } as any)
@@ -274,9 +276,9 @@ describe('videoAlgolia', () => {
           objectID: 'collectionId',
           mediaComponentId: 'collectionId',
           subType: 'collection',
-          componentType: 'container',
-          contentType: 'none',
-          lengthInMilliseconds: 0,
+          componentType: 'content',
+          contentType: 'video',
+          lengthInMilliseconds: 1000,
           isDownloadable: true,
           restrictViewArclight: false,
           keywords: []
@@ -287,15 +289,10 @@ describe('videoAlgolia', () => {
           variables: { videoId: 'collectionId' }
         })
 
-        expect(result).toHaveProperty('data.checkVideoInAlgolia', {
-          ok: true,
-          mismatches: [],
-          recordUrl:
-            'https://www.algolia.com/apps/test-app-id/explorer/browse/test-videos-index?query=collectionId'
-        })
+        expect(result).toHaveProperty('data.checkVideoInAlgolia.ok', true)
       })
 
-      it('should flag a collection still indexed with the old forced false', async () => {
+      it('should flag a collection with real media still indexed as not downloadable', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -309,17 +306,25 @@ describe('videoAlgolia', () => {
           label: 'collection',
           restrictViewPlatforms: [],
           keywords: [],
-          variants: [{ hls: null, lengthInMilliseconds: 0, downloadable: true }]
+          variants: [
+            {
+              hls: 'https://example.com/collection.m3u8',
+              dash: '',
+              lengthInMilliseconds: 1000,
+              downloadable: true,
+              downloads: [{ quality: 'low' }]
+            }
+          ]
         } as any)
 
         getObjectSpy.mockResolvedValue({
           objectID: 'collectionId',
           mediaComponentId: 'collectionId',
           subType: 'collection',
-          componentType: 'container',
-          contentType: 'none',
-          lengthInMilliseconds: 0,
-          isDownloadable: false, // stale record from before the override was dropped
+          componentType: 'content',
+          contentType: 'video',
+          lengthInMilliseconds: 1000,
+          isDownloadable: false,
           restrictViewArclight: false,
           keywords: []
         })
@@ -336,6 +341,106 @@ describe('videoAlgolia', () => {
           field: 'isDownloadable',
           expected: 'true',
           actual: 'false'
+        })
+      })
+
+      it('should expect an empty container to be not downloadable even if its variant flag is true', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'seriesId',
+          label: 'series',
+          restrictViewPlatforms: [],
+          keywords: [],
+          variants: [
+            {
+              hls: '',
+              dash: '',
+              lengthInMilliseconds: 0,
+              downloadable: true,
+              downloads: []
+            }
+          ]
+        } as any)
+
+        getObjectSpy.mockResolvedValue({
+          objectID: 'seriesId',
+          mediaComponentId: 'seriesId',
+          subType: 'series',
+          componentType: 'content',
+          contentType: 'video',
+          lengthInMilliseconds: 0,
+          isDownloadable: false,
+          restrictViewArclight: false,
+          keywords: []
+        })
+
+        const result = await authClient({
+          document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
+          variables: { videoId: 'seriesId' }
+        })
+
+        expect(
+          (result as any).data.checkVideoInAlgolia.mismatches.map(
+            (m: { field: string }) => m.field
+          )
+        ).not.toContain('isDownloadable')
+      })
+
+      it('should flag an empty container still indexed as downloadable', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'seriesId',
+          label: 'series',
+          restrictViewPlatforms: [],
+          keywords: [],
+          variants: [
+            {
+              hls: '',
+              dash: '',
+              lengthInMilliseconds: 0,
+              downloadable: true,
+              downloads: []
+            }
+          ]
+        } as any)
+
+        getObjectSpy.mockResolvedValue({
+          objectID: 'seriesId',
+          mediaComponentId: 'seriesId',
+          subType: 'series',
+          componentType: 'content',
+          contentType: 'video',
+          lengthInMilliseconds: 0,
+          isDownloadable: true,
+          restrictViewArclight: false,
+          keywords: []
+        })
+
+        const result = await authClient({
+          document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
+          variables: { videoId: 'seriesId' }
+        })
+
+        expect(
+          (result as any).data.checkVideoInAlgolia.mismatches
+        ).toContainEqual({
+          field: 'isDownloadable',
+          expected: 'false',
+          actual: 'true'
         })
       })
 

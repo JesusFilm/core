@@ -12,6 +12,7 @@ import {
   updateVideoVariantInAlgolia,
   videoVariantAlgoliaInclude
 } from '../../../lib/algolia/algoliaVideoVariantUpdate'
+import { isAlgoliaVideoDownloadable } from '../../../lib/algolia/isAlgoliaVideoDownloadable/isAlgoliaVideoDownloadable'
 import { getLanguages } from '../../../lib/algolia/languages'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
@@ -641,8 +642,13 @@ builder.queryFields((t) => ({
           variants: {
             select: {
               hls: true,
+              dash: true,
               lengthInMilliseconds: true,
-              downloadable: true
+              downloadable: true,
+              downloads: {
+                select: { quality: true },
+                where: { quality: { in: ['low', 'high'] } }
+              }
             },
             where: { languageId: '529', published: true },
             take: 1
@@ -656,7 +662,10 @@ builder.queryFields((t) => ({
 
       const primaryVariant = video.variants[0]
       const isVideoContent = primaryVariant?.hls != null
-      const isDownloadable = primaryVariant?.downloadable ?? false
+      const isDownloadable = isAlgoliaVideoDownloadable(
+        video.label,
+        primaryVariant
+      )
       const expected = {
         objectID: video.id,
         mediaComponentId: video.id,
