@@ -280,11 +280,14 @@ export function Video({
                     insetBlockEnd: 'var(--caption-bottom) !important',
                     insetInline: 'var(--caption-inline) !important'
                   },
-                // Safari draws captions natively, e.g. on iOS
+                // Safari draws captions natively, e.g. on iOS. Narrowing the
+                // container (padding is ignored) makes long captions wrap.
                 [`&.${CAPTIONS_ABOVE_CONTROLS_CLASS} > .vjs-tech::-webkit-media-text-track-container`]:
                   {
                     transform: 'translateY(calc(-1 * var(--caption-bottom)))',
-                    paddingInline: 'var(--caption-inline)'
+                    insetInline: 0,
+                    width: 'calc(100% - 2 * var(--caption-inline))',
+                    marginInline: 'auto'
                   }
               }}
             >
