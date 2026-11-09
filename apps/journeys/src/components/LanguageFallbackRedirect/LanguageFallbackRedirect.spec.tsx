@@ -62,6 +62,7 @@ describe('LanguageFallbackRedirect', () => {
     )
     fallback.unmount()
 
+    vi.spyOn(window.history, 'replaceState').mockImplementation(() => undefined)
     visit(`https://example.org${replace.mock.calls[0][0] as string}`)
     render(<CampaignLanguageRedirect campaign={campaignPublic} />)
     expect(replace).toHaveBeenCalledTimes(1)

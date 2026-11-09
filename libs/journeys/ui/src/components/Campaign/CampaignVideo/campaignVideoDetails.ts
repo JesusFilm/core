@@ -10,9 +10,8 @@ import type {
 } from '../../Video/__generated__/VideoFields'
 import type { CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video as WatchVideo } from '../__generated__/CampaignPublicBlockFields'
 import { campaignImageSource } from '../libs/campaignImageSource'
-import { watchUrl } from '../libs/watchUrl'
 import type { CampaignBlockOf } from '../types'
-import { hasText } from '../types'
+import { hasText, watchHref } from '../types'
 
 type CampaignVideoBlock = CampaignBlockOf<'CampaignVideoBlock'>
 
@@ -67,7 +66,6 @@ export function campaignVideoDetails(
   languageId: string
 ): CampaignVideoDetails {
   const video = watchVideo(block)
-  const slug = video?.variant?.slug ?? video?.slug
   return {
     title: hasText(block.title)
       ? block.title
@@ -77,7 +75,7 @@ export function campaignVideoDetails(
       : watchField(video?.description, languageId),
     poster: campaignImageSource(block)?.src ?? null,
     childrenCount: video?.childrenCount ?? 0,
-    watchHref: hasText(slug) ? watchUrl(slug) : null
+    watchHref: video == null ? null : watchHref(video)
   }
 }
 

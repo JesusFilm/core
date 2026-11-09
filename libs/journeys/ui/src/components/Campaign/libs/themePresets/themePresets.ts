@@ -8,7 +8,7 @@ import type {
  * A Theme Preset: theme mode, the eight colour columns and the button corners
  * of a Campaign Theme. Applying one replaces those ten values only; fonts and
  * the corner radius are untouched. Nothing records which preset is active: the editor derives it by
- * comparing the current values to these constants (PRD §4, §14).
+ * comparing the current values to these constants (glossary: **Theme Preset**).
  */
 export interface CampaignThemePreset {
   themeMode: CampaignThemeMode
