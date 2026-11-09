@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.",
   "Show country names": "Show country names",
   "Countries": "Countries",
+  "Always turned off for background videos": "Always turned off for background videos",
   "Appears on <0>{{count}}</0> card_one": "በ<0>{{count}}</0> ካርድ ላይ ይታያል",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>ካርድ</1>",
