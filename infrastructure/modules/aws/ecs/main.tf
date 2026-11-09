@@ -2,6 +2,15 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.name
 }
 
+# Lets a service choose FARGATE_SPOT through ecs-task's capacity_provider.
+# No default strategy: services that set launch_type are unaffected. Stage
+# only until prod wants Spot, so prod's cluster stays as it is.
+resource "aws_ecs_cluster_capacity_providers" "ecs_cluster" {
+  count              = var.env == "stage" ? 1 : 0
+  cluster_name       = aws_ecs_cluster.ecs_cluster.name
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+}
+
 resource "aws_security_group" "internal_security_group" {
   name   = "jfp-ecs-internal-sg-${var.env}"
   vpc_id = var.vpc_id

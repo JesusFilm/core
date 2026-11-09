@@ -27,7 +27,7 @@ builder.mutationField('campaignRichTextBlockUpdate', (t) =>
         'CampaignRichTextBlock'
       )
       return await updateBlock(block, {
-        ...validateSectionText(input, ['title', 'content']),
+        ...validateSectionText('CampaignRichTextBlock', input),
         ...sectionStyleColumns(input)
       })
     }

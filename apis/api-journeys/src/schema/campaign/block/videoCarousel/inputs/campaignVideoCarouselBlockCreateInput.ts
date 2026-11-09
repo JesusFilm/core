@@ -14,6 +14,10 @@ export const CampaignVideoCarouselBlockCreateInput = builder.inputType(
       title: t.string({
         required: false,
         description: `At most ${TEXT_CAPS.title} characters.`
+      }),
+      description: t.string({
+        required: false,
+        description: `At most ${TEXT_CAPS.description} characters.`
       })
     })
   }

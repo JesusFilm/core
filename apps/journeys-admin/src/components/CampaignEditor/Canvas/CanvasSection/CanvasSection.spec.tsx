@@ -6,7 +6,10 @@ import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
 import { headerLogoBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
-import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  CampaignStringKey
+} from '../../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../../data'
 import { newSectionBlock } from '../../sectionTypes'
@@ -57,6 +60,17 @@ const withHeaderText: Campaign = {
   )
 }
 
+function withAllRegions(source: Campaign, value: string): Campaign {
+  return {
+    ...source,
+    strings: source.strings.map((string) =>
+      string.key === CampaignStringKey.allRegions
+        ? { ...string, value }
+        : string
+    )
+  }
+}
+
 const oneLanguage: Campaign = {
   ...campaign,
   languages: campaign.languages.slice(0, 1)
@@ -89,6 +103,55 @@ function renderChrome(
 }
 
 describe('CanvasSection header', () => {
+  describe('CanvasAllRegionsChip', () => {
+    function renderRegionHeader(source: Campaign): void {
+      render(
+        <StaticEditor
+          campaignProp={source}
+          initialState={{
+            pageKind: CampaignPageKind.regionTemplate,
+            regionId: 'eurRegionId',
+            previewLanguageId: '529'
+          }}
+        >
+          <CanvasSection block={chromeBlock(source, 'CampaignHeaderBlock')} />
+        </StaticEditor>
+      )
+    }
+
+    it('shows the allRegions string on a Region Page', () => {
+      renderRegionHeader(campaignWithRegions)
+
+      const chip = screen.getByTestId('CanvasAllRegionsChip')
+      expect(screen.getByTestId('CanvasHeaderRow')).toContainElement(chip)
+      expect(chip).toHaveTextContent('All regions')
+    })
+
+    it('shows an edited allRegions string', () => {
+      renderRegionHeader(
+        withAllRegions(campaignWithRegions, 'Toutes les régions')
+      )
+
+      expect(screen.getByTestId('CanvasAllRegionsChip')).toHaveTextContent(
+        'Toutes les régions'
+      )
+    })
+
+    it('leaves the chip empty for a blank allRegions string', () => {
+      renderRegionHeader(withAllRegions(campaignWithRegions, '  '))
+
+      expect(screen.getByTestId('CanvasAllRegionsChip')).toHaveTextContent(/^$/)
+    })
+
+    it('shows no chip on the landing page', () => {
+      renderChrome('CampaignHeaderBlock', campaignWithRegions)
+
+      expect(
+        screen.queryByTestId('CanvasAllRegionsChip')
+      ).not.toBeInTheDocument()
+    })
+  })
+
   describe('CanvasBrandMark', () => {
     it('shows the campaign title while there is no logo', () => {
       renderChrome('CampaignHeaderBlock')

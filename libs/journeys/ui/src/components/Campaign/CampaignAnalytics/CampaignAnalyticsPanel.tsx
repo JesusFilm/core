@@ -17,8 +17,7 @@ import {
 } from 'react'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
-import { campaignString } from '../CampaignProvider/campaignString'
-import { hasText } from '../types'
+import { campaignStringOr } from '../CampaignProvider/campaignString'
 import type { CampaignRegion } from '../types'
 
 import type {
@@ -71,15 +70,6 @@ interface CampaignAnalyticsPanelProps {
   worldMap?: WorldMapShapes | null
   /** The theme accent (`#RRGGBB`) the map shades in. */
   accentColor?: string
-}
-
-function stringValue(
-  strings: CampaignAnalyticsPanelProps['strings'],
-  key: CampaignStringKey,
-  fallback: string
-): string {
-  const value = campaignString(strings, key)
-  return hasText(value) ? value : fallback
 }
 
 interface TileProps {
@@ -404,7 +394,7 @@ export function CampaignAnalyticsPanel({
       )}
       {tabFor(
         ALL_REGIONS,
-        stringValue(strings, CampaignStringKey.allRegions, t('All'))
+        campaignStringOr(strings, CampaignStringKey.allRegions, t('All'))
       )}
     </Box>
   )
@@ -533,7 +523,7 @@ export function CampaignAnalyticsPanel({
   const topCountry = view.countries[0]
   const visitorsLabel =
     activeRegion == null
-      ? stringValue(
+      ? campaignStringOr(
           strings,
           CampaignStringKey.totalVisitors,
           t('Total visitors')
@@ -550,7 +540,7 @@ export function CampaignAnalyticsPanel({
     >
       <Tile
         testId="CampaignAnalyticsTopCountry"
-        label={stringValue(
+        label={campaignStringOr(
           strings,
           CampaignStringKey.topCountry,
           t('Top country')

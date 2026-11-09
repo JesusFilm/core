@@ -30,7 +30,7 @@ builder.mutationField('campaignRegionHeaderBlockUpdate', (t) =>
         'CampaignRegionHeaderBlock'
       )
       return await updateBlock(block, {
-        ...validateSectionText(input, ['intro']),
+        ...validateSectionText('CampaignRegionHeaderBlock', input),
         ...sectionStyleColumns(input)
       })
     }
