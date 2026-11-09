@@ -1,11 +1,24 @@
 import { prisma } from '@core/prisma/media/client'
 
+import {
+  enqueueVideoAlgoliaSync,
+  videoOnlyScope
+} from '../../../workers/videoAlgoliaSync'
 import { builder, toPrismaDateTimeFilter } from '../../builder'
 
 import { VideoVariantDownloadQuality } from './enums/videoVariantDownloadQuality'
 import { VideoVariantDownloadCreateInput } from './inputs/videoVariantDownloadCreate'
 import { VideoVariantDownloadsFilter } from './inputs/videoVariantDownloadsFilter'
 import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUpdate'
+
+// A collection/series Video's indexed isDownloadable now depends on its
+// variant's download rows (see isAlgoliaVideoDownloadable), so adding,
+// changing or removing a download must re-sync the owning Video or the
+// index silently goes stale until the next reconciliation sweep.
+async function syncOwningVideo(videoId: string | undefined): Promise<void> {
+  if (videoId == null) return
+  await enqueueVideoAlgoliaSync(videoId, videoOnlyScope)
+}
 
 export const VideoVariantDownload = builder.prismaObject(
   'VideoVariantDownload',
@@ -87,14 +100,17 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantDownloadCreateInput, required: true })
     },
     resolve: async (_query, _parent, { input }) => {
-      return await prisma.videoVariantDownload.create({
+      const result = await prisma.videoVariantDownload.create({
         data: {
           ...input,
           id: input.id ?? undefined,
           assetId: input.assetId ?? undefined,
           version: input.version ?? undefined
-        }
+        },
+        include: { videoVariant: { select: { videoId: true } } }
       })
+      await syncOwningVideo(result.videoVariant?.videoId)
+      return result
     }
   }),
   videoVariantDownloadUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -104,7 +120,7 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantDownloadUpdateInput, required: true })
     },
     resolve: async (_query, _parent, { input }) => {
-      return await prisma.videoVariantDownload.update({
+      const result = await prisma.videoVariantDownload.update({
         where: { id: input.id },
         data: {
           videoVariantId: input.videoVariantId ?? undefined,
@@ -116,8 +132,11 @@ builder.mutationFields((t) => ({
           url: input.url ?? undefined,
           assetId: input.assetId ?? undefined,
           version: input.version ?? undefined
-        }
+        },
+        include: { videoVariant: { select: { videoId: true } } }
       })
+      await syncOwningVideo(result.videoVariant?.videoId)
+      return result
     }
   }),
   videoVariantDownloadDelete: t.withAuth({ isPublisher: true }).prismaField({
@@ -127,9 +146,12 @@ builder.mutationFields((t) => ({
       id: t.arg.id({ required: true })
     },
     resolve: async (_query, _parent, { id }) => {
-      return await prisma.videoVariantDownload.delete({
-        where: { id }
+      const result = await prisma.videoVariantDownload.delete({
+        where: { id },
+        include: { videoVariant: { select: { videoId: true } } }
       })
+      await syncOwningVideo(result.videoVariant?.videoId)
+      return result
     }
   })
 }))

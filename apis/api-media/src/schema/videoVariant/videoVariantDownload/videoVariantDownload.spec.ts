@@ -1,11 +1,31 @@
+import { vi } from 'vitest'
+
 import { VideoVariantDownloadQuality } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
+import { enqueueVideoAlgoliaSync } from '../../../workers/videoAlgoliaSync'
+
+vi.mock('../../../workers/videoAlgoliaSync', () => ({
+  enqueueVideoAlgoliaSync: vi.fn(),
+  videoOnlyScope: {
+    syncVideoRecord: true,
+    syncAllVariants: false,
+    syncPublishedFlag: false,
+    dirtyVariantIds: [],
+    deletedVariantIds: []
+  }
+}))
+
+const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 
 describe('videoVariantDownload', () => {
   const client = getClient()
+
+  beforeEach(() => {
+    mockedEnqueueVideoAlgoliaSync.mockClear()
+  })
 
   const authClient = getClient({
     headers: {
@@ -153,8 +173,9 @@ describe('videoVariantDownload', () => {
           assetId: null,
           version: 1,
           createdAt: new Date(),
-          updatedAt: new Date()
-        })
+          updatedAt: new Date(),
+          videoVariant: { videoId: 'videoId' }
+        } as any)
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_CREATE_MUTATION,
           variables: {
@@ -178,8 +199,13 @@ describe('videoVariantDownload', () => {
             height: 1024,
             width: 1024,
             url: 'url'
-          }
+          },
+          include: { videoVariant: { select: { videoId: true } } }
         })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'videoId',
+          expect.objectContaining({ syncVideoRecord: true })
+        )
         expect(result).toHaveProperty('data.videoVariantDownloadCreate', {
           id: 'id'
         })
@@ -235,8 +261,9 @@ describe('videoVariantDownload', () => {
           assetId: null,
           version: 1,
           createdAt: new Date(),
-          updatedAt: new Date()
-        })
+          updatedAt: new Date(),
+          videoVariant: { videoId: 'videoId' }
+        } as any)
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_UPDATE_MUTATION,
           variables: {
@@ -260,8 +287,13 @@ describe('videoVariantDownload', () => {
             height: 1024,
             width: 1024,
             url: 'url'
-          }
+          },
+          include: { videoVariant: { select: { videoId: true } } }
         })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'videoId',
+          expect.objectContaining({ syncVideoRecord: true })
+        )
         expect(result).toHaveProperty('data.videoVariantDownloadUpdate', {
           id: 'id'
         })
@@ -315,8 +347,9 @@ describe('videoVariantDownload', () => {
           assetId: null,
           version: 1,
           createdAt: new Date(),
-          updatedAt: new Date()
-        })
+          updatedAt: new Date(),
+          videoVariant: { videoId: 'videoId' }
+        } as any)
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_DELETE_MUTATION,
           variables: {
@@ -324,8 +357,13 @@ describe('videoVariantDownload', () => {
           }
         })
         expect(prismaMock.videoVariantDownload.delete).toHaveBeenCalledWith({
-          where: { id: 'id' }
+          where: { id: 'id' },
+          include: { videoVariant: { select: { videoId: true } } }
         })
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'videoId',
+          expect.objectContaining({ syncVideoRecord: true })
+        )
         expect(result).toHaveProperty('data.videoVariantDownloadDelete', {
           id: 'id'
         })
