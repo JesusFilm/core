@@ -311,13 +311,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       </MockedProvider>
     )
     await screen.findByTestId('template-breakdown-analytics-table')
-    expect(screen.getByRole('status')).toHaveTextContent('All time')
     selectRange('01-12-2025', '10-12-2025')
-    await user.click(screen.getByRole('button', { name: 'Apply' }))
     await waitFor(() => expect(filteredResult).toHaveBeenCalledOnce())
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Date range: 2025-12-01 to 2025-12-10'
-    )
     await waitFor(() =>
       expect(screen.queryByText('100')).not.toBeInTheDocument()
     )
@@ -325,11 +320,37 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     await user.click(screen.getByRole('switch'))
     await waitFor(() => expect(withoutArchivedResult).toHaveBeenCalledOnce())
 
-    await user.click(screen.getByRole('button', { name: 'Clear' }))
-    expect(screen.getByRole('status')).toHaveTextContent('All time')
+    await user.click(screen.getByRole('button', { name: 'Reset date range' }))
     await screen.findByTestId('template-breakdown-analytics-table')
     expect(screen.getAllByText('100')).toHaveLength(2)
     expect(screen.getByRole('switch')).not.toBeChecked()
+  })
+
+  it('shows reset for a partial range without querying until both dates are filled', async () => {
+    const user = userEvent.setup()
+    render(
+      <MockedProvider mocks={[getTemplateFamilyStatsBreakdownMockWithArchived]}>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('template-breakdown-analytics-table')
+    expect(
+      screen.queryByRole('button', { name: 'Reset date range' })
+    ).not.toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('From', { selector: 'input' }), {
+      target: { value: '01-12-2025' }
+    })
+    expect(
+      screen.getByTestId('template-breakdown-analytics-table')
+    ).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Reset date range' }))
+    expect(
+      screen.queryByRole('button', { name: 'Reset date range' })
+    ).not.toBeInTheDocument()
   })
 
   it('clears a range back to explicit all-time analytics', async () => {
@@ -357,12 +378,12 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     )
     await screen.findByTestId('template-breakdown-analytics-table')
     selectRange('01-12-2025', '10-12-2025')
-    await user.click(screen.getByRole('button', { name: 'Apply' }))
     await screen.findByText('No template breakdown analytics data available')
-    await user.click(screen.getByRole('button', { name: 'Clear' }))
+    await user.click(screen.getByRole('button', { name: 'Reset date range' }))
     await screen.findByTestId('template-breakdown-analytics-table')
-    expect(screen.getByRole('status')).toHaveTextContent('All time')
-    expect(screen.getByRole('button', { name: 'Apply' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Apply' })
+    ).not.toBeInTheDocument()
   })
 
   it.each([
@@ -382,14 +403,15 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     )
     await screen.findByTestId('template-breakdown-analytics-table')
     selectRange(start, end)
-    expect(screen.getByRole('button', { name: 'Apply' })).toBeDisabled()
-    expect(screen.getByRole('status')).toHaveTextContent('All time')
+    expect(
+      screen.queryByRole('button', { name: 'Apply' })
+    ).not.toBeInTheDocument()
     expect(
       screen.getByTestId('template-breakdown-analytics-table')
     ).toBeInTheDocument()
   })
 
-  it('shows an empty state when all journeys have zero activity', async () => {
+  it('keeps project rows and zero totals visible when there is no activity', async () => {
     const zeroData: GetTemplateFamilyStatsBreakdown = {
       templateFamilyStatsBreakdown:
         mockSingleRowData.templateFamilyStatsBreakdown!.map((row) => ({
@@ -418,9 +440,11 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         />
       </MockedProvider>
     )
-    await screen.findByText('No template breakdown analytics data available')
+    await screen.findByTestId('template-breakdown-analytics-table')
+    expect(screen.getByRole('link', { name: 'Journey 1' })).toBeInTheDocument()
+    expect(screen.getAllByText('0')).toHaveLength(4)
     expect(
       screen.queryByTestId('template-breakdown-analytics-table')
-    ).not.toBeInTheDocument()
+    ).toBeInTheDocument()
   })
 })

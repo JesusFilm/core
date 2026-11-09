@@ -140,17 +140,9 @@ describe('TemplateBreakdownAnalyticsTable', () => {
     expect(link).toHaveAttribute('href', '/journeys/journey-1')
   })
 
-  it('should limit display rows to 10', () => {
+  it('shows all projects, including projects beyond the first ten', () => {
     render(<TemplateBreakdownAnalyticsTable data={mockDataWithManyRows} />)
-
-    // Should only show first 10 regular rows + total row + possibly restricted row
-    const journeyRows = screen
-      .getAllByText(/Journey \d+/)
-      .filter(
-        (el) => el.textContent !== 'Journey 1' && el.textContent !== 'Journey 2'
-      )
-    // We expect at most 10 regular rows to be displayed
-    expect(journeyRows.length).toBeLessThanOrEqual(10)
+    expect(screen.getAllByRole('link')).toHaveLength(15)
   })
 
   it('should sort rows when column header is clicked', async () => {

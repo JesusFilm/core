@@ -111,7 +111,6 @@ export function TemplateBreakdownAnalyticsTable({
 
   const { totalRow, regularRows, restrictedRow, columnsWithZeros } =
     processedData
-  const displayRows = regularRows.slice(0, 10)
 
   const columnHeaders = getColumnHeaders(t)
   const visibleColumnHeaders = columnHeaders.filter(
@@ -320,7 +319,7 @@ export function TemplateBreakdownAnalyticsTable({
             }}
           >
             {/* Regular Rows */}
-            {displayRows.map((row) => (
+            {regularRows.map((row) => (
               <TableRow key={row.journeyId}>
                 <TableCell
                   sx={{

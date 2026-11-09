@@ -1,13 +1,14 @@
 import { gql } from '@apollo/client'
 import { useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { formatISO, isValid, parseISO, startOfToday } from 'date-fns'
@@ -15,6 +16,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import ArrowRotateLeft1Icon from '@core/shared/ui/icons/ArrowRotateLeft1'
 
 import {
   GetTemplateFamilyStatsBreakdown,
@@ -76,14 +78,6 @@ export function TemplateBreakdownAnalyticsDialog({
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [appliedDateRange, setAppliedDateRange] = useState<string | null>(null)
-  const isDateRangeValid =
-    startDate != null &&
-    endDate != null &&
-    isValid(startDate) &&
-    isValid(endDate) &&
-    startDate >= earliestDate &&
-    endDate <= today &&
-    startDate <= endDate
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
 
   const variables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
@@ -128,11 +122,31 @@ export function TemplateBreakdownAnalyticsDialog({
     skip: !open
   })
 
-  const handleApplyDateRange = (): void => {
-    if (!isDateRangeValid || startDate == null || endDate == null) return
-    setAppliedDateRange(
-      `${formatISO(startDate, { representation: 'date' })},${formatISO(endDate, { representation: 'date' })}`
+  const getValidDateRange = (
+    from: Date | null,
+    to: Date | null
+  ): string | null => {
+    if (
+      from == null ||
+      to == null ||
+      !isValid(from) ||
+      !isValid(to) ||
+      from < earliestDate ||
+      to > today ||
+      from > to
     )
+      return null
+    return `${formatISO(from, { representation: 'date' })},${formatISO(to, { representation: 'date' })}`
+  }
+
+  const isDateRangeValid = getValidDateRange(startDate, endDate) != null
+
+  const handleDateRangeChange = (from: Date | null, to: Date | null): void => {
+    setStartDate(from)
+    setEndDate(to)
+    const range = getValidDateRange(from, to)
+    if (range != null || (from == null && to == null))
+      setAppliedDateRange(range)
   }
 
   const handleClearDateRange = (): void => {
@@ -145,9 +159,7 @@ export function TemplateBreakdownAnalyticsDialog({
     !loading &&
     !error &&
     (data?.templateFamilyStatsBreakdown == null ||
-      data.templateFamilyStatsBreakdown.every((row) =>
-        row.stats.every((stat) => stat.visitors === 0)
-      ))
+      data.templateFamilyStatsBreakdown.length === 0)
 
   return (
     <Dialog
@@ -199,39 +211,28 @@ export function TemplateBreakdownAnalyticsDialog({
       }}
     >
       <Box sx={{ px: 4, pb: 2 }}>
-        <DateRangePicker
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-          minDate={earliestDate}
-          maxDate={today}
-        />
-        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-          <Button
-            variant="contained"
-            disabled={!isDateRangeValid}
-            onClick={handleApplyDateRange}
-          >
-            {t('Apply')}
-          </Button>
-          <Button
-            onClick={handleClearDateRange}
-            disabled={
-              startDate == null && endDate == null && appliedDateRange == null
-            }
-          >
-            {t('Clear')}
-          </Button>
+        <Stack direction="row" sx={{ alignItems: 'center' }}>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={(date) => handleDateRangeChange(date, endDate)}
+            onEndDateChange={(date) => handleDateRangeChange(startDate, date)}
+            minDate={earliestDate}
+            maxDate={today}
+          />
+          {(startDate != null ||
+            endDate != null ||
+            appliedDateRange != null) && (
+            <Tooltip title={t('Reset date range')}>
+              <IconButton
+                aria-label={t('Reset date range')}
+                onClick={handleClearDateRange}
+              >
+                <ArrowRotateLeft1Icon />
+              </IconButton>
+            </Tooltip>
+          )}
         </Stack>
-        <Typography variant="body2" sx={{ mt: 2 }} role="status">
-          {appliedDateRange == null
-            ? t('All time')
-            : t('Date range: {{startDate}} to {{endDate}}', {
-                startDate: appliedDateRange.split(',')[0],
-                endDate: appliedDateRange.split(',')[1]
-              })}
-        </Typography>
         {startDate != null && endDate != null && !isDateRangeValid && (
           <Typography variant="body2" color="error" role="alert">
             {t(

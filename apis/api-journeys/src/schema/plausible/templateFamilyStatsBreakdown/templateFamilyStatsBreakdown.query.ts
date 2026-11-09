@@ -157,7 +157,9 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       )
       const journeyIds = [
         ...new Set([
+          templateJourney.id,
           ...journeyIdsFromPlausible,
+          ...allChildJourneyIds,
           ...Array.from(journeyIdsWithResponses)
         ])
       ]
@@ -217,8 +219,20 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
           .map((journey) => journey.id)
       )
 
+      // Include the full family even when Plausible has no activity in this range.
+      const resultsByJourneyId = new Map(
+        transformedResults.map((result) => [result.journeyId, result])
+      )
+      const familyResults = journeys.map(
+        (journey) =>
+          resultsByJourneyId.get(journey.id) ?? {
+            journeyId: journey.id,
+            stats: []
+          }
+      )
+
       const resultsWithPermissions = addPermissionsAndNames(
-        transformedResults,
+        familyResults,
         journeys,
         context.user,
         {

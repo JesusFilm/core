@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse, isAxiosError } from 'axios'
+import axios, { isAxiosError } from 'axios'
 import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { UserRole } from '@core/prisma/journeys/client'
@@ -739,7 +739,9 @@ describe('templateFamilyStatsBreakdown', () => {
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          id: { in: ['journey-1', 'journey-2', 'journey-3'] },
+          id: {
+            in: ['template-journey-id', 'journey-1', 'journey-2', 'journey-3']
+          },
           status: { in: ['published', 'draft'] }
         })
       })
@@ -851,5 +853,64 @@ describe('templateFamilyStatsBreakdown', () => {
         ]
       })
     ])
+  })
+
+  it('returns every readable child journey with zero stats when the range has no activity', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'template-journey-id',
+      slug: 'template-slug',
+      title: 'Template',
+      userJourneys: [],
+      team: { userTeams: [] }
+    } as unknown as JourneyWithAcl)
+    const journeys = ['template-journey-id', 'journey-1', 'journey-2'].map(
+      (id) => ({
+        id,
+        slug: id,
+        title: id,
+        status: 'published',
+        userJourneys: [],
+        teamId: 'team-1',
+        team: { title: 'Team One', userTeams: [] }
+      })
+    ) as unknown as JourneyWithAcl[]
+    prismaMock.journey.findMany
+      .mockResolvedValueOnce(journeys.slice(1))
+      .mockResolvedValueOnce(journeys)
+    vi.mocked(prismaMock.journeyVisitor.groupBy).mockResolvedValue([])
+    mockAxios.get.mockResolvedValue({ data: { results: [] } })
+
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-journey-id',
+        where: {
+          property: 'event:props:templateKey',
+          period: 'custom',
+          date: '2025-12-01,2025-12-10'
+        },
+        events: ['journeyVisitors', 'journeyResponses']
+      }
+    })
+    expect(result).toMatchObject({
+      data: {
+        templateFamilyStatsBreakdown: journeys.map((journey) => ({
+          journeyId: journey.id,
+          journeyName: journey.title,
+          teamName: 'Team One',
+          stats: [
+            { event: 'journeyVisitors', visitors: 0 },
+            { event: 'journeyResponses', visitors: 0 }
+          ]
+        }))
+      }
+    })
+    expect(prismaMock.journey.findMany).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          id: { in: ['template-journey-id', 'journey-1', 'journey-2'] }
+        })
+      })
+    )
   })
 })

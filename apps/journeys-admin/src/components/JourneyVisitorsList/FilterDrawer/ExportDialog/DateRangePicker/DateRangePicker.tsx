@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { isValid } from 'date-fns'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -29,6 +30,12 @@ export function DateRangePicker({
   maxDate = null
 }: DateRangePickerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const minEndDate =
+    startDate != null &&
+    isValid(startDate) &&
+    (minDate == null || startDate > minDate)
+      ? startDate
+      : minDate
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box sx={{ py: 2, pr: 2, width: '100%' }}>
@@ -71,7 +78,7 @@ export function DateRangePicker({
               value={endDate}
               onChange={onEndDateChange}
               format="dd-MM-yyyy"
-              minDate={minDate ?? undefined}
+              minDate={minEndDate ?? undefined}
               maxDate={maxDate ?? undefined}
               slots={{
                 openPickerIcon: ChevronDown

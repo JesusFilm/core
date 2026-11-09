@@ -1762,5 +1762,7 @@
   "Countries": "Countries",
   "All time": "All time",
   "Date range: {{startDate}} to {{endDate}}": "Date range: {{startDate}} to {{endDate}}",
-  "Select a valid date range. The start date must be on or before the end date.": "Select a valid date range. The start date must be on or before the end date."
+  "Select a valid date range. The start date must be on or before the end date.": "Select a valid date range. The start date must be on or before the end date.",
+  "Reset date range": "Reset date range",
+  "Columns with zero activity are hidden": "Columns with zero activity are hidden"
 }
