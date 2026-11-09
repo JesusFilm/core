@@ -155,6 +155,31 @@ describe('videoLabelConsistency', () => {
       expect(rendered).toContain('and 15 more')
     })
 
+    it('drops rows further when long ids/slugs would push a section over the Slack text limit', async () => {
+      const longValue = 'x'.repeat(200)
+      const many = Array.from({ length: 30 }, (_, index) => ({
+        id: `${longValue}-${index}`,
+        slug: `${longValue}-${index}`,
+        label: 'collection'
+      }))
+      prismaMock.video.findMany.mockResolvedValueOnce(many as any)
+      prismaMock.video.findMany.mockResolvedValueOnce([])
+
+      await sendVideoLabelConsistencyAlert(logger)
+
+      const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
+      const section = body.blocks.find(
+        (block: any) =>
+          block.type === 'section' && block.text?.text?.includes('no children')
+      )
+
+      expect(section.text.text.length).toBeLessThanOrEqual(3000)
+      expect(section.text.text).toContain(
+        'Series or collection with no children (30)'
+      )
+      expect(section.text.text).toMatch(/…and \d+ more$/)
+    })
+
     it('skips quietly when Slack is not configured', async () => {
       delete process.env.SLACK_VIDEO_ADMIN_BOT_TOKEN
       prismaMock.video.findMany.mockResolvedValueOnce([

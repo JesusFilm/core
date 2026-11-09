@@ -9,6 +9,7 @@ import { getMediaDataLangSlackConfig } from '../slack/config'
 // Slack rejects section text over 3000 characters (and slackChatPostMessage
 // swallows the error), so keep each listed group comfortably under that.
 const maxRowsPerGroup = 15
+const maxSectionChars = 2900
 
 export interface EmptyContainerVideo {
   id: string
@@ -81,16 +82,27 @@ function formatRows(
 ): { type: 'section'; text: { type: 'mrkdwn'; text: string } } | undefined {
   if (rows.length === 0) return undefined
 
-  const listed = rows.slice(0, maxRowsPerGroup)
-  const omitted = rows.length - listed.length
-  const lines = omitted > 0 ? [...listed, `…and ${omitted} more`] : listed
+  const buildText = (shown: string[], omitted: number): string => {
+    const lines = omitted > 0 ? [...shown, `…and ${omitted} more`] : shown
+    return `*${heading} (${rows.length})*\n${lines.join('\n')}`
+  }
+
+  // Row count alone doesn't bound the text length: ids or slugs can be
+  // arbitrarily long, so drop rows until the rendered section actually
+  // fits Slack's limit, keeping the omission count accurate.
+  let shown = rows.slice(0, maxRowsPerGroup)
+  let omitted = rows.length - shown.length
+  while (
+    shown.length > 0 &&
+    buildText(shown, omitted).length > maxSectionChars
+  ) {
+    shown = shown.slice(0, -1)
+    omitted = rows.length - shown.length
+  }
 
   return {
     type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: `*${heading} (${rows.length})*\n${lines.join('\n')}`
-    }
+    text: { type: 'mrkdwn', text: buildText(shown, omitted) }
   }
 }
 
