@@ -914,9 +914,7 @@ describe('ImageUpload', () => {
 
     const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
-      value: [
-        new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
-      ]
+      value: [new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })]
     })
 
     fireEvent.drop(inputEl)
