@@ -1,4 +1,7 @@
-import { isAlgoliaVideoDownloadable } from './isAlgoliaVideoDownloadable'
+import {
+  hasAlgoliaPlayableMedia,
+  isAlgoliaVideoDownloadable
+} from './isAlgoliaVideoDownloadable'
 
 const realMedia = {
   hls: 'https://example.com/v.m3u8',
@@ -51,4 +54,24 @@ describe('isAlgoliaVideoDownloadable', () => {
       ).toBe(false)
     }
   )
+})
+
+describe('hasAlgoliaPlayableMedia', () => {
+  it('is true with an HLS URL', () => {
+    expect(hasAlgoliaPlayableMedia({ hls: 'https://example.com/v.m3u8' })).toBe(
+      true
+    )
+  })
+
+  it('is true with a DASH-only URL', () => {
+    expect(
+      hasAlgoliaPlayableMedia({ hls: '', dash: 'https://example.com/v.mpd' })
+    ).toBe(true)
+  })
+
+  it('is false with no media', () => {
+    expect(hasAlgoliaPlayableMedia({ hls: '', dash: '' })).toBe(false)
+    expect(hasAlgoliaPlayableMedia({ hls: null, dash: null })).toBe(false)
+    expect(hasAlgoliaPlayableMedia(undefined)).toBe(false)
+  })
 })

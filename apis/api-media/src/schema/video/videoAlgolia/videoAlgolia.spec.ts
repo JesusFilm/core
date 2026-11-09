@@ -292,6 +292,51 @@ describe('videoAlgolia', () => {
         expect(result).toHaveProperty('data.checkVideoInAlgolia.ok', true)
       })
 
+      it('should classify a collection with a DASH-only variant as content, matching isDownloadable', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'collectionId',
+          label: 'collection',
+          restrictViewPlatforms: [],
+          keywords: [],
+          variants: [
+            {
+              hls: '',
+              dash: 'https://example.com/collection.mpd',
+              lengthInMilliseconds: 1000,
+              downloadable: true,
+              downloads: [{ quality: 'low' }]
+            }
+          ]
+        } as any)
+
+        getObjectSpy.mockResolvedValue({
+          objectID: 'collectionId',
+          mediaComponentId: 'collectionId',
+          subType: 'collection',
+          componentType: 'content',
+          contentType: 'video',
+          lengthInMilliseconds: 1000,
+          isDownloadable: true,
+          restrictViewArclight: false,
+          keywords: []
+        })
+
+        const result = await authClient({
+          document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
+          variables: { videoId: 'collectionId' }
+        })
+
+        expect(result).toHaveProperty('data.checkVideoInAlgolia.ok', true)
+      })
+
       it('should flag a collection with real media still indexed as not downloadable', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',

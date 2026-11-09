@@ -3,7 +3,10 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/media/client'
 
 import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
-import { isAlgoliaVideoDownloadable } from '../isAlgoliaVideoDownloadable/isAlgoliaVideoDownloadable'
+import {
+  hasAlgoliaPlayableMedia,
+  isAlgoliaVideoDownloadable
+} from '../isAlgoliaVideoDownloadable/isAlgoliaVideoDownloadable'
 import { getLanguages } from '../languages'
 
 export async function updateVideoInAlgolia(
@@ -122,6 +125,7 @@ export async function updateVideoInAlgolia(
       video.label,
       video.variants[0]
     )
+    const isVideoContent = hasAlgoliaPlayableMedia(video.variants[0])
 
     const titles = video.title.map((title) => ({
       value: title.value,
@@ -193,9 +197,9 @@ export async function updateVideoInAlgolia(
     const transformedVideo = {
       objectID: video.id,
       mediaComponentId: video.id,
-      componentType: video.variants[0]?.hls != null ? 'content' : 'container',
+      componentType: isVideoContent ? 'content' : 'container',
       subType: video.label,
-      contentType: video.variants[0]?.hls != null ? 'video' : 'none',
+      contentType: isVideoContent ? 'video' : 'none',
       lengthInMilliseconds: video.variants[0]?.lengthInMilliseconds ?? 0,
       titles,
       descriptions,

@@ -326,6 +326,54 @@ describe('algoliaVideoUpdate', () => {
   )
 
   it.each(['collection', 'series'])(
+    'classifies a %s with a DASH-only variant as content, matching isDownloadable',
+    async (label) => {
+      prismaMock.video.findUnique.mockResolvedValueOnce({
+        id: 'dash-only-container-id',
+        label,
+        primaryLanguageId: '529',
+        childIds: ['child1'],
+        restrictDownloadPlatforms: [],
+        published: true,
+        restrictViewPlatforms: [],
+        title: [{ value: 'Test Container', languageId: '529' }],
+        description: [],
+        studyQuestions: [],
+        bibleCitation: [],
+        keywords: [],
+        images: [],
+        availableLanguages: [],
+        variants: [
+          {
+            published: true,
+            hls: '',
+            dash: 'https://example.com/container.mpd',
+            lengthInMilliseconds: 1000,
+            downloadable: true,
+            downloads: [{ quality: 'low', size: 1000 }]
+          }
+        ]
+      } as any)
+
+      await updateVideoInAlgolia('dash-only-container-id', mockLogger)
+
+      expect(saveObjectsSpy).toHaveBeenCalledWith({
+        indexName: 'test-videos',
+        objects: [
+          expect.objectContaining({
+            objectID: 'dash-only-container-id',
+            subType: label,
+            componentType: 'content',
+            contentType: 'video',
+            isDownloadable: true
+          })
+        ],
+        waitForTasks: true
+      })
+    }
+  )
+
+  it.each(['collection', 'series'])(
     'never reports an empty %s (generated parent variant) as downloadable, even when its flag is true',
     async (label) => {
       prismaMock.video.findUnique.mockResolvedValueOnce({

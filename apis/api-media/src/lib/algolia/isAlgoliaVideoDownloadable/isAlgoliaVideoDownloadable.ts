@@ -8,6 +8,20 @@ export interface AlgoliaDownloadableVariant {
 }
 
 /**
+ * Whether a Variant has playable media (a non-empty HLS or DASH URL).
+ *
+ * Shared by isAlgoliaVideoDownloadable and the componentType/contentType
+ * classification in the indexer and checkVideoInAlgolia, so a DASH-only
+ * Variant is never marked downloadable while still being classified as a
+ * contentless container.
+ */
+export function hasAlgoliaPlayableMedia(
+  variant: AlgoliaDownloadableVariant | null | undefined
+): boolean {
+  return Boolean(variant?.hls) || Boolean(variant?.dash)
+}
+
+/**
  * Whether a Video is downloadable in the Algolia index (and therefore in
  * /resources), judged from its published English Variant.
  *
@@ -30,7 +44,6 @@ export function isAlgoliaVideoDownloadable(
   const downloadable = variant?.downloadable ?? false
   if (!CONTAINER_LABELS.has(label)) return downloadable
 
-  const hasPlayableMedia = Boolean(variant?.hls) || Boolean(variant?.dash)
   const hasDownloads = (variant?.downloads?.length ?? 0) > 0
-  return downloadable && hasPlayableMedia && hasDownloads
+  return downloadable && hasAlgoliaPlayableMedia(variant) && hasDownloads
 }
