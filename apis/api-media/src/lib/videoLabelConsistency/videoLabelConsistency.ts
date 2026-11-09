@@ -6,7 +6,9 @@ import { logger } from '../../logger'
 import { slackChatPostMessage } from '../slack/chatPostMessage'
 import { getMediaDataLangSlackConfig } from '../slack/config'
 
-const maxRowsPerGroup = 25
+// Slack rejects section text over 3000 characters (and slackChatPostMessage
+// swallows the error), so keep each listed group comfortably under that.
+const maxRowsPerGroup = 15
 
 export interface EmptyContainerVideo {
   id: string
@@ -32,6 +34,8 @@ export interface VideoLabelInconsistencies {
  * to decide what the right label is.
  */
 export async function findVideoLabelInconsistencies(): Promise<VideoLabelInconsistencies> {
+  // childIds and the `children` relation are both written on videoUpdate. Require
+  // both to be empty so drift between them never raises a false alarm.
   const emptyContainers = await prisma.video.findMany({
     where: {
       label: { in: ['series', 'collection'] },

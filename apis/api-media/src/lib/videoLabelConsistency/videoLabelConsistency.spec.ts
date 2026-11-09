@@ -150,9 +150,9 @@ describe('videoLabelConsistency', () => {
 
       const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
       const rendered = JSON.stringify(body.blocks)
-      expect(rendered).toContain('video-0')
-      expect(rendered).not.toContain('video-29')
-      expect(rendered).toContain('and 5 more')
+      expect(rendered).toContain('video-14')
+      expect(rendered).not.toContain('video-15')
+      expect(rendered).toContain('and 15 more')
     })
 
     it('skips quietly when Slack is not configured', async () => {
