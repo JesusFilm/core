@@ -117,6 +117,7 @@ function Controls(): ReactElement {
   return (
     <>
       <Button onClick={() => setListed(eur, !eur.listed)}>Toggle listed</Button>
+      <Button onClick={() => setListed(eur, true)}>List on switcher</Button>
       <Button onClick={() => reorderRegion(eur, eur.order + 1)}>
         Move down
       </Button>
@@ -182,6 +183,39 @@ function renderCommands(
 
 describe('useCampaignRegionCommand', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  it('captures queued List undo state at execution and retains it through replay', async () => {
+    const unlist = { ...updateMock(false), delay: 500, maxUsageCount: 2 }
+    const list = { ...updateMock(true), maxUsageCount: 6 }
+    renderCommands([unlist, list])
+    await screen.findByTestId('Region-eurRegionId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle listed' }))
+    fireEvent.click(screen.getByRole('button', { name: 'List on switcher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'List on switcher' }))
+    expect(unlist.result).not.toHaveBeenCalled()
+    expect(list.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(list.result).toHaveBeenCalledTimes(2))
+
+    for (let replay = 0; replay < 2; replay++) {
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() =>
+        expect(list.result).toHaveBeenCalledTimes(3 + replay * 2)
+      )
+      expect(screen.getByTestId('Region-eurRegionId')).toHaveTextContent(
+        'Europe|eur|0|true|FR'
+      )
+      if (replay === 1) break
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(list.result).toHaveBeenCalledTimes(4))
+    }
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(unlist.result).toHaveBeenCalledTimes(2))
+    expect(screen.getByTestId('Region-eurRegionId')).toHaveTextContent(
+      'Europe|eur|0|false|FR'
+    )
+  })
 
   it('captures queued region positions at execution and preserves current siblings through replay', async () => {
     const data = {

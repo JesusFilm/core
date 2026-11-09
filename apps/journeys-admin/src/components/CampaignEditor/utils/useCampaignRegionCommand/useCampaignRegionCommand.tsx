@@ -167,6 +167,16 @@ export function useCampaignRegionCommand(): {
   const [orderUpdate] = useCampaignRegionOrderUpdateMutation()
   const reportFailure = useCommandFailure()
 
+  function currentRegions(): CampaignRegion[] {
+    return (
+      cache.readQuery<GetCampaign>({
+        query: GET_CAMPAIGN,
+        variables: { id: campaign.id },
+        optimistic: true
+      })?.campaign ?? campaignRef.current
+    ).regions
+  }
+
   function addRegion({ hostBlockId }: AddRegionOptions = {}): void {
     const id = uuidv4()
     const region = newRegion(campaign, id)
@@ -210,6 +220,8 @@ export function useCampaignRegionCommand(): {
   }
 
   function setListed(region: CampaignRegion, listed: boolean): void {
+    let previousListed: boolean | undefined
+
     async function write(next: boolean): Promise<unknown> {
       return await regionUpdate({
         variables: { id: region.id, input: { listed: next } },
@@ -226,23 +238,21 @@ export function useCampaignRegionCommand(): {
     }
 
     addCampaignCommand({
-      execute: async () => await write(listed),
-      undo: async () => await write(region.listed)
+      async execute() {
+        previousListed ??=
+          currentRegions().find((candidate) => candidate.id === region.id)
+            ?.listed ?? region.listed
+        return await write(listed)
+      },
+      async undo() {
+        if (previousListed == null) return
+        return await write(previousListed)
+      }
     }).catch((error: unknown) => reportFailure(error))
   }
 
   function reorderRegion(region: CampaignRegion, order: number): void {
     let previousOrder: number | undefined
-
-    function currentRegions(): CampaignRegion[] {
-      return (
-        cache.readQuery<GetCampaign>({
-          query: GET_CAMPAIGN,
-          variables: { id: campaign.id },
-          optimistic: true
-        })?.campaign ?? campaignRef.current
-      ).regions
-    }
 
     async function write(next: number): Promise<unknown> {
       const regions = currentRegions()
