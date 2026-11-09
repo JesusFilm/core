@@ -291,10 +291,9 @@ describe('campaignMachineTranslate', () => {
 
       expect(blockWrites().heroId.titleTranslations).toBeUndefined()
       await run({ mode: 'all', languageId: SPANISH })
-      const spanishTitle = blockWrites().heroId.titleTranslations
-      expect(spanishTitle[FRENCH]).toEqual({
-        value: 'Titre de la personne',
-        source: 'human'
+      expect(blockWrites().heroId.titleTranslations).toEqual({
+        [FRENCH]: { value: 'Titre de la personne', source: 'human' },
+        [SPANISH]: { value: 'FR heroId title', source: 'machine' }
       })
     })
   })

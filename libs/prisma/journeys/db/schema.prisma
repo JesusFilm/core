@@ -1005,7 +1005,7 @@ model Campaign {
   defaultLanguageId String
   /// The eight most recently used picker colours, newest first, `#RRGGBB` uppercase.
   palette           String[]
-  /// Stamped on the first publish only; never cleared by unpublish.
+  /// Last published; kept after unpublish. Stamped on every draft → published move.
   publishedAt       DateTime?
   /// The shared-link slug of the Campaign's own Plausible site
   /// (`api-journeys-campaign-<id>`); null until the plausible worker creates it.
@@ -1119,6 +1119,8 @@ model CampaignBlock {
   mediaBlockId            String?                      @unique
   logoBlockId             String?                      @unique
   switcherVariant         CampaignSwitcherVariant?     @default(cards)
+  /// CampaignRegionSwitcherBlock: whether each country chip shows its name beside the flag; null reads as true.
+  showCountryNames        Boolean?                     @default(true)
   display                 CampaignJourneyListDisplay?  @default(grid)
   showMap                 Boolean?                     @default(false)
   ratio                   CampaignColumnsRatio?        @default(equal)

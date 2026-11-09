@@ -969,11 +969,13 @@ export interface CampaignRegionSwitcherBlockCreateInput {
   parentOrder?: number | null;
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
+  showCountryNames?: boolean | null;
 }
 
 export interface CampaignRegionSwitcherBlockUpdateInput {
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
+  showCountryNames?: boolean | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;
@@ -1119,6 +1121,7 @@ export interface CampaignVideoCarouselBlockCreateInput {
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
+  description?: string | null;
 }
 
 export interface CampaignVideoCarouselBlockUpdateInput {

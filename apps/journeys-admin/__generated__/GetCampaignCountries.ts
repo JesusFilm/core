@@ -22,3 +22,8 @@ export interface GetCampaignCountries_countries {
 export interface GetCampaignCountries {
   countries: GetCampaignCountries_countries[];
 }
+
+export interface GetCampaignCountriesVariables {
+  ids?: string[] | null;
+  languageId?: string | null;
+}
