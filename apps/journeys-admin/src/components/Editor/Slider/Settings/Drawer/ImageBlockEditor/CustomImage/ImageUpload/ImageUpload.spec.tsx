@@ -869,6 +869,73 @@ describe('ImageUpload', () => {
     })
   })
 
+  it('should ignore a drop while the previous one is still uploading', async () => {
+    mockFetch.mockClear()
+    let finishUpload: (() => void) | undefined
+    mockFetch.mockImplementationOnce(
+      async () =>
+        await new Promise((resolve) => {
+          finishUpload = () =>
+            resolve({
+              ok: true,
+              json: async () => await Promise.resolve(cfResponse)
+            } as unknown as Response)
+        })
+    )
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+    const result = vi.fn(() => ({
+      data: {
+        createCloudflareUploadByFile: {
+          id: 'uploadId',
+          uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+          userId: 'userId',
+          __typename: 'CloudflareImage' as const
+        }
+      }
+    }))
+    const uploadMock = {
+      request: { query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE },
+      result
+    }
+    const onChange = vi.fn()
+
+    render(
+      <MockedProvider mocks={[uploadMock, uploadMock]}>
+        <ImageUpload
+          onChange={onChange}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([PNG_FILE_BYTES], 'testFile.png', { type: 'image/png' })
+      ]
+    })
+
+    fireEvent.drop(inputEl)
+    await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1))
+    fireEvent.drop(inputEl)
+    // Give the second drop time to reach the handler
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(result).toHaveBeenCalledTimes(1)
+
+    finishUpload?.()
+    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(1))
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+
+    // The guard clears once the first upload settles
+    fireEvent.drop(inputEl)
+    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2))
+    expect(result).toHaveBeenCalledTimes(2)
+  })
+
   it('should send image_upload_success GTM event on successful upload', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,

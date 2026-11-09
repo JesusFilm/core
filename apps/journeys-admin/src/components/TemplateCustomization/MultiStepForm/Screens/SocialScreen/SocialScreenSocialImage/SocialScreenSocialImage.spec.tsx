@@ -40,6 +40,8 @@ describe('SocialScreenSocialImage', () => {
   afterEach(() => {
     process.env = originalEnv
     vi.clearAllMocks()
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
   })
 
   const mockJourney = {
@@ -432,6 +434,59 @@ describe('SocialScreenSocialImage', () => {
     expect(
       screen.queryByTestId('SocialScreenSocialImageSkeleton')
     ).not.toBeInTheDocument()
+  })
+
+  it('should show a processing error when a valid SVG cannot be rasterized', async () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:svg')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+    vi.stubGlobal(
+      'Image',
+      class {
+        onload: (() => void) | null = null
+        set src(_value: string) {
+          setTimeout(() => this.onload?.())
+        }
+      }
+    )
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+
+    render(
+      <MockedProvider mocks={[cloudflareUploadMutationMock]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: mockJourney,
+              renderMode: 'admin'
+            }}
+          >
+            <SocialScreenSocialImage />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
+    const file = new File(
+      ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>'],
+      'logo.svg',
+      { type: 'image/svg+xml' }
+    )
+
+    fireEvent.change(fileInput, { target: { files: [file] } })
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'Failed to update social image, please try again later'
+        )
+      ).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByText(
+        'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
+      )
+    ).not.toBeInTheDocument()
+    expect(cloudflareUploadMutationMock.result).not.toHaveBeenCalled()
   })
 
   it('should show loading state during upload', async () => {

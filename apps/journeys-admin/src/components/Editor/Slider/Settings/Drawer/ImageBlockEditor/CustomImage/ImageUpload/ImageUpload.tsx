@@ -71,6 +71,7 @@ export function ImageUpload({
   const successResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   )
+  const dropInFlightRef = useRef(false)
 
   useEffect(() => {
     setErrorCode(undefined)
@@ -85,6 +86,21 @@ export function ImageUpload({
   }, [])
 
   async function handleDrop(
+    acceptedFiles: File[],
+    rejectedFiles: FileRejection[]
+  ): Promise<void> {
+    // Preparing an SVG runs before the parent marks the upload as loading, so
+    // a second drop would otherwise race the first one
+    if (dropInFlightRef.current) return
+    dropInFlightRef.current = true
+    try {
+      await uploadDroppedFile(acceptedFiles, rejectedFiles)
+    } finally {
+      dropInFlightRef.current = false
+    }
+  }
+
+  async function uploadDroppedFile(
     acceptedFiles: File[],
     rejectedFiles: FileRejection[]
   ): Promise<void> {

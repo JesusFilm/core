@@ -12,7 +12,11 @@ export const SVG_RASTER_LONGEST_EDGE = 2048
 const DEFAULT_SVG_WIDTH = 300
 const DEFAULT_SVG_HEIGHT = 150
 
-// ISO-BMFF major brands of HEIC/HEIF images (AVIF's 'avif' is not accepted).
+// Bytes read to identify a file: enough for the ftyp box of a HEIF/AVIF file,
+// whose compatible brands follow its major brand.
+const HEADER_BYTES = 64
+
+// ISO-BMFF major brands of HEIC/HEIF images.
 const HEIF_BRANDS = new Set([
   'heic',
   'heix',
@@ -23,6 +27,10 @@ const HEIF_BRANDS = new Set([
   'mif1',
   'msf1'
 ])
+
+// AVIF is not accepted, even when a HEIF major brand ('mif1', 'msf1') carries
+// it as a compatible brand.
+const AVIF_BRANDS = new Set(['avif', 'avis'])
 
 /**
  * Thrown when a file cannot be uploaded as an image. `code` is the
@@ -47,6 +55,20 @@ function readAscii(bytes: Uint8Array, start: number, end: number): string {
   return String.fromCharCode(...bytes.subarray(start, end))
 }
 
+// The major brand then the compatible brands of a file that starts with an
+// ISO-BMFF ftyp box, else none.
+function readFtypBrands(bytes: Uint8Array): string[] {
+  if (readAscii(bytes, 4, 8) !== 'ftyp') return []
+  const boxSize =
+    ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]) >>> 0
+  const end = boxSize >= 16 ? Math.min(boxSize, bytes.length) : bytes.length
+  const brands = [readAscii(bytes, 8, 12)]
+  // Bytes 12-16 hold the minor version, not a brand
+  for (let offset = 16; offset + 4 <= end; offset += 4)
+    brands.push(readAscii(bytes, offset, offset + 4))
+  return brands
+}
+
 function parseSvg(text: string): SVGSVGElement | undefined {
   const document = new DOMParser().parseFromString(text, 'image/svg+xml')
   if (document.getElementsByTagName('parsererror').length > 0) return
@@ -63,16 +85,17 @@ function parseSvg(text: string): SVGSVGElement | undefined {
 export async function detectImageType(
   file: Blob
 ): Promise<DetectedImageType | undefined> {
-  const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer())
+  const bytes = new Uint8Array(await file.slice(0, HEADER_BYTES).arrayBuffer())
 
   if (matchesBytes(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
     return 'png'
   if (matchesBytes(bytes, [0xff, 0xd8, 0xff])) return 'jpeg'
   const gifHeader = readAscii(bytes, 0, 6)
   if (gifHeader === 'GIF87a' || gifHeader === 'GIF89a') return 'gif'
+  const brands = readFtypBrands(bytes)
   if (
-    readAscii(bytes, 4, 8) === 'ftyp' &&
-    HEIF_BRANDS.has(readAscii(bytes, 8, 12))
+    HEIF_BRANDS.has(brands[0]) &&
+    !brands.some((brand) => AVIF_BRANDS.has(brand))
   )
     return 'heif'
   if (readAscii(bytes, 0, 4) === 'RIFF' && readAscii(bytes, 8, 12) === 'WEBP')
@@ -99,8 +122,7 @@ const OTHER_FILE_SIGNATURES: Array<{
   {
     type: 'avif',
     matches: (bytes) =>
-      readAscii(bytes, 4, 8) === 'ftyp' &&
-      ['avif', 'avis'].includes(readAscii(bytes, 8, 12))
+      readFtypBrands(bytes).some((brand) => AVIF_BRANDS.has(brand))
   },
   // Any other ISO-BMFF brand: MP4, MOV, M4A, 3GP
   { type: 'mp4', matches: (bytes) => readAscii(bytes, 4, 8) === 'ftyp' },
@@ -164,11 +186,23 @@ export async function describeFileContents(file: Blob): Promise<string> {
     : 'text'
 }
 
+// CSS pixels per absolute unit, at the 96 px-per-inch reference browsers use
+const CSS_PX_PER_UNIT: Record<string, number> = {
+  px: 1,
+  in: 96,
+  cm: 96 / 2.54,
+  mm: 96 / 25.4,
+  pt: 96 / 72,
+  pc: 16
+}
+
+// A width or height in CSS pixels. Relative units (%, em) are left out, so
+// the SVG falls back to the browser's default size as it would on a page.
 function parseLength(value: string | null): number | undefined {
   if (value == null) return
-  const match = /^\s*(\d*\.?\d+)\s*(px)?\s*$/.exec(value)
+  const match = /^\s*(\d*\.?\d+)\s*(px|in|cm|mm|pt|pc)?\s*$/.exec(value)
   if (match == null) return
-  const length = Number(match[1])
+  const length = Number(match[1]) * CSS_PX_PER_UNIT[match[2] ?? 'px']
   return length > 0 ? length : undefined
 }
 

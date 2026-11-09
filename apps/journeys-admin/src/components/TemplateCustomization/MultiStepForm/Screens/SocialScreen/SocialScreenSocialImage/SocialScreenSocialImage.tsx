@@ -69,6 +69,21 @@ export function SocialScreenSocialImage({
   const [journeyImageBlockUpdate] = useJourneyImageBlockUpdateMutation()
   const [journeyImageBlockCreate] = useJourneyImageBlockCreateMutation()
 
+  // Only a file the upload rules reject gets a file-type or size message; a
+  // valid SVG that fails to rasterize (canvas, PNG encoding) is a processing
+  // failure the user can retry
+  function getPrepareErrorMessage(error: unknown): string {
+    if (!(error instanceof ImageUploadFileError))
+      return t('Failed to update social image, please try again later')
+    if (error.code === ErrorCode.FileTooLarge)
+      return t(
+        'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+      )
+    return t(
+      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
+    )
+  }
+
   async function handleImageChange(
     file: File | null | undefined
   ): Promise<void> {
@@ -80,17 +95,10 @@ export function SocialScreenSocialImage({
       uploadFile = await prepareImageUpload(file)
     } catch (error) {
       setLoading(false)
-      enqueueSnackbar(
-        error instanceof ImageUploadFileError &&
-          error.code === ErrorCode.FileTooLarge
-          ? t(
-              'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
-            )
-          : t(
-              'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
-            ),
-        { variant: 'error', preventDuplicate: true }
-      )
+      enqueueSnackbar(getPrepareErrorMessage(error), {
+        variant: 'error',
+        preventDuplicate: true
+      })
       return
     }
 

@@ -62,6 +62,15 @@ describe('prepareImageUpload', () => {
       expect(
         await detectImageType(
           binaryFile(
+            [0, 0, 0, 0x18, ...asciiBytes('ftypheic\0\0\0\0mif1heic')],
+            'a.heic',
+            'image/heic'
+          )
+        )
+      ).toBe('heif')
+      expect(
+        await detectImageType(
+          binaryFile(
             [...asciiBytes('RIFF'), 0x24, 0, 0, 0, ...asciiBytes('WEBP')],
             'a.webp',
             'image/webp'
@@ -111,6 +120,18 @@ describe('prepareImageUpload', () => {
       ).toBeUndefined()
     })
 
+    it('should not detect an AVIF listed as a compatible brand', async () => {
+      expect(
+        await detectImageType(
+          binaryFile(
+            [0, 0, 0, 0x1c, ...asciiBytes('ftypmif1\0\0\0\0mif1avifmiaf')],
+            'a.heic',
+            'image/heic'
+          )
+        )
+      ).toBeUndefined()
+    })
+
     it('should not detect well-formed XML that is not an SVG', async () => {
       expect(
         await detectImageType(
@@ -126,6 +147,11 @@ describe('prepareImageUpload', () => {
       ['a PDF', asciiBytes('%PDF-1.7\n'), 'pdf'],
       ['a ZIP or Office document', [0x50, 0x4b, 0x03, 0x04, 0x14], 'zip'],
       ['an AVIF', [0, 0, 0, 0x1c, ...asciiBytes('ftypavif')], 'avif'],
+      [
+        'an AVIF under a HEIF major brand',
+        [0, 0, 0, 0x1c, ...asciiBytes('ftypmif1\0\0\0\0mif1avifmiaf')],
+        'avif'
+      ],
       ['an MP4', [0, 0, 0, 0x20, ...asciiBytes('ftypisom')], 'mp4'],
       [
         'a WAV',
@@ -252,6 +278,32 @@ describe('prepareImageUpload', () => {
       await prepareImageUpload(file)
 
       expect(await drawnSvg?.text()).toContain('viewBox="0 0 24 48"')
+      expect(drawImage).toHaveBeenCalledWith(
+        expect.anything(),
+        0,
+        0,
+        SVG_RASTER_LONGEST_EDGE / 2,
+        SVG_RASTER_LONGEST_EDGE
+      )
+    })
+
+    it('should convert physical units to pixels for the viewBox', async () => {
+      const file = textFile(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="2cm" height="4cm"/>',
+        'print.svg',
+        'image/svg+xml'
+      )
+
+      await prepareImageUpload(file)
+
+      const viewBox = /viewBox="([^"]+)"/
+        .exec((await drawnSvg?.text()) ?? '')?.[1]
+        .split(' ')
+        .map(Number)
+      expect(viewBox?.[0]).toBe(0)
+      expect(viewBox?.[1]).toBe(0)
+      expect(viewBox?.[2]).toBeCloseTo(75.59, 2)
+      expect(viewBox?.[3]).toBeCloseTo(151.18, 2)
       expect(drawImage).toHaveBeenCalledWith(
         expect.anything(),
         0,
