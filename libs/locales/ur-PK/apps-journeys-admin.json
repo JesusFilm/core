@@ -1728,6 +1728,7 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "یہ مستقل طور پر اس زبان کو اس کے مہم کے QR کوڈ اور شیئر لنک کے ساتھ ہٹا دیتا ہے۔ پہلے سے چھاپے یا شیئر کیے گئے QR کوڈ کی نقول لنک صاف ہونے کے بعد ری ڈائریکٹ کرنا بند کر دیں گی۔",
   "Show country names": "ملکوں کے نام دکھائیں",
   "Countries": "ممالک",
+  "Always turned off for background videos": "پس منظر کی ویڈیوز کے لیے ہمیشہ بند",
   "Appears on <0>{{count}}</0> card_one": "<0>{{count}}</0> کارڈ پر ظاہر ہوتا ہے",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>کارڈ</1>",
