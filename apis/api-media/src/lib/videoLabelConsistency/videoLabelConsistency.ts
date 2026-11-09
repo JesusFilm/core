@@ -16,7 +16,8 @@ export interface EmptyContainerVideo {
   label: string
 }
 
-export interface SeriesWithoutCollectionParentVideo extends EmptyContainerVideo {
+export interface SeriesWithoutCollectionParentVideo
+  extends EmptyContainerVideo {
   parentId: string
   parentLabel: string
 }
