@@ -80,6 +80,11 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         id,
         normalizeIdType(idType)
       )
+      if (templateJourney.deletedAt != null) {
+        throw new GraphQLError('Journey not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
       if (
         !ability(
           Action.Update,
@@ -131,10 +136,11 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       const shouldIncludeJourneyResponses =
         allowedEvents == null || allowedEvents.has('journeyResponses')
 
-      // Fetch all child journeys from the template to check for responses
+      // Fetch the full family, including projects without activity in this range.
       const allChildJourneys = await prisma.journey.findMany({
         where: {
           fromTemplateId: templateJourney.id,
+          deletedAt: null,
           ...(status != null && status.length > 0
             ? { status: { in: status } }
             : {})
@@ -146,21 +152,11 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
 
       const allChildJourneyIds = allChildJourneys.map((journey) => journey.id)
 
-      // Get responses for all child journeys
-      const allChildJourneysResponses = shouldIncludeJourneyResponses
-        ? await getJourneysResponses(allChildJourneyIds)
-        : []
-
-      // Include journey IDs that have responses but no Plausible stats
-      const journeyIdsWithResponses = new Set(
-        allChildJourneysResponses.map((result) => result.journeyId)
-      )
       const journeyIds = [
         ...new Set([
           templateJourney.id,
           ...journeyIdsFromPlausible,
-          ...allChildJourneyIds,
-          ...Array.from(journeyIdsWithResponses)
+          ...allChildJourneyIds
         ])
       ]
 
@@ -168,6 +164,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         prisma.journey.findMany({
           where: {
             id: { in: journeyIds },
+            deletedAt: null,
             ...(status != null && status.length > 0
               ? { status: { in: status } }
               : {})
@@ -199,7 +196,10 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         ? filterPageVisitors(pageVisitors, journeys)
         : []
       const journeysResponses = shouldIncludeJourneyResponses
-        ? await getJourneysResponses(journeys)
+        ? await getJourneysResponses(
+            journeys,
+            where.period === 'custom' ? where.date : undefined
+          )
         : []
 
       const visitorsByJourneyId = new Map(
@@ -234,11 +234,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       const resultsWithPermissions = addPermissionsAndNames(
         familyResults,
         journeys,
-        context.user,
-        {
-          responsesByJourneyId,
-          allowedEvents
-        }
+        context.user
       )
 
       return resultsWithPermissions.map((result) => {

@@ -797,20 +797,9 @@ describe('templateFamilyStatsBreakdown', () => {
         }
       ] as unknown as JourneyWithAcl[])
 
-    // Responses exist (journeyVisitor with lastTextResponse not null)
-    ;(prismaMock.journeyVisitor.groupBy as any)
-      .mockResolvedValueOnce([
-        {
-          journeyId: 'journey-1',
-          _count: { journeyId: 7 }
-        }
-      ] as Awaited<ReturnType<typeof prismaMock.journeyVisitor.groupBy>>)
-      .mockResolvedValueOnce([
-        {
-          journeyId: 'journey-1',
-          _count: { journeyId: 7 }
-        }
-      ] as Awaited<ReturnType<typeof prismaMock.journeyVisitor.groupBy>>)
+    vi.mocked(prismaMock.journeyVisitor.groupBy).mockResolvedValue([
+      { journeyId: 'journey-1', _count: { journeyId: 7 } }
+    ] as Awaited<ReturnType<typeof prismaMock.journeyVisitor.groupBy>>)
 
     // Plausible returns no stats for this template family, but we still expect journeyResponses
     mockAxios.get.mockResolvedValueOnce({
@@ -908,7 +897,66 @@ describe('templateFamilyStatsBreakdown', () => {
     expect(prismaMock.journey.findMany).toHaveBeenLastCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          id: { in: ['template-journey-id', 'journey-1', 'journey-2'] }
+          id: { in: ['template-journey-id', 'journey-1', 'journey-2'] },
+          deletedAt: null
+        })
+      })
+    )
+  })
+
+  it('excludes deleted projects during family discovery and performs one bounded response query', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'template-id',
+      deletedAt: null
+    } as JourneyWithAcl)
+    const journey = {
+      id: 'child-id',
+      title: 'Child',
+      status: 'published',
+      team: { title: 'Team', userTeams: [] },
+      userJourneys: []
+    } as unknown as JourneyWithAcl
+    prismaMock.journey.findMany.mockResolvedValue([journey])
+    vi.mocked(prismaMock.journeyVisitor.groupBy).mockResolvedValue([])
+    mockAxios.get.mockResolvedValue({ data: { results: [] } })
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-id',
+        events: ['journeyResponses'],
+        where: {
+          property: 'event:props:templateKey',
+          period: 'custom',
+          date: '2025-12-01,2025-12-10'
+        }
+      }
+    })
+    expect(result).toMatchObject({
+      data: {
+        templateFamilyStatsBreakdown: [
+          {
+            journeyId: 'child-id',
+            stats: [{ event: 'journeyResponses', visitors: 0 }]
+          }
+        ]
+      }
+    })
+    for (const [args] of prismaMock.journey.findMany.mock.calls) {
+      expect(args?.where).toMatchObject({ deletedAt: null })
+    }
+    expect(prismaMock.journeyVisitor.groupBy).toHaveBeenCalledOnce()
+    expect(prismaMock.journeyVisitor.groupBy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          events: {
+            some: {
+              typename: 'TextResponseSubmissionEvent',
+              createdAt: {
+                gte: new Date('2025-12-01T00:00:00.000Z'),
+                lt: new Date('2025-12-11T00:00:00.000Z')
+              }
+            }
+          }
         })
       })
     )

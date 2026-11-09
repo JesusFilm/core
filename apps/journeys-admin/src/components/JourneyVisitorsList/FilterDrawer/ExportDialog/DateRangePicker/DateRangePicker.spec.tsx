@@ -104,14 +104,8 @@ describe('DateRangePicker', () => {
     )
     fireEvent.click(screen.getAllByRole('button', { name: /Choose date/ })[1])
     const calendar = within(screen.getByRole('dialog'))
-    expect(
-      calendar.getByRole('gridcell', { name: '14', exact: true })
-    ).toBeDisabled()
-    expect(
-      calendar.getByRole('gridcell', { name: '15', exact: true })
-    ).not.toBeDisabled()
-    expect(
-      calendar.getByRole('gridcell', { name: '16', exact: true })
-    ).not.toBeDisabled()
+    expect(calendar.getByRole('gridcell', { name: '14' })).toBeDisabled()
+    expect(calendar.getByRole('gridcell', { name: '15' })).not.toBeDisabled()
+    expect(calendar.getByRole('gridcell', { name: '16' })).not.toBeDisabled()
   })
 })
