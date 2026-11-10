@@ -11,5 +11,5 @@ export function blockIcon(
   typename: CampaignBlock['__typename'] | undefined
 ): ReactElement {
   if (typename == null) return <Home3Icon />
-  return BLOCK_TYPES[typename].icon
+  return BLOCK_TYPES[typename]?.icon ?? <Home3Icon />
 }

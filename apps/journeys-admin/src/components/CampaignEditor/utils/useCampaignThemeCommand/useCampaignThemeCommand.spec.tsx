@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -37,6 +38,12 @@ function Controls(): ReactElement {
       <button onClick={() => addTheme({ primaryColor: '#123456' })}>
         Primary
       </button>
+      <Button onClick={() => addTheme({ primaryColor: '#654321' })}>
+        Second primary
+      </Button>
+      <Button onClick={() => addTheme({ primaryColor: '#abcdef' })}>
+        Third primary
+      </Button>
       <button onClick={() => addTheme({ headerFont: 'Oswald' })}>Font</button>
       <button onClick={() => addTheme({ radius: CampaignRadius.square })}>
         Square
@@ -105,6 +112,45 @@ describe('useCampaignThemeCommand', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalledTimes(2))
     expect(readTheme(cache)?.primaryColor).toBe('#123456')
+  })
+
+  it('undoes rapid queued edits to the immediately preceding colour and retains it across redo', async () => {
+    const cache = campaignCache()
+    const first = {
+      ...themeMock({ primaryColor: '#123456' }),
+      delay: 300,
+      maxUsageCount: 2
+    }
+    const second = {
+      ...themeMock({ primaryColor: '#654321' }),
+      maxUsageCount: 3
+    }
+    const third = {
+      ...themeMock({ primaryColor: '#abcdef' }),
+      maxUsageCount: 2
+    }
+    renderControls([first, second, third], cache)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Primary' }))
+    await waitFor(() => expect(readTheme(cache)?.primaryColor).toBe('#123456'))
+    fireEvent.click(screen.getByRole('button', { name: 'Second primary' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Third primary' }))
+    expect(first.result).not.toHaveBeenCalled()
+    expect(second.result).not.toHaveBeenCalled()
+    expect(third.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(third.result).toHaveBeenCalledTimes(1))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(readTheme(cache)?.primaryColor).toBe('#654321'))
+    await waitFor(() => expect(second.result).toHaveBeenCalledTimes(2))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(third.result).toHaveBeenCalledTimes(2))
+    expect(readTheme(cache)?.primaryColor).toBe('#abcdef')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(second.result).toHaveBeenCalledTimes(3))
+    expect(readTheme(cache)?.primaryColor).toBe('#654321')
   })
 
   it('undoes a font to the null it had', async () => {

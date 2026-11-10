@@ -17,13 +17,14 @@ import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../../libs/useCampaignJourne
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { JourneyCardSnapshotRefreshDialog } from '../../JourneyCardSnapshotRefreshDialog'
-import { blockUpdateMock } from '../../styleTesting'
+import { blockOf, blockUpdateMock } from '../../styleTesting'
 import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
   UndoRedo
 } from '../../testing'
+import { useCampaignBlockFieldsCommand } from '../useCampaignBlockFieldsCommand'
 
 import {
   JourneyCardBlock,
@@ -105,6 +106,7 @@ const restoreUneditedMock = blockUpdateMock(card, {
 })
 
 function Harness(): ReactElement {
+  const { addFields } = useCampaignBlockFieldsCommand()
   const { campaign: current } = useCampaignEditor()
   const { refreshSnapshot, pending, confirmRefresh, cancelRefresh } =
     useCampaignJourneyBlockSnapshotRefreshCommand()
@@ -113,6 +115,13 @@ function Harness(): ReactElement {
   ) as JourneyCardBlock
   return (
     <>
+      <Button
+        onClick={() =>
+          addFields(blockOf<'CampaignHeroBlock'>('heroId'), { minHeight: 70 })
+        }
+      >
+        Slow unrelated edit
+      </Button>
       <Button
         onClick={() => {
           void refreshSnapshot(currentCard)
@@ -201,6 +210,60 @@ describe('snapshotOf', () => {
 
 describe('useCampaignJourneyBlockSnapshotRefreshCommand', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  it('captures each queued refresh snapshot at execution and retains it through replay', async () => {
+    const slow = {
+      ...blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), {
+        minHeight: 70
+      }),
+      delay: 500
+    }
+    const refresh = { ...refreshMock, maxUsageCount: 3 }
+    const restoreRefreshed = {
+      ...blockUpdateMock(card, {
+        title: liveJourney.title,
+        description: liveJourney.description,
+        snapshotEdited: false
+      }),
+      maxUsageCount: 2
+    }
+    await renderHarness(
+      { ...journeyMock(liveJourney), maxUsageCount: 2 },
+      [slow, refresh, restoreRefreshed, restoreUneditedMock],
+      campaign
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Slow unrelated edit' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('3')
+    )
+    expect(slow.result).not.toHaveBeenCalled()
+    expect(refresh.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(refresh.result).toHaveBeenCalledTimes(2))
+
+    for (let replay = 1; replay <= 2; replay++) {
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() =>
+        expect(restoreRefreshed.result).toHaveBeenCalledTimes(replay)
+      )
+      expect(screen.getByTestId('CardText')).toHaveTextContent(
+        `${liveJourney.title}|${liveJourney.description}`
+      )
+      if (replay === 2) break
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(refresh.result).toHaveBeenCalledTimes(3))
+    }
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(restoreUneditedMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CardText')).toHaveTextContent(
+      `${card.title}|${card.description}`
+    )
+  })
 
   it('holds the card as pending when the author edited the snapshot, then confirmRefresh replaces both values as one Command', async () => {
     const lookup = journeyMock(liveJourney)

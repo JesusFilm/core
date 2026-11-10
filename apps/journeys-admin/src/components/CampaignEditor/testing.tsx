@@ -18,7 +18,12 @@ import {
   GetCampaign,
   GetCampaignVariables
 } from '../../../__generated__/GetCampaign'
+import {
+  GetCampaignCountries,
+  GetCampaignCountriesVariables
+} from '../../../__generated__/GetCampaignCountries'
 import { DebounceLink } from '../../libs/apolloClient/DebounceLink'
+import { GET_CAMPAIGN_COUNTRIES } from '../../libs/useCampaignCountriesQuery'
 import { GET_CAMPAIGN, useCampaignQuery } from '../../libs/useCampaignQuery'
 import { CommandRedoItem } from '../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../Editor/Toolbar/Items/CommandUndoItem'
@@ -55,6 +60,33 @@ export function getCampaignMockFor(campaign: Campaign): MockLink.MockedResponse<
 }
 
 export const getCampaignMock = getCampaignMockFor(campaignFixture)
+
+/** Serve the fixture's primary country names unless a test supplies translations. */
+function previewCountriesMock(
+  campaign: Campaign
+): MockLink.MockedResponse<
+  GetCampaignCountries,
+  GetCampaignCountriesVariables
+> {
+  const countries = campaign.regions.flatMap((region) =>
+    region.countries.map((entry) => entry.country)
+  )
+  const byId = new Map(countries.map((country) => [country.id, country]))
+  return {
+    request: {
+      query: GET_CAMPAIGN_COUNTRIES,
+      variables: ({ ids, languageId }) => ids != null && languageId != null
+    },
+    result: ({ ids }) => ({
+      data: {
+        countries: Array.from(byId.values()).filter((country) =>
+          ids?.includes(country.id)
+        )
+      }
+    }),
+    maxUsageCount: Infinity
+  }
+}
 
 /** Shows the selection kind, selected block id and page the provider holds. */
 export function SelectionProbe(): ReactElement {
@@ -240,7 +272,8 @@ export function QueriedEditor({
         : {
             mocks: [
               getCampaignMockFor(campaign),
-              ...mocks
+              ...mocks,
+              previewCountriesMock(campaign)
             ] as MockLink.MockedResponse[]
           })}
       cache={cache}
@@ -269,7 +302,12 @@ export function StaticEditor({
     <MockedProvider
       {...(link != null
         ? { link }
-        : { mocks: mocks as MockLink.MockedResponse[] })}
+        : {
+            mocks: [
+              ...mocks,
+              previewCountriesMock(campaign)
+            ] as MockLink.MockedResponse[]
+          })}
       cache={cache}
     >
       <SnackbarProvider>

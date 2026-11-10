@@ -9,7 +9,10 @@ import {
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { IdType } from '../../../../../__generated__/globalTypes'
-import { useCampaignBlockUpdateMutation } from '../../../../libs/useCampaignBlockUpdateMutation'
+import {
+  CampaignBlockUpdateInput,
+  useCampaignBlockUpdateMutation
+} from '../../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignJourneyBlockSnapshotRefreshMutation } from '../../../../libs/useCampaignJourneyBlockSnapshotRefreshMutation'
 import { useCampaignJourneyByLinkLazyQuery } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
 import { useCampaignCommand } from '../useCampaignCommand'
@@ -87,7 +90,7 @@ export function useCampaignJourneyBlockSnapshotRefreshCommand(): CampaignJourney
   const reportFailure = useCommandFailure()
   const [lookup] = useCampaignJourneyByLinkLazyQuery()
   const [refresh] = useCampaignJourneyBlockSnapshotRefreshMutation()
-  const { update } = useCampaignBlockUpdateMutation()
+  const { update, previousFields } = useCampaignBlockUpdateMutation()
   const [pending, setPending] = useState<{
     card: JourneyCardBlock
     journey: SnapshotText
@@ -97,13 +100,15 @@ export function useCampaignJourneyBlockSnapshotRefreshCommand(): CampaignJourney
     card: JourneyCardBlock,
     journey: SnapshotText
   ): void {
-    const before: SnapshotText = {
-      title: card.title,
-      description: card.description
-    }
+    let before: CampaignBlockUpdateInput<'CampaignJourneyBlock'> | undefined
     addCampaignCommand({
-      execute: async () =>
-        await refresh({
+      async execute() {
+        before ??= previousFields(card, {
+          title: card.title,
+          description: card.description,
+          snapshotEdited: card.snapshotEdited
+        })
+        return await refresh({
           variables: { id: card.id },
           optimisticResponse: {
             campaignJourneyBlockSnapshotRefresh: {
@@ -113,9 +118,12 @@ export function useCampaignJourneyBlockSnapshotRefreshCommand(): CampaignJourney
               snapshotEdited: false
             }
           }
-        }),
-      undo: async () =>
-        await update(card, { ...before, snapshotEdited: card.snapshotEdited })
+        })
+      },
+      async undo() {
+        if (before == null) return
+        return await update(card, before)
+      }
     }).catch((error: unknown) =>
       reportFailure(error, t('Could not refresh from journey'))
     )

@@ -1,10 +1,18 @@
 import { ThemeProvider } from '@mui/material/styles'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import {
   CampaignPageKind,
   CampaignSwitcherVariant
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
 import { shouldRenderSection } from '../CampaignPage'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -23,7 +31,9 @@ import type {
 } from '../types'
 
 import {
+  CampaignRegionCountries,
   CampaignRegionSwitcher,
+  FALLBACK_FLAG,
   switcherRegions
 } from './CampaignRegionSwitcher'
 
@@ -96,6 +106,13 @@ describe('CampaignRegionSwitcher', () => {
     expect(
       screen.queryByTestId('CampaignRegionCard-lacRegionId')
     ).not.toBeInTheDocument()
+  })
+
+  it('aligns the card text to the reading side', () => {
+    renderSwitcher(switcherTree())
+    expect(
+      cssRulesFor(screen.getByTestId('CampaignRegionCard-eurRegionId'))
+    ).toContain('text-align:start')
   })
 
   it('shows the name as heading with the lines beneath and country chips with flags', () => {
@@ -212,14 +229,16 @@ describe('CampaignRegionSwitcher', () => {
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.landing,
         region: null,
-        regions: [lacRegion]
+        regions: [lacRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(false)
     expect(
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.landing,
         region: null,
-        regions: [eurRegion]
+        regions: [eurRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(true)
   })
@@ -230,14 +249,16 @@ describe('CampaignRegionSwitcher', () => {
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.regionTemplate,
         region: eurRegion,
-        regions: [eurRegion, lacRegion]
+        regions: [eurRegion, lacRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(false)
     expect(
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.regionTemplate,
         region: eurRegion,
-        regions: [eurRegion, afrRegion]
+        regions: [eurRegion, afrRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(true)
   })
@@ -258,10 +279,220 @@ describe('CampaignRegionSwitcher', () => {
       shouldRenderSection(section, {
         pageKind: CampaignPageKind.regionTemplate,
         region: eurRegion,
-        regions: [eurRegion]
+        regions: [eurRegion],
+        strings: campaignPublic.strings
       })
     ).toBe(true)
   })
+})
+
+describe('CampaignRegionSwitcher country names', () => {
+  type RegionCountry = CampaignRegion['countries'][number]
+
+  function regionCountry(
+    countryId: string,
+    flagPngSrc: string | null,
+    name: string
+  ): RegionCountry {
+    return {
+      __typename: 'CampaignRegionCountry',
+      id: `eurCountry-${countryId}`,
+      countryId,
+      order: 0,
+      country: {
+        __typename: 'Country',
+        id: countryId,
+        flagPngSrc,
+        name: [{ __typename: 'CountryName', value: name }]
+      }
+    }
+  }
+
+  function renderCountries(
+    countries: RegionCountry[],
+    showNames: boolean
+  ): HTMLElement {
+    render(
+      <CampaignRegionCountries region={{ countries }} showNames={showNames} />
+    )
+    return screen.getByTestId('CampaignRegionCountry')
+  }
+
+  it.each([
+    ['small', '18px'],
+    ['medium', '24px']
+  ] as const)(
+    'keeps %s flags compact with names on or off',
+    (size, expected) => {
+      const { rerender } = render(
+        <CampaignRegionCountries region={eurRegion} size={size} />
+      )
+      const flag = () => screen.getByTestId('CampaignCountryFlag')
+      expect(flag()).toHaveClass('MuiChip-avatar')
+
+      rerender(
+        <CampaignRegionCountries
+          region={eurRegion}
+          size={size}
+          showNames={false}
+        />
+      )
+      expect(flag()).toHaveStyle({
+        boxSizing: 'border-box',
+        width: expected,
+        height: expected
+      })
+    }
+  )
+
+  it('shows each country as a flag with its name by default', () => {
+    renderSwitcher(switcherTree())
+
+    const chip = within(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).getByTestId('CampaignRegionCountry')
+    expect(chip).toHaveTextContent('France')
+    expect(chip.querySelector('img')).toHaveAttribute(
+      'src',
+      'https://flags.example.org/fr.png'
+    )
+  })
+
+  it.each([
+    [CampaignSwitcherVariant.cards],
+    [CampaignSwitcherVariant.list],
+    [CampaignSwitcherVariant.pills]
+  ])(
+    'shows each country as its flag alone in %s while the section hides names, named by its tooltip and accessible name',
+    async (variant) => {
+      renderSwitcher(
+        switcherTree({ switcherVariant: variant, showCountryNames: false })
+      )
+
+      const card = screen.getByTestId('CampaignRegionCard-eurRegionId')
+      const flag = within(card).getByRole('img', { name: 'France' })
+      expect(flag).toHaveAttribute('data-testid', 'CampaignRegionCountry')
+      expect(flag.querySelector('img')).toHaveAttribute(
+        'src',
+        'https://flags.example.org/fr.png'
+      )
+      expect(
+        within(card).getByTestId('CampaignRegionCountries')
+      ).not.toHaveTextContent('France')
+      expect(card).toHaveAccessibleName(expect.stringContaining('France'))
+
+      fireEvent.mouseOver(flag)
+      expect(await screen.findByRole('tooltip')).toHaveTextContent('France')
+    }
+  )
+
+  it('shows all country names while their region link has keyboard focus', async () => {
+    const user = userEvent.setup()
+    const region = {
+      ...eurRegion,
+      countries: [
+        regionCountry('FR', null, 'France'),
+        regionCountry('DE', null, 'Allemagne')
+      ]
+    }
+    renderSwitcher(switcherTree({ showCountryNames: false }), {
+      campaign: { ...campaignPublic, regions: [region, afrRegion] }
+    })
+    const [first, next] = screen.getAllByRole('link')
+    const countries = within(first).getByTestId('CampaignRegionCountries')
+    expect(countries).not.toHaveTextContent('Allemagne')
+
+    await user.tab()
+    expect(first).toHaveFocus()
+    expect(within(countries).getByText('France')).toBeVisible()
+    expect(within(countries).getByText('Allemagne')).toBeVisible()
+
+    await user.tab()
+    expect(next).toHaveFocus()
+    expect(countries).not.toHaveTextContent('France')
+    expect(
+      within(countries).getByRole('img', { name: 'Allemagne' })
+    ).toBeVisible()
+  })
+
+  it('applies each section its own setting for the same regions', () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <CampaignProvider
+          value={{
+            campaign: campaignPublic,
+            pageKind: CampaignPageKind.landing,
+            region: null
+          }}
+        >
+          <CampaignRegionSwitcher block={switcherTree()} />
+          <CampaignRegionSwitcher
+            block={switcherTree({ showCountryNames: false })}
+          />
+        </CampaignProvider>
+      </ThemeProvider>
+    )
+
+    const [named, flagOnly] = screen.getAllByTestId('CampaignRegionCountries')
+    expect(named).toHaveAttribute('data-show-names', 'true')
+    expect(named).toHaveTextContent('France')
+    expect(flagOnly).toHaveAttribute('data-show-names', 'false')
+    expect(flagOnly).not.toHaveTextContent('France')
+    expect(
+      within(flagOnly).getByRole('img', { name: 'France' })
+    ).toBeInTheDocument()
+  })
+
+  it.each([
+    ['null', null],
+    ['empty', '']
+  ])(
+    'shows the fallback flag for a %s flag source, with the name still shown',
+    (_label, flagPngSrc) => {
+      const chip = renderCountries(
+        [regionCountry('FR', flagPngSrc, 'France')],
+        true
+      )
+
+      expect(chip.querySelector('img')).not.toBeInTheDocument()
+      expect(chip).toHaveTextContent(`${FALLBACK_FLAG}France`)
+    }
+  )
+
+  it('shows the fallback flag for a flag-only country with no flag, keeping its accessible name', () => {
+    const flag = renderCountries([regionCountry('FR', null, 'France')], false)
+
+    expect(flag).toHaveAccessibleName('France')
+    expect(flag).toHaveTextContent(FALLBACK_FLAG)
+    expect(flag).not.toHaveTextContent('France')
+  })
+
+  it.each([[true], [false]])(
+    'swaps in the fallback flag when the image fails to load (names shown: %s)',
+    async (showNames) => {
+      const entry = renderCountries(
+        [
+          regionCountry('FR', 'https://flags.example.org/missing.png', 'France')
+        ],
+        showNames
+      )
+
+      const image = entry.querySelector('img')
+      if (image == null) throw new Error('flag image')
+      fireEvent.error(image)
+
+      await waitFor(() =>
+        expect(entry.querySelector('img')).not.toBeInTheDocument()
+      )
+      expect(entry).toHaveTextContent(FALLBACK_FLAG)
+      expect(within(entry).getByTestId('CampaignCountryFlag')).toHaveAttribute(
+        'data-fallback',
+        'true'
+      )
+      if (showNames) expect(entry).toHaveTextContent('France')
+      else expect(entry).toHaveAccessibleName('France')
+    }
+  )
 })
 
 describe('CampaignRegionSwitcher events', () => {

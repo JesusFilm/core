@@ -148,6 +148,11 @@ export function CampaignCommandProvider({
 
       async function run(name: StepName): Promise<void> {
         await enqueue(async () => {
+          if (name !== 'execute') {
+            focus({ ...snapshot, ...spec.focus?.[name] })
+          } else if (spec.focus?.execute != null) {
+            focus({ ...snapshot, ...spec.focus.execute })
+          }
           const flushContext = campaignFlushContext(
             latest.current.campaign.blocks,
             spec.flush
@@ -166,13 +171,14 @@ export function CampaignCommandProvider({
             executed = true
           } catch (error) {
             executed = false
+            if (name === 'execute' && spec.focus?.execute != null)
+              focus(snapshot)
             throw error
           }
         })
       }
 
       function replay(name: 'undo' | 'redo'): void {
-        focus({ ...snapshot, ...spec.focus?.[name] })
         void run(name).catch((error: unknown) =>
           latest.current.reportFailure(error)
         )
@@ -183,8 +189,6 @@ export function CampaignCommandProvider({
         id: spec.id,
         parameters: { execute: {}, undo: {}, redo: {} },
         execute() {
-          if (spec.focus?.execute != null)
-            focus({ ...snapshot, ...spec.focus.execute })
           first = run('execute')
         },
         undo() {
@@ -194,12 +198,7 @@ export function CampaignCommandProvider({
           replay('redo')
         }
       })
-      try {
-        await first
-      } catch (error) {
-        if (spec.focus?.execute != null) focus(snapshot)
-        throw error
-      }
+      await first
     },
     [enqueue]
   )

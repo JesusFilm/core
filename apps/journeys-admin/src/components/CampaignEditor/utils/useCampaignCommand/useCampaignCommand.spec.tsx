@@ -144,10 +144,10 @@ describe('useCampaignCommand', () => {
     expect(result.current.editor.state.selectedBlockId).toBe('regionId')
     moveAway(result)
 
-    act(() => result.current.undo())
+    await act(async () => result.current.undo())
 
     expect(focusOf(result)).toEqual(initialState)
-    act(() => result.current.redo())
+    await act(async () => result.current.redo())
     expect(result.current.editor.state.selectedBlockId).toBe('regionHeaderId')
   })
 
@@ -227,6 +227,43 @@ describe('useCampaignCommand', () => {
 
     await waitFor(() => expect(execute).toHaveBeenCalledTimes(2))
     expect(redo).not.toHaveBeenCalled()
+  })
+
+  it('restores replay focus when a queued retry starts after the first create is refused', async () => {
+    const { result } = renderModule()
+    const flight = deferred()
+    const undo = landing()
+    const execute = vi
+      .fn<CampaignCommandStep>()
+      .mockImplementationOnce(async () => await flight.promise)
+      .mockImplementation(async () => undefined)
+    let first: Promise<void> = Promise.resolve()
+
+    act(() => {
+      first = result.current.addCampaignCommand({
+        execute,
+        undo,
+        focus: {
+          execute: { selectedBlockId: 'newBlockId' },
+          redo: { selectedBlockId: 'newBlockId' }
+        }
+      })
+    })
+    act(() => result.current.undo())
+    act(() => result.current.redo())
+    moveAway(result)
+
+    await act(async () => {
+      flight.reject(new Error('Refused'))
+      await first.catch(() => undefined)
+    })
+
+    await waitFor(() => expect(execute).toHaveBeenCalledTimes(2))
+    expect(undo).not.toHaveBeenCalled()
+    expect(focusOf(result)).toEqual({
+      ...initialState,
+      selectedBlockId: 'newBlockId'
+    })
   })
 
   it('rejects the returned promise on a refused first execute, and reports a refused undo or redo in the snackbar', async () => {

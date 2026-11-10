@@ -1762,5 +1762,8 @@
   "{{language}} is already being translated. Try again when it has finished.": "{{language}} is already being translated. Try again when it has finished.",
   "Unlink the journey before removing this language.": "Unlink the journey before removing this language.",
   "Delete {{language}}?": "Delete {{language}}?",
-  "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up."
+  "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.",
+  "Show country names": "Show country names",
+  "Countries": "Countries",
+  "Always turned off for background videos": "Always turned off for background videos"
 }

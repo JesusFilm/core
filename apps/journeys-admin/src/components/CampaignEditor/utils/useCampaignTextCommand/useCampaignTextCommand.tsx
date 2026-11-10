@@ -75,7 +75,7 @@ export function useCampaignTextCommand(
     id: uuidv4(),
     value: committed
   }))
-  // Typed writes not yet answered: in their debounce or in flight.
+  // Typed writes for this Preview Language, in their debounce or in flight.
   const pendingWrites = useRef(new Set<symbol>())
   // A cache change arrived while a typed write was pending; the field
   // catches up once the last one answers.
@@ -112,6 +112,13 @@ export function useCampaignTextCommand(
   }, [committed, resyncRequest])
 
   useEffect(() => {
+    // Earlier-language saves still finish, but cannot hold this field or
+    // change its error or resync state, even after switching back.
+    pendingWrites.current = new Set<symbol>()
+    skippedCacheChange.current = false
+    appliedValue.current = undefined
+    setValue(committed)
+    setError(undefined)
     setCommandInput({ id: uuidv4(), value: committed })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLanguageId])
@@ -136,12 +143,17 @@ export function useCampaignTextCommand(
     setValue(next)
     setError(undefined)
     const languageId = translating ? previewLanguageId : null
+    const writes = pendingWrites.current
     const pending = Symbol('pending write')
-    pendingWrites.current.add(pending)
+    writes.add(pending)
     void write(next, languageId, {})
-      .catch((mutationError: unknown) => setError(messageOf(mutationError)))
+      .catch((mutationError: unknown) => {
+        if (pendingWrites.current !== writes) return
+        setError(messageOf(mutationError))
+      })
       .finally(() => {
-        pendingWrites.current.delete(pending)
+        writes.delete(pending)
+        if (pendingWrites.current !== writes) return
         // Answered: the cache holds the saved text, or the rolled-back one.
         if (pendingWrites.current.size === 0 && skippedCacheChange.current)
           setResyncRequest((request) => request + 1)

@@ -8,8 +8,6 @@ import { gql } from '@apollo/client'
 export const GET_CAMPAIGN_STATS = gql`
   query GetCampaignStats($id: ID!) {
     campaignStats(id: $id) {
-      from
-      to
       all {
         totalVisitors
         countries {

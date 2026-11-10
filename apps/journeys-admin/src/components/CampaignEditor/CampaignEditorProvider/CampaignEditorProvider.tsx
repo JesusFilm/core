@@ -263,8 +263,8 @@ export function regionLines(
 
 /**
  * The Region Switcher a region card or Region Line is reached through: the
- * one the card was clicked in, else the switcher on the page being shown (a
- * Region Line carries no host of its own), else the first one.
+ * one the card was clicked in, or the only switcher on the current page.
+ * A Region Line carries no host of its own when multiple sections show it.
  */
 function regionSwitcherOf(
   campaign: Pick<Campaign, 'blocks' | 'pages'>,
@@ -272,16 +272,13 @@ function regionSwitcherOf(
   pageKind: CampaignPageKind
 ): CampaignBlock | undefined {
   if (host != null) return host
+  const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
   const switchers = campaign.blocks.filter(
-    (block) => block.__typename === 'CampaignRegionSwitcherBlock'
+    (block) =>
+      block.__typename === 'CampaignRegionSwitcherBlock' &&
+      block.pageId === page?.id
   )
-  return (
-    switchers.find(
-      (block) =>
-        campaign.pages.find((page) => page.id === block.pageId)?.kind ===
-        pageKind
-    ) ?? switchers[0]
-  )
+  return switchers.length === 1 ? switchers[0] : undefined
 }
 
 /**
