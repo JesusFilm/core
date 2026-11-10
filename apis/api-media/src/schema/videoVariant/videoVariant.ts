@@ -15,6 +15,7 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
+import { removeLanguageFromVideoIfUnused } from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
 import { syncParentLanguage } from '../videoVariantReconciliation/reconcileParentVariants'
@@ -160,7 +161,7 @@ export async function handleParentVariantCreation(
           has: videoId
         }
       },
-      select: { id: true, label: true }
+      select: { id: true, label: true, availableLanguages: true }
     }),
     prisma.videoVariant.findFirst({
       where: {
@@ -189,13 +190,18 @@ export async function handleParentVariantCreation(
     return
   }
 
-  // Cascade the new language to every parent -- including featureFilm
-  // parents, which aggregate their segments' languages but (unlike
-  // collection/series) never get a placeholder Variant -- so
-  // availableLanguages stays correct even when no parent is eligible for
-  // one.
+  // Cascade the new language to every parent that doesn't list it yet --
+  // including featureFilm parents, which aggregate their segments' languages
+  // but (unlike collection/series) never get a placeholder Variant -- so
+  // availableLanguages stays correct even when no parent is eligible for one.
+  // A parent that already lists the language is skipped: syncParentLanguage
+  // is an UPDATE, a recompute of every container above it (queuing Algolia)
+  // and a cache revalidation, none of which change anything for it.
+  const parentsMissingLanguage = parentVideos.filter(
+    (parent) => !parent.availableLanguages.includes(languageId)
+  )
   await Promise.allSettled(
-    parentVideos.map(async (parent) => {
+    parentsMissingLanguage.map(async (parent) => {
       try {
         await syncParentLanguage(parent.id, languageId)
       } catch (error) {
@@ -328,9 +334,12 @@ async function checkAndRemoveEmptyParentVariant(
     })
   ])
 
-  // If no published child variants exist in this language and we have an empty parent variant, remove it
-  if (publishedChildVariantsCount === 0 && parentVariant) {
-    // Delete the empty parent variant and update available languages in a single transaction
+  // Other published children still carry this language: the parent keeps it.
+  if (publishedChildVariantsCount > 0) return
+
+  // No published child variants remain in this language and the parent has an
+  // empty placeholder: remove it and the language in a single transaction.
+  if (parentVariant) {
     const updatedLanguages = parentVideo.availableLanguages.filter(
       (lang) => lang !== languageId
     )
@@ -345,6 +354,22 @@ async function checkAndRemoveEmptyParentVariant(
         data: { availableLanguages: updatedLanguages }
       })
     })
+    return
+  }
+
+  // No placeholder to delete -- a featureFilm never has one -- but the
+  // language was listed on the parent only because of its segments, so it
+  // must still come off, or Arclight and Algolia keep advertising a language
+  // with nothing behind it. removeLanguageFromVideoIfUnused leaves the
+  // language in place when the parent has a published Variant of its own in
+  // it (a dubbed film is playable without any segment).
+  if (!parentVideo.availableLanguages.includes(languageId)) return
+
+  await removeLanguageFromVideoIfUnused(parentVideoId, languageId)
+  try {
+    await videoCacheReset(parentVideoId)
+  } catch (error) {
+    logger.error({ error, parentVideoId }, 'Parent video cache reset failed')
   }
 }
 
