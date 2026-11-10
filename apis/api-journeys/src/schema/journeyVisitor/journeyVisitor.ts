@@ -2,6 +2,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
+import { INTERACTION_EVENT_FILTER } from '../event/capture/captureTypes'
 
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
   shareable: true,
@@ -74,7 +75,10 @@ export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
       }
     }),
     visitor: t.relation('visitor', { nullable: false }),
-    events: t.relation('events', { nullable: false })
+    events: t.relation('events', {
+      nullable: false,
+      query: { where: INTERACTION_EVENT_FILTER }
+    })
   })
 })
 builder.asEntity(JourneyVisitorRef, {

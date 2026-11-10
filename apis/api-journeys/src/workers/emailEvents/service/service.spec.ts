@@ -159,6 +159,10 @@ const journey: JourneyWithTeamAndUserJourney = {
 }
 
 const event: Event = {
+  captureIdentity: null,
+  captureTag: null,
+  captureTrigger: null,
+  templateFamilyId: null,
   id: 'event 1',
   typename: 'event',
   journeyId: 'journeyId',
