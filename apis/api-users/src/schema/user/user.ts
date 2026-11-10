@@ -6,19 +6,12 @@ import { impersonateUser } from '@core/yoga/firebaseClient'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
+import { findUserByEmail } from './findUserByEmail'
 import { CreateVerificationRequestInput, MeInput } from './inputs'
+import { isFirebaseNotFound } from './isFirebaseNotFound'
 import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
-
-function isFirebaseNotFound(error: unknown): boolean {
-  return (
-    error != null &&
-    typeof error === 'object' &&
-    'code' in error &&
-    (error as { code: string }).code === 'auth/user-not-found'
-  )
-}
 
 builder.asEntity(User, {
   key: builder.selection<{ id: string }>('id'),
@@ -191,10 +184,7 @@ builder.queryFields((t) => ({
       email: t.arg.string({ required: true })
     },
     resolve: async (query, _parent, { email }) => {
-      return await prisma.user.findFirst({
-        ...query,
-        where: { email: { equals: email, mode: 'insensitive' } }
-      })
+      return await findUserByEmail(email, query)
     }
   })
 }))
@@ -207,11 +197,7 @@ builder.mutationFields((t) => ({
     },
     nullable: true,
     resolve: async (_parent, { email }) => {
-      const userToImpersonate = await prisma.user.findFirst({
-        where: {
-          email: { equals: email, mode: 'insensitive' }
-        }
-      })
+      const userToImpersonate = await findUserByEmail(email)
       if (userToImpersonate?.userId == null)
         throw new GraphQLError('email does not match any user', {
           extensions: { code: 'NOT_FOUND' }
@@ -251,11 +237,7 @@ builder.mutationFields((t) => ({
     },
     nullable: true,
     resolve: async (_parent, { token, email }) => {
-      const user = await prisma.user.findFirst({
-        where: {
-          email: { equals: email, mode: 'insensitive' }
-        }
-      })
+      const user = await findUserByEmail(email)
       if (user == null)
         throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' }
