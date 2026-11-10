@@ -12,6 +12,7 @@ import {
 import { logger } from '../logger'
 
 import { type AppType } from './enums/app'
+import { isFirebaseNotFound } from './isFirebaseNotFound'
 import { verifyUser } from './verifyUser'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
@@ -48,11 +49,32 @@ function isRecordNotFoundError(error: unknown): boolean {
   )
 }
 
+// A row may only be moved off a Firebase UID that no longer exists. If the
+// old account is still live (two Firebase accounts sharing one verified
+// email, or an email moved between providers) relinking would flip the row
+// back and forth between them, and any read that resolves a user reference
+// could trigger it. Only `auth/user-not-found` counts as stale; any other
+// failure (network, permissions) is rethrown rather than guessed at.
+async function assertPreviousUidIsStale(previousUserId: string): Promise<void> {
+  try {
+    await auth.getUser(previousUserId)
+  } catch (error) {
+    if (isFirebaseNotFound(error)) return
+    throw error
+  }
+  throw new UserEmailConflictError()
+}
+
 // Moves the row holding this email onto the new Firebase UID. Only `userId`
 // changes, so the row keeps its id and the rest of its fields (createdAt,
 // profile). The `userId` and `email` guards on the update make a concurrent
 // change to the row (another relink, or the holder's own email changing)
 // fail the write instead of being overwritten.
+//
+// Only the api-users row moves. Rows in other databases (api-journeys:
+// UserJourney, UserTeam, UserRole, JourneyProfile; api-media: UserMediaRole,
+// UserMediaProfile) stay keyed to the old UID, so the user gets their profile
+// back but not their journeys, teams or roles.
 async function relinkUserToFirebaseUid(
   email: string,
   userId: string
@@ -89,6 +111,8 @@ async function relinkUserToFirebaseUid(
       })
       if (lowercaseCollision != null) throw new UserEmailConflictError()
     }
+
+    await assertPreviousUidIsStale(holder.userId)
 
     try {
       const relinked = await tx.user.update({
