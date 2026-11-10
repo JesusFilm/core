@@ -30,7 +30,9 @@ vi.mock('./verifyUser', () => ({
 }))
 
 const firebaseUserNotFound = Object.assign(
-  new Error('There is no user record corresponding to the provided identifier.'),
+  new Error(
+    'There is no user record corresponding to the provided identifier.'
+  ),
   { code: 'auth/user-not-found' }
 )
 

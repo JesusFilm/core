@@ -33,10 +33,10 @@ function mockPostgres(rows: typeof storedRows = storedRows): void {
       .slice(0, 1)
       .map(({ id }) => ({ id }))
   }) as never)
-  prismaMock.user.findUnique.mockImplementation(((args: {
-    where: { id: string }
-  }) =>
-    rows.find((row) => row.id === args.where.id) ?? null) as never)
+  prismaMock.user.findUnique.mockImplementation(
+    ((args: { where: { id: string } }) =>
+      rows.find((row) => row.id === args.where.id) ?? null) as never
+  )
 }
 
 describe('findUserByEmail', () => {
