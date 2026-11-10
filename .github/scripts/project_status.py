@@ -11,6 +11,8 @@ from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
 
+from markdown_it import MarkdownIt
+
 PROJECT_ID = "PVT_kwDOBNwqhs4BeMYJ"
 MANUAL_LABEL = "status:manual"
 REPOSITORY = "JesusFilm/core"
@@ -81,6 +83,30 @@ class ProseHTMLParser(HTMLParser):
     """Keep visible prose outside HTML examples, quotes, and comments."""
 
     excluded_tags = frozenset({"pre", "code", "blockquote", "q", "script", "style"})
+    block_tags = frozenset(
+        {
+            "p",
+            "div",
+            "ul",
+            "ol",
+            "li",
+            "dl",
+            "dt",
+            "dd",
+            "table",
+            "tr",
+            "td",
+            "th",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "br",
+            "hr",
+        }
+    )
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -91,13 +117,15 @@ class ProseHTMLParser(HTMLParser):
         if tag in self.excluded_tags:
             self.excluded.append(tag)
         # Preserve a boundary rather than joining text across excluded content.
-        self.parts.append("\0")
+        if tag in self.excluded_tags or tag in self.block_tags:
+            self.parts.append("\0")
 
     def handle_endtag(self, tag: str):
         if tag in self.excluded:
             matching = len(self.excluded) - 1 - self.excluded[::-1].index(tag)
             del self.excluded[matching:]
-        self.parts.append("\0")
+        if tag in self.excluded_tags or tag in self.block_tags:
+            self.parts.append("\0")
 
     def handle_data(self, data: str):
         if not self.excluded:
@@ -108,73 +136,9 @@ class ProseHTMLParser(HTMLParser):
 
 
 def closing_declaration_prose(body: str) -> str:
-    """Exclude Markdown/HTML code and quotes before interpreting declarations."""
-    lines = []
-    fence_character = ""
-    fence_length = 0
-    quoted = False
-    for line in (body or "").expandtabs(4).splitlines(keepends=True):
-        if fence_character:
-            if re.fullmatch(
-                r" {0,3}"
-                + re.escape(fence_character)
-                + "{"
-                + str(fence_length)
-                + r",}\s*",
-                line,
-            ):
-                fence_character = ""
-            lines.append("\0\n")
-            continue
-        if not line.strip():
-            quoted = False
-            lines.append(line)
-            continue
-        if re.match(r" {0,3}>", line):
-            quoted = True
-        elif re.match(r" {0,3}(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|`{3,}|~{3,})", line):
-            quoted = False
-        if quoted or line.startswith("    "):
-            lines.append("\0\n")
-            continue
-        fence = re.match(r" {0,3}(`{3,}|~{3,})", line)
-        if fence and fence[1][0] == "`" and "`" in line[fence.end() :]:
-            fence = None
-        if fence:
-            fence_character = fence[1][0]
-            fence_length = len(fence[1])
-            lines.append("\0\n")
-            continue
-        lines.append(line)
-
-    # Code spans can span lines and use any equal-length pair of backtick runs.
-    # Strip them before HTML so an inline `<pre>` example cannot hide later prose.
-    body = "".join(lines)
-    ticks = list(re.finditer(r"`+", body))
-    parts = []
-    position = 0
-    index = 0
-    while index < len(ticks):
-        opening = ticks[index]
-        prefix = body[: opening.start()]
-        escaped = (len(prefix) - len(prefix.rstrip("\\"))) % 2
-        closing = next(
-            (
-                candidate
-                for candidate in range(index + 1, len(ticks))
-                if len(ticks[candidate][0]) == len(opening[0])
-            ),
-            None,
-        )
-        if escaped or closing is None:
-            index += 1
-            continue
-        parts.extend([body[position : opening.start()], "\0"])
-        position = ticks[closing].end()
-        index = closing + 1
-    parts.append(body[position:])
+    """Parse Markdown structure so nested code and quotes remain excluded."""
     parser = ProseHTMLParser()
-    parser.feed("".join(parts))
+    parser.feed(MarkdownIt("commonmark").render(body or ""))
     parser.close()
     return "".join(parser.parts)
 
@@ -218,11 +182,7 @@ def linked_issues(github: GitHub, pr: dict) -> list[dict]:
         if issue["repository"]["nameWithOwner"] == REPOSITORY
     }
     for number in sorted(closing_issue_numbers(pr["body"]) - known_numbers):
-        issue = github.graphql(
-            'query($number: Int!) { repository(owner: "JesusFilm", name: "core") { '
-            "issue(number: $number) { id number state repository { nameWithOwner } } } }",
-            number=number,
-        )["repository"]["issue"]
+        issue = github.lookup_issue(number)
         if issue:
             by_id[issue["id"]] = issue
     return list(by_id.values())
@@ -256,6 +216,14 @@ def implementation_prs(github: GitHub, issue: dict, current_pr: dict) -> list[di
     return list(by_id.values())
 
 
+class GitHubGraphQLError(RuntimeError):
+    """Keep structured GitHub errors available for narrowly scoped handling."""
+
+    def __init__(self, errors: list[dict]):
+        self.errors = errors
+        super().__init__(json.dumps(errors))
+
+
 class GitHub:
     """Small gh GraphQL adapter; every connection is paginated."""
 
@@ -270,14 +238,40 @@ class GitHub:
             capture_output=True,
             check=False,
         )
+        try:
+            response = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            raise RuntimeError(
+                f"GitHub GraphQL failed: {result.stderr}\n{result.stdout}"
+            ) from None
+        if response.get("errors"):
+            raise GitHubGraphQLError(response["errors"])
         if result.returncode:
             raise RuntimeError(
                 f"GitHub GraphQL failed: {result.stderr}\n{result.stdout}"
             )
-        response = json.loads(result.stdout)
-        if response.get("errors"):
-            raise RuntimeError(json.dumps(response["errors"]))
         return response["data"]
+
+    def lookup_issue(self, number: int) -> dict | None:
+        """Ignore declared PR/missing numbers, while preserving other API failures."""
+        try:
+            target = self.graphql(
+                'query($number: Int!) { repository(owner: "JesusFilm", name: "core") { '
+                "issueOrPullRequest(number: $number) { __typename ... on Issue { "
+                "id number state repository { nameWithOwner } } } } }",
+                number=number,
+            )["repository"]["issueOrPullRequest"]
+        except GitHubGraphQLError as error:
+            if all(
+                item.get("type") == "NOT_FOUND"
+                and item.get("path") == ["repository", "issueOrPullRequest"]
+                for item in error.errors
+            ):
+                return None
+            raise
+        if target and target.get("__typename") == "Issue":
+            return target
+        return None
 
     def node(self, node_id: str, node_type: str, selection: str) -> dict:
         data = self.graphql(

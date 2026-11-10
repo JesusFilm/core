@@ -24,4 +24,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python3 -m pip install -r .github/scripts/project_status_requirements.txt
       - run: python3 -m unittest discover -s .github/scripts -p 'project_status_test.py' -v

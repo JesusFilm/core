@@ -46,6 +46,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install status parser dependencies
+        run: python3 -m pip install -r .github/scripts/project_status_requirements.txt
       - name: Download review event
         if: github.event_name == 'workflow_run'
         env:

@@ -69,7 +69,10 @@ An issue receives a status update only when all these conditions hold:
   or an explicit `Closes`, `Fixes`, or `Resolves` declaration in its body. Closing
   declarations support stacked PRs whose non-default base prevents GitHub from
   exposing the native closing relationship. Ordinary mentions, quoted/code
-  examples, and ancestor issues are ignored.
+  examples, and ancestor issues are ignored. Markdown is parsed structurally so
+  quotes and code nested inside lists remain examples, while real list prose
+  still counts. Declared PR numbers and nonexistent issues are ignored; other
+  API errors still fail the run.
 - The issue belongs to `JesusFilm/core`. It must be open for review/progress
   updates. A merged PR can set Done even when GitHub already closed the issue.
 - This PR is the issue's only open or merged linked PR. Other PRs closed without
@@ -129,9 +132,12 @@ GitHub's PR/review APIs before creating the App token. It never executes code
 from the PR. The writer serializes runs and reads current reviews, labels, and
 fully paginated links before updating project items. It does not post comments.
 
-Run the behavior tests without installing the monorepo dependencies:
+Run the behavior tests in a Python virtual environment without installing the
+monorepo dependencies. The pinned CommonMark parser is also installed by the
+writer and test workflows:
 
 ```bash
+python3 -m pip install -r .github/scripts/project_status_requirements.txt
 python3 -m unittest discover -s .github/scripts -p 'project_status_test.py' -v
 ```
 

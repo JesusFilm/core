@@ -1,5 +1,8 @@
 import copy
+import json
+import subprocess
 import unittest
+from unittest.mock import patch
 
 from project_status import (
     MANUAL_LABEL,
@@ -43,6 +46,8 @@ class MemoryGitHub(GitHub):
         self.statuses = {}
         self.archived = set()
         self.writes = []
+        self.declared_pull_requests = set()
+        self.lookup_errors = {}
 
     def node(self, node_id, node_type, selection):
         return self.pr if node_type == "PullRequest" else self.issue
@@ -92,14 +97,36 @@ class MemoryGitHub(GitHub):
         }[name]
 
     def graphql(self, query, **variables):
-        if "issue(number:" in query:
-            return {
-                "repository": {
-                    "issue": self.issue
-                    if variables["number"] == self.issue["number"]
-                    else None
-                }
-            }
+        if "issue(number:" in query or "issueOrPullRequest(number:" in query:
+            number = variables["number"]
+            field = (
+                "issueOrPullRequest"
+                if "issueOrPullRequest(number:" in query
+                else "issue"
+            )
+            target = None
+            errors = self.lookup_errors.get(number, [])
+            if not errors and number == self.issue["number"]:
+                target = dict(self.issue, __typename="Issue")
+            elif (
+                not errors
+                and number in self.declared_pull_requests
+                and field == "issueOrPullRequest"
+            ):
+                target = {"__typename": "PullRequest"}
+            elif not errors:
+                errors = [{"type": "NOT_FOUND", "path": ["repository", field]}]
+            response = {"data": {"repository": {field: target}}, "errors": errors}
+            # Exercise the real gh response/error adapter rather than returning
+            # a misleading null for GitHub's NOT_FOUND error response.
+            result = subprocess.CompletedProcess(
+                args=["gh", "api", "graphql"],
+                returncode=1 if errors else 0,
+                stdout=json.dumps(response),
+                stderr="GraphQL lookup failed" if errors else "",
+            )
+            with patch("project_status.subprocess.run", return_value=result):
+                return GitHub.graphql(self, query, **variables)
         if "addProjectV2ItemById" in query:
             node_id = variables["content"]
             if node_id != self.issue["id"]:
@@ -340,6 +367,10 @@ class HandlerTests(unittest.TestCase):
             "> Example command:\nCloses #123\n",
             "<blockquote>Closes #123</blockquote>",
             "This fixes `an example` #123.",
+            "- > Closes #123",
+            "- ```text\n  Closes #123\n  ```\n",
+            "1. Example:\n   > Closes #123\n",
+            "- Examples:\n  - > Closes #123\n",
         ]
         for body in examples:
             with self.subTest(body=body):
@@ -360,6 +391,8 @@ class HandlerTests(unittest.TestCase):
             "``Closes #123``",
             "<pre>Closes #123</pre>",
             "> Example command:\nCloses #123\n",
+            "- > Closes #123",
+            "- ```text\n  Closes #123\n  ```\n",
         ]:
             with self.subTest(body=body):
                 self.setUp()
@@ -386,6 +419,7 @@ class HandlerTests(unittest.TestCase):
             "This PR fixes #123.",
             "This change resolves JesusFilm/core#123.",
             "It closes https://github.com/JesusFilm/core/issues/123.",
+            "- Parent\n  - Child\n    - This PR fixes #123.",
         ]:
             with self.subTest(declaration=declaration):
                 self.setUp()
@@ -408,6 +442,22 @@ class HandlerTests(unittest.TestCase):
                 self.assertEqual(self.github.statuses, {"issue": "In progress"})
                 self.assertEqual(self.github.writes, [])
                 self.assertEqual(self.github.added, [])
+
+    def test_genuine_closing_declarations_in_nested_list_prose_complete_issue(self):
+        for body in [
+            "- This PR fixes #123.",
+            "- Parent\n  - Child\n    - This PR fixes #123.",
+            "1. Parent\n   - This PR fixes #123.",
+            "- **Closes** #123.",
+        ]:
+            with self.subTest(body=body):
+                self.setUp()
+                self.github.issue["number"] = 123
+                self.github.issues = []
+                self.github.linked_prs = []
+                self.github.pr["body"] = body
+                self.merge(base="feature/parent")
+                self.assertEqual(self.github.statuses, {"issue": "Done"})
 
     def test_single_prose_stack_pr_completes_issue_despite_unrelated_references(self):
         self.github.issue["number"] = 123
@@ -602,6 +652,68 @@ class HandlerTests(unittest.TestCase):
         ]
         self.handle("dismissed", "pull_request_review")
         self.assertEqual(self.github.statuses["issue"], "In review")
+
+
+class IssueLookupTests(unittest.TestCase):
+    def handle_merge(self, github):
+        github.pr["state"] = "MERGED"
+        payload = event("closed")
+        payload["pull_request"]["merged"] = True
+        run(github, "pull_request_target", payload)
+
+    def test_declared_pr_number_is_ignored_without_creating_a_card(self):
+        github = MemoryGitHub()
+        github.issues = []
+        github.pr["body"] = "Closes #200"
+        github.declared_pull_requests.add(200)
+        self.handle_merge(github)
+        self.assertEqual(github.writes, [])
+        self.assertEqual(github.added, [])
+
+    def test_nonexistent_issue_number_is_ignored_without_creating_a_card(self):
+        github = MemoryGitHub()
+        github.issues = []
+        github.pr["body"] = "Closes #999"
+        self.handle_merge(github)
+        self.assertEqual(github.writes, [])
+        self.assertEqual(github.added, [])
+
+    def test_invalid_numbers_do_not_prevent_valid_issue_completion(self):
+        github = MemoryGitHub()
+        github.pr["body"] = "Closes #1. Closes #200. Closes #999."
+        github.declared_pull_requests.add(200)
+        self.handle_merge(github)
+        self.assertEqual(github.statuses, {"issue": "Done"})
+
+    def test_lookup_permission_and_other_not_found_errors_still_fail(self):
+        for errors in [
+            [{"type": "FORBIDDEN", "path": ["repository", "issueOrPullRequest"]}],
+            [{"type": "NOT_FOUND", "path": ["repository"]}],
+            [{"type": "RATE_LIMITED"}],
+            [
+                {"type": "NOT_FOUND", "path": ["repository", "issueOrPullRequest"]},
+                {"type": "FORBIDDEN", "path": ["repository"]},
+            ],
+        ]:
+            with self.subTest(errors=errors):
+                github = MemoryGitHub()
+                github.issues = []
+                github.pr["body"] = "Closes #200"
+                github.lookup_errors[200] = errors
+                with self.assertRaises(RuntimeError):
+                    self.handle_merge(github)
+                self.assertEqual(github.writes, [])
+                self.assertEqual(github.added, [])
+
+    def test_unstructured_authentication_failure_is_not_ignored(self):
+        result = subprocess.CompletedProcess(
+            args=["gh"], returncode=1, stdout="", stderr="authentication failed"
+        )
+        with (
+            patch("project_status.subprocess.run", return_value=result),
+            self.assertRaisesRegex(RuntimeError, "authentication failed"),
+        ):
+            GitHub().graphql("query { viewer { login } }")
 
 
 class PaginationTests(unittest.TestCase):
