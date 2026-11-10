@@ -87,16 +87,3 @@ export type {
   WorldMapShapes,
   WorldAtlasTopology
 } from './CampaignAnalytics/WorldMap/buildWorldMap'
-
-// Keep public-route imports usable until the route batch migrates them.
-export { CampaignPage } from './CampaignPage'
-export { legacyCampaignBasePath as campaignBasePath } from './CampaignProvider/CampaignProvider'
-export { campaignFontsHref } from './libs/campaignFontsHref'
-export { campaignLanguageUrl } from './CampaignHeader'
-export {
-  CAMPAIGN_LANGUAGE_COOKIE,
-  CAMPAIGN_LANGUAGE_PARAM,
-  resolvePageLanguage
-} from './libs/resolvePageLanguage'
-export { matchRegionSlug } from './libs/matchRegionSlug'
-export type { CampaignPublic, CampaignRegion } from './types'
