@@ -1,64 +1,102 @@
-import { render } from '@testing-library/react'
-import PlausibleProvider from 'next-plausible'
-import { ReactNode } from 'react'
+import { useTheme } from '@mui/material/styles'
+import { render, screen } from '@testing-library/react'
+import type { NextSeoProps } from 'next-seo'
+import { ReactElement, ReactNode } from 'react'
 
 import { campaignPublic, eurRegion } from '@core/journeys/ui/Campaign/testData'
+import type { CampaignPublic } from '@core/journeys/ui/Campaign/types'
+import { googleFontsHref } from '@core/journeys/ui/fonts/googleFontsHref'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
 
 import { CampaignPageWrapper } from './CampaignPageWrapper'
 
+const plausibleProps: Array<Record<string, unknown>> = []
 vi.mock('next-plausible', () => ({
-  default: vi.fn(({ children }: { children: ReactNode }) => children)
+  default: ({
+    children,
+    ...props
+  }: {
+    children: ReactNode
+  } & Record<string, unknown>) => {
+    plausibleProps.push(props)
+    return <>{children}</>
+  }
 }))
 
-vi.mock('@core/journeys/ui/Campaign', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@core/journeys/ui/Campaign')>()),
-  CampaignPage: () => null,
-  CampaignSeo: () => null
+vi.mock('next/head', () => ({
+  default: ({ children }: { children: ReactNode }) => <>{children}</>
+}))
+
+const seoCalls: NextSeoProps[] = []
+vi.mock('next-seo', () => ({
+  NextSeo: (props: NextSeoProps) => {
+    seoCalls.push(props)
+    return null
+  }
+}))
+
+function ThemeProbe(): ReactElement {
+  return <p data-testid="ThemeDirection">{useTheme().direction}</p>
+}
+
+vi.mock('@core/journeys/ui/Campaign/CampaignPage', () => ({
+  CampaignPage: () => <ThemeProbe />
 }))
 
 vi.mock('../CampaignLanguageRedirect', () => ({
   CampaignLanguageRedirect: () => null
 }))
 
-function plausibleProps(): Record<string, unknown> {
-  return vi.mocked(PlausibleProvider).mock.calls[0][0]
+const arabic: CampaignPublic = {
+  ...campaignPublic,
+  languageId: '22658',
+  language: { __typename: 'Language', id: '22658', bcp47: 'ar' }
 }
 
 describe('CampaignPageWrapper', () => {
   beforeEach(() => {
-    vi.mocked(PlausibleProvider).mockClear()
+    plausibleProps.length = 0
+    seoCalls.length = 0
   })
 
-  it("reports to the campaign's own Plausible site and its team's", () => {
+  it('lays the theme out left to right for a left-to-right Page Language', () => {
     render(
       <CampaignPageWrapper
         campaign={campaignPublic}
         pageKind={CampaignPageKind.landing}
       />
     )
-    expect(plausibleProps()).toMatchObject({
-      domain: `api-journeys-campaign-campaignId,api-journeys-team-${campaignPublic.teamId}`,
-      customDomain: '/plausible',
-      trackOutboundLinks: true
-    })
+
+    expect(screen.getByTestId('ThemeDirection')).toHaveTextContent('ltr')
   })
 
-  it('tags a landing page view with the campaign and the Page Language', () => {
+  it('lays the theme out right to left for a right-to-left Page Language', () => {
+    render(
+      <CampaignPageWrapper
+        campaign={arabic}
+        pageKind={CampaignPageKind.landing}
+      />
+    )
+
+    expect(screen.getByTestId('ThemeDirection')).toHaveTextContent('rtl')
+  })
+
+  it('links the Google Fonts stylesheet of the campaign theme', () => {
     render(
       <CampaignPageWrapper
         campaign={campaignPublic}
         pageKind={CampaignPageKind.landing}
       />
     )
-    expect(plausibleProps().pageviewProps).toEqual({
-      campaign_id: 'campaignId',
-      language: 'en'
-    })
+
+    expect(document.querySelector('link[rel="stylesheet"]')).toHaveAttribute(
+      'href',
+      googleFontsHref(campaignPublic.theme)
+    )
   })
 
-  it("tags a Region Page view with the region's slug too", () => {
+  it('renders the SEO tags of the page it wraps', () => {
     render(
       <CampaignPageWrapper
         campaign={campaignPublic}
@@ -66,9 +104,54 @@ describe('CampaignPageWrapper', () => {
         region={eurRegion}
       />
     )
-    expect(plausibleProps().pageviewProps).toEqual({
-      campaign_id: 'campaignId',
-      region: 'eur',
+
+    expect(seoCalls).toHaveLength(1)
+    expect(seoCalls[0].canonical).toBe(
+      `https://your.nextstep.is/campaign/${campaignPublic.slug}/${eurRegion.slug}`
+    )
+  })
+
+  it('reports page views to the campaign and team Plausible sites', () => {
+    render(
+      <CampaignPageWrapper
+        campaign={campaignPublic}
+        pageKind={CampaignPageKind.landing}
+      />
+    )
+
+    expect(plausibleProps[0]).toEqual(
+      expect.objectContaining({
+        domain: `api-journeys-campaign-${campaignPublic.id},api-journeys-team-${campaignPublic.teamId}`,
+        customDomain: '/plausible',
+        enabled: true
+      })
+    )
+  })
+
+  it('tags landing page views with the campaign and Page Language', () => {
+    render(
+      <CampaignPageWrapper
+        campaign={campaignPublic}
+        pageKind={CampaignPageKind.landing}
+      />
+    )
+    expect(plausibleProps[0].pageviewProps).toEqual({
+      campaign_id: campaignPublic.id,
+      language: 'en'
+    })
+  })
+
+  it('tags Region Page views with the region slug', () => {
+    render(
+      <CampaignPageWrapper
+        campaign={campaignPublic}
+        pageKind={CampaignPageKind.regionTemplate}
+        region={eurRegion}
+      />
+    )
+    expect(plausibleProps[0].pageviewProps).toEqual({
+      campaign_id: campaignPublic.id,
+      region: eurRegion.slug,
       language: 'en'
     })
   })

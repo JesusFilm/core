@@ -1,22 +1,25 @@
+import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement, useState } from 'react'
 
+import { GetCampaign } from '../../../../../__generated__/GetCampaign'
 import {
   CAMPAIGN_BLOCK_DELETE_ACTION,
   CAMPAIGN_BLOCK_UPDATE_LINK_ACTION,
   CAMPAIGN_BLOCK_UPDATE_SCROLL_TO_BLOCK_ACTION,
   CampaignButtonAction
 } from '../../../../libs/useCampaignBlockActionMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
+import { GET_CAMPAIGN } from '../../../../libs/useCampaignQuery'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import {
   BlocksProbe,
   CommandProbe,
   QueriedEditor,
-  SelectionProbe
+  SelectionProbe,
+  UndoRedo,
+  campaignCache
 } from '../../testing'
 
 import { useCampaignActionCommand } from './useCampaignActionCommand'
@@ -37,13 +40,28 @@ const badLinkAction: CampaignButtonAction = {
   url: 'https://bad.example/'
 }
 
+function campaignWithAction(
+  action: CampaignButtonAction | null
+): GetCampaign['campaign'] {
+  return {
+    ...campaign,
+    blocks: campaign.blocks.map((block) =>
+      block.id === 'heroButtonId' && block.__typename === 'CampaignButtonBlock'
+        ? { ...block, action }
+        : block
+    )
+  }
+}
+
 /** One button that writes `action` onto the hero button as a Command. */
 function Harness({
   action,
-  undoAction
+  undoAction,
+  label = 'Change link'
 }: {
   action: CampaignButtonAction | null
   undoAction?: CampaignButtonAction | null
+  label?: string
 }): ReactElement | null {
   const { campaign: current } = useCampaignEditor()
   const { addAction } = useCampaignActionCommand()
@@ -54,7 +72,7 @@ function Harness({
   if (block?.__typename !== 'CampaignButtonBlock') return null
   return (
     <>
-      <button
+      <Button
         onClick={() =>
           addAction({
             block,
@@ -64,8 +82,8 @@ function Harness({
           })
         }
       >
-        Change link
-      </button>
+        {label}
+      </Button>
       {error != null && <span role="alert">{error}</span>}
     </>
   )
@@ -149,11 +167,13 @@ function renderHarness(
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
+      campaign={
+        undoAction === undefined ? campaign : campaignWithAction(undoAction)
+      }
       initialState={{ selectedBlockId: 'heroId' }}
       mocks={[linkMock, scrollMock, deleteMock, errorMock]}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
@@ -213,6 +233,67 @@ describe('useCampaignActionCommand', () => {
     await waitFor(() => expect(linkMock.result).toHaveBeenCalledTimes(2))
   })
 
+  it('undoes queued link edits to the preceding action and retains it across redo', async () => {
+    const cache = campaignCache()
+    const actions = ['first', 'second', 'third'].map((name) => ({
+      ...linkAction,
+      url: `https://${name}.example/`
+    }))
+    const mocks = actions.map((action, index) => ({
+      delay: index === 0 ? 300 : 0,
+      maxUsageCount: index === 1 ? 3 : 2,
+      request: {
+        query: CAMPAIGN_BLOCK_UPDATE_LINK_ACTION,
+        variables: {
+          id: 'heroButtonId',
+          input: { url: action.url, target: action.target }
+        }
+      },
+      result: vi.fn(() => ({
+        data: { campaignBlockUpdateLinkAction: action }
+      }))
+    }))
+    function currentAction(): CampaignButtonAction | null | undefined {
+      const block = cache
+        .readQuery<GetCampaign>({
+          query: GET_CAMPAIGN,
+          variables: { id: campaign.id },
+          optimistic: true
+        })
+        ?.campaign.blocks.find((candidate) => candidate.id === 'heroButtonId')
+      return block?.__typename === 'CampaignButtonBlock'
+        ? block.action
+        : undefined
+    }
+    render(
+      <QueriedEditor cache={cache} mocks={mocks}>
+        <UndoRedo />
+        {actions.map((action, index) => (
+          <Harness key={action.url} action={action} label={`Link ${index}`} />
+        ))}
+      </QueriedEditor>
+    )
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Link 0' }))
+    await waitFor(() => expect(currentAction()).toEqual(actions[0]))
+    fireEvent.click(screen.getByRole('button', { name: 'Link 1' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Link 2' }))
+    mocks.forEach((mock) => expect(mock.result).not.toHaveBeenCalled())
+    await waitFor(() => expect(mocks[2].result).toHaveBeenCalledTimes(1))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(currentAction()).toEqual(actions[1]))
+    await waitFor(() => expect(mocks[1].result).toHaveBeenCalledTimes(2))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(mocks[2].result).toHaveBeenCalledTimes(2))
+    expect(currentAction()).toEqual(actions[2])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mocks[1].result).toHaveBeenCalledTimes(3))
+    expect(currentAction()).toEqual(actions[1])
+  })
+
   it('removes the action through campaignBlockDeleteAction and restores it on undo', async () => {
     renderHarness(null)
     await screen.findByTestId('Block-heroButtonId')
@@ -248,6 +329,32 @@ describe('useCampaignActionCommand', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
+  it('retains a null previous action across undo and redo', async () => {
+    render(
+      <QueriedEditor
+        campaign={campaignWithAction(null)}
+        mocks={[linkMock, { ...deleteMock, maxUsageCount: 2 }]}
+      >
+        <UndoRedo />
+        <BlocksProbe />
+        <Harness action={linkAction} undoAction={scrollAction} />
+      </QueriedEditor>
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Change link' }))
+    await waitFor(() => expect(linkMock.result).toHaveBeenCalledTimes(1))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalledTimes(1))
+    expect(buttonActionText()).toMatch(/\|null$/)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(linkMock.result).toHaveBeenCalledTimes(2))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalledTimes(2))
+    expect(buttonActionText()).toMatch(/\|null$/)
+  })
+
   it("reports the API's message verbatim when the write fails", async () => {
     renderHarness(badLinkAction)
     await screen.findByTestId('Block-heroButtonId')
@@ -266,10 +373,11 @@ describe('useCampaignActionCommand', () => {
   it('raises a refused undo in the error snackbar after the panel has unmounted', async () => {
     render(
       <QueriedEditor
+        campaign={campaignWithAction(badLinkAction)}
         initialState={{ selectedBlockId: 'heroId' }}
         mocks={[linkMock, errorMock]}
       >
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <RemovableHarness action={linkAction} undoAction={badLinkAction} />
       </QueriedEditor>
     )

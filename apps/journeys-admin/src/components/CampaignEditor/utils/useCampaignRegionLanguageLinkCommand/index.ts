@@ -1,0 +1,1 @@
+export { useCampaignRegionLanguageLinkCommand } from './useCampaignRegionLanguageLinkCommand'
