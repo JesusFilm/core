@@ -60,7 +60,7 @@ import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
-import { useShareLanguageLinkCommand } from '../utils/useShareLanguageLinkCommand'
+import { useCampaignRegionLanguageLinkCommand } from '../utils/useCampaignRegionLanguageLinkCommand'
 import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
 
 interface ShareSectionEditProps {
@@ -641,7 +641,7 @@ export function ShareSectionEdit({
   const [languageCreate] = useCampaignRegionLanguageCreateMutation()
   const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
   const [languageDelete] = useCampaignRegionLanguageDeleteMutation()
-  const { link } = useShareLanguageLinkCommand()
+  const { link } = useCampaignRegionLanguageLinkCommand()
   const { requestRefresh, pending, confirmRefresh, cancelRefresh } =
     useSnapshotRefreshCommand()
   // The row stays set while the dialog closes, so its name does not vanish
