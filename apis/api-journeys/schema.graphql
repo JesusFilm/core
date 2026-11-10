@@ -3660,6 +3660,21 @@ type Journey
   seoTitle: String
   seoDescription: String
   template: Boolean
+
+  """
+  Own template display label for custom1. Requires Journey Read permission or a successful Journey update response; never inherited from fromTemplateId.
+  """
+  custom1Label: String
+
+  """
+  Own template display label for custom2. Requires Journey Read permission or a successful Journey update response; never inherited from fromTemplateId.
+  """
+  custom2Label: String
+
+  """
+  Own template display label for custom3. Requires Journey Read permission or a successful Journey update response; never inherited from fromTemplateId.
+  """
+  custom3Label: String
   primaryImageBlock: ImageBlock
   creatorImageBlock: ImageBlock
   logoImageBlock: ImageBlock
@@ -3964,6 +3979,20 @@ input JourneyThemeUpdateInput {
 }
 
 input JourneyUpdateInput {
+  """
+  Template-only display label. Trimmed, at most 100 Unicode code points; null or blank resets to default, omission preserves the value.
+  """
+  custom1Label: String
+
+  """
+  Template-only display label. Trimmed, at most 100 Unicode code points; null or blank resets to default, omission preserves the value.
+  """
+  custom2Label: String
+
+  """
+  Template-only display label. Trimmed, at most 100 Unicode code points; null or blank resets to default, omission preserves the value.
+  """
+  custom3Label: String
   title: String
   languageId: String
   themeMode: ThemeMode
