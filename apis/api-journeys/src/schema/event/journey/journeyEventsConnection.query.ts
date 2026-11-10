@@ -7,6 +7,7 @@ import {
 
 import { builder } from '../../builder'
 import { PageInfoRef } from '../../visitor/visitorsConnection.query'
+import { INTERACTION_EVENT_FILTER } from '../capture/captureTypes'
 
 import { JourneyEventsFilter } from './inputs'
 import { JourneyEventRef } from './journeyEvent'
@@ -73,7 +74,10 @@ function generateEventsWhere(
     journeyId
   }
 
-  const andClauses: Prisma.EventWhereInput[] = [accessibleEvent]
+  const andClauses: Prisma.EventWhereInput[] = [
+    accessibleEvent,
+    INTERACTION_EVENT_FILTER
+  ]
 
   if (filter?.typenames != null && filter.typenames.length > 0) {
     andClauses.push({ typename: { in: filter.typenames } })
