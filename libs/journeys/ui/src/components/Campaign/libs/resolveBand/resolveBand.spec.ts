@@ -23,7 +23,7 @@ const onPrimary = contrastText(light.primaryColor)
 const onAccent = contrastText(light.accentColor)
 
 describe('resolveBand', () => {
-  describe('the table (PRD §4)', () => {
+  describe('the Section Background table', () => {
     it('none → backgroundColor / textColor / surfaceColor / primaryColor on-primary, muted from mutedColor', () => {
       expect(resolveBand({ backgroundKind: 'none' }, light)).toMatchObject({
         background: '#FBF7F1',

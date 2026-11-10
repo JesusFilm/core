@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyBlock as CampaignJourneyBlock } from '../../../../__generated__/GetCampaign'
-import { CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT } from '../../../libs/useCampaignBlockTextMutation'
+import { CAMPAIGN_JOURNEY_BLOCK_UPDATE } from '../../../libs/useCampaignBlockUpdateMutation'
 import { campaign } from '../data'
 import { CommandProbe, StaticEditor } from '../testing'
 
@@ -13,12 +13,13 @@ const card = campaign.blocks.find(
 
 const titleMock = {
   request: {
-    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
+    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE,
     variables: { id: 'landingJourneyId', input: { title: 'A new title' } }
   },
   result: vi.fn(() => ({
     data: {
       campaignJourneyBlockUpdate: {
+        ...card,
         __typename: 'CampaignJourneyBlock',
         id: 'landingJourneyId',
         title: 'A new title',

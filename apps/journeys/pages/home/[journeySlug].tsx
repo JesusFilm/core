@@ -5,7 +5,7 @@ import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslation
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import { campaignFontsHref } from '@core/journeys/ui/Campaign/libs/campaignFontsHref'
+import { googleFontsHref } from '@core/journeys/ui/fonts/googleFontsHref'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -36,7 +36,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
 
-  const googleFontsUrl = campaignFontsHref(journey?.journeyTheme)
+  const googleFontsUrl = googleFontsHref(journey?.journeyTheme)
 
   return (
     <>

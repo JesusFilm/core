@@ -1,4 +1,12 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MockLink } from '@apollo/client/testing'
+import {
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor
+} from '@testing-library/react'
+import { useTranslation } from 'next-i18next/pages'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_STRING_UPDATE } from '../../../libs/useCampaignStringUpdateMutation'
@@ -19,7 +27,7 @@ const noJourneys = campaign.strings.find(
   (string) => string.key === CampaignStringKey.noJourneys
 )!
 
-function stringMock(value: string): Record<string, unknown> {
+function stringMock(value: string): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_STRING_UPDATE,
@@ -138,7 +146,11 @@ describe('SectionWordingSettings', () => {
   )
 
   it('names every key', () => {
-    const t = (key: string): string => key
+    const {
+      result: {
+        current: { t }
+      }
+    } = renderHook(() => useTranslation('apps-journeys-admin'))
     for (const key of Object.values(CampaignStringKey)) {
       expect(stringKeyLabel(t, key)).not.toBe(key)
     }
