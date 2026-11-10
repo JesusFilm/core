@@ -1190,6 +1190,16 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   customDomainDelete(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomainCreate(input: CustomDomainCreateInput!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
+  christDecisionCaptureEventCreate(input: ChristDecisionCaptureEventCreateInput!) : ChristDecisionCaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  gospelStartCaptureEventCreate(input: GospelStartCaptureEventCreateInput!) : GospelStartCaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  gospelCompleteCaptureEventCreate(input: GospelCompleteCaptureEventCreateInput!) : GospelCompleteCaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  prayerRequestCaptureEventCreate(input: PrayerRequestCaptureEventCreateInput!) : PrayerRequestCaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  rsvpCaptureEventCreate(input: RsvpCaptureEventCreateInput!) : RsvpCaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  specialVideoStartCaptureEventCreate(input: SpecialVideoStartCaptureEventCreateInput!) : SpecialVideoStartCaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  specialVideoCompleteCaptureEventCreate(input: SpecialVideoCompleteCaptureEventCreateInput!) : SpecialVideoCompleteCaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  custom1CaptureEventCreate(input: Custom1CaptureEventCreateInput!) : Custom1CaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  custom2CaptureEventCreate(input: Custom2CaptureEventCreateInput!) : Custom2CaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  custom3CaptureEventCreate(input: Custom3CaptureEventCreateInput!) : Custom3CaptureEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS_MODERN) 
@@ -3516,6 +3526,20 @@ type ChatOpenEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @jo
   messagePlatform: MessagePlatform
 }
 
+type ChristDecisionCaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
 type Country @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id")  {
   id: ID!
   updatedAt: DateTime! @join__field(graph: API_LANGUAGES) 
@@ -3530,6 +3554,48 @@ type Country @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)
   countryLanguages: [CountryLanguage!]! @join__field(graph: API_LANGUAGES) 
   languageCount: Int! @join__field(graph: API_LANGUAGES) 
   languageHavingMediaCount: Int! @join__field(graph: API_LANGUAGES) 
+}
+
+type Custom1CaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+type Custom2CaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+type Custom3CaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
 }
 
 type CustomDomain @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3593,6 +3659,34 @@ type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   updatedAt: DateTime!
   integration: Integration
   journey: Journey!
+}
+
+type GospelCompleteCaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+type GospelStartCaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
 }
 
 type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -4100,6 +4194,20 @@ type PowerBiEmbed @join__type(graph: API_JOURNEYS_MODERN)  {
   expiration: String!
 }
 
+type PrayerRequestCaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
 type QrCode @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   toJourneyId: String
@@ -4140,6 +4248,20 @@ type RadioQuestionSubmissionEvent implements Event @join__type(graph: API_JOURNE
   createdAt: DateTime!
   label: String
   value: String
+}
+
+type RsvpCaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
 }
 
 """
@@ -4269,6 +4391,34 @@ type SpacerBlock implements Block @join__type(graph: API_JOURNEYS_MODERN)  @join
   parentBlockId: ID
   parentOrder: Int
   spacing: Int
+}
+
+type SpecialVideoCompleteCaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+type SpecialVideoStartCaptureEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
 }
 
 type StepBlock implements Block @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -6476,6 +6626,14 @@ enum VideoBlockSource @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph
   mux @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
 }
 
+enum CaptureEventTrigger @join__type(graph: API_JOURNEYS_MODERN)  {
+  stepView @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  buttonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  radioQuestionSubmit @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoStart @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoComplete @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum ThemeName @join__type(graph: API_JOURNEYS_MODERN)  {
   base @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
@@ -8550,12 +8708,76 @@ input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   value: MessagePlatform
 }
 
+input ChristDecisionCaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
 input CreateGoogleSheetsSyncInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   integrationId: ID!
   spreadsheetId: ID!
   sheetName: String!
   folderId: String
+}
+
+input Custom1CaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
+input Custom2CaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
+input Custom3CaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
 }
 
 input CustomDomainCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -8585,6 +8807,38 @@ input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input GoogleSheetsSyncsFilter @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID
   integrationId: ID
+}
+
+input GospelCompleteCaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
+input GospelStartCaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
 }
 
 input HostCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -9063,6 +9317,22 @@ input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS_MODERN)  {
   interval: String
 }
 
+input PrayerRequestCaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
 input QrCodeCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   teamId: ID!
   journeyId: ID!
@@ -9112,6 +9382,22 @@ input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MO
   value: String
 }
 
+input RsvpCaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
 input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   journeyId: ID!
@@ -9143,6 +9429,38 @@ input SpacerBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input SpacerBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
   spacing: Int
+}
+
+input SpecialVideoCompleteCaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
+input SpecialVideoStartCaptureEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Unique occurrence UUID. Reuse only when retrying this capture.
+  """
+  id: ID!
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+  """
+  Containing Step ID in the played journey.
+  """
+  stepId: ID!
+  trigger: CaptureEventTrigger!
 }
 
 input StepBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

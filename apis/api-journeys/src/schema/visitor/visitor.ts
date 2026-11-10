@@ -6,6 +6,7 @@ import {
 
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
+import { INTERACTION_EVENT_FILTER } from '../event/capture/captureTypes'
 import { EventInterface } from '../event/event'
 
 import { VisitorStatus } from './enums'
@@ -59,7 +60,7 @@ export const VisitorRef = builder.prismaObject('Visitor', {
 
         const userId = context.user.id
         const events = await prisma.event.findMany({
-          where: { visitorId: visitor.id },
+          where: { visitorId: visitor.id, ...INTERACTION_EVENT_FILTER },
           include: {
             journey: {
               include: {
