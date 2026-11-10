@@ -1,0 +1,27 @@
+name: Project status tests
+
+on:
+  pull_request:
+    paths:
+      - '.github/scripts/project_status*'
+      - '.github/workflows/project-status*.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/scripts/project_status*'
+      - '.github/workflows/project-status*.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m unittest discover -s .github/scripts -p 'project_status_test.py' -v

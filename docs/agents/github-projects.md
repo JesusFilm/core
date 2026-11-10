@@ -15,9 +15,11 @@ One Status per ticket, moving left to right:
 | **Ready**       | Fully specified, up for grabs (by a human or the AI workflow)                                       |
 | **In progress** | Being worked, human or AI                                                                           |
 | **In review**   | PR up, awaiting review                                                                              |
+| **Changes requested** | A reviewer requested changes and has not been requested to review again                         |
+| **Approved**    | At least one reviewer has approved the current PR head                                              |
 | **QA**          | Review passed, awaiting **human QA team** approval                                                  |
 | **Needs Human** | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4) |
-| **Done**        | Closed — shipped, or rejected as not planned                                                        |
+| **Done**        | PR merged, or manually marked complete                                                             |
 
 **QA always means the human QA team.** The AI pipeline's own automated verification (the
 Vera QA harness) is _not_ this column — it runs inside **In progress**, before a PR is
@@ -29,8 +31,86 @@ State transitions:
 - **Humans** drag cards on the board or set Status in the issue sidebar.
 - **Agents/scripts** use the `gh project` commands (see below). The token needs the
   `project` scope (`gh auth refresh -s project`).
-- **Automatic**: new `JesusFilm/core` issues enter the project in Triage; closing an
-  issue moves it to Done and archives it (project built-in workflows).
+- **Automatic**: new `JesusFilm/core` issues enter the project in Triage. PR events
+  update the PR and, when eligible, its linked issue as described below. Closing
+  an issue does not automatically set Done or archive it.
+
+## Automatic PR and issue statuses
+
+The `Project status` workflow writes the Next Steps Status field. It adds PRs to
+the project when needed and applies to all authors and target branches.
+
+| Event or current condition | Status |
+| --- | --- |
+| New issue | Triage |
+| PR opened, including drafts and ready-for-review PRs | In progress |
+| Reviewer requested and no current approval exists | In review |
+| Formal Request changes review, with no current approval and that reviewer not requested again | Changes requested |
+| At least one current approval of the PR head | Approved, even if other reviewers are pending or request changes |
+| New commits, or dismissal of the last approval | In progress |
+| Re-review requested after approval dismissal | In review |
+| PR merged | Done |
+| PR closed without merging | No change to the PR or issue |
+| PR reopened | Recalculate from current reviews and requests |
+
+If reviewers are already requested when a PR opens, it immediately enters In
+review. Approval dismissal leaves Approved intact when another approval remains.
+New commits invalidate approvals of earlier commits even if GitHub has not yet
+dismissed those reviews. Comment-only reviews and resolving discussion threads
+do not change status. QA is assigned manually; later PR events can move an item
+out of QA. Delayed reset events do not override newer reviews or review requests.
+
+An issue receives the same status only when all these conditions hold:
+
+- The PR has exactly one linked issue, using GitHub's Development relationship.
+  Ordinary mentions and ancestor issues are ignored.
+- The issue belongs to `JesusFilm/core` and is still open.
+- This PR is the issue's only open or merged linked PR. Other PRs closed without
+  merging are ignored. A second open or merged PR disables issue updates.
+
+Closing an additional PR leaves the issue untouched. Automation resumes on the
+remaining PR's next qualifying event. The workflow never creates, closes, or
+reopens issues. If GitHub itself closes an issue when its PR merges, the closed
+issue is left untouched under the open-issue rule. Archived project items are
+also left untouched.
+
+Apply `status:manual` to pause updates for that item only. A frozen issue does not
+freeze its PR, and a frozen PR does not freeze its issue. Removing the label does
+not immediately change status; the next qualifying PR event resumes automation.
+New-issue initialization does not overwrite a status already assigned while its
+creation event was queued.
+
+### Workflow setup and verification
+
+The writer uses the existing `CI_BOT_APP_ID` and `CI_BOT_PRIVATE_KEY` secrets. The
+App installation must have **organization Projects: write**, **Issues: read**, and
+**Pull requests: read** for `JesusFilm/core`. The ordinary `GITHUB_TOKEN` cannot
+write this organization project's fields. Provision the `status:manual` label if
+it does not already exist. No other project status workflows should be enabled
+for the same transitions.
+
+PR and issue events run trusted code from `main`. Review events, including fork
+reviews, first upload their event JSON in the unprivileged `Project status
+reviews` workflow. The writer validates the artifact against its source run and
+GitHub's PR/review APIs before creating the App token. It never executes code
+from the PR. The writer serializes runs and reads current reviews, labels, and
+fully paginated links before updating project items. It does not post comments.
+
+Run the behavior tests without installing the monorepo dependencies:
+
+```bash
+python3 -m unittest discover -s .github/scripts -p 'project_status_test.py' -v
+```
+
+For read-only validation against a saved GitHub event payload:
+
+```bash
+python3 .github/scripts/project_status.py --dry-run \
+  --event-name pull_request_target --event-path /path/to/event.json
+```
+
+These workflows take effect after merging to `main`. They do not backfill existing
+items; existing PRs move on their next qualifying event.
 
 Rejecting a ticket ("wontfix"): add the `Won't do` label, then close the issue as
 **not planned**. No dedicated column — the close reason is the record.
@@ -156,6 +236,8 @@ Ready. The agent then:
 | Status: Ready        | `3c63150a`                       |
 | Status: In progress  | `b9c41da0`                       |
 | Status: In review    | `ab210038`                       |
+| Status: Changes requested | `bd91d0f2`                  |
+| Status: Approved     | `8ea90e2e`                       |
 | Status: QA           | `12a20fe3`                       |
 | Status: Needs Human  | `f3e5a000`                       |
 | Status: Done         | `5243b071`                       |

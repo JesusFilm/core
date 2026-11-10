@@ -1,0 +1,88 @@
+name: Project status
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - review_requested
+      - review_request_removed
+      - closed
+  workflow_run:
+    workflows: [Project status reviews]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+# Serialize project writes and retain pending events during review/push bursts.
+concurrency:
+  group: project-status-writer
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  update-status:
+    if: >-
+      github.repository == 'JesusFilm/core' &&
+      (github.event_name != 'workflow_run' ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'pull_request_review' &&
+        github.event.workflow_run.path == '.github/workflows/project-status-reviews.yml'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Always execute trusted code from main, including for fork PR reviews.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download review event
+        if: github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: >-
+          gh run download "$SOURCE_RUN_ID" --name project-status-review
+          --dir "$RUNNER_TEMP/project-status-review"
+      - name: Validate review event
+        id: review
+        if: github.event_name == 'workflow_run'
+        env:
+          REVIEW_EVENT_PATH: ${{ runner.temp }}/project-status-review/event.json
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/project_status_review.py
+      - name: Create project writer token
+        if: github.event_name != 'workflow_run' || steps.review.outputs.apply == 'true'
+        id: token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.CI_BOT_APP_ID }}
+          private-key: ${{ secrets.CI_BOT_PRIVATE_KEY }}
+          owner: JesusFilm
+          repositories: core
+          permission-issues: read
+          permission-pull-requests: read
+          permission-organization-projects: write
+      - name: Update PR and eligible issue statuses
+        if: github.event_name != 'workflow_run' || steps.review.outputs.apply == 'true'
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          REVIEW_EVENT_PATH: ${{ runner.temp }}/project-status-review/event.json
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then
+            python3 .github/scripts/project_status.py \
+              --event-name pull_request_review --event-path "$REVIEW_EVENT_PATH"
+          else
+            python3 .github/scripts/project_status.py
+          fi
