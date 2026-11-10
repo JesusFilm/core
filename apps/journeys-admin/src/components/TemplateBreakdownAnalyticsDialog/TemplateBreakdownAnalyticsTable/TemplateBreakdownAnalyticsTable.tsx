@@ -29,6 +29,7 @@ import {
   sortRows,
   trackNonZeroColumns
 } from './utils'
+import type { CustomTrackingLabels } from './utils/constants'
 
 const isNumericColumn = (columnId: SortableColumn): boolean => {
   return NUMERIC_COLUMNS.includes(columnId)
@@ -42,12 +43,14 @@ interface TemplateBreakdownAnalyticsTableProps {
   data: GetTemplateFamilyStatsBreakdown | null | undefined
   loading?: boolean
   error?: unknown
+  customTrackingLabels?: CustomTrackingLabels | null
 }
 
 export function TemplateBreakdownAnalyticsTable({
   data,
   loading,
-  error
+  error,
+  customTrackingLabels
 }: TemplateBreakdownAnalyticsTableProps): ReactElement | null {
   const [orderBy, setOrderBy] = useState<SortableColumn>('views')
   const [order, setOrder] = useState<Order>('desc')
@@ -113,7 +116,7 @@ export function TemplateBreakdownAnalyticsTable({
     processedData
   const displayRows = regularRows.slice(0, 10)
 
-  const columnHeaders = getColumnHeaders(t)
+  const columnHeaders = getColumnHeaders(t, customTrackingLabels)
   const visibleColumnHeaders = columnHeaders.filter(
     (header) =>
       header.id === 'journeyName' ||

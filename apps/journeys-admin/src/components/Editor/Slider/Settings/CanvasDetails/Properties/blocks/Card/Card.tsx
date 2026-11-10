@@ -23,6 +23,7 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { useJourneyCustomTrackingLabels } from '../../../../../../../../libs/useTemplateLabelsQuery'
 import { Accordion } from '../../Accordion'
 import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
@@ -87,6 +88,7 @@ export function Card({
   expandChatByDefault
 }: TreeBlock<CardBlock>): ReactElement {
   const { journey } = useJourney()
+  const customLabels = useJourneyCustomTrackingLabels()
   const {
     state: { selectedStep }
   } = useEditor()
@@ -144,7 +146,11 @@ export function Card({
       ? t('Expanded')
       : t('Contained')
 
-  const selectedEventLabel = getEventLabelOption(t, eventLabel).label
+  const selectedEventLabel = getEventLabelOption(
+    t,
+    eventLabel,
+    customLabels
+  ).label
 
   // `showAssistant` / `expandChatByDefault` are the legacy GraphQL fields;
   // the mapper exposes them as `enableAiChat` / `collapseChat`. Remove with

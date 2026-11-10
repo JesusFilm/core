@@ -11,6 +11,7 @@ import { ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
@@ -34,6 +35,8 @@ import {
   EventLabelVideoStartEventLabelUpdateVariables
 } from '../../../../../../../../../__generated__/EventLabelVideoStartEventLabelUpdate'
 import { BlockEventLabel } from '../../../../../../../../../__generated__/globalTypes'
+import { useJourneyCustomTrackingLabels } from '../../../../../../../../libs/useTemplateLabelsQuery'
+import { CustomTrackingLabels } from '../../../../../../../CustomTrackingLabels'
 
 import type { EventLabelOption, EventLabelType } from './utils/eventLabels'
 import { getCurrentEventLabel } from './utils/getCurrentEventLabel'
@@ -119,6 +122,8 @@ export function EventLabel({
     dispatch
   } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
+  const customLabels = useJourneyCustomTrackingLabels()
 
   const [cardEventLabelUpdate] = useMutation<
     EventLabelCardEventLabelUpdate,
@@ -155,7 +160,8 @@ export function EventLabel({
     const previousEventLabel = getCurrentEventLabel(
       t,
       currentBlock,
-      videoActionType
+      videoActionType,
+      customLabels
     )
 
     // Convert string to EventLabelType
@@ -168,7 +174,7 @@ export function EventLabel({
           ? (event.target.value as BlockEventLabel)
           : null
 
-    const nextEventLabel = getEventLabelOption(t, eventLabelType)
+    const nextEventLabel = getEventLabelOption(t, eventLabelType, customLabels)
     if (previousEventLabel.type === nextEventLabel.type) return
 
     const blockId = currentBlock.id
@@ -269,13 +275,15 @@ export function EventLabel({
   const currentEventLabel = getCurrentEventLabel(
     t,
     currentBlock,
-    videoActionType
+    videoActionType,
+    customLabels
   )
 
   const filteredEventLabels: EventLabelOption[] = getFilteredEventLabels(
     t,
     currentBlock,
-    videoActionType
+    videoActionType,
+    customLabels
   )
 
   const displayLabel = label ?? t('Event to track:')
@@ -295,8 +303,8 @@ export function EventLabel({
           >
             {filteredEventLabels.map(({ type, label }) => {
               return (
-                <MenuItem key={`event-label-${label}`} value={type}>
-                  {t(label)}
+                <MenuItem key={`event-label-${type}`} value={type}>
+                  {label}
                 </MenuItem>
               )
             })}
@@ -309,6 +317,9 @@ export function EventLabel({
             </FormHelperText>
           )}
         </FormControl>
+        {journey?.template === true && videoActionType !== 'start' && (
+          <CustomTrackingLabels />
+        )}
       </Stack>
     </>
   )

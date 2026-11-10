@@ -29,6 +29,151 @@ vi.mock('next/link', () => ({
 }))
 
 describe('TemplateBreakdownAnalyticsTable', () => {
+  const customTrackingData: GetTemplateFamilyStatsBreakdown = {
+    templateFamilyStatsBreakdown: [
+      {
+        __typename: 'TemplateFamilyStatsBreakdownResponse',
+        journeyId: 'journey-low',
+        journeyName: 'Lower count',
+        teamName: 'Team A',
+        status: null,
+        stats: [
+          {
+            __typename: 'TemplateFamilyStatsEventResponse',
+            event: PlausibleEvent.custom1Capture,
+            visitors: 4
+          }
+        ]
+      },
+      {
+        __typename: 'TemplateFamilyStatsBreakdownResponse',
+        journeyId: 'journey-high',
+        journeyName: 'Higher count',
+        teamName: 'Team B',
+        status: null,
+        stats: [
+          {
+            __typename: 'TemplateFamilyStatsEventResponse',
+            event: PlausibleEvent.custom1Capture,
+            visitors: 10
+          },
+          {
+            __typename: 'TemplateFamilyStatsEventResponse',
+            event: PlausibleEvent.custom2Capture,
+            visitors: 3
+          }
+        ]
+      },
+      {
+        __typename: 'TemplateFamilyStatsBreakdownResponse',
+        journeyId: '__unknown_journeys__',
+        journeyName: 'Restricted',
+        teamName: 'Restricted Team',
+        status: null,
+        stats: [
+          {
+            __typename: 'TemplateFamilyStatsEventResponse',
+            event: PlausibleEvent.custom1Capture,
+            visitors: 7
+          }
+        ]
+      }
+    ]
+  }
+
+  it('uses plain custom headings and defaults while preserving zero hiding and totals', () => {
+    render(
+      <TemplateBreakdownAnalyticsTable
+        data={customTrackingData}
+        customTrackingLabels={{
+          custom1Label: '<strong>Follow-ups</strong>',
+          custom2Label: null,
+          custom3Label: 'Hidden zero count'
+        }}
+      />
+    )
+
+    const heading = screen.getByText('<strong>Follow-ups</strong>')
+    expect(heading).toBeInTheDocument()
+    expect(heading.querySelector('strong')).toBeNull()
+    expect(screen.getByText('Custom Tracking 2')).toBeInTheDocument()
+    expect(screen.queryByText('Hidden zero count')).not.toBeInTheDocument()
+    expect(screen.getByText('Restricted teams')).toBeInTheDocument()
+    const totalRow = screen.getByText('TOTAL').closest('tr')!
+    expect(within(totalRow).getByText('21')).toBeInTheDocument()
+    expect(within(totalRow).getByText('3')).toBeInTheDocument()
+  })
+
+  it('keeps custom event sorting when a heading changes', async () => {
+    const { rerender } = render(
+      <TemplateBreakdownAnalyticsTable
+        data={customTrackingData}
+        customTrackingLabels={{
+          custom1Label: 'Follow-ups',
+          custom2Label: null,
+          custom3Label: null
+        }}
+      />
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Follow-ups' }))
+    expect(screen.getAllByRole('link')[0]).toHaveTextContent('Lower count')
+
+    rerender(
+      <TemplateBreakdownAnalyticsTable
+        data={customTrackingData}
+        customTrackingLabels={{
+          custom1Label: 'Conversations',
+          custom2Label: null,
+          custom3Label: null
+        }}
+      />
+    )
+
+    expect(screen.queryByText('Follow-ups')).not.toBeInTheDocument()
+    expect(screen.getAllByRole('link')[0]).toHaveTextContent('Lower count')
+    await userEvent.click(screen.getByRole('button', { name: 'Conversations' }))
+    expect(screen.getAllByRole('link')[0]).toHaveTextContent('Higher count')
+    const totalRow = screen.getByText('TOTAL').closest('tr')!
+    expect(within(totalRow).getByText('21')).toBeInTheDocument()
+  })
+
+  it('displays all three configured headings when their columns have counts', () => {
+    const data: GetTemplateFamilyStatsBreakdown = {
+      templateFamilyStatsBreakdown: [
+        {
+          ...customTrackingData.templateFamilyStatsBreakdown![0],
+          stats: [
+            PlausibleEvent.custom1Capture,
+            PlausibleEvent.custom2Capture,
+            PlausibleEvent.custom3Capture
+          ].map((event) => ({
+            __typename: 'TemplateFamilyStatsEventResponse',
+            event,
+            visitors: 1
+          }))
+        }
+      ]
+    }
+    render(
+      <TemplateBreakdownAnalyticsTable
+        data={data}
+        customTrackingLabels={{
+          custom1Label: 'Conversations',
+          custom2Label: 'Visits',
+          custom3Label: 'Follow-ups'
+        }}
+      />
+    )
+
+    expect(screen.getByText('Conversations')).toBeInTheDocument()
+    expect(screen.getByText('Visits')).toBeInTheDocument()
+    expect(screen.getByText('Follow-ups')).toBeInTheDocument()
+    expect(screen.queryByText('Custom Tracking 1')).not.toBeInTheDocument()
+    expect(screen.queryByText('Custom Tracking 2')).not.toBeInTheDocument()
+    expect(screen.queryByText('Custom Tracking 3')).not.toBeInTheDocument()
+  })
+
   it('should render empty box when loading', () => {
     render(<TemplateBreakdownAnalyticsTable data={null} loading={true} />)
 

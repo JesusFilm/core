@@ -1,7 +1,7 @@
 import { MockLink } from '@apollo/client/testing'
-import { MockedProvider } from '@apollo/client/testing/react'
+import { MockedProvider as ApolloMockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { ReactNode } from 'react'
+import { ComponentProps, ReactElement, ReactNode } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -37,6 +37,7 @@ import {
 } from '../../../../../../../../../__generated__/EventLabelVideoStartEventLabelUpdate'
 import { BlockEventLabel } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
+import { TEMPLATE_LABELS } from '../../../../../../../../libs/useTemplateLabelsQuery'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -306,6 +307,38 @@ const defaultJourney = {
   },
   template: true
 } as unknown as JourneyFields
+
+function MockedProvider({
+  mocks = [],
+  ...props
+}: ComponentProps<typeof ApolloMockedProvider>): ReactElement {
+  return (
+    <ApolloMockedProvider
+      {...props}
+      mocks={[
+        {
+          request: {
+            query: TEMPLATE_LABELS,
+            variables: { id: defaultJourney.id }
+          },
+          result: {
+            data: {
+              adminJourney: {
+                __typename: 'Journey',
+                id: defaultJourney.id,
+                custom1Label: null,
+                custom2Label: null,
+                custom3Label: null
+              }
+            }
+          },
+          maxUsageCount: Infinity
+        },
+        ...mocks
+      ]}
+    />
+  )
+}
 
 describe('EventLabel', () => {
   describe('Basic Rendering', () => {
@@ -1272,5 +1305,192 @@ describe('EventLabel', () => {
       fireEvent.click(redo)
       await waitFor(() => expect(mockRedoResult).toHaveBeenCalled())
     })
+  })
+})
+
+describe('template custom tracking names', () => {
+  const customLabels = {
+    __typename: 'Journey' as const,
+    id: defaultJourney.id,
+    custom1Label: 'First <goal>',
+    custom2Label: 'Second {{goal}}',
+    custom3Label: 'Third goal'
+  }
+
+  it.each([
+    {
+      block: createCardBlockMock({ eventLabel: BlockEventLabel.custom1 }),
+      query: EVENT_LABEL_CARD_EVENT_LABEL_UPDATE,
+      mutation: 'cardBlockUpdate'
+    },
+    {
+      block: createButtonBlockMock({ eventLabel: BlockEventLabel.custom1 }),
+      query: EVENT_LABEL_BUTTON_EVENT_LABEL_UPDATE,
+      mutation: 'buttonBlockUpdate'
+    },
+    {
+      block: createRadioOptionBlockMock({
+        eventLabel: BlockEventLabel.custom1
+      }),
+      query: EVENT_LABEL_RADIO_OPTION_EVENT_LABEL_UPDATE,
+      mutation: 'radioOptionBlockUpdate'
+    },
+    {
+      block: createVideoBlockMock({
+        eventLabel: BlockEventLabel.custom1,
+        endEventLabel: BlockEventLabel.custom1
+      }),
+      query: EVENT_LABEL_VIDEO_START_EVENT_LABEL_UPDATE,
+      mutation: 'videoBlockUpdate',
+      videoActionType: 'start' as const
+    },
+    {
+      block: createVideoBlockMock({
+        eventLabel: BlockEventLabel.custom1,
+        endEventLabel: BlockEventLabel.custom1
+      }),
+      query: EVENT_LABEL_VIDEO_END_EVENT_LABEL_UPDATE,
+      mutation: 'videoBlockUpdate',
+      videoActionType: 'complete' as const
+    }
+  ])(
+    'preserves enums and undo/redo for $mutation $videoActionType with renamed options',
+    async ({ block, query, mutation, videoActionType }) => {
+      const execute = vi.fn()
+      const undo = vi.fn()
+      const redo = vi.fn()
+      const mutationMock = (
+        eventLabel: BlockEventLabel,
+        result: () => void
+      ): MockLink.MockedResponse => ({
+        request: {
+          query,
+          variables:
+            videoActionType === 'complete'
+              ? { id: block.id, endEventLabel: eventLabel }
+              : { id: block.id, eventLabel }
+        },
+        result: () => {
+          result()
+          return {
+            data: {
+              [mutation]: {
+                __typename: block.__typename,
+                id: block.id,
+                eventLabel:
+                  videoActionType === 'complete'
+                    ? BlockEventLabel.custom1
+                    : eventLabel,
+                ...(block.__typename === 'VideoBlock'
+                  ? {
+                      endEventLabel:
+                        videoActionType === 'complete'
+                          ? eventLabel
+                          : BlockEventLabel.custom1
+                    }
+                  : {})
+              }
+            }
+          }
+        }
+      })
+      render(
+        <ApolloMockedProvider
+          mocks={[
+            {
+              request: {
+                query: TEMPLATE_LABELS,
+                variables: { id: defaultJourney.id }
+              },
+              result: { data: { adminJourney: customLabels } }
+            },
+            mutationMock(BlockEventLabel.custom2, execute),
+            mutationMock(BlockEventLabel.custom1, undo),
+            mutationMock(BlockEventLabel.custom2, redo)
+          ]}
+        >
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{
+                selectedBlock: block,
+                selectedStep: createStepBlockMock()
+              }}
+            >
+              <CommandProvider>
+                <CommandUndoItem variant="icon-button" />
+                <CommandRedoItem variant="icon-button" />
+                <EventLabel videoActionType={videoActionType} />
+              </CommandProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </ApolloMockedProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getByRole('combobox')).toHaveTextContent(
+          customLabels.custom1Label
+        )
+      )
+      fireEvent.mouseDown(screen.getByRole('combobox'))
+      fireEvent.click(
+        await screen.findByRole('option', { name: customLabels.custom2Label })
+      )
+      await waitFor(() => expect(execute).toHaveBeenCalledOnce())
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(undo).toHaveBeenCalledOnce())
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(redo).toHaveBeenCalledOnce())
+    }
+  )
+
+  it('keeps child choices on defaults without fetching parent names or offering a parent edit', async () => {
+    const parentRead = vi.fn(() => ({ data: { adminJourney: customLabels } }))
+    render(
+      <ApolloMockedProvider
+        mocks={[
+          {
+            request: {
+              query: TEMPLATE_LABELS,
+              variables: { id: defaultJourney.id }
+            },
+            result: parentRead
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney,
+              id: 'child',
+              template: false,
+              fromTemplateId: defaultJourney.id
+            }
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              selectedBlock: createCardBlockMock({
+                eventLabel: BlockEventLabel.custom1
+              })
+            }}
+          >
+            <CommandProvider>
+              <EventLabel />
+            </CommandProvider>
+          </EditorProvider>
+        </JourneyProvider>
+      </ApolloMockedProvider>
+    )
+    expect(screen.getByRole('combobox')).toHaveTextContent('Custom Tracking 1')
+    fireEvent.mouseDown(screen.getByRole('combobox'))
+    expect(
+      await screen.findByRole('option', { name: 'Custom Tracking 2' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText(customLabels.custom1Label)
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Custom tracking labels' })
+    ).not.toBeInTheDocument()
+    expect(parentRead).not.toHaveBeenCalled()
   })
 })
