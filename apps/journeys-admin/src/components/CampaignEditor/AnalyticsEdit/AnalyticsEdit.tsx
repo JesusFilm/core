@@ -25,7 +25,8 @@ interface AnalyticsEditProps {
 export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
   const { campaign, currentRegion } = useCampaignEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const { shapes: worldMap, error: worldMapError } = useWorldMap(block.showMap)
+  const worldMap = useWorldMap(block.showMap)
+  const worldMapError = worldMap.error
 
   return (
     <Box

@@ -7,3 +7,5 @@ export {
 } from './CampaignSectionContext'
 export type { CampaignSectionContextValue } from './CampaignSectionContext'
 export { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
+export { useCampaignBand } from './useCampaignBand'
+export type { CampaignBand } from './useCampaignBand'

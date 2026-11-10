@@ -501,6 +501,52 @@ describe('VideoBlockEditorSettings', () => {
     expect(getByText('Subtitles')).toBeInTheDocument()
   })
 
+  it('locks YouTube subtitles off for background videos', () => {
+    // Languages are supplied so the saved English subtitle would show if the
+    // background lock did not force the selection off
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const { getByRole, getByText } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                parentOrder: null,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id',
+                subtitleLanguage: {
+                  __typename: 'Language',
+                  id: 'lang-en',
+                  bcp47: 'en'
+                }
+              }}
+              posterBlock={null}
+              onChange={vi.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(mockUseYouTubeClosedCaptions).toHaveBeenCalledWith({
+      videoId: 'test-youtube-id',
+      skip: true
+    })
+    const combobox = getByRole('combobox')
+    expect(combobox).toHaveClass('Mui-disabled')
+    expect(combobox).toHaveTextContent('Off')
+    // The note sits under the Subtitles title, not below the select
+    expect(getByText('Subtitles').parentElement).toContainElement(
+      getByText('Always turned off for background videos')
+    )
+  })
+
   it('does not show YouTubeSubtitleSelector for non-YouTube videos', () => {
     const { queryByText } = render(
       <ThemeProvider>
@@ -766,6 +812,68 @@ describe('VideoBlockEditorSettings', () => {
       await waitFor(() => {
         expect(getByTestId('MuxSubtitleSwitch')).toBeInTheDocument()
       })
+    })
+
+    it('should lock MuxSubtitleSwitch off for background videos', () => {
+      const { getByTestId, getByText } = render(
+        <ThemeProvider>
+          <MockedProvider mocks={[]}>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: {
+                    __typename: 'Journey',
+                    language: { bcp47: 'en', id: '529' }
+                  } as Journey
+                }}
+              >
+                <EditorProvider
+                  initialState={{
+                    selectedBlock: {
+                      ...video,
+                      parentOrder: null,
+                      source: VideoBlockSource.mux,
+                      showGeneratedSubtitles: true,
+                      mediaVideo: {
+                        __typename: 'MuxVideo',
+                        id: 'mux-video-id',
+                        assetId: 'asset-id',
+                        playbackId: 'playback-id'
+                      }
+                    }
+                  }}
+                >
+                  <VideoBlockEditorSettings
+                    selectedBlock={{
+                      ...video,
+                      parentOrder: null,
+                      source: VideoBlockSource.mux,
+                      showGeneratedSubtitles: true,
+                      mediaVideo: {
+                        __typename: 'MuxVideo',
+                        id: 'mux-video-id',
+                        assetId: 'asset-id',
+                        playbackId: 'playback-id'
+                      }
+                    }}
+                    posterBlock={null}
+                    onChange={vi.fn()}
+                  />
+                </EditorProvider>
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      const switchInput =
+        getByTestId('MuxSubtitleSwitch').querySelector('input')
+      expect(switchInput).toBeDisabled()
+      expect(switchInput).not.toBeChecked()
+      // The note sits under the Subtitles title, beside the switch
+      expect(getByText('Subtitles').parentElement).toContainElement(
+        getByText('Always turned off for background videos')
+      )
     })
 
     it('should not render MuxSubtitleSwitch for non-Mux videos', () => {

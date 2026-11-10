@@ -1,2 +1,1 @@
-export { useSnapshotRefreshCommand } from './useSnapshotRefreshCommand'
-export type { SnapshotRefreshCommand } from './useSnapshotRefreshCommand'
+export { useCampaignRegionLanguageSnapshotRefreshCommand as useSnapshotRefreshCommand } from '../useCampaignRegionLanguageSnapshotRefreshCommand'

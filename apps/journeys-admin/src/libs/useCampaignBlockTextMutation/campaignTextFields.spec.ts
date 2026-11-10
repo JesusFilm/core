@@ -1,13 +1,9 @@
-import { campaignWithColumns } from '../../components/CampaignEditor/data'
-
 import {
-  CAMPAIGN_TEXT_CAPS,
   CAMPAIGN_TEXT_FIELDS,
-  CampaignTextBlock,
   campaignTextInputKey,
-  primaryTextField
+  primaryTextField,
+  translatedBlockFields
 } from './campaignTextFields'
-import { campaignTextOptimisticResponse } from './useCampaignBlockTextMutation'
 
 describe('campaignTextFields', () => {
   it('writes rich text content under the API’s content key and every other field under its own', () => {
@@ -16,30 +12,46 @@ describe('campaignTextFields', () => {
     expect(campaignTextInputKey('title')).toBe('title')
   })
 
-  it('gives rich text a title and a 5000-character content', () => {
+  it('gives rich text a title and its content, read as richTextContent', () => {
     expect(CAMPAIGN_TEXT_FIELDS.CampaignRichTextBlock).toEqual([
       'title',
       'richTextContent'
     ])
-    expect(CAMPAIGN_TEXT_CAPS.richTextContent).toBe(5000)
-    expect(CAMPAIGN_TEXT_CAPS.title).toBe(150)
     expect(primaryTextField('CampaignRichTextBlock')).toBe('title')
   })
 
-  it('builds the optimistic response of a rich text edit under the aliased field', () => {
-    const block = campaignWithColumns.blocks.find(
-      (candidate) => candidate.id === 'slotRichTextId'
-    ) as CampaignTextBlock
-
-    expect(
-      campaignTextOptimisticResponse(block, 'richTextContent', 'New text')
-    ).toEqual({
-      campaignRichTextBlockUpdate: {
-        __typename: 'CampaignRichTextBlock',
-        id: 'slotRichTextId',
-        title: 'Our story',
-        richTextContent: 'New text'
-      }
+  it('lists the inline text of every text block but the panel-edited image and carousel card', () => {
+    expect(CAMPAIGN_TEXT_FIELDS).toEqual({
+      CampaignHeroBlock: ['eyebrow', 'title', 'description'],
+      CampaignFeaturedMediaBlock: [
+        'eyebrow',
+        'title',
+        'description',
+        'bullets'
+      ],
+      CampaignRichTextBlock: ['title', 'richTextContent'],
+      CampaignRegionSwitcherBlock: ['title'],
+      CampaignRegionHeaderBlock: ['intro'],
+      CampaignRegionShareBlock: ['title', 'intro'],
+      CampaignJourneyListBlock: ['eyebrow', 'title', 'description'],
+      CampaignVideoCarouselBlock: ['eyebrow', 'title', 'description'],
+      CampaignAnalyticsBlock: ['eyebrow', 'title'],
+      CampaignTypographyBlock: ['content'],
+      CampaignButtonBlock: ['label'],
+      CampaignJourneyBlock: ['title', 'description']
     })
+  })
+
+  it('lists a block’s Translated Fields, media included, as the editor reads them', () => {
+    expect(translatedBlockFields('CampaignImageBlock')).toEqual(['alt'])
+    expect(translatedBlockFields('CampaignVideoBlock')).toEqual([
+      'title',
+      'description'
+    ])
+    expect(translatedBlockFields('CampaignRichTextBlock')).toEqual([
+      'title',
+      'richTextContent'
+    ])
+    expect(translatedBlockFields('CampaignColumnsBlock')).toEqual([])
   })
 })

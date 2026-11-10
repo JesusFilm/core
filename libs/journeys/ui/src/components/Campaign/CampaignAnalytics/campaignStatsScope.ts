@@ -46,17 +46,32 @@ export function statsForTab(
   }
 }
 
+const regionNamesByLocale = new Map<string, Intl.DisplayNames | null>()
+
+/** One `Intl.DisplayNames` for region names per locale, built on first use; null for a locale it rejects. */
+function regionNames(locale: string): Intl.DisplayNames | null {
+  if (!regionNamesByLocale.has(locale)) {
+    let names: Intl.DisplayNames | null
+    try {
+      names = new Intl.DisplayNames([locale], { type: 'region' })
+    } catch {
+      names = null
+    }
+    regionNamesByLocale.set(locale, names)
+  }
+  return regionNamesByLocale.get(locale) ?? null
+}
+
 /**
  * A country's name in the viewer's locale. Plausible reports codes that are
  * not valid regions (`A1`) and `Intl.DisplayNames` throws on them, so the
- * code itself is the label.
+ * code itself is the label. The display names are built once per locale, so
+ * the world map can name every country on every render.
  */
 export function countryName(code: string, locale: string): string {
   try {
-    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code
+    return regionNames(locale)?.of(code) ?? code
   } catch {
     return code
   }
 }
-
-/** "Nov 1" (the locale's order), with the year once it is not the current one. */

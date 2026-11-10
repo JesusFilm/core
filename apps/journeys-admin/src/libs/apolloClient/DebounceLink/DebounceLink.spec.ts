@@ -81,6 +81,21 @@ describe('DebounceLink', () => {
     await expect(second).resolves.toEqual({ data: { save: { value: 'b' } } })
   })
 
+  it('reports a pending request until it is forwarded', async () => {
+    const downstream = createRecordingLink()
+    const debounceLink = new DebounceLink(500)
+    const link = ApolloLink.from([debounceLink, downstream.link])
+    expect(debounceLink.hasPending()).toBe(false)
+
+    const saved = execute(link, 'a', { debounceKey: 'field' })
+
+    expect(debounceLink.hasPending()).toBe(true)
+    await vi.advanceTimersByTimeAsync(500)
+    expect(downstream.forwarded()).toEqual(['a'])
+    expect(debounceLink.hasPending()).toBe(false)
+    await saved
+  })
+
   it('debounces each key independently', async () => {
     const downstream = createRecordingLink()
     const link = ApolloLink.from([new DebounceLink(500), downstream.link])
@@ -118,6 +133,33 @@ describe('DebounceLink', () => {
     await vi.advanceTimersByTimeAsync(500)
 
     expect(downstream.forwarded()).toEqual(['label', 'delete', 'other'])
+  })
+
+  it('forwards pending operations under any prefix of a list before the flushing operation', async () => {
+    const downstream = createRecordingLink()
+    const link = ApolloLink.from([new DebounceLink(500), downstream.link])
+
+    void execute(link, 'heroTitle', { debounceKey: 'Hero:1:title' })
+    void execute(link, 'extraContent', { debounceKey: 'Typography:2:content' })
+    void execute(link, 'other', { debounceKey: 'Typography:3:content' })
+    void execute(link, 'duplicate', {
+      debounceFlushPrefix: ['Hero:1:', 'Typography:2:']
+    })
+
+    expect(downstream.forwarded()).toEqual([
+      'heroTitle',
+      'extraContent',
+      'duplicate'
+    ])
+
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(downstream.forwarded()).toEqual([
+      'heroTitle',
+      'extraContent',
+      'duplicate',
+      'other'
+    ])
   })
 
   it('forwards operations without a debounce key immediately', async () => {
