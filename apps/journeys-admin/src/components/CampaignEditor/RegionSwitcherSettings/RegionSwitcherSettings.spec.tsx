@@ -1,15 +1,21 @@
 import { MockLink } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
-import { useCampaignEditor } from '../CampaignEditorProvider'
-import { campaign, campaignWithRegions } from '../data'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { useCampaignEditor } from '../CampaignEditorProvider'
+import { campaign, campaignWithRegions } from '../data'
 import { Inspector } from '../Inspector'
 import { RegionSwitcherEdit } from '../RegionSwitcherEdit'
 import { blockUpdateMock } from '../styleTesting'
@@ -37,8 +43,11 @@ function variantMock(
 }
 
 function showCountryNamesMock(showCountryNames: boolean, id = switcher.id) {
-  const block = campaignWithRegions.blocks.find((candidate) => candidate.id === id)
-  if (block?.__typename !== 'CampaignRegionSwitcherBlock') throw new Error('Missing switcher fixture')
+  const block = campaignWithRegions.blocks.find(
+    (candidate) => candidate.id === id
+  )
+  if (block?.__typename !== 'CampaignRegionSwitcherBlock')
+    throw new Error('Missing switcher fixture')
   return blockUpdateMock(block, { showCountryNames })
 }
 
@@ -188,7 +197,7 @@ describe('RegionSwitcherSettings', () => {
         initialState={{ selectedBlockId: hostId, inspectorTab: 'settings' }}
         mocks={[countries, hide, show, undo, redo]}
       >
-        <Inspector isManager={false} />
+        <Inspector role="member" />
         <SwitcherPreviews />
         <CommandUndoItem variant="button" />
         <CommandRedoItem variant="button" />

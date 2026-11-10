@@ -1142,7 +1142,7 @@ describe('Inspector', () => {
             }
           ]}
         >
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </QueriedEditor>
       )
 

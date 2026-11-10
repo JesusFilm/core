@@ -25,13 +25,13 @@ import {
   CampaignSwitcherVariant,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
+import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQuery'
 import {
   regionLines,
   regionNeedsJourney,
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
-import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQuery'
 import { CanvasDragHandle } from '../Canvas/CanvasDragHandle'
 import { EditorNote } from '../Canvas/EditorNote'
 import {

@@ -9,9 +9,8 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { KeyboardEvent, ReactElement, useState } from 'react'
 
-import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
-
 import { CampaignCountryFlag } from '@core/journeys/ui/Campaign'
+import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 
 import {
   GetCampaign_campaign_regions as CampaignRegion,
@@ -22,8 +21,8 @@ import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQue
 import { useCampaignRegionCountryAddMutation } from '../../../libs/useCampaignRegionCountryAddMutation'
 import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
-import { ShowCountryNamesSwitch } from '../ShowCountryNamesSwitch'
 import { SLUG_MAX_LENGTH, shapeSlug } from '../Settings'
+import { ShowCountryNamesSwitch } from '../ShowCountryNamesSwitch'
 import { characterCount } from '../utils/characterCount'
 import { useCommittedField } from '../utils/useCommittedField'
 import { useTranslatedField } from '../utils/useTranslatedField'
@@ -61,7 +60,10 @@ function fieldErrorOf(
  * length rule and the API's own messages are shown verbatim under the field
  * that failed.
  */
-export function RegionSettings({ region, hostSwitcher }: RegionSettingsProps): ReactElement {
+export function RegionSettings({
+  region,
+  hostSwitcher
+}: RegionSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const [countryError, setCountryError] = useState<string>()
@@ -252,7 +254,10 @@ export function RegionSettings({ region, hostSwitcher }: RegionSettingsProps): R
           renderOption={(props, country) => (
             <Box component="li" {...props} key={country.id}>
               <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-                <CampaignCountryFlag src={country.flagPngSrc} sx={{ width: 20, height: 20, fontSize: 14 }} />
+                <CampaignCountryFlag
+                  src={country.flagPngSrc}
+                  sx={{ width: 20, height: 20, fontSize: 14 }}
+                />
                 <Typography component="span" variant="inherit">
                   {countryName(country)}
                 </Typography>

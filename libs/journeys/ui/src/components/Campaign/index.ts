@@ -92,7 +92,7 @@ export { CampaignPage } from './CampaignPage'
 export { legacyCampaignBasePath as campaignBasePath } from './CampaignProvider/CampaignProvider'
 export { campaignLanguageUrl } from './CampaignHeader'
 export {
-  CAMPAIGN_LANGUAGE_COOKIE,
+  campaignLanguageCookie,
   CAMPAIGN_LANGUAGE_PARAM,
   resolvePageLanguage
 } from './libs/resolvePageLanguage'

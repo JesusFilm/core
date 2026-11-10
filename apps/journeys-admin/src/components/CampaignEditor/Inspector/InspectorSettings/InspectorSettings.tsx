@@ -267,8 +267,14 @@ export function RegionCardSettings(): ReactElement {
           </Typography>
         )}
       </Stack>
-      <RegionSettings key={region.id} region={region}
-        hostSwitcher={selection.host?.__typename === 'CampaignRegionSwitcherBlock' ? selection.host : undefined}
+      <RegionSettings
+        key={region.id}
+        region={region}
+        hostSwitcher={
+          selection.host?.__typename === 'CampaignRegionSwitcherBlock'
+            ? selection.host
+            : undefined
+        }
       />
     </Stack>
   )

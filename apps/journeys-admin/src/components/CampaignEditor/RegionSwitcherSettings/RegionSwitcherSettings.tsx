@@ -7,8 +7,8 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
-import { ShowCountryNamesSwitch } from '../ShowCountryNamesSwitch'
 import { CommandError } from '../CommandError'
+import { ShowCountryNamesSwitch } from '../ShowCountryNamesSwitch'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 interface RegionSwitcherSettingsProps {
