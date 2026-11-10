@@ -1,0 +1,1 @@
+export { CommandError } from './CommandError'

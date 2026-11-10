@@ -5,14 +5,14 @@ import { useCallback } from 'react'
 import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
 
 import {
-  CampaignVideoBlockUpdate,
-  CampaignVideoBlockUpdateVariables
-} from '../../../__generated__/CampaignVideoBlockUpdate'
+  LegacyCampaignVideoBlockUpdate,
+  LegacyCampaignVideoBlockUpdateVariables
+} from '../../../__generated__/LegacyCampaignVideoBlockUpdate'
 import { CampaignVideoBlock } from '../useCampaignVideoBlockCreateMutation'
 
 export const CAMPAIGN_VIDEO_BLOCK_UPDATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
-  mutation CampaignVideoBlockUpdate(
+  mutation LegacyCampaignVideoBlockUpdate(
     $id: ID!
     $input: CampaignVideoBlockUpdateInput!
     $languageId: ID
@@ -32,7 +32,7 @@ export interface CampaignVideoTextInput {
 export type CampaignVideoTextMutate = (
   block: CampaignVideoBlock,
   input: CampaignVideoTextInput
-) => Promise<ApolloLink.Result<CampaignVideoBlockUpdate>>
+) => Promise<ApolloLink.Result<LegacyCampaignVideoBlockUpdate>>
 
 /**
  * Write a Campaign Video's title or description override through
@@ -45,8 +45,8 @@ export function useCampaignVideoBlockUpdateMutation(): CampaignVideoTextMutate {
   return useCallback(
     async (block, input) =>
       await client.mutate<
-        CampaignVideoBlockUpdate,
-        CampaignVideoBlockUpdateVariables
+        LegacyCampaignVideoBlockUpdate,
+        LegacyCampaignVideoBlockUpdateVariables
       >({
         mutation: CAMPAIGN_VIDEO_BLOCK_UPDATE,
         variables: { id: block.id, input },
