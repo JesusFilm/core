@@ -62,7 +62,7 @@ export function DefaultLanguageDialog({
   const currentName = current == null ? '' : languageNames(current).autonym
   const manualOnly = languageId != null && !isMachineTranslatable(languageId)
 
-  async function changeDefaultLanguage(): Promise<void> {
+  async function handleChangeDefaultLanguage(): Promise<void> {
     if (languageId == null) return
     setError(undefined)
     setChanging(true)
@@ -87,7 +87,8 @@ export function DefaultLanguageDialog({
   }
 
   function handleMachineTranslate(): void {
-    if (languageId == null) return
+    if (languageId == null || run != null) return
+    setError(undefined)
     start(
       {
         campaignId: campaign.id,
@@ -115,7 +116,7 @@ export function DefaultLanguageDialog({
         missingCount == null
           ? {
               onSubmit: () => {
-                void changeDefaultLanguage()
+                void handleChangeDefaultLanguage()
               },
               submitLabel: t('Change'),
               closeLabel: t('Cancel')

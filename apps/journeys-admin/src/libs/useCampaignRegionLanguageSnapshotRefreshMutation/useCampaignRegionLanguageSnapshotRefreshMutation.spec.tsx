@@ -46,7 +46,7 @@ function wrapperWith(
 }
 
 describe('useCampaignRegionLanguageSnapshotRefreshMutation', () => {
-  it('skips the mutation queue', async () => {
+  it('uses the mutation queue by default', async () => {
     const contexts: Array<Record<string, unknown>> = []
     const { result } = renderHook(
       () => useCampaignRegionLanguageSnapshotRefreshMutation(),
@@ -60,7 +60,7 @@ describe('useCampaignRegionLanguageSnapshotRefreshMutation', () => {
     })
 
     expect(contexts).toHaveLength(1)
-    expect(contexts[0].skipQueue).toBe(true)
+    expect(contexts[0].skipQueue).not.toBe(true)
   })
 
   it('keeps the context the caller passes', async () => {
@@ -68,7 +68,7 @@ describe('useCampaignRegionLanguageSnapshotRefreshMutation', () => {
     const { result } = renderHook(
       () =>
         useCampaignRegionLanguageSnapshotRefreshMutation({
-          context: { flush: 'slotId' }
+          context: { flush: 'slotId', skipQueue: false }
         }),
       { wrapper: wrapperWith(contexts) }
     )
@@ -77,6 +77,6 @@ describe('useCampaignRegionLanguageSnapshotRefreshMutation', () => {
       await result.current[0]({ variables: { id: eurEnglish.id } })
     })
 
-    expect(contexts[0]).toMatchObject({ flush: 'slotId', skipQueue: true })
+    expect(contexts[0]).toMatchObject({ flush: 'slotId', skipQueue: false })
   })
 })

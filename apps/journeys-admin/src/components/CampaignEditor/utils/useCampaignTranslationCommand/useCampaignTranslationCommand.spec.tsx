@@ -1,4 +1,6 @@
+import { ApolloLink } from '@apollo/client'
 import { MockLink } from '@apollo/client/testing'
+import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement, useState } from 'react'
@@ -10,6 +12,7 @@ import {
   CampaignTextField,
   CampaignTextSource
 } from '../../../../../__generated__/globalTypes'
+import { MutationQueueLink } from '../../../../libs/apolloClient/MutationQueueLink'
 import { translationValue } from '../../../../libs/useCampaignBlockTextMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
@@ -19,7 +22,8 @@ import {
   QueriedEditor,
   SelectionProbe,
   SpyMock,
-  UndoRedo
+  UndoRedo,
+  getCampaignMockFor
 } from '../../testing'
 
 import { useCampaignTranslationCommand } from './useCampaignTranslationCommand'
@@ -90,7 +94,11 @@ function refusedMock(value: string): SpyMock {
 }
 
 /** The image's alt panel while previewing French: one button commits a new translation. */
-function Harness(): ReactElement | null {
+function Harness({
+  values = [NEW_FRENCH_ALT]
+}: {
+  values?: string[]
+}): ReactElement | null {
   const { campaign: current } = useCampaignEditor()
   const { addTranslation, error } = useCampaignTranslationCommand()
   const block = current.blocks.find((candidate) => candidate.id === IMAGE_ID)
@@ -98,19 +106,22 @@ function Harness(): ReactElement | null {
   const committed = translationValue(block.altTranslations, '496')
   return (
     <>
-      <button
-        onClick={() =>
-          addTranslation({
-            block,
-            field: CampaignTextField.alt,
-            languageId: '496',
-            value: NEW_FRENCH_ALT,
-            previous: committed
-          })
-        }
-      >
-        Translate alt
-      </button>
+      {values.map((value) => (
+        <Button
+          key={value}
+          onClick={() =>
+            addTranslation({
+              block,
+              field: CampaignTextField.alt,
+              languageId: '496',
+              value,
+              previous: committed
+            })
+          }
+        >
+          {values.length === 1 ? 'Translate alt' : `Translate alt ${value}`}
+        </Button>
+      ))}
       <span data-testid="FrenchAlt">{committed}</span>
       {error != null && <span data-testid="InlineError">{error}</span>}
     </>
@@ -150,13 +161,15 @@ function PreviewLanguageControl(): ReactElement {
 
 function renderHarness(
   mocks: MockLink.MockedResponse[],
-  panel: ReactElement = <Harness />
+  panel: ReactElement = <Harness />,
+  link?: ApolloLink
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       campaign={imageCampaign}
       initialState={{ previewLanguageId: '496', selectedBlockId: IMAGE_ID }}
       mocks={mocks}
+      link={link}
     >
       <UndoRedo />
       <CommandProbe />
@@ -169,6 +182,51 @@ function renderHarness(
 
 describe('useCampaignTranslationCommand', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  it('undoes and redoes rapid queued edits using the translation at each first execute', async () => {
+    const values = ['first', 'second', 'third']
+    const saves = values.map(translationSetMock)
+    saves[0].delay = 150
+    const undoValues = ['second', 'first', FRENCH_ALT]
+    const undos = undoValues.map(translationSetMock)
+    const redos = values.map(translationSetMock)
+    const link = ApolloLink.from([
+      new MutationQueueLink(),
+      new MockLink([
+        getCampaignMockFor(imageCampaign),
+        ...saves,
+        ...undos,
+        ...redos
+      ])
+    ])
+    renderHarness([], <Harness values={values} />, link)
+    await screen.findByTestId('FrenchAlt')
+
+    for (const value of values) {
+      fireEvent.click(
+        screen.getByRole('button', { name: `Translate alt ${value}` })
+      )
+    }
+
+    await waitFor(() => expect(saves[2].result).toHaveBeenCalledTimes(1))
+    expect(screen.getByTestId('FrenchAlt')).toHaveTextContent('third')
+
+    for (const [index, undo] of undos.entries()) {
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() =>
+        expect(screen.getByTestId('FrenchAlt')).toHaveTextContent(
+          undoValues[index]
+        )
+      )
+      await waitFor(() => expect(undo.result).toHaveBeenCalledTimes(1))
+    }
+
+    for (const [index, redo] of redos.entries()) {
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(redo.result).toHaveBeenCalledTimes(1))
+      expect(screen.getByTestId('FrenchAlt')).toHaveTextContent(values[index])
+    }
+  })
 
   it('writes a translation as one Command and undo writes the previous translation back in the Preview Language it was made in', async () => {
     const execute = translationSetMock(NEW_FRENCH_ALT)

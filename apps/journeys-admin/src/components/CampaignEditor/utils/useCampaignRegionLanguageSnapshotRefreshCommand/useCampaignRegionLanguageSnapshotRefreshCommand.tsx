@@ -1,6 +1,8 @@
+import { useApolloClient } from '@apollo/client/react'
 import { useState } from 'react'
 
 import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../../../__generated__/GetCampaign'
+import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../../../../libs/useCampaignQuery'
 import { useCampaignRegionLanguageSnapshotRefreshMutation } from '../../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { useCampaignCommand } from '../useCampaignCommand'
@@ -33,6 +35,7 @@ export interface CampaignRegionLanguageSnapshotRefreshCommand {
  * asks first, so the Command is only added once the author has confirmed.
  */
 export function useCampaignRegionLanguageSnapshotRefreshCommand(): CampaignRegionLanguageSnapshotRefreshCommand {
+  const { cache } = useApolloClient()
   const { addCampaignCommand } = useCampaignCommand()
   const [snapshotRefresh] = useCampaignRegionLanguageSnapshotRefreshMutation()
   const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
@@ -47,14 +50,27 @@ export function useCampaignRegionLanguageSnapshotRefreshCommand(): CampaignRegio
       description: journey.description,
       snapshotEdited: false
     }
-    const previous: SnapshotParameters = {
-      title: regionLanguage.title,
-      description: regionLanguage.description,
-      snapshotEdited: regionLanguage.snapshotEdited
-    }
+    let previous: SnapshotParameters | undefined
     addCampaignCommand({
-      execute: async () =>
-        await snapshotRefresh({
+      async execute() {
+        if (previous == null) {
+          const current =
+            cache.readFragment<CampaignRegionLanguage>({
+              id: cache.identify({
+                __typename: regionLanguage.__typename,
+                id: regionLanguage.id
+              }),
+              fragment: CAMPAIGN_REGION_LANGUAGE_FIELDS,
+              fragmentName: 'CampaignRegionLanguageFields',
+              optimistic: true
+            }) ?? regionLanguage
+          previous = {
+            title: current.title,
+            description: current.description,
+            snapshotEdited: current.snapshotEdited
+          }
+        }
+        return await snapshotRefresh({
           variables: { id: regionLanguage.id },
           optimisticResponse: {
             campaignRegionLanguageSnapshotRefresh: {
@@ -62,14 +78,17 @@ export function useCampaignRegionLanguageSnapshotRefreshCommand(): CampaignRegio
               ...refreshed
             }
           }
-        }),
-      undo: async () =>
-        await languageUpdate({
+        })
+      },
+      async undo() {
+        if (previous == null) return
+        return await languageUpdate({
           variables: { id: regionLanguage.id, input: previous },
           optimisticResponse: {
             campaignRegionLanguageUpdate: { ...regionLanguage, ...previous }
           }
         })
+      }
     }).catch((error: unknown) => reportFailure(error))
   }
 

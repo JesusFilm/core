@@ -65,6 +65,7 @@ export function useCommittedField({
   // the field was held.
   const adopted = useRef(committed)
   const movedWhileHeld = useRef(false)
+  const resetGeneration = useRef(0)
 
   useEffect(() => {
     if (held) {
@@ -78,10 +79,12 @@ export function useCommittedField({
   }, [committed, held])
 
   useEffect(() => {
+    resetGeneration.current++
     adopted.current = committed
     movedWhileHeld.current = false
     setValue(committed)
     setError(undefined)
+    setSaving(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey])
 
@@ -106,17 +109,21 @@ export function useCommittedField({
     const pending = save(next)
     if (pending == null) return
     setSaving(true)
+    const generation = resetGeneration.current
     void pending
       .then(
         () => undefined,
         (saveError: unknown) => {
+          if (generation !== resetGeneration.current) return
           const refusal = onRefused(saveError)
           setError(refusal)
           // Reported elsewhere: once released, take the rolled-back value.
           if (refusal == null) movedWhileHeld.current = true
         }
       )
-      .finally(() => setSaving(false))
+      .finally(() => {
+        if (generation === resetGeneration.current) setSaving(false)
+      })
   }
 
   return { value, onChange, onBlur, error }

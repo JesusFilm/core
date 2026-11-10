@@ -187,6 +187,8 @@ describe('CampaignVideo', () => {
       'src',
       'https://imagedelivery.net/accountHash/jesusVideoId/mobileCinematicHigh'
     )
+    expect(card.querySelector('img')).toHaveAttribute('loading', 'lazy')
+    expect(card.querySelector('img')).not.toHaveAttribute('fetchpriority')
     expect(
       screen.queryByTestId('JourneysVideo-watchParentVideoId')
     ).not.toBeInTheDocument()

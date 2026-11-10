@@ -14,7 +14,8 @@ import {
   campaignPublic,
   featuredMediaImageBlock,
   heroVideoBlock,
-  landingBlocks
+  landingBlocks,
+  watchParentVideoBlock
 } from '../testData'
 import type { CampaignBlock, CampaignTreeOf } from '../types'
 
@@ -169,6 +170,21 @@ describe('CampaignHero', () => {
     renderHero(heroTree({ mediaBlockId: heroVideoBlock.id }, [heroVideoBlock]))
     const poster = within(screen.getByTestId('CampaignMediaSlot')).getByTestId(
       'CampaignImage'
+    )
+    expect(poster).toHaveAttribute('loading', 'eager')
+    expect(poster).toHaveAttribute('fetchpriority', 'high')
+  })
+
+  it('loads its Watch collection poster eagerly with high priority', () => {
+    const collection = { ...watchParentVideoBlock, parentBlockId: 'heroId' }
+    renderHero(heroTree({ mediaBlockId: collection.id }, [collection]))
+    const card = within(screen.getByTestId('CampaignMediaSlot')).getByTestId(
+      `CampaignVideoCard-${collection.id}`
+    )
+    const poster = card.querySelector('img')
+    expect(poster).toHaveAttribute(
+      'src',
+      'https://imagedelivery.net/accountHash/jesusVideoId/mobileCinematicHigh'
     )
     expect(poster).toHaveAttribute('loading', 'eager')
     expect(poster).toHaveAttribute('fetchpriority', 'high')

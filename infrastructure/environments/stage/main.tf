@@ -5,6 +5,7 @@ module "stage" {
   internal_url_name            = "stage.internal"
   certificate_arn              = aws_acm_certificate.stage.arn
   datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
+  s3_gateway_endpoint          = true
 }
 
 module "route53_stage_central_jesusfilm_org" {
@@ -193,12 +194,14 @@ module "datadog_aurora" {
   }]
 }
 
+# Stage peaks at 36 MB of cache and under 1% CPU over 14 days; a t4g.micro's
+# 0.5 GiB covers that with room, at a quarter of the t2.medium's price.
 module "redis" {
   source            = "../../modules/aws/elasticache"
   cluster_id        = "redis-stage"
   subnet_ids        = module.stage.vpc.internal_subnets
   env               = "stage"
-  node_type         = "cache.t2.medium"
+  node_type         = "cache.t4g.micro"
   apply_immediately = true
   security_group_id = module.stage.ecs.internal_ecs_security_group_id
   cidr              = module.stage.cidr

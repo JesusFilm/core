@@ -1,4 +1,5 @@
 import { MockLink } from '@apollo/client/testing'
+import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
@@ -19,6 +20,7 @@ import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { blockOf, blockUpdateMock } from '../../styleTesting'
 import { BlocksProbe, QueriedEditor, SpyMock, UndoRedo } from '../../testing'
+import { useCampaignBlockFieldsCommand } from '../useCampaignBlockFieldsCommand'
 
 import {
   fitCampaignText,
@@ -34,6 +36,7 @@ const YOUTUBE: CampaignVideoPick = {
 }
 const PLAYLIST_URL =
   'https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG'
+const WATCH_URL = 'https://www.jesusfilm.org/watch/jesus.html/english.html'
 const refusal = { errors: [{ message: 'The request was refused' }] }
 
 /** The carousel expanded from a Watch video, as a pasted Watch link leaves it. */
@@ -168,13 +171,24 @@ function playlistItemDeleteMock(index: number): SpyMock {
 /** Adds a YouTube item, imports a playlist or drops the Watch video on the carousel as the provider holds it, and shows its Watch video and the hook's error inline. */
 function CarouselHarness(): ReactElement {
   const { campaign: current } = useCampaignEditor()
-  const { addItem, importPlaylist, clearWatchVideo, error } =
+  const { addItem, importPlaylist, clearWatchVideo, setWatchVideo, error } =
     useCampaignCarouselCommand()
+  const { addFields } = useCampaignBlockFieldsCommand()
   const currentCarousel = current.blocks.find(
     (block) => block.id === carousel.id
   ) as CampaignVideoCarouselBlock
   return (
     <>
+      <Button
+        onClick={() =>
+          addFields(blockOf<'CampaignHeroBlock'>('heroId'), { minHeight: 70 })
+        }
+      >
+        Slow unrelated edit
+      </Button>
+      <Button onClick={() => setWatchVideo(currentCarousel, WATCH_URL)}>
+        Use Watch video
+      </Button>
       <button type="button" onClick={() => addItem(currentCarousel, YOUTUBE)}>
         Add YouTube item
       </button>
@@ -224,6 +238,159 @@ describe('useCampaignCarouselCommand', () => {
     vi.clearAllMocks()
     calls.length = 0
   })
+
+  describe.each([
+    {
+      action: 'Add YouTube item',
+      create: createMock,
+      deletes: [deleteMock],
+      restores: [restoreMock],
+      itemId: 'newItemId'
+    },
+    {
+      action: 'Import playlist',
+      create: playlistMock,
+      deletes: [0, 1, 2].map(playlistItemDeleteMock),
+      restores: PLAYLIST_ITEM_IDS.map((id, parentOrder) => ({
+        request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id } },
+        result: {
+          data: {
+            campaignBlockRestore: [
+              {
+                ...newOwnedVideoBlock(id, carousel, {
+                  source: VideoBlockSource.youTube,
+                  videoId: `youTube-${id}`
+                }),
+                parentOrder,
+                title: `Reading ${parentOrder + 1}`
+              }
+            ]
+          }
+        }
+      })),
+      itemId: 'playlistItem2'
+    }
+  ])(
+    '$action behind queued mode changes',
+    ({ action, create, deletes, restores, itemId }) => {
+      function slowEditMock(): SpyMock {
+        return {
+          ...blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), {
+            minHeight: 70
+          }),
+          delay: 300
+        }
+      }
+
+      it('keeps a preceding switch to explicit mode when undoing and redoing the added items', async () => {
+        const slow = slowEditMock()
+        const clearVideo = {
+          ...blockUpdateMock(watchCarousel, { videoId: null }),
+          maxUsageCount: 3
+        }
+        const restoreVideo = blockUpdateMock(watchCarousel, {
+          videoId: 'watchVideoId',
+          videoVariantLanguageId: '529'
+        })
+        renderHarness(
+          [slow, clearVideo, create, ...deletes, ...restores, restoreVideo],
+          campaignWithWatchCarousel
+        )
+        fireEvent.click(
+          await screen.findByRole('button', { name: 'Slow unrelated edit' })
+        )
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use my own videos' })
+        )
+        fireEvent.click(screen.getByRole('button', { name: action }))
+        expect(slow.result).not.toHaveBeenCalled()
+        expect(clearVideo.result).not.toHaveBeenCalled()
+        expect(create.result).not.toHaveBeenCalled()
+
+        await waitFor(() => expect(create.result).toHaveBeenCalledTimes(1))
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+        await waitFor(() => expect(deletes.at(-1)?.result).toHaveBeenCalled())
+        await waitFor(() =>
+          expect(
+            screen.queryByTestId(`Block-${itemId}`)
+          ).not.toBeInTheDocument()
+        )
+        expect(screen.getByTestId('CarouselVideoId')).toHaveTextContent(/^$/)
+        expect(restoreVideo.result).not.toHaveBeenCalled()
+
+        fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+        expect(await screen.findByTestId(`Block-${itemId}`)).toBeInTheDocument()
+        expect(screen.getByTestId('CarouselVideoId')).toHaveTextContent(/^$/)
+        expect(clearVideo.result).toHaveBeenCalledTimes(1)
+        expect(create.result).toHaveBeenCalledTimes(1)
+      })
+
+      it('clears a preceding Watch selection and restores that selection on undo, including after redo', async () => {
+        const slow = slowEditMock()
+        const selectVideo = blockUpdateMock(
+          carousel,
+          { url: WATCH_URL },
+          watchCarousel
+        )
+        const clearVideo = {
+          ...blockUpdateMock(watchCarousel, { videoId: null }),
+          maxUsageCount: 2
+        }
+        const restoreVideo = {
+          ...blockUpdateMock(watchCarousel, {
+            videoId: 'watchVideoId',
+            videoVariantLanguageId: '529'
+          }),
+          maxUsageCount: 2
+        }
+        renderHarness([
+          slow,
+          selectVideo,
+          clearVideo,
+          create,
+          ...deletes.map((mock) => ({ ...mock, maxUsageCount: 2 })),
+          ...restores,
+          restoreVideo
+        ])
+        fireEvent.click(
+          await screen.findByRole('button', { name: 'Slow unrelated edit' })
+        )
+        fireEvent.click(screen.getByRole('button', { name: 'Use Watch video' }))
+        fireEvent.click(screen.getByRole('button', { name: action }))
+        expect(slow.result).not.toHaveBeenCalled()
+        expect(selectVideo.result).not.toHaveBeenCalled()
+        expect(create.result).not.toHaveBeenCalled()
+
+        await waitFor(() => expect(create.result).toHaveBeenCalledTimes(1))
+        expect(screen.getByTestId(`Block-${itemId}`)).toBeInTheDocument()
+        expect(screen.getByTestId('CarouselVideoId')).toHaveTextContent(/^$/)
+        expect(clearVideo.result).toHaveBeenCalledTimes(1)
+
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+        await waitFor(() =>
+          expect(restoreVideo.result).toHaveBeenCalledTimes(1)
+        )
+        expect(screen.getByTestId('CarouselVideoId')).toHaveTextContent(
+          'watchVideoId'
+        )
+        expect(screen.queryByTestId(`Block-${itemId}`)).not.toBeInTheDocument()
+
+        fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+        expect(await screen.findByTestId(`Block-${itemId}`)).toBeInTheDocument()
+        expect(screen.getByTestId('CarouselVideoId')).toHaveTextContent(/^$/)
+        await waitFor(() => expect(clearVideo.result).toHaveBeenCalledTimes(2))
+
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+        await waitFor(() =>
+          expect(restoreVideo.result).toHaveBeenCalledTimes(2)
+        )
+        expect(screen.getByTestId('CarouselVideoId')).toHaveTextContent(
+          'watchVideoId'
+        )
+        expect(create.result).toHaveBeenCalledTimes(1)
+      })
+    }
+  )
 
   describe('addItem', () => {
     it('adds the item at the end of the carousel; undo removes it and redo restores it', async () => {

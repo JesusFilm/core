@@ -140,8 +140,7 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
     fieldsCommand.clearError()
     setItemError(undefined)
     const explicit: CampaignCarouselVideoInput = { videoId: null }
-    const previous = previousFields(carousel, explicit)
-    const wasExpanded = previous.videoId != null
+    let previous: CampaignCarouselVideoInput | undefined
     let created: CampaignBlock[] = []
 
     async function removeItems(): Promise<void> {
@@ -163,22 +162,23 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
 
     addCampaignCommand({
       async execute() {
-        if (wasExpanded) await update(carousel, explicit)
+        previous ??= previousFields(carousel, explicit)
+        if (previous.videoId != null) await update(carousel, explicit)
         try {
           created = await create(carousel)
         } catch (error) {
           // The create's refusal is the one to report, not this write's.
-          if (wasExpanded)
+          if (previous.videoId != null)
             await update(carousel, previous).catch(() => undefined)
           throw error
         }
       },
       async undo() {
         await removeItems()
-        if (wasExpanded) await update(carousel, previous)
+        if (previous?.videoId != null) await update(carousel, previous)
       },
       async redo() {
-        if (wasExpanded) await update(carousel, explicit)
+        if (previous?.videoId != null) await update(carousel, explicit)
         await restoreItems()
       }
     }).catch((error: unknown) => setItemError(messageOf(error)))

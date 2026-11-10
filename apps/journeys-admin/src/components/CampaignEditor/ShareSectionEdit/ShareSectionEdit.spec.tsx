@@ -116,7 +116,7 @@ const deleteMock = {
 }
 
 const journey = {
-  __typename: 'Journey',
+  __typename: 'Journey' as const,
   id: 'frJourneyId',
   title: 'Campagne en Europe',
   description: null,
@@ -169,39 +169,64 @@ const resolveMock = {
   result: vi.fn(() => ({ data: { journey } }))
 }
 
+const linkedFrench: typeof eurFrench = {
+  ...eurFrench,
+  journeyId: 'frJourneyId',
+  title: 'Campagne en Europe',
+  description: null,
+  snapshotEdited: false,
+  qrCodeId: 'frQrCodeId',
+  journey,
+  qrCode: {
+    __typename: 'QrCode',
+    id: 'frQrCodeId',
+    shortLink: {
+      __typename: 'ShortLink',
+      id: 'frShortLinkId',
+      pathname: 'eur-fr',
+      domain: { __typename: 'ShortLinkDomain', hostname: 'short.nextstep.is' }
+    }
+  }
+}
+
 const linkMock = {
   request: {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
     variables: {
-      id: 'eurRegionId-496',
+      id: eurFrench.id,
       input: { url: 'https://admin.nextstep.is/journeys/frJourneyId' }
     }
   },
   result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
+  }))
+}
+
+const firstUnlinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: eurFrench.id, input: { journeyId: null } }
+  },
+  result: vi.fn(() => ({
     data: {
       campaignRegionLanguageUpdate: {
-        ...eurFrench,
-        journeyId: 'frJourneyId',
-        title: 'Campagne en Europe',
-        description: null,
-        snapshotEdited: false,
-        qrCodeId: 'frQrCodeId',
-        journey,
-        qrCode: {
-          __typename: 'QrCode',
-          id: 'frQrCodeId',
-          shortLink: {
-            __typename: 'ShortLink',
-            id: 'frShortLinkId',
-            pathname: 'eur-fr',
-            domain: {
-              __typename: 'ShortLinkDomain',
-              hostname: 'short.nextstep.is'
-            }
-          }
-        }
+        ...linkedFrench,
+        journeyId: null,
+        journey: null,
+        title: null,
+        description: null
       }
     }
+  }))
+}
+
+const firstRelinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: eurFrench.id, input: { journeyId: 'frJourneyId' } }
+  },
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
   }))
 }
 
@@ -303,34 +328,6 @@ const resolveBySlugMock = {
   result: vi.fn(() => ({ data: { journey } }))
 }
 
-/** Undo of the first link: unlink, keeping the QR code the link minted. */
-const firstUnlinkMock = {
-  request: {
-    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
-    variables: { id: 'eurRegionId-496', input: { journeyId: null } }
-  },
-  result: vi.fn(() => ({
-    data: {
-      campaignRegionLanguageUpdate: {
-        ...linkMock.result().data.campaignRegionLanguageUpdate,
-        journeyId: null,
-        title: null,
-        description: null,
-        journey: null
-      }
-    }
-  }))
-}
-
-/** Redo of the first link: the same journey, by id. */
-const firstRelinkMock = {
-  request: {
-    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
-    variables: { id: 'eurRegionId-496', input: { journeyId: 'frJourneyId' } }
-  },
-  result: vi.fn(() => linkMock.result())
-}
-
 const unlinkMock = {
   request: {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
@@ -430,9 +427,9 @@ function renderShare(
           accessibleJourneysMock,
           resolveBySlugMock,
           linkMock,
-          linkFailureMock,
           firstUnlinkMock,
           firstRelinkMock,
+          linkFailureMock,
           unlinkMock,
           swapMock,
           swapRelinkMock,

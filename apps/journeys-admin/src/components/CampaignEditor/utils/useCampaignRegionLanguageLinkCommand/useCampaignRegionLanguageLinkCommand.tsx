@@ -1,6 +1,7 @@
 import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../../../__generated__/GetCampaign'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
-import { useCampaignCommand } from '../useCampaignCommand'
+import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { CampaignCommandFocus, useCampaignCommand } from '../useCampaignCommand'
 
 export interface ShareLanguageLinkCommand {
   /**
@@ -22,10 +23,11 @@ export interface ShareLanguageLinkCommand {
  * had edited, since linking resets it. Redo links the same journey by id. A
  * swap retargets the Campaign QR Code's short link, so printed codes stay
  * valid across undo and redo. The Campaign Command module runs undo and redo
- * in order after the page they were made on is focused, and reports their
+ * in order after the focus captured before the link request is restored, and reports their
  * refusals in the snackbar.
  */
 export function useCampaignRegionLanguageLinkCommand(): ShareLanguageLinkCommand {
+  const { state } = useCampaignEditor()
   const { addCampaignCommand } = useCampaignCommand()
   const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
 
@@ -33,6 +35,13 @@ export function useCampaignRegionLanguageLinkCommand(): ShareLanguageLinkCommand
     regionLanguage: CampaignRegionLanguage,
     url: string
   ): Promise<void> {
+    const focus: CampaignCommandFocus = {
+      pageKind: state.pageKind,
+      regionId: state.regionId,
+      selectedBlockId: state.selectedBlockId,
+      selectedRegionId: state.selectedRegionId,
+      previewLanguageId: state.previewLanguageId
+    }
     const { data } = await languageUpdate({
       variables: { id: regionLanguage.id, input: { url } }
     })
@@ -66,6 +75,7 @@ export function useCampaignRegionLanguageLinkCommand(): ShareLanguageLinkCommand
     }
 
     void addCampaignCommand({
+      focus: { undo: focus, redo: focus },
       // The link was sent above, before the Command was added.
       execute: async () => undefined,
       undo: restorePrevious,

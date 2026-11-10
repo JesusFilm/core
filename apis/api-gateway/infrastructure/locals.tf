@@ -9,13 +9,15 @@ locals {
     "HIVE_REGISTRY_TOKEN",
     "GATEWAY_HMAC_SECRET"
   ]
+  # Stage peaked at 1.3 GiB of memory and a few percent of one vCPU over
+  # 14 days, so it runs on half the task size prod gets.
   service_config = {
     name                              = "api-gateway"
     is_public                         = true
     container_port                    = local.port
     host_port                         = local.port
-    cpu                               = 1024
-    memory                            = 4096
+    cpu                               = var.env == "stage" ? 512 : 1024
+    memory                            = var.env == "stage" ? 2048 : 4096
     desired_count                     = var.env == "stage" ? 1 : 2
     zone_id                           = var.ecs_config.zone_id
     health_check_grace_period_seconds = 60

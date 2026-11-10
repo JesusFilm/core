@@ -9,7 +9,7 @@ export function blockLabel(
   t: TFunction,
   typename: CampaignBlock['__typename']
 ): string {
-  return BLOCK_TYPES[typename].label(t)
+  return BLOCK_TYPES[typename]?.label(t) ?? typename
 }
 
 /** The name of a region card on the canvas and in the Navigator. */

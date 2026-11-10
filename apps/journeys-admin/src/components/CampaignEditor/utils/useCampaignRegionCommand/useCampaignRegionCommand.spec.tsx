@@ -10,6 +10,7 @@ import { CAMPAIGN_REGION_UPDATE } from '../../../../libs/useCampaignRegionUpdate
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaignWithRegions, eurRegion } from '../../data'
 import { Hotkeys } from '../../Hotkeys'
+import { blockOf, blockUpdateMock } from '../../styleTesting'
 import {
   CommandProbe,
   QueriedEditor,
@@ -17,6 +18,7 @@ import {
   SpyMock,
   UndoRedo
 } from '../../testing'
+import { useCampaignBlockFieldsCommand } from '../useCampaignBlockFieldsCommand'
 
 import {
   isEmptyRegion,
@@ -115,10 +117,45 @@ function Controls(): ReactElement {
   return (
     <>
       <Button onClick={() => setListed(eur, !eur.listed)}>Toggle listed</Button>
+      <Button onClick={() => setListed(eur, true)}>List on switcher</Button>
       <Button onClick={() => reorderRegion(eur, eur.order + 1)}>
         Move down
       </Button>
       <Button onClick={() => addRegion()}>Add region</Button>
+    </>
+  )
+}
+
+function QueuedRegionMoves(): ReactElement {
+  const { campaign } = useCampaignEditor()
+  const { reorderRegion } = useCampaignRegionCommand()
+  const { addFields } = useCampaignBlockFieldsCommand()
+  return (
+    <>
+      <Button
+        onClick={() =>
+          addFields(blockOf<'CampaignHeroBlock'>('heroId'), { minHeight: 70 })
+        }
+      >
+        Slow unrelated edit
+      </Button>
+      {[
+        { name: 'First move', id: 'eurRegionId', order: 1 },
+        { name: 'Move sibling', id: 'usaRegionId', order: 2 },
+        { name: 'Second move', id: 'eurRegionId', order: 2 }
+      ].map(({ name, id, order }) => (
+        <Button
+          key={name}
+          onClick={() =>
+            reorderRegion(
+              campaign.regions.find((region) => region.id === id)!,
+              order
+            )
+          }
+        >
+          {name}
+        </Button>
+      ))}
     </>
   )
 }
@@ -146,6 +183,158 @@ function renderCommands(
 
 describe('useCampaignRegionCommand', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  it('captures queued List undo state at execution and retains it through replay', async () => {
+    const unlist = { ...updateMock(false), delay: 500, maxUsageCount: 2 }
+    const list = { ...updateMock(true), maxUsageCount: 6 }
+    renderCommands([unlist, list])
+    await screen.findByTestId('Region-eurRegionId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle listed' }))
+    fireEvent.click(screen.getByRole('button', { name: 'List on switcher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'List on switcher' }))
+    expect(unlist.result).not.toHaveBeenCalled()
+    expect(list.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(list.result).toHaveBeenCalledTimes(2))
+
+    for (let replay = 0; replay < 2; replay++) {
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() =>
+        expect(list.result).toHaveBeenCalledTimes(3 + replay * 2)
+      )
+      expect(screen.getByTestId('Region-eurRegionId')).toHaveTextContent(
+        'Europe|eur|0|true|FR'
+      )
+      if (replay === 1) break
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(list.result).toHaveBeenCalledTimes(4))
+    }
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(unlist.result).toHaveBeenCalledTimes(2))
+    expect(screen.getByTestId('Region-eurRegionId')).toHaveTextContent(
+      'Europe|eur|0|false|FR'
+    )
+  })
+
+  it('captures queued region positions at execution and preserves current siblings through replay', async () => {
+    const data = {
+      ...campaignWithRegions,
+      regions: [
+        ...campaignWithRegions.regions,
+        ...['asia', 'usa'].map((slug, index) => ({
+          ...eurRegion,
+          id: `${slug}RegionId`,
+          name: slug,
+          slug,
+          order: index + 2,
+          countries: [],
+          languages: []
+        }))
+      ]
+    }
+    function move(
+      id: string,
+      order: number,
+      ids: string[],
+      delay = 20
+    ): SpyMock {
+      return {
+        request: {
+          query: CAMPAIGN_REGION_ORDER_UPDATE,
+          variables: { id, order }
+        },
+        result: vi.fn(() => ({
+          data: {
+            campaignRegionOrderUpdate: ids.map((id, order) => ({
+              __typename: 'CampaignRegion',
+              id,
+              order
+            }))
+          }
+        })),
+        delay,
+        maxUsageCount: 3
+      }
+    }
+    const slow = {
+      ...blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), {
+        minHeight: 70
+      }),
+      delay: 300
+    }
+    const first = move('eurRegionId', 1, [
+      'afrRegionId',
+      'eurRegionId',
+      'asiaRegionId',
+      'usaRegionId'
+    ])
+    const sibling = move('usaRegionId', 2, [
+      'afrRegionId',
+      'eurRegionId',
+      'usaRegionId',
+      'asiaRegionId'
+    ])
+    const second = move(
+      'eurRegionId',
+      2,
+      ['afrRegionId', 'usaRegionId', 'eurRegionId', 'asiaRegionId'],
+      300
+    )
+    const undo = move('eurRegionId', 1, [
+      'afrRegionId',
+      'eurRegionId',
+      'usaRegionId',
+      'asiaRegionId'
+    ])
+    render(
+      <QueriedEditor
+        campaign={data}
+        mocks={[slow, { ...first, maxUsageCount: 1 }, sibling, second, undo]}
+      >
+        <QueuedRegionMoves />
+        <RegionsProbe />
+        <UndoRedo />
+      </QueriedEditor>
+    )
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Slow unrelated edit' })
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'First move' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Move sibling' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Second move' }))
+    expect(slow.result).not.toHaveBeenCalled()
+    expect(first.result).not.toHaveBeenCalled()
+    const regionIds = () =>
+      screen
+        .getAllByTestId(/^Region-/)
+        .map((item) => item.getAttribute('data-testid'))
+
+    await waitFor(() =>
+      expect(regionIds()).toEqual([
+        'Region-afrRegionId',
+        'Region-usaRegionId',
+        'Region-eurRegionId',
+        'Region-asiaRegionId'
+      ])
+    )
+    expect(second.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(second.result).toHaveBeenCalledTimes(1))
+
+    for (let replay = 1; replay <= 2; replay++) {
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(undo.result).toHaveBeenCalledTimes(replay))
+      expect(regionIds()).toEqual([
+        'Region-afrRegionId',
+        'Region-eurRegionId',
+        'Region-usaRegionId',
+        'Region-asiaRegionId'
+      ])
+      if (replay === 2) break
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(second.result).toHaveBeenCalledTimes(2))
+    }
+  })
 
   it('unlists and lists as a Command with no confirmation, and undo reverses it', async () => {
     renderCommands()

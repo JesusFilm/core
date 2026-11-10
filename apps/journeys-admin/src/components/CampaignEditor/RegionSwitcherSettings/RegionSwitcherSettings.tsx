@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
+import { ShowCountryNamesSwitch } from '../ShowCountryNamesSwitch'
 import { CommandError } from '../CommandError'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
@@ -16,8 +17,9 @@ interface RegionSwitcherSettingsProps {
 
 /**
  * The Region Switcher's Settings: how it lists the regions — cards, a list or
- * pills. Picking one is one Command through `campaignRegionSwitcherBlockUpdate`;
- * undo writes the previous variant back.
+ * pills — and whether its country chips show their names beside the flags.
+ * Each change is one Command through `campaignRegionSwitcherBlockUpdate` on
+ * this section alone; undo writes the previous value back.
  */
 export function RegionSwitcherSettings({
   block
@@ -58,6 +60,8 @@ export function RegionSwitcherSettings({
           {t('Pills')}
         </ToggleButton>
       </ToggleButtonGroup>
+      <Typography variant="subtitle2">{t('Countries')}</Typography>
+      <ShowCountryNamesSwitch block={block} />
     </Stack>
   )
 }
