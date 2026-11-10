@@ -1585,6 +1585,7 @@ describe('video', () => {
     it('should include unpublished/incomplete children for an authenticated publisher on videos-admin', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc7 (TS2740) requires the full VideoVariant shape here even though editor tsc does not
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
@@ -1624,6 +1625,7 @@ describe('video', () => {
     it('should include unpublished/incomplete parents for an authenticated publisher on videos-admin', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc7 (TS2740) requires the full VideoVariant shape here even though editor tsc does not
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
@@ -1663,6 +1665,7 @@ describe('video', () => {
     it('should not spoof videos-admin access via the client-name header alone, without publisher auth', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc7 (TS2740) requires the full VideoVariant shape here even though editor tsc does not
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
