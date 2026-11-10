@@ -3302,7 +3302,11 @@ describe('videoVariant', () => {
             ? { label: 'segment', published: true }
             : { slug: args.where.id, availableLanguages: ['19372'] }) as any)
         prismaMock.video.findMany.mockResolvedValue([
-          { id: '1_jf-0-0', label: 'featureFilm', availableLanguages: ['19372'] },
+          {
+            id: '1_jf-0-0',
+            label: 'featureFilm',
+            availableLanguages: ['19372']
+          },
           // Lists the language but has no placeholder Variant yet: the
           // placeholder is still created, only the language sync is skipped.
           {
