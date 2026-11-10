@@ -221,7 +221,7 @@ export function JourneyFlow(): ReactElement {
     async (onload = false): Promise<void> => {
       if (steps == null || data == null) return
 
-      if (journey?.socialNodeX == null || journey.socialNodeY == null) return
+      if (journey == null) return
       const socialPreviewNodeInput = {
         id: 'SocialPreview',
         x: DEFAULT_SOCIAL_NODE_X,
@@ -248,8 +248,8 @@ export function JourneyFlow(): ReactElement {
                 // social preview
                 {
                   id: 'SocialPreview',
-                  x: journey.socialNodeX,
-                  y: journey.socialNodeY
+                  x: journey.socialNodeX ?? DEFAULT_SOCIAL_NODE_X,
+                  y: journey.socialNodeY ?? DEFAULT_SOCIAL_NODE_Y
                 },
                 // step blocks
                 ...(
@@ -272,15 +272,7 @@ export function JourneyFlow(): ReactElement {
         })
       }
     },
-    [
-      data,
-      dispatch,
-      steps,
-      add,
-      blockPositionUpdate,
-      journey?.socialNodeX,
-      journey?.socialNodeY
-    ]
+    [data, dispatch, steps, add, blockPositionUpdate, journey]
   )
 
   useEffect(() => {
