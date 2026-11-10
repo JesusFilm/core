@@ -11,7 +11,7 @@ import { Prisma, User, prisma } from '@core/prisma/users/client'
 // the caller's `select` / `include` applied.
 export async function findUserByEmail(
   email: string,
-  query: { select?: Prisma.UserSelect; include?: Prisma.UserInclude } = {}
+  query: { select?: Prisma.UserSelect; include?: undefined } = {}
 ): Promise<User | null> {
   const rows = await prisma.$queryRaw<
     Array<{ id: string }>
