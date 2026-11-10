@@ -88,7 +88,11 @@ export function DefaultLanguageDialog({
     if (languageId == null || run != null) return
     setError(undefined)
     start(
-      { campaignId: campaign.id, languageId, mode: CampaignAiTranslateMode.missing },
+      {
+        campaignId: campaign.id,
+        languageId,
+        mode: CampaignAiTranslateMode.missing
+      },
       targetName,
       { thenSwapDefaultLanguage: true, onDefaultLanguageChanged: onChanged }
     )
@@ -116,9 +120,7 @@ export function DefaultLanguageDialog({
       }
       dialogActionChildren={
         missingCount == null ? undefined : (
-          <Button onClick={onClose}>
-            {t('Cancel')}
-          </Button>
+          <Button onClick={onClose}>{t('Cancel')}</Button>
         )
       }
       loading={changing}

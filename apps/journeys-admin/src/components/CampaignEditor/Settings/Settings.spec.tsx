@@ -57,7 +57,12 @@ function RunScope({
   children: ReactNode
 }): ReactElement {
   if (run == null)
-    return <TranslationRunProvider><RunProbe />{children}</TranslationRunProvider>
+    return (
+      <TranslationRunProvider>
+        <RunProbe />
+        {children}
+      </TranslationRunProvider>
+    )
   return (
     <TranslationRunContext.Provider
       value={{ run, start: vi.fn(), cancel: vi.fn() }}
@@ -601,7 +606,11 @@ describe('Settings', () => {
       )
 
       expect(screen.getByTestId('SharedRun')).toHaveTextContent('Français')
-      await waitFor(() => expect(screen.queryByTestId('CampaignDefaultLanguageDialog')).not.toBeInTheDocument())
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('CampaignDefaultLanguageDialog')
+        ).not.toBeInTheDocument()
+      )
       expect(onDefaultLanguageChanged).not.toHaveBeenCalled()
       await waitFor(() => expect(onDefaultLanguageChanged).toHaveBeenCalled())
       expect(sweep).toHaveBeenCalled()

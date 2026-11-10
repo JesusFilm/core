@@ -115,7 +115,7 @@ const deleteMock = {
 }
 
 const journey = {
-  __typename: 'Journey',
+  __typename: 'Journey' as const,
   id: 'frJourneyId',
   title: 'Campagne en Europe',
   description: null,
@@ -196,7 +196,9 @@ const linkMock = {
       input: { url: 'https://admin.nextstep.is/journeys/frJourneyId' }
     }
   },
-  result: vi.fn(() => ({ data: { campaignRegionLanguageUpdate: linkedFrench } }))
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
+  }))
 }
 
 const firstUnlinkMock = {
@@ -204,15 +206,17 @@ const firstUnlinkMock = {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
     variables: { id: eurFrench.id, input: { journeyId: null } }
   },
-  result: vi.fn(() => ({ data: {
-    campaignRegionLanguageUpdate: {
-      ...linkedFrench,
-      journeyId: null,
-      journey: null,
-      title: null,
-      description: null
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageUpdate: {
+        ...linkedFrench,
+        journeyId: null,
+        journey: null,
+        title: null,
+        description: null
+      }
     }
-  } }))
+  }))
 }
 
 const firstRelinkMock = {
@@ -220,7 +224,9 @@ const firstRelinkMock = {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
     variables: { id: eurFrench.id, input: { journeyId: 'frJourneyId' } }
   },
-  result: vi.fn(() => ({ data: { campaignRegionLanguageUpdate: linkedFrench } }))
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
+  }))
 }
 
 const swapMock = {
@@ -817,11 +823,22 @@ describe('ShareSectionEdit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(firstUnlinkMock.result).toHaveBeenCalled())
-    await waitFor(() => expect(screen.getByTestId('ShareLanguageRow-496')).toHaveAttribute('data-state', 'unlinked'))
+    await waitFor(() =>
+      expect(screen.getByTestId('ShareLanguageRow-496')).toHaveAttribute(
+        'data-state',
+        'unlinked'
+      )
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(firstRelinkMock.result).toHaveBeenCalled())
-    await waitFor(() => expect(within(screen.getByTestId('ShareLanguageRow-496')).getByTestId('ShareLanguageJourney')).toHaveTextContent('Campagne en Europe'))
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toHaveTextContent('Campagne en Europe')
+    )
   })
 
   it('swaps as one Command: undo links the previous journey again and puts back the snapshot the author edited', async () => {
