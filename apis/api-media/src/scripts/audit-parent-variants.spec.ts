@@ -189,7 +189,42 @@ describe('auditParentVariants', () => {
     ])
   })
 
-  it('does not propose a placeholder Variant for a feature film parent', async () => {
+  it('does not propose a placeholder Variant for a feature film parent that already lists the language', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'film-1',
+        slug: 'jesus',
+        label: 'featureFilm',
+        published: true,
+        availableLanguages: ['20770'],
+        variants: [],
+        children: [
+          {
+            id: 'segment-1',
+            published: true,
+            variants: [
+              {
+                id: 'kurmanji-segment-1',
+                languageId: '20770',
+                slug: 'jesus/segment-1/ku',
+                published: true
+              }
+            ]
+          }
+        ]
+      }
+    ] as never)
+
+    const result = await auditParentVariants()
+
+    expect(result).toEqual({
+      applied: false,
+      deterministicGaps: [],
+      ambiguous: []
+    })
+  })
+
+  it('reports a missing parent language for a feature film whose language cascade fell behind', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {
         id: 'film-1',
@@ -219,7 +254,16 @@ describe('auditParentVariants', () => {
 
     expect(result).toEqual({
       applied: false,
-      deterministicGaps: [],
+      deterministicGaps: [
+        {
+          parentVideoId: 'film-1',
+          childVideoId: 'segment-1',
+          languageId: '20770',
+          variantId: '20770_film-1',
+          action: 'addParentLanguage',
+          result: 'proposed'
+        }
+      ],
       ambiguous: []
     })
   })

@@ -15,7 +15,10 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
-import { removeLanguageFromVideoIfUnused } from '../video/lib/updateAvailableLanguages'
+import {
+  removeLanguageFromVideoIfUnused,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
 import { syncParentLanguage } from '../videoVariantReconciliation/reconcileParentVariants'
@@ -366,6 +369,10 @@ async function checkAndRemoveEmptyParentVariant(
   if (!parentVideo.availableLanguages.includes(languageId)) return
 
   await removeLanguageFromVideoIfUnused(parentVideoId, languageId)
+  // The featureFilm's own containers (e.g. a collection above it) computed
+  // their availableLanguages from this featureFilm's old value, so they need
+  // the same recalculation syncParentLanguage does for the add path.
+  await updateParentCollectionLanguages(parentVideoId)
   try {
     await videoCacheReset(parentVideoId)
   } catch (error) {

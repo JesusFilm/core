@@ -3403,6 +3403,12 @@ describe('videoVariant', () => {
             '1_jf-0-0',
             '19372'
           )
+          // The film's own containers (e.g. a collection above it) computed
+          // their availableLanguages from the film's old value, so they need
+          // the same recalculation the add path does via syncParentLanguage.
+          expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+            '1_jf-0-0'
+          )
           expect(mockedVideoCacheReset).toHaveBeenCalledWith('1_jf-0-0')
         })
 
@@ -3422,6 +3428,7 @@ describe('videoVariant', () => {
           await handleParentVariantCleanup('1_jf6101-0-0', '19372')
 
           expect(mockedRemoveLanguageFromVideoIfUnused).not.toHaveBeenCalled()
+          expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
           expect(mockedVideoCacheReset).not.toHaveBeenCalled()
           expect(prismaMock.videoVariant.delete).not.toHaveBeenCalled()
         })
@@ -3442,6 +3449,7 @@ describe('videoVariant', () => {
           await handleParentVariantCleanup('1_jf6101-0-0', '19372')
 
           expect(mockedRemoveLanguageFromVideoIfUnused).not.toHaveBeenCalled()
+          expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
           expect(mockedVideoCacheReset).not.toHaveBeenCalled()
         })
 

@@ -127,8 +127,22 @@ export async function auditParentVariants(): Promise<ParentVariantAuditResult> {
       }
 
       // A playable parent (featureFilm) never gets a placeholder Variant, so
-      // a segment-only language is not a gap in its Variants.
-      if (!canHavePlaceholderVariant(parentVideo.label)) continue
+      // a segment-only language is not a gap in its Variants. The language
+      // cascade that keeps availableLanguages in sync can still have failed,
+      // so that drift is reported as a missing parent language instead.
+      if (!canHavePlaceholderVariant(parentVideo.label)) {
+        if (!parentVideo.availableLanguages.includes(languageId)) {
+          deterministicGaps.push({
+            parentVideoId: parentVideo.id,
+            childVideoId: qualifyingVariant.childVideoId,
+            languageId,
+            variantId: `${languageId}_${parentVideo.id}`,
+            action: 'addParentLanguage',
+            result: 'proposed'
+          })
+        }
+        continue
+      }
 
       deterministicGaps.push({
         parentVideoId: parentVideo.id,
