@@ -1,6 +1,6 @@
 # Update the VARIANT arg in docker-compose.yml to pick a Node version
-ARG VARIANT=22
-FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT} AS base
+ARG VARIANT=22-bookworm@sha256:7dd2504a6a3c37d493a05f89b0b9e3bcae0456e5aef1c489a83835b116f93b1c
+FROM mcr.microsoft.com/devcontainers/typescript-node:${VARIANT} AS base
 
 # Update args in docker-compose.yaml to set the UID/GID of the "node" user.
 ARG USER_UID=1000

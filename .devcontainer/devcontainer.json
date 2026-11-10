@@ -70,7 +70,7 @@
     "ghcr.io/devcontainers/features/python:1": {},
     "ghcr.io/devcontainers/features/node:1": {
       "nodeGypDependencies": true,
-      "version": "lts"
+      "version": "22.23.4"
     }
   }
 }
