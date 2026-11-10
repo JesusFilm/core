@@ -33,6 +33,7 @@ import {
   JourneyStatus,
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
+import { useTemplateLabelsQuery } from '../../libs/useTemplateLabelsQuery'
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 import { DateRangePicker } from '../JourneyVisitorsList/FilterDrawer/ExportDialog/DateRangePicker'
 
@@ -90,6 +91,9 @@ export function TemplateBreakdownAnalyticsDialog({
   const [datePickerResetKey, setDatePickerResetKey] = useState(0)
   const [appliedDateRange, setAppliedDateRange] = useState<string | null>(null)
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
+  const { data: templateLabelsData } = useTemplateLabelsQuery(
+    open ? journeyId : undefined
+  )
 
   const getValidDateRange = (
     from: Date | null,
@@ -320,6 +324,11 @@ export function TemplateBreakdownAnalyticsDialog({
             data={data}
             loading={loading}
             error={error}
+            customTrackingLabels={
+              templateLabelsData?.adminJourney?.id === journeyId
+                ? templateLabelsData.adminJourney
+                : undefined
+            }
           />
         </Box>
       )}

@@ -15,6 +15,7 @@ import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock
 } from '../../../../../../../../../__generated__/BlockFields'
+import { useJourneyCustomTrackingLabels } from '../../../../../../../../libs/useTemplateLabelsQuery'
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
@@ -30,9 +31,14 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
     dispatch
   } = useEditor()
   const { journey } = useJourney()
+  const customLabels = useJourneyCustomTrackingLabels()
   const { editJourneyTrackingMetrics } = useFlags()
   const selectedAction = getAction(t, props.action?.__typename)
-  const selectedEventLabel = getEventLabelOption(t, props.eventLabel).label
+  const selectedEventLabel = getEventLabelOption(
+    t,
+    props.eventLabel,
+    customLabels
+  ).label
 
   const flatten = useCallback((children: TreeBlock[]): TreeBlock[] => {
     return flatmap(children, (item) => [item, ...flatten(item.children)])

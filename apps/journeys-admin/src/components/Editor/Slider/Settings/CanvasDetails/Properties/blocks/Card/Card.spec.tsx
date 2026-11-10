@@ -18,6 +18,7 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { TEMPLATE_LABELS } from '../../../../../../../../libs/useTemplateLabelsQuery'
 import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Card } from '.'
@@ -72,7 +73,27 @@ const renderWithProviders = (
 ) => {
   const defaultJourney = createJourney(journey)
   return render(
-    <MockedProvider>
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: TEMPLATE_LABELS,
+            variables: { id: defaultJourney.id }
+          },
+          result: {
+            data: {
+              adminJourney: {
+                __typename: 'Journey',
+                id: defaultJourney.id,
+                custom1Label: null,
+                custom2Label: null,
+                custom3Label: null
+              }
+            }
+          }
+        }
+      ]}
+    >
       <SnackbarProvider>
         <FlagsProvider flags={flags}>
           <JourneyProvider
