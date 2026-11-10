@@ -1703,6 +1703,7 @@ describe('video', () => {
     it('should not grant videos-admin access to an authenticated caller without the publisher role', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc7 (TS2740) requires the full VideoVariant shape here even though editor tsc does not
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
