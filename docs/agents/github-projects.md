@@ -146,7 +146,7 @@ and these GitHub App permissions:
 | ---------------------------- | ------------------------------------------------------- |
 | Issues: read                 | Read the linked issue, labels, and implementation links |
 | Pull requests: read          | Read authors, branches, reviews, and merge state        |
-| Organization Projects: write | Change Status on existing Next Steps issue cards       |
+| Organization Projects: write | Change Status on existing Next Steps issue cards        |
 
 Status belongs to the organization project, not the GitHub issue itself. That
 is why issue read access alone is insufficient, and why the ordinary repository
