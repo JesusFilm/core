@@ -18,6 +18,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { StepFields } from '../../../../../__generated__/StepFields'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
+import { cache } from '../../../../libs/apolloClient/cache'
 import { STEP_BLOCK_POSITION_UPDATE } from '../../../../libs/useStepBlockPositionUpdateMutation/useStepBlockPositionUpdateMutation'
 import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
 import { EditorLayoutProvider } from '../../EditorLayoutContext'
@@ -72,6 +73,7 @@ describe('JourneyFlow initial positions', () => {
 
     render(
       <MockedProvider
+        cache={cache()}
         mocks={[
           {
             request: {

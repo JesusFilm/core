@@ -236,6 +236,9 @@ export function JourneyFlow(): ReactElement {
       const input = [socialPreviewNodeInput, ...stepBlockInputs]
 
       if (onload) {
+        // Finish publishing the position query before its optimistic mutations
+        // write back to the cache. Reentrant writes can leave useQuery stale.
+        await Promise.resolve()
         blockPositionUpdate(input)
       } else {
         add({
