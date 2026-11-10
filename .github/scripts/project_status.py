@@ -8,6 +8,7 @@ import os
 import re
 import subprocess
 from dataclasses import dataclass, field
+from html.parser import HTMLParser
 from pathlib import Path
 
 PROJECT_ID = "PVT_kwDOBNwqhs4BeMYJ"
@@ -76,17 +77,116 @@ def eligible_issue(
     return active_pr_ids == {pr_id}
 
 
+class ProseHTMLParser(HTMLParser):
+    """Keep visible prose outside HTML examples, quotes, and comments."""
+
+    excluded_tags = frozenset({"pre", "code", "blockquote", "q", "script", "style"})
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts: list[str] = []
+        self.excluded: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs):
+        if tag in self.excluded_tags:
+            self.excluded.append(tag)
+        # Preserve a boundary rather than joining text across excluded content.
+        self.parts.append("\0")
+
+    def handle_endtag(self, tag: str):
+        if tag in self.excluded:
+            matching = len(self.excluded) - 1 - self.excluded[::-1].index(tag)
+            del self.excluded[matching:]
+        self.parts.append("\0")
+
+    def handle_data(self, data: str):
+        if not self.excluded:
+            self.parts.append(data)
+
+    def handle_comment(self, data: str):
+        self.parts.append("\0")
+
+
+def closing_declaration_prose(body: str) -> str:
+    """Exclude Markdown/HTML code and quotes before interpreting declarations."""
+    lines = []
+    fence_character = ""
+    fence_length = 0
+    quoted = False
+    for line in (body or "").expandtabs(4).splitlines(keepends=True):
+        if fence_character:
+            if re.fullmatch(
+                r" {0,3}"
+                + re.escape(fence_character)
+                + "{"
+                + str(fence_length)
+                + r",}\s*",
+                line,
+            ):
+                fence_character = ""
+            lines.append("\0\n")
+            continue
+        if not line.strip():
+            quoted = False
+            lines.append(line)
+            continue
+        if re.match(r" {0,3}>", line):
+            quoted = True
+        elif re.match(r" {0,3}(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|`{3,}|~{3,})", line):
+            quoted = False
+        if quoted or line.startswith("    "):
+            lines.append("\0\n")
+            continue
+        fence = re.match(r" {0,3}(`{3,}|~{3,})", line)
+        if fence and fence[1][0] == "`" and "`" in line[fence.end() :]:
+            fence = None
+        if fence:
+            fence_character = fence[1][0]
+            fence_length = len(fence[1])
+            lines.append("\0\n")
+            continue
+        lines.append(line)
+
+    # Code spans can span lines and use any equal-length pair of backtick runs.
+    # Strip them before HTML so an inline `<pre>` example cannot hide later prose.
+    body = "".join(lines)
+    ticks = list(re.finditer(r"`+", body))
+    parts = []
+    position = 0
+    index = 0
+    while index < len(ticks):
+        opening = ticks[index]
+        prefix = body[: opening.start()]
+        escaped = (len(prefix) - len(prefix.rstrip("\\"))) % 2
+        closing = next(
+            (
+                candidate
+                for candidate in range(index + 1, len(ticks))
+                if len(ticks[candidate][0]) == len(opening[0])
+            ),
+            None,
+        )
+        if escaped or closing is None:
+            index += 1
+            continue
+        parts.extend([body[position : opening.start()], "\0"])
+        position = ticks[closing].end()
+        index = closing + 1
+    parts.append(body[position:])
+    parser = ProseHTMLParser()
+    parser.feed("".join(parts))
+    parser.close()
+    return "".join(parser.parts)
+
+
 def closing_issue_numbers(body: str) -> set[int]:
-    """Read explicit closing declarations, including on non-default stack bases."""
-    # Quoted examples, comments and code are not implementation declarations.
-    body = re.sub(r"(?ms)^\s*(`{3,}|~{3,}).*?^\s*\1[^\n]*$", "", body or "")
-    body = re.sub(r"(?s)<!--.*?-->|`[^`\n]*`", "", body)
-    body = re.sub(r"(?m)^[ \t]*>.*$", "", body)
+    """Read closing declarations in prose, including on non-default stack bases."""
+    body = closing_declaration_prose(body)
     reference = (
         r"(?:https://github\.com/[\w.-]+/[\w.-]+/issues/\d+|(?:[\w.-]+/[\w.-]+)?#\d+)"
     )
     declaration = re.compile(
-        r"(?im)(?:^|(?<=[.;,]))[ \t]*(?:[-*+]\s+)?(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)"
+        r"(?i)\b(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)"
         r"\s*:?\s+(" + reference + r"(?:\s*(?:,|and)\s*" + reference + r")*)"
     )
     numbers = set()

@@ -318,6 +318,132 @@ class HandlerTests(unittest.TestCase):
         self.merge(base="feature/parent")
         self.assertEqual(self.github.statuses, {"issue": "Done"})
 
+    def test_code_examples_do_not_link_current_stack_pr(self):
+        examples = [
+            "Example command:\n\n    Closes #123\n",
+            "Example command:\n\n\tCloses #123\n",
+            "``Closes #123``",
+            "```Closes #123```",
+            "Example: ``a `Closes #123` command``",
+            "Example: ``\nCloses #123\n``",
+            "Inline example: ```Closes #123```",
+            "<pre>Closes #123</pre>",
+            "<pre><code>This PR fixes #123.</code></pre>",
+            "<pre><pre>nested example</pre>Closes #123</pre>",
+            '<PRE class="example">\nCloses #123\n</PRE>',
+            "<code>Closes #123</code>",
+            "```text\nCloses #123\n```",
+            "~~~text\nCloses #123\n~~~",
+            "````text\n```\nCloses #123\n````",
+            "```text\nCloses #123\n",
+            "> Closes #123",
+            "> Example command:\nCloses #123\n",
+            "<blockquote>Closes #123</blockquote>",
+            "This fixes `an example` #123.",
+        ]
+        for body in examples:
+            with self.subTest(body=body):
+                self.setUp()
+                self.github.issue["number"] = 123
+                self.github.statuses["issue"] = "In review"
+                self.github.issues = []
+                self.github.linked_prs = []
+                self.github.pr["body"] = body
+                self.merge(base="feature/parent")
+                self.assertEqual(self.github.statuses, {"issue": "In review"})
+                self.assertEqual(self.github.writes, [])
+                self.assertEqual(self.github.added, [])
+
+    def test_code_examples_in_other_prs_do_not_block_stack_completion(self):
+        for body in [
+            "Example command:\n\n    Closes #123\n",
+            "``Closes #123``",
+            "<pre>Closes #123</pre>",
+            "> Example command:\nCloses #123\n",
+        ]:
+            with self.subTest(body=body):
+                self.setUp()
+                self.github.issue["number"] = 123
+                self.github.issues = []
+                self.github.linked_prs = []
+                self.github.pr["body"] = "Closes #123"
+                self.github.cross_references = [
+                    {
+                        "source": {
+                            "id": "example-pr",
+                            "state": "OPEN",
+                            "body": body,
+                            "repository": {"nameWithOwner": "JesusFilm/core"},
+                        }
+                    }
+                ]
+                self.merge(base="feature/parent")
+                self.assertEqual(self.github.statuses, {"issue": "Done"})
+                self.assertEqual(self.github.added, ["issue"])
+
+    def test_prose_implementation_pr_blocks_stack_completion(self):
+        for declaration in [
+            "This PR fixes #123.",
+            "This change resolves JesusFilm/core#123.",
+            "It closes https://github.com/JesusFilm/core/issues/123.",
+        ]:
+            with self.subTest(declaration=declaration):
+                self.setUp()
+                self.github.issue["number"] = 123
+                self.github.statuses["issue"] = "In progress"
+                self.github.issues = []
+                self.github.linked_prs = []
+                self.github.pr["body"] = "Closes #123"
+                self.github.cross_references = [
+                    {
+                        "source": {
+                            "id": "other-implementation",
+                            "state": "OPEN",
+                            "body": declaration,
+                            "repository": {"nameWithOwner": "JesusFilm/core"},
+                        }
+                    }
+                ]
+                self.merge(base="feature/parent")
+                self.assertEqual(self.github.statuses, {"issue": "In progress"})
+                self.assertEqual(self.github.writes, [])
+                self.assertEqual(self.github.added, [])
+
+    def test_single_prose_stack_pr_completes_issue_despite_unrelated_references(self):
+        self.github.issue["number"] = 123
+        self.github.issues = []
+        self.github.linked_prs = []
+        self.github.pr["body"] = "This PR fixes #123. Related to #999."
+        self.github.cross_references = [
+            {
+                "source": {
+                    "id": "reference-pr",
+                    "state": "OPEN",
+                    "body": "This PR mentions #123. It fixes other/repo#123. "
+                    "It resolves https://github.com/other/repo/issues/123.",
+                    "repository": {"nameWithOwner": "JesusFilm/core"},
+                }
+            }
+        ]
+        self.merge(base="feature/parent")
+        self.assertEqual(self.github.statuses, {"issue": "Done"})
+        self.assertEqual(self.github.added, ["issue"])
+
+    def test_genuine_declaration_after_code_example_completes_stack_issue(self):
+        for example in [
+            "```Closes #999```",
+            "Inline example: ``<pre>Closes #999</pre>``",
+            "<pre>This PR fixes #999.</pre>",
+            "> This PR fixes #999.\nThis is still quoted.",
+        ]:
+            with self.subTest(example=example):
+                self.setUp()
+                self.github.issues = []
+                self.github.linked_prs = []
+                self.github.pr["body"] = example + "\n\nThis PR fixes #1."
+                self.merge(base="feature/parent")
+                self.assertEqual(self.github.statuses, {"issue": "Done"})
+
     def test_archived_closed_issue_can_complete_without_being_restored(self):
         self.github.statuses["issue"] = "In review"
         self.github.archived.add("issue")
