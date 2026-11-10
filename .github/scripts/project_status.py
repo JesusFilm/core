@@ -1,10 +1,11 @@
-"""Update Next Steps statuses without checking out or executing PR code."""
+"""Update Next Steps issue cards from PR evidence without executing PR code."""
 
 from __future__ import annotations
 
 import argparse
 import json
 import os
+import re
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -61,14 +62,98 @@ def pull_request_status(pr: PullRequest, action: str) -> str | None:
     return "In progress"
 
 
-def eligible_issue(pr_id: str, issues: list[dict], linked_prs: list[dict]) -> bool:
+def eligible_issue(
+    pr_id: str, issues: list[dict], linked_prs: list[dict], merged: bool = False
+) -> bool:
     if len(issues) != 1:
         return False
     issue = issues[0]
-    if issue["state"] != "OPEN" or issue["repository"]["nameWithOwner"] != REPOSITORY:
+    if (issue["state"] != "OPEN" and not merged) or issue["repository"][
+        "nameWithOwner"
+    ] != REPOSITORY:
         return False
     active_pr_ids = {pr["id"] for pr in linked_prs if pr["state"] in {"OPEN", "MERGED"}}
     return active_pr_ids == {pr_id}
+
+
+def closing_issue_numbers(body: str) -> set[int]:
+    """Read explicit closing declarations, including on non-default stack bases."""
+    # Quoted examples, comments and code are not implementation declarations.
+    body = re.sub(r"(?ms)^\s*(`{3,}|~{3,}).*?^\s*\1[^\n]*$", "", body or "")
+    body = re.sub(r"(?s)<!--.*?-->|`[^`\n]*`", "", body)
+    body = re.sub(r"(?m)^[ \t]*>.*$", "", body)
+    reference = (
+        r"(?:https://github\.com/[\w.-]+/[\w.-]+/issues/\d+|(?:[\w.-]+/[\w.-]+)?#\d+)"
+    )
+    declaration = re.compile(
+        r"(?im)(?:^|(?<=[.;,]))[ \t]*(?:[-*+]\s+)?(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)"
+        r"\s*:?\s+(" + reference + r"(?:\s*(?:,|and)\s*" + reference + r")*)"
+    )
+    numbers = set()
+    for match in declaration.finditer(body or ""):
+        for target in re.findall(reference, match[1]):
+            if target.startswith("#"):
+                numbers.add(int(target[1:]))
+            elif target.lower().startswith(REPOSITORY.lower() + "#"):
+                numbers.add(int(target.split("#")[1]))
+            elif target.lower().startswith(
+                "https://github.com/" + REPOSITORY.lower() + "/issues/"
+            ):
+                numbers.add(int(target.rsplit("/", 1)[1]))
+    return numbers
+
+
+def linked_issues(github: GitHub, pr: dict) -> list[dict]:
+    """Combine native Development links with explicit stack closing declarations."""
+    issues = github.connection(
+        pr["id"],
+        "PullRequest",
+        "closingIssuesReferences",
+        "id number state repository { nameWithOwner }",
+    )
+    by_id = {issue["id"]: issue for issue in issues}
+    known_numbers = {
+        issue["number"]
+        for issue in issues
+        if issue["repository"]["nameWithOwner"] == REPOSITORY
+    }
+    for number in sorted(closing_issue_numbers(pr["body"]) - known_numbers):
+        issue = github.graphql(
+            'query($number: Int!) { repository(owner: "JesusFilm", name: "core") { '
+            "issue(number: $number) { id number state repository { nameWithOwner } } } }",
+            number=number,
+        )["repository"]["issue"]
+        if issue:
+            by_id[issue["id"]] = issue
+    return list(by_id.values())
+
+
+def implementation_prs(github: GitHub, issue: dict, current_pr: dict) -> list[dict]:
+    """Count native links and stack declarations, excluding mere cross-references."""
+    pulls = github.connection(
+        issue["id"],
+        "Issue",
+        "closedByPullRequestsReferences",
+        "id state",
+        ", includeClosedPrs: true",
+    )
+    by_id = {pr["id"]: pr for pr in pulls}
+    events = github.connection(
+        issue["id"],
+        "Issue",
+        "timelineItems",
+        "... on CrossReferencedEvent { source { ... on PullRequest { "
+        "id state body repository { nameWithOwner } } } }",
+        ", itemTypes: [CROSS_REFERENCED_EVENT]",
+    )
+    for event in events:
+        source = event.get("source") or {}
+        if source.get("repository", {}).get("nameWithOwner") == REPOSITORY and issue[
+            "number"
+        ] in closing_issue_numbers(source.get("body") or ""):
+            by_id[source["id"]] = source
+    by_id[current_pr["id"]] = current_pr
+    return list(by_id.values())
 
 
 class GitHub:
@@ -135,7 +220,10 @@ class GitHub:
             nodes.extend(node for node in connection["nodes"] if node is not None)
             if not connection["pageInfo"]["hasNextPage"]:
                 return nodes
-            cursor = connection["pageInfo"]["endCursor"]
+            next_cursor = connection["pageInfo"]["endCursor"]
+            if not next_cursor or next_cursor == cursor:
+                raise RuntimeError(f"Pagination for {name} did not advance")
+            cursor = next_cursor
 
 
 class ProjectStatuses:
@@ -163,20 +251,20 @@ class ProjectStatuses:
         if missing := required - self.options.keys():
             raise RuntimeError(f"Missing project statuses: {sorted(missing)}")
 
-    def labels(self, node_id: str, node_type: str) -> set[str]:
+    def labels(self, node_id: str) -> set[str]:
         return {
             label["name"]
-            for label in self.github.connection(node_id, node_type, "labels", "name")
+            for label in self.github.connection(node_id, "Issue", "labels", "name")
         }
 
-    def set(self, node_id: str, node_type: str, status: str, only_if_unset=False):
-        # Read labels again immediately before writing, independently for each item.
-        if MANUAL_LABEL in self.labels(node_id, node_type):
+    def set_issue(self, node_id: str, status: str, only_if_unset=False):
+        """Write only issue cards; PRs are never project content."""
+        if MANUAL_LABEL in self.labels(node_id):
             print(f"Skipping {node_id}: {MANUAL_LABEL}")
             return
         items = self.github.connection(
             node_id,
-            node_type,
+            "Issue",
             "projectItems",
             "id isArchived project { id } "
             'fieldValueByName(name: "Status") { '
@@ -185,16 +273,14 @@ class ProjectStatuses:
         item = next(
             (item for item in items if item["project"]["id"] == PROJECT_ID), None
         )
-        if item and item["isArchived"]:
+        if item and item["isArchived"] and status != "Done":
             print(f"Skipping archived item {node_id}")
             return
         previous = ((item or {}).get("fieldValueByName") or {}).get("name")
         if previous == status or (only_if_unset and previous):
             return
         if self.github.dry_run:
-            print(
-                f"Would set {node_type} {node_id}: {previous or '(unset)'} -> {status}"
-            )
+            print(f"Would set Issue {node_id}: {previous or '(unset)'} -> {status}")
             return
         if item is None:
             item = self.github.graphql(
@@ -213,7 +299,7 @@ class ProjectStatuses:
             field=self.field_id,
             option=self.options[status],
         )
-        print(f"{node_type} {node_id}: {previous or '(unset)'} -> {status}")
+        print(f"Issue {node_id}: {previous or '(unset)'} -> {status}")
 
 
 def run(github: GitHub, event_name: str, event: dict):
@@ -227,7 +313,7 @@ def run(github: GitHub, event_name: str, event: dict):
         issue = github.node(issue_id, "Issue", "state")
         if issue["state"] == "OPEN":
             # A delayed creation run must not undo a subsequent PR/manual update.
-            ProjectStatuses(github).set(issue_id, "Issue", "Triage", only_if_unset=True)
+            ProjectStatuses(github).set_issue(issue_id, "Triage", only_if_unset=True)
         return
 
     if event_name not in {"pull_request_target", "pull_request_review"}:
@@ -237,8 +323,8 @@ def run(github: GitHub, event_name: str, event: dict):
     ):
         return
     pr_id = event["pull_request"]["node_id"]
-    current = github.node(pr_id, "PullRequest", "id state headRefOid")
-    # Cancellation never updates either item, even when processing was delayed.
+    current = github.node(pr_id, "PullRequest", "id state headRefOid body baseRefName")
+    # Cancellation never updates the issue, even when processing was delayed.
     if action == "closed" and not event["pull_request"].get("merged"):
         return
     if current["state"] == "CLOSED":
@@ -249,7 +335,23 @@ def run(github: GitHub, event_name: str, event: dict):
         print("Skipping superseded push")
         return
 
+    issues = linked_issues(github, current)
+    if len(issues) != 1:
+        return
+    issue = issues[0]
+    merged = current["state"] == "MERGED"
+    if issue["repository"]["nameWithOwner"] != REPOSITORY or (
+        issue["state"] != "OPEN" and not merged
+    ):
+        return
+    linked_prs = implementation_prs(github, issue, current)
+    if not eligible_issue(pr_id, issues, linked_prs, merged=merged):
+        print("Skipping issue: another open or merged implementation PR is linked")
+        return
     statuses = ProjectStatuses(github)
+    if merged:
+        statuses.set_issue(issue["id"], "Done")
+        return
     reviews = github.connection(
         pr_id,
         "PullRequest",
@@ -336,29 +438,7 @@ def run(github: GitHub, event_name: str, event: dict):
     status = pull_request_status(pr, policy_action)
     if status is None:
         return
-    statuses.set(pr_id, "PullRequest", status)
-    issues = github.connection(
-        pr_id,
-        "PullRequest",
-        "closingIssuesReferences",
-        "id state repository { nameWithOwner }",
-    )
-    if len(issues) != 1 or issues[0]["state"] != "OPEN":
-        return
-    issue = issues[0]
-    if issue["repository"]["nameWithOwner"] != REPOSITORY:
-        return
-    linked_prs = github.connection(
-        issue["id"],
-        "Issue",
-        "closedByPullRequestsReferences",
-        "id state",
-        ", includeClosedPrs: true",
-    )
-    if eligible_issue(pr_id, issues, linked_prs):
-        statuses.set(issue["id"], "Issue", status)
-    else:
-        print("Skipping issue: another open or merged PR is linked")
+    statuses.set_issue(issue["id"], status)
 
 
 if __name__ == "__main__":

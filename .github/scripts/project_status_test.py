@@ -7,6 +7,7 @@ from project_status import (
     GitHub,
     PullRequest,
     Review,
+    closing_issue_numbers,
     pull_request_status,
     run,
 )
@@ -18,9 +19,16 @@ class MemoryGitHub(GitHub):
 
     def __init__(self):
         super().__init__()
-        self.pr = {"id": "pr", "state": "OPEN", "headRefOid": "head"}
+        self.pr = {
+            "id": "pr",
+            "state": "OPEN",
+            "headRefOid": "head",
+            "body": "",
+            "baseRefName": "main",
+        }
         self.issue = {
             "id": "issue",
+            "number": 1,
             "state": "OPEN",
             "repository": {"nameWithOwner": "JesusFilm/core"},
         }
@@ -29,6 +37,8 @@ class MemoryGitHub(GitHub):
         self.reviews = []
         self.requests = []
         self.dismissals = []
+        self.cross_references = []
+        self.added = []
         self.labels = {"pr": set(), "issue": set()}
         self.statuses = {}
         self.archived = set()
@@ -74,17 +84,32 @@ class MemoryGitHub(GitHub):
         return {
             "latestOpinionatedReviews": self.reviews,
             "reviewRequests": self.requests,
-            "timelineItems": self.dismissals,
+            "timelineItems": self.cross_references
+            if node_type == "Issue"
+            else self.dismissals,
             "closingIssuesReferences": self.issues,
             "closedByPullRequestsReferences": self.linked_prs,
         }[name]
 
     def graphql(self, query, **variables):
+        if "issue(number:" in query:
+            return {
+                "repository": {
+                    "issue": self.issue
+                    if variables["number"] == self.issue["number"]
+                    else None
+                }
+            }
         if "addProjectV2ItemById" in query:
             node_id = variables["content"]
+            if node_id != self.issue["id"]:
+                raise AssertionError("Only GitHub issues may be added to the project")
+            self.added.append(node_id)
             self.statuses[node_id] = None
             return {"addProjectV2ItemById": {"item": {"id": node_id}}}
         if "updateProjectV2ItemFieldValue" in query:
+            if variables["item"] != self.issue["id"]:
+                raise AssertionError("Only issue cards may be updated")
             self.statuses[variables["item"]] = variables["option"]
             self.writes.append((variables["item"], variables["option"]))
             return {}
@@ -118,6 +143,24 @@ def api_review(
 
 
 class StatusPolicyTests(unittest.TestCase):
+    def test_only_explicit_closing_declarations_identify_issues(self):
+        body = """Closes #12. Part of #99. Related to #100.
+Fixes JesusFilm/core#13
+Resolves https://github.com/JesusFilm/core/issues/14
+Closes #15, #16 and #17
+Closes #23. Fixes #24, resolves #25
+Closes other/repo#18
+> Closes #19
+`Closes #20`
+<!-- Closes #21 -->
+```text
+Closes #22
+```
+"""
+        self.assertEqual(
+            closing_issue_numbers(body), {12, 13, 14, 15, 16, 17, 23, 24, 25}
+        )
+
     def test_approval_wins_over_other_reviews_and_pending_requests(self):
         pr = PullRequest(
             "pr",
@@ -193,6 +236,12 @@ class HandlerTests(unittest.TestCase):
     def handle(self, action="opened", event_name="pull_request_target", payload=None):
         run(self.github, event_name, payload or event(action))
 
+    def merge(self, base="main"):
+        self.github.pr["state"] = "MERGED"
+        payload = event("closed")
+        payload["pull_request"].update(merged=True, base={"ref": base})
+        self.handle(payload=payload)
+
     def test_new_issue_enters_triage_without_overwriting_later_work(self):
         self.handle(event_name="issues")
         self.assertEqual(self.github.statuses, {"issue": "Triage"})
@@ -200,68 +249,149 @@ class HandlerTests(unittest.TestCase):
         self.handle(event_name="issues")
         self.assertEqual(self.github.statuses["issue"], "Ready")
 
-    def test_open_pr_moves_ready_issue_and_pr_into_progress(self):
+    def test_open_pr_moves_only_ready_issue_into_progress(self):
         self.github.statuses["issue"] = "Ready"
         self.handle()
-        self.assertEqual(
-            self.github.statuses, {"pr": "In progress", "issue": "In progress"}
-        )
+        self.assertEqual(self.github.statuses, {"issue": "In progress"})
+        self.assertEqual(self.github.added, [])
+
+    def test_existing_pr_card_is_never_updated(self):
+        self.github.statuses["pr"] = "Ready"
+        self.handle()
+        self.assertEqual(self.github.statuses, {"pr": "Ready", "issue": "In progress"})
+        self.assertEqual(self.github.added, ["issue"])
+
+    def test_bot_review_request_moves_issue_to_review(self):
+        self.github.requests = [{"requestedReviewer": {"id": "csiyang"}}]
+        payload = event("review_requested")
+        payload["sender"] = {"login": "siyang-bot"}
+        self.handle(payload=payload)
+        self.assertEqual(self.github.statuses, {"issue": "In review"})
 
     def test_open_with_pending_reviewer_enters_review(self):
         self.github.requests = [{"requestedReviewer": {"id": "alice"}}]
         self.handle()
-        self.assertEqual(self.github.statuses["pr"], "In review")
+        self.assertEqual(self.github.statuses["issue"], "In review")
 
-    def test_approval_updates_both_items_and_leaves_qa(self):
-        self.github.statuses = {"issue": "QA", "pr": "In review"}
+    def test_approval_moves_issue_out_of_manual_qa_position(self):
+        self.github.statuses = {"issue": "QA"}
         self.github.reviews = [api_review()]
         self.handle("submitted", "pull_request_review")
-        self.assertEqual(self.github.statuses, {"pr": "Approved", "issue": "Approved"})
+        self.assertEqual(self.github.statuses, {"issue": "Approved"})
 
-    def test_manual_overrides_are_independent_and_removal_waits_for_next_event(self):
-        for frozen, moving in [("issue", "pr"), ("pr", "issue")]:
-            with self.subTest(frozen=frozen):
-                self.setUp()
-                self.github.statuses = {"issue": "QA", "pr": "QA"}
-                self.github.labels[frozen].add(MANUAL_LABEL)
-                self.handle()
-                self.assertEqual(self.github.statuses[frozen], "QA")
-                self.assertEqual(self.github.statuses[moving], "In progress")
-                self.github.labels[frozen].clear()
-                self.handle("unlabeled", event_name="issues")
-                self.assertEqual(self.github.statuses[frozen], "QA")
-                self.handle("review_requested")
-                self.assertEqual(self.github.statuses[frozen], "In progress")
+    def test_explicit_manual_label_waits_for_next_event_after_removal(self):
+        self.github.statuses = {"issue": "QA"}
+        self.github.labels["issue"].add(MANUAL_LABEL)
+        self.handle()
+        self.assertEqual(self.github.statuses["issue"], "QA")
+        self.github.labels["issue"].clear()
+        self.handle("unlabeled", event_name="issues")
+        self.assertEqual(self.github.statuses["issue"], "QA")
+        self.handle("review_requested")
+        self.assertEqual(self.github.statuses["issue"], "In progress")
 
     def test_cancellation_never_changes_issue_or_pr_even_if_pr_was_reopened(self):
+        self.github.statuses["issue"] = "Changes requested"
         for state in ["CLOSED", "OPEN"]:
             with self.subTest(state=state):
                 self.github.pr["state"] = state
                 self.handle("closed")
                 self.assertEqual(self.github.writes, [])
+                self.assertEqual(self.github.statuses, {"issue": "Changes requested"})
 
-    def test_merge_moves_both_open_items_to_done(self):
+    def test_merge_moves_open_issue_to_done(self):
+        self.merge()
+        self.assertEqual(self.github.statuses, {"issue": "Done"})
+
+    def test_merge_completes_issue_already_closed_by_github_without_reopening(self):
+        self.github.issue["state"] = "CLOSED"
+        self.merge()
+        self.assertEqual(self.github.statuses, {"issue": "Done"})
+        self.assertEqual(self.github.issue["state"], "CLOSED")
+
+    def test_child_merge_into_stack_branch_completes_child_issue(self):
+        self.github.pr.update(
+            body="Closes #1. Part of #999.", baseRefName="feature/parent"
+        )
+        self.github.issues = []
+        self.github.linked_prs = []
+        self.merge(base="feature/parent")
+        self.assertEqual(self.github.statuses, {"issue": "Done"})
+
+    def test_archived_closed_issue_can_complete_without_being_restored(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.archived.add("issue")
+        self.github.issue["state"] = "CLOSED"
+        self.merge()
+        self.assertEqual(self.github.statuses, {"issue": "Done"})
+        self.assertIn("issue", self.github.archived)
+        self.assertEqual(self.github.added, [])
+
+    def test_multiple_implementation_prs_also_block_completion_of_closed_issue(self):
+        self.github.issue["state"] = "CLOSED"
         self.github.pr["state"] = "MERGED"
-        self.github.linked_prs[0]["state"] = "MERGED"
         payload = event("closed")
         payload["pull_request"]["merged"] = True
-        self.handle(payload=payload)
-        self.assertEqual(self.github.statuses, {"pr": "Done", "issue": "Done"})
+        for other_state in ["OPEN", "MERGED"]:
+            with self.subTest(other_state=other_state):
+                self.github.linked_prs = [{"id": "other-pr", "state": other_state}]
+                self.handle(payload=payload)
+                self.assertEqual(self.github.writes, [])
+
+    def test_another_stack_declaration_blocks_automatic_movement(self):
+        self.github.cross_references = [
+            {
+                "source": {
+                    "id": "another-stack-pr",
+                    "state": "OPEN",
+                    "body": "Closes #1",
+                    "repository": {"nameWithOwner": "JesusFilm/core"},
+                }
+            }
+        ]
+        self.handle()
+        self.assertEqual(self.github.writes, [])
+
+    def test_ordinary_mentions_from_other_prs_do_not_block_movement(self):
+        self.github.cross_references = [
+            {
+                "source": {
+                    "id": "reference-pr",
+                    "state": "OPEN",
+                    "body": "Related to #1. Part of #1.",
+                    "repository": {"nameWithOwner": "JesusFilm/core"},
+                }
+            }
+        ]
+        self.handle()
+        self.assertEqual(self.github.statuses, {"issue": "In progress"})
+
+    def test_duplicate_native_link_and_closing_declaration_are_one_issue(self):
+        self.github.pr["body"] = "Closes #1"
+        self.handle()
+        self.assertEqual(self.github.statuses, {"issue": "In progress"})
+
+    def test_body_mentions_alone_do_not_create_or_move_an_issue_card(self):
+        self.github.issues = []
+        self.github.pr["body"] = "Related to #1. Part of #1. Source requirements: #1."
+        self.handle()
+        self.assertEqual(self.github.statuses, {})
+        self.assertEqual(self.github.added, [])
 
     def test_closed_issue_is_never_updated_or_reopened(self):
         self.github.issue["state"] = "CLOSED"
         self.handle("reopened")
-        self.assertEqual(self.github.statuses, {"pr": "In progress"})
+        self.assertEqual(self.github.statuses, {})
 
     def test_reopened_pr_recalculates_eligible_open_issue(self):
         self.github.reviews = [api_review()]
         self.handle("reopened")
-        self.assertEqual(self.github.statuses, {"pr": "Approved", "issue": "Approved"})
+        self.assertEqual(self.github.statuses, {"issue": "Approved"})
 
     def test_multiple_issues_are_never_updated(self):
         self.github.issues.append(dict(self.github.issue, id="another-issue"))
         self.handle()
-        self.assertEqual(self.github.statuses, {"pr": "In progress"})
+        self.assertEqual(self.github.statuses, {})
 
     def test_other_open_or_merged_pr_blocks_issue_but_closed_pr_does_not(self):
         for state, expected in [("OPEN", False), ("MERGED", False), ("CLOSED", True)]:
@@ -270,7 +400,7 @@ class HandlerTests(unittest.TestCase):
                 self.github.linked_prs.append({"id": "other-pr", "state": state})
                 self.handle()
                 self.assertEqual("issue" in self.github.statuses, expected)
-                self.assertEqual(self.github.statuses["pr"], "In progress")
+                self.assertNotIn("pr", self.github.statuses)
 
     def test_superseded_push_and_commented_review_are_ignored(self):
         self.github.pr["headRefOid"] = "newer-head"
@@ -278,8 +408,8 @@ class HandlerTests(unittest.TestCase):
         self.handle("submitted", "pull_request_review", event("submitted", "commented"))
         self.assertEqual(self.github.writes, [])
 
-    def test_last_approval_dismissal_resets_both_items(self):
-        self.github.statuses = {"issue": "Approved", "pr": "Approved"}
+    def test_last_approval_dismissal_resets_issue(self):
+        self.github.statuses = {"issue": "Approved"}
         self.github.requests = [{"requestedReviewer": {"id": "alice"}}]
         self.github.reviews = [api_review(state="DISMISSED")]
         self.github.dismissals = [
@@ -290,9 +420,7 @@ class HandlerTests(unittest.TestCase):
             }
         ]
         self.handle("dismissed", "pull_request_review")
-        self.assertEqual(
-            self.github.statuses, {"pr": "In progress", "issue": "In progress"}
-        )
+        self.assertEqual(self.github.statuses, {"issue": "In progress"})
 
     def test_dismissal_of_changes_does_not_reset_an_existing_review_request(self):
         self.github.requests = [{"requestedReviewer": {"id": "alice"}}]
@@ -304,7 +432,7 @@ class HandlerTests(unittest.TestCase):
             }
         ]
         self.handle("dismissed", "pull_request_review")
-        self.assertEqual(self.github.statuses["pr"], "In review")
+        self.assertEqual(self.github.statuses["issue"], "In review")
 
     def test_repeated_event_is_idempotent(self):
         self.handle()
@@ -323,15 +451,15 @@ class HandlerTests(unittest.TestCase):
         self.handle()
         self.assertEqual(self.github.statuses["issue"], "Done")
 
-    def test_pr_without_linked_issue_still_updates_itself(self):
+    def test_pr_without_linked_issue_creates_no_card(self):
         self.github.issues = []
         self.handle()
-        self.assertEqual(self.github.statuses, {"pr": "In progress"})
+        self.assertEqual(self.github.statuses, {})
 
     def test_delayed_push_does_not_override_a_newer_change_request(self):
         self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
         self.handle("synchronize")
-        self.assertEqual(self.github.statuses["pr"], "Changes requested")
+        self.assertEqual(self.github.statuses["issue"], "Changes requested")
 
     def test_delayed_dismissal_does_not_override_a_newer_review_request(self):
         self.github.requests = [{"requestedReviewer": {"id": "alice"}}]
@@ -347,10 +475,34 @@ class HandlerTests(unittest.TestCase):
             },
         ]
         self.handle("dismissed", "pull_request_review")
-        self.assertEqual(self.github.statuses["pr"], "In review")
+        self.assertEqual(self.github.statuses["issue"], "In review")
 
 
 class PaginationTests(unittest.TestCase):
+    def test_missing_or_repeated_cursor_fails_instead_of_looping(self):
+        class StalledGitHub(GitHub):
+            next_cursor = None
+
+            def graphql(self, query, **variables):
+                return {
+                    "node": {
+                        "reviews": {
+                            "nodes": [],
+                            "pageInfo": {
+                                "hasNextPage": True,
+                                "endCursor": self.next_cursor,
+                            },
+                        }
+                    }
+                }
+
+        for next_cursor in [None, "same"]:
+            with self.subTest(next_cursor=next_cursor):
+                github = StalledGitHub()
+                github.next_cursor = next_cursor
+                with self.assertRaisesRegex(RuntimeError, "did not advance"):
+                    github.connection("pr", "PullRequest", "reviews", "state")
+
     def test_connection_reads_past_first_hundred_items(self):
         class PagedGitHub(GitHub):
             def graphql(self, query, **variables):

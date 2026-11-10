@@ -32,13 +32,16 @@ State transitions:
 - **Agents/scripts** use the `gh project` commands (see below). The token needs the
   `project` scope (`gh auth refresh -s project`).
 - **Automatic**: new `JesusFilm/core` issues enter the project in Triage. PR events
-  update the PR and, when eligible, its linked issue as described below. Closing
+  use the PR as evidence to update its eligible linked issue as described below. Closing
   an issue does not automatically set Done or archive it.
 
 ## Automatic PR and issue statuses
 
-The `Project status` workflow writes the Next Steps Status field. It adds PRs to
-the project when needed and applies to all authors and target branches.
+The `Project status` workflow writes the Next Steps Status field on **issue cards
+only**. PRs supply evidence; they are never added to the project or updated as
+project cards. The workflow never creates GitHub issues. It applies to all PR
+authors and target branches, including child PRs targeting a parent stack branch.
+The statuses below describe the linked issue, not an additional PR card.
 
 | Event or current condition                                                                    | Status                                                           |
 | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
@@ -50,7 +53,7 @@ the project when needed and applies to all authors and target branches.
 | New commits, or dismissal of the last approval                                                | In progress                                                      |
 | Re-review requested after approval dismissal                                                  | In review                                                        |
 | PR merged                                                                                     | Done                                                             |
-| PR closed without merging                                                                     | No change to the PR or issue                                     |
+| PR closed without merging                                                                     | No change to the issue                                     |
 | PR reopened                                                                                   | Recalculate from current reviews and requests                    |
 
 If reviewers are already requested when a PR opens, it immediately enters In
@@ -60,25 +63,55 @@ dismissed those reviews. Comment-only reviews and resolving discussion threads
 do not change status. QA is assigned manually; later PR events can move an item
 out of QA. Delayed reset events do not override newer reviews or review requests.
 
-An issue receives the same status only when all these conditions hold:
+An issue receives a status update only when all these conditions hold:
 
-- The PR has exactly one linked issue, using GitHub's Development relationship.
-  Ordinary mentions and ancestor issues are ignored.
-- The issue belongs to `JesusFilm/core` and is still open.
+- The PR has exactly one linked issue, using GitHub's Development relationship
+  or an explicit `Closes`, `Fixes`, or `Resolves` declaration in its body. Closing
+  declarations support stacked PRs whose non-default base prevents GitHub from
+  exposing the native closing relationship. Ordinary mentions, quoted/code
+  examples, and ancestor issues are ignored.
+- The issue belongs to `JesusFilm/core`. It must be open for review/progress
+  updates. A merged PR can set Done even when GitHub already closed the issue.
 - This PR is the issue's only open or merged linked PR. Other PRs closed without
   merging are ignored. A second open or merged PR disables issue updates.
 
-Closing an additional PR leaves the issue untouched. Automation resumes on the
-remaining PR's next qualifying event. The workflow never creates, closes, or
-reopens issues. If GitHub itself closes an issue when its PR merges, the closed
-issue is left untouched under the open-issue rule. Archived project items are
-also left untouched.
+Merging a child PR into its parent stack branch completes the child issue; it
+need not reach `main` first. This is a board completion rule, not a statement
+that dependent work is safe to run or that the parent issue is complete. Issues
+with multiple open or merged implementation PRs remain manual, including on
+merge. Ordinary mentions from other PRs do not count as implementation links.
 
-Apply `status:manual` to pause updates for that item only. A frozen issue does not
-freeze its PR, and a frozen PR does not freeze its issue. Removing the label does
-not immediately change status; the next qualifying PR event resumes automation.
-New-issue initialization does not overwrite a status already assigned while its
-creation event was queued.
+Closing an additional PR leaves the issue untouched. Automation resumes on the
+remaining PR's next qualifying event. The workflow never closes or reopens
+issues. Merge completion can update an existing archived issue card without
+unarchiving it; other updates leave archived cards alone.
+
+Dragging an issue to QA or another board position does not protect it from
+subsequent PR events. The explicit `status:manual` label is the opt-out: it pauses
+updates to that issue. Removing it does not immediately change status; the next
+qualifying PR event resumes automation. New-issue initialization does not
+overwrite a status already assigned while its creation event was queued.
+
+### External metadata and review scheduling
+
+This workflow replaces **project status writes only**. It does not produce or
+refresh an external engine's registry, resolve scheduling dependencies, maintain
+branch-to-issue mappings, transfer runner ownership, or request reviews. A
+review request made by an external worker is handled just like a human's request.
+
+An external engine may require fresh metadata even after its board writer is
+replaced. Retain its metadata-only refresh and transport to every consuming
+runner. Disable only the old board-writing path before enabling this writer,
+without stopping metadata refresh or ready-update review requests. This PR does
+not change running services or perform that cutover.
+
+Removing the refresh entirely is separate engine work. Its consumers must first
+obtain equivalent, fresh branch mappings, ownership/hold checks, and dependency
+and merge-base evidence from an authoritative source. Issue Status alone does
+not supply those facts. Verify restacked branches, merged blockers, multiple
+implementation PRs, stale data, and cross-runner synchronization before retiring
+the registry producer. A child issue being Done does not itself unblock a
+scheduler dependency that still requires integration into the default branch.
 
 ### Workflow setup and verification
 
