@@ -28,6 +28,9 @@ class MemoryGitHub(GitHub):
             "headRefOid": "head",
             "body": "",
             "baseRefName": "main",
+            "authorAssociation": "MEMBER",
+            "headRepository": {"nameWithOwner": "JesusFilm/core"},
+            "repository": {"nameWithOwner": "JesusFilm/core"},
         }
         self.issue = {
             "id": "issue",
@@ -48,11 +51,17 @@ class MemoryGitHub(GitHub):
         self.writes = []
         self.declared_pull_requests = set()
         self.lookup_errors = {}
+        self.timeline_snapshots = []
+        self.timeline_reads = 0
 
     def node(self, node_id, node_type, selection):
         return self.pr if node_type == "PullRequest" else self.issue
 
     def connection(self, node_id, node_type, name, selection, arguments=""):
+        if name == "timelineItems" and node_type == "PullRequest":
+            self.timeline_reads += 1
+            if self.timeline_snapshots:
+                return self.timeline_snapshots.pop(0)
         if name == "fields":
             return [
                 {
@@ -276,6 +285,109 @@ class HandlerTests(unittest.TestCase):
         self.handle(event_name="issues")
         self.assertEqual(self.github.statuses["issue"], "Ready")
 
+    def test_outside_fork_cannot_move_or_complete_an_issue(self):
+        self.github.pr.update(
+            authorAssociation="NONE", headRepository={"nameWithOwner": "outside/core"}
+        )
+        self.github.statuses["issue"] = "Ready"
+        self.handle()
+        self.merge()
+        self.assertEqual(self.github.statuses, {"issue": "Ready"})
+        self.assertEqual(self.github.writes, [])
+        self.assertEqual(self.github.added, [])
+
+    def test_trusted_fork_authors_and_same_repository_bots_are_allowed(self):
+        for association, head_repo in [
+            ("MEMBER", "outside/core"),
+            ("OWNER", "outside/core"),
+            ("COLLABORATOR", "outside/core"),
+            ("NONE", "JesusFilm/core"),
+        ]:
+            with self.subTest(association=association, head_repo=head_repo):
+                self.setUp()
+                self.github.pr.update(
+                    authorAssociation=association,
+                    headRepository={"nameWithOwner": head_repo},
+                )
+                self.handle()
+                self.assertEqual(self.github.statuses, {"issue": "In progress"})
+
+    def test_review_artifact_cannot_override_live_pr_author_trust(self):
+        self.github.pr.update(
+            authorAssociation="NONE", headRepository={"nameWithOwner": "outside/core"}
+        )
+        payload = event("submitted")
+        payload["pull_request"]["author_association"] = "MEMBER"
+        self.github.reviews = [api_review()]
+        self.handle("submitted", "pull_request_review", payload)
+        self.assertEqual(self.github.writes, [])
+
+    def test_fork_trust_is_also_applied_to_the_multiple_pr_guard(self):
+        for association, should_complete in [("NONE", True), ("COLLABORATOR", False)]:
+            for native_link in [True, False]:
+                with self.subTest(association=association, native_link=native_link):
+                    self.setUp()
+                    other = {
+                        "id": "fork-pr",
+                        "state": "OPEN",
+                        "body": "Closes #1",
+                        "authorAssociation": association,
+                        "headRepository": {"nameWithOwner": "outside/core"},
+                        "repository": {"nameWithOwner": "JesusFilm/core"},
+                    }
+                    if native_link:
+                        self.github.linked_prs.append(other)
+                    else:
+                        self.github.cross_references.append({"source": other})
+                    self.merge()
+                    self.assertEqual(
+                        self.github.statuses == {"issue": "Done"}, should_complete
+                    )
+
+    def test_dismissal_retries_until_its_timeline_event_is_visible(self):
+        self.github.timeline_snapshots = [
+            [],
+            [],
+            [
+                {
+                    "createdAt": "2026-11-10T02:00:00Z",
+                    "previousReviewState": "APPROVED",
+                    "review": {"id": "review"},
+                }
+            ],
+        ]
+        self.github.statuses["issue"] = "Approved"
+        with patch("project_status.time.sleep") as sleep:
+            self.handle("dismissed", "pull_request_review")
+        self.assertEqual(self.github.statuses, {"issue": "In progress"})
+        self.assertEqual(self.github.timeline_reads, 3)
+        self.assertEqual(sleep.call_count, 2)
+
+    def test_ownership_of_another_repository_does_not_confer_core_trust(self):
+        other = {
+            "id": "foreign-pr",
+            "state": "OPEN",
+            "body": "Closes JesusFilm/core#1",
+            "authorAssociation": "OWNER",
+            "repository": {"nameWithOwner": "outside/core"},
+            "headRepository": {"nameWithOwner": "outside/core"},
+        }
+        self.github.linked_prs.append(other)
+        self.github.cross_references.append({"source": other})
+        self.merge()
+        self.assertEqual(self.github.statuses, {"issue": "Done"})
+
+    def test_dismissal_retry_exhaustion_leaves_status_unchanged(self):
+        self.github.statuses["issue"] = "Approved"
+        with (
+            patch("project_status.time.sleep") as sleep,
+            self.assertRaisesRegex(RuntimeError, "Dismissed review"),
+        ):
+            self.handle("dismissed", "pull_request_review")
+        self.assertEqual(self.github.statuses, {"issue": "Approved"})
+        self.assertEqual(self.github.timeline_reads, 3)
+        self.assertEqual(sleep.call_count, 2)
+
     def test_open_pr_moves_only_ready_issue_into_progress(self):
         self.github.statuses["issue"] = "Ready"
         self.handle()
@@ -404,6 +516,7 @@ class HandlerTests(unittest.TestCase):
                     {
                         "source": {
                             "id": "example-pr",
+                            "authorAssociation": "MEMBER",
                             "state": "OPEN",
                             "body": body,
                             "repository": {"nameWithOwner": "JesusFilm/core"},
@@ -432,6 +545,7 @@ class HandlerTests(unittest.TestCase):
                     {
                         "source": {
                             "id": "other-implementation",
+                            "authorAssociation": "MEMBER",
                             "state": "OPEN",
                             "body": declaration,
                             "repository": {"nameWithOwner": "JesusFilm/core"},
@@ -468,6 +582,7 @@ class HandlerTests(unittest.TestCase):
             {
                 "source": {
                     "id": "reference-pr",
+                    "authorAssociation": "MEMBER",
                     "state": "OPEN",
                     "body": "This PR mentions #123. It fixes other/repo#123. "
                     "It resolves https://github.com/other/repo/issues/123.",
@@ -510,7 +625,9 @@ class HandlerTests(unittest.TestCase):
         payload["pull_request"]["merged"] = True
         for other_state in ["OPEN", "MERGED"]:
             with self.subTest(other_state=other_state):
-                self.github.linked_prs = [{"id": "other-pr", "state": other_state}]
+                self.github.linked_prs = [
+                    dict(self.github.pr, id="other-pr", state=other_state)
+                ]
                 self.handle(payload=payload)
                 self.assertEqual(self.github.writes, [])
 
@@ -519,6 +636,7 @@ class HandlerTests(unittest.TestCase):
             {
                 "source": {
                     "id": "another-stack-pr",
+                    "authorAssociation": "MEMBER",
                     "state": "OPEN",
                     "body": "Closes #1",
                     "repository": {"nameWithOwner": "JesusFilm/core"},
@@ -533,6 +651,7 @@ class HandlerTests(unittest.TestCase):
             {
                 "source": {
                     "id": "reference-pr",
+                    "authorAssociation": "MEMBER",
                     "state": "OPEN",
                     "body": "Related to #1. Part of #1.",
                     "repository": {"nameWithOwner": "JesusFilm/core"},
@@ -573,7 +692,9 @@ class HandlerTests(unittest.TestCase):
         for state, expected in [("OPEN", False), ("MERGED", False), ("CLOSED", True)]:
             with self.subTest(state=state):
                 self.setUp()
-                self.github.linked_prs.append({"id": "other-pr", "state": state})
+                self.github.linked_prs.append(
+                    dict(self.github.pr, id="other-pr", state=state)
+                )
                 self.handle()
                 self.assertEqual("issue" in self.github.statuses, expected)
                 self.assertNotIn("pr", self.github.statuses)

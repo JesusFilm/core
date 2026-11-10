@@ -39,9 +39,19 @@ State transitions:
 
 The `Project status` workflow writes the Next Steps Status field on **issue cards
 only**. PRs supply evidence; they are never added to the project or updated as
-project cards. The workflow never creates GitHub issues. It applies to all PR
-authors and target branches, including child PRs targeting a parent stack branch.
-The statuses below describe the linked issue, not an additional PR card.
+project cards. The workflow never creates GitHub issues. It accepts PRs whose
+author is an OWNER, MEMBER, or COLLABORATOR, or whose head repository is
+`JesusFilm/core`. Author/origin metadata is read from GitHub, not an event
+artifact. Other fork PRs neither move issues nor count toward the multiple-PR
+guard. New issue intake into Triage still applies to all authors.
+
+Every target/base branch is supported, including child PRs targeting a parent
+stack branch. The head is the source branch; the base is the merge destination.
+GitHub loads [`pull_request_target`](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target)
+from Core's default branch and this workflow
+checks out `main`, regardless of the PR's target. Older stack branches do not
+need this workflow copied into them. The statuses below describe the linked
+issue, not an additional PR card.
 
 | Event or current condition                                                                    | Status                                                           |
 | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
@@ -62,6 +72,14 @@ New commits invalidate approvals of earlier commits even if GitHub has not yet
 dismissed those reviews. Comment-only reviews and resolving discussion threads
 do not change status. QA is assigned manually; later PR events can move an item
 out of QA. Delayed reset events do not override newer reviews or review requests.
+If a dismissal's timeline event is not visible yet, the writer reads it at most
+three times, waiting one and two seconds between attempts. Exhaustion fails the
+run without changing status; it does not guess what was dismissed.
+
+Closing declarations are literal `Closes`, `Fixes`, or `Resolves` keywords next
+to an issue reference, including in prose. There is no agent or interpretation
+of intent: negated or partial phrases still contain the keyword. Use `Related
+to #123` for discussion, and code/quotes for examples.
 
 An issue receives a status update only when all these conditions hold:
 
@@ -95,35 +113,37 @@ updates to that issue. Removing it does not immediately change status; the next
 qualifying PR event resumes automation. New-issue initialization does not
 overwrite a status already assigned while its creation event was queued.
 
-### External metadata and review scheduling
+### External workers
 
-This workflow replaces **project status writes only**. It does not produce or
-refresh an external engine's registry, resolve scheduling dependencies, maintain
-branch-to-issue mappings, transfer runner ownership, or request reviews. A
-review request made by an external worker is handled just like a human's request.
-
-An external engine may require fresh metadata even after its board writer is
-replaced. Retain its metadata-only refresh and transport to every consuming
-runner. Disable only the old board-writing path before enabling this writer,
-without stopping metadata refresh or ready-update review requests. This PR does
-not change running services or perform that cutover.
-
-Removing the refresh entirely is separate engine work. Its consumers must first
-obtain equivalent, fresh branch mappings, ownership/hold checks, and dependency
-and merge-base evidence from an authoritative source. Issue Status alone does
-not supply those facts. Verify restacked branches, merged blockers, multiple
-implementation PRs, stale data, and cross-runner synchronization before retiring
-the registry producer. A child issue being Done does not itself unblock a
-scheduler dependency that still requires integration into the default branch.
+This workflow writes project status only. External workers still own their
+metadata/dependency registries, scheduling, ownership/holds, and review
+requests. A Done status is not dependency evidence. Keep metadata refresh
+running when transferring board-writing ownership; operational cutover notes
+are in [PR #10522](https://github.com/JesusFilm/core/pull/10522).
 
 ### Workflow setup and verification
 
-The writer uses the existing `CI_BOT_APP_ID` and `CI_BOT_PRIVATE_KEY` secrets. The
-App installation must have **organization Projects: write**, **Issues: read**, and
-**Pull requests: read** for `JesusFilm/core`. The ordinary `GITHUB_TOKEN` cannot
-write this organization project's fields. Provision the `status:manual` label if
-it does not already exist. No other project status workflows should be enabled
-for the same transitions.
+The writer uses the existing `CI_BOT_APP_ID` and `CI_BOT_PRIVATE_KEY` secrets.
+There is no new App to install. Its installation needs access to `JesusFilm/core`
+and these GitHub App permissions:
+
+| Permission | Purpose |
+| --- | --- |
+| Issues: read | Read the linked issue, labels, and implementation links |
+| Pull requests: read | Read authors, branches, reviews, and merge state |
+| Organization Projects: write | Add issue cards to Next Steps and change their Status |
+
+Status belongs to the organization project, not the GitHub issue itself. That
+is why issue read access alone is insufficient, and why the ordinary repository
+`GITHUB_TOKEN` cannot perform this update. Issue write access is not needed.
+These API permissions are separate from the trusted-PR rule, which determines
+which PRs may supply evidence.
+
+Before merging, an App/organization administrator should verify these permissions
+on the existing installation; the PR cannot grant them. Missing permissions fail
+token creation or project access. Provision `status:manual` if needed, and avoid
+a second writer for the same status transitions. Closing a PR without merging,
+or manually closing an issue, does not itself set Done or archive a card.
 
 PR and issue events run trusted code from `main`. Review events, including fork
 reviews, first upload their event JSON in the unprivileged `Project status
@@ -134,10 +154,11 @@ fully paginated links before updating project items. It does not post comments.
 
 Run the behavior tests in a Python virtual environment without installing the
 monorepo dependencies. The pinned CommonMark parser is also installed by the
-writer and test workflows:
+writer and test workflows. Both require the pinned wheel hashes and reject
+unverified artifacts:
 
 ```bash
-python3 -m pip install -r .github/scripts/project_status_requirements.txt
+python3 -m pip install --require-hashes --only-binary=:all: -r .github/scripts/project_status_requirements.txt
 python3 -m unittest discover -s .github/scripts -p 'project_status_test.py' -v
 ```
 

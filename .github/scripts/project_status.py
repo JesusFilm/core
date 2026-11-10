@@ -7,6 +7,7 @@ import json
 import os
 import re
 import subprocess
+import time
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
@@ -16,6 +17,17 @@ from markdown_it import MarkdownIt
 PROJECT_ID = "PVT_kwDOBNwqhs4BeMYJ"
 MANUAL_LABEL = "status:manual"
 REPOSITORY = "JesusFilm/core"
+PR_TRUST_FIELDS = (
+    "repository { nameWithOwner } authorAssociation headRepository { nameWithOwner }"
+)
+
+
+def trusted_pr(pr: dict) -> bool:
+    """Use live PR author/origin metadata, not the actor or uploaded event."""
+    return (pr.get("repository") or {}).get("nameWithOwner") == REPOSITORY and (
+        pr.get("authorAssociation") in {"MEMBER", "OWNER", "COLLABORATOR"}
+        or (pr.get("headRepository") or {}).get("nameWithOwner") == REPOSITORY
+    )
 
 
 @dataclass(frozen=True)
@@ -194,23 +206,23 @@ def implementation_prs(github: GitHub, issue: dict, current_pr: dict) -> list[di
         issue["id"],
         "Issue",
         "closedByPullRequestsReferences",
-        "id state",
+        "id state " + PR_TRUST_FIELDS,
         ", includeClosedPrs: true",
     )
-    by_id = {pr["id"]: pr for pr in pulls}
+    by_id = {pr["id"]: pr for pr in pulls if trusted_pr(pr)}
     events = github.connection(
         issue["id"],
         "Issue",
         "timelineItems",
         "... on CrossReferencedEvent { source { ... on PullRequest { "
-        "id state body repository { nameWithOwner } } } }",
+        "id state body " + PR_TRUST_FIELDS + " } } }",
         ", itemTypes: [CROSS_REFERENCED_EVENT]",
     )
     for event in events:
         source = event.get("source") or {}
-        if source.get("repository", {}).get("nameWithOwner") == REPOSITORY and issue[
-            "number"
-        ] in closing_issue_numbers(source.get("body") or ""):
+        if trusted_pr(source) and issue["number"] in closing_issue_numbers(
+            source.get("body") or ""
+        ):
             by_id[source["id"]] = source
     by_id[current_pr["id"]] = current_pr
     return list(by_id.values())
@@ -396,6 +408,29 @@ class ProjectStatuses:
         print(f"Issue {node_id}: {previous or '(unset)'} -> {status}")
 
 
+def review_timeline(
+    github: GitHub, pr_id: str, dismissed_review_id: str | None = None
+) -> list[dict]:
+    """Allow bounded API visibility lag without guessing a dismissal's meaning."""
+    for attempt in range(3):
+        timeline = github.connection(
+            pr_id,
+            "PullRequest",
+            "timelineItems",
+            "__typename "
+            "... on ReviewDismissedEvent { createdAt previousReviewState review { id } } "
+            "... on ReviewRequestedEvent { createdAt }",
+            ", itemTypes: [REVIEW_DISMISSED_EVENT, REVIEW_REQUESTED_EVENT]",
+        )
+        if dismissed_review_id is None or any(
+            item.get("review", {}).get("id") == dismissed_review_id for item in timeline
+        ):
+            return timeline
+        if attempt < 2:
+            time.sleep(2**attempt)
+    raise RuntimeError("Dismissed review is not visible after 3 timeline reads")
+
+
 def run(github: GitHub, event_name: str, event: dict):
     if event["repository"]["full_name"] != REPOSITORY:
         return
@@ -417,7 +452,12 @@ def run(github: GitHub, event_name: str, event: dict):
     ):
         return
     pr_id = event["pull_request"]["node_id"]
-    current = github.node(pr_id, "PullRequest", "id state headRefOid body baseRefName")
+    current = github.node(
+        pr_id, "PullRequest", "id state headRefOid body baseRefName " + PR_TRUST_FIELDS
+    )
+    if not trusted_pr(current):
+        print("Skipping PR: author and head repository are outside the trusted scope")
+        return
     # Cancellation never updates the issue, even when processing was delayed.
     if action == "closed" and not event["pull_request"].get("merged"):
         return
@@ -446,6 +486,11 @@ def run(github: GitHub, event_name: str, event: dict):
     if merged:
         statuses.set_issue(issue["id"], "Done")
         return
+    timeline = review_timeline(
+        github, pr_id, event["review"]["node_id"] if action == "dismissed" else None
+    )
+    # Refresh reviews and requests after any timeline retries, so a delayed
+    # dismissal cannot overwrite review activity that arrived while waiting.
     reviews = github.connection(
         pr_id,
         "PullRequest",
@@ -459,15 +504,6 @@ def run(github: GitHub, event_name: str, event: dict):
         "reviewRequests",
         "requestedReviewer { ... on User { id } ... on Team { id } "
         "... on Mannequin { id } }",
-    )
-    timeline = github.connection(
-        pr_id,
-        "PullRequest",
-        "timelineItems",
-        "__typename "
-        "... on ReviewDismissedEvent { createdAt previousReviewState review { id } } "
-        "... on ReviewRequestedEvent { createdAt }",
-        ", itemTypes: [REVIEW_DISMISSED_EVENT, REVIEW_REQUESTED_EVENT]",
     )
     dismissals = [item for item in timeline if "previousReviewState" in item]
     pr = PullRequest(
