@@ -17,6 +17,7 @@ from markdown_it import MarkdownIt
 PROJECT_ID = "PVT_kwDOBNwqhs4BeMYJ"
 MANUAL_LABEL = "status:manual"
 REPOSITORY = "JesusFilm/core"
+TRIAGE_BATCH_SIZE = 25
 PR_TRUST_FIELDS = (
     "repository { nameWithOwner } authorAssociation headRepository { nameWithOwner }"
 )
@@ -332,6 +333,20 @@ class GitHub:
             cursor = next_cursor
 
 
+def next_steps_item(github: GitHub, issue_id: str) -> dict | None:
+    """Board membership is the scope boundary; never enroll issues from PR activity."""
+    items = github.connection(
+        issue_id,
+        "Issue",
+        "projectItems",
+        "id isArchived project { id } "
+        'fieldValueByName(name: "Status") { '
+        "... on ProjectV2ItemFieldSingleSelectValue { name } }",
+        ", includeArchived: true",
+    )
+    return next((item for item in items if item["project"]["id"] == PROJECT_ID), None)
+
+
 class ProjectStatuses:
     def __init__(self, github: GitHub):
         self.github = github
@@ -364,22 +379,15 @@ class ProjectStatuses:
         }
 
     def set_issue(self, node_id: str, status: str, only_if_unset=False):
-        """Write only issue cards; PRs are never project content."""
+        """Update existing Next Steps issue cards only."""
         if MANUAL_LABEL in self.labels(node_id):
             print(f"Skipping {node_id}: {MANUAL_LABEL}")
             return
-        items = self.github.connection(
-            node_id,
-            "Issue",
-            "projectItems",
-            "id isArchived project { id } "
-            'fieldValueByName(name: "Status") { '
-            "... on ProjectV2ItemFieldSingleSelectValue { name } }",
-        )
-        item = next(
-            (item for item in items if item["project"]["id"] == PROJECT_ID), None
-        )
-        if item and item["isArchived"] and status != "Done":
+        item = next_steps_item(self.github, node_id)
+        if item is None:
+            print(f"Skipping {node_id}: not on the Next Steps board")
+            return
+        if item["isArchived"] and status != "Done":
             print(f"Skipping archived item {node_id}")
             return
         previous = ((item or {}).get("fieldValueByName") or {}).get("name")
@@ -388,13 +396,6 @@ class ProjectStatuses:
         if self.github.dry_run:
             print(f"Would set Issue {node_id}: {previous or '(unset)'} -> {status}")
             return
-        if item is None:
-            item = self.github.graphql(
-                "mutation($project: ID!, $content: ID!) { addProjectV2ItemById("
-                "input: {projectId: $project, contentId: $content}) { item { id } } }",
-                project=PROJECT_ID,
-                content=node_id,
-            )["addProjectV2ItemById"]["item"]
         self.github.graphql(
             "mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) { "
             "updateProjectV2ItemFieldValue(input: {projectId: $project, itemId: $item, "
@@ -431,8 +432,49 @@ def review_timeline(
     raise RuntimeError("Dismissed review is not visible after 3 timeline reads")
 
 
+def initialize_triage(github: GitHub):
+    """Initialize unset cards added after their issue-created event was processed."""
+    intake_filter = (
+        f'repo:{REPOSITORY} is:issue is:open no:status -label:"{MANUAL_LABEL}"'
+    )
+    items = github.connection(
+        PROJECT_ID,
+        "ProjectV2",
+        "items",
+        'isArchived fieldValueByName(name: "Status") { '
+        "... on ProjectV2ItemFieldSingleSelectValue { name } } "
+        "content { ... on Issue { id state repository { nameWithOwner } } }",
+        ", archivedStates: [NOT_ARCHIVED], query: " + json.dumps(intake_filter),
+    )
+    statuses = None
+    processed = 0
+    for item in items:
+        issue = item.get("content") or {}
+        if (
+            item["isArchived"]
+            or item.get("fieldValueByName")
+            or issue.get("state") != "OPEN"
+            or issue.get("repository", {}).get("nameWithOwner") != REPOSITORY
+        ):
+            continue
+        if statuses is None:
+            statuses = ProjectStatuses(github)
+        # Re-read membership and status immediately before writing, in case
+        # someone removed the card or started work while this scan was queued.
+        statuses.set_issue(issue["id"], "Triage", only_if_unset=True)
+        processed += 1
+        if processed >= TRIAGE_BATCH_SIZE:
+            break
+
+
 def run(github: GitHub, event_name: str, event: dict):
-    if event["repository"]["full_name"] != REPOSITORY:
+    repository = (event.get("repository") or {}).get("full_name") or os.environ.get(
+        "GITHUB_REPOSITORY"
+    )
+    if repository != REPOSITORY:
+        return
+    if event_name == "schedule":
+        initialize_triage(github)
         return
     action = event["action"]
     if event_name == "issues":
@@ -440,7 +482,7 @@ def run(github: GitHub, event_name: str, event: dict):
             return
         issue_id = event["issue"]["node_id"]
         issue = github.node(issue_id, "Issue", "state")
-        if issue["state"] == "OPEN":
+        if issue["state"] == "OPEN" and next_steps_item(github, issue_id) is not None:
             # A delayed creation run must not undo a subsequent PR/manual update.
             ProjectStatuses(github).set_issue(issue_id, "Triage", only_if_unset=True)
         return
@@ -477,6 +519,9 @@ def run(github: GitHub, event_name: str, event: dict):
     if issue["repository"]["nameWithOwner"] != REPOSITORY or (
         issue["state"] != "OPEN" and not merged
     ):
+        return
+    if next_steps_item(github, issue["id"]) is None:
+        print("Skipping issue: not on the Next Steps board")
         return
     linked_prs = implementation_prs(github, issue, current)
     if not eligible_issue(pr_id, issues, linked_prs, merged=merged):

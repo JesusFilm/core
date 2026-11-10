@@ -31,19 +31,25 @@ State transitions:
 - **Humans** drag cards on the board or set Status in the issue sidebar.
 - **Agents/scripts** use the `gh project` commands (see below). The token needs the
   `project` scope (`gh auth refresh -s project`).
-- **Automatic**: new `JesusFilm/core` issues enter the project in Triage. PR events
-  use the PR as evidence to update its eligible linked issue as described below. Closing
-  an issue does not automatically set Done or archive it.
+- **Automatic**: open Core issue cards already on Next Steps start in Triage when
+  their Status is unset. PR events update eligible existing cards on this board.
+  This workflow does not enroll issues, move cards on other boards, or mark an
+  issue Done just because it was closed.
 
 ## Automatic PR and issue statuses
 
-The `Project status` workflow writes the Next Steps Status field on **issue cards
-only**. PRs supply evidence; they are never added to the project or updated as
-project cards. The workflow never creates GitHub issues. It accepts PRs whose
+The `Project status` workflow updates **existing issue cards on Next Steps only**.
+Board membership is the scope boundary; no extra classification label is needed.
+An issue that is also on QA, Engineering, or Video Management can have its Next
+Steps card updated, but its other project cards are untouched. Issues absent
+from Next Steps are ignored, even when a trusted PR explicitly links them.
+The workflow never adds project cards, creates GitHub issues, or updates PR cards.
+PRs supply evidence only. It accepts PRs whose
 author is an OWNER, MEMBER, or COLLABORATOR, or whose head repository is
 `JesusFilm/core`. Author/origin metadata is read from GitHub, not an event
 artifact. Other fork PRs neither move issues nor count toward the multiple-PR
-guard. New issue intake into Triage still applies to all authors.
+guard. Triage initialization applies to all authors of open issues already on
+Next Steps.
 
 Every target/base branch is supported, including child PRs targeting a parent
 stack branch. The head is the source branch; the base is the merge destination.
@@ -55,7 +61,7 @@ issue, not an additional PR card.
 
 | Event or current condition                                                                    | Status                                                           |
 | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| New issue                                                                                     | Triage                                                           |
+| Open issue already on Next Steps with unset Status                                            | Triage                                                           |
 | PR opened, including drafts and ready-for-review PRs                                          | In progress                                                      |
 | Reviewer requested and no current approval exists                                             | In review                                                        |
 | Formal Request changes review, with no current approval and that reviewer not requested again | Changes requested                                                |
@@ -82,6 +88,9 @@ of intent: negated or partial phrases still contain the keyword. Use `Related
 to #123` for discussion, and code/quotes for examples.
 
 An issue receives a status update only when all these conditions hold:
+
+- Its issue card already exists on Next Steps. Membership is checked again
+  immediately before writing, and no card is added if it has been removed.
 
 - The PR has exactly one linked issue, using GitHub's Development relationship
   or an explicit `Closes`, `Fixes`, or `Resolves` declaration in its body. Closing
@@ -110,8 +119,14 @@ unarchiving it; other updates leave archived cards alone.
 Dragging an issue to QA or another board position does not protect it from
 subsequent PR events. The explicit `status:manual` label is the opt-out: it pauses
 updates to that issue. Removing it does not immediately change status; the next
-qualifying PR event resumes automation. New-issue initialization does not
-overwrite a status already assigned while its creation event was queued.
+qualifying PR event resumes automation. Triage initialization does not overwrite
+an assigned status. The issue-created event initializes an existing card when
+possible; a five-minute scheduled scan handles cards added later or after the
+creation event was processed. It reads only open, non-archived Core issue cards
+on Next Steps with an unset Status, and rechecks membership and Status before
+writing. Each run handles at most 25 cards so an intake backlog cannot hold up
+PR events. No live board intake filters or existing memberships are changed by
+this PR; the board's own auto-add/manual intake decides which cards appear.
 
 ### External workers
 
@@ -131,7 +146,7 @@ and these GitHub App permissions:
 | ---------------------------- | ------------------------------------------------------- |
 | Issues: read                 | Read the linked issue, labels, and implementation links |
 | Pull requests: read          | Read authors, branches, reviews, and merge state        |
-| Organization Projects: write | Add issue cards to Next Steps and change their Status   |
+| Organization Projects: write | Change Status on existing Next Steps issue cards       |
 
 Status belongs to the organization project, not the GitHub issue itself. That
 is why issue read access alone is insufficient, and why the ordinary repository
@@ -169,8 +184,9 @@ python3 .github/scripts/project_status.py --dry-run \
   --event-name pull_request_target --event-path /path/to/event.json
 ```
 
-These workflows take effect after merging to `main`. They do not backfill existing
-items; existing PRs move on their next qualifying event.
+These workflows take effect after merging to `main`. They do not replay past PR
+events; existing eligible PRs move their issue cards on the next
+qualifying event. The Triage scan can initialize an existing unset card.
 
 Rejecting a ticket ("wontfix"): add the `Won't do` label, then close the issue as
 **not planned**. No dedicated column — the close reason is the record.

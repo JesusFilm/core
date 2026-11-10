@@ -53,6 +53,8 @@ class MemoryGitHub(GitHub):
         self.lookup_errors = {}
         self.timeline_snapshots = []
         self.timeline_reads = 0
+        self.project_memberships = {"issue": [PROJECT_ID]}
+        self.board_scan_items = None
 
     def node(self, node_id, node_type, selection):
         return self.pr if node_type == "PullRequest" else self.issue
@@ -85,16 +87,33 @@ class MemoryGitHub(GitHub):
         if name == "labels":
             return [{"name": label} for label in self.labels[node_id]]
         if name == "projectItems":
-            if node_id not in self.statuses:
-                return []
             return [
                 {
-                    "id": node_id,
-                    "project": {"id": PROJECT_ID},
+                    "id": node_id if project == PROJECT_ID else "other:" + node_id,
+                    "project": {"id": project},
                     "isArchived": node_id in self.archived,
-                    "fieldValueByName": {"name": self.statuses[node_id]},
+                    "fieldValueByName": {"name": self.statuses[node_id]}
+                    if self.statuses.get(node_id)
+                    else None,
                 }
+                for project in self.project_memberships.get(node_id, [])
             ]
+        if name == "items":
+            if self.board_scan_items is not None:
+                return self.board_scan_items
+            return (
+                [
+                    {
+                        "isArchived": "issue" in self.archived,
+                        "fieldValueByName": {"name": self.statuses["issue"]}
+                        if self.statuses.get("issue")
+                        else None,
+                        "content": self.issue,
+                    }
+                ]
+                if PROJECT_ID in self.project_memberships.get("issue", [])
+                else []
+            )
         return {
             "latestOpinionatedReviews": self.reviews,
             "reviewRequests": self.requests,
@@ -137,12 +156,7 @@ class MemoryGitHub(GitHub):
             with patch("project_status.subprocess.run", return_value=result):
                 return GitHub.graphql(self, query, **variables)
         if "addProjectV2ItemById" in query:
-            node_id = variables["content"]
-            if node_id != self.issue["id"]:
-                raise AssertionError("Only GitHub issues may be added to the project")
-            self.added.append(node_id)
-            self.statuses[node_id] = None
-            return {"addProjectV2ItemById": {"item": {"id": node_id}}}
+            raise AssertionError("The status workflow must never create project cards")
         if "updateProjectV2ItemFieldValue" in query:
             if variables["item"] != self.issue["id"]:
                 raise AssertionError("Only issue cards may be updated")
@@ -285,6 +299,91 @@ class HandlerTests(unittest.TestCase):
         self.handle(event_name="issues")
         self.assertEqual(self.github.statuses["issue"], "Ready")
 
+    def test_off_board_issues_are_not_enrolled_by_creation_or_pr_activity(self):
+        for memberships in [[], ["qa-project"]]:
+            with self.subTest(memberships=memberships):
+                self.setUp()
+                self.github.project_memberships["issue"] = memberships
+                self.github.statuses["issue"] = "Ready"
+                self.handle(event_name="issues")
+                self.handle()
+                self.github.reviews = [api_review()]
+                self.handle("submitted", "pull_request_review")
+                self.merge()
+                self.assertEqual(self.github.statuses, {"issue": "Ready"})
+                self.assertEqual(self.github.writes, [])
+                self.assertEqual(self.github.added, [])
+
+    def test_dual_membership_updates_only_the_next_steps_card(self):
+        self.github.project_memberships["issue"] = ["qa-project", PROJECT_ID]
+        self.github.reviews = [api_review()]
+        self.handle("submitted", "pull_request_review")
+        self.assertEqual(self.github.writes, [("issue", "Approved")])
+        self.assertEqual(self.github.added, [])
+
+    def test_triage_initializes_an_issue_added_after_its_creation_event(self):
+        self.github.project_memberships["issue"] = []
+        self.handle(event_name="issues")
+        self.assertEqual(self.github.writes, [])
+        self.github.project_memberships["issue"] = [PROJECT_ID]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.statuses, {"issue": "Triage"})
+        self.assertEqual(self.github.added, [])
+
+    def test_triage_scan_preserves_assigned_statuses_and_explicit_overrides(self):
+        for status, manual in [("Ready", False), ("QA", False), (None, True)]:
+            with self.subTest(status=status, manual=manual):
+                self.setUp()
+                if status:
+                    self.github.statuses["issue"] = status
+                if manual:
+                    self.github.labels["issue"].add(MANUAL_LABEL)
+                self.handle(event_name="schedule")
+                self.assertEqual(self.github.writes, [])
+
+    def test_triage_scan_rechecks_membership_and_status_before_writing(self):
+        stale = {
+            "content": self.github.issue,
+            "fieldValueByName": None,
+            "isArchived": False,
+        }
+        self.github.board_scan_items = [stale]
+        self.github.project_memberships["issue"] = []
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [])
+        self.github.project_memberships["issue"] = [PROJECT_ID]
+        self.github.statuses["issue"] = "In progress"
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.statuses, {"issue": "In progress"})
+        self.assertEqual(self.github.writes, [])
+
+    def test_triage_backlog_is_bounded_per_run(self):
+        self.github.board_scan_items = [
+            {
+                "content": self.github.issue,
+                "isArchived": False,
+                "fieldValueByName": None,
+            }
+        ] * 30
+        with patch("project_status.ProjectStatuses.set_issue") as writer:
+            self.handle(event_name="schedule")
+        self.assertEqual(writer.call_count, 25)
+
+    def test_triage_scan_ignores_closed_archived_and_other_repository_items(self):
+        for changed in [
+            {"state": "CLOSED"},
+            {"repository": {"nameWithOwner": "JesusFilm/forge"}},
+        ]:
+            with self.subTest(changed=changed):
+                self.setUp()
+                self.github.issue.update(changed)
+                self.handle(event_name="schedule")
+                self.assertEqual(self.github.writes, [])
+        self.setUp()
+        self.github.archived.add("issue")
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [])
+
     def test_outside_fork_cannot_move_or_complete_an_issue(self):
         self.github.pr.update(
             authorAssociation="NONE", headRepository={"nameWithOwner": "outside/core"}
@@ -398,7 +497,7 @@ class HandlerTests(unittest.TestCase):
         self.github.statuses["pr"] = "Ready"
         self.handle()
         self.assertEqual(self.github.statuses, {"pr": "Ready", "issue": "In progress"})
-        self.assertEqual(self.github.added, ["issue"])
+        self.assertEqual(self.github.added, [])
 
     def test_bot_review_request_moves_issue_to_review(self):
         self.github.requests = [{"requestedReviewer": {"id": "csiyang"}}]
@@ -525,7 +624,7 @@ class HandlerTests(unittest.TestCase):
                 ]
                 self.merge(base="feature/parent")
                 self.assertEqual(self.github.statuses, {"issue": "Done"})
-                self.assertEqual(self.github.added, ["issue"])
+                self.assertEqual(self.github.added, [])
 
     def test_prose_implementation_pr_blocks_stack_completion(self):
         for declaration in [
@@ -592,7 +691,7 @@ class HandlerTests(unittest.TestCase):
         ]
         self.merge(base="feature/parent")
         self.assertEqual(self.github.statuses, {"issue": "Done"})
-        self.assertEqual(self.github.added, ["issue"])
+        self.assertEqual(self.github.added, [])
 
     def test_genuine_declaration_after_code_example_completes_stack_issue(self):
         for example in [
