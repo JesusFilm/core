@@ -23,6 +23,7 @@ import {
   JourneyStatus,
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
+import { useTemplateLabelsQuery } from '../../libs/useTemplateLabelsQuery'
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 
 import { InfoIcon } from './InfoIcon'
@@ -69,6 +70,9 @@ export function TemplateBreakdownAnalyticsDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const [includeArchivedJourneys, setIncludeArchivedJourneys] = useState(true)
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
+  const { data: templateLabelsData } = useTemplateLabelsQuery(
+    open ? journeyId : undefined
+  )
 
   const defaultVariables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
     () => ({
@@ -230,6 +234,11 @@ export function TemplateBreakdownAnalyticsDialog({
             data={data}
             loading={loading}
             error={error}
+            customTrackingLabels={
+              templateLabelsData?.adminJourney?.id === journeyId
+                ? templateLabelsData.adminJourney
+                : undefined
+            }
           />
         </Box>
       )}

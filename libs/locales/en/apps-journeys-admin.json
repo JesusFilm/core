@@ -1760,5 +1760,13 @@
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.",
   "Show country names": "Show country names",
   "Countries": "Countries",
-  "Always turned off for background videos": "Always turned off for background videos"
+  "Always turned off for background videos": "Always turned off for background videos",
+  "Custom tracking labels": "Custom tracking labels",
+  "Retry": "Retry",
+  "Unable to load custom tracking labels": "Unable to load custom tracking labels",
+  "Custom tracking labels saved": "Custom tracking labels saved",
+  "Name the custom tracking slots for this template. These names appear in its tracking choices and report. Child projects keep their current labels.": "Name the custom tracking slots for this template. These names appear in its tracking choices and report. Child projects keep their current labels.",
+  "Use 100 characters or fewer": "Use 100 characters or fewer",
+  "Leave blank to use the default label": "Leave blank to use the default label",
+  "Unable to save custom tracking labels. Try again.": "Unable to save custom tracking labels. Try again."
 }

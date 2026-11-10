@@ -22,6 +22,7 @@ import {
   ButtonVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
+import { useJourneyCustomTrackingLabels } from '../../../../../../../../libs/useTemplateLabelsQuery'
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
@@ -49,6 +50,7 @@ export function Button({
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
+  const customLabels = useJourneyCustomTrackingLabels()
   const { editJourneyTrackingMetrics } = useFlags()
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -61,7 +63,11 @@ export function Button({
   ) as TreeBlock<IconFields>
 
   const selectedAction = getAction(t, action?.__typename)
-  const selectedEventLabel = getEventLabelOption(t, eventLabel).label
+  const selectedEventLabel = getEventLabelOption(
+    t,
+    eventLabel,
+    customLabels
+  ).label
 
   // Map alignment to a translated label with literal t() calls. Justify only
   // appears in this summary (the alignment control itself is icon-only), so it
