@@ -1697,6 +1697,51 @@ describe('video', () => {
       )
     })
 
+    it('should not grant videos-admin access to an authenticated caller without the publisher role', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userMediaRoleId',
+        userId: 'testUserId',
+        roles: ['shortLinkEditor'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+
+      const nonPublisherClient = getClient({
+        headers: {
+          authorization: 'token',
+          'x-graphql-client-name': 'videos-admin'
+        }
+      })
+
+      await nonPublisherClient({
+        document: VIDEOS_QUERY
+      })
+
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: expect.objectContaining({
+            children: {
+              where: {
+                published: true,
+                availableLanguages: { isEmpty: false }
+              }
+            },
+            parents: {
+              where: {
+                published: true,
+                availableLanguages: { isEmpty: false }
+              }
+            }
+          })
+        })
+      )
+    })
+
     it('should keep children filters for non videos-admin clients', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
