@@ -17,6 +17,8 @@ import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { keyify, templateKeyify } from '../../libs/plausibleHelpers'
+import { CUSTOM1_CAPTURE_EVENT_CREATE, CUSTOM2_CAPTURE_EVENT_CREATE  } from '../../libs/useCaptureEvent/useCaptureEvent'
+import { createEventRequestLink } from '../../test/createEventRequestLink'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
@@ -195,9 +197,26 @@ describe('VideoEvents', () => {
       }
     }))
 
+    const captureVariables = vi.fn(() => true)
+    const captureResult = vi.fn(() => ({
+      data: {
+        custom1CaptureEventCreate: {
+          id: 'capture-uuid',
+          __typename: 'Custom1CaptureEvent'
+        }
+      }
+    }))
+    const captureMock = {
+      request: {
+        query: CUSTOM1_CAPTURE_EVENT_CREATE,
+        variables: captureVariables
+      },
+      result: captureResult
+    }
     render(
       <MockedProvider
         mocks={[
+          captureMock,
           {
             request: {
               query: VIDEO_START_EVENT_CREATE,
@@ -249,6 +268,16 @@ describe('VideoEvents', () => {
           event: 'custom1Capture',
           journeyId: 'journey.id'
         })
+      }
+    })
+
+    await waitFor(() => expect(captureResult).toHaveBeenCalledTimes(1))
+    expect(captureVariables).toHaveBeenCalledWith({
+      input: {
+        id: expect.any(String),
+        blockId: 'video0.id',
+        stepId: 'step.id',
+        trigger: 'videoStart'
       }
     })
   })
@@ -1284,9 +1313,26 @@ describe('VideoEvents', () => {
       blockId: 'block2.id'
     } as unknown as VideoTriggerFields_triggerAction
 
+    const captureVariables = vi.fn(() => true)
+    const captureResult = vi.fn(() => ({
+      data: {
+        custom2CaptureEventCreate: {
+          id: 'capture-uuid',
+          __typename: 'Custom2CaptureEvent'
+        }
+      }
+    }))
+    const captureMock = {
+      request: {
+        query: CUSTOM2_CAPTURE_EVENT_CREATE,
+        variables: captureVariables
+      },
+      result: captureResult
+    }
     render(
       <MockedProvider
         mocks={[
+          captureMock,
           {
             request: {
               query: VIDEO_START_EVENT_CREATE,
@@ -1424,6 +1470,79 @@ describe('VideoEvents', () => {
           journeyId: 'journey.id'
         })
       }
+    })
+
+    await waitFor(() => expect(captureResult).toHaveBeenCalledTimes(1))
+    expect(captureVariables).toHaveBeenCalledWith({
+      input: {
+        id: expect.any(String),
+        blockId: 'video0.id',
+        stepId: 'step.id',
+        trigger: 'videoComplete'
+      }
+    })
+  })
+
+  it.each([
+    BlockEventLabel.custom1,
+    null,
+    BlockEventLabel.share,
+    BlockEventLabel.inviteFriend
+  ])('captures only start/completion for video tag %s', async (eventLabel) => {
+    mockUsePlausible.mockReturnValue(vi.fn())
+    blockHistoryVar([activeBlock])
+    const { link, requests } = createEventRequestLink()
+    const content = (
+      <MockedProvider link={link}>
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents
+            {...props}
+            eventLabel={eventLabel}
+            endEventLabel={BlockEventLabel.specialVideoComplete}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const view = render(content)
+    act(() => {
+      props.player.currentTime(0)
+      props.player.trigger('timeupdate')
+      props.player.trigger('timeupdate')
+    })
+    await waitFor(() =>
+      expect(
+        requests.some(({ name }) => name === 'VideoStartEventCreate')
+      ).toBe(true)
+    )
+    view.rerender(content)
+    act(() => {
+      props.player.trigger('timeupdate')
+      props.player.trigger('play')
+      props.player.trigger('pause')
+      props.player.currentTime(98)
+      props.player.trigger('timeupdate')
+      props.player.trigger('timeupdate')
+    })
+    await waitFor(() =>
+      expect(
+        requests.some(({ name }) => name === 'VideoCompleteEventCreate')
+      ).toBe(true)
+    )
+    act(() => props.player.trigger('timeupdate'))
+    const captures = requests.filter(({ name }) => name.includes('Capture'))
+    expect(captures.map(({ name }) => name)).toEqual(
+      eventLabel === BlockEventLabel.custom1
+        ? [
+            'Custom1CaptureEventCreate',
+            'SpecialVideoCompleteCaptureEventCreate'
+          ]
+        : ['SpecialVideoCompleteCaptureEventCreate']
+    )
+    expect(captures.at(-1)?.input).toEqual({
+      id: expect.any(String),
+      blockId: props.blockId,
+      stepId: activeBlock.id,
+      trigger: 'videoComplete'
     })
   })
 })

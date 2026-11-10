@@ -3,6 +3,7 @@ import { usePlausible } from 'next-plausible'
 import {
   BlockEventLabel,
   ButtonClickEventCreateInput,
+  CaptureEventTrigger,
   ChatOpenEventCreateInput,
   MultiselectSubmissionEventCreateInput,
   RadioQuestionSubmissionEventCreateInput,
@@ -26,6 +27,7 @@ import {
   BlockFields_SignUpBlock_action,
   BlockFields_VideoBlock_action
 } from '../block/__generated__/BlockFields'
+import type { CaptureEventSender } from '../useCaptureEvent/useCaptureEvent'
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -212,6 +214,11 @@ export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<
 }
 
 interface FireCaptureEventOptions<TInput extends object> {
+  capture?: {
+    send: CaptureEventSender
+    trigger: CaptureEventTrigger
+    blockId?: string
+  }
   u: string
   input: TInput
   stepId: string
@@ -225,6 +232,7 @@ export function fireCaptureEvent<TInput extends object>(
   plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
   eventLabel: BlockEventLabel | null | undefined,
   {
+    capture,
     u,
     input,
     stepId,
@@ -252,6 +260,13 @@ export function fireCaptureEvent<TInput extends object>(
       })
     }
   })
+  if (capture != null && eventLabel != null) {
+    capture.send(eventLabel, {
+      blockId: capture.blockId ?? blockId,
+      stepId,
+      trigger: capture.trigger
+    })
+  }
 }
 
 export function actionToTarget(action: Action | null): 'link' | 'chat' | null {

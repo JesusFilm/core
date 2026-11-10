@@ -2,12 +2,13 @@ import { gql } from '@apollo/client'
 import { useMutation } from '@apollo/client/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { usePlausible } from 'next-plausible'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import Player from 'video.js/dist/types/player'
 
 import {
   BlockEventLabel,
+  CaptureEventTrigger,
   VideoBlockSource,
   VideoCollapseEventCreateInput,
   VideoCompleteEventCreateInput,
@@ -25,6 +26,7 @@ import {
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
+import { useCaptureEvent } from '../../libs/useCaptureEvent/useCaptureEvent'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
@@ -150,6 +152,9 @@ export function VideoEvents({
   >(VIDEO_COLLAPSE_EVENT_CREATE)
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
+  const captureEventCreate = useCaptureEvent()
+  const startCaptureSent = useRef(false)
+  const completeCaptureSent = useRef(false)
   const { blockHistory } = useBlocks()
   const { journey } = useJourney()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -468,13 +473,20 @@ export function VideoEvents({
               })
             }
           })
-          fireCaptureEvent(plausible, eventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-            input,
-            stepId: input.stepId ?? '',
-            blockId: input.blockId,
-            journeyId: journey?.id
-          })
+          if (!startCaptureSent.current) {
+            startCaptureSent.current = true
+            fireCaptureEvent(plausible, eventLabel, {
+              capture: {
+                send: captureEventCreate,
+                trigger: CaptureEventTrigger.videoStart
+              },
+              u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+              input,
+              stepId: input.stepId ?? '',
+              blockId: input.blockId,
+              journeyId: journey?.id
+            })
+          }
         }
         sendGTMEvent({
           event: 'video_start',
@@ -500,7 +512,8 @@ export function VideoEvents({
     source,
     journey,
     plausible,
-    eventLabel
+    eventLabel,
+    captureEventCreate
   ])
 
   // PROGRESS 25% event
@@ -748,13 +761,20 @@ export function VideoEvents({
               })
             }
           })
-          fireCaptureEvent(plausible, endEventLabel, {
-            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
-            input,
-            stepId: input.stepId ?? '',
-            blockId: input.blockId,
-            journeyId: journey?.id
-          })
+          if (!completeCaptureSent.current) {
+            completeCaptureSent.current = true
+            fireCaptureEvent(plausible, endEventLabel, {
+              capture: {
+                send: captureEventCreate,
+                trigger: CaptureEventTrigger.videoComplete
+              },
+              u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+              input,
+              stepId: input.stepId ?? '',
+              blockId: input.blockId,
+              journeyId: journey?.id
+            })
+          }
         }
         sendGTMEvent({
           event: 'video_complete',
@@ -781,7 +801,8 @@ export function VideoEvents({
     journey,
     plausible,
     action,
-    endEventLabel
+    endEventLabel,
+    captureEventCreate
   ])
 
   return <></>

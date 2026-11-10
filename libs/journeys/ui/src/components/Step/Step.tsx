@@ -7,7 +7,10 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
+import {
+  CaptureEventTrigger,
+  StepViewEventCreateInput
+} from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import {
   getStepHeading,
@@ -21,6 +24,7 @@ import {
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
+import { useCaptureEvent } from '../../libs/useCaptureEvent/useCaptureEvent'
 // eslint-disable-next-line import/no-cycle
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
@@ -53,6 +57,7 @@ export function Step({
     StepViewEventCreateVariables
   >(STEP_VIEW_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
+  const captureEventCreate = useCaptureEvent()
   const { renderMode, journey } = useJourney()
   const { treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
@@ -113,6 +118,11 @@ export function Step({
         // the raw event label so card conversions are counted in the Plausible
         // dashboard, matching how buttons/videos/radio questions report captures.
         fireCaptureEvent(plausible, eventLabel, {
+          capture: {
+            send: captureEventCreate,
+            trigger: CaptureEventTrigger.stepView,
+            blockId: children[0]?.id
+          },
           u: `${window.location.origin}/${journey.id}/${input.blockId}`,
           input,
           stepId: input.blockId,
@@ -130,6 +140,7 @@ export function Step({
   }, [
     blockId,
     stepViewEventCreate,
+    captureEventCreate,
     renderMode,
     heading,
     activeJourneyStep,
