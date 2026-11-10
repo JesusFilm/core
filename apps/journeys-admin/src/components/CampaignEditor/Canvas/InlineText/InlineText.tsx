@@ -35,6 +35,8 @@ interface InlineTextProps
   autoFocus?: boolean
   /** Clicking the text (or Enter or Space on it) selects its block. */
   onSelect?: () => void
+  /** The surrounding selectable provides the keyboard target and button role. */
+  withinSelectable?: boolean
   variantMapping?: TypographyProps['variantMapping']
   /**
    * Size the input to its text (a button label): it grows as the author
@@ -84,6 +86,7 @@ export function InlineText({
   editing,
   autoFocus = false,
   onSelect,
+  withinSelectable = false,
   variant,
   component,
   align,
@@ -124,18 +127,17 @@ export function InlineText({
     handleChange(next)
   }
 
-  // The static text is a button named by its field; the block it selects
-  // then shows the input.
+  function handleSelect(): void {
+    focusOnEdit.current = true
+    onSelect?.()
+  }
+
   const selectable =
     onSelect == null
       ? { onClick: handleStopPropagation }
-      : {
-          role: 'button',
-          ...selectableProps(() => {
-            focusOnEdit.current = true
-            onSelect()
-          }, placeholder)
-        }
+      : withinSelectable
+        ? { onClick: selectableProps(handleSelect, placeholder).onClick }
+        : { role: 'button', ...selectableProps(handleSelect, placeholder) }
 
   const items =
     display === 'paragraphs'

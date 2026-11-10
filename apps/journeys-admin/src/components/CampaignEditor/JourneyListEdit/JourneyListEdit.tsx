@@ -98,7 +98,7 @@ function JourneyCardEdit({
       data-testid={`JourneyCard-${card.id}`}
       data-selected={selected}
       data-hoverable
-      role="button"
+      role={selected ? undefined : 'button'}
       {...selectableProps(
         () => onSelect('title'),
         blockLabel(t, card.__typename)
@@ -145,6 +145,7 @@ function JourneyCardEdit({
           editing={selected}
           autoFocus={selected && focusField === 'title'}
           onSelect={() => onSelect('title')}
+          withinSelectable
           variant="h5"
           component="h3"
           sx={{ color: 'var(--campaign-band-heading)' }}
@@ -155,6 +156,7 @@ function JourneyCardEdit({
           editing={selected}
           autoFocus={selected && focusField === 'description'}
           onSelect={() => onSelect('description')}
+          withinSelectable
           variant="body2"
           sx={{ color: 'var(--campaign-band-muted)' }}
         />

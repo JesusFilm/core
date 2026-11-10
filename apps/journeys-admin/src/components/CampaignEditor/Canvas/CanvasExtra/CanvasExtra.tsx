@@ -39,7 +39,7 @@ export function CanvasExtra({
           data-testid={`CanvasExtra-${block.id}`}
           data-selected={selected}
           data-hoverable
-          role="button"
+          role={selected ? undefined : 'button'}
           {...selectable}
           sx={{
             position: 'relative',
@@ -60,6 +60,7 @@ export function CanvasExtra({
             editing={selected}
             autoFocus={selected && focusField === 'content'}
             onSelect={onSelect}
+            withinSelectable
             variant={block.typographyVariant ?? TypographyVariant.body1}
             variantMapping={{ overline: 'p', caption: 'p' }}
             align={block.align ?? undefined}
@@ -75,7 +76,7 @@ export function CanvasExtra({
           data-testid={`CanvasExtra-${block.id}`}
           data-selected={selected}
           data-hoverable
-          role="button"
+          role={selected ? undefined : 'button'}
           {...selectable}
           sx={{
             position: 'relative',
@@ -100,6 +101,7 @@ export function CanvasExtra({
           />
           <Button
             component="div"
+            role="presentation"
             variant={buttonVariant}
             size={block.size ?? 'medium'}
             data-testid="CanvasButton"
@@ -137,6 +139,7 @@ export function CanvasExtra({
               editing={selected}
               autoFocus={selected && focusField === 'label'}
               onSelect={onSelect}
+              withinSelectable
               variant="inherit"
               component="span"
               autoWidth

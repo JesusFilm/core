@@ -341,6 +341,10 @@ describe('JourneyListEdit', () => {
       const card = screen.getByTestId('JourneyCard-landingJourneyId')
       expect(card).toHaveAttribute('role', 'button')
       expect(card).toHaveAttribute('tabindex', '0')
+      for (const text of within(card).getAllByTestId(/^InlineText-/)) {
+        expect(text).not.toHaveAttribute('role', 'button')
+        expect(text).not.toHaveAttribute('tabindex')
+      }
 
       fireEvent.keyDown(card, { key })
 
@@ -350,6 +354,10 @@ describe('JourneyListEdit', () => {
       expect(
         screen.getByRole('textbox', { name: 'Journey title' })
       ).toHaveValue('The outreach story')
+      for (const field of within(card).getAllByRole('textbox')) {
+        expect(field.closest('[role="button"], button')).toBeNull()
+        expect(fireEvent.keyDown(field, { key })).toBe(true)
+      }
     }
   )
 

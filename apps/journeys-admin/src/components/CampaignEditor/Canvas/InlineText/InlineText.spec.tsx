@@ -101,6 +101,39 @@ describe('InlineText', () => {
     expect(screen.getByTestId('InlineText-title')).toHaveTextContent('Title')
   })
 
+  it.each(['Enter', ' '])('selects standalone text on %j', (key) => {
+    const onSelect = vi.fn()
+    renderText({ editing: false, onSelect })
+
+    const text = screen.getByRole('button', { name: 'Title' })
+    expect(text).toHaveAttribute('tabindex', '0')
+    fireEvent.keyDown(text, { key })
+    expect(onSelect).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(['text', 'paragraphs', 'bullets'] as const)(
+    'lets the host provide keyboard selection for %s while retaining click selection',
+    (display) => {
+      const onSelect = vi.fn()
+      renderText({
+        editing: false,
+        withinSelectable: true,
+        onSelect,
+        display,
+        target: {
+          block: { ...hero, title: 'First\n\nSecond' },
+          field: 'title'
+        }
+      })
+
+      const text = screen.getByTestId('InlineText-title')
+      expect(text).not.toHaveAttribute('role', 'button')
+      expect(text).not.toHaveAttribute('tabindex')
+      fireEvent.click(text)
+      expect(onSelect).toHaveBeenCalledTimes(1)
+    }
+  )
+
   describe('display', () => {
     const text = 'First line\nstill first\n\nSecond'
     const target: CampaignTextTarget = {

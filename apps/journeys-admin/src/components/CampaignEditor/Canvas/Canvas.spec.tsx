@@ -1,5 +1,11 @@
 import Button from '@mui/material/Button'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
 import { GET_CAMPAIGN_STATS } from '@core/journeys/ui/Campaign'
@@ -539,6 +545,32 @@ describe('Canvas', () => {
       'Pick your region to find a journey in your language, ready to share.'
     )
   })
+
+  it.each([
+    ['heroButtonId', 'label'],
+    ['journeyListNoteId', 'content']
+  ])(
+    'keeps the %s Extra editable outside button semantics',
+    async (id, field) => {
+      const { baseElement } = renderCanvas()
+      const body = await frameBody(baseElement, `CanvasExtra-${id}`)
+      const host = body.querySelector(`[data-testid="CanvasExtra-${id}"]`)!
+      const text = host.querySelector(`[data-testid="InlineText-${field}"]`)!
+      expect(host).toHaveAttribute('role', 'button')
+      expect(text).not.toHaveAttribute('role', 'button')
+      expect(text).not.toHaveAttribute('tabindex')
+
+      fireEvent.click(text)
+
+      const input = await within(body).findByRole('textbox', {
+        name: field === 'label' ? 'Button' : 'Your text'
+      })
+      expect(input).toHaveFocus()
+      expect(input.closest('[role="button"], button')).toBeNull()
+      expect(fireEvent.keyDown(input, { key: ' ' })).toBe(true)
+      expect(fireEvent.keyDown(input, { key: 'Enter' })).toBe(true)
+    }
+  )
 
   it('selects an Extra on click and the campaign on the empty frame', async () => {
     const { baseElement } = renderCanvas()

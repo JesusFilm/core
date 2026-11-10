@@ -306,6 +306,15 @@ describe('RegionSwitcherEdit', () => {
     await waitFor(() =>
       expect(screen.getByRole('textbox', { name: 'Your text' })).toBeVisible()
     )
+    const line = screen.getByTestId('RegionLineEdit-eurLineId')
+    expect(line).not.toHaveStyle({ opacity: '0.5' })
+    expect(within(line).getByTestId('SelectionBadge')).toHaveAttribute(
+      'data-state',
+      'selected'
+    )
+
+    fireEvent.click(screen.getByTestId('RegionCardEdit-eurRegionId'))
+    expect(line).toHaveStyle({ opacity: '0.5' })
   })
 
   it('fades a pill’s Region Lines and notes they are not shown in pills', async () => {
@@ -543,12 +552,18 @@ describe('RegionSwitcherEdit', () => {
 
       const line = screen.getByTestId('RegionLineEdit-eurLineId')
       expect(line).toHaveAttribute('role', 'button')
+      const text = within(line).getByTestId('InlineText-content')
+      expect(text).not.toHaveAttribute('role', 'button')
+      expect(text).not.toHaveAttribute('tabindex')
       fireEvent.keyDown(line, { key })
 
       expect(screen.getByTestId('SelectionKind')).toHaveTextContent('text')
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
         'eurLineId'
       )
+      const field = within(line).getByRole('textbox', { name: 'Your text' })
+      expect(field.closest('[role="button"], button')).toBeNull()
+      expect(fireEvent.keyDown(field, { key })).toBe(true)
     }
   )
 

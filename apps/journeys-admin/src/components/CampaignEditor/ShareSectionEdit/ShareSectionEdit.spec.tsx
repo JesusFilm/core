@@ -27,6 +27,7 @@ import { campaignWithRegions, eurEnglish, eurFrench } from '../data'
 import {
   CommandProbe,
   QueriedEditor,
+  SelectionProbe,
   UndoRedo,
   holdRequests,
   landRequests
@@ -406,7 +407,8 @@ function withEnglish(english: typeof eurEnglish): typeof campaignWithRegions {
 
 function renderShare(
   campaignProp = campaignWithRegions,
-  previewLanguageId?: string
+  previewLanguageId?: string,
+  selectedBlockId = 'regionShareId'
 ): ReturnType<typeof render> {
   return render(
     <SnackbarProvider>
@@ -415,7 +417,7 @@ function renderShare(
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
-          selectedBlockId: 'regionShareId',
+          selectedBlockId,
           ...(previewLanguageId != null && { previewLanguageId })
         }}
         mocks={[
@@ -440,6 +442,7 @@ function renderShare(
       >
         <UndoRedo />
         <CommandProbe />
+        <SelectionProbe />
         <ShareSectionEdit block={{ id: 'regionShareId' }} />
       </QueriedEditor>
     </SnackbarProvider>
@@ -526,6 +529,41 @@ describe('ShareSectionEdit', () => {
       'ShareLanguageRow-496'
     ])
   })
+
+  it.each(['Enter', ' '])(
+    'selects a labelled Share Language container on %j without hiding its controls',
+    async (key) => {
+      renderShare(undefined, undefined, 'regionFooterId')
+      const row = await screen.findByTestId('ShareLanguageRow-496')
+      expect(row).not.toHaveAttribute('role', 'button')
+      expect(row).toHaveAttribute('tabindex', '0')
+      expect(row).toHaveAttribute(
+        'aria-label',
+        'Share language: Français (French)'
+      )
+      expect(screen.getByTestId('SelectedBlockId')).not.toHaveTextContent(
+        'regionShareId'
+      )
+
+      const pick = within(row).getByRole('button', { name: 'Pick a journey' })
+      expect(pick.closest('[role="button"]')).toBeNull()
+      fireEvent.click(pick)
+      const field = within(row).getByRole('textbox', {
+        name: 'or paste a link'
+      })
+      expect(field.closest('[role="button"], button')).toBeNull()
+      fireEvent.keyDown(field, { key })
+      expect(screen.getByTestId('SelectedBlockId')).not.toHaveTextContent(
+        'regionShareId'
+      )
+
+      row.focus()
+      fireEvent.keyDown(row, { key })
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'regionShareId'
+      )
+    }
+  )
 
   describe('Campaign Strings', () => {
     function withStrings(

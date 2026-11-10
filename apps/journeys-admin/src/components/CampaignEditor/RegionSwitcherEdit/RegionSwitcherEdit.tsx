@@ -205,14 +205,15 @@ function RegionCardEdit({
         {lines.map((line) => {
           if (line.__typename !== 'CampaignTypographyBlock') return null
           const lineVariant = line.typographyVariant ?? TypographyVariant.body1
+          const selected = selection.block?.id === line.id
           return (
             <Box
               key={line.id}
               id={line.id}
               data-testid={`RegionLineEdit-${line.id}`}
-              data-selected={selection.block?.id === line.id}
+              data-selected={selected}
               data-hoverable
-              role="button"
+              role={selected ? undefined : 'button'}
               {...selectableProps(
                 () => selectBlock(line.id),
                 regionLineLabel(t)
@@ -222,22 +223,23 @@ function RegionCardEdit({
                 width: '100%',
                 // Room for the line's badge above it, clear of the text before it.
                 mt: 1,
-                ...(linesHidden ? { opacity: 0.5 } : {}),
+                ...(linesHidden && !selected ? { opacity: 0.5 } : {}),
                 ...HOVER_OUTLINE_SX,
-                ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
+                ...(selected ? SELECTED_OUTLINE : {})
               }}
             >
               <SelectionBadge
                 id={line.id}
                 label={regionLineLabel(t)}
-                selected={selection.block?.id === line.id}
+                selected={selected}
               />
               <InlineText
                 target={{ block: line, field: 'content' }}
                 placeholder={t('Your text')}
-                editing={selection.block?.id === line.id}
-                autoFocus={selection.block?.id === line.id}
+                editing={selected}
+                autoFocus={selected}
                 onSelect={() => selectBlock(line.id)}
+                withinSelectable
                 variant={lineVariant}
                 variantMapping={{ overline: 'p', caption: 'p' }}
                 align={line.align ?? undefined}

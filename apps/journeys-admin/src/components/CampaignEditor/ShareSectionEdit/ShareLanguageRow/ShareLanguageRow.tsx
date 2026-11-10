@@ -186,7 +186,6 @@ export function ShareLanguageRow({
       data-testid={`ShareLanguageRow-${regionLanguage.languageId}`}
       data-state={state}
       data-hoverable
-      role="button"
       {...selectableProps(
         () => selectBlock(hostBlockId),
         `${shareLanguageLabel(t)}: ${regionLanguageLabel(regionLanguage)}`
