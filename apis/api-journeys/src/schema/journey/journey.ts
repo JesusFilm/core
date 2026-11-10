@@ -5,6 +5,7 @@ import {
 } from '@core/prisma/journeys/client'
 import { journeySimpleSchema } from '@core/shared/ai/journeySimpleTypes'
 
+import { Context } from '../authScopes'
 import { Block } from '../block/block'
 import { ThemeMode } from '../block/card/enums/themeMode'
 import { ThemeName } from '../block/card/enums/themeName'
@@ -15,7 +16,7 @@ import { Language } from '../language'
 import { UserJourneyRef } from '../userJourney/userJourney'
 
 import { JourneyMenuButtonIcon } from './enums'
-import { Action, journeyAcl } from './journey.acl'
+import { Action, Journey, journeyAcl } from './journey.acl'
 import { getSimpleJourney, updateSimpleJourney } from './simple'
 
 const Tag = builder.externalRef('Tag', builder.selection<{ id: string }>('id'))
@@ -26,6 +27,20 @@ Tag.implement({
     // No additional fields needed - this is just the external reference
   })
 })
+
+const customTrackingLabelReadOptions = {
+  nullable: true,
+  select: {
+    userJourneys: true,
+    team: { include: { userTeams: true } }
+  },
+  authScopes: (journey: Journey, _args: object, context: Context) => {
+    if (context.type !== 'authenticated') return false
+    if (journeyAcl(Action.Read, journey, context.user)) return true
+    // Update-only callers may read labels on their successful mutation response.
+    return { $granted: `journey:update-labels:${journey.id}` }
+  }
+} as const
 
 export const JourneyRef = builder.prismaObject('Journey', {
   shareable: true,
@@ -143,6 +158,28 @@ export const JourneyRef = builder.prismaObject('Journey', {
     }),
     template: t.exposeBoolean('template', {
       nullable: true
+    }),
+
+    custom1Label: t.string({
+      ...customTrackingLabelReadOptions,
+      description:
+        'Own template display label for custom1. Requires Journey Read permission or a successful Journey update response; never inherited from fromTemplateId.',
+      resolve: (journey) =>
+        journey.template === true ? journey.custom1Label : null
+    }),
+    custom2Label: t.string({
+      ...customTrackingLabelReadOptions,
+      description:
+        'Own template display label for custom2. Requires Journey Read permission or a successful Journey update response; never inherited from fromTemplateId.',
+      resolve: (journey) =>
+        journey.template === true ? journey.custom2Label : null
+    }),
+    custom3Label: t.string({
+      ...customTrackingLabelReadOptions,
+      description:
+        'Own template display label for custom3. Requires Journey Read permission or a successful Journey update response; never inherited from fromTemplateId.',
+      resolve: (journey) =>
+        journey.template === true ? journey.custom3Label : null
     }),
 
     // Image and Block References
