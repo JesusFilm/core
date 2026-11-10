@@ -75,71 +75,78 @@ async function assertPreviousUidIsStale(previousUserId: string): Promise<void> {
 // UserJourney, UserTeam, UserRole, JourneyProfile; api-media: UserMediaRole,
 // UserMediaProfile) stay keyed to the old UID, so the user gets their profile
 // back but not their journeys, teams or roles.
+//
+// No step here runs inside a `prisma.$transaction`: the update's own WHERE
+// guard (id + userId + email + superAdmin) is what makes the write safe under
+// a concurrent relink or email change, not transactional isolation (Postgres'
+// default Read Committed gives each statement its own snapshot regardless).
+// A wrapping transaction would only hold a pooled connection open across the
+// `assertPreviousUidIsStale` network round-trip below without adding any
+// correctness, and could abort on Prisma's interactive-transaction timeout if
+// Firebase is slow.
 async function relinkUserToFirebaseUid(
   email: string,
   userId: string
 ): Promise<User> {
-  return await prisma.$transaction(async (tx) => {
-    const holder = await tx.user.findUnique({ where: { email } })
-    if (holder == null) {
-      // Another concurrent call may have already relinked this exact
-      // mixed-case email and normalized the row's email to lowercase as
-      // part of that write, so this lookup by the original string no
-      // longer matches anything. Check by userId before giving up, same
-      // recovery as the update-conflict branch below.
-      const relinkedByOtherCall = await tx.user.findUnique({
-        where: { userId }
-      })
-      if (relinkedByOtherCall != null) return relinkedByOtherCall
-      throw new Error('User row holding the email disappeared during re-link')
-    }
-    if (holder.userId === userId) return holder
-    // A superAdmin row's email can be orphaned (e.g. the admin moved on and
-    // the address was reassigned), so an unrelated person later verifying it
-    // must not inherit the privilege. Surface the same conflict as an
-    // unverified email instead of relinking.
-    if (holder.superAdmin) throw new UserEmailConflictError()
+  const holder = await prisma.user.findUnique({ where: { email } })
+  if (holder == null) {
+    // Another concurrent call may have already relinked this exact
+    // mixed-case email and normalized the row's email to lowercase as
+    // part of that write, so this lookup by the original string no
+    // longer matches anything. Check by userId before giving up, same
+    // recovery as the update-conflict branch below.
+    const relinkedByOtherCall = await prisma.user.findUnique({
+      where: { userId }
+    })
+    if (relinkedByOtherCall != null) return relinkedByOtherCall
+    throw new Error('User row holding the email disappeared during re-link')
+  }
+  if (holder.userId === userId) return holder
+  // A superAdmin row's email can be orphaned (e.g. the admin moved on and
+  // the address was reassigned), so an unrelated person later verifying it
+  // must not inherit the privilege. Surface the same conflict as an
+  // unverified email instead of relinking.
+  if (holder.superAdmin) throw new UserEmailConflictError()
 
-    const normalizedEmail = email.trim().toLowerCase()
-    if (normalizedEmail !== holder.email) {
-      // The unique index on email is case-sensitive, so a lowercase row can
-      // already coexist with this mixed-case holder. Normalizing the
-      // holder's email would collide with it and raise a raw P2002 instead
-      // of the typed conflict error below.
-      const lowercaseCollision = await tx.user.findUnique({
-        where: { email: normalizedEmail }
-      })
-      if (lowercaseCollision != null) throw new UserEmailConflictError()
-    }
+  const normalizedEmail = email.trim().toLowerCase()
+  if (normalizedEmail !== holder.email) {
+    // The unique index on email is case-sensitive, so a lowercase row can
+    // already coexist with this mixed-case holder. Normalizing the
+    // holder's email would collide with it and raise a raw P2002 instead
+    // of the typed conflict error below.
+    const lowercaseCollision = await prisma.user.findUnique({
+      where: { email: normalizedEmail }
+    })
+    if (lowercaseCollision != null) throw new UserEmailConflictError()
+  }
 
-    await assertPreviousUidIsStale(holder.userId)
+  await assertPreviousUidIsStale(holder.userId)
 
-    try {
-      const relinked = await tx.user.update({
-        where: {
-          id: holder.id,
-          userId: holder.userId,
-          email,
-          superAdmin: false
-        },
-        data: { userId, emailVerified: true, email: normalizedEmail }
-      })
-      logger.warn(
-        { userRowId: holder.id, previousUserId: holder.userId, userId },
-        'findOrFetchUser: re-linked User on verified email'
-      )
-      return relinked
-    } catch (error) {
-      if (!isRecordNotFoundError(error)) throw error
-      // Another concurrent call relinked this row between our read above
-      // and this update, so the userId guard lost the race safely.
-      const relinkedByOtherCall = await tx.user.findUnique({
-        where: { userId }
-      })
-      if (relinkedByOtherCall == null) throw error
-      return relinkedByOtherCall
-    }
-  })
+  try {
+    const relinked = await prisma.user.update({
+      where: {
+        id: holder.id,
+        userId: holder.userId,
+        email,
+        superAdmin: false
+      },
+      data: { userId, emailVerified: true, email: normalizedEmail }
+    })
+    logger.warn(
+      { userRowId: holder.id, previousUserId: holder.userId, userId },
+      'findOrFetchUser: re-linked User on verified email'
+    )
+    return relinked
+  } catch (error) {
+    if (!isRecordNotFoundError(error)) throw error
+    // Another concurrent call relinked this row between our read above
+    // and this update, so the userId guard lost the race safely.
+    const relinkedByOtherCall = await prisma.user.findUnique({
+      where: { userId }
+    })
+    if (relinkedByOtherCall == null) throw error
+    return relinkedByOtherCall
+  }
 }
 
 // The create lost to a unique constraint. Either a concurrent call already
