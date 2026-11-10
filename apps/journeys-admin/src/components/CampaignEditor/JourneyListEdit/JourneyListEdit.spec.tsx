@@ -20,11 +20,12 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_ACCESSIBLE_JOURNEYS } from '../../../libs/useCampaignAccessibleJourneysLazyQuery'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
-import { CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT } from '../../../libs/useCampaignBlockTextMutation'
+import { CAMPAIGN_JOURNEY_BLOCK_UPDATE } from '../../../libs/useCampaignBlockUpdateMutation'
 import { CAMPAIGN_JOURNEY_BLOCK_CREATE } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../libs/useCampaignJourneyByLinkLazyQuery'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { campaign } from '../data'
 import { QueriedEditor, SelectionProbe } from '../testing'
 
 import { JourneyListEdit } from './JourneyListEdit'
@@ -140,7 +141,7 @@ const createFailureMock = {
 
 const titleUpdateMock = {
   request: {
-    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
+    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE,
     variables: {
       id: 'landingJourneyId',
       input: { title: 'Outreach, retold' }
@@ -149,6 +150,7 @@ const titleUpdateMock = {
   result: vi.fn(() => ({
     data: {
       campaignJourneyBlockUpdate: {
+        ...campaign.blocks.find((block) => block.id === 'landingJourneyId'),
         __typename: 'CampaignJourneyBlock',
         id: 'landingJourneyId',
         title: 'Outreach, retold',

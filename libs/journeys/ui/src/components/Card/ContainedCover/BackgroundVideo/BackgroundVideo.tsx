@@ -12,6 +12,11 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
+import { disableVisibleTextTracks } from '../../../Video/utils/disableVisibleTextTracks'
+import { getYouTubePlayer } from '../../../Video/utils/getYouTubePlayer'
+import { unloadYouTubeCaptions } from '../../../Video/utils/unloadYouTubeCaptions'
+import VideoJsPlayer from '../../../Video/utils/videoJsTypes'
+import { YoutubeTech } from '../../../Video/utils/videoJsTypes/YoutubeTech'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
@@ -116,6 +121,61 @@ export function BackgroundVideo({
       })
     }
   }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
+
+  // Background videos never show captions, whatever the source or subtitle
+  // setting: like muted and autoplay, they have no controls to change it.
+  // Streams bring their own tracks (e.g. iOS Safari auto-selects the
+  // AUTOSELECT=YES track in Mux and library HLS manifests), so turn every
+  // track off as it arrives and whenever the browser switches one on
+  useEffect(() => {
+    const player = playerRef.current as VideoJsPlayer | null
+    if (player == null) return
+
+    const textTracks = player.textTracks?.()
+    const handleTextTracksChange = (): void => disableVisibleTextTracks(player)
+    handleTextTracksChange()
+    textTracks?.addEventListener('addtrack', handleTextTracksChange)
+    textTracks?.addEventListener('change', handleTextTracksChange)
+    return () => {
+      textTracks?.removeEventListener('addtrack', handleTextTracksChange)
+      textTracks?.removeEventListener('change', handleTextTracksChange)
+    }
+  }, [])
+
+  // YouTube draws captions inside its iframe, outside video.js text tracks,
+  // and can load its captions module at any point (signalled by
+  // onApiChange), e.g. for a viewer whose account always shows captions
+  useEffect(() => {
+    const player = playerRef.current as VideoJsPlayer | null
+    if (player == null || !isYouTube) return
+
+    const handlePlaying = (): void => {
+      unloadYouTubeCaptions(getYouTubePlayer(player))
+    }
+    let isCleanedUp = false
+    let ytPlayer: YoutubeTech['ytPlayer'] | null = null
+    const handleApiChange = (): void => {
+      // Unloading fires onApiChange again, so only unload a loaded module.
+      // getOptions is undocumented; without it, leave unloading to 'playing'
+      const loadedModules = ytPlayer?.getOptions?.()
+      if (loadedModules == null) return
+      if (!loadedModules.includes('captions') && !loadedModules.includes('cc'))
+        return
+      unloadYouTubeCaptions(ytPlayer)
+    }
+
+    player.on('playing', handlePlaying)
+    player.ready(() => {
+      if (isCleanedUp) return
+      ytPlayer = getYouTubePlayer(player)
+      ytPlayer?.addEventListener?.('onApiChange', handleApiChange)
+    })
+    return () => {
+      isCleanedUp = true
+      player.off('playing', handlePlaying)
+      ytPlayer?.removeEventListener?.('onApiChange', handleApiChange)
+    }
+  }, [isYouTube])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()

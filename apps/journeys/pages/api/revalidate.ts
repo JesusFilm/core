@@ -4,9 +4,12 @@ import type { NextApiRequest, NextApiResponse } from 'next'
  * Resolve the Next.js page path to revalidate. The revalidate worker's
  * `paths[]` job sends an explicit `path` (campaign pages are not addressed
  * by a journey slug); the journey job sends `slug` and optionally `hostname`.
+ * A repeated `path` is refused rather than joined into one: the worker never
+ * sends one, so it is a misuse worth seeing.
  */
 function resolvePath(query: NextApiRequest['query']): string | null {
-  const path = query.path?.toString()
+  const { path } = query
+  if (Array.isArray(path)) return null
   if (path != null) return path.startsWith('/') ? path : null
   const slug = query.slug?.toString()
   if (slug == null) return null
@@ -28,7 +31,7 @@ export default async function handler(
 
   const path = resolvePath(req.query)
   if (path == null) {
-    return res.status(400).json({ message: 'Missing path or slug' })
+    return res.status(400).json({ message: 'Missing or invalid path or slug' })
   }
 
   try {

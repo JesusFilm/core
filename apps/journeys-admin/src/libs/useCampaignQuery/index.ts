@@ -1,2 +1,9 @@
-export { CAMPAIGN_FIELDS } from './campaignFields'
+export {
+  CAMPAIGN_BLOCK_TRANSLATION_FIELDS,
+  CAMPAIGN_FIELDS,
+  CAMPAIGN_LANGUAGE_FIELDS,
+  CAMPAIGN_REGION_FIELDS,
+  CAMPAIGN_REGION_LANGUAGE_FIELDS,
+  TRANSLATED_VALUE_FIELDS
+} from './campaignFields'
 export { GET_CAMPAIGN, useCampaignQuery } from './useCampaignQuery'
