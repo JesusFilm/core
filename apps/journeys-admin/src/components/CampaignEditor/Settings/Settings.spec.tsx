@@ -599,7 +599,7 @@ describe('Settings', () => {
               variables: {
                 campaignId: 'campaignId',
                 languageId: FRENCH,
-                mode: 'missing'
+                mode: CampaignAiTranslateMode.missing
               }
             },
             delay: 1000,
