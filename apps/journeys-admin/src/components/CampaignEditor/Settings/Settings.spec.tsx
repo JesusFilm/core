@@ -25,7 +25,8 @@ import { campaign, publishedCampaign } from '../data'
 import {
   TranslationRun,
   TranslationRunContext,
-  TranslationRunProvider
+  TranslationRunProvider,
+  useTranslationRun
 } from '../TranslationRunProvider'
 
 import { Settings, shapeSlug } from './Settings'
@@ -42,6 +43,11 @@ function CommandCount(): ReactElement {
   return <span data-testid="CommandCount">{state.commands.length}</span>
 }
 
+function RunProbe(): ReactElement {
+  const { run } = useTranslationRun()
+  return <span data-testid="SharedRun">{run?.languageName ?? 'idle'}</span>
+}
+
 /** The real provider, or a fixed run in flight when one is given. */
 function RunScope({
   run,
@@ -51,7 +57,7 @@ function RunScope({
   children: ReactNode
 }): ReactElement {
   if (run == null)
-    return <TranslationRunProvider>{children}</TranslationRunProvider>
+    return <TranslationRunProvider><RunProbe />{children}</TranslationRunProvider>
   return (
     <TranslationRunContext.Provider
       value={{ run, start: vi.fn(), cancel: vi.fn() }}
@@ -532,6 +538,7 @@ describe('Settings', () => {
           campaignAiTranslateSubscription: {
             __typename: 'CampaignAiTranslateProgress',
             progress: 100,
+            translatedCount: 3,
             message: 'Translation completed!',
             campaign: {
               __typename: 'Campaign',
@@ -565,7 +572,7 @@ describe('Settings', () => {
                 mode: CampaignAiTranslateMode.missing
               }
             },
-            delay: 20,
+            delay: 1000,
             result: sweep
           },
           updateMock({ result: swapped }),
@@ -593,6 +600,9 @@ describe('Settings', () => {
         })
       )
 
+      expect(screen.getByTestId('SharedRun')).toHaveTextContent('Français')
+      await waitFor(() => expect(screen.queryByTestId('CampaignDefaultLanguageDialog')).not.toBeInTheDocument())
+      expect(onDefaultLanguageChanged).not.toHaveBeenCalled()
       await waitFor(() => expect(onDefaultLanguageChanged).toHaveBeenCalled())
       expect(sweep).toHaveBeenCalled()
       expect(swapped).toHaveBeenCalled()
