@@ -61,7 +61,7 @@ export function useCampaignTranslationCommand(): CampaignTranslationCommand {
 
     function currentBlock(): CampaignBlockTranslationFields | null {
       return cache.readFragment<CampaignBlockTranslationFields>({
-        id: cache.identify(block),
+        id: cache.identify({ __typename: block.__typename, id: block.id }),
         fragment: CAMPAIGN_BLOCK_TRANSLATION_FIELDS,
         fragmentName: 'CampaignBlockTranslationFields',
         optimistic: true

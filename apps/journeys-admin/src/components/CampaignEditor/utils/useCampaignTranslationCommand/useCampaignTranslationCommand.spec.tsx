@@ -12,18 +12,18 @@ import {
   CampaignTextField,
   CampaignTextSource
 } from '../../../../../__generated__/globalTypes'
-import { translationValue } from '../../../../libs/useCampaignBlockTextMutation'
 import { MutationQueueLink } from '../../../../libs/apolloClient/MutationQueueLink'
+import { translationValue } from '../../../../libs/useCampaignBlockTextMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign, withEmptyTranslations } from '../../data'
 import {
   CommandProbe,
-  getCampaignMockFor,
   QueriedEditor,
   SelectionProbe,
   SpyMock,
-  UndoRedo
+  UndoRedo,
+  getCampaignMockFor
 } from '../../testing'
 
 import { useCampaignTranslationCommand } from './useCampaignTranslationCommand'
