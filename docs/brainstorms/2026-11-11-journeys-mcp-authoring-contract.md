@@ -20,21 +20,21 @@ The review artifact is [the single-file authoring prototype](./2026-11-11-journe
 
 ## What the code actually does today
 
-| Gesture or constraint | Evidence in the current implementation | Consequence for the command contract |
-| --- | --- | --- |
-| Blank creation | `useJourneyCreateMutation` sends seven root writes: Journey, Step, Card, cover Image, heading, body and caption. It generates the structural IDs in the browser. [Document and defaults](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/libs/useJourneyCreateMutation/useJourneyCreateMutation.ts#L26-L151). | One GraphQL document is not one database transaction. The new backend create command must commit all seven pieces together and return their IDs. |
-| Creation status and side effects | `journeyCreate` creates an owner in its transaction, sets `status: 'published'` and `publishedAt`, then submits two Plausible jobs outside the transaction. The catch handles every unique-constraint violation by changing the slug. [Resolver](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyCreate.mutation.ts#L36-L118). | Calling this resolver and subsequently changing status risks a published intermediate state. Add a draft-specific command. Persist an outbox with the draft; distinguish a slug collision from a duplicate operation or Journey ID. |
-| Connected Step | `useCreateStepFromStep` creates a Step and Card, then replaces the source Step's `nextBlockId`. The browser supplies x/y coordinates. [Mutation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/libs/useCreateStepFromStep/useCreateStepFromStep.ts#L95-L121), [variables](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/libs/useCreateStepFromStep/useCreateStepFromStep.ts#L193-L213). | A new screen needs a Step and exactly one Card. A continuation edge and an answer action are different fields. A command must name which edge changes and leave the others alone. |
-| Branch from a choice | `useCreateStepFromAction` creates a Step/Card and calls `blockUpdateAction` on the source block with the new Step ID, preserving `gtmEventName`. [Variables](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/libs/useCreateStepFromAction/useCreateStepFromAction.ts#L242-L261). | Never infer that changing Yes also changes No or the Step default. Preserve unrelated action metadata. |
-| Radio poll | `NewRadioQuestionButton` sends three writes, one RadioQuestion and two RadioOptions. The options initially have no action. [Mutation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/AddBlock/NewRadioQuestionButton/NewRadioQuestionButton.tsx#L24-L49), [initial objects and inputs](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/AddBlock/NewRadioQuestionButton/NewRadioQuestionButton.tsx#L70-L119). | `poll_add` owns both options and both destinations. The question prompt is a sibling Typography block, since the RadioQuestion itself has no prompt text field. |
-| Option click | `RadioOption` passes its action to `handleAction`. A null action returns without navigation; navigation calls `nextActiveBlock` with `action.blockId`. Website addressing only recognizes a Step. [Option](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/libs/journeys/ui/src/components/RadioOption/RadioOption.tsx#L38-L43), [action handler](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/libs/journeys/ui/src/libs/action/action.ts#L19-L27), [Step slug](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/libs/journeys/ui/src/libs/action/getNextStepSlug.ts#L9-L20). | Do not describe a null option action as "use the default continuation." For the worked poll, both answers get explicit Step destinations. |
-| Block creation checks | `validateParentBlock` checks journey membership and `deletedAt`, but not parent typename. Card and RadioOption creation call it before their separate transactions and append using sibling count. [Parent validation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/service.ts#L44-L60), [Card create](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/card/cardBlockCreate.mutation.ts#L27-L49), [option create](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/radioOption/radioOptionBlockCreate.mutation.ts#L27-L49). | Recheck ancestry and the allowed type relationship in the aggregate transaction. A live child of a deleted ancestor is not an editable parent. |
-| Navigation validation | The specialized navigation mutation authorizes the source, checks action eligibility and non-null destination, then connects by destination ID. It does not check that destination's journey, Step type or deleted ancestry. The generic action mutation additionally rejects the containing Step. `stepBlockUpdate` rejects only a self continuation before the shared update. [Specialized navigation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/action/navigateToBlockAction/blockUpdateNavigateToBlockAction.mutation.ts#L28-L88), [generic action](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/action/blockUpdateAction.mutation.ts#L156-L187), [Step update](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/step/stepBlockUpdate.mutation.ts#L27-L40). | Add uniform same-journey live-Step validation. An ID or a foreign key is not sufficient proof. This is a code-level gap, not a demonstrated production exploit. |
-| Existing text | `typographyBlockUpdate` patches one ID and merges supplied settings. The shared block update transaction advances `Journey.updatedAt`. [Typography](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/typography/typographyBlockUpdate.mutation.ts#L22-L34), [shared update](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/service.ts#L155-L199). | Retain this narrow-edit behavior, with a transaction-bound expected revision added. |
-| Action-only changes | The navigation resolver upserts Action directly; `blockDeleteAction` directly deletes it. Their customizable recalculation immediately returns for ordinary journeys. [Navigation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/action/navigateToBlockAction/blockUpdateNavigateToBlockAction.mutation.ts#L71-L88), [delete](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/action/blockDeleteAction.mutation.ts#L56-L61), [recalculation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts#L45-L60). | `updatedAt` cannot serve as the concurrency token. Add one monotonically increasing Journey revision shared by Admin and MCP. |
-| Compact AI shape | `simplifyJourney` selects the first matching heading/body/button and gives Steps synthetic card IDs. `updateSimpleJourney` soft-deletes all active blocks and creates replacements. [Projection](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/simple/simplifyJourney.ts#L12-L108), [replacement](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/simple/updateSimpleJourney.ts#L138-L185). | This is unsuitable for editing an existing Admin journey. Keep unsupported blocks and all their IDs in storage. A readable outline must not become a write-back format. |
-| Video creation | The resolver fetches provider metadata for YouTube/Mux, creates a video and checks the one-video-per-parent rule in a transaction. Internal video validation accepts optional IDs, and Mux metadata can lack playback readiness. [Resolver](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/video/videoBlockCreate.mutation.ts#L54-L153), [source schemas and readiness](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/video/service.ts#L13-L94). | Initial new video Steps use an existing playable internal catalog rendition returned by discovery. Do not accept uploads, arbitrary fetch URLs or unready media through this command. Preserve other existing sources. |
-| Template clone | `journeyDuplicate` checks source Read, constructs ID maps, creates the destination with Create authorization, and supports `duplicateAsDraft`. Blocks, references, actions, theme and chat buttons are then saved outside that initial transaction. Local templates remain templates unless `forceNonTemplate` is set. [Source and map](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyDuplicate.mutation.ts#L151-L204), [status and destination](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyDuplicate.mutation.ts#L259-L343), [separate writes](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyDuplicate.mutation.ts#L345-L442). | Do not wrap the current resolver and claim atomic adoption. Require source visibility, destination Create and grant checks, a consistent source revision, complete remapping, and one commit before advertising adoption. |
+| Gesture or constraint            | Evidence in the current implementation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Consequence for the command contract                                                                                                                                                                                                |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Blank creation                   | `useJourneyCreateMutation` sends seven root writes: Journey, Step, Card, cover Image, heading, body and caption. It generates the structural IDs in the browser. [Document and defaults](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/libs/useJourneyCreateMutation/useJourneyCreateMutation.ts#L26-L151).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | One GraphQL document is not one database transaction. The new backend create command must commit all seven pieces together and return their IDs.                                                                                    |
+| Creation status and side effects | `journeyCreate` creates an owner in its transaction, sets `status: 'published'` and `publishedAt`, then submits two Plausible jobs outside the transaction. The catch handles every unique-constraint violation by changing the slug. [Resolver](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyCreate.mutation.ts#L36-L118).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Calling this resolver and subsequently changing status risks a published intermediate state. Add a draft-specific command. Persist an outbox with the draft; distinguish a slug collision from a duplicate operation or Journey ID. |
+| Connected Step                   | `useCreateStepFromStep` creates a Step and Card, then replaces the source Step's `nextBlockId`. The browser supplies x/y coordinates. [Mutation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/libs/useCreateStepFromStep/useCreateStepFromStep.ts#L95-L121), [variables](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/libs/useCreateStepFromStep/useCreateStepFromStep.ts#L193-L213).                                                                                                                                                                                                                                                                                                                                                                                | A new screen needs a Step and exactly one Card. A continuation edge and an answer action are different fields. A command must name which edge changes and leave the others alone.                                                   |
+| Branch from a choice             | `useCreateStepFromAction` creates a Step/Card and calls `blockUpdateAction` on the source block with the new Step ID, preserving `gtmEventName`. [Variables](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/libs/useCreateStepFromAction/useCreateStepFromAction.ts#L242-L261).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Never infer that changing Yes also changes No or the Step default. Preserve unrelated action metadata.                                                                                                                              |
+| Radio poll                       | `NewRadioQuestionButton` sends three writes, one RadioQuestion and two RadioOptions. The options initially have no action. [Mutation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/AddBlock/NewRadioQuestionButton/NewRadioQuestionButton.tsx#L24-L49), [initial objects and inputs](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/AddBlock/NewRadioQuestionButton/NewRadioQuestionButton.tsx#L70-L119).                                                                                                                                                                                                                                                                                                                                        | `poll_add` owns both options and both destinations. The question prompt is a sibling Typography block, since the RadioQuestion itself has no prompt text field.                                                                     |
+| Option click                     | `RadioOption` passes its action to `handleAction`. A null action returns without navigation; navigation calls `nextActiveBlock` with `action.blockId`. Website addressing only recognizes a Step. [Option](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/libs/journeys/ui/src/components/RadioOption/RadioOption.tsx#L38-L43), [action handler](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/libs/journeys/ui/src/libs/action/action.ts#L19-L27), [Step slug](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/libs/journeys/ui/src/libs/action/getNextStepSlug.ts#L9-L20).                                                                                                                                                                                                                                                                                      | Do not describe a null option action as "use the default continuation." For the worked poll, both answers get explicit Step destinations.                                                                                           |
+| Block creation checks            | `validateParentBlock` checks journey membership and `deletedAt`, but not parent typename. Card and RadioOption creation call it before their separate transactions and append using sibling count. [Parent validation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/service.ts#L44-L60), [Card create](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/card/cardBlockCreate.mutation.ts#L27-L49), [option create](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/radioOption/radioOptionBlockCreate.mutation.ts#L27-L49).                                                                                                                                                                                                                               | Recheck ancestry and the allowed type relationship in the aggregate transaction. A live child of a deleted ancestor is not an editable parent.                                                                                      |
+| Navigation validation            | The specialized navigation mutation authorizes the source, checks action eligibility and non-null destination, then connects by destination ID. It does not check that destination's journey, Step type or deleted ancestry. The generic action mutation additionally rejects the containing Step. `stepBlockUpdate` rejects only a self continuation before the shared update. [Specialized navigation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/action/navigateToBlockAction/blockUpdateNavigateToBlockAction.mutation.ts#L28-L88), [generic action](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/action/blockUpdateAction.mutation.ts#L156-L187), [Step update](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/step/stepBlockUpdate.mutation.ts#L27-L40). | Add uniform same-journey live-Step validation. An ID or a foreign key is not sufficient proof. This is a code-level gap, not a demonstrated production exploit.                                                                     |
+| Existing text                    | `typographyBlockUpdate` patches one ID and merges supplied settings. The shared block update transaction advances `Journey.updatedAt`. [Typography](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/typography/typographyBlockUpdate.mutation.ts#L22-L34), [shared update](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/service.ts#L155-L199).                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Retain this narrow-edit behavior, with a transaction-bound expected revision added.                                                                                                                                                 |
+| Action-only changes              | The navigation resolver upserts Action directly; `blockDeleteAction` directly deletes it. Their customizable recalculation immediately returns for ordinary journeys. [Navigation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/action/navigateToBlockAction/blockUpdateNavigateToBlockAction.mutation.ts#L71-L88), [delete](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/action/blockDeleteAction.mutation.ts#L56-L61), [recalculation](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts#L45-L60).                                                                                                                                                                                                        | `updatedAt` cannot serve as the concurrency token. Add one monotonically increasing Journey revision shared by Admin and MCP.                                                                                                       |
+| Compact AI shape                 | `simplifyJourney` selects the first matching heading/body/button and gives Steps synthetic card IDs. `updateSimpleJourney` soft-deletes all active blocks and creates replacements. [Projection](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/simple/simplifyJourney.ts#L12-L108), [replacement](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/simple/updateSimpleJourney.ts#L138-L185).                                                                                                                                                                                                                                                                                                                                                                                                                              | This is unsuitable for editing an existing Admin journey. Keep unsupported blocks and all their IDs in storage. A readable outline must not become a write-back format.                                                             |
+| Video creation                   | The resolver fetches provider metadata for YouTube/Mux, creates a video and checks the one-video-per-parent rule in a transaction. Internal video validation accepts optional IDs, and Mux metadata can lack playback readiness. [Resolver](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/video/videoBlockCreate.mutation.ts#L54-L153), [source schemas and readiness](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/block/video/service.ts#L13-L94).                                                                                                                                                                                                                                                                                                                                                                            | Initial new video Steps use an existing playable internal catalog rendition returned by discovery. Do not accept uploads, arbitrary fetch URLs or unready media through this command. Preserve other existing sources.              |
+| Template clone                   | `journeyDuplicate` checks source Read, constructs ID maps, creates the destination with Create authorization, and supports `duplicateAsDraft`. Blocks, references, actions, theme and chat buttons are then saved outside that initial transaction. Local templates remain templates unless `forceNonTemplate` is set. [Source and map](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyDuplicate.mutation.ts#L151-L204), [status and destination](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyDuplicate.mutation.ts#L259-L343), [separate writes](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyDuplicate.mutation.ts#L345-L442).                                                                                         | Do not wrap the current resolver and claim atomic adoption. Require source visibility, destination Create and grant checks, a consistent source revision, complete remapping, and one commit before advertising adoption.           |
 
 ## Rights are enforced by the owning backend
 
@@ -44,13 +44,13 @@ For an ordinary journey, effective rights are the intersection of current Admin 
 
 The current `journeyAcl` is useful policy input, but it is not the complete settled MCP policy. It allows Read on every published template and gives publishers broad template rights. Its list filter does too. MCP must apply the stricter distinction below in the backend, consistently for lists and direct access. [Current ACL](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journey.acl.ts#L36-L113).
 
-| Resource | Required current user right, in addition to the operation grant |
-| --- | --- |
-| Ordinary journey | Journey Read for reads/preview, Update for draft editing, team Create for a new draft. |
-| Published global template | Signed-in catalog reader; identify global ownership using the backend's `jfp-team` rule, not a caller flag. |
-| Unpublished global template | Authoring access under the private-draft rules. Catalog access alone is insufficient. |
-| Team template | Current membership in the owning team. A public URL, direct journey collaborator role or publisher status alone is insufficient. |
-| Adopted destination | Team Create plus destination create grant. Source access does not imply destination access or the reverse. |
+| Resource                    | Required current user right, in addition to the operation grant                                                                  |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Ordinary journey            | Journey Read for reads/preview, Update for draft editing, team Create for a new draft.                                           |
+| Published global template   | Signed-in catalog reader; identify global ownership using the backend's `jfp-team` rule, not a caller flag.                      |
+| Unpublished global template | Authoring access under the private-draft rules. Catalog access alone is insufficient.                                            |
+| Team template               | Current membership in the owning team. A public URL, direct journey collaborator role or publisher status alone is insufficient. |
+| Adopted destination         | Team Create plus destination create grant. Source access does not imply destination access or the reverse.                       |
 
 MCP writes require `status === draft`, no deletion, trash or archive, and an ordinary authoring journey. The proposed initial commands do not mutate templates in place. Publishing is absent from the tool list and edit union. Admin's `journeyPublish` checks Manage, not merely Update. [Publish resolver](https://github.com/JesusFilm/core/blob/593400f9201d0b2acccea67835613639619bf527/apis/api-journeys/src/schema/journey/journeyPublish.mutation.ts#L18-L45). A user who can publish in Admin still cannot publish through MCP or use MCP to edit published content.
 
@@ -64,11 +64,11 @@ The fixed tool descriptions carry all operational teaching necessary for clients
 
 ### Read tools
 
-| Tool | Exact description proposed for `tools/list` | Input and bounded result |
-| --- | --- | --- |
-| `journeys_discover` | "Find resources this signed-in connection may use. Choose teams, journeys, templates or videos. Use returned stable IDs, never infer access from a public URL. Results report allowed operations; every later call checks rights again. Videos are existing playable catalog renditions for new video Steps." | `{kind: "teams" | "journeys" | "templates" | "videos", query?: string, teamId?: string, status?: "draft" | "published", cursor?: string, limit?: integer}`. `limit` defaults to 20, maximum 50; query maximum 200 characters. `teamId` is a filter, not an authorization assertion. `status` applies only to journeys/templates. Returns a discriminated item list and opaque next cursor. |
-| `journey_read` | "Read the current authorized journey outline and stable IDs before editing. A Step is a navigable screen; its Card holds content. Answer actions and Step default continuations are separate routes. Pass the returned revision to edit. Existing unsupported content is preserved; the outline is not a replacement document." | `{journeyId: string, stepIds?: string[], cursor?: string}`. At most 20 step IDs, bounded 100 content summaries per page, same revision across a paged read. Returns status, revision, editable capabilities, Step/Card/content IDs, typed edges, warnings and Admin link. Nested selections must belong to the authorized journey. |
-| `journey_preview` | "Get an authenticated preview handoff and a route checklist for an authorized journey revision. This does not publish or grant access to another person. The returned page rechecks access at open and playback time. Do not substitute the public URL. If preview is unavailable, report that and use the Admin editor link." | `{journeyId: string, expectedRevision: string, startStepId?: string}`. Returns preview availability, requested revision, Admin link, proposed authenticated preview link when implemented, and bounded route checklist. Any missing/inaccessible Step fails without disclosing another journey. |
+| Tool                | Exact description proposed for `tools/list`                                                                                                                                                                                                                                                                                     | Input and bounded result                                                                                                                                                                                                                                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `journeys_discover` | "Find resources this signed-in connection may use. Choose teams, journeys, templates or videos. Use returned stable IDs, never infer access from a public URL. Results report allowed operations; every later call checks rights again. Videos are existing playable catalog renditions for new video Steps."                   | `{kind: "teams"                                                                                                                                                                                                                                                                                                                    | "journeys" | "templates" | "videos", query?: string, teamId?: string, status?: "draft" | "published", cursor?: string, limit?: integer}`. `limit`defaults to 20, maximum 50; query maximum 200 characters.`teamId`is a filter, not an authorization assertion.`status` applies only to journeys/templates. Returns a discriminated item list and opaque next cursor. |
+| `journey_read`      | "Read the current authorized journey outline and stable IDs before editing. A Step is a navigable screen; its Card holds content. Answer actions and Step default continuations are separate routes. Pass the returned revision to edit. Existing unsupported content is preserved; the outline is not a replacement document." | `{journeyId: string, stepIds?: string[], cursor?: string}`. At most 20 step IDs, bounded 100 content summaries per page, same revision across a paged read. Returns status, revision, editable capabilities, Step/Card/content IDs, typed edges, warnings and Admin link. Nested selections must belong to the authorized journey. |
+| `journey_preview`   | "Get an authenticated preview handoff and a route checklist for an authorized journey revision. This does not publish or grant access to another person. The returned page rechecks access at open and playback time. Do not substitute the public URL. If preview is unavailable, report that and use the Admin editor link."  | `{journeyId: string, expectedRevision: string, startStepId?: string}`. Returns preview availability, requested revision, Admin link, proposed authenticated preview link when implemented, and bounded route checklist. Any missing/inaccessible Step fails without disclosing another journey.                                    |
 
 Discovery returns only relevant summaries. A team result has `id`, `name` and allowed create modes. A journey/template result has `id`, `title`, `status`, `teamId`, `allowedOperations`, and a template classification when relevant. A video result has `videoId`, `videoVariantLanguageId`, `title`, `languageName`, `durationSeconds` and `playable: true`. Do not return visitor data, membership rosters, analytics credentials, integration tokens or unrelated fields from a raw Prisma aggregate. Cursor state is bound to identity, grant, filters and resource kind; revoke it with access.
 
@@ -76,11 +76,11 @@ Discovery returns only relevant summaries. A team result has `id`, `name` and al
 
 ### Write commands
 
-| Tool | Exact description proposed for `tools/list` | Required input/result |
-| --- | --- | --- |
-| `journey_create_draft` | "Create one complete blank draft in an authorized team. The server creates the starter Step, Card, cover and text blocks atomically. Save the idempotency key before calling. If the response is lost, resend the exact arguments and key; do not make a new key. This cannot publish. Read/edit of the resulting draft requires a create-and-edit grant or separate rights." | `{teamId, title, languageId, idempotencyKey}`. Title 1–200 characters; IDs 1–200; key 16–128. Returns committed result, effective draft status, revision and IDs for starter Step, Card, cover, heading, body and caption. For create-only, return a minimal creation receipt and Admin link, not reusable content-read rights. |
-| `journey_edit_draft` | "Apply one complete typed edit to a draft, atomically. Read first and supply its revision. A route targets a Step ID, never a Card ID. Omitted blocks, fields and routes are preserved. A new poll requires two explicit Step destinations; a null answer action is not a default route. Use local keys to connect new Steps in the same call. The server supplies Cards, IDs, order and layout. Retry an uncertain result with the exact key and arguments. On revision conflict, read again, preserve unrelated changes, and submit a new key only if the user's intended change is still clear. Earlier human edits may be deliberately replaced; only edits after the read are stale. This cannot publish, edit published content, delete blocks or replace a journey." | `{journeyId, expectedRevision, idempotencyKey, operations}` using the union below. Returns IDs, changed fields/edges, resulting revision, preserved-route summary, warnings and Admin link. |
-| `template_adopt_draft`, conditional | "Copy an authorized template into an authorized team as one complete ordinary draft. Both source-read and destination-create permission are required. Supply the source revision from a fresh read. The server remaps all copied IDs and routes. Retry uncertain results with identical arguments and key. This never publishes or edits the source." | `{sourceTemplateId, expectedSourceRevision, destinationTeamId, title, idempotencyKey}`. No arbitrary substitutions initially. Returns original template reference, new ordinary draft ID, revision, copied Step IDs and Admin link only after the full copy commits. Do not advertise until its backend exists. |
+| Tool                                | Exact description proposed for `tools/list`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Required input/result                                                                                                                                                                                                                                                                                                           |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `journey_create_draft`              | "Create one complete blank draft in an authorized team. The server creates the starter Step, Card, cover and text blocks atomically. Save the idempotency key before calling. If the response is lost, resend the exact arguments and key; do not make a new key. This cannot publish. Read/edit of the resulting draft requires a create-and-edit grant or separate rights."                                                                                                                                                                                                                                                                                                                                                                                               | `{teamId, title, languageId, idempotencyKey}`. Title 1–200 characters; IDs 1–200; key 16–128. Returns committed result, effective draft status, revision and IDs for starter Step, Card, cover, heading, body and caption. For create-only, return a minimal creation receipt and Admin link, not reusable content-read rights. |
+| `journey_edit_draft`                | "Apply one complete typed edit to a draft, atomically. Read first and supply its revision. A route targets a Step ID, never a Card ID. Omitted blocks, fields and routes are preserved. A new poll requires two explicit Step destinations; a null answer action is not a default route. Use local keys to connect new Steps in the same call. The server supplies Cards, IDs, order and layout. Retry an uncertain result with the exact key and arguments. On revision conflict, read again, preserve unrelated changes, and submit a new key only if the user's intended change is still clear. Earlier human edits may be deliberately replaced; only edits after the read are stale. This cannot publish, edit published content, delete blocks or replace a journey." | `{journeyId, expectedRevision, idempotencyKey, operations}` using the union below. Returns IDs, changed fields/edges, resulting revision, preserved-route summary, warnings and Admin link.                                                                                                                                     |
+| `template_adopt_draft`, conditional | "Copy an authorized template into an authorized team as one complete ordinary draft. Both source-read and destination-create permission are required. Supply the source revision from a fresh read. The server remaps all copied IDs and routes. Retry uncertain results with identical arguments and key. This never publishes or edits the source."                                                                                                                                                                                                                                                                                                                                                                                                                       | `{sourceTemplateId, expectedSourceRevision, destinationTeamId, title, idempotencyKey}`. No arbitrary substitutions initially. Returns original template reference, new ordinary draft ID, revision, copied Step IDs and Admin link only after the full copy commits. Do not advertise until its backend exists.                 |
 
 The following is the normative argument union for the edit proposal. It is schema notation for review, not an implementation or a promise that TypeScript alone validates requests. Generate closed JSON Schema objects with `additionalProperties: false`, required fields as shown, and `oneOf` variants discriminated by `op` or `kind`.
 
@@ -97,9 +97,7 @@ type NewContent =
       videoId: Id
       videoVariantLanguageId: Id
     }
-type Edge =
-  | { kind: 'stepDefault'; stepId: Id }
-  | { kind: 'answer'; optionId: Id }
+type Edge = { kind: 'stepDefault'; stepId: Id } | { kind: 'answer'; optionId: Id }
 type Operation =
   | { op: 'text_set'; blockId: Id; text: string }
   | {
@@ -123,10 +121,7 @@ type Operation =
       cardId: Id
       placement: Placement
       prompt: string
-      answers: [
-        { key: LocalKey; label: string; destination: StepRef },
-        { key: LocalKey; label: string; destination: StepRef }
-      ]
+      answers: [{ key: LocalKey; label: string; destination: StepRef }, { key: LocalKey; label: string; destination: StepRef }]
     }
   | { op: 'route_set'; edge: Edge; destination: StepRef }
 type EditDraftInput = {
@@ -192,17 +187,7 @@ type WriteResult = {
 }
 type ToolError = {
   schemaVersion: 'journeys-authoring-v1'
-  code:
-    | 'ACCESS_DENIED_OR_NOT_FOUND'
-    | 'NOT_A_DRAFT'
-    | 'REVISION_CONFLICT'
-    | 'IDEMPOTENCY_KEY_REUSED'
-    | 'OPERATION_IN_PROGRESS'
-    | 'INVALID_GRAPH'
-    | 'UNSUPPORTED_EDIT'
-    | 'MEDIA_UNAVAILABLE'
-    | 'LIMIT_EXCEEDED'
-    | 'PREVIEW_UNAVAILABLE'
+  code: 'ACCESS_DENIED_OR_NOT_FOUND' | 'NOT_A_DRAFT' | 'REVISION_CONFLICT' | 'IDEMPOTENCY_KEY_REUSED' | 'OPERATION_IN_PROGRESS' | 'INVALID_GRAPH' | 'UNSUPPORTED_EDIT' | 'MEDIA_UNAVAILABLE' | 'LIMIT_EXCEEDED' | 'PREVIEW_UNAVAILABLE'
   message: string
   nextAction: 'reauthorize' | 'read_again' | 'correct_input' | 'retry_same_request' | 'open_admin'
   currentRevision?: string // only after current Read authorization
@@ -223,38 +208,38 @@ The transcript uses short synthetic IDs for readability. Production IDs are opaq
 ### Discover, create, then establish the initial continuation
 
 ```json
-{"name":"journeys_discover","arguments":{"kind":"teams","query":"Outreach","limit":20}}
+{ "name": "journeys_discover", "arguments": { "kind": "teams", "query": "Outreach", "limit": 20 } }
 ```
 
 ```json
-{"items":[{"id":"team-outreach","name":"Outreach","allowedOperations":["createDraft","readCreatedDraft","editCreatedDraft","previewCreatedDraft"],"grantMode":"create-and-edit"}],"nextCursor":null}
+{ "items": [{ "id": "team-outreach", "name": "Outreach", "allowedOperations": ["createDraft", "readCreatedDraft", "editCreatedDraft", "previewCreatedDraft"], "grantMode": "create-and-edit" }], "nextCursor": null }
 ```
 
 ```json
-{"name":"journeys_discover","arguments":{"kind":"videos","query":"Hope","limit":20}}
+{ "name": "journeys_discover", "arguments": { "kind": "videos", "query": "Hope", "limit": 20 } }
 ```
 
 ```json
-{"items":[{"videoId":"fixture-hope-film","videoVariantLanguageId":"529","title":"Hope film","languageName":"English","durationSeconds":120,"playable":true}],"nextCursor":null}
+{ "items": [{ "videoId": "fixture-hope-film", "videoVariantLanguageId": "529", "title": "Hope film", "languageName": "English", "durationSeconds": 120, "playable": true }], "nextCursor": null }
 ```
 
 ```json
-{"name":"journey_create_draft","arguments":{"teamId":"team-outreach","title":"Hope","languageId":"529","idempotencyKey":"5fb0d20b-b6fe-4321-9423-959ea25bc801"}}
+{ "name": "journey_create_draft", "arguments": { "teamId": "team-outreach", "title": "Hope", "languageId": "529", "idempotencyKey": "5fb0d20b-b6fe-4321-9423-959ea25bc801" } }
 ```
 
 ```json
 {
-  "schemaVersion":"journeys-authoring-v1",
-  "outcome":"committed",
-  "operationId":"op-create-hope",
-  "journeyId":"j-hope",
-  "committedRevision":"1",
-  "statusAtCommit":"draft",
-  "ids":{"starter.step":"s-start","starter.card":"c-start","starter.cover":"cover-start","starter.heading":"h-start","starter.body":"body-start","starter.caption":"caption-start"},
-  "changes":[{"kind":"step","ids":["s-start","c-start"],"summary":"Created complete starter Step and Card with cover and text."}],
-  "routes":[{"sourceKind":"stepDefault","sourceId":"s-start","destinationStepId":null}],
-  "warnings":[{"code":"STARTER_COPY","message":"Starter body and caption still contain default copy; review before publishing."}],
-  "editorUrl":"/journeys/j-hope"
+  "schemaVersion": "journeys-authoring-v1",
+  "outcome": "committed",
+  "operationId": "op-create-hope",
+  "journeyId": "j-hope",
+  "committedRevision": "1",
+  "statusAtCommit": "draft",
+  "ids": { "starter.step": "s-start", "starter.card": "c-start", "starter.cover": "cover-start", "starter.heading": "h-start", "starter.body": "body-start", "starter.caption": "caption-start" },
+  "changes": [{ "kind": "step", "ids": ["s-start", "c-start"], "summary": "Created complete starter Step and Card with cover and text." }],
+  "routes": [{ "sourceKind": "stepDefault", "sourceId": "s-start", "destinationStepId": null }],
+  "warnings": [{ "code": "STARTER_COPY", "message": "Starter body and caption still contain default copy; review before publishing." }],
+  "editorUrl": "/journeys/j-hope"
 }
 ```
 
@@ -263,26 +248,26 @@ A create-only grant can perform the create and receive the ID/status receipt, bu
 The first edit sets the heading, creates a continuation Step and attaches it. This establishes an explicit route that the subsequent poll can preserve. A truly blank draft has no pre-existing No answer; the transcript does not pretend otherwise.
 
 ```json
-{"name":"journey_read","arguments":{"journeyId":"j-hope"}}
+{ "name": "journey_read", "arguments": { "journeyId": "j-hope" } }
 ```
 
 Relevant result fields:
 
 ```json
-{"journeyId":"j-hope","status":"draft","revision":"1","complete":true,"steps":[{"id":"s-start","cardId":"c-start","defaultNextStepId":null,"content":[{"id":"h-start","typename":"TypographyBlock","text":"The Journey Is On","editable":true}]}],"editorUrl":"/journeys/j-hope"}
+{ "journeyId": "j-hope", "status": "draft", "revision": "1", "complete": true, "steps": [{ "id": "s-start", "cardId": "c-start", "defaultNextStepId": null, "content": [{ "id": "h-start", "typename": "TypographyBlock", "text": "The Journey Is On", "editable": true }] }], "editorUrl": "/journeys/j-hope" }
 ```
 
 ```json
 {
-  "name":"journey_edit_draft",
-  "arguments":{
-    "journeyId":"j-hope",
-    "expectedRevision":"1",
-    "idempotencyKey":"fb5a8150-6d26-4bf7-a3ce-6675f0dbd802",
-    "operations":[
-      {"op":"text_set","blockId":"h-start","text":"Where do you find hope?"},
-      {"op":"step_add","key":"continuation","title":"Continue at your own pace","content":[{"kind":"text","key":"continuation_body","text":"Thank you for exploring with us.","style":"body"}],"defaultNext":null},
-      {"op":"route_set","edge":{"kind":"stepDefault","stepId":"s-start"},"destination":{"newStep":"continuation"}}
+  "name": "journey_edit_draft",
+  "arguments": {
+    "journeyId": "j-hope",
+    "expectedRevision": "1",
+    "idempotencyKey": "fb5a8150-6d26-4bf7-a3ce-6675f0dbd802",
+    "operations": [
+      { "op": "text_set", "blockId": "h-start", "text": "Where do you find hope?" },
+      { "op": "step_add", "key": "continuation", "title": "Continue at your own pace", "content": [{ "kind": "text", "key": "continuation_body", "text": "Thank you for exploring with us.", "style": "body" }], "defaultNext": null },
+      { "op": "route_set", "edge": { "kind": "stepDefault", "stepId": "s-start" }, "destination": { "newStep": "continuation" } }
     ]
   }
 }
@@ -291,7 +276,7 @@ Relevant result fields:
 Relevant success fields:
 
 ```json
-{"outcome":"committed","operationId":"op-continuation","journeyId":"j-hope","committedRevision":"2","statusAtCommit":"draft","ids":{"continuation.step":"s-continue","continuation.card":"c-continue","continuation.heading":"h-continue","continuation_body":"body-continue"},"routes":[{"sourceKind":"stepDefault","sourceId":"s-start","destinationStepId":"s-continue"}],"editorUrl":"/journeys/j-hope"}
+{ "outcome": "committed", "operationId": "op-continuation", "journeyId": "j-hope", "committedRevision": "2", "statusAtCommit": "draft", "ids": { "continuation.step": "s-continue", "continuation.card": "c-continue", "continuation.heading": "h-continue", "continuation_body": "body-continue" }, "routes": [{ "sourceKind": "stepDefault", "sourceId": "s-start", "destinationStepId": "s-continue" }], "editorUrl": "/journeys/j-hope" }
 ```
 
 ### Add the two-answer poll and a video Step in one commit
@@ -300,14 +285,24 @@ Read revision 2, including `s-start.defaultNextStepId === s-continue`. Then send
 
 ```json
 {
-  "name":"journey_edit_draft",
-  "arguments":{
-    "journeyId":"j-hope",
-    "expectedRevision":"2",
-    "idempotencyKey":"b582cfb6-f507-4cfb-bf13-b8ca31ba9803",
-    "operations":[
-      {"op":"step_add","key":"film","title":"A story of hope","content":[{"kind":"video","key":"film_video","videoId":"fixture-hope-film","videoVariantLanguageId":"529"}],"defaultNext":{"stepId":"s-continue"}},
-      {"op":"poll_add","key":"choice","cardId":"c-start","placement":{"afterBlockId":"h-start"},"prompt":"Would you like to watch a short film?","answers":[{"key":"yes","label":"Yes","destination":{"newStep":"film"}},{"key":"no","label":"No","destination":{"stepId":"s-continue"}}]}
+  "name": "journey_edit_draft",
+  "arguments": {
+    "journeyId": "j-hope",
+    "expectedRevision": "2",
+    "idempotencyKey": "b582cfb6-f507-4cfb-bf13-b8ca31ba9803",
+    "operations": [
+      { "op": "step_add", "key": "film", "title": "A story of hope", "content": [{ "kind": "video", "key": "film_video", "videoId": "fixture-hope-film", "videoVariantLanguageId": "529" }], "defaultNext": { "stepId": "s-continue" } },
+      {
+        "op": "poll_add",
+        "key": "choice",
+        "cardId": "c-start",
+        "placement": { "afterBlockId": "h-start" },
+        "prompt": "Would you like to watch a short film?",
+        "answers": [
+          { "key": "yes", "label": "Yes", "destination": { "newStep": "film" } },
+          { "key": "no", "label": "No", "destination": { "stepId": "s-continue" } }
+        ]
+      }
     ]
   }
 }
@@ -317,25 +312,25 @@ The question prompt and RadioQuestion are adjacent after `h-start`; existing bod
 
 ```json
 {
-  "schemaVersion":"journeys-authoring-v1",
-  "outcome":"committed",
-  "operationId":"op-poll-film",
-  "journeyId":"j-hope",
-  "committedRevision":"3",
-  "statusAtCommit":"draft",
-  "ids":{"film.step":"s-film","film.card":"c-film","film.heading":"h-film","film_video":"v-film","choice.prompt":"h-question","choice.question":"q-choice","choice.yes":"o-yes","choice.no":"o-no"},
-  "changes":[
-    {"kind":"step","ids":["s-film","c-film","h-film","v-film"],"summary":"Added a connected video Step; its default continuation is s-continue."},
-    {"kind":"poll","ids":["h-question","q-choice","o-yes","o-no"],"summary":"Added Yes and No with explicit destinations. Existing text and default continuation preserved."}
+  "schemaVersion": "journeys-authoring-v1",
+  "outcome": "committed",
+  "operationId": "op-poll-film",
+  "journeyId": "j-hope",
+  "committedRevision": "3",
+  "statusAtCommit": "draft",
+  "ids": { "film.step": "s-film", "film.card": "c-film", "film.heading": "h-film", "film_video": "v-film", "choice.prompt": "h-question", "choice.question": "q-choice", "choice.yes": "o-yes", "choice.no": "o-no" },
+  "changes": [
+    { "kind": "step", "ids": ["s-film", "c-film", "h-film", "v-film"], "summary": "Added a connected video Step; its default continuation is s-continue." },
+    { "kind": "poll", "ids": ["h-question", "q-choice", "o-yes", "o-no"], "summary": "Added Yes and No with explicit destinations. Existing text and default continuation preserved." }
   ],
-  "routes":[
-    {"sourceKind":"answer","sourceId":"o-yes","destinationStepId":"s-film"},
-    {"sourceKind":"answer","sourceId":"o-no","destinationStepId":"s-continue"},
-    {"sourceKind":"stepDefault","sourceId":"s-start","destinationStepId":"s-continue"},
-    {"sourceKind":"stepDefault","sourceId":"s-film","destinationStepId":"s-continue"}
+  "routes": [
+    { "sourceKind": "answer", "sourceId": "o-yes", "destinationStepId": "s-film" },
+    { "sourceKind": "answer", "sourceId": "o-no", "destinationStepId": "s-continue" },
+    { "sourceKind": "stepDefault", "sourceId": "s-start", "destinationStepId": "s-continue" },
+    { "sourceKind": "stepDefault", "sourceId": "s-film", "destinationStepId": "s-continue" }
   ],
-  "warnings":[],
-  "editorUrl":"/journeys/j-hope"
+  "warnings": [],
+  "editorUrl": "/journeys/j-hope"
 }
 ```
 
@@ -352,13 +347,25 @@ If the first call is still running, return `OPERATION_IN_PROGRESS` and `nextActi
 ### Preview and Admin handoff
 
 ```json
-{"name":"journey_preview","arguments":{"journeyId":"j-hope","expectedRevision":"3","startStepId":"s-start"}}
+{ "name": "journey_preview", "arguments": { "journeyId": "j-hope", "expectedRevision": "3", "startStepId": "s-start" } }
 ```
 
 Proposed result once the private preview exists:
 
 ```json
-{"journeyId":"j-hope","revision":"3","previewAvailable":true,"previewUrl":"/journeys/j-hope/preview","editorUrl":"/journeys/j-hope","requiresSignIn":true,"routesToReview":[{"answerId":"o-yes","label":"Yes","destinationStepId":"s-film"},{"answerId":"o-no","label":"No","destinationStepId":"s-continue"}],"publishing":"Open Admin; a user with current Manage rights publishes there."}
+{
+  "journeyId": "j-hope",
+  "revision": "3",
+  "previewAvailable": true,
+  "previewUrl": "/journeys/j-hope/preview",
+  "editorUrl": "/journeys/j-hope",
+  "requiresSignIn": true,
+  "routesToReview": [
+    { "answerId": "o-yes", "label": "Yes", "destinationStepId": "s-film" },
+    { "answerId": "o-no", "label": "No", "destinationStepId": "s-continue" }
+  ],
+  "publishing": "Open Admin; a user with current Manage rights publishes there."
+}
 ```
 
 This proposed `/journeys/{id}/preview` route does not exist in the inspected code. Today `PreviewItem` links to `/api/preview?slug=...`. The handoff investigation confirms that path authenticates the Admin session, revalidates the public viewer, then redirects to a public slug; the public viewer excludes drafts. It is not authorized draft playback. The necessary implementation is an authenticated Admin-origin preview that obtains draft content under current backend Read authorization and reuses the shared renderer without recording visitor events. No bearer token belongs in its URL. The URL is a locator, not a credential. The [Admin handoff investigation](https://github.com/JesusFilm/core/issues/10536) holds the detailed source trace and publication/lifecycle findings. Its proposed renderer must adapt website-mode navigation so Step links stay on the authenticated preview route; the existing viewer renderer is app-local and needs reuse or extraction.
@@ -373,24 +380,34 @@ Draft privacy must survive other Admin lifecycle operations. In particular, the 
 
 Discovery selects the explicitly granted `j-welcome`; do not infer authorization from the same team. Its fresh read returns revision 40 and these relevant items:
 
-| ID | Existing item | What the agent may do |
-| --- | --- | --- |
-| `s-welcome` / `c-welcome` | Step/Card, default to `s-next` | Add content to this Card; preserve the default. |
-| `h-welcome` | Typography heading | Replace its content only. |
-| `s-existing-film` / `c-existing-film` / `v-existing-film` | Existing video Step/Card/Video | Route Yes to the Step; leave media and Card untouched. |
-| `s-next` | Continuation Step | Use as No's explicit destination. |
-| `button-extra`, `grid-old`, `signup-old`, `trigger-old` | Extra button, Grid, SignUp and VideoTrigger | Preserve IDs, data, descendants, actions and relative order. Unsupported operations are unavailable, not silently simplified. |
+| ID                                                        | Existing item                               | What the agent may do                                                                                                         |
+| --------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `s-welcome` / `c-welcome`                                 | Step/Card, default to `s-next`              | Add content to this Card; preserve the default.                                                                               |
+| `h-welcome`                                               | Typography heading                          | Replace its content only.                                                                                                     |
+| `s-existing-film` / `c-existing-film` / `v-existing-film` | Existing video Step/Card/Video              | Route Yes to the Step; leave media and Card untouched.                                                                        |
+| `s-next`                                                  | Continuation Step                           | Use as No's explicit destination.                                                                                             |
+| `button-extra`, `grid-old`, `signup-old`, `trigger-old`   | Extra button, Grid, SignUp and VideoTrigger | Preserve IDs, data, descendants, actions and relative order. Unsupported operations are unavailable, not silently simplified. |
 
 ```json
 {
-  "name":"journey_edit_draft",
-  "arguments":{
-    "journeyId":"j-welcome",
-    "expectedRevision":"40",
-    "idempotencyKey":"48c78ac4-66ed-4f80-849d-a853d0c8c804",
-    "operations":[
-      {"op":"text_set","blockId":"h-welcome","text":"A place to start"},
-      {"op":"poll_add","key":"welcome_choice","cardId":"c-welcome","placement":{"afterBlockId":"h-welcome"},"prompt":"Would you like to watch?","answers":[{"key":"yes","label":"Yes","destination":{"stepId":"s-existing-film"}},{"key":"no","label":"No","destination":{"stepId":"s-next"}}]}
+  "name": "journey_edit_draft",
+  "arguments": {
+    "journeyId": "j-welcome",
+    "expectedRevision": "40",
+    "idempotencyKey": "48c78ac4-66ed-4f80-849d-a853d0c8c804",
+    "operations": [
+      { "op": "text_set", "blockId": "h-welcome", "text": "A place to start" },
+      {
+        "op": "poll_add",
+        "key": "welcome_choice",
+        "cardId": "c-welcome",
+        "placement": { "afterBlockId": "h-welcome" },
+        "prompt": "Would you like to watch?",
+        "answers": [
+          { "key": "yes", "label": "Yes", "destination": { "stepId": "s-existing-film" } },
+          { "key": "no", "label": "No", "destination": { "stepId": "s-next" } }
+        ]
+      }
     ]
   }
 }
@@ -405,17 +422,17 @@ The agent reads revision 41. The creator asks, "Change Yes to the other video St
 The stale attempt is exact and narrow:
 
 ```json
-{"name":"journey_edit_draft","arguments":{"journeyId":"j-welcome","expectedRevision":"41","idempotencyKey":"4bdb03f4-e275-4bb9-96eb-8e07f577d805","operations":[{"op":"route_set","edge":{"kind":"answer","optionId":"o-welcome-yes"},"destination":{"stepId":"s-film-two"}}]}}
+{ "name": "journey_edit_draft", "arguments": { "journeyId": "j-welcome", "expectedRevision": "41", "idempotencyKey": "4bdb03f4-e275-4bb9-96eb-8e07f577d805", "operations": [{ "op": "route_set", "edge": { "kind": "answer", "optionId": "o-welcome-yes" }, "destination": { "stepId": "s-film-two" } }] } }
 ```
 
 ```json
-{"schemaVersion":"journeys-authoring-v1","code":"REVISION_CONFLICT","message":"This draft changed after revision 41. No part of this edit was saved.","nextAction":"read_again","currentRevision":"44"}
+{ "schemaVersion": "journeys-authoring-v1", "code": "REVISION_CONFLICT", "message": "This draft changed after revision 41. No part of this edit was saved.", "nextAction": "read_again", "currentRevision": "44" }
 ```
 
 The agent calls `journey_read` again and finds the updated text, No still pointing to `s-next`, Yes pointing to `s-film-three`, and the intended `s-film-two` at new coordinates. The original request is still unambiguous. The agent preserves the text and coordinates, changes only Yes, and uses a new key:
 
 ```json
-{"name":"journey_edit_draft","arguments":{"journeyId":"j-welcome","expectedRevision":"44","idempotencyKey":"a8477b15-9f67-4a75-ab06-d3d2bf8c4806","operations":[{"op":"route_set","edge":{"kind":"answer","optionId":"o-welcome-yes"},"destination":{"stepId":"s-film-two"}}]}}
+{ "name": "journey_edit_draft", "arguments": { "journeyId": "j-welcome", "expectedRevision": "44", "idempotencyKey": "a8477b15-9f67-4a75-ab06-d3d2bf8c4806", "operations": [{ "op": "route_set", "edge": { "kind": "answer", "optionId": "o-welcome-yes" }, "destination": { "stepId": "s-film-two" } }] } }
 ```
 
 The result is revision 45. `o-welcome-yes` points to `s-film-two`, `o-welcome-no` still points to `s-next`, the unrelated body remains "Updated welcome", and the destination's new position remains. The prior human destination is deliberately replaced because the user requested it. No rule blocks an edit merely because a human has ever touched that field. If Admin only moved coordinates, the same recovery applies: stale at first, then safe to retry against the new revision.
@@ -481,16 +498,16 @@ An optional prompt may collect audience, title, language and desired routes or h
 
 This research establishes what the current code does and supplies a concrete proposal. It does not establish creator acceptance, successful two-client operation, runtime authorization, database atomicity or playback behavior. The prototype models the selected behaviors in memory; it does not test Prisma, gateway authentication, media playback or the renderer.
 
-| Acceptance case | What the proposal/prototype demonstrates | Required observation before release |
-| --- | --- | --- |
-| A3 | Complete starter graph; create-only versus create-and-edit are separate grants. | Actual blank draft opens in Admin with owner, cover and text. Created-draft grant works; unrelated existing/different-team drafts and create-only follow-up edits fail. |
-| A3b, conditional | Source revision and visibility plus destination Create; full ID remap. | Atomic persisted adoption of authorized global/team templates, no result when either permission is removed, no references to source Steps. |
-| A4 | Exact create replay returns one ID; key mismatch rejects; revoked replay returns no receipt. | Kill before commit and after commit, inspect database/outbox and replay through actual clients. |
-| A5 | Heading/poll/connected-Step edits with stable IDs and explicit Step destinations; legacy content remains. | Existing Admin draft with extra buttons, Grid, SignUp and video trigger survives. Both answers work in private preview. Foreign Card/Step IDs fail the whole operation. |
-| A6 | Earlier human edit can be deliberately replaced after read. | Human changes Yes, agent reads, explicit user instruction changes Yes again; No and unrelated data remain. |
-| A7 | Stale edit rejects; refresh preserves human body/position and permits intended route change; deleted target requires clarification. | Concurrent Admin writes exercise all seven action mutations plus relevant related content and publication. Observe shared revision and no stale save. |
-| A8 | Preview link is authenticated; no publish command exists. | New preview route enforces privacy on open/reload/navigation/cache, Manage-only Admin publication works, lifecycle paths cannot expose never-published drafts, race with publication rejects MCP write. |
-| A9 | Core transcript uses only ordinary tool calls and tool descriptions. | Run hosted and desktop/CLI clients with recorded versions. Disable optional resources/prompts in one. Complete discovery, create, existing-draft edit, conflict recovery, replay and preview handoff. Record actual IDs/revisions without private content. |
+| Acceptance case  | What the proposal/prototype demonstrates                                                                                            | Required observation before release                                                                                                                                                                                                                        |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A3               | Complete starter graph; create-only versus create-and-edit are separate grants.                                                     | Actual blank draft opens in Admin with owner, cover and text. Created-draft grant works; unrelated existing/different-team drafts and create-only follow-up edits fail.                                                                                    |
+| A3b, conditional | Source revision and visibility plus destination Create; full ID remap.                                                              | Atomic persisted adoption of authorized global/team templates, no result when either permission is removed, no references to source Steps.                                                                                                                 |
+| A4               | Exact create replay returns one ID; key mismatch rejects; revoked replay returns no receipt.                                        | Kill before commit and after commit, inspect database/outbox and replay through actual clients.                                                                                                                                                            |
+| A5               | Heading/poll/connected-Step edits with stable IDs and explicit Step destinations; legacy content remains.                           | Existing Admin draft with extra buttons, Grid, SignUp and video trigger survives. Both answers work in private preview. Foreign Card/Step IDs fail the whole operation.                                                                                    |
+| A6               | Earlier human edit can be deliberately replaced after read.                                                                         | Human changes Yes, agent reads, explicit user instruction changes Yes again; No and unrelated data remain.                                                                                                                                                 |
+| A7               | Stale edit rejects; refresh preserves human body/position and permits intended route change; deleted target requires clarification. | Concurrent Admin writes exercise all seven action mutations plus relevant related content and publication. Observe shared revision and no stale save.                                                                                                      |
+| A8               | Preview link is authenticated; no publish command exists.                                                                           | New preview route enforces privacy on open/reload/navigation/cache, Manage-only Admin publication works, lifecycle paths cannot expose never-published drafts, race with publication rejects MCP write.                                                    |
+| A9               | Core transcript uses only ordinary tool calls and tool descriptions.                                                                | Run hosted and desktop/CLI clients with recorded versions. Disable optional resources/prompts in one. Complete discovery, create, existing-draft edit, conflict recovery, replay and preview handoff. Record actual IDs/revisions without private content. |
 
 For the creator review, open the HTML and walk through "Make a draft", "Existing draft", "Lost response", "Human edit", "Deleted destination" and "Access boundary". Ask the creator to identify where No goes, which screen Yes reaches, what a conflict means, and whether a deliberate replacement after refresh matches their intent. Have them choose which command names, fields and descriptions they would hand to an engineer. Record their answers verbatim or accurately summarized on the decision ticket. Leave that ticket open until the live exchange settles the proposal.
 

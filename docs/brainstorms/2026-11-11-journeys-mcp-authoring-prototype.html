@@ -5,30 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Journeys authoring contract prototype</title>
     <style>
-      :root { font-family: system-ui, sans-serif; color: #17243a; background: #f3f5f9; }
-      body { max-width: 1080px; margin: 36px auto; padding: 0 24px 48px; }
-      h1 { font-size: 30px; margin-bottom: 8px; }
-      h2 { font-size: 20px; margin-top: 0; }
-      p { line-height: 1.55; max-width: 90ch; }
-      .muted { color: #5a6578; }
-      section { background: white; border: 1px solid #d8dfeb; border-radius: 10px; margin: 20px 0; padding: 22px; }
-      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-      dl { margin: 0; } dt { font-size: 12px; color: #657087; margin-top: 12px; } dd { margin: 3px 0; overflow-wrap: anywhere; }
-      button { font: inherit; cursor: pointer; background: #fff; color: #223b72; border: 1px solid #aebedc; border-radius: 6px; padding: 9px 12px; margin: 4px; }
-      button:hover, button[aria-selected="true"] { background: #e6edfc; border-color: #4367b1; }
-      button:disabled { cursor: default; opacity: .4; }
-      .message { border-left: 4px solid #4367b1; background: #eef3fc; padding: 14px; line-height: 1.5; }
-      .step { border-top: 1px solid #e1e6ee; padding: 10px 0; }
-      code, pre { font-family: ui-monospace, monospace; font-size: 12px; }
-      pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 350px; overflow: auto; }
-      ol { padding-left: 22px; line-height: 1.6; }
-      a { color: #224d9c; }
+      :root {
+        font-family: system-ui, sans-serif;
+        color: #17243a;
+        background: #f3f5f9;
+      }
+      body {
+        max-width: 1080px;
+        margin: 36px auto;
+        padding: 0 24px 48px;
+      }
+      h1 {
+        font-size: 30px;
+        margin-bottom: 8px;
+      }
+      h2 {
+        font-size: 20px;
+        margin-top: 0;
+      }
+      p {
+        line-height: 1.55;
+        max-width: 90ch;
+      }
+      .muted {
+        color: #5a6578;
+      }
+      section {
+        background: white;
+        border: 1px solid #d8dfeb;
+        border-radius: 10px;
+        margin: 20px 0;
+        padding: 22px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      dl {
+        margin: 0;
+      }
+      dt {
+        font-size: 12px;
+        color: #657087;
+        margin-top: 12px;
+      }
+      dd {
+        margin: 3px 0;
+        overflow-wrap: anywhere;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        background: #fff;
+        color: #223b72;
+        border: 1px solid #aebedc;
+        border-radius: 6px;
+        padding: 9px 12px;
+        margin: 4px;
+      }
+      button:hover,
+      button[aria-selected='true'] {
+        background: #e6edfc;
+        border-color: #4367b1;
+      }
+      button:disabled {
+        cursor: default;
+        opacity: 0.4;
+      }
+      .message {
+        border-left: 4px solid #4367b1;
+        background: #eef3fc;
+        padding: 14px;
+        line-height: 1.5;
+      }
+      .step {
+        border-top: 1px solid #e1e6ee;
+        padding: 10px 0;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+      }
+      pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-height: 350px;
+        overflow: auto;
+      }
+      ol {
+        padding-left: 22px;
+        line-height: 1.6;
+      }
+      a {
+        color: #224d9c;
+      }
     </style>
   </head>
   <body>
     <h1>Make a draft, keep its routes</h1>
-    <p>This throwaway prototype asks whether five small tools can express complete edits, recover a lost response, and preserve another creator's unrelated work. It models the proposed backend rules in memory. It does not connect to Admin, prove authorization, play a video, or save anything.</p>
-    <p class="muted">Creator review is pending. The new private preview and ordinary Publish control still need implementation. <a href="2026-11-11-journeys-mcp-authoring-contract.md">Read the proposed contract</a>.</p>
+    <p>
+      This throwaway prototype asks whether five small tools can express
+      complete edits, recover a lost response, and preserve another creator's
+      unrelated work. It models the proposed backend rules in memory. It does
+      not connect to Admin, prove authorization, play a video, or save anything.
+    </p>
+    <p class="muted">
+      Creator review is pending. The new private preview and ordinary Publish
+      control still need implementation.
+      <a href="2026-11-11-journeys-mcp-authoring-contract.md"
+        >Read the proposed contract</a
+      >.
+    </p>
     <section aria-live="polite">
       <h2>Current draft and connection</h2>
       <div id="message" class="message"></div>
@@ -38,7 +127,12 @@
     <section>
       <h2>Try an action</h2>
       <div id="actions"></div>
-      <p class="muted">"Move destination" represents a creator changing Yes, moving the requested video Step, and editing unrelated text. "Apply refreshed edit" deliberately changes only Yes after a new read. No remains on its original route.</p>
+      <p class="muted">
+        "Move destination" represents a creator changing Yes, moving the
+        requested video Step, and editing unrelated text. "Apply refreshed edit"
+        deliberately changes only Yes after a new read. No remains on its
+        original route.
+      </p>
     </section>
     <section>
       <h2>Guided walkthroughs</h2>
@@ -48,127 +142,369 @@
     </section>
     <section>
       <h2>Last request and result</h2>
-      <p class="muted">Stable Step IDs are destinations. Card IDs hold content. The full proposed wire schema is in the research note; these requests show the relevant fields of this focused state model.</p>
-      <div class="grid"><div><h3>Request</h3><pre id="request"></pre></div><div><h3>Result</h3><pre id="result"></pre></div></div>
-      <details><summary>Full in-memory state</summary><pre id="raw"></pre></details>
+      <p class="muted">
+        Stable Step IDs are destinations. Card IDs hold content. The full
+        proposed wire schema is in the research note; these requests show the
+        relevant fields of this focused state model.
+      </p>
+      <div class="grid">
+        <div>
+          <h3>Request</h3>
+          <pre id="request"></pre>
+        </div>
+        <div>
+          <h3>Result</h3>
+          <pre id="result"></pre>
+        </div>
+      </div>
+      <details>
+        <summary>Full in-memory state</summary>
+        <pre id="raw"></pre>
+      </details>
     </section>
     <script>
       // Pure state module. No DOM, network, storage, clock or random input.
       const AuthoringModel = (() => {
         const initial = () => ({
-          journey: null, revisionRead: null, grant: 'create-and-edit', active: true,
-          existingGranted: true, savedRequest: null, ledger: {}, request: null,
-          result: null, message: 'Choose a walkthrough or create a draft. Nothing is persisted.'
+          journey: null,
+          revisionRead: null,
+          grant: 'create-and-edit',
+          active: true,
+          existingGranted: true,
+          savedRequest: null,
+          ledger: {},
+          request: null,
+          result: null,
+          message:
+            'Choose a walkthrough or create a draft. Nothing is persisted.'
         })
-        const step = (id, title, kind = 'text') => ({ id, cardId: 'c-' + id.slice(2), title, kind, next: null, x: 0, y: 0, deleted: false })
+        const step = (id, title, kind = 'text') => ({
+          id,
+          cardId: 'c-' + id.slice(2),
+          title,
+          kind,
+          next: null,
+          x: 0,
+          y: 0,
+          deleted: false
+        })
         const seedExisting = () => ({
-          id: 'j-welcome', origin: 'admin', status: 'draft', revision: 40,
-          heading: 'Welcome', body: 'Original body', no: 's-next', yes: 's-film', poll: true,
-          steps: [step('s-start', 'Welcome'), step('s-next', 'Continue'), step('s-film', 'First film', 'video'), step('s-film-two', 'Second film', 'video'), step('s-film-three', 'Third film', 'video')],
+          id: 'j-welcome',
+          origin: 'admin',
+          status: 'draft',
+          revision: 40,
+          heading: 'Welcome',
+          body: 'Original body',
+          no: 's-next',
+          yes: 's-film',
+          poll: true,
+          steps: [
+            step('s-start', 'Welcome'),
+            step('s-next', 'Continue'),
+            step('s-film', 'First film', 'video'),
+            step('s-film-two', 'Second film', 'video'),
+            step('s-film-three', 'Third film', 'video')
+          ],
           legacy: ['button-extra', 'grid-old', 'signup-old', 'trigger-old'],
-          blockIds: ['h-start', 'body-start', 'q-choice', 'o-yes', 'o-no'], effects: 0
+          blockIds: ['h-start', 'body-start', 'q-choice', 'o-yes', 'o-no'],
+          effects: 0
         })
         const allowed = (state, operation) => {
           if (!state.active) return false
-          if (operation === 'create') return ['create-and-edit', 'create-only'].includes(state.grant)
+          if (operation === 'create')
+            return ['create-and-edit', 'create-only'].includes(state.grant)
           if (!state.journey) return false
-          if (state.journey.origin === 'admin') return state.existingGranted && state.grant !== 'create-only'
+          if (state.journey.origin === 'admin')
+            return state.existingGranted && state.grant !== 'create-only'
           return state.grant === 'create-and-edit'
         }
         function runWrite(state, request, loseResponse = false) {
           state.request = request
           state.savedRequest = request
-          const fail = (code, message) => { state.result = { code }; state.message = message; return state }
-          if (!allowed(state, request.tool === 'journey_create_draft' ? 'create' : 'edit')) return fail('ACCESS_DENIED_OR_NOT_FOUND', 'The current grant does not allow this request. No content or stored receipt is returned.')
+          const fail = (code, message) => {
+            state.result = { code }
+            state.message = message
+            return state
+          }
+          if (
+            !allowed(
+              state,
+              request.tool === 'journey_create_draft' ? 'create' : 'edit'
+            )
+          )
+            return fail(
+              'ACCESS_DENIED_OR_NOT_FOUND',
+              'The current grant does not allow this request. No content or stored receipt is returned.'
+            )
           const fingerprint = JSON.stringify(request)
           const prior = state.ledger[request.key]
           if (prior) {
-            if (prior.fingerprint !== fingerprint) return fail('IDEMPOTENCY_KEY_REUSED', 'This key already belongs to different arguments. Nothing changed.')
+            if (prior.fingerprint !== fingerprint)
+              return fail(
+                'IDEMPOTENCY_KEY_REUSED',
+                'This key already belongs to different arguments. Nothing changed.'
+              )
             state.result = { ...prior.result, outcome: 'replayed' }
-            state.message = 'Returned the original receipt. No second draft, poll or effect was created.'
+            state.message =
+              'Returned the original receipt. No second draft, poll or effect was created.'
             return state
           }
           if (request.tool === 'journey_create_draft') {
-            if (state.journey) return fail('DEMO_LIMIT', 'This small demo displays one journey at a time. Reset before creating another.')
+            if (state.journey)
+              return fail(
+                'DEMO_LIMIT',
+                'This small demo displays one journey at a time. Reset before creating another.'
+              )
             state.journey = {
-              id: 'j-hope', origin: 'connection', status: 'draft', revision: 1,
-              heading: 'The Journey Is On', body: 'Starter body and caption', no: null, yes: null, poll: false,
-              steps: [step('s-start', 'Starter')], legacy: [],
-              blockIds: ['h-start', 'body-start', 'caption-start', 'cover-start'], effects: 1
+              id: 'j-hope',
+              origin: 'connection',
+              status: 'draft',
+              revision: 1,
+              heading: 'The Journey Is On',
+              body: 'Starter body and caption',
+              no: null,
+              yes: null,
+              poll: false,
+              steps: [step('s-start', 'Starter')],
+              legacy: [],
+              blockIds: [
+                'h-start',
+                'body-start',
+                'caption-start',
+                'cover-start'
+              ],
+              effects: 1
             }
           } else {
             const journey = state.journey
-            if (journey.status !== 'draft') return fail('NOT_A_DRAFT', 'Admin published this journey. MCP cannot change it.')
-            if (request.expectedRevision !== journey.revision) return fail('REVISION_CONFLICT', 'The draft changed after the read. No part of this edit was saved. Read again before deciding what to change.')
+            if (journey.status !== 'draft')
+              return fail(
+                'NOT_A_DRAFT',
+                'Admin published this journey. MCP cannot change it.'
+              )
+            if (request.expectedRevision !== journey.revision)
+              return fail(
+                'REVISION_CONFLICT',
+                'The draft changed after the read. No part of this edit was saved. Read again before deciding what to change.'
+              )
             if (request.intent === 'build') {
-              if (journey.poll) return fail('INVALID_GRAPH', 'The demo poll already exists. Use a route edit instead of adding it twice.')
+              if (journey.poll)
+                return fail(
+                  'INVALID_GRAPH',
+                  'The demo poll already exists. Use a route edit instead of adding it twice.'
+                )
               journey.heading = 'Where do you find hope?'
-              journey.steps.push(step('s-next', 'Continue at your own pace'), step('s-film', 'A story of hope', 'video'))
+              journey.steps.push(
+                step('s-next', 'Continue at your own pace'),
+                step('s-film', 'A story of hope', 'video')
+              )
               journey.steps[0].next = 's-next'
               journey.steps[2].next = 's-next'
-              journey.yes = 's-film'; journey.no = 's-next'; journey.poll = true
-              journey.blockIds.push('h-question', 'q-choice', 'o-yes', 'o-no', 'v-film')
+              journey.yes = 's-film'
+              journey.no = 's-next'
+              journey.poll = true
+              journey.blockIds.push(
+                'h-question',
+                'q-choice',
+                'o-yes',
+                'o-no',
+                'v-film'
+              )
             } else {
-              const destination = journey.steps.find(item => item.id === request.destination && !item.deleted)
-              if (!destination) return fail('INVALID_GRAPH', 'The destination is missing, deleted, or is a Card ID. Ask the creator if the intended Step no longer exists; nothing was saved.')
+              const destination = journey.steps.find(
+                (item) => item.id === request.destination && !item.deleted
+              )
+              if (!destination)
+                return fail(
+                  'INVALID_GRAPH',
+                  'The destination is missing, deleted, or is a Card ID. Ask the creator if the intended Step no longer exists; nothing was saved.'
+                )
               journey.yes = destination.id
             }
             journey.revision += 1
           }
           state.result = {
-            outcome: 'committed', journeyId: state.journey.id,
-            committedRevision: state.journey.revision, statusAtCommit: 'draft',
-            yesStepId: state.journey.yes, noStepId: state.journey.no,
-            blockIds: [...state.journey.blockIds], editorUrl: '/journeys/' + state.journey.id
+            outcome: 'committed',
+            journeyId: state.journey.id,
+            committedRevision: state.journey.revision,
+            statusAtCommit: 'draft',
+            yesStepId: state.journey.yes,
+            noStepId: state.journey.no,
+            blockIds: [...state.journey.blockIds],
+            editorUrl: '/journeys/' + state.journey.id
           }
-          state.ledger[request.key] = { fingerprint, result: structuredClone(state.result) }
-          state.message = 'The complete requested edit committed. Unspecified content and No are preserved.'
-          if (loseResponse) { state.result = { transport: 'response lost', outcome: 'unknown to client' }; state.message = 'The response was lost. The visible server state shows a commit, but the client must retry the same request and key to learn its result.' }
+          state.ledger[request.key] = {
+            fingerprint,
+            result: structuredClone(state.result)
+          }
+          state.message =
+            'The complete requested edit committed. Unspecified content and No are preserved.'
+          if (loseResponse) {
+            state.result = {
+              transport: 'response lost',
+              outcome: 'unknown to client'
+            }
+            state.message =
+              'The response was lost. The visible server state shows a commit, but the client must retry the same request and key to learn its result.'
+          }
           return state
         }
         function reduce(previous, action) {
           if (action === 'reset') return initial()
           const state = structuredClone(previous)
-          state.request = null; state.result = null
-          if (action === 'seed') { state.journey = seedExisting(); state.revisionRead = null; state.ledger = {}; state.savedRequest = null; state.message = 'Loaded an existing Admin draft with extra legacy blocks. They must survive every supported edit.'; return state }
-          if (action === 'revoke') { state.active = false; state.message = 'Client grant revoked. All MCP reads, writes and replays are denied. A person with separate Admin rights can still use Admin.'; return state }
-          if (action === 'createOnly') { state.grant = 'create-only'; state.message = 'Create-only selected. Creation is allowed; follow-up MCP read/edit/preview is not.'; return state }
-          if (action === 'restoreGrant') { state.active = true; state.grant = 'create-and-edit'; state.existingGranted = true; state.message = 'Synthetic create-and-edit grant restored for this demonstration.'; return state }
-          if (action === 'create' || action === 'createLost') return runWrite(state, { tool: 'journey_create_draft', key: 'create-hope-0001', teamId: 'team-outreach', title: 'Hope' }, action === 'createLost')
+          state.request = null
+          state.result = null
+          if (action === 'seed') {
+            state.journey = seedExisting()
+            state.revisionRead = null
+            state.ledger = {}
+            state.savedRequest = null
+            state.message =
+              'Loaded an existing Admin draft with extra legacy blocks. They must survive every supported edit.'
+            return state
+          }
+          if (action === 'revoke') {
+            state.active = false
+            state.message =
+              'Client grant revoked. All MCP reads, writes and replays are denied. A person with separate Admin rights can still use Admin.'
+            return state
+          }
+          if (action === 'createOnly') {
+            state.grant = 'create-only'
+            state.message =
+              'Create-only selected. Creation is allowed; follow-up MCP read/edit/preview is not.'
+            return state
+          }
+          if (action === 'restoreGrant') {
+            state.active = true
+            state.grant = 'create-and-edit'
+            state.existingGranted = true
+            state.message =
+              'Synthetic create-and-edit grant restored for this demonstration.'
+            return state
+          }
+          if (action === 'create' || action === 'createLost')
+            return runWrite(
+              state,
+              {
+                tool: 'journey_create_draft',
+                key: 'create-hope-0001',
+                teamId: 'team-outreach',
+                title: 'Hope'
+              },
+              action === 'createLost'
+            )
           if (action === 'retry') {
-            if (!state.savedRequest) { state.message = 'There is no saved request to retry.'; return state }
+            if (!state.savedRequest) {
+              state.message = 'There is no saved request to retry.'
+              return state
+            }
             return runWrite(state, state.savedRequest)
           }
           if (action === 'reuseKey') {
-            if (!state.savedRequest) { state.message = 'Create or edit first to save a request.'; return state }
-            return runWrite(state, { ...state.savedRequest, title: 'Changed input under old key' })
+            if (!state.savedRequest) {
+              state.message = 'Create or edit first to save a request.'
+              return state
+            }
+            return runWrite(state, {
+              ...state.savedRequest,
+              title: 'Changed input under old key'
+            })
           }
-          if (!state.journey) { state.message = 'Create or load a draft first.'; return state }
-          if (action === 'human' || action === 'deleteTarget' || action === 'publish') {
+          if (!state.journey) {
+            state.message = 'Create or load a draft first.'
+            return state
+          }
+          if (
+            action === 'human' ||
+            action === 'deleteTarget' ||
+            action === 'publish'
+          ) {
             if (action === 'human') {
-              if (!state.journey.steps.some(item => item.id === 's-film-three')) { state.message = 'Load the existing Admin draft to explore the concurrent destination scenario.'; return state }
-              state.journey.yes = 's-film-three'; state.journey.body = 'Updated welcome'
-              const target = state.journey.steps.find(item => item.id === 's-film-two')
-              if (target) { target.x = 320; target.y = 180 }
-              state.message = 'A creator changed Yes, moved the second film Step, and edited the body. The agent still holds its old read revision.'
+              if (
+                !state.journey.steps.some((item) => item.id === 's-film-three')
+              ) {
+                state.message =
+                  'Load the existing Admin draft to explore the concurrent destination scenario.'
+                return state
+              }
+              state.journey.yes = 's-film-three'
+              state.journey.body = 'Updated welcome'
+              const target = state.journey.steps.find(
+                (item) => item.id === 's-film-two'
+              )
+              if (target) {
+                target.x = 320
+                target.y = 180
+              }
+              state.message =
+                'A creator changed Yes, moved the second film Step, and edited the body. The agent still holds its old read revision.'
             }
             if (action === 'deleteTarget') {
-              const target = state.journey.steps.find(item => item.id === 's-film-two')
+              const target = state.journey.steps.find(
+                (item) => item.id === 's-film-two'
+              )
               if (target) target.deleted = true
-              state.message = 'A creator deleted the requested second film Step. Refreshing cannot make that destination valid.'
+              state.message =
+                'A creator deleted the requested second film Step. Refreshing cannot make that destination valid.'
             }
-            if (action === 'publish') { state.journey.status = 'published'; state.message = 'Simulated a Manage-authorized Admin publish. The real ordinary Publish control is a separate prerequisite.' }
+            if (action === 'publish') {
+              state.journey.status = 'published'
+              state.message =
+                'Simulated a Manage-authorized Admin publish. The real ordinary Publish control is a separate prerequisite.'
+            }
             state.journey.revision += 1
             return state
           }
           if (action === 'read' || action === 'preview') {
-            if (!allowed(state, 'read')) { state.result = { code: 'ACCESS_DENIED_OR_NOT_FOUND' }; state.message = 'MCP cannot read or preview under this grant. The server state panel is visible only because this is a teaching demo.'; return state }
-            if (action === 'read') { state.revisionRead = state.journey.revision; state.result = { revision: state.revisionRead, yes: state.journey.yes, no: state.journey.no }; state.message = 'Read the current revision and routes. An intentional change may now replace an earlier human value.' }
-            else { state.result = { code: 'PREVIEW_UNAVAILABLE', proposedPath: '/journeys/' + state.journey.id + '/preview', routesToReview: { Yes: state.journey.yes, No: state.journey.no } }; state.message = 'The proposal requires an authenticated Admin preview. This local demo cannot provide playback; the existing public redirect is insufficient.' }
+            if (!allowed(state, 'read')) {
+              state.result = { code: 'ACCESS_DENIED_OR_NOT_FOUND' }
+              state.message =
+                'MCP cannot read or preview under this grant. The server state panel is visible only because this is a teaching demo.'
+              return state
+            }
+            if (action === 'read') {
+              state.revisionRead = state.journey.revision
+              state.result = {
+                revision: state.revisionRead,
+                yes: state.journey.yes,
+                no: state.journey.no
+              }
+              state.message =
+                'Read the current revision and routes. An intentional change may now replace an earlier human value.'
+            } else {
+              state.result = {
+                code: 'PREVIEW_UNAVAILABLE',
+                proposedPath: '/journeys/' + state.journey.id + '/preview',
+                routesToReview: { Yes: state.journey.yes, No: state.journey.no }
+              }
+              state.message =
+                'The proposal requires an authenticated Admin preview. This local demo cannot provide playback; the existing public redirect is insufficient.'
+            }
             return state
           }
-          if (action === 'build' || action === 'buildLost') return runWrite(state, { tool: 'journey_edit_draft', key: 'build-hope-00002', expectedRevision: state.revisionRead, intent: 'build' }, action === 'buildLost')
-          if (action === 'route' || action === 'badCard') return runWrite(state, { tool: 'journey_edit_draft', key: 'yes-route-' + state.revisionRead + (action === 'badCard' ? '-bad' : '-ok'), expectedRevision: state.revisionRead, intent: 'route', destination: action === 'badCard' ? 'c-film-two' : 's-film-two' })
+          if (action === 'build' || action === 'buildLost')
+            return runWrite(
+              state,
+              {
+                tool: 'journey_edit_draft',
+                key: 'build-hope-00002',
+                expectedRevision: state.revisionRead,
+                intent: 'build'
+              },
+              action === 'buildLost'
+            )
+          if (action === 'route' || action === 'badCard')
+            return runWrite(state, {
+              tool: 'journey_edit_draft',
+              key:
+                'yes-route-' +
+                state.revisionRead +
+                (action === 'badCard' ? '-bad' : '-ok'),
+              expectedRevision: state.revisionRead,
+              intent: 'route',
+              destination: action === 'badCard' ? 'c-film-two' : 's-film-two'
+            })
           return state
         }
         return { initial, reduce }
@@ -177,53 +513,208 @@
     <script>
       // Thin, disposable page shell. All decisions are in the pure module above.
       const labels = {
-        reset: 'Reset', create: 'Create blank draft', createLost: 'Create; lose response',
-        seed: 'Load existing Admin draft', read: 'Read current draft', build: 'Add heading, poll and film',
-        buildLost: 'Add poll; lose response', retry: 'Retry exact saved request', reuseKey: 'Change input; reuse key',
-        human: 'Creator moves destination', route: 'Apply intended Yes edit', deleteTarget: 'Creator deletes destination',
-        badCard: 'Try Card ID as destination', preview: 'Request authorized preview', publish: 'Creator publishes in Admin',
-        revoke: 'Revoke client grant', createOnly: 'Use create-only grant', restoreGrant: 'Restore demo grant'
+        reset: 'Reset',
+        create: 'Create blank draft',
+        createLost: 'Create; lose response',
+        seed: 'Load existing Admin draft',
+        read: 'Read current draft',
+        build: 'Add heading, poll and film',
+        buildLost: 'Add poll; lose response',
+        retry: 'Retry exact saved request',
+        reuseKey: 'Change input; reuse key',
+        human: 'Creator moves destination',
+        route: 'Apply intended Yes edit',
+        deleteTarget: 'Creator deletes destination',
+        badCard: 'Try Card ID as destination',
+        preview: 'Request authorized preview',
+        publish: 'Creator publishes in Admin',
+        revoke: 'Revoke client grant',
+        createOnly: 'Use create-only grant',
+        restoreGrant: 'Restore demo grant'
       }
       const scenarios = [
-        { name: 'Make a draft', description: 'A complete edit creates the heading, poll, video Step and explicit No continuation. No browser mutation choreography is required.', steps: ['create', 'read', 'build', 'preview'] },
-        { name: 'Existing draft', description: 'Read an Admin draft, deliberately change Yes to the second film, and keep the extra blocks and No destination.', steps: ['seed', 'read', 'route', 'read', 'preview'] },
-        { name: 'Lost response', description: 'The create and poll responses disappear after commit. Exact retry returns the same IDs. A changed payload cannot reuse the key.', steps: ['createLost', 'retry', 'read', 'buildLost', 'retry', 'reuseKey'] },
-        { name: 'Human edit', description: 'A stale change must fail. After reading again, change Yes as requested while preserving the creator\'s body and new Step coordinates.', steps: ['seed', 'read', 'human', 'route', 'read', 'route'] },
-        { name: 'Deleted destination', description: 'A refresh reveals that the requested Step is gone. The agent must ask for a destination instead of inventing one.', steps: ['seed', 'read', 'deleteTarget', 'route', 'read', 'route'] },
-        { name: 'Access boundary', description: 'Create-only cannot read the new draft. A revoked connection cannot replay its old receipt. Admin rights remain separate.', steps: ['createOnly', 'create', 'read', 'restoreGrant', 'revoke', 'retry'] },
-        { name: 'Publication race', description: 'A draft read does not authorize a later edit after a Manage-authorized creator publishes it.', steps: ['seed', 'read', 'publish', 'route'] }
+        {
+          name: 'Make a draft',
+          description:
+            'A complete edit creates the heading, poll, video Step and explicit No continuation. No browser mutation choreography is required.',
+          steps: ['create', 'read', 'build', 'preview']
+        },
+        {
+          name: 'Existing draft',
+          description:
+            'Read an Admin draft, deliberately change Yes to the second film, and keep the extra blocks and No destination.',
+          steps: ['seed', 'read', 'route', 'read', 'preview']
+        },
+        {
+          name: 'Lost response',
+          description:
+            'The create and poll responses disappear after commit. Exact retry returns the same IDs. A changed payload cannot reuse the key.',
+          steps: [
+            'createLost',
+            'retry',
+            'read',
+            'buildLost',
+            'retry',
+            'reuseKey'
+          ]
+        },
+        {
+          name: 'Human edit',
+          description:
+            "A stale change must fail. After reading again, change Yes as requested while preserving the creator's body and new Step coordinates.",
+          steps: ['seed', 'read', 'human', 'route', 'read', 'route']
+        },
+        {
+          name: 'Deleted destination',
+          description:
+            'A refresh reveals that the requested Step is gone. The agent must ask for a destination instead of inventing one.',
+          steps: ['seed', 'read', 'deleteTarget', 'route', 'read', 'route']
+        },
+        {
+          name: 'Access boundary',
+          description:
+            'Create-only cannot read the new draft. A revoked connection cannot replay its old receipt. Admin rights remain separate.',
+          steps: [
+            'createOnly',
+            'create',
+            'read',
+            'restoreGrant',
+            'revoke',
+            'retry'
+          ]
+        },
+        {
+          name: 'Publication race',
+          description:
+            'A draft read does not authorize a later edit after a Manage-authorized creator publishes it.',
+          steps: ['seed', 'read', 'publish', 'route']
+        }
       ]
       let state = AuthoringModel.initial()
       let scenarioIndex = 0
       let scenarioStep = 0
-      const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character])
-      const field = (name, value) => '<dt>' + escape(name) + '</dt><dd>' + escape(value ?? 'None') + '</dd>'
-      function dispatch(action) { state = AuthoringModel.reduce(state, action); render() }
+      const escape = (value) =>
+        String(value).replace(
+          /[&<>"']/g,
+          (character) =>
+            ({
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#39;'
+            })[character]
+        )
+      const field = (name, value) =>
+        '<dt>' + escape(name) + '</dt><dd>' + escape(value ?? 'None') + '</dd>'
+      function dispatch(action) {
+        state = AuthoringModel.reduce(state, action)
+        render()
+      }
       function render() {
         const journey = state.journey
         document.getElementById('message').textContent = state.message
-        document.getElementById('state').innerHTML = '<dl>' + field('Journey / status', journey ? journey.id + ' / ' + journey.status : 'No draft') + field('Stored revision / agent read', journey ? journey.revision + ' / ' + (state.revisionRead ?? 'not read') : 'None') + field('Client grant', state.grant + (state.active ? ' / active' : ' / revoked')) + '</dl><dl>' + field('Heading', journey?.heading) + field('Body', journey?.body) + field('Yes goes to Step', journey?.yes) + field('No goes to Step', journey?.no) + '</dl><dl>' + field('Preserved legacy IDs', journey?.legacy.join(', ') || 'None') + field('Saved operation receipts', Object.keys(state.ledger).length) + field('Provisioning effects', journey?.effects ?? 0) + field('Poll count', journey?.poll ? 1 : 0) + '</dl>'
-        document.getElementById('steps').innerHTML = journey ? journey.steps.map(item => '<div class="step"><strong>' + escape(item.title) + '</strong> · Step <code>' + escape(item.id) + '</code> · Card <code>' + escape(item.cardId) + '</code> · ' + escape(item.kind) + ' · default ' + escape(item.next ?? 'none') + ' · position ' + item.x + ', ' + item.y + (item.deleted ? ' · DELETED' : '') + '</div>').join('') : ''
-        document.getElementById('request').textContent = JSON.stringify(state.request, null, 2)
-        document.getElementById('result').textContent = JSON.stringify(state.result, null, 2)
-        document.getElementById('raw').textContent = JSON.stringify(state, null, 2)
-        document.getElementById('scenario-description').textContent = scenarios[scenarioIndex].description
-        document.getElementById('walkthrough').replaceChildren(...scenarios[scenarioIndex].steps.map((action, index) => {
-          const button = document.createElement('button')
-          button.textContent = (index + 1) + '. ' + labels[action]
-          button.disabled = index !== scenarioStep
-          button.onclick = () => { scenarioStep += 1; dispatch(action) }
-          return button
-        }))
-        document.querySelectorAll('[role="tab"]').forEach((tab, index) => tab.setAttribute('aria-selected', String(index === scenarioIndex)))
+        document.getElementById('state').innerHTML =
+          '<dl>' +
+          field(
+            'Journey / status',
+            journey ? journey.id + ' / ' + journey.status : 'No draft'
+          ) +
+          field(
+            'Stored revision / agent read',
+            journey
+              ? journey.revision + ' / ' + (state.revisionRead ?? 'not read')
+              : 'None'
+          ) +
+          field(
+            'Client grant',
+            state.grant + (state.active ? ' / active' : ' / revoked')
+          ) +
+          '</dl><dl>' +
+          field('Heading', journey?.heading) +
+          field('Body', journey?.body) +
+          field('Yes goes to Step', journey?.yes) +
+          field('No goes to Step', journey?.no) +
+          '</dl><dl>' +
+          field('Preserved legacy IDs', journey?.legacy.join(', ') || 'None') +
+          field('Saved operation receipts', Object.keys(state.ledger).length) +
+          field('Provisioning effects', journey?.effects ?? 0) +
+          field('Poll count', journey?.poll ? 1 : 0) +
+          '</dl>'
+        document.getElementById('steps').innerHTML = journey
+          ? journey.steps
+              .map(
+                (item) =>
+                  '<div class="step"><strong>' +
+                  escape(item.title) +
+                  '</strong> · Step <code>' +
+                  escape(item.id) +
+                  '</code> · Card <code>' +
+                  escape(item.cardId) +
+                  '</code> · ' +
+                  escape(item.kind) +
+                  ' · default ' +
+                  escape(item.next ?? 'none') +
+                  ' · position ' +
+                  item.x +
+                  ', ' +
+                  item.y +
+                  (item.deleted ? ' · DELETED' : '') +
+                  '</div>'
+              )
+              .join('')
+          : ''
+        document.getElementById('request').textContent = JSON.stringify(
+          state.request,
+          null,
+          2
+        )
+        document.getElementById('result').textContent = JSON.stringify(
+          state.result,
+          null,
+          2
+        )
+        document.getElementById('raw').textContent = JSON.stringify(
+          state,
+          null,
+          2
+        )
+        document.getElementById('scenario-description').textContent =
+          scenarios[scenarioIndex].description
+        document.getElementById('walkthrough').replaceChildren(
+          ...scenarios[scenarioIndex].steps.map((action, index) => {
+            const button = document.createElement('button')
+            button.textContent = index + 1 + '. ' + labels[action]
+            button.disabled = index !== scenarioStep
+            button.onclick = () => {
+              scenarioStep += 1
+              dispatch(action)
+            }
+            return button
+          })
+        )
+        document
+          .querySelectorAll('[role="tab"]')
+          .forEach((tab, index) =>
+            tab.setAttribute('aria-selected', String(index === scenarioIndex))
+          )
       }
       Object.entries(labels).forEach(([action, label]) => {
-        const button = document.createElement('button'); button.textContent = label
-        button.onclick = () => dispatch(action); document.getElementById('actions').append(button)
+        const button = document.createElement('button')
+        button.textContent = label
+        button.onclick = () => dispatch(action)
+        document.getElementById('actions').append(button)
       })
       scenarios.forEach((scenario, index) => {
-        const button = document.createElement('button'); button.textContent = scenario.name; button.setAttribute('role', 'tab')
-        button.onclick = () => { scenarioIndex = index; scenarioStep = 0; state = AuthoringModel.initial(); render() }
+        const button = document.createElement('button')
+        button.textContent = scenario.name
+        button.setAttribute('role', 'tab')
+        button.onclick = () => {
+          scenarioIndex = index
+          scenarioStep = 0
+          state = AuthoringModel.initial()
+          render()
+        }
         document.getElementById('tabs').append(button)
       })
       render()
