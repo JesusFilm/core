@@ -127,11 +127,11 @@ The writer uses the existing `CI_BOT_APP_ID` and `CI_BOT_PRIVATE_KEY` secrets.
 There is no new App to install. Its installation needs access to `JesusFilm/core`
 and these GitHub App permissions:
 
-| Permission | Purpose |
-| --- | --- |
-| Issues: read | Read the linked issue, labels, and implementation links |
-| Pull requests: read | Read authors, branches, reviews, and merge state |
-| Organization Projects: write | Add issue cards to Next Steps and change their Status |
+| Permission                   | Purpose                                                 |
+| ---------------------------- | ------------------------------------------------------- |
+| Issues: read                 | Read the linked issue, labels, and implementation links |
+| Pull requests: read          | Read authors, branches, reviews, and merge state        |
+| Organization Projects: write | Add issue cards to Next Steps and change their Status   |
 
 Status belongs to the organization project, not the GitHub issue itself. That
 is why issue read access alone is insufficient, and why the ordinary repository
