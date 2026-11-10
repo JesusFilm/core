@@ -53,7 +53,7 @@ The statuses below describe the linked issue, not an additional PR card.
 | New commits, or dismissal of the last approval                                                | In progress                                                      |
 | Re-review requested after approval dismissal                                                  | In review                                                        |
 | PR merged                                                                                     | Done                                                             |
-| PR closed without merging                                                                     | No change to the issue                                     |
+| PR closed without merging                                                                     | No change to the issue                                           |
 | PR reopened                                                                                   | Recalculate from current reviews and requests                    |
 
 If reviewers are already requested when a PR opens, it immediately enters In
