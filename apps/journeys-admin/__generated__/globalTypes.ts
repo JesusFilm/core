@@ -1372,6 +1372,9 @@ export interface JourneyThemeUpdateInput {
 }
 
 export interface JourneyUpdateInput {
+  custom1Label?: string | null;
+  custom2Label?: string | null;
+  custom3Label?: string | null;
   title?: string | null;
   languageId?: string | null;
   themeMode?: ThemeMode | null;
