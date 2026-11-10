@@ -9,17 +9,17 @@ state**. This replaces Linear for the AI workflow trial (Linear ENG-3688).
 
 One Status per ticket, moving left to right:
 
-| Status          | Meaning                                                                                             |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| **Triage**      | New or unevaluated; also covers "waiting on more info"                                              |
-| **Ready**       | Fully specified, up for grabs (by a human or the AI workflow)                                       |
-| **In progress** | Being worked, human or AI                                                                           |
-| **In review**   | PR up, awaiting review                                                                              |
-| **Changes requested** | A reviewer requested changes and has not been requested to review again                         |
-| **Approved**    | At least one reviewer has approved the current PR head                                              |
-| **QA**          | Review passed, awaiting **human QA team** approval                                                  |
-| **Needs Human** | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4) |
-| **Done**        | PR merged, or manually marked complete                                                             |
+| Status                | Meaning                                                                                             |
+| --------------------- | --------------------------------------------------------------------------------------------------- |
+| **Triage**            | New or unevaluated; also covers "waiting on more info"                                              |
+| **Ready**             | Fully specified, up for grabs (by a human or the AI workflow)                                       |
+| **In progress**       | Being worked, human or AI                                                                           |
+| **In review**         | PR up, awaiting review                                                                              |
+| **Changes requested** | A reviewer requested changes and has not been requested to review again                             |
+| **Approved**          | At least one reviewer has approved the current PR head                                              |
+| **QA**                | Review passed, awaiting **human QA team** approval                                                  |
+| **Needs Human**       | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4) |
+| **Done**              | PR merged, or manually marked complete                                                              |
 
 **QA always means the human QA team.** The AI pipeline's own automated verification (the
 Vera QA harness) is _not_ this column — it runs inside **In progress**, before a PR is
@@ -40,18 +40,18 @@ State transitions:
 The `Project status` workflow writes the Next Steps Status field. It adds PRs to
 the project when needed and applies to all authors and target branches.
 
-| Event or current condition | Status |
-| --- | --- |
-| New issue | Triage |
-| PR opened, including drafts and ready-for-review PRs | In progress |
-| Reviewer requested and no current approval exists | In review |
-| Formal Request changes review, with no current approval and that reviewer not requested again | Changes requested |
-| At least one current approval of the PR head | Approved, even if other reviewers are pending or request changes |
-| New commits, or dismissal of the last approval | In progress |
-| Re-review requested after approval dismissal | In review |
-| PR merged | Done |
-| PR closed without merging | No change to the PR or issue |
-| PR reopened | Recalculate from current reviews and requests |
+| Event or current condition                                                                    | Status                                                           |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| New issue                                                                                     | Triage                                                           |
+| PR opened, including drafts and ready-for-review PRs                                          | In progress                                                      |
+| Reviewer requested and no current approval exists                                             | In review                                                        |
+| Formal Request changes review, with no current approval and that reviewer not requested again | Changes requested                                                |
+| At least one current approval of the PR head                                                  | Approved, even if other reviewers are pending or request changes |
+| New commits, or dismissal of the last approval                                                | In progress                                                      |
+| Re-review requested after approval dismissal                                                  | In review                                                        |
+| PR merged                                                                                     | Done                                                             |
+| PR closed without merging                                                                     | No change to the PR or issue                                     |
+| PR reopened                                                                                   | Recalculate from current reviews and requests                    |
 
 If reviewers are already requested when a PR opens, it immediately enters In
 review. Approval dismissal leaves Approved intact when another approval remains.
@@ -228,19 +228,19 @@ Ready. The agent then:
 
 ### Stable IDs
 
-| Thing                | ID                               |
-| -------------------- | -------------------------------- |
-| Project (Next Steps) | `PVT_kwDOBNwqhs4BeMYJ`           |
-| Status field         | `PVTSSF_lADOBNwqhs4BeMYJzhYobGA` |
-| Status: Triage       | `e5a2c514`                       |
-| Status: Ready        | `3c63150a`                       |
-| Status: In progress  | `b9c41da0`                       |
-| Status: In review    | `ab210038`                       |
-| Status: Changes requested | `bd91d0f2`                  |
-| Status: Approved     | `8ea90e2e`                       |
-| Status: QA           | `12a20fe3`                       |
-| Status: Needs Human  | `f3e5a000`                       |
-| Status: Done         | `5243b071`                       |
+| Thing                     | ID                               |
+| ------------------------- | -------------------------------- |
+| Project (Next Steps)      | `PVT_kwDOBNwqhs4BeMYJ`           |
+| Status field              | `PVTSSF_lADOBNwqhs4BeMYJzhYobGA` |
+| Status: Triage            | `e5a2c514`                       |
+| Status: Ready             | `3c63150a`                       |
+| Status: In progress       | `b9c41da0`                       |
+| Status: In review         | `ab210038`                       |
+| Status: Changes requested | `bd91d0f2`                       |
+| Status: Approved          | `8ea90e2e`                       |
+| Status: QA                | `12a20fe3`                       |
+| Status: Needs Human       | `f3e5a000`                       |
+| Status: Done              | `5243b071`                       |
 
 (If the Status options are ever edited in the project settings, these option IDs change —
 re-read them with `gh project field-list 8 --owner JesusFilm --format json`.)
