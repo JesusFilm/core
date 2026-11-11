@@ -1658,6 +1658,7 @@
   "Open journey": "खुला यात्रा",
   "There was an error loading campaigns.": "क्याम्पेनहरू लोड गर्दा त्रुटि भयो।",
   "There was an error refreshing the campaign.": "अभियान रिफ्रेस गर्दा त्रुटि भयो।",
+  "This language has a QR code. Unlink it instead.": "यस भाषामा QR कोड छ। यसको सट्टा यसलाई अनलिङ्क गर्नुहोस्।",
   "Remove {{language}}?": "{{language}} हटाउनुहोस्?",
   "Every translation into {{language}} is deleted.": "{{language}} मा गरिएको प्रत्येक अनुवाद मेटाइन्छ।",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "अहिलेसम्म कुनै अभियान छैनन्। प्रत्येक क्षेत्रका लागि पृथक पृष्ठ सहितको ल्यान्डिङ पृष्ठ बनाउन एउटा अभियान सिर्जना गर्नुहोस्।",
@@ -1723,6 +1724,8 @@
   "All regions label": "सबै क्षेत्रहरूको लेबल",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "फाइल प्रकार स्वीकार गरिएको छैन। कृपया निम्नलिखित मध्ये कुनै एक अपलोड गर्नुहोस्: (PNG, JPG, GIF, SVG, HEIC, वा WebP)",
   "Maximum file size: 10 MB": "अधिकतम फाइल आकार: १० एमबी",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} पहिले नै अनुवाद भइरहेको छ। अनुवाद सकिएपछि फेरि प्रयास गर्नुहोस्।",
   "Unlink the journey before removing this language.": "यो भाषा हटाउनु अघि यात्रालाई अनलिङ्क गर्नुहोस्।",
   "Delete {{language}}?": "{{language}} मेटाउनुहोस्?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "यसले यस भाषालाई यसको अभियान QR कोड र शेयर लिंकसहित स्थायी रूपमा हटाउँछ। पहिले नै मुद्रित वा साझा गरिएका QR कोडका प्रतिलिपिहरू लिंक सफा भएपछि पुनः निर्देशित हुन बन्द हुनेछन्।",
@@ -1760,5 +1763,9 @@
   "Translated {{count}} strings into {{language}}_one": "{{count}} स्ट्रिङलाई अनुवाद गर्नुहोस् {{language}}",
   "Translated {{count}} strings into {{language}}_other": "{{count}} का स्ट्रिङहरूलाई अनुवादित {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "{{language}} मा अनुवाद रद्द गरियो। {{count}} स्ट्रिङ कायम राखियो।",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} मा अनुवाद रद्द गरियो। {{count}} का स्ट्रिङहरू राखियो।"
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} मा अनुवाद रद्द गरियो। {{count}} का स्ट्रिङहरू राखियो।",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} टेक्स्टको अझै पनि {{language}}मा अनुवाद छैन, त्यसैले यो पूर्वनिर्धारित हुन सक्दैन।",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} टेक्स्टहरूमा अझै पनि {{language}}मा अनुवाद छैन, त्यसैले यो पूर्वनिर्धारित हुन सक्दैन।",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "{{language}} मा अनुवाद रोकियो। {{count}} स्ट्रिङ कायम राखियो।",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "{{language}} मा अनुवाद रोकियो। {{count}} का स्ट्रिङहरू राखियो।"
 }
