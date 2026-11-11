@@ -514,6 +514,54 @@ describe('algoliaVideoUpdate', () => {
     })
   })
 
+  it('reports a video as downloadable when its only download rows are above high quality', async () => {
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      id: 'hd-only-id',
+      label: 'featureFilm',
+      primaryLanguageId: '529',
+      childIds: [],
+      restrictDownloadPlatforms: [],
+      published: true,
+      restrictViewPlatforms: [],
+      title: [{ value: 'HD Only', languageId: '529' }],
+      description: [],
+      studyQuestions: [],
+      bibleCitation: [],
+      keywords: [],
+      images: [],
+      availableLanguages: [],
+      variants: [
+        {
+          published: true,
+          hls: 'https://example.com/film.m3u8',
+          dash: '',
+          lengthInMilliseconds: 1000,
+          downloadable: true,
+          // Lowest static rendition is already 1080p, so no low/sd/high row
+          // was ever created for this variant.
+          downloads: [{ quality: 'fhd', size: 9000000 }]
+        }
+      ]
+    } as any)
+
+    await updateVideoInAlgolia('hd-only-id', mockLogger)
+
+    expect(saveObjectsSpy).toHaveBeenCalledWith({
+      indexName: 'test-videos',
+      objects: [
+        expect.objectContaining({
+          objectID: 'hd-only-id',
+          isDownloadable: true,
+          downloadSizes: {
+            approximateSmallDownloadSizeInBytes: 0,
+            approximateLargeDownloadSizeInBytes: 0
+          }
+        })
+      ],
+      waitForTasks: true
+    })
+  })
+
   it('selects only the published English variant', async () => {
     prismaMock.video.findUnique.mockResolvedValueOnce({
       id: 'test-video-id',

@@ -648,9 +648,12 @@ builder.queryFields((t) => ({
               dash: true,
               lengthInMilliseconds: true,
               downloadable: true,
+              // Unfiltered: isAlgoliaVideoDownloadable needs to see every
+              // download row, not just low/high, since a variant whose
+              // lowest static rendition is already >=1080p has no low/high
+              // row at all.
               downloads: {
-                select: { quality: true },
-                where: { quality: { in: ['low', 'high'] } }
+                select: { quality: true }
               }
             },
             where: { languageId: '529', published: true },

@@ -79,15 +79,15 @@ export async function updateVideoInAlgolia(
             dash: true,
             lengthInMilliseconds: true,
             downloadable: true,
+            // Unfiltered: isAlgoliaVideoDownloadable needs to see every
+            // download row, not just low/high, since a variant whose lowest
+            // static rendition is already >=1080p has no low/high row at
+            // all. The downloadSizes lookups below still pick out low/high
+            // specifically.
             downloads: {
               select: {
                 quality: true,
                 size: true
-              },
-              where: {
-                quality: {
-                  in: ['low', 'high']
-                }
               }
             }
           },
