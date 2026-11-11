@@ -1658,6 +1658,7 @@
   "Open journey": "Offene Reise",
   "There was an error loading campaigns.": "Beim Laden der Kampagnen ist ein Fehler aufgetreten.",
   "There was an error refreshing the campaign.": "Beim Aktualisieren der Kampagne ist ein Fehler aufgetreten.",
+  "This language has a QR code. Unlink it instead.": "Diese Sprache hat einen QR-Code. Heb stattdessen die Verknüpfung auf.",
   "Remove {{language}}?": "{{language}} entfernen?",
   "Every translation into {{language}} is deleted.": "Jede Übersetzung in „ {{language}} “ wird gelöscht.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "Noch keine Kampagnen. Erstelle eine, um eine Landingpage mit einer Seite für jede Region zu erstellen.",
@@ -1723,6 +1724,8 @@
   "All regions label": "Beschriftung „Alle Regionen“",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Dateiformat wird nicht unterstützt. Bitte lade eine der folgenden Dateiformate hoch: (PNG, JPG, GIF, SVG, HEIC oder WebP)",
   "Maximum file size: 10 MB": "Maximale Dateigröße: 10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} Wird gerade übersetzt. Versuch es noch mal, wenn der Vorgang abgeschlossen ist.",
   "Unlink the journey before removing this language.": "Entferne die Verknüpfung zur Reise, bevor du diesen Text löschst.",
   "Delete {{language}}?": "{{language}} löschen?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Dadurch wird der Text mit dem QR-Code der Kampagne und dem Teilen-Link dauerhaft entfernt. Bereits gedruckte oder geteilte Kopien des QR-Codes leiten nicht mehr weiter, sobald der Link bereinigt wurde.",
@@ -1760,5 +1763,9 @@
   "Translated {{count}} strings into {{language}}_one": "Den String „ {{count}} “ übersetzt in {{language}}",
   "Translated {{count}} strings into {{language}}_other": "Die Zeichenfolgen von „ {{count}} “ wurden übersetzt in {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "Die Übersetzung in „ {{language}} “ wurde gestrichen. Die Zeichenfolge „ {{count}} “ wurde beibehalten.",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Die Übersetzung ins „ {{language}} “ wurde gestrichen. Die „ {{count}} “-Zeichenfolgen wurden beibehalten."
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Die Übersetzung ins „ {{language}} “ wurde gestrichen. Die „ {{count}} “-Zeichenfolgen wurden beibehalten.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} Der Text ist unter {{language}}noch nicht übersetzt, daher kann er nicht als Standard festgelegt werden.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} Die Texte sind unter {{language}}noch nicht übersetzt, daher kann die Seite nicht als Standard festgelegt werden.",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "Die Übersetzung in „ {{language}} “ wurde gestoppt. Die Zeichenfolge „ {{count}} “ wurde beibehalten.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "Die Übersetzung in {{language}} wurde gestoppt. Die Zeichenfolgen von {{count}} wurden beibehalten."
 }
