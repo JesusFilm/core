@@ -63,39 +63,37 @@ interface CampaignEditorProps {
   campaign?: Campaign
 }
 
-interface CampaignEditorShellProps {
+interface CampaignEditorViewportProps {
   campaign: Campaign
   role: CampaignRole
   /** Asks for the role again after it could not be read. */
   onRoleRetry: () => void
 }
 
+interface CampaignEditorShellProps extends CampaignEditorViewportProps {
+  localizeTab: LocalizeTab
+  onLocalizeTabChange: (tab: LocalizeTab) => void
+  promotionNotice: boolean
+  onPromotionNoticeClose: () => void
+  onDefaultLanguageChanged: () => void
+}
+
 /** Everything inside the providers: the rail, the docked panel (always one open, ahead of the canvas in Tab order), the canvas with its banner, and the Inspector. */
 function CampaignEditorShell({
   campaign,
   role,
-  onRoleRetry
+  onRoleRetry,
+  localizeTab,
+  onLocalizeTabChange,
+  promotionNotice,
+  onPromotionNoticeClose,
+  onDefaultLanguageChanged
 }: CampaignEditorShellProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { pageKind, panel },
-    dispatch
+    state: { pageKind, panel }
   } = useCampaignEditor()
   const [view, setView] = useState<CanvasView>('desktop')
-  const [localizeTab, setLocalizeTab] = useState<LocalizeTab>('languages')
-  const [promotionNotice, setPromotionNotice] = useState(false)
-
-  /** A default-language swap opens Localize on Translations with the promotion notice. */
-  function handleDefaultLanguageChanged(): void {
-    setLocalizeTab('translations')
-    setPromotionNotice(true)
-    if (panel !== 'localize')
-      dispatch({ type: 'SetPanelAction', panel: 'localize' })
-  }
-
-  function handlePromotionNoticeClose(): void {
-    setPromotionNotice(false)
-  }
 
   const panelBodies: Record<CampaignPanel, ReactElement> = {
     add: <AddPanel />,
@@ -104,9 +102,9 @@ function CampaignEditorShell({
     localize: (
       <LocalizePanel
         tab={localizeTab}
-        onTabChange={setLocalizeTab}
+        onTabChange={onLocalizeTabChange}
         promotionNotice={promotionNotice}
-        onPromotionNoticeClose={handlePromotionNoticeClose}
+        onPromotionNoticeClose={onPromotionNoticeClose}
       />
     )
   }
@@ -142,7 +140,7 @@ function CampaignEditorShell({
       <Inspector
         role={role}
         onRoleRetry={onRoleRetry}
-        onDefaultLanguageChanged={handleDefaultLanguageChanged}
+        onDefaultLanguageChanged={onDefaultLanguageChanged}
       />
     </Stack>
   )
@@ -185,9 +183,24 @@ function CampaignEditorViewport({
   campaign,
   role,
   onRoleRetry
-}: CampaignEditorShellProps): ReactElement {
+}: CampaignEditorViewportProps): ReactElement {
   const isDesktop = useMediaQuery(`(min-width:${EDITOR_MIN_WIDTH}px)`)
   const { run } = useTranslationRun()
+  const { dispatch } = useCampaignEditor()
+  const [localizeTab, setLocalizeTab] = useState<LocalizeTab>('languages')
+  const [promotionNotice, setPromotionNotice] = useState(false)
+
+  /** A default-language swap opens Localize even if the shell remounted during the run. */
+  function handleDefaultLanguageChanged(): void {
+    setLocalizeTab('translations')
+    setPromotionNotice(true)
+    dispatch({ type: 'SetPanelAction', panel: 'localize' })
+  }
+
+  function handlePromotionNoticeClose(): void {
+    setPromotionNotice(false)
+  }
+
   useCampaignLeaveGuard([run != null, hasPendingDebouncedWrites])
 
   if (!isDesktop) return <CampaignEditorLargerScreen />
@@ -196,6 +209,11 @@ function CampaignEditorViewport({
       campaign={campaign}
       role={role}
       onRoleRetry={onRoleRetry}
+      localizeTab={localizeTab}
+      onLocalizeTabChange={setLocalizeTab}
+      promotionNotice={promotionNotice}
+      onPromotionNoticeClose={handlePromotionNoticeClose}
+      onDefaultLanguageChanged={handleDefaultLanguageChanged}
     />
   )
 }

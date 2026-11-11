@@ -845,41 +845,64 @@ describe('CampaignEditor', () => {
     expect(unsubscribed).not.toHaveBeenCalled()
   })
 
-  it('changes the default language once a sweep from the dialog completes, then opens Localize on Translations', async () => {
-    const swapped = vi.fn(() => ({
-      data: {
-        campaignUpdate: {
-          __typename: 'Campaign',
-          id: 'campaignId',
-          title: 'Outreach 2026',
-          slug: 'outreach-2026'
+  it.each(['without resizing', 'after widening', 'while narrow'])(
+    'opens Localize on Translations with the promotion notice when the default-language sweep completes %s',
+    async (completionViewport) => {
+      const swapped = vi.fn(() => ({
+        data: {
+          campaignUpdate: {
+            __typename: 'Campaign',
+            id: 'campaignId',
+            title: 'Outreach 2026',
+            slug: 'outreach-2026'
+          }
+        }
+      }))
+      const { subscriptionLink, rerender } = renderEditorWithRun([
+        defaultLanguageMissingTexts,
+        { ...defaultLanguageMissingTexts, result: swapped },
+        {
+          request: { query: GET_CAMPAIGN, variables: { id: 'campaignId' } },
+          result: { data: { campaign } }
+        },
+        translationsMock
+      ])
+      await machineTranslateMissingIntoFrench()
+      expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
+      expect(swapped).not.toHaveBeenCalled()
+
+      if (completionViewport !== 'without resizing') {
+        setViewport(EDITOR_MIN_WIDTH - 1)
+        rerender()
+        expect(
+          screen.getByTestId('CampaignEditorLargerScreen')
+        ).toBeInTheDocument()
+
+        if (completionViewport === 'after widening') {
+          setViewport(EDITOR_MIN_WIDTH)
+          rerender()
         }
       }
-    }))
-    const { subscriptionLink } = renderEditorWithRun([
-      defaultLanguageMissingTexts,
-      { ...defaultLanguageMissingTexts, result: swapped },
-      {
-        request: { query: GET_CAMPAIGN, variables: { id: 'campaignId' } },
-        result: { data: { campaign } }
-      },
-      translationsMock
-    ])
-    await machineTranslateMissingIntoFrench()
-    expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
-    expect(swapped).not.toHaveBeenCalled()
 
-    await emitSubscription(subscriptionLink, runReport(100, true), true)
+      await emitSubscription(subscriptionLink, runReport(100, true), true)
+      await waitFor(() => expect(swapped).toHaveBeenCalledTimes(1))
 
-    expect(
-      await screen.findByTestId('TranslationsPromotionNotice')
-    ).toBeInTheDocument()
-    expect(swapped).toHaveBeenCalledTimes(1)
-    expect(screen.getByRole('tab', { name: 'Translations' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-  })
+      if (completionViewport === 'while narrow') {
+        await screen.findByText('Translated 3 strings into Français')
+        setViewport(EDITOR_MIN_WIDTH)
+        rerender()
+      }
+
+      expect(
+        await screen.findByTestId('TranslationsPromotionNotice')
+      ).toBeInTheDocument()
+      expect(swapped).toHaveBeenCalledTimes(1)
+      expect(screen.getByRole('tab', { name: 'Translations' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    }
+  )
 
   it('shows a loading state until the campaign arrives', () => {
     render(
