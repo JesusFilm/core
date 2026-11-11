@@ -1658,6 +1658,7 @@
   "Open journey": "旅の始まり",
   "There was an error loading campaigns.": "キャンペーンの読み込み中にエラーが発生しました。",
   "There was an error refreshing the campaign.": "キャンペーンの更新中にエラーが発生しました。",
+  "This language has a QR code. Unlink it instead.": "この言語にはQRコードが含まれています。代わりにリンクを解除してください。",
   "Remove {{language}}?": "{{language}} を削除しますか？",
   "Every translation into {{language}} is deleted.": "{{language}} への翻訳はすべて削除されます。",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "まだキャンペーンはありません。キャンペーンを作成して、地域ごとにページを配置したランディングページを作成しましょう。",
@@ -1723,6 +1724,8 @@
   "All regions label": "「すべての地域」ラベル",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "このファイル形式はサポートされていません。以下のいずれかの形式でアップロードしてください：（PNG、JPG、GIF、SVG、HEIC、またはWebP）",
   "Maximum file size: 10 MB": "ファイルの最大サイズ：10 MB",
+  "{{first}} · {{second}}": "{{first}} ・ {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} 現在翻訳中だ。翻訳が完了したら、もう一度試してみてほしい。",
   "Unlink the journey before removing this language.": "この言語を削除する前に、その旅のリンクを解除してください。",
   "Delete {{language}}?": "「 {{language}} 」を削除しますか？",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "これにより、キャンペーンのQRコードおよび共有リンクを含むテキストが完全に削除されます。すでに印刷または共有済みのQRコードは、リンクが削除されると、それ以降リダイレクトされなくなります。",
@@ -1744,5 +1747,7 @@
   "First {{limit}} of {{count}} videos_other": "「 {{count}} 」の動画の最初の1本： {{limit}}",
   "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} {{language}} にはまだこのテキストの翻訳がないため、デフォルトに設定することはできません。",
   "Translated {{count}} strings into {{language}}_other": "{{count}} の文字列を以下のように翻訳しました {{language}}",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} への翻訳はキャンセルされました。 {{count}} の文字列は保持されました。"
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} への翻訳はキャンセルされました。 {{count}} の文字列は保持されました。",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} {{language}}にはまだ翻訳が掲載されていないため、これをデフォルトに設定することはできない。",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "{{language}} への翻訳は中止された。 {{count}} の文字列は保持された。"
 }
