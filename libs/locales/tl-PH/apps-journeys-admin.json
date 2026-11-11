@@ -1658,6 +1658,7 @@
   "Open journey": "Bukas na paglalakbay",
   "There was an error loading campaigns.": "May naganap na error sa pag-load ng mga kampanya.",
   "There was an error refreshing the campaign.": "Nagkaroon ng error sa pagre-refresh ng kampanya.",
+  "This language has a QR code. Unlink it instead.": "May QR code ang wikang ito. I-unlink mo na lang ito.",
   "Remove {{language}}?": "Alisin ba ang {{language}}?",
   "Every translation into {{language}} is deleted.": "Bawat pagsasalin sa {{language}} ay binubura.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "Walang kampanya pa. Lumikha ng isa para makabuo ng landing page na may pahina para sa bawat rehiyon.",
@@ -1723,6 +1724,8 @@
   "All regions label": "Lahat ng rehiyon etiketa",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Hindi tinatanggap ang uri ng file. Mangyaring mag-upload ng isa sa mga sumusunod: (PNG, JPG, GIF, SVG, HEIC, o WebP)",
   "Maximum file size: 10 MB": "Pinakamalaking laki ng file: 10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} Nasa proseso na ng pagsasalin. Subukan muli kapag natapos na.",
   "Unlink the journey before removing this language.": "Ihiwalay ang paglalakbay bago alisin ang wikang ito.",
   "Delete {{language}}?": "Bura ang {{language}}?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Permanentlyeng tinatanggal nito ang teksto kasama ang QR code ng kampanya at ang Share Link. Ang mga kopya ng QR code na naimprenta o naibahagi na ay titigil sa pag-redirect kapag naayos na ang link.",
@@ -1760,5 +1763,9 @@
   "Translated {{count}} strings into {{language}}_one": "Isalin ang {{count}} na string sa {{language}}",
   "Translated {{count}} strings into {{language}}_other": "Isinalin ang mga string ng {{count}} {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "Nabigong isalin sa {{language}} . Pinanatili ang string na {{count}}.",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Nabigong isalin sa {{language}} . Pinanatili ang mga string ng {{count}}."
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Nabigong isalin sa {{language}} . Pinanatili ang mga string ng {{count}}.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} Ang teksto ay wala pa ring pagsasalin sa {{language}}, kaya hindi ito maaaring maging default.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} Ang mga teksto ay wala pa ring pagsasalin sa {{language}}, kaya hindi ito maaaring maging default.",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "Natigil ang pagsasalin sa {{language}} . Pinanatili ang string na {{count}}.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "Ang pagsasalin sa {{language}} ay itinigil. Ang mga string ng {{count}} ay pinanatili."
 }
