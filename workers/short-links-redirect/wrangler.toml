@@ -104,7 +104,7 @@ routes = [
 
 [env.stage.vars]
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
-# jfp-short-links-stage (ClickHouse Cloud, Terraform-managed); the writer's
+# jfp-clickhouse-stage (ClickHouse Cloud, Terraform-managed, shared with Plausible); the writer's
 # user and password are Worker secrets (README, "Setting up ClickHouse").
 CLICKHOUSE_URL = "https://vaewmvnvzl.us-east-2.aws.clickhouse.cloud:8443"
 CLICKHOUSE_DATABASE = "redirects"
@@ -154,7 +154,7 @@ routes = [
 
 [env.prod.vars]
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
-# jfp-short-links-prod (ClickHouse Cloud, Terraform-managed); the writer's
+# jfp-clickhouse-prod (ClickHouse Cloud, Terraform-managed, shared with Plausible); the writer's
 # user and password are Worker secrets (README, "Setting up ClickHouse").
 CLICKHOUSE_URL = "https://eksrmbdzri.us-east-2.aws.clickhouse.cloud:8443"
 CLICKHOUSE_DATABASE = "redirects"
