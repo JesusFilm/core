@@ -12,10 +12,10 @@ import { VideoVariantDownloadCreateInput } from './inputs/videoVariantDownloadCr
 import { VideoVariantDownloadsFilter } from './inputs/videoVariantDownloadsFilter'
 import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUpdate'
 
-// A collection/series Video's indexed isDownloadable now depends on its
-// variant's download rows (see isAlgoliaVideoDownloadable), so adding,
-// changing or removing a download must re-sync the owning Video or the
-// index silently goes stale until the next reconciliation sweep.
+// A Video's indexed isDownloadable depends on its variant's download rows
+// (see isAlgoliaVideoDownloadable), so adding, changing or removing a
+// download must re-sync the owning Video or the index silently goes stale
+// until the next reconciliation sweep.
 async function syncOwningVideo(videoId: string | undefined): Promise<void> {
   if (videoId == null) return
   await enqueueVideoAlgoliaSync(videoId, videoOnlyScope, logger)

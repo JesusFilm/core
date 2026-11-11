@@ -121,10 +121,7 @@ export async function updateVideoInAlgolia(
       `Found video: ${video.label} with ${video.variants.length} variants`
     )
 
-    const isDownloadable = isAlgoliaVideoDownloadable(
-      video.label,
-      video.variants[0]
-    )
+    const isDownloadable = isAlgoliaVideoDownloadable(video.variants[0])
     const isVideoContent = hasAlgoliaPlayableMedia(video.variants[0])
 
     const titles = video.title.map((title) => ({

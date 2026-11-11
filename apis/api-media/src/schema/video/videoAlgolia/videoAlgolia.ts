@@ -665,10 +665,7 @@ builder.queryFields((t) => ({
 
       const primaryVariant = video.variants[0]
       const isVideoContent = hasAlgoliaPlayableMedia(primaryVariant)
-      const isDownloadable = isAlgoliaVideoDownloadable(
-        video.label,
-        primaryVariant
-      )
+      const isDownloadable = isAlgoliaVideoDownloadable(primaryVariant)
       const expected = {
         objectID: video.id,
         mediaComponentId: video.id,
