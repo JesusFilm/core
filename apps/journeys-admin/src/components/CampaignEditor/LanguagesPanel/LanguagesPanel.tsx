@@ -1,5 +1,5 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -22,38 +22,17 @@ import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_languages as CampaignLanguage
 } from '../../../../__generated__/GetCampaign'
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import { useCampaignLanguageAddMutation } from '../../../libs/useCampaignLanguageAddMutation'
 import { useCampaignLanguageRemoveMutation } from '../../../libs/useCampaignLanguageRemoveMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { TranslationRunProgress } from '../TranslationRunProgress'
 import { useTranslationRun } from '../TranslationRunProvider'
+import { languageNames } from '../utils/languageNames'
+import { messageOf } from '../utils/messageOf'
 
 interface LanguagesPanelProps {
   campaign: Campaign
-}
-
-/** Autonym first, the English name beside it when it differs. */
-export function languageNames(language: CampaignLanguage): {
-  autonym: string
-  localName?: string
-} {
-  const names = language.language.name
-  const autonym =
-    names.find((name) => name.primary)?.value ??
-    names[0]?.value ??
-    language.languageId
-  const localName = names.find((name) => !name.primary)?.value
-  return {
-    autonym,
-    localName:
-      localName != null && localName !== autonym ? localName : undefined
-  }
-}
-
-function messageOf(error: unknown): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : String(error)
 }
 
 /**
@@ -102,7 +81,11 @@ export function LanguagesPanel({
       })
       if (isMachineTranslatable(option.id))
         start(
-          { campaignId: campaign.id, languageId: option.id, mode: 'missing' },
+          {
+            campaignId: campaign.id,
+            languageId: option.id,
+            mode: CampaignAiTranslateMode.missing
+          },
           option.nativeName ?? option.localName ?? option.id
         )
     } catch (addError) {
@@ -120,6 +103,12 @@ export function LanguagesPanel({
       setError(messageOf(removeError))
     }
     setRemoveOpen(false)
+  }
+
+  /** Remove asks first: every translation into the language goes with it. */
+  function handleRemoveClick(language: CampaignLanguage): void {
+    setRemoveTarget(language)
+    setRemoveOpen(true)
   }
 
   const removeTargetName =
@@ -157,10 +146,7 @@ export function LanguagesPanel({
               edge="end"
               aria-label={t('Remove {{language}}', { language: autonym })}
               disabled={isDefault || removing}
-              onClick={() => {
-                setRemoveTarget(language)
-                setRemoveOpen(true)
-              }}
+              onClick={() => handleRemoveClick(language)}
             >
               <Trash2Icon />
             </IconButton>
@@ -189,7 +175,7 @@ export function LanguagesPanel({
                     <Tooltip
                       title={t('The default language cannot be removed')}
                     >
-                      <span>{removeButton}</span>
+                      <Box component="span">{removeButton}</Box>
                     </Tooltip>
                   ) : (
                     removeButton
@@ -206,7 +192,13 @@ export function LanguagesPanel({
                   manualOnly ? t('Manual only') : undefined
                 ]
                   .filter((part) => part != null)
-                  .join(' · ')}
+                  .reduce<string | undefined>(
+                    (first, second) =>
+                      first == null
+                        ? second
+                        : t('{{first}} · {{second}}', { first, second }),
+                    undefined
+                  )}
               />
             </ListItem>
           )
@@ -253,3 +245,5 @@ export function LanguagesPanel({
     </Stack>
   )
 }
+
+export { languageNames } from '../utils/languageNames'

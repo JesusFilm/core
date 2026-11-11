@@ -1,11 +1,11 @@
 import { ApolloCache } from '@apollo/client'
 
 import {
-  CampaignTranslations,
-  CampaignTranslationsVariables,
-  CampaignTranslations_campaignTranslations as TranslationRow,
-  CampaignTranslations_campaignTranslations_target as TranslationTarget
-} from '../../../__generated__/CampaignTranslations'
+  GetCampaignTranslations,
+  GetCampaignTranslationsVariables,
+  GetCampaignTranslations_campaignTranslations as TranslationRow,
+  GetCampaignTranslations_campaignTranslations_target as TranslationTarget
+} from '../../../__generated__/GetCampaignTranslations'
 import {
   CampaignTextSource,
   CampaignTranslationFilter
@@ -17,7 +17,7 @@ import { CAMPAIGN_TRANSLATIONS } from './useCampaignTranslationsQuery'
 export function campaignTranslationsVariables(
   campaignId: string,
   languageId: string
-): CampaignTranslationsVariables {
+): GetCampaignTranslationsVariables {
   return { campaignId, languageId, filter: CampaignTranslationFilter.all }
 }
 
@@ -84,11 +84,11 @@ export function withWrittenTranslation(
  */
 export function writeCachedTranslation(
   cache: ApolloCache,
-  variables: CampaignTranslationsVariables,
+  variables: GetCampaignTranslationsVariables,
   writtenKey: string,
   translations: WrittenTranslation[]
 ): void {
-  cache.updateQuery<CampaignTranslations, CampaignTranslationsVariables>(
+  cache.updateQuery<GetCampaignTranslations, GetCampaignTranslationsVariables>(
     { query: CAMPAIGN_TRANSLATIONS, variables },
     (current) =>
       current == null

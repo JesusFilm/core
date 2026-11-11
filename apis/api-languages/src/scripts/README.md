@@ -78,7 +78,7 @@ nx run api-languages:wess-languages-import
 
 ### WESS Countries Import (QueryId 156)
 
-Imports country rows into `Country` and (when a name is present) `CountryName` (English label, `languageId=529`).
+Updates existing `Country` rows and (when a name is present) their `CountryName` (English label, `languageId=529`). It never creates a country.
 
 ```bash
 nx run api-languages:wess-countries-import
@@ -87,6 +87,7 @@ nx run api-languages:wess-countries-import
 - **Country id** is read from `COUNTRY_CODE`/`id` and uppercased.
 - **Fields populated:** `name` (English `CountryName`, `languageId=529`) from `COUNTRY_NAME`; `population` from `COUNTRY_POPULATION`.
 - WESS QueryId 156 does **not** return `latitude`, `longitude`, or `continentId`; those are populated by other pipelines and the import leaves them untouched.
+- **Countries not already in the database are skipped** and logged as a warning with their ids. GraphQL `Country.continent` is non-null, so one country without a continent errors the whole `countries` query (this took down arclight `/v2/media-countries` when Kosovo was created this way). Create a new country by hand with a `continentId` first; the next import then fills its name and population.
 - `AOA_NAME` is returned by WESS (e.g. `Namestan`, `Europe`) and is the country→region mapping, but is not currently imported — the schema has no region field yet.
 - `ImportTimes.modelName`: `wessCountryImport`.
 
