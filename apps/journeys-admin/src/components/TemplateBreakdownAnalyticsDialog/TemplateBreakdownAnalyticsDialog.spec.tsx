@@ -331,7 +331,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     expect(screen.getByRole('switch')).not.toBeChecked()
   })
 
-  it('shows reset for a partial range without querying until both dates are filled', async () => {
+  it('keeps reset visible and enables it when a date is entered', async () => {
     const user = userEvent.setup()
     render(
       <MockedProvider mocks={[getTemplateFamilyStatsBreakdownMockWithArchived]}>
@@ -344,18 +344,21 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     )
     await screen.findByTestId('template-breakdown-analytics-table')
     expect(
-      screen.queryByRole('button', { name: 'Reset date range' })
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: 'Reset date range' })
+    ).toBeDisabled()
     fireEvent.change(screen.getByLabelText('From', { selector: 'input' }), {
       target: { value: '01-12-2025' }
     })
     expect(
       screen.queryByTestId('template-breakdown-analytics-table')
     ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Reset date range' })
+    ).toBeEnabled()
     await user.click(screen.getByRole('button', { name: 'Reset date range' }))
     expect(
-      screen.queryByRole('button', { name: 'Reset date range' })
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: 'Reset date range' })
+    ).toBeDisabled()
   })
 
   it('clears a range back to explicit all-time analytics', async () => {
@@ -548,8 +551,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     expect(screen.getByLabelText('From', { selector: 'input' })).toHaveValue('')
     expect(screen.getByLabelText('To', { selector: 'input' })).toHaveValue('')
     expect(
-      screen.queryByRole('button', { name: 'Reset date range' })
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: 'Reset date range' })
+    ).toBeDisabled()
   })
 
   it('fetches new all-time metrics after resetting instead of reusing cached values', async () => {
@@ -626,8 +629,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     await user.click(screen.getByRole('button', { name: 'Reset date range' }))
     await screen.findByTestId('template-breakdown-analytics-table')
     expect(
-      screen.queryByRole('button', { name: 'Reset date range' })
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: 'Reset date range' })
+    ).toBeDisabled()
     expect(
       within(screen.getAllByRole('group', { name: 'From' })[0]).getByRole(
         'spinbutton',

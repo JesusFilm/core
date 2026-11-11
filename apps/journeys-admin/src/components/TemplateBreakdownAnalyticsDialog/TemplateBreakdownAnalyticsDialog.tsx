@@ -22,7 +22,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import ArrowRotateLeft1Icon from '@core/shared/ui/icons/ArrowRotateLeft1'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import {
   GetTemplateFamilyStatsBreakdown,
@@ -250,16 +250,17 @@ export function TemplateBreakdownAnalyticsDialog({
             minDate={earliestDate}
             maxDate={today}
           />
-          {(hasDateInput || appliedDateRange != null) && (
-            <Tooltip title={t('Reset date range')}>
+          <Tooltip title={t('Reset date range')}>
+            <Box component="span" sx={{ display: 'inline-flex' }}>
               <IconButton
                 aria-label={t('Reset date range')}
                 onClick={handleClearDateRange}
+                disabled={!hasDateInput && appliedDateRange == null}
               >
-                <ArrowRotateLeft1Icon />
+                <X2Icon />
               </IconButton>
-            </Tooltip>
-          )}
+            </Box>
+          </Tooltip>
         </Stack>
         {startDate != null && endDate != null && !isDateRangeValid && (
           <Typography variant="body2" color="error" role="alert">
