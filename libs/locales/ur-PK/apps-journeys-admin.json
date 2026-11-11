@@ -1658,6 +1658,7 @@
   "Open journey": "کھلا سفر",
   "There was an error loading campaigns.": "مہمات لوڈ کرنے میں ایک خرابی پیش آئی۔",
   "There was an error refreshing the campaign.": "مہم کو ریفریش کرنے میں ایک خرابی پیش آئی۔",
+  "This language has a QR code. Unlink it instead.": "اس زبان میں ایک QR کوڈ ہے۔ اس کے بجائے اسے ان لنک کریں۔",
   "Remove {{language}}?": "{{language}} کو ہٹا دیں؟",
   "Every translation into {{language}} is deleted.": "{{language}} میں ہر ترجمہ حذف کر دیا جاتا ہے۔",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "ابھی تک کوئی مہم نہیں ہے۔ ایک مہم بنائیں تاکہ ہر خطے کے لیے ایک صفحہ کے ساتھ لینڈنگ پیج تیار کیا جا سکے۔",
@@ -1723,6 +1724,8 @@
   "All regions label": "تمام خطوں کا لیبل",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "فائل کی قسم قبول نہیں کی گئی۔ براہ کرم درج ذیل میں سے کسی ایک کو اپ لوڈ کریں: (PNG, JPG, GIF, SVG, HEIC, یا WebP)",
   "Maximum file size: 10 MB": "فائل کا زیادہ سے زیادہ سائز: 10 ایم بی",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} یہ پہلے ہی ترجمہ ہو رہا ہے۔ جب یہ ختم ہو جائے تو دوبارہ کوشش کریں۔",
   "Unlink the journey before removing this language.": "اس زبان کو ہٹانے سے پہلے سفر کو الگ کریں۔",
   "Delete {{language}}?": "{{language}} کو حذف کریں؟",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "یہ مستقل طور پر اس زبان کو اس کے مہم کے QR کوڈ اور شیئر لنک کے ساتھ ہٹا دیتا ہے۔ پہلے سے چھاپے یا شیئر کیے گئے QR کوڈ کی نقول لنک صاف ہونے کے بعد ری ڈائریکٹ کرنا بند کر دیں گی۔",
@@ -1760,5 +1763,9 @@
   "Translated {{count}} strings into {{language}}_one": "{{count}} سٹرنگ کو انگریزی میں ترجمہ کریں۔ {{language}}",
   "Translated {{count}} strings into {{language}}_other": "{{count}} کی سٹرنگز کو میں نے {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "{{language}} میں ترجمہ منسوخ۔ {{count}} سٹرنگ برقرار رکھی گئی۔",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} میں ترجمہ منسوخ۔ {{count}} کی سٹرنگز برقرار رکھی گئیں۔"
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} میں ترجمہ منسوخ۔ {{count}} کی سٹرنگز برقرار رکھی گئیں۔",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} متن کا ابھی تک {{language}}میں کوئی ترجمہ نہیں ہے، لہٰذا یہ بطورِ ڈیفالٹ نہیں ہو سکتا۔",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} متنوں کا ابھی تک {{language}}میں کوئی ترجمہ نہیں ہے، اس لیے یہ بطورِ ڈیفالٹ نہیں بن سکتا۔",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "{{language}} میں ترجمہ روک دیا گیا۔ {{count}} سٹرنگ برقرار رکھی گئی۔",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "{{language}} میں ترجمہ روک دیا گیا۔ {{count}} کی سٹرنگز برقرار رکھی گئیں۔"
 }
