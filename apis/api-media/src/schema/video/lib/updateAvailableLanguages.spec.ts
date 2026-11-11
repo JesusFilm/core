@@ -42,6 +42,15 @@ type AvailableLanguagesVideoPayload = Prisma.VideoGetPayload<{
   }
 }>
 
+type BatchedAvailableLanguagesVideoPayload = Prisma.VideoGetPayload<{
+  select: {
+    id: true
+    label: true
+    variants: { select: { languageId: true } }
+    children: { select: { availableLanguages: true } }
+  }
+}>
+
 type ContainerParentPayload = Prisma.VideoGetPayload<{
   select: { id: true }
 }>
@@ -59,6 +68,12 @@ function mockCalculateAvailableLanguagesQuery(
 
 function mockContainerParentQuery(parents: ContainerParentPayload[]): void {
   prismaMock.video.findMany.mockResolvedValueOnce(parents as unknown as Video[])
+}
+
+function mockBatchedAvailableLanguagesQuery(
+  videos: BatchedAvailableLanguagesVideoPayload[]
+): void {
+  prismaMock.video.findMany.mockResolvedValueOnce(videos as unknown as Video[])
 }
 
 const containerParents: ContainerParentPayload[] = [
@@ -222,20 +237,26 @@ describe('updateParentCollectionLanguages', () => {
     deletedVariantIds: []
   }
 
-  // This path reads twice: findContainerParentIds for the id list, then the
-  // batched recompute. Both arrive on video.findMany, told apart by whether
-  // the select asked for variants.
+  // This path reads twice, in order: findContainerParentIds for the id
+  // list, then the batched recompute. Queuing two `Once` values keeps each
+  // call typed as a plain Video[] resolution rather than needing a
+  // `mockImplementation` callback (whose return type Prisma's mock typing
+  // demands be a PrismaPromise, not a plain Promise). None of these parents
+  // contain each other here, so childIds is empty and every parent resolves
+  // from the batched snapshot alone — see the dedicated diamond-dependency
+  // test below for the case where childIds is non-empty.
   function mockParentCascadeQueries(parents: ContainerParentPayload[]): void {
-    ;(prismaMock.video.findMany as any).mockImplementation(
-      async ({ select }: { select?: Record<string, unknown> }) =>
-        select?.variants == null
-          ? (parents as unknown as Video[])
-          : parents.map(({ id }) => ({
-              id,
-              label: 'collection',
-              variants: [],
-              children: [{ availableLanguages: ['529'] }]
-            }))
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      parents as unknown as Video[]
+    )
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      parents.map(({ id }) => ({
+        id,
+        label: 'collection',
+        childIds: [],
+        variants: [],
+        children: [{ availableLanguages: ['529'] }]
+      })) as unknown as Video[]
     )
   }
 
@@ -313,13 +334,71 @@ describe('updateParentCollectionLanguages', () => {
     expect(prismaMock.video.findMany).toHaveBeenCalledTimes(1)
     expect(prismaMock.video.update).not.toHaveBeenCalled()
   })
+
+  it('re-derives a parent that itself contains another parent in the same batch', async () => {
+    // Diamond shape: child-id sits directly inside both parent-1 and
+    // parent-2, and parent-2 also directly contains parent-1 (e.g. a clip
+    // in both a series and the collection that contains that series). The
+    // batched snapshot below freezes parent-1's pre-update languages
+    // ('old-lang') into parent-2's children — if parent-2 just wrote that
+    // snapshot value, it would silently keep a language parent-1 no longer
+    // has. parent-2 must instead be written after parent-1 and re-derived
+    // from a fresh read picking up parent-1's new value.
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      containerParents as unknown as Video[]
+    )
+    prismaMock.video.findMany.mockResolvedValueOnce([
+      {
+        id: 'parent-1',
+        label: 'collection',
+        childIds: [],
+        variants: [],
+        children: [{ availableLanguages: ['529'] }]
+      },
+      {
+        id: 'parent-2',
+        label: 'collection',
+        childIds: ['parent-1'],
+        variants: [],
+        children: [{ availableLanguages: ['old-lang'] }]
+      }
+    ] as unknown as Video[])
+    // The fresh read for parent-2 happens after parent-1 is written, so it
+    // reflects parent-1's new, not snapshot, languages.
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      label: 'collection',
+      variants: [],
+      children: [{ availableLanguages: ['529'] }]
+    } as unknown as Video)
+
+    await updateParentCollectionLanguages('child-id')
+
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'parent-1' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'parent-2' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+
+    const updateOrder = prismaMock.video.update.mock.calls.map(
+      ([{ where }]) => where.id
+    )
+    expect(updateOrder).toEqual(['parent-1', 'parent-2'])
+    expect(prismaMock.video.findUnique).toHaveBeenCalledTimes(1)
+    expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
+      where: { id: 'parent-2' },
+      select: expect.objectContaining({ variants: expect.anything() })
+    })
+  })
 })
 
 describe('calculateAvailableLanguagesForVideos', () => {
   // Rows the single-video and batched entry points must both reduce the
   // same way: a container deriving from a child, and a leaf deriving from
   // its own published variants.
-  const rows = [
+  const rows: BatchedAvailableLanguagesVideoPayload[] = [
     {
       id: 'container',
       label: 'series',
@@ -335,7 +414,7 @@ describe('calculateAvailableLanguagesForVideos', () => {
   ]
 
   it('resolves the whole set with a single query', async () => {
-    ;(prismaMock.video.findMany as any).mockResolvedValueOnce(rows)
+    mockBatchedAvailableLanguagesQuery(rows)
 
     const result = await calculateAvailableLanguagesForVideos([
       'container',
@@ -355,8 +434,8 @@ describe('calculateAvailableLanguagesForVideos', () => {
   it('agrees with calculateAvailableLanguages for the same row', async () => {
     // Guards the one-code-path goal: if the two entry points ever diverge,
     // the batched seed and the per-video write paths would disagree.
-    ;(prismaMock.video.findMany as any).mockResolvedValueOnce([rows[0]])
-    ;(prismaMock.video.findUnique as any).mockResolvedValueOnce(rows[0])
+    mockBatchedAvailableLanguagesQuery([rows[0]])
+    mockCalculateAvailableLanguagesQuery(rows[0])
 
     const batched = await calculateAvailableLanguagesForVideos(['container'])
 

@@ -228,16 +228,90 @@ export async function findContainerParentIds(
   return parents.map((parent) => parent.id)
 }
 
+interface ParentDependencyOrder {
+  orderedParentIds: string[]
+  parentsWithSiblingDependency: Set<string>
+}
+
+// findContainerParentIds' results are independent of each other whenever
+// none of them is itself a child of another one of them. That assumption
+// breaks for a diamond shape: a clip sitting directly inside both a series
+// and the collection that contains that series. The collection then needs
+// the series' freshly recomputed languages, not the pre-update value a
+// single batched snapshot would otherwise freeze in. Orders the batch by
+// that containment - restricted to this batch, via childIds, the same field
+// videoVariant.ts and reconcileParentVariants treat as authoritative for
+// parent/child lookups - so dependents are written after what they depend
+// on, and reports which parents have such a dependency so the caller knows
+// to re-derive them instead of trusting the batched value.
+function orderParentsByDependency(
+  parentIds: string[],
+  childIdsByParentId: Map<string, string[]>
+): ParentDependencyOrder {
+  const parentIdSet = new Set(parentIds)
+  const dependencies = new Map(
+    parentIds.map((id) => [
+      id,
+      (childIdsByParentId.get(id) ?? []).filter((childId) =>
+        parentIdSet.has(childId)
+      )
+    ])
+  )
+
+  const dependents = new Map<string, string[]>()
+  const remainingDependencyCount = new Map<string, number>()
+  for (const [parentId, deps] of dependencies) {
+    remainingDependencyCount.set(parentId, deps.length)
+    for (const dep of deps) {
+      dependents.set(dep, [...(dependents.get(dep) ?? []), parentId])
+    }
+  }
+
+  const queue = parentIds.filter(
+    (id) => remainingDependencyCount.get(id) === 0
+  )
+  const orderedParentIds: string[] = []
+  while (queue.length > 0) {
+    const id = queue.shift() as string
+    orderedParentIds.push(id)
+    for (const dependent of dependents.get(id) ?? []) {
+      const remaining = (remainingDependencyCount.get(dependent) ?? 0) - 1
+      remainingDependencyCount.set(dependent, remaining)
+      if (remaining === 0) {
+        queue.push(dependent)
+      }
+    }
+  }
+
+  // Two of these parents directly containing each other is already
+  // inconsistent data this function cannot resolve - fall back to the
+  // original order rather than dropping a parent from the update.
+  if (orderedParentIds.length < parentIds.length) {
+    return {
+      orderedParentIds: parentIds,
+      parentsWithSiblingDependency: new Set()
+    }
+  }
+
+  const parentsWithSiblingDependency = new Set(
+    [...dependencies.entries()]
+      .filter(([, deps]) => deps.length > 0)
+      .map(([id]) => id)
+  )
+
+  return { orderedParentIds, parentsWithSiblingDependency }
+}
+
 // Updates all parent videos (collections) when a child video's languages change
 // Ensures collections always reflect the union of their children's languages
 //
 // The parents are recomputed from one batched lookup rather than a lookup
-// each. Resolving them together is safe even when the containers nest: every
-// parent here is a *direct* parent of childVideoId, and childVideoId is the
-// only video whose languages just changed, so each parent picks the new
-// language up from the child itself. No parent depends on another parent's
-// updated value, and the previous per-parent loop had no defined order to
-// rely on anyway (findContainerParentIds does not sort).
+// each, kept to the same two-read budget as before by asking this single
+// query for childIds too. A parent with no sibling dependency in this batch
+// uses that snapshot value directly; a parent that depends on a sibling
+// (see orderParentsByDependency above) is written after that sibling and
+// re-derived with a fresh read at that point, so it picks up the sibling's
+// just-written value rather than the snapshot's stale one.
 //
 // The writes stay per-parent: the Algolia enqueue and cache reset are
 // per-video side effects, and keeping the updates separate preserves the
@@ -252,18 +326,29 @@ export async function updateParentCollectionLanguages(
     return
   }
 
-  const availableLanguagesByVideoId =
-    await calculateAvailableLanguagesForVideos(parentIds)
+  const parents = await prisma.video.findMany({
+    where: { id: { in: parentIds } },
+    select: { id: true, childIds: true, ...availableLanguagesSelect }
+  })
+
+  const availableLanguagesByVideoId = new Map(
+    parents.map((video) => [video.id, reduceAvailableLanguages(video)])
+  )
+  const childIdsByParentId = new Map(
+    parents.map((video) => [video.id, video.childIds])
+  )
+  const { orderedParentIds, parentsWithSiblingDependency } =
+    orderParentsByDependency(parentIds, childIdsByParentId)
 
   // Update each parent collection
-  for (const parentId of parentIds) {
-    await applyAvailableLanguages(
-      parentId,
-      availableLanguagesByVideoId.get(parentId) ?? [],
-      {
-        skipCache: false,
-        skipAlgolia: false
-      }
-    )
+  for (const parentId of orderedParentIds) {
+    const availableLanguages = parentsWithSiblingDependency.has(parentId)
+      ? await calculateAvailableLanguages(parentId)
+      : availableLanguagesByVideoId.get(parentId) ?? []
+
+    await applyAvailableLanguages(parentId, availableLanguages, {
+      skipCache: false,
+      skipAlgolia: false
+    })
   }
 }
