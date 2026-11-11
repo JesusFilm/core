@@ -310,12 +310,16 @@ export async function findOrFetchUser(
   // than pattern matching, it needs no `%`/`_` wildcard escaping either.
   if (data.email != null) {
     const holderRows = await prisma.$queryRaw<
-      Array<{ email: string }>
-    >`SELECT email FROM "User" WHERE LOWER(email) = LOWER(${data.email}) ORDER BY "createdAt" ASC, id ASC LIMIT 1`
-    const holderEmail = holderRows?.[0]?.email
-    if (holderEmail != null) {
+      Array<{ email: string; userId: string }>
+    >`SELECT email, "userId" FROM "User" WHERE LOWER(email) = LOWER(${data.email}) ORDER BY "createdAt" ASC, id ASC LIMIT 1`
+    const holder = holderRows?.[0]
+    // A holder already keyed to this UID is not a conflict: a concurrent call
+    // created this user's row after the lookup by UID above (the Firebase
+    // call widens that window). Fall through to create, which fails on the
+    // unique UID and lets resolveCreateConflict return and sync that row.
+    if (holder != null && holder.userId !== userId) {
       if (!emailVerified) throw new UserEmailConflictError()
-      return await relinkUserToFirebaseUid(holderEmail, userId)
+      return await relinkUserToFirebaseUid(holder.email, userId)
     }
   }
 

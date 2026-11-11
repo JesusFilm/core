@@ -1030,6 +1030,36 @@ describe('findOrFetchUser', () => {
       expect(verifyUser).not.toHaveBeenCalled()
     })
 
+    it('should return the row a concurrent call just created for the same uid instead of reporting a conflict', async () => {
+      mockFirebaseUser(false)
+      // The case-insensitive lookup finds the unverified row a parallel `me`
+      // call created for this very uid. That is not another account's email,
+      // so it must not surface as USER_EMAIL_CONFLICT.
+      prismaMock.$queryRaw.mockResolvedValueOnce([
+        { email: 'amin@email.com', userId: newUid }
+      ])
+      const racedRow = {
+        ...legacyRow,
+        userId: newUid,
+        email: 'amin@email.com',
+        emailVerified: false
+      }
+      prismaMock.user.create.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+          code: 'P2002',
+          clientVersion: '',
+          meta: { target: ['userId'] }
+        })
+      )
+      prismaMock.user.findUnique.mockResolvedValueOnce(racedRow)
+
+      const data = await findOrFetchUser({}, newUid, undefined)
+
+      expect(data).toEqual(racedRow)
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
     it('should fall through to create when no row matches case-insensitively', async () => {
       mockFirebaseUser(true)
       prismaMock.$queryRaw.mockResolvedValueOnce([])
