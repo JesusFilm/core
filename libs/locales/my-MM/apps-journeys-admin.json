@@ -1658,6 +1658,7 @@
   "Open journey": "ခရီးစတင်ခြင်း",
   "There was an error loading campaigns.": "ကမ်ပိန်းများအား တင်ယူရာတွင် အမှားတစ်ခု ဖြစ်ပေါ်ခဲ့သည်။",
   "There was an error refreshing the campaign.": "ကမ်ပိန်းကို ပြန်လည်အသစ်ပြုလုပ်ရာတွင် အမှားတစ်ခု ဖြစ်ပေါ်ခဲ့သည်။",
+  "This language has a QR code. Unlink it instead.": "ဤဘာသာစကားတွင် QR ကုဒ်ပါရှိသည်။ အစားထိုး၍ ၎င်းကို ချိတ်ဆက်ပါ။",
   "Remove {{language}}?": "{{language}} ကို ဖယ်ရှားပါ?",
   "Every translation into {{language}} is deleted.": "{{language}} သို့ ပြန်ဆိုထားသည့် ဘာသာပြန်ချက်အားလုံးကို ဖျက်ပစ်သည်။",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "ယခုအချိန်တွင် မည်သည့်ကမ်ပိန်းမျှ မရှိသေးပါ။ တိုင်းဒေသတိုင်းအတွက် စာမျက်နှာတစ်ခုစီပါဝင်သည့် လန်ဒင်းစာမျက်နှာတစ်ခု တည်ဆောက်ရန် ကမ်ပိန်းအသစ်တစ်ခု ဖန်တီးပါ။",
@@ -1723,6 +1724,8 @@
   "All regions label": "ဒေသအားလုံး၏ တံဆိပ်",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "ဖိုင်အမျိုးအစား မလက်ခံပါ။ အောက်ပါ ဖိုင်အမျိုးအစားများထဲမှ တစ်ခုဖြင့် တင်ပါ။ (PNG, JPG, GIF, SVG, HEIC, သို့မဟုတ် WebP)",
   "Maximum file size: 10 MB": "အများဆုံး ဖိုင်အရွယ်အစား: 10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} အခုပြန်ဆိုနေဆဲဖြစ်ပါတယ်။ ပြီးဆုံးသွားရင် ထပ်ကြိုးစားပါ။",
   "Unlink the journey before removing this language.": "ဤစာသားကို ဖယ်ရှားရန်မပြုမီ ခရီးစဉ်ကို ချိတ်ဆက်မှုမှ ဖြုတ်ပါ။",
   "Delete {{language}}?": "{{language}} ကို ဖျက်မည်လား?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "ဤသည်သည် ၎င်း၏ ကမ်ပိန်း QR ကုဒ်နှင့် Share Link ပါဝင်သည့် စာသားကို အမြဲတမ်း ဖယ်ရှားပစ်သည်။ ယခင်က ပုံနှိပ်ထား သို့မဟုတ် မျှဝေထားသော QR ကုဒ် မိတ္တူများသည် လင့်ခ်ကို သန့်ရှင်းပြီးနောက် ပြန်လည်ညွှန်ပြခြင်း ရပ်သွားမည်။",
@@ -1744,5 +1747,7 @@
   "First {{limit}} of {{count}} videos_other": "ပထမဆုံး {{limit}} ၏ {{count}} ဗီဒီယိုများ",
   "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} {{language}} တွင် texts များအတွက် ဘာသာပြန်မရှိသေးသောကြောင့် အလိုအလျောက် သတ်မှတ်မဖြစ်နိုင်ပါ။",
   "Translated {{count}} strings into {{language}}_other": "{{count}} ဟု ခေါ်သော စာကြောင်းများကို {{language}}",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} သို့ ဘာသာပြန်ခြင်း ဖျက်သိမ်းခဲ့သည်။ {{count}} ၏ စာကြောင်းများကို ထိန်းသိမ်းထားသည်။"
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} သို့ ဘာသာပြန်ခြင်း ဖျက်သိမ်းခဲ့သည်။ {{count}} ၏ စာကြောင်းများကို ထိန်းသိမ်းထားသည်။",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} {{language}}တွင် စာသားများအတွက် ဘာသာပြန်မရှိသေးသောကြောင့် မူလတန်ဖိုးအဖြစ် သတ်မှတ်၍ မရနိုင်ပါ။",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "{{language}} သို့ ဘာသာပြန်ခြင်း ရပ်ဆိုင်းခဲ့သည်။ {{count}} စာကြောင်းများ ထိန်းသိမ်းထားသည်။"
 }
