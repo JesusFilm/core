@@ -1,11 +1,10 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../../libs/useCampaignBlockDuplicateMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../../data'
 import { Inspector } from '../../Inspector'
 import {
@@ -13,11 +12,15 @@ import {
   PendingTextSave,
   QueriedEditor,
   SelectionProbe,
+  UndoRedo,
   campaignCache,
-  debounceSpyLink
+  debounceSpyLink,
+  holdRequests,
+  landRequests
 } from '../../testing'
+import { subtreeOf } from '../subtreeOf'
 
-import { duplicateBlocks, subtreeOf } from './useCampaignBlockDuplicateCommand'
+import { duplicateBlocks } from './useCampaignBlockDuplicateCommand'
 
 vi.mock('uuid', () => ({ v4: vi.fn() }))
 
@@ -31,7 +34,6 @@ function copyIds(): () => string {
 const expected = duplicateBlocks(campaign.blocks, hero, copyIds())
 
 const duplicateMock = {
-  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_DUPLICATE,
     variables: { id: 'heroId', idMap: expected.idMap }
@@ -47,7 +49,6 @@ const duplicateMock = {
 }
 
 const deleteMock = {
-  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'heroCopyId' } },
   result: vi.fn(() => ({
     data: {
@@ -68,7 +69,6 @@ const deleteMock = {
 }
 
 const restoreMock = {
-  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id: 'heroCopyId' } },
   result: vi.fn(() => ({
     data: {
@@ -83,38 +83,38 @@ const restoreMock = {
 const refusal = { errors: [{ message: 'The request was refused' }] }
 
 function renderEditor(
-  mocks: Array<Record<string, unknown>> = [
-    duplicateMock,
-    deleteMock,
-    restoreMock
-  ]
+  mocks: MockLink.MockedResponse[] = [duplicateMock, deleteMock, restoreMock]
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor initialState={{ selectedBlockId: 'heroId' }} mocks={mocks}>
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector isManager />
     </QueriedEditor>
   )
 }
 
-function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
+function renderWithPendingText(
+  requests: string[],
+  pendingBlock: { __typename: string; id: string } = hero
+): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       link={debounceSpyLink(requests, [duplicateMock])}
       cache={campaignCache()}
       initialState={{ selectedBlockId: 'heroId' }}
     >
-      <PendingTextSave block={hero} />
+      <PendingTextSave block={pendingBlock} />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector isManager />
     </QueriedEditor>
   )
 }
 
 describe('useCampaignBlockDuplicateCommand', () => {
+  afterEach(() => vi.useRealTimers())
+
   beforeEach(() => {
     vi.clearAllMocks()
     const nextId = copyIds()
@@ -209,15 +209,15 @@ describe('useCampaignBlockDuplicateCommand', () => {
     renderEditor()
     expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }))
+    )
 
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'heroCopyId'
     )
-    await waitFor(() =>
-      expect(screen.getByTestId('Block-heroCopyId')).toHaveTextContent(
-        'CampaignHeroBlock||1||||center|'
-      )
+    expect(screen.getByTestId('Block-heroCopyId')).toHaveTextContent(
+      'CampaignHeroBlock||1||||center|'
     )
     expect(screen.getByTestId('Block-heroButtonCopyId')).toHaveTextContent(
       'CampaignButtonBlock|heroCopyId|0|below||"Choose your region"|null|CampaignScrollToBlockAction'
@@ -226,12 +226,29 @@ describe('useCampaignBlockDuplicateCommand', () => {
       'CampaignRegionSwitcherBlock||2|'
     )
     expect(duplicateMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(duplicateMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(duplicateMock.result).toHaveBeenCalled()
   })
 
   it('sends a text edit still waiting on its debounce before the duplicate, so the copy is not made from stale text', async () => {
     const requests: string[] = []
     renderWithPendingText(requests)
+    expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Queue text save' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }))
+
+    await waitFor(() =>
+      expect(requests).toEqual(['PendingTextSave', 'CampaignBlockDuplicate'])
+    )
+  })
+
+  it('sends a text edit of one of its Extras still waiting on its debounce before the duplicate, so the copy keeps the new text', async () => {
+    const requests: string[] = []
+    renderWithPendingText(requests, {
+      __typename: 'CampaignButtonBlock',
+      id: 'heroButtonId'
+    })
     expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Queue text save' }))
@@ -302,31 +319,34 @@ describe('useCampaignBlockDuplicateCommand', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }))
     await waitFor(() => expect(duplicateMock.result).toHaveBeenCalled())
 
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    )
 
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
-    await waitFor(() =>
-      expect(screen.queryByTestId('Block-heroCopyId')).not.toBeInTheDocument()
-    )
+    expect(screen.queryByTestId('Block-heroCopyId')).not.toBeInTheDocument()
     expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
       'CampaignRegionSwitcherBlock||1|'
     )
     expect(deleteMock.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+    await landRequests()
+    expect(deleteMock.result).toHaveBeenCalled()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await holdRequests(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    )
 
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'heroCopyId'
     )
-    await waitFor(() =>
-      expect(screen.getByTestId('Block-heroCopyId')).toHaveTextContent(
-        'CampaignHeroBlock||1|'
-      )
+    expect(screen.getByTestId('Block-heroCopyId')).toHaveTextContent(
+      'CampaignHeroBlock||1|'
     )
     expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
       'CampaignRegionSwitcherBlock||2|'
     )
-    await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
+    expect(restoreMock.result).not.toHaveBeenCalled()
+    await landRequests()
+    expect(restoreMock.result).toHaveBeenCalled()
   })
 })

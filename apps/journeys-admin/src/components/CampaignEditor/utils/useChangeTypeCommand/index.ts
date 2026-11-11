@@ -1,1 +1,1 @@
-export { useChangeTypeCommand } from './useChangeTypeCommand'
+export { useCampaignBlockTypeChangeCommand as useChangeTypeCommand } from '../useCampaignBlockTypeChangeCommand'

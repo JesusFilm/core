@@ -1,0 +1,1 @@
+export { scrollBehavior } from './scrollBehavior'

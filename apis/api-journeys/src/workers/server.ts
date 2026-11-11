@@ -137,6 +137,12 @@ async function main(): Promise<void> {
         './anonymousJourneyCleanup'
       )
     )
+    run(
+      await import(
+        /* webpackChunkName: "plausibleSiteCleanup" */
+        './plausibleSiteCleanup'
+      )
+    )
     // Google Sheets sync worker - concurrency of 1 to prevent race conditions
     run({
       ...(await import(

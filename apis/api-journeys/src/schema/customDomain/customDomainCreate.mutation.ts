@@ -5,7 +5,10 @@ import { logger } from '../../logger'
 import { builder } from '../builder'
 import { authorizeCampaignDomainAdd } from '../campaign/authorizeCampaignDomainAdd'
 import { badUserInput } from '../campaign/errors'
-import { enqueueCampaignDomainRevalidation } from '../campaign/revalidateCampaign'
+import {
+  queuePageSetChange,
+  snapshotCampaignAddress
+} from '../campaign/revalidateCampaign'
 import { isUniqueViolation } from '../campaign/validation'
 
 import { CustomDomainRef } from './customDomain'
@@ -43,10 +46,10 @@ async function loadDomainCampaign(input: CustomDomainCreateArgs, user: User) {
 }
 
 /**
- * A concurrent create gave the campaign its domain first, after this request
- * had registered `name` with Vercel. Remove that registration unless a row
- * owns the name (the other request may have used the same one); a Vercel
- * failure is logged, not thrown.
+ * The create failed after this request had registered `name` with Vercel,
+ * for instance because a concurrent create gave the campaign its domain
+ * first. Remove that registration unless a row owns the name (the other
+ * request may have used the same one); a Vercel failure is logged, not thrown.
  */
 async function releaseVercelDomain(name: string): Promise<void> {
   try {
@@ -56,7 +59,7 @@ async function releaseVercelDomain(name: string): Promise<void> {
   } catch (error) {
     logger.error(
       { name, error },
-      'Failed to remove campaign domain from Vercel after a lost race'
+      'Failed to remove custom domain from Vercel after a failed create'
     )
   }
 }
@@ -89,8 +92,12 @@ builder.mutationField('customDomainCreate', (t) =>
             : await loadDomainCampaign(input, context.user)
 
         let registeredWithVercel = false
-        const customDomain = await prisma
+        const { customDomain, before, after } = await prisma
           .$transaction(async (tx) => {
+            const before =
+              campaign == null
+                ? null
+                : await snapshotCampaignAddress(tx, campaign.id)
             const { apexName } = await createVercelDomain(input.name)
             registeredWithVercel = true
 
@@ -114,21 +121,25 @@ builder.mutationField('customDomainCreate', (t) =>
               }
             }
 
-            return await tx.customDomain.create({
+            const customDomain = await tx.customDomain.create({
               ...query,
               data
             })
+            const after =
+              campaign == null
+                ? null
+                : await snapshotCampaignAddress(tx, campaign.id)
+            return { customDomain, before, after }
           })
           .catch(async (err: unknown) => {
+            if (registeredWithVercel) await releaseVercelDomain(input.name)
             // Two creates raced for one campaign: the unique campaignId index
             // refused the second, which is no fault of the domain name.
-            if (campaign != null && isUniqueViolation(err, 'campaignId')) {
-              if (registeredWithVercel) await releaseVercelDomain(input.name)
+            if (campaign != null && isUniqueViolation(err, 'campaignId'))
               throw badUserInput(
                 'campaign already has a custom domain',
                 'campaignId'
               )
-            }
             if (isUniqueViolation(err, 'name'))
               throw badUserInput('custom domain already exists', 'name')
             throw err
@@ -137,7 +148,7 @@ builder.mutationField('customDomainCreate', (t) =>
         // A Campaign Domain serves no team journey, so no short link moves;
         // the Campaign Address moves from the Root Domain to the domain.
         if (campaign != null) {
-          await enqueueCampaignDomainRevalidation([campaign], customDomain.name)
+          await queuePageSetChange(before, after)
           return customDomain
         }
 

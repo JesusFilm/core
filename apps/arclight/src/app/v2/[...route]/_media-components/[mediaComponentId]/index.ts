@@ -8,6 +8,7 @@ import { generateCacheKey } from '../../../../../lib/cache'
 import { getWithStaleCacheForRequest } from '../../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
+import { getComponentType } from '../../../../../lib/mediaComponentType'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
@@ -72,6 +73,7 @@ const GET_VIDEO = graphql(`
       availableLanguages
       variant {
         hls
+        dash
         lengthInMilliseconds
         language {
           bcp47
@@ -271,19 +273,24 @@ mediaComponent.openapi(route, async (c) => {
         return { data: descriptorsonlyResponse, statusCode: 200 }
       }
 
+      const componentType = getComponentType(
+        video.variant?.hls,
+        video.variant?.dash
+      )
+
       // Matches updateVideoInAlgolia's isAlgoliaVideoDownloadable rule: the
       // raw `downloadable` flag alone isn't enough, since it defaults to
       // true even for a variant with no media and no download rows.
       const isDownloadable =
+        componentType === 'content' &&
         (video.variant?.downloadable ?? false) &&
-        video.variant?.hls != null &&
         (video.variant?.downloads.length ?? 0) > 0
 
       const responseData = {
         mediaComponentId,
-        componentType: video.variant?.hls != null ? 'content' : 'container',
+        componentType,
         subType: video.label,
-        contentType: 'video',
+        contentType: componentType === 'content' ? 'video' : 'none',
         imageUrls: {
           thumbnail:
             video.images.find((image) => image.thumbnail != null)?.thumbnail ??

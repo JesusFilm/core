@@ -1,1 +1,4 @@
-export { CampaignSectionHeading } from './CampaignSectionHeading'
+export {
+  CAMPAIGN_LEDE_SX,
+  CampaignSectionHeading
+} from './CampaignSectionHeading'

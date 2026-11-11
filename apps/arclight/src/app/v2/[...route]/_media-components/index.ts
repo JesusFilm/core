@@ -11,6 +11,7 @@ import {
   getPreferredItems
 } from '../../../../lib/getLanguageIdsFromTags'
 import { getImageUrl } from '../../../../lib/imageHelper'
+import { getComponentType } from '../../../../lib/mediaComponentType'
 
 import { mediaComponent } from './[mediaComponentId]'
 
@@ -216,9 +217,14 @@ mediaComponents.openapi(route, async (c) => {
             },
             children: true,
             availableLanguages: true,
+            // Must match the Variant the detail route reports (the
+            // `video.variant` GraphQL field): the published one in English.
+            // An unfiltered `take: 1` returns whichever Variant row Postgres
+            // reads first, which for a Video in many languages is arbitrary.
             variants: {
               select: {
                 hls: true,
+                dash: true,
                 lengthInMilliseconds: true,
                 languageId: true,
                 downloadable: true,
@@ -229,6 +235,7 @@ mediaComponents.openapi(route, async (c) => {
                   }
                 }
               },
+              where: { languageId: '529', published: true },
               take: 1
             }
           },
@@ -356,14 +363,15 @@ mediaComponents.openapi(route, async (c) => {
       )
 
       const variant = video.variants[0]
+      const componentType = getComponentType(variant?.hls, variant?.dash)
       // Matches updateVideoInAlgolia's isAlgoliaVideoDownloadable rule: the
       // raw `downloadable` flag alone isn't enough, since it defaults to
       // true even for a variant with no media and no download rows. This
       // also replaces the old blanket collection/series override, which no
       // longer matches what the Algolia index reports for the same video.
       const isDownloadable =
+        componentType === 'content' &&
         (variant?.downloadable ?? false) &&
-        variant?.hls != null &&
         (variant?.downloads.length ?? 0) > 0
 
       const titleContent = getPreferredContent(video.title, metadataLanguages)
@@ -378,9 +386,9 @@ mediaComponents.openapi(route, async (c) => {
 
       return {
         mediaComponentId: video.id,
-        componentType: variant?.hls != null ? 'content' : 'container',
+        componentType,
         subType: video.label,
-        contentType: variant?.hls != null ? 'video' : 'none',
+        contentType: componentType === 'content' ? 'video' : 'none',
         imageUrls: {
           thumbnail: getImageUrl(hdImage?.id, 'thumbnail'),
           videoStill: getImageUrl(hdImage?.id, 'videoStill'),
@@ -401,12 +409,10 @@ mediaComponents.openapi(route, async (c) => {
         containsCount: video.children.length,
         isDownloadable,
         downloadSizes: {
-          approximateSmallDownloadSizeInBytes: isDownloadable
-            ? (variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0)
-            : 0,
-          approximateLargeDownloadSizeInBytes: isDownloadable
-            ? (variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0)
-            : 0
+          approximateSmallDownloadSizeInBytes:
+            variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0,
+          approximateLargeDownloadSizeInBytes:
+            variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0
         },
         bibleCitations: video.bibleCitation.map((citation) => ({
           osisBibleBook: citation.osisId,
