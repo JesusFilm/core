@@ -1,4 +1,5 @@
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { parseUrl } from '../../utils/parseUrl'
 
 /** A pasted link the media paste field recognises, with what it resolves through. */
 export type ParsedMediaUrl =
@@ -94,12 +95,8 @@ function youTubeId(url: URL): string | null {
  */
 export function parseMediaUrl(value: string): ParsedMediaUrl | null {
   const trimmed = value.trim()
-  let url: URL
-  try {
-    url = new URL(trimmed)
-  } catch {
-    return null
-  }
+  const url = parseUrl(trimmed)
+  if (url == null) return null
   const slugs = watchSlugs(url)
   if (slugs != null)
     return { source: VideoBlockSource.internal, url: trimmed, slugs }
@@ -125,12 +122,8 @@ const PLAYLIST_ID = /^[\w-]{10,}$/
  */
 export function parsePlaylistUrl(value: string): ParsedPlaylistUrl | null {
   const trimmed = value.trim()
-  let url: URL
-  try {
-    url = new URL(trimmed)
-  } catch {
-    return null
-  }
+  const url = parseUrl(trimmed)
+  if (url == null) return null
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
   if (!YOUTUBE_HOSTS.includes(url.hostname)) return null
   if (url.pathname.replace(/\/$/, '') !== '/playlist') return null

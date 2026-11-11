@@ -1,4 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
@@ -28,6 +29,7 @@ import {
   TranslationRunProvider,
   useTranslationRun
 } from '../TranslationRunProvider'
+import { CampaignRole } from '../utils/campaignRole'
 
 import { Settings, shapeSlug } from './Settings'
 
@@ -74,8 +76,9 @@ function RunScope({
 
 interface RenderOptions {
   campaign?: Campaign
-  isManager?: boolean
-  mocks?: Array<Record<string, unknown>>
+  role?: CampaignRole
+  onRoleRetry?: () => void
+  mocks?: MockLink.MockedResponse[]
   onDefaultLanguageChanged?: () => void
   cache?: InMemoryCache
   /** A background machine-translation run in flight. */
@@ -84,21 +87,23 @@ interface RenderOptions {
 
 function renderSettings({
   campaign: campaignProp = campaign,
-  isManager = true,
+  role = 'manager',
+  onRoleRetry,
   mocks = [],
   onDefaultLanguageChanged,
   cache,
   run
 }: RenderOptions = {}): void {
   render(
-    <MockedProvider mocks={mocks as never} cache={cache}>
+    <MockedProvider mocks={mocks} cache={cache}>
       <SnackbarProvider>
         <CommandProvider>
           <CommandCount />
           <RunScope run={run}>
             <Settings
               campaign={campaignProp}
-              isManager={isManager}
+              role={role}
+              onRoleRetry={onRoleRetry}
               onDefaultLanguageChanged={onDefaultLanguageChanged}
             />
           </RunScope>
@@ -353,16 +358,6 @@ describe('Settings', () => {
     expect(screen.getByText('Title is required')).toBeInTheDocument()
   })
 
-  it('has no Save button, Unsaved chip or save indicator', () => {
-    renderSettings()
-
-    expect(
-      screen.queryByRole('button', { name: 'Save' })
-    ).not.toBeInTheDocument()
-    expect(screen.queryByText('Unsaved')).not.toBeInTheDocument()
-    expect(screen.queryByText(/Saving/)).not.toBeInTheDocument()
-  })
-
   it('offers Delete campaign to managers and confirms before campaignDelete', async () => {
     const result = vi.fn(() => ({
       data: { campaignDelete: { __typename: 'Campaign', id: 'campaignId' } }
@@ -456,8 +451,38 @@ describe('Settings', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('shows Delete campaign disabled with a spinner while the role is pending', () => {
+    renderSettings({ role: 'pending' })
+
+    const button = screen.getByRole('button', { name: 'Delete campaign' })
+    expect(button).toBeDisabled()
+    expect(within(button).getByRole('progressbar')).toBeInTheDocument()
+    expect(
+      screen.queryByText("We couldn't check your role.")
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows Delete campaign disabled with Retry when the role could not be read', () => {
+    const onRoleRetry = vi.fn()
+    renderSettings({ role: 'error', onRoleRetry })
+
+    expect(
+      screen.getByRole('button', { name: 'Delete campaign' })
+    ).toBeDisabled()
+    const notices = screen.getAllByTestId('ManagerRoleNotice')
+    expect(notices[notices.length - 1]).toHaveTextContent(
+      "We couldn't check your role."
+    )
+    fireEvent.click(
+      within(notices[notices.length - 1]).getByRole('button', {
+        name: 'Retry'
+      })
+    )
+    expect(onRoleRetry).toHaveBeenCalled()
+  })
+
   it('does not offer Delete campaign to members', () => {
-    renderSettings({ isManager: false })
+    renderSettings({ role: 'member' })
 
     expect(
       screen.queryByRole('button', { name: 'Delete campaign' })
@@ -473,14 +498,14 @@ describe('Settings', () => {
     }
 
     function updateMock(
-      result: Record<string, unknown>
-    ): Record<string, unknown> {
+      response: Omit<MockLink.MockedResponse, 'request'>
+    ): MockLink.MockedResponse {
       return {
         request: {
           query: CAMPAIGN_UPDATE,
           variables: { id: 'campaignId', input: { defaultLanguageId: FRENCH } }
         },
-        ...result
+        ...response
       }
     }
 

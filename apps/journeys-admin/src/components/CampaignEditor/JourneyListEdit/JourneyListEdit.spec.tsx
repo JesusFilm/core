@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -13,20 +14,26 @@ import { ReactElement } from 'react'
 import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
 import { journeyCard } from '@core/journeys/ui/Campaign/testData'
 
+import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import {
   CampaignJourneyListDisplay,
+  CampaignStringKey,
   IdType,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_ACCESSIBLE_JOURNEYS } from '../../../libs/useCampaignAccessibleJourneysLazyQuery'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
-import { CAMPAIGN_JOURNEY_BLOCK_UPDATE } from '../../../libs/useCampaignBlockUpdateMutation'
 import { CAMPAIGN_JOURNEY_BLOCK_CREATE } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../libs/useCampaignJourneyByLinkLazyQuery'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { QueriedEditor, SelectionProbe } from '../testing'
+import { blockOf, blockUpdateMock } from '../styleTesting'
+import {
+  BlocksProbe,
+  QueriedEditor,
+  SelectionProbe,
+  UndoRedo
+} from '../testing'
 
 import { JourneyListEdit } from './JourneyListEdit'
 
@@ -139,27 +146,10 @@ const createFailureMock = {
   }))
 }
 
-const titleUpdateMock = {
-  request: {
-    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE,
-    variables: {
-      id: 'landingJourneyId',
-      input: { title: 'Outreach, retold' }
-    }
-  },
-  result: vi.fn(() => ({
-    data: {
-      campaignJourneyBlockUpdate: {
-        ...campaign.blocks.find((block) => block.id === 'landingJourneyId'),
-        __typename: 'CampaignJourneyBlock',
-        id: 'landingJourneyId',
-        title: 'Outreach, retold',
-        description: 'A short journey through the story.',
-        snapshotEdited: true
-      }
-    }
-  }))
-}
+const titleUpdateMock = blockUpdateMock(
+  blockOf<'CampaignJourneyBlock'>('landingJourneyId'),
+  { title: 'Outreach, retold' }
+)
 
 function ListHarness({
   display
@@ -182,14 +172,20 @@ function ListHarness({
 
 async function renderList(
   selectedBlockId?: string,
-  mocks: Array<Record<string, unknown>> = [],
-  display?: CampaignJourneyListDisplay
+  mocks: MockLink.MockedResponse[] = [],
+  display?: CampaignJourneyListDisplay,
+  campaignProp: Campaign = campaign
 ): Promise<ReturnType<typeof render>> {
   const result = render(
     <SnackbarProvider>
-      <QueriedEditor initialState={{ selectedBlockId }} mocks={mocks}>
-        <CommandUndoItem variant="button" />
+      <QueriedEditor
+        initialState={{ selectedBlockId }}
+        mocks={mocks}
+        campaign={campaignProp}
+      >
+        <UndoRedo />
         <SelectionProbe />
+        <BlocksProbe />
         <ListHarness display={display} />
       </QueriedEditor>
     </SnackbarProvider>
@@ -198,8 +194,74 @@ async function renderList(
   return result
 }
 
+/** The seeded campaign with no journey card in the landing list, its noJourneys string set to `noJourneys`. */
+function emptyList(noJourneys: string): Campaign {
+  return {
+    ...campaign,
+    blocks: campaign.blocks.filter(
+      (block) =>
+        !(
+          block.parentBlockId === 'landingJourneyListId' &&
+          block.__typename === 'CampaignJourneyBlock'
+        )
+    ),
+    strings: campaign.strings.map((string) =>
+      string.key === CampaignStringKey.noJourneys
+        ? { ...string, value: noJourneys }
+        : string
+    )
+  }
+}
+
 describe('JourneyListEdit', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  describe('with no card', () => {
+    it('shows the noJourneys string above the hint while not selected', async () => {
+      await renderList(undefined, [], undefined, emptyList('Coming soon'))
+
+      const noJourneys = screen.getByTestId('JourneyListNoJourneys')
+      expect(noJourneys).toHaveTextContent(/^Coming soon$/)
+      expect(noJourneys.nextSibling).toBe(
+        screen.getByTestId('JourneyListEmpty')
+      )
+    })
+
+    it('shows the noJourneys string above the picker while selected', async () => {
+      await renderList(
+        'landingJourneyListId',
+        [],
+        undefined,
+        emptyList('Coming soon')
+      )
+
+      const noJourneys = screen.getByTestId('JourneyListNoJourneys')
+      expect(noJourneys).toHaveTextContent(/^Coming soon$/)
+      expect(
+        noJourneys.compareDocumentPosition(
+          screen.getByRole('combobox', { name: 'Add a journey' })
+        ) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      expect(screen.queryByTestId('JourneyListEmpty')).not.toBeInTheDocument()
+    })
+
+    it('shows nothing for a blank noJourneys string', async () => {
+      await renderList(undefined, [], undefined, emptyList('  '))
+
+      expect(
+        screen.queryByTestId('JourneyListNoJourneys')
+      ).not.toBeInTheDocument()
+      expect(screen.getByTestId('JourneyListEmpty')).toBeInTheDocument()
+    })
+  })
+
+  it('shows no noJourneys string while the list has cards', async () => {
+    await renderList()
+
+    expect(
+      screen.queryByTestId('JourneyListNoJourneys')
+    ).not.toBeInTheDocument()
+  })
 
   it.each([
     [CampaignJourneyListDisplay.grid],
@@ -271,6 +333,33 @@ describe('JourneyListEdit', () => {
 
     await waitFor(() => expect(titleUpdateMock.result).toHaveBeenCalled())
   })
+
+  it.each(['Enter', ' '])(
+    'selects a card, a button, on %j and edits its title',
+    async (key) => {
+      await renderList()
+      const card = screen.getByTestId('JourneyCard-landingJourneyId')
+      expect(card).toHaveAttribute('role', 'button')
+      expect(card).toHaveAttribute('tabindex', '0')
+      for (const text of within(card).getAllByTestId(/^InlineText-/)) {
+        expect(text).not.toHaveAttribute('role', 'button')
+        expect(text).not.toHaveAttribute('tabindex')
+      }
+
+      fireEvent.keyDown(card, { key })
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingJourneyId'
+      )
+      expect(
+        screen.getByRole('textbox', { name: 'Journey title' })
+      ).toHaveValue('The outreach story')
+      for (const field of within(card).getAllByRole('textbox')) {
+        expect(field.closest('[role="button"], button')).toBeNull()
+        expect(fireEvent.keyDown(field, { key })).toBe(true)
+      }
+    }
+  )
 
   it('caps the title at 200 characters and the description at 1000', async () => {
     await renderList('landingJourneyId')
@@ -415,6 +504,23 @@ describe('JourneyListEdit', () => {
       expect(screen.queryByTestId('JourneyCard-newJourneyItemId')).toBeNull()
     )
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+  })
+
+  it('numbers the optimistic card after every ordered child of the list, its Extras included', async () => {
+    await renderList('landingJourneyListId', [resolveMock, createMock])
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'or paste a link' }),
+      `${ADMIN_LINK}{enter}`
+    )
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Use this journey' })
+    )
+
+    // The note above the cards and the two cards: the API answers 3.
+    expect(
+      await screen.findByTestId('Block-newJourneyItemId')
+    ).toHaveTextContent('CampaignJourneyBlock|landingJourneyListId|3|')
+    expect(createMock.result).not.toHaveBeenCalled()
   })
 
   it('leaves nothing to undo when the add is refused, and keeps the list selected', async () => {

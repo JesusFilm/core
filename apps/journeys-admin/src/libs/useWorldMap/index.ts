@@ -1,1 +1,0 @@
-export { useWorldMap } from './useWorldMap'

@@ -81,9 +81,20 @@ export type {
 } from './libs/themePresets'
 export type { CampaignTreeBlock } from './libs/transformer'
 
-// Retain the old editor import surface until its shell migration lands.
 export { campaignPagePaths } from './libs/campaignPagePaths'
 export type {
   WorldMapShapes,
   WorldAtlasTopology
 } from './CampaignAnalytics/WorldMap/buildWorldMap'
+
+// Keep public-route imports usable until the route batch migrates them.
+export { CampaignPage } from './CampaignPage'
+export { legacyCampaignBasePath as campaignBasePath } from './CampaignProvider/CampaignProvider'
+export { campaignLanguageUrl } from './CampaignHeader'
+export {
+  campaignLanguageCookie,
+  CAMPAIGN_LANGUAGE_PARAM,
+  resolvePageLanguage
+} from './libs/resolvePageLanguage'
+export { matchRegionSlug } from './libs/matchRegionSlug'
+export type { CampaignPublic, CampaignRegion } from './types'

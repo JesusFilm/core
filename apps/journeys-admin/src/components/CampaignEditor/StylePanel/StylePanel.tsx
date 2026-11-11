@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -6,7 +5,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
@@ -22,24 +21,34 @@ import {
   CampaignImageSlot
 } from '../../../../__generated__/globalTypes'
 import {
-  CampaignSectionStyleInput,
+  CampaignBlockUpdateInput,
   CampaignStyledBlock,
+  CampaignStyledTypename,
   SECTION_OVERRIDE_FIELDS,
-  SectionOverrideField,
-  useCampaignSectionStyleMutation
-} from '../../../libs/useCampaignSectionStyleMutation'
+  SectionOverrideField
+} from '../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
+import { CommandError } from '../CommandError'
 import { FocalPointControl } from '../FocalPointControl'
-import { PaletteColorPicker } from '../PaletteColorPicker'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
-import { previousOf } from '../utils/useCampaignStyleCommand'
+
+/** `react-colorful` loads when a colour is first edited. */
+const CampaignPaletteColorPicker = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/CampaignPaletteColorPicker" */ '../CampaignPaletteColorPicker/CampaignPaletteColorPicker'
+    ).then((mod) => mod.CampaignPaletteColorPicker),
+  { ssr: false }
+)
 
 type StyleTab = 'background' | 'colours'
 
+type SectionStyleInput = CampaignBlockUpdateInput<CampaignStyledTypename>
+
 /** The six Section Background kinds, in the Background tab's order. */
-export const BACKGROUND_KINDS = [
+const BACKGROUND_KINDS = [
   CampaignBackgroundKind.none,
   CampaignBackgroundKind.surface,
   CampaignBackgroundKind.contrast,
@@ -72,8 +81,7 @@ interface StylePanelProps {
 export function StylePanel({ block }: StylePanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addOwnedImage, addStyle, error } = useCampaignOwnedImageCommand()
-  const writeStyle = useCampaignSectionStyleMutation()
+  const { addOwnedImage, addFields, error } = useCampaignOwnedImageCommand()
   const [tab, setTab] = useState<StyleTab>('background')
   /** The author chose Image but the section has no cover yet: the picker shows, no Command until a picture is kept. */
   const [choosingCover, setChoosingCover] = useState(false)
@@ -87,18 +95,6 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
   const cover = campaignImageSource(
     coverBlock?.__typename === 'CampaignImageBlock' ? coverBlock : null
   )
-
-  function addSectionStyle(
-    target: CampaignStyledBlock,
-    input: CampaignSectionStyleInput
-  ): void {
-    addStyle({
-      block: target,
-      input,
-      previous: previousOf(target, input),
-      run: writeStyle
-    })
-  }
 
   const kindLabels: Record<(typeof BACKGROUND_KINDS)[number], string> = {
     none: t('None'),
@@ -134,18 +130,23 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
   ): void {
     if (kind == null) return
     if (kind !== CampaignBackgroundKind.image) setChoosingCover(false)
-    if (kind === block.backgroundKind && !choosingCover) return
+    // The kind the section already has only closes the cover picker: a
+    // write would be an empty undo step.
+    if (kind === block.backgroundKind) {
+      setChoosingCover(false)
+      return
+    }
     if (kind === CampaignBackgroundKind.image && cover == null) {
       setChoosingCover(true)
       return
     }
-    addSectionStyle(block, { backgroundKind: kind })
+    addFields(block, { backgroundKind: kind })
   }
 
   /** A kept picture: the cover is created and the kind and overlay written as one Command. */
   function handleCoverPick(src: string): void {
     setChoosingCover(false)
-    const input = (imageId: string): CampaignSectionStyleInput => ({
+    const input = (imageId: string): SectionStyleInput => ({
       backgroundKind: CampaignBackgroundKind.image,
       coverBlockId: imageId,
       backgroundOverlay:
@@ -156,9 +157,7 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
       slot: CampaignImageSlot.cover,
       src,
       input,
-      previous: previousOf(block, input('')),
-      imageIdOf: (fields) => fields.coverBlockId,
-      write: writeStyle
+      imageIdOf: (fields) => fields.coverBlockId
     })
   }
 
@@ -168,7 +167,7 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
   ): void {
     if (overlay == null || overlay === (block.backgroundOverlay ?? 'medium'))
       return
-    addSectionStyle(block, { backgroundOverlay: overlay })
+    addFields(block, { backgroundOverlay: overlay })
   }
 
   const showingImage =
@@ -186,22 +185,34 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
         aria-label={t('Style')}
         variant="fullWidth"
       >
-        <Tab value="background" label={t('Background')} />
-        <Tab value="colours" label={t('Colours')} />
+        <Tab
+          value="background"
+          label={t('Background')}
+          id="style-tab-background"
+          aria-controls="style-panel"
+        />
+        <Tab
+          value="colours"
+          label={t('Colours')}
+          id="style-tab-colours"
+          aria-controls="style-panel"
+        />
       </Tabs>
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       {tab === 'background' && (
-        <Stack spacing={4} role="tabpanel" data-testid="StyleBackgroundTab">
+        <Stack
+          spacing={4}
+          role="tabpanel"
+          id="style-panel"
+          aria-labelledby="style-tab-background"
+          data-testid="StyleBackgroundTab"
+        >
           <ToggleButtonGroup
             exclusive
             fullWidth
             size="small"
-            // Six kinds in a 360px drawer: stacked, so the panel never
-            // scrolls sideways.
+            // Six kinds in the Inspector's width: stacked, so the panel
+            // never scrolls sideways.
             orientation="vertical"
             value={
               choosingCover
@@ -218,13 +229,11 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
             ))}
           </ToggleButtonGroup>
           {block.backgroundKind === CampaignBackgroundKind.custom && (
-            <PaletteColorPicker
+            <CampaignPaletteColorPicker
               label={t('Custom colour')}
               value={block.backgroundColor}
               fallback={campaign.theme.backgroundColor}
-              onCommit={(hex) =>
-                addSectionStyle(block, { backgroundColor: hex })
-              }
+              onCommit={(hex) => addFields(block, { backgroundColor: hex })}
               testId="StyleBackgroundColor"
             />
           )}
@@ -290,7 +299,13 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
         </Stack>
       )}
       {tab === 'colours' && (
-        <Stack spacing={4} role="tabpanel" data-testid="StyleColoursTab">
+        <Stack
+          spacing={4}
+          role="tabpanel"
+          id="style-panel"
+          aria-labelledby="style-tab-colours"
+          data-testid="StyleColoursTab"
+        >
           <ColourRows
             label={t('Colour overrides')}
             rows={SECTION_OVERRIDE_FIELDS.map((field) => ({
@@ -301,8 +316,8 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
             }))}
             rowTestId="StyleOverride"
             pickerTestId="StyleOverrideColor"
-            onCommit={(field, hex) => addSectionStyle(block, { [field]: hex })}
-            onReset={(field) => addSectionStyle(block, { [field]: null })}
+            onCommit={(field, hex) => addFields(block, { [field]: hex })}
+            onReset={(field) => addFields(block, { [field]: null })}
           />
         </Stack>
       )}

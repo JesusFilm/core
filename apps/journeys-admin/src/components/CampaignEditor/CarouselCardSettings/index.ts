@@ -1,0 +1,1 @@
+export { CarouselCardSettings } from './CarouselCardSettings'

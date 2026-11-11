@@ -8,7 +8,7 @@ import {
   CampaignEditorProvider,
   CampaignEditorState
 } from '../CampaignEditorProvider'
-import { NavigatorHoverProvider } from '../Navigator'
+import { CampaignHoverProvider } from '../CampaignHoverProvider'
 import { TranslationRunProvider } from '../TranslationRunProvider'
 import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
@@ -38,7 +38,7 @@ export function CampaignEditorProviders({
         <CampaignCommandProvider>
           <MuxVideoUploadProvider>
             <TranslationRunProvider>
-              <NavigatorHoverProvider>{children}</NavigatorHoverProvider>
+              <CampaignHoverProvider>{children}</CampaignHoverProvider>
             </TranslationRunProvider>
           </MuxVideoUploadProvider>
         </CampaignCommandProvider>

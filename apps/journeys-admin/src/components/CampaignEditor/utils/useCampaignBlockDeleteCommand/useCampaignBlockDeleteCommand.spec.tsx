@@ -74,7 +74,7 @@ function renderEditor(
       <UndoRedo />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }
@@ -205,7 +205,7 @@ describe('useCampaignBlockDeleteCommand', () => {
           <UndoRedo />
           <SelectionProbe />
           <BlocksProbe />
-          <Inspector isManager />
+          <Inspector role="member" />
         </QueriedEditor>
       )
     }

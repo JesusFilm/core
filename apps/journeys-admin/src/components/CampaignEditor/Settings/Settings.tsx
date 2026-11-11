@@ -9,14 +9,12 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import {
-  FocusEvent,
-  KeyboardEvent,
-  ReactElement,
-  useEffect,
-  useState
-} from 'react'
+import { KeyboardEvent, ReactElement, useState } from 'react'
 
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
@@ -31,22 +29,30 @@ import {
   useCampaignDeleteMutation
 } from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
-import { textLength } from '../Canvas/InlineText'
-import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
+import { CampaignRole } from '../utils/campaignRole'
+import { characterCount } from '../utils/characterCount'
+import { languageNames } from '../utils/languageNames'
+import { useCommittedField } from '../utils/useCommittedField'
 
 import { CampaignDomain } from './CampaignDomain'
 import { DefaultLanguageDialog } from './DefaultLanguageDialog'
+import { ManagerRoleNotice, managerControlIcon } from './ManagerRoleNotice'
 
-const TITLE_MAX_LENGTH = 100
-const SLUG_MAX_LENGTH = 200
+/** The longest slug the API accepts, for the campaign and its regions. */
+export const SLUG_MAX_LENGTH = 200
 
 type SettingsField = 'title' | 'slug'
 
 interface SettingsProps {
   campaign: Campaign
-  /** Delete campaign is campaign Delete: offered to a manager of the team only. */
-  isManager: boolean
+  /**
+   * Delete campaign is campaign Delete: offered to a manager of the team
+   * only, and shown disabled while the role is pending or could not be read.
+   */
+  role: CampaignRole
+  /** Asks for the role again after it could not be read. */
+  onRoleRetry?: () => void
   /** The default language was swapped; the Translations view tells the author about promoted machine values. */
   onDefaultLanguageChanged?: () => void
 }
@@ -71,106 +77,78 @@ export function shapeSlug(value: string): string {
  */
 export function Settings({
   campaign,
-  isManager,
+  role,
+  onRoleRetry,
   onDefaultLanguageChanged
 }: SettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
-  const [title, setTitle] = useState(campaign.title)
-  const [slug, setSlug] = useState(campaign.slug)
-  const [errors, setErrors] = useState<Partial<Record<SettingsField, string>>>(
-    {}
-  )
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [nextDefaultLanguageId, setNextDefaultLanguageId] = useState<string>()
-  const [saving, setSaving] = useState<Partial<Record<SettingsField, boolean>>>(
-    {}
-  )
   const [campaignUpdate] = useCampaignUpdateMutation()
   const { cache } = useApolloClient()
   const [campaignDelete, { loading: deleting }] = useCampaignDeleteMutation()
-
-  // While a save is in flight, or a field error describes a rejected value,
-  // the fields hold what the user is reading about, so skip the sync; after a
-  // failed save they adopt the rolled-back value from `campaign` again.
-  const titleBlocked = (saving.title ?? false) || errors.title != null
-  const slugBlocked = (saving.slug ?? false) || errors.slug != null
-  useEffect(() => {
-    if (!titleBlocked) setTitle(campaign.title)
-  }, [campaign.title, titleBlocked])
-  useEffect(() => {
-    if (!slugBlocked) setSlug(campaign.slug)
-  }, [campaign.slug, slugBlocked])
-
-  function setFieldError(field: SettingsField, message?: string): void {
-    setErrors((previous) => ({ ...previous, [field]: message }))
-  }
+  const title = useCommittedField({
+    committed: campaign.title,
+    validate: (value) =>
+      preValidate(
+        value,
+        t('Title is required'),
+        TRANSLATED_FIELDS.campaign.title
+      ),
+    save: async (value) => await save('title', value),
+    onRefused: (error) => refusalMessage('title', error)
+  })
+  const slug = useCommittedField({
+    committed: campaign.slug,
+    normalize: (typed) => typed.replace(/-+$/, ''),
+    validate: (value) =>
+      preValidate(value, t('Slug is required'), SLUG_MAX_LENGTH),
+    save: async (value) => await save('slug', value),
+    onRefused: (error) => refusalMessage('slug', error)
+  })
 
   function preValidate(
-    field: SettingsField,
-    value: string
+    value: string,
+    requiredMessage: string,
+    max: number
   ): string | undefined {
-    if (value === '')
-      return field === 'title' ? t('Title is required') : t('Slug is required')
-    const max = field === 'title' ? TITLE_MAX_LENGTH : SLUG_MAX_LENGTH
-    if ([...value].length > max) return t('Max {{max}} characters', { max })
+    if (value === '') return requiredMessage
+    if (textLength(value) > max) return t('Max {{max}} characters', { max })
     return undefined
   }
 
-  async function save(field: SettingsField, rawValue: string): Promise<void> {
-    const value =
-      field === 'slug' ? rawValue.replace(/-+$/, '') : rawValue.trim()
-    if (field === 'slug') setSlug(value)
-    if (value === campaign[field]) {
-      setFieldError(field, undefined)
-      return
-    }
-    const message = preValidate(field, value)
-    if (message != null) {
-      setFieldError(field, message)
-      return
-    }
-    setSaving((previous) => ({ ...previous, [field]: true }))
-    try {
-      await campaignUpdate({
-        variables: { id: campaign.id, input: { [field]: value } },
-        optimisticResponse: {
-          campaignUpdate: {
-            __typename: 'Campaign',
-            id: campaign.id,
-            title: field === 'title' ? value : campaign.title,
-            slug: field === 'slug' ? value : campaign.slug
-          }
-        }
-      })
-      setFieldError(field, undefined)
-    } catch (error) {
-      if (CombinedGraphQLErrors.is(error)) {
-        const fieldError = error.errors.find(
-          (graphQLError) => graphQLError.extensions?.field === field
-        )
-        if (fieldError != null) {
-          setFieldError(field, fieldError.message)
-          return
+  async function save(field: SettingsField, value: string): Promise<void> {
+    await campaignUpdate({
+      variables: { id: campaign.id, input: { [field]: value } },
+      optimisticResponse: {
+        campaignUpdate: {
+          __typename: 'Campaign',
+          id: campaign.id,
+          title: field === 'title' ? value : campaign.title,
+          slug: field === 'slug' ? value : campaign.slug
         }
       }
-      enqueueSnackbar(
-        error instanceof Error ? error.message : t('Could not save campaign'),
-        { variant: 'error', preventDuplicate: true }
+    })
+  }
+
+  /** A refusal naming the field shows under it; any other goes to the snackbar. */
+  function refusalMessage(
+    field: SettingsField,
+    error: unknown
+  ): string | undefined {
+    if (CombinedGraphQLErrors.is(error)) {
+      const fieldError = error.errors.find(
+        (graphQLError) => graphQLError.extensions?.field === field
       )
-      setFieldError(field, undefined)
-    } finally {
-      setSaving((previous) => ({ ...previous, [field]: false }))
+      if (fieldError != null) return fieldError.message
     }
-  }
-
-  function handleTitleBlur(event: FocusEvent<HTMLInputElement>): void {
-    void save('title', event.target.value)
-  }
-
-  function handleSlugBlur(event: FocusEvent<HTMLInputElement>): void {
-    void save('slug', event.target.value)
+    enqueueSnackbar(
+      error instanceof Error ? error.message : t('Could not save campaign'),
+      { variant: 'error', preventDuplicate: true }
+    )
+    return undefined
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
@@ -210,26 +188,31 @@ export function Settings({
       </Typography>
       <TextField
         label={t('Title')}
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        onBlur={handleTitleBlur}
+        value={title.value}
+        onChange={(event) => title.onChange(event.target.value)}
+        onBlur={title.onBlur}
         onKeyDown={handleKeyDown}
-        error={errors.title != null}
+        error={title.error != null}
         helperText={
-          errors.title ?? `${textLength(title)} / ${TITLE_MAX_LENGTH}`
+          title.error ??
+          characterCount(
+            t,
+            textLength(title.value),
+            TRANSLATED_FIELDS.campaign.title
+          )
         }
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Title') } }}
       />
       <TextField
         label={t('Slug')}
-        value={slug}
-        onChange={(event) => setSlug(shapeSlug(event.target.value))}
-        onBlur={handleSlugBlur}
+        value={slug.value}
+        onChange={(event) => slug.onChange(shapeSlug(event.target.value))}
+        onBlur={slug.onBlur}
         onKeyDown={handleKeyDown}
-        error={errors.slug != null}
+        error={slug.error != null}
         helperText={
-          errors.slug ?? (
+          slug.error ?? (
             <>
               <Box component="span" sx={{ display: 'block' }}>
                 {t(
@@ -242,7 +225,7 @@ export function Settings({
                 })}
               </Box>
               <Box component="span" sx={{ display: 'block' }}>
-                {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
+                {characterCount(t, textLength(slug.value), SLUG_MAX_LENGTH)}
               </Box>
             </>
           )
@@ -250,7 +233,11 @@ export function Settings({
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Slug') } }}
       />
-      <CampaignDomain campaign={campaign} isManager={isManager} />
+      <CampaignDomain
+        campaign={campaign}
+        role={role}
+        onRoleRetry={onRoleRetry}
+      />
       <TextField
         select
         label={t('Default language')}
@@ -273,17 +260,19 @@ export function Settings({
             </MenuItem>
           ))}
       </TextField>
-      {isManager && (
-        <Box>
+      {role !== 'member' && (
+        <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
           <Button
             variant="outlined"
             color="error"
-            startIcon={<Trash2Icon />}
+            startIcon={managerControlIcon(role, <Trash2Icon />)}
             onClick={() => setDeleteOpen(true)}
+            disabled={role !== 'manager'}
           >
             {t('Delete campaign')}
           </Button>
-        </Box>
+          <ManagerRoleNotice role={role} onRetry={onRoleRetry} />
+        </Stack>
       )}
       <DefaultLanguageDialog
         campaign={campaign}

@@ -1,42 +1,52 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 
+import { GetCampaign_campaign_blocks_CampaignHeroBlock as CampaignHeroBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignTextBlock } from '../../../../libs/useCampaignBlockTextMutation'
-import { CAMPAIGN_HERO_BLOCK_UPDATE } from '../../../../libs/useCampaignBlockUpdateMutation'
+import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
 import { CampaignEditorState } from '../../CampaignEditorProvider'
 import { campaign, campaignStrings } from '../../data'
-import { StaticEditor } from '../../testing'
+import { blockUpdateMock } from '../../styleTesting'
+import { PreviewLanguageSwitch, StaticEditor } from '../../testing'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
 
-import { InlineText, inlineTextTestId, textLength } from './InlineText'
+import { InlineText, inlineTextCap, inlineTextTestId } from './InlineText'
 
 const hero = campaign.blocks.find(
   (block) => block.id === 'heroId'
-) as CampaignTextBlock
+) as CampaignHeroBlock
 
 function heroMock(title: string, errors?: GraphQLError[]) {
+  const mock = blockUpdateMock(hero, { title })
+  if (errors != null) mock.result = vi.fn(() => ({ errors }))
+  return mock
+}
+
+function heroTranslationMock(value: string) {
   return {
     request: {
-      query: CAMPAIGN_HERO_BLOCK_UPDATE,
-      variables: { id: 'heroId', input: { title } }
+      query: CAMPAIGN_TRANSLATION_SET,
+      variables: {
+        input: {
+          target: { blockId: 'heroId' },
+          field: 'title',
+          languageId: '496',
+          value
+        }
+      }
     },
-    result: vi.fn(() =>
-      errors != null
-        ? { errors }
-        : {
-            data: {
-              campaignHeroBlockUpdate: {
-                ...hero,
-                __typename: 'CampaignHeroBlock',
-                id: 'heroId',
-                eyebrow: 'Outreach 2026',
-                title,
-                description:
-                  'Pick your region to find a journey in your language, ready to share.'
-              }
-            }
+    result: vi.fn(() => ({
+      data: {
+        campaignTranslationSet: [
+          {
+            __typename: 'TranslatedValue',
+            languageId: '496',
+            value,
+            source: 'human'
           }
-    )
+        ]
+      }
+    }))
   }
 }
 
@@ -61,8 +71,10 @@ function renderText(
 describe('InlineText', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('counts Unicode code points after trim', () => {
-    expect(textLength('  héllo 👋  ')).toBe(7)
+  it('reads its cap from the Translated Field declaration', () => {
+    expect(inlineTextCap({ block: hero, field: 'title' })).toBe(150)
+    expect(inlineTextCap({ block: hero, field: 'eyebrow' })).toBe(80)
+    expect(inlineTextCap({ string: campaignStrings[0] })).toBe(200)
   })
 
   it('renders as text when not editing and selects its block on click', () => {
@@ -87,6 +99,91 @@ describe('InlineText', () => {
     })
 
     expect(screen.getByTestId('InlineText-title')).toHaveTextContent('Title')
+  })
+
+  it.each(['Enter', ' '])('selects standalone text on %j', (key) => {
+    const onSelect = vi.fn()
+    renderText({ editing: false, onSelect })
+
+    const text = screen.getByRole('button', { name: 'Title' })
+    expect(text).toHaveAttribute('tabindex', '0')
+    fireEvent.keyDown(text, { key })
+    expect(onSelect).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(['text', 'paragraphs', 'bullets'] as const)(
+    'lets the host provide keyboard selection for %s while retaining click selection',
+    (display) => {
+      const onSelect = vi.fn()
+      renderText({
+        editing: false,
+        withinSelectable: true,
+        onSelect,
+        display,
+        target: {
+          block: { ...hero, title: 'First\n\nSecond' },
+          field: 'title'
+        }
+      })
+
+      const text = screen.getByTestId('InlineText-title')
+      expect(text).not.toHaveAttribute('role', 'button')
+      expect(text).not.toHaveAttribute('tabindex')
+      fireEvent.click(text)
+      expect(onSelect).toHaveBeenCalledTimes(1)
+    }
+  )
+
+  describe('display', () => {
+    const text = 'First line\nstill first\n\nSecond'
+    const target: CampaignTextTarget = {
+      block: { ...hero, title: text } as CampaignTextBlock,
+      field: 'title'
+    }
+
+    it('splits unselected text into paragraphs on blank lines', () => {
+      renderText({ editing: false, target, display: 'paragraphs' })
+
+      const paragraphs = screen.getAllByTestId('InlineTextParagraph')
+      expect(paragraphs).toHaveLength(2)
+      expect(paragraphs[0]).toHaveTextContent('First line still first')
+      expect(paragraphs[1]).toHaveTextContent('Second')
+    })
+
+    it('lists unselected text one item per line', () => {
+      renderText({ editing: false, target, display: 'bullets' })
+
+      expect(screen.getByRole('list')).toBe(
+        screen.getByTestId('InlineText-title')
+      )
+      expect(
+        screen.getAllByRole('listitem').map((item) => item.textContent)
+      ).toEqual(['First line', 'still first', 'Second'])
+    })
+
+    it('edits as one textarea with the original text', () => {
+      renderText({ target, display: 'paragraphs' })
+
+      expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(text)
+      expect(
+        screen.queryByTestId('InlineTextParagraph')
+      ).not.toBeInTheDocument()
+      expect(screen.queryByRole('list')).not.toBeInTheDocument()
+    })
+
+    it('shows the placeholder as text while empty', () => {
+      renderText({
+        editing: false,
+        target: {
+          block: { ...hero, title: '' } as CampaignTextBlock,
+          field: 'title'
+        },
+        display: 'bullets'
+      })
+
+      expect(screen.queryByRole('list')).not.toBeInTheDocument()
+      expect(screen.getByTestId('InlineText-title')).toHaveTextContent('Title')
+    })
   })
 
   it('pre-validates only the length, with a character counter near the cap', async () => {
@@ -261,6 +358,66 @@ describe('InlineText', () => {
       expect(input).toHaveAttribute(
         'placeholder',
         'Share the story of Outreach'
+      )
+    })
+
+    it('writes a translation, not the block update, while translating', async () => {
+      const translation = heroTranslationMock('Bonjour')
+      const update = heroMock('Bonjour')
+      renderText(
+        { target: { block: translated, field: 'title' } },
+        [translation, update],
+        { previewLanguageId: '496' }
+      )
+
+      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+        target: { value: 'Bonjour' }
+      })
+
+      await waitFor(() => expect(translation.result).toHaveBeenCalled())
+      expect(update.result).not.toHaveBeenCalled()
+    })
+
+    it('writes the block update, not a translation, in the default language', async () => {
+      const translation = heroTranslationMock('Hello')
+      const update = heroMock('Hello')
+      renderText({ target: { block: translated, field: 'title' } }, [
+        translation,
+        update
+      ])
+
+      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+        target: { value: 'Hello' }
+      })
+
+      await waitFor(() => expect(update.result).toHaveBeenCalled())
+      expect(translation.result).not.toHaveBeenCalled()
+    })
+
+    it('drops what was typed in one language when the Preview Language changes', async () => {
+      const translation = heroTranslationMock('Brouillon')
+      render(
+        <StaticEditor
+          mocks={[translation]}
+          initialState={{ previewLanguageId: '496' }}
+        >
+          <PreviewLanguageSwitch languageIds={['529', '496']} />
+          <InlineText
+            target={{ block: translated, field: 'title' }}
+            placeholder="Title"
+            editing
+            variant="h1"
+          />
+        </StaticEditor>
+      )
+      const input = screen.getByRole('textbox', { name: 'Title' })
+      fireEvent.change(input, { target: { value: 'Brouillon' } })
+      await waitFor(() => expect(translation.result).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+
+      await waitFor(() =>
+        expect(input).toHaveValue('Share the story of Outreach')
       )
     })
   })
