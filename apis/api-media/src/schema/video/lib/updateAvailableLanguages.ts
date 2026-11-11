@@ -3,7 +3,7 @@
 // Handles both regular videos and collections
 // Used by video.ts and videoVariant.ts
 
-import { prisma } from '@core/prisma/media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { videoCacheReset } from '../../../lib/videoCacheReset'
 import {
@@ -12,12 +12,15 @@ import {
 } from '../../../workers/videoAlgoliaSync'
 import { logger } from '../../logger'
 
+type PrismaClientOrTx = typeof prisma | Prisma.TransactionClient
+
 // Calculates what availableLanguages should be for a given video
 // Does NOT update the database - only calculates the correct value
 export async function calculateAvailableLanguages(
-  videoId: string
+  videoId: string,
+  client: PrismaClientOrTx = prisma
 ): Promise<string[]> {
-  const video = await prisma.video.findUnique({
+  const video = await client.video.findUnique({
     where: { id: videoId },
     select: {
       label: true,
@@ -61,12 +64,14 @@ export async function updateVideoAvailableLanguages(
   options: {
     skipCache?: boolean
     skipAlgolia?: boolean
+    client?: PrismaClientOrTx
   } = {}
 ): Promise<string[]> {
-  const availableLanguages = await calculateAvailableLanguages(videoId)
+  const client = options.client ?? prisma
+  const availableLanguages = await calculateAvailableLanguages(videoId, client)
 
   // Update the video
-  await prisma.video.update({
+  await client.video.update({
     where: { id: videoId },
     data: {
       availableLanguages: {
