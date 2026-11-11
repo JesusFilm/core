@@ -45,11 +45,6 @@ set_explicit_default() {
   if [[ -n "$value" ]]; then
     # mimeapps.list stores even a single entry with a trailing semicolon;
     # xdg-mime's own `*.desktop)` match rejects that literally, so strip it.
-    # A multi-entry value (still semicolon-separated after stripping one
-    # trailing semicolon) is left untouched: restoring that case isn't handled.
-    if [[ "${value%;}" == *\;* ]]; then
-      return 0
-    fi
     xdg-mime default "${value%;}" "$mime"
     return 0
   fi
@@ -108,6 +103,14 @@ EOF
 install_handler() {
   local previous
   previous="$(explicit_default)"
+  # A multi-entry value (semicolon-separated after stripping one trailing
+  # semicolon) can't be restored by set_explicit_default, so don't replace
+  # it in the first place: skip the handler and rely on the clipboard/paste
+  # fallbacks instead.
+  if [[ "${previous%;}" == *\;* ]]; then
+    echo "existing $mime default has multiple entries; skipping the temporary handler" >&2
+    return 0
+  fi
   mkdir -p "$apps_dir"
   cat >"$apps_dir/$desktop_id" <<EOF
 [Desktop Entry]

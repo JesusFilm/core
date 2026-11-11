@@ -8,6 +8,10 @@ if [[ -f .env ]]; then
   while IFS='=' read -r key value || [[ -n "$key" ]]; do
     [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
     [[ -v "$key" ]] && continue
+    # Compose strips one pair of surrounding quotes from .env values.
+    if [[ "$value" == \"*\" && "$value" == *\" ]] || [[ "$value" == \'*\' && "$value" == *\' ]]; then
+      value="${value:1:${#value}-2}"
+    fi
     export "$key=$value"
   done <.env
 fi
@@ -85,6 +89,7 @@ elif atyp == 3:
 else:
     raise AssertionError(f"unexpected ATYP {atyp} in SOCKS5 reply")
 s.settimeout(10)
+s.sendall(struct.pack("!II", 8, 80877103))  # SSLRequest
 reply = recv_exact(1)
 assert reply in (b"S", b"N"), f"no Postgres reply to SSLRequest (got {reply!r})"
 print("postgres answered", reply.decode())
