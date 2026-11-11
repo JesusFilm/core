@@ -43,6 +43,13 @@ explicit_default() {
 set_explicit_default() {
   local value="${1:-}" tmp
   if [[ -n "$value" ]]; then
+    # mimeapps.list stores even a single entry with a trailing semicolon;
+    # xdg-mime's own `*.desktop)` match rejects that literally, so strip it
+    # when it is the only entry. A multi-entry value is left untouched (see
+    # README: restoring that case isn't handled).
+    if [[ "$value" == *.desktop\; && "${value%;}" != *\;* ]]; then
+      value="${value%;}"
+    fi
     xdg-mime default "$value" "$mime"
     return 0
   fi
@@ -169,6 +176,15 @@ wait_for_token() {
 }
 
 main() {
+  # One handler per user: a second concurrent run must not delete the first
+  # run's handler (recover_stale_handler) or restore over it on exit.
+  local lock="${XDG_RUNTIME_DIR:-/tmp}/warp-enroll.lock"
+  exec {lock_fd}>"$lock"
+  flock -n "$lock_fd" || {
+    echo "another enroll.sh is already running for this user" >&2
+    exit 1
+  }
+
   trap restore_handler EXIT
   trap 'exit 130' INT
   trap 'exit 143' TERM
