@@ -267,9 +267,7 @@ function orderParentsByDependency(
     }
   }
 
-  const queue = parentIds.filter(
-    (id) => remainingDependencyCount.get(id) === 0
-  )
+  const queue = parentIds.filter((id) => remainingDependencyCount.get(id) === 0)
   const orderedParentIds: string[] = []
   while (queue.length > 0) {
     const id = queue.shift() as string
@@ -344,7 +342,7 @@ export async function updateParentCollectionLanguages(
   for (const parentId of orderedParentIds) {
     const availableLanguages = parentsWithSiblingDependency.has(parentId)
       ? await calculateAvailableLanguages(parentId)
-      : availableLanguagesByVideoId.get(parentId) ?? []
+      : (availableLanguagesByVideoId.get(parentId) ?? [])
 
     await applyAvailableLanguages(parentId, availableLanguages, {
       skipCache: false,
