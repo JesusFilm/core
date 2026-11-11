@@ -3416,8 +3416,8 @@ describe('videoVariant', () => {
               : null
           }) as any)
           prismaMock.$transaction.mockImplementation(
-            (async (callback: (tx: typeof prismaMock) => Promise<unknown>) =>
-              await callback(prismaMock))
+            async (callback: (tx: typeof prismaMock) => Promise<unknown>) =>
+              await callback(prismaMock)
           )
         }
 
