@@ -1658,6 +1658,7 @@
   "Open journey": "Açık yolculuk",
   "There was an error loading campaigns.": "Kampanyalar yüklenirken bir hata oluştu.",
   "There was an error refreshing the campaign.": "Kampanyayı yenileme sırasında bir hata oluştu.",
+  "This language has a QR code. Unlink it instead.": "Bu dilin bir QR kodu var. Bunun yerine bağlantısını kaldırın.",
   "Remove {{language}}?": "{{language}} 'i kaldırmak mı?",
   "Every translation into {{language}} is deleted.": "{{language}} adresine yapılan tüm çeviriler silinir.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "Henüz herhangi bir kampanya yok. Her bölge için ayrı bir sayfa içeren bir açılış sayfası oluşturmak üzere bir kampanya oluşturun.",
@@ -1723,6 +1724,8 @@
   "All regions label": "\"Tüm bölgeler\" etiketi",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Bu dosya türü kabul edilmiyor. Lütfen aşağıdakilerden birini yükleyin: (PNG, JPG, GIF, SVG, HEIC veya WebP)",
   "Maximum file size: 10 MB": "Maksimum dosya boyutu: 10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} Şu anda çeviri yapılıyor. Çeviri bittiğinde lütfen tekrar deneyin.",
   "Unlink the journey before removing this language.": "Bu dili kaldırmadan önce yolculuğun bağlantısını kaldırın.",
   "Delete {{language}}?": "{{language}} 'i silmek mi?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Bu işlem, ilgili dil seçeneğini, kampanya QR kodunu ve Paylaşım Bağlantısını kalıcı olarak siler. Daha önce basılmış veya paylaşılmış QR kodlarının kopyaları, bağlantı temizlendikten sonra artık yönlendirme yapmayacaktır.",
@@ -1760,5 +1763,9 @@
   "Translated {{count}} strings into {{language}}_one": "{{count}} dizesini şu şekilde çevirdi: {{language}}",
   "Translated {{count}} strings into {{language}}_other": "{{count}} adresindeki metinleri şu şekilde çevirdi: {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "{{language}} 'e çeviri iptal edildi. {{count}} dizesi korundu.",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} 'e çeviri iptal edildi. {{count}} dizeleri korundu."
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} 'e çeviri iptal edildi. {{count}} dizeleri korundu.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} Bu metnin {{language}}adresinde hâlâ bir çevirisi bulunmadığından, varsayılan olarak ayarlanamaz.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} {{language}}adresinde bu metinlerin hâlâ çevirisi bulunmadığından, bu metinler varsayılan olarak ayarlanamaz.",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "{{language}} 'e çeviri durduruldu. {{count}} dizesi korundu.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "{{language}} 'e çeviri durduruldu. {{count}} dizeleri korundu."
 }
