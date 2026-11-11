@@ -7,6 +7,21 @@ import { JourneyMenuButtonIcon } from '../enums'
 
 export const JourneyUpdateInput = builder.inputType('JourneyUpdateInput', {
   fields: (t) => ({
+    custom1Label: t.string({
+      required: false,
+      description:
+        'Template-only display label. Trimmed, at most 100 Unicode code points; null or blank resets to default, omission preserves the value.'
+    }),
+    custom2Label: t.string({
+      required: false,
+      description:
+        'Template-only display label. Trimmed, at most 100 Unicode code points; null or blank resets to default, omission preserves the value.'
+    }),
+    custom3Label: t.string({
+      required: false,
+      description:
+        'Template-only display label. Trimmed, at most 100 Unicode code points; null or blank resets to default, omission preserves the value.'
+    }),
     title: t.string({ required: false }),
     languageId: t.string({ required: false }),
     themeMode: t.field({ type: ThemeMode, required: false }),
