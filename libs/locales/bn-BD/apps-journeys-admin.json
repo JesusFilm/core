@@ -1658,6 +1658,7 @@
   "Open journey": "খোলা যাত্রা",
   "There was an error loading campaigns.": "ক্যাম্পেইন লোড করতে একটি ত্রুটি ঘটেছে।",
   "There was an error refreshing the campaign.": "অভিযান রিফ্রেশ করার সময় একটি ত্রুটি ঘটেছে।",
+  "This language has a QR code. Unlink it instead.": "এই ভাষায় একটি QR কোড রয়েছে। পরিবর্তে এটি আনলিংক করুন।",
   "Remove {{language}}?": "{{language}} সরান?",
   "Every translation into {{language}} is deleted.": "{{language}} -এ প্রতিটি অনুবাদ মুছে ফেলা হয়।",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "এখনো কোনো ক্যাম্পেইন নেই। প্রতিটি অঞ্চলের জন্য একটি করে পৃষ্ঠা সহ একটি ল্যান্ডিং পেজ তৈরি করতে একটি ক্যাম্পেইন তৈরি করুন।",
@@ -1723,6 +1724,8 @@
   "All regions label": "সমস্ত অঞ্চলের লেবেল",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "ফাইল ধরন গ্রহণযোগ্য নয়। অনুগ্রহ করে নিম্নলিখিতগুলির মধ্যে একটি আপলোড করুন: (PNG, JPG, GIF, SVG, HEIC, বা WebP)",
   "Maximum file size: 10 MB": "সর্বোচ্চ ফাইল আকার: ১০ এমবি",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} এটি ইতিমধ্যেই অনুবাদ হচ্ছে। অনুবাদ শেষ হলে আবার চেষ্টা করুন।",
   "Unlink the journey before removing this language.": "এই ভাষা অপসারণের আগে যাত্রাকে আনলিংক করুন।",
   "Delete {{language}}?": "{{language}} মুছবেন?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "এটি স্থায়ীভাবে ক্যাম্পেইন QR কোড এবং শেয়ার লিঙ্কসহ ভাষাটি সরিয়ে ফেলে। ইতোমধ্যে মুদ্রিত বা শেয়ার করা QR কোডের কপিগুলো লিঙ্কটি পরিষ্কার করার পর আর পুনঃনির্দেশ করবে না।",
@@ -1760,5 +1763,9 @@
   "Translated {{count}} strings into {{language}}_one": "{{count}} স্ট্রিংটিকে অনুবাদ করুন {{language}}",
   "Translated {{count}} strings into {{language}}_other": "{{count}} স্ট্রিংগুলিকে অনুবাদ করে {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "{{language}} -এ অনুবাদ বাতিল। {{count}} স্ট্রিং রাখা হয়েছে।",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} -এ অনুবাদ বাতিল। {{count}} স্ট্রিংগুলো রাখা হয়েছে।"
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} -এ অনুবাদ বাতিল। {{count}} স্ট্রিংগুলো রাখা হয়েছে।",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} টেক্সটের এখনও {{language}}-এ কোনো অনুবাদ নেই, তাই এটি ডিফল্ট হতে পারে না।",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} টেক্সটগুলোর এখনও {{language}}-এ কোনো অনুবাদ নেই, তাই এটি ডিফল্ট হতে পারে না।",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "{{language}} -এ অনুবাদ বন্ধ করা হয়েছে। {{count}} স্ট্রিং রাখা হয়েছে।",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "{{language}} -এ অনুবাদ বন্ধ করা হয়েছে। {{count}} স্ট্রিংগুলো রাখা হয়েছে।"
 }
