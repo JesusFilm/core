@@ -5,7 +5,7 @@ set -uo pipefail
 
 # Load the same .env Compose reads; an already-exported value still wins.
 if [[ -f .env ]]; then
-  while IFS='=' read -r key value; do
+  while IFS='=' read -r key value || [[ -n "$key" ]]; do
     [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
     [[ -v "$key" ]] && continue
     export "$key=$value"

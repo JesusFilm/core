@@ -44,13 +44,13 @@ set_explicit_default() {
   local value="${1:-}" tmp
   if [[ -n "$value" ]]; then
     # mimeapps.list stores even a single entry with a trailing semicolon;
-    # xdg-mime's own `*.desktop)` match rejects that literally, so strip it
-    # when it is the only entry. A multi-entry value is left untouched (see
-    # README: restoring that case isn't handled).
-    if [[ "$value" == *.desktop\; && "${value%;}" != *\;* ]]; then
-      value="${value%;}"
+    # xdg-mime's own `*.desktop)` match rejects that literally, so strip it.
+    # A multi-entry value (still semicolon-separated after stripping one
+    # trailing semicolon) is left untouched: restoring that case isn't handled.
+    if [[ "${value%;}" == *\;* ]]; then
+      return 0
     fi
-    xdg-mime default "$value" "$mime"
+    xdg-mime default "${value%;}" "$mime"
     return 0
   fi
   [[ -f "$mimeapps" ]] || return 0
