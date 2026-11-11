@@ -345,9 +345,10 @@ async function checkAndRemoveEmptyParentVariant(
   // one) still lists the language only because of its segments, so it must
   // come off too, or Arclight and Algolia keep advertising a language with
   // nothing behind it.
-  if (parentVariant) {
-    await prisma.videoVariant.delete({ where: { id: parentVariant.id } })
-  } else if (!parentVideo.availableLanguages.includes(languageId)) {
+  if (
+    parentVariant == null &&
+    !parentVideo.availableLanguages.includes(languageId)
+  ) {
     return
   }
 
@@ -357,7 +358,20 @@ async function checkAndRemoveEmptyParentVariant(
   // current state and keeps the language when the parent has a published
   // Variant of its own in it (a dubbed film is playable without any
   // segment), and it also resets the parent's cache and Algolia record.
-  await updateVideoAvailableLanguages(parentVideoId)
+  //
+  // The placeholder delete and the recompute+write run in one transaction so
+  // a crash between them can never leave the placeholder gone while
+  // availableLanguages still lists the language -- a drift
+  // audit-parent-variants.ts does not detect, since it only looks for
+  // languages that are missing, not stale ones left over-listed.
+  if (parentVariant != null) {
+    await prisma.$transaction(async (tx) => {
+      await tx.videoVariant.delete({ where: { id: parentVariant.id } })
+      await updateVideoAvailableLanguages(parentVideoId, { client: tx })
+    })
+  } else {
+    await updateVideoAvailableLanguages(parentVideoId)
+  }
   // Containers above this parent (e.g. a collection holding a film) computed
   // their availableLanguages from its old value, so recalculate them too --
   // the same cascade syncParentLanguage does on the add path.

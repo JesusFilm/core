@@ -3415,6 +3415,10 @@ describe('videoVariant', () => {
               ? { id: `19372_${parent.id}` }
               : null
           }) as any)
+          prismaMock.$transaction.mockImplementation(
+            (async (callback: (tx: typeof prismaMock) => Promise<unknown>) =>
+              await callback(prismaMock))
+          )
         }
 
         it('drops the language from a feature film when its last published segment in it is unpublished', async () => {
@@ -3538,6 +3542,10 @@ describe('videoVariant', () => {
 
           await handleParentVariantCleanup('1_jf6101-0-0', '19372')
 
+          // The placeholder delete and the availableLanguages recompute run
+          // inside a single $transaction, so a crash between them can never
+          // leave the placeholder gone with the language still listed.
+          expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
           expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
             where: { id: '19372_1_jf-0-0' }
           })
