@@ -1068,8 +1068,9 @@ describe('findOrFetchUser', () => {
       await findOrFetchUser({}, newUid, undefined)
 
       expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
-      const [strings] = prismaMock.$queryRaw.mock
-        .calls[0] as unknown as [TemplateStringsArray]
+      const [strings] = prismaMock.$queryRaw.mock.calls[0] as unknown as [
+        TemplateStringsArray
+      ]
       // Legacy rows can differ only by case; the pick must not be arbitrary.
       expect(strings.join('?')).toContain('ORDER BY "createdAt" ASC, id ASC')
       expect(prismaMock.user.create).toHaveBeenCalledWith({
