@@ -1658,6 +1658,7 @@
   "Open journey": "การเดินทางแบบเปิด",
   "There was an error loading campaigns.": "เกิดข้อผิดพลาดขณะโหลดแคมเปญ",
   "There was an error refreshing the campaign.": "เกิดข้อผิดพลาดขณะอัปเดตแคมเปญ",
+  "This language has a QR code. Unlink it instead.": "ภาษานี้มีรหัส QR อยู่ ให้ยกเลิกการเชื่อมโยงแทน",
   "Remove {{language}}?": "ลบ {{language}}?",
   "Every translation into {{language}} is deleted.": "การแปลทุกฉบับไปยัง {{language}} ถูกลบออกทั้งหมด",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "ยังไม่มีแคมเปญใดเลย สร้างแคมเปญหนึ่งเพื่อสร้างหน้าแลนดิ้งเพจที่มีหน้าแยกสำหรับแต่ละภูมิภาค",
@@ -1723,6 +1724,8 @@
   "All regions label": "ป้ายกำกับทุกภูมิภาค",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "ไม่รองรับประเภทไฟล์นี้ โปรดอัปโหลดไฟล์หนึ่งในประเภทต่อไปนี้: (PNG, JPG, GIF, SVG, HEIC หรือ WebP)",
   "Maximum file size: 10 MB": "ขนาดไฟล์สูงสุด: 10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} กำลังถูกแปลอยู่ โปรดลองอีกครั้งเมื่อการแปลเสร็จสิ้น",
   "Unlink the journey before removing this language.": "ยกเลิกการเชื่อมโยงเส้นทางก่อนที่จะลบภาษานี้",
   "Delete {{language}}?": "ลบ {{language}}?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "การนี้จะลบภาษาดังกล่าวพร้อมรหัส QR ของแคมเปญและลิงก์แชร์ออกไปอย่างถาวร สำเนารหัส QR ที่ได้พิมพ์หรือแชร์ไปแล้วจะหยุดการเปลี่ยนเส้นทางทันทีหลังจากที่ลิงก์ถูกลบออก",
@@ -1744,5 +1747,7 @@
   "First {{limit}} of {{count}} videos_other": "วิดีโอแรก {{limit}} จาก {{count}}",
   "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} ข้อความเหล่านี้ยังไม่มีคำแปลใน {{language}} จึงไม่สามารถตั้งเป็นค่าเริ่มต้นได้",
   "Translated {{count}} strings into {{language}}_other": "แปลข้อความจาก {{count}} เป็น {{language}}",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "การแปลไปยัง {{language}} ถูกยกเลิกแล้ว ส่วนข้อความใน {{count}} ยังคงอยู่"
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "การแปลไปยัง {{language}} ถูกยกเลิกแล้ว ส่วนข้อความใน {{count}} ยังคงอยู่",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} ข้อความเหล่านี้ยังไม่มีคำแปลใน {{language}}จึงไม่สามารถตั้งเป็นค่าเริ่มต้นได้",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "การแปลเป็น {{language}} ได้หยุดลงแล้ว {{count}} ยังคงเก็บไว้"
 }
