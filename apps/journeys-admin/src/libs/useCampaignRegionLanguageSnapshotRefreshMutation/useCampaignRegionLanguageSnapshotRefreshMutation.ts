@@ -5,7 +5,7 @@ import {
   CampaignRegionLanguageSnapshotRefresh,
   CampaignRegionLanguageSnapshotRefreshVariables
 } from '../../../__generated__/CampaignRegionLanguageSnapshotRefresh'
-import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../useCampaignQuery'
 
 export const CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH = gql`
   ${CAMPAIGN_REGION_LANGUAGE_FIELDS}
@@ -16,7 +16,11 @@ export const CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH = gql`
   }
 `
 
-/** "Refresh from journey": re-read a Share Language's snapshot title and description from its journey; the row is normalised from the result. */
+/**
+ * "Refresh from journey": re-read a Share Language's snapshot title and
+ * description from its journey; the row is normalised from the result.
+ * Uses the app-wide mutation queue so earlier edits land before the refresh.
+ */
 export function useCampaignRegionLanguageSnapshotRefreshMutation(
   options?: useMutation.Options<
     CampaignRegionLanguageSnapshotRefresh,

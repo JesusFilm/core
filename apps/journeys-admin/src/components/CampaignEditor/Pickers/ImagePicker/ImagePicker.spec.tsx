@@ -1,12 +1,14 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../../libs/useCloudflareUploadByUrlMutation'
+import { CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL } from '../../../../libs/useCloudflareTeamUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import type { UseImageUploadOptions } from '../../../../libs/useImageUpload'
 import { GET_MY_CLOUDFLARE_IMAGES } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary/MediaLibrary'
+import { isHttpsUrl } from '../../utils/isHttpsUrl'
 
-import { ImagePicker, isHttpsUrl } from './ImagePicker'
+import { ImagePicker } from './ImagePicker'
 
 vi.mock('../../../../libs/useImageUpload', () => ({
   useImageUpload: vi.fn()
@@ -17,7 +19,7 @@ const STORED = 'https://imagedelivery.net/accountHash/cfId'
 
 const uploadByUrlMock = {
   request: {
-    query: CREATE_CLOUDFLARE_UPLOAD_BY_URL,
+    query: CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL,
     variables: { url: PASTED, teamId: 'teamId' }
   },
   result: vi.fn(() => ({
@@ -37,10 +39,10 @@ const open = vi.fn()
 
 function renderPicker(
   onPick = vi.fn(),
-  mocks: Array<Record<string, unknown>> = [uploadByUrlMock]
+  mocks: MockLink.MockedResponse[] = [uploadByUrlMock]
 ): { onPick: ReturnType<typeof vi.fn> } {
   render(
-    <MockedProvider mocks={mocks as never}>
+    <MockedProvider mocks={mocks}>
       <ImagePicker teamId="teamId" onPick={onPick} />
     </MockedProvider>
   )

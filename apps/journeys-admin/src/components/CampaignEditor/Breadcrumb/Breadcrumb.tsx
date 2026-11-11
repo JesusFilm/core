@@ -5,8 +5,8 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
-import { blockLabel, regionLineLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { blockLabel, regionLineLabel } from '../utils/blockLabel'
 import { regionDisplayName } from '../utils/regionDisplayName'
 
 /** A block and everything above it, outermost first. */

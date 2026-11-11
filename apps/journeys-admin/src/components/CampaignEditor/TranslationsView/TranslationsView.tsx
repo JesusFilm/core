@@ -12,20 +12,24 @@ import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
-import { CampaignTranslations_campaignTranslations as TranslationRow } from '../../../../__generated__/CampaignTranslations'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
-import { CampaignTranslationGroup } from '../../../../__generated__/globalTypes'
+import { GetCampaignTranslations_campaignTranslations as TranslationRowData } from '../../../../__generated__/GetCampaignTranslations'
+import {
+  CampaignAiTranslateMode,
+  CampaignTranslationGroup
+} from '../../../../__generated__/globalTypes'
 import {
   campaignTranslationsVariables,
   rowKey,
   useCampaignTranslationsQuery
 } from '../../../libs/useCampaignTranslationsQuery'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { TranslationRunProgress } from '../TranslationRunProgress'
 import { useTranslationRun } from '../TranslationRunProvider'
+import { languageNames } from '../utils/languageNames'
+import { regionCardId } from '../utils/regionCardId'
 
-import { TranslationRowItem } from './TranslationRow'
+import { TranslationRow } from './TranslationRow'
 import {
   TRANSLATION_FILTERS,
   TRANSLATION_GROUPS,
@@ -175,7 +179,7 @@ export function TranslationsView({
     setRevealId(undefined)
   })
 
-  function handleReveal(row: TranslationRow): void {
+  function handleReveal(row: TranslationRowData): void {
     const place = rowPlace(row, campaign)
     if (place.regionId != null) {
       const host = campaign.blocks.find(
@@ -187,7 +191,9 @@ export function TranslationsView({
         selectedBlockId: host?.id,
         selectedRegionId: place.regionId
       })
-      setRevealId(host == null ? undefined : `${host.id}__${place.regionId}`)
+      setRevealId(
+        host == null ? undefined : regionCardId(host.id, place.regionId)
+      )
       return
     }
     const block = campaign.blocks.find(
@@ -242,7 +248,11 @@ export function TranslationsView({
   function handleMachineTranslateMissing(): void {
     if (languageId == null) return
     start(
-      { campaignId: campaign.id, languageId, mode: 'missing' },
+      {
+        campaignId: campaign.id,
+        languageId,
+        mode: CampaignAiTranslateMode.missing
+      },
       selectedLanguage == null
         ? languageId
         : languageNames(selectedLanguage).autonym
@@ -281,7 +291,12 @@ export function TranslationsView({
           const { autonym, localName } = languageNames(language)
           return (
             <MenuItem key={language.id} value={language.languageId}>
-              {localName == null ? autonym : `${autonym} · ${localName}`}
+              {localName == null
+                ? autonym
+                : t('{{first}} · {{second}}', {
+                    first: autonym,
+                    second: localName
+                  })}
             </MenuItem>
           )
         })}
@@ -362,12 +377,11 @@ export function TranslationsView({
               <Divider sx={{ borderBottomWidth: 2 }} />
               <Stack divider={<Divider flexItem />}>
                 {groupRows.map((row) => (
-                  <TranslationRowItem
+                  <TranslationRow
                     key={rowKey(row)}
                     row={row}
                     languageId={languageId}
                     bcp47={bcp47}
-                    queryVariables={queryVariables}
                     selected={rowMatchesSelection(row, selection, campaign)}
                     onReveal={() => handleReveal(row)}
                   />

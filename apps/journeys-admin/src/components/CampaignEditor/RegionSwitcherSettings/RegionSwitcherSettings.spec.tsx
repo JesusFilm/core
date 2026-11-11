@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -11,19 +12,19 @@ import { ReactElement } from 'react'
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
-import { CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_SHOW_COUNTRY_NAMES } from '../../../libs/useCampaignRegionSwitcherBlockShowCountryNamesMutation'
-import { CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_VARIANT } from '../../../libs/useCampaignRegionSwitcherBlockVariantMutation'
 import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign, campaignWithRegions } from '../data'
 import { Inspector } from '../Inspector'
 import { RegionSwitcherEdit } from '../RegionSwitcherEdit'
+import { blockUpdateMock } from '../styleTesting'
 import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
-  StaticEditor
+  StaticEditor,
+  UndoRedo
 } from '../testing'
 
 import { RegionSwitcherSettings } from './RegionSwitcherSettings'
@@ -36,43 +37,18 @@ function variantMock(
   variant: CampaignSwitcherVariant,
   errors?: GraphQLError[]
 ) {
-  return {
-    request: {
-      query: CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_VARIANT,
-      variables: { id: 'landingSwitcherId', input: { variant } }
-    },
-    result: vi.fn(() =>
-      errors != null
-        ? { errors }
-        : {
-            data: {
-              campaignRegionSwitcherBlockUpdate: {
-                __typename: 'CampaignRegionSwitcherBlock',
-                id: 'landingSwitcherId',
-                switcherVariant: variant
-              }
-            }
-          }
-    )
-  }
+  const mock = blockUpdateMock(switcher, { variant })
+  if (errors != null) mock.result = vi.fn(() => ({ errors }))
+  return mock
 }
 
 function showCountryNamesMock(showCountryNames: boolean, id = switcher.id) {
-  return {
-    request: {
-      query: CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_SHOW_COUNTRY_NAMES,
-      variables: { id, input: { showCountryNames } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignRegionSwitcherBlockUpdate: {
-          __typename: 'CampaignRegionSwitcherBlock',
-          id,
-          showCountryNames
-        }
-      }
-    }))
-  }
+  const block = campaignWithRegions.blocks.find(
+    (candidate) => candidate.id === id
+  )
+  if (block?.__typename !== 'CampaignRegionSwitcherBlock')
+    throw new Error('Missing switcher fixture')
+  return blockUpdateMock(block, { showCountryNames })
 }
 
 /** The settings over the block as the cache holds it, so a saved value flows back in. */
@@ -103,10 +79,13 @@ function SwitcherPreviews(): ReactElement {
   )
 }
 
-function renderSettings(mocks: Array<Record<string, unknown>> = []): void {
+function renderSettings(mocks: MockLink.MockedResponse[] = []): void {
   render(
-    <StaticEditor mocks={mocks}>
-      <CommandUndoItem variant="button" />
+    <StaticEditor
+      initialState={{ selectedBlockId: 'landingSwitcherId' }}
+      mocks={mocks}
+    >
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <RegionSwitcherSettings block={switcher} />
@@ -218,7 +197,7 @@ describe('RegionSwitcherSettings', () => {
         initialState={{ selectedBlockId: hostId, inspectorTab: 'settings' }}
         mocks={[countries, hide, show, undo, redo]}
       >
-        <Inspector isManager={false} />
+        <Inspector role="member" />
         <SwitcherPreviews />
         <CommandUndoItem variant="button" />
         <CommandRedoItem variant="button" />

@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
@@ -39,7 +40,7 @@ function checkResult(
   }
 }
 
-function checkMock(result: CustomDomainCheck): Record<string, unknown> {
+function checkMock(result: CustomDomainCheck): MockLink.MockedResponse {
   return {
     request: {
       query: CHECK_CUSTOM_DOMAIN,
@@ -54,7 +55,7 @@ function renderDns(
   result: CustomDomainCheck
 ): void {
   render(
-    <MockedProvider mocks={[checkMock(result)] as never}>
+    <MockedProvider mocks={[checkMock(result)]}>
       <ThemeProvider>
         <SnackbarProvider>
           <CampaignDomainDns customDomain={customDomain} />

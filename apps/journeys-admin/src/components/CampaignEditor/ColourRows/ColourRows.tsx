@@ -3,11 +3,20 @@ import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
-import { PaletteColorPicker } from '../PaletteColorPicker'
 import { ValueIndicator } from '../ValueIndicator'
+
+/** `react-colorful` loads when a colour is first edited. */
+const CampaignPaletteColorPicker = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/CampaignPaletteColorPicker" */ '../CampaignPaletteColorPicker/CampaignPaletteColorPicker'
+    ).then((mod) => mod.CampaignPaletteColorPicker),
+  { ssr: false }
+)
 
 export interface ColourRow<K extends string = string> {
   key: K
@@ -29,13 +38,18 @@ interface ColourRowsProps<K extends string> {
   onCommit: (key: K, hex: string) => void
   /** Offered when the rows may inherit; Reset writes null. */
   onReset?: (key: K) => void
+  /**
+   * Show where each value comes from. Off for rows that cannot inherit (the
+   * Theme's own colours), where the dot could only ever say "set".
+   */
+  showIndicator?: boolean
 }
 
 /**
  * A list of colour rows, each with a swatch, its value and the dot that says
  * where the value comes from — orange when inherited from the band or theme,
- * blue when set on the block — and the palette picker of the selected row
- * below, whose Reset writes null.
+ * blue when set on the block (unless `showIndicator` is off) — and the palette
+ * picker of the selected row below, whose Reset writes null.
  */
 export function ColourRows<K extends string>({
   rows,
@@ -43,7 +57,8 @@ export function ColourRows<K extends string>({
   rowTestId,
   pickerTestId,
   onCommit,
-  onReset
+  onReset,
+  showIndicator = true
 }: ColourRowsProps<K>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [selectedKey, setSelectedKey] = useState(rows[0].key)
@@ -74,11 +89,15 @@ export function ColourRows<K extends string>({
               primary={row.label}
               secondary={row.value ?? t('Inherited')}
             />
-            <ValueIndicator source={row.value == null ? 'inherited' : 'set'} />
+            {showIndicator && (
+              <ValueIndicator
+                source={row.value == null ? 'inherited' : 'set'}
+              />
+            )}
           </ListItemButton>
         ))}
       </List>
-      <PaletteColorPicker
+      <CampaignPaletteColorPicker
         key={selected.key}
         label={selected.label}
         value={selected.value}

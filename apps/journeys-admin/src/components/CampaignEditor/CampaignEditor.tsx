@@ -18,6 +18,7 @@ import {
   CampaignEditorProvider,
   useCampaignEditor
 } from './CampaignEditorProvider'
+import { CampaignHoverProvider } from './CampaignHoverProvider'
 import { CANVAS_GUTTER, Canvas, MIN_STAGE_WIDTH } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { CanvasBanner } from './CanvasBanner'
@@ -30,6 +31,7 @@ import type { LocalizeTab } from './LocalizePanel'
 import { Navigator, NavigatorHoverProvider } from './Navigator'
 import { PagesPanel } from './PagesPanel'
 import { TranslationRunProvider } from './TranslationRunProvider'
+import { CampaignCommandProvider } from './utils/useCampaignCommand'
 
 /**
  * The editor shell is desktop only: narrower viewports get a message, no
@@ -123,7 +125,7 @@ function CampaignEditorShell({
         </Box>
       </Stack>
       <Inspector
-        isManager={isManager}
+        role={isManager ? 'manager' : 'member'}
         onDefaultLanguageChanged={handleDefaultLanguageChanged}
       />
     </Stack>
@@ -205,13 +207,20 @@ export function CampaignEditor({
   return (
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
-        <MuxVideoUploadProvider>
-          <TranslationRunProvider>
-            <NavigatorHoverProvider>
-              <CampaignEditorShell campaign={campaign} isManager={isManager} />
-            </NavigatorHoverProvider>
-          </TranslationRunProvider>
-        </MuxVideoUploadProvider>
+        <CampaignCommandProvider>
+          <MuxVideoUploadProvider>
+            <TranslationRunProvider>
+              <CampaignHoverProvider>
+                <NavigatorHoverProvider>
+                  <CampaignEditorShell
+                    campaign={campaign}
+                    isManager={isManager}
+                  />
+                </NavigatorHoverProvider>
+              </CampaignHoverProvider>
+            </TranslationRunProvider>
+          </MuxVideoUploadProvider>
+        </CampaignCommandProvider>
       </CampaignEditorProvider>
     </CommandProvider>
   )

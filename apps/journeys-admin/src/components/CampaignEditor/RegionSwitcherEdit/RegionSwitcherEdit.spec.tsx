@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -74,13 +75,13 @@ const refusal = { errors: [{ message: 'The request was refused' }] }
 function renderSwitcher(
   campaignProp = campaign,
   initialState?: Partial<CampaignEditorState>,
-  mocks: Array<Record<string, unknown>> = [createMock, unlistMock, deleteMock],
+  mocks: MockLink.MockedResponse[] = [createMock, unlistMock, deleteMock],
   switcherVariant?: CampaignSwitcherVariant,
   showCountryNames?: boolean
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       initialState={initialState}
       mocks={mocks}
     >
@@ -119,6 +120,26 @@ describe('RegionSwitcherEdit', () => {
       expect(screen.getByTestId('RegionSwitcherEmpty')).toBeInTheDocument()
     )
     expect(screen.getByText('Add your first region')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument()
+  })
+
+  it('reads "No other regions yet" with + Add on the only region’s page', async () => {
+    const oneRegion = {
+      ...campaignWithRegions,
+      regions: campaignWithRegions.regions.filter(
+        (region) => region.id === 'eurRegionId'
+      )
+    }
+    renderSwitcher(oneRegion, {
+      pageKind: CampaignPageKind.regionTemplate,
+      regionId: 'eurRegionId'
+    })
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionSwitcherEmpty')).toBeInTheDocument()
+    )
+    expect(screen.getByText('No other regions yet')).toBeInTheDocument()
+    expect(screen.queryByText('Add your first region')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument()
   })
 
@@ -285,6 +306,54 @@ describe('RegionSwitcherEdit', () => {
     await waitFor(() =>
       expect(screen.getByRole('textbox', { name: 'Your text' })).toBeVisible()
     )
+    const line = screen.getByTestId('RegionLineEdit-eurLineId')
+    expect(line).not.toHaveStyle({ opacity: '0.5' })
+    expect(within(line).getByTestId('SelectionBadge')).toHaveAttribute(
+      'data-state',
+      'selected'
+    )
+
+    fireEvent.click(screen.getByTestId('RegionCardEdit-eurRegionId'))
+    expect(line).toHaveStyle({ opacity: '0.5' })
+  })
+
+  it('fades a pill’s Region Lines and notes they are not shown in pills', async () => {
+    renderSwitcher(
+      campaignWithRegions,
+      { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+      [],
+      CampaignSwitcherVariant.pills
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionLineEdit-eurLineId')).toHaveStyle({
+        opacity: '0.5'
+      })
+    )
+    const note = screen.getByTestId('RegionLinesHidden-eurRegionId')
+    expect(note).toHaveTextContent('Not shown in pills')
+    expect(screen.getByTestId('RegionCardEdit-eurRegionId').nextSibling).toBe(
+      note
+    )
+  })
+
+  it('shows Region Lines at full strength with no note outside pills', async () => {
+    renderSwitcher(
+      campaignWithRegions,
+      { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+      [],
+      CampaignSwitcherVariant.cards
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionLineEdit-eurLineId')).toBeInTheDocument()
+    )
+    expect(screen.getByTestId('RegionLineEdit-eurLineId')).not.toHaveStyle({
+      opacity: '0.5'
+    })
+    expect(
+      screen.queryByTestId('RegionLinesHidden-eurRegionId')
+    ).not.toBeInTheDocument()
   })
 
   it('shows each region’s name in the previewed language, falling back to the default name', async () => {
@@ -464,6 +533,39 @@ describe('RegionSwitcherEdit', () => {
     ).toBeInTheDocument()
     expect(deleteMock.result).not.toHaveBeenCalled()
   })
+
+  it.each(['Enter', ' '])(
+    'selects a card on %j and a line, a button, on its own %j',
+    async (key) => {
+      renderSwitcher(campaignWithRegions)
+      const card = await screen.findByTestId('RegionCardEdit-eurRegionId')
+      expect(card).toHaveAttribute('tabindex', '0')
+      expect(card).toHaveAttribute('aria-label', 'Region card: Europe')
+      expect(card).not.toHaveAttribute('role')
+
+      fireEvent.keyDown(card, { key })
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+      expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+        'eurRegionId'
+      )
+
+      const line = screen.getByTestId('RegionLineEdit-eurLineId')
+      expect(line).toHaveAttribute('role', 'button')
+      const text = within(line).getByTestId('InlineText-content')
+      expect(text).not.toHaveAttribute('role', 'button')
+      expect(text).not.toHaveAttribute('tabindex')
+      fireEvent.keyDown(line, { key })
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('text')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'eurLineId'
+      )
+      const field = within(line).getByRole('textbox', { name: 'Your text' })
+      expect(field.closest('[role="button"], button')).toBeNull()
+      expect(fireEvent.keyDown(field, { key })).toBe(true)
+    }
+  )
 
   it('selects a card on click and a line on its own click', async () => {
     renderSwitcher(campaignWithRegions)

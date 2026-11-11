@@ -12,8 +12,8 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { campaign, withEmptyTranslations } from '../../data'
 import { StaticEditor } from '../../testing'
+import type { CanvasBlock } from '../canvasBlock'
 import { CanvasSection } from '../CanvasSection'
-import type { CanvasBlock } from '../CanvasSection'
 
 const withCards = {
   ...campaign,
@@ -38,7 +38,7 @@ const theme = createCampaignTheme(campaign.theme, false)
 /** The Video Carousel on the 1200 px Desktop frame, with more cards than fit and the read-only arrows. */
 function CanvasCarouselStory(): ReactElement {
   return (
-    <StaticEditor campaignProp={withCards}>
+    <StaticEditor campaign={withCards}>
       <ThemeProvider theme={theme}>
         <Box sx={{ width: 1200 }}>
           <CanvasSection block={carouselBlock} />
