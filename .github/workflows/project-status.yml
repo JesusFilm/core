@@ -4,6 +4,8 @@ on:
   issues:
     types: [opened]
   schedule:
+    # Also recover submitted reviews when an old/conflicting PR ref cannot run
+    # project-status-reviews.yml. Newer Status updates take precedence.
     - cron: '*/5 * * * *'
   pull_request_target:
     types:
