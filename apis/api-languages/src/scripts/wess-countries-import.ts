@@ -163,14 +163,16 @@ async function upsertCountryNameEntry(params: {
   })
 }
 
-async function upsertCountry(row: WessCountryRow): Promise<void> {
-  await prisma.country.upsert({
+/**
+ * Updates an existing country only. WESS rows carry no continent, and a
+ * `Country` without one errors the non-null GraphQL `Country.continent` field
+ * for the whole `countries` query (arclight /v2/media-countries 500s), so new
+ * countries must be created by hand with a continent before WESS can sync them.
+ */
+async function updateCountry(row: WessCountryRow): Promise<void> {
+  await prisma.country.update({
     where: { id: row.id },
-    create: {
-      id: row.id,
-      ...(row.population != null ? { population: row.population } : {})
-    },
-    update: {
+    data: {
       ...(row.population != null ? { population: row.population } : {})
     }
   })
@@ -189,25 +191,42 @@ async function upsertCountry(row: WessCountryRow): Promise<void> {
 }
 
 /**
- * Runs the WESS countries import and returns the number of rows upserted.
+ * Runs the WESS countries import and returns the number of countries updated.
+ * Countries not already in the database are skipped (see `updateCountry`).
  * Safe to call in-process (e.g. from a GraphQL resolver): it never calls
  * `process.exit` and throws on failure so the caller can handle the error.
  */
 export async function runWessCountriesImport(): Promise<number> {
   log.info('Starting (this can take a while over HTTP and per-row DB upserts)…')
-  const rows = await fetchWessCountries()
+  const fetchedRows = await fetchWessCountries()
+
+  const existingCountryIds = new Set(
+    (await prisma.country.findMany({ select: { id: true } })).map(
+      ({ id }) => id
+    )
+  )
+  const rows = fetchedRows.filter((row) => existingCountryIds.has(row.id))
+  const unknownCountryIds = fetchedRows
+    .filter((row) => !existingCountryIds.has(row.id))
+    .map((row) => row.id)
+  if (unknownCountryIds.length > 0) {
+    log.warn(
+      { countryIds: unknownCountryIds },
+      `Skipped ${unknownCountryIds.length.toLocaleString()} country(ies) not in the database — create them with a continent first`
+    )
+  }
 
   const total = rows.length
   log.info(
-    `Database: upserting ${total.toLocaleString()} country(ies) (progress every ${WESS_IMPORT_PROGRESS_LOG_EVERY.toLocaleString()} rows)…`
+    `Database: updating ${total.toLocaleString()} country(ies) (progress every ${WESS_IMPORT_PROGRESS_LOG_EVERY.toLocaleString()} rows)…`
   )
 
   for (let i = 0; i < total; i++) {
     const n = i + 1
     if (n === 1 || n === total || n % WESS_IMPORT_PROGRESS_LOG_EVERY === 0) {
-      log.info(`Upsert ${n.toLocaleString()}/${total.toLocaleString()}…`)
+      log.info(`Update ${n.toLocaleString()}/${total.toLocaleString()}…`)
     }
-    await upsertCountry(rows[i])
+    await updateCountry(rows[i])
   }
 
   if (rows.length > 0) {

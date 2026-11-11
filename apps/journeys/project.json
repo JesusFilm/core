@@ -157,12 +157,16 @@
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/__generated__"],
       "options": {
+        "parallel": false,
         "commands": [
           {
             "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
           },
           {
             "command": "rm -rf apps/journeys/__generated__"
+          },
+          {
+            "command": "find apps/journeys/pages -type d -name __generated__ -prune -exec rm -rf {} +"
           },
           {
             "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"

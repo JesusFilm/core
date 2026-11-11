@@ -11,20 +11,17 @@ import { getTheme } from '@core/shared/ui/themes'
 
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 import { getPageRTL } from '../src/libs/getPageRTL'
+import type { PageRTLProps } from '../src/libs/getPageRTL'
 import { createRtlEmotionPlugin } from '../src/libs/rtlEmotionPlugin'
 
-interface CampaignPageProps {
-  campaign?: { language?: { bcp47?: string | null } | null } | null
-}
-
 /**
- * The document's `lang` and `dir` (PRD §2, §11): on a campaign page the
- * resolved Page Language's bcp47 and the RTL lookup on it (`ltr` when there
- * is none), read from the page props the route rendered with; every other
- * page keeps the app default.
+ * The document's `lang` and `dir` (glossary: Campaign Page): on a campaign
+ * page the resolved Page Language's bcp47 and the RTL lookup on it (`ltr`
+ * when there is none), read from the page props the route rendered with;
+ * every other page keeps the app default.
  */
 export function documentLanguage(
-  pageProps: CampaignPageProps | undefined,
+  pageProps: PageRTLProps | undefined,
   fallback: { rtl: boolean }
 ): { lang: string; dir: string } {
   const bcp47 = pageProps?.campaign?.language?.bcp47
@@ -33,6 +30,24 @@ export function documentLanguage(
     lang: bcp47,
     dir: getPageRTL({ campaign: pageProps?.campaign }) ? 'rtl' : 'ltr'
   }
+}
+
+const DEFAULT_FONTS_HREF =
+  'https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap'
+const RTL_FONTS_HREF =
+  'https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap'
+
+/**
+ * The app's Google Fonts stylesheet: the right-to-left pair, or the default
+ * pair. A campaign page links its own (`CampaignPageWrapper`), which already
+ * includes the defaults, so it gets none.
+ */
+export function documentFontsHref(
+  pageProps: PageRTLProps | undefined,
+  { rtl, locale }: { rtl: boolean; locale: string }
+): string | null {
+  if (pageProps?.campaign != null) return null
+  return rtl && locale !== 'ur' ? RTL_FONTS_HREF : DEFAULT_FONTS_HREF
 }
 
 export default class MyDocument extends Document<{
@@ -46,38 +61,18 @@ export default class MyDocument extends Document<{
   })
 
   render(): ReactElement {
-    const { lang, dir } = documentLanguage(
-      this.props.__NEXT_DATA__.props.pageProps as CampaignPageProps,
-      this.props
-    )
+    const pageProps = this.props.__NEXT_DATA__.props.pageProps as PageRTLProps
+    const { lang, dir } = documentLanguage(pageProps, this.props)
+    const fontsHref = documentFontsHref(pageProps, this.props)
     return (
       <Html lang={lang} dir={dir} style={{ overscrollBehaviorY: 'none' }}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
-          {this.props.rtl && this.props.locale !== 'ur' ? (
+          {fontsHref != null && (
             <>
-              <link
-                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
-                rel="stylesheet"
-              />
-              <link
-                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
-                rel="preload"
-                as="style"
-              />
-            </>
-          ) : (
-            <>
-              <link
-                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
-                rel="stylesheet"
-              />
-              <link
-                href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
-                rel="preload"
-                as="style"
-              />
+              <link href={fontsHref} rel="stylesheet" />
+              <link href={fontsHref} rel="preload" as="style" />
             </>
           )}
           <link
