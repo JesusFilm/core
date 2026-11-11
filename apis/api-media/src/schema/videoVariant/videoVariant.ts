@@ -9,7 +9,10 @@ import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
-import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
+import {
+  enqueueVideoAlgoliaSync,
+  videoOnlyScope
+} from '../../workers/videoAlgoliaSync'
 import { builder, toPrismaDateTimeFilter } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
@@ -364,11 +367,26 @@ async function checkAndRemoveEmptyParentVariant(
   // availableLanguages still lists the language -- a drift
   // audit-parent-variants.ts does not detect, since it only looks for
   // languages that are missing, not stale ones left over-listed.
+  //
+  // Cache reset and Algolia sync are network/queue calls, not DB writes, so
+  // they stay out of the transaction -- running them inside it would hold
+  // the row lock open for unrelated I/O and risk tripping Prisma's
+  // interactive-transaction timeout.
   if (parentVariant != null) {
     await prisma.$transaction(async (tx) => {
       await tx.videoVariant.delete({ where: { id: parentVariant.id } })
-      await updateVideoAvailableLanguages(parentVideoId, { client: tx })
+      await updateVideoAvailableLanguages(parentVideoId, {
+        client: tx,
+        skipCache: true,
+        skipAlgolia: true
+      })
     })
+    await enqueueVideoAlgoliaSync(parentVideoId, videoOnlyScope, logger)
+    try {
+      await videoCacheReset(parentVideoId)
+    } catch (error) {
+      console.error('Cache reset error:', error)
+    }
   } else {
     await updateVideoAvailableLanguages(parentVideoId)
   }

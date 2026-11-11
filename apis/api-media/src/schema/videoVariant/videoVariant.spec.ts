@@ -3558,7 +3558,18 @@ describe('videoVariant', () => {
           expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
             '1_jf-0-0'
           )
+          expect(mockedVideoCacheReset).toHaveBeenCalledTimes(1)
           expect(mockedVideoCacheReset).toHaveBeenCalledWith('1_jf-0-0')
+          // Algolia sync and cache reset are network/queue I/O, not DB
+          // writes, so they run once after the transaction commits rather
+          // than inside it -- holding the row lock open for that I/O risks
+          // tripping Prisma's interactive-transaction timeout.
+          expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledTimes(1)
+          expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+            '1_jf-0-0',
+            expect.objectContaining({ syncVideoRecord: true }),
+            expect.anything()
+          )
         })
 
         it('still deletes the empty placeholder and drops the language on a collection', async () => {
