@@ -17,7 +17,10 @@ import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { keyify, templateKeyify } from '../../libs/plausibleHelpers'
-import { CUSTOM1_CAPTURE_EVENT_CREATE, CUSTOM2_CAPTURE_EVENT_CREATE  } from '../../libs/useCaptureEvent/useCaptureEvent'
+import {
+  CUSTOM1_CAPTURE_EVENT_CREATE,
+  CUSTOM2_CAPTURE_EVENT_CREATE
+} from '../../libs/useCaptureEvent/useCaptureEvent'
 import { createEventRequestLink } from '../../test/createEventRequestLink'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 

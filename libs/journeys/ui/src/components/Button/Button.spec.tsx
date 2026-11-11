@@ -28,7 +28,10 @@ import {
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
-import { CUSTOM1_CAPTURE_EVENT_CREATE, CUSTOM2_CAPTURE_EVENT_CREATE  } from '../../libs/useCaptureEvent/useCaptureEvent'
+import {
+  CUSTOM1_CAPTURE_EVENT_CREATE,
+  CUSTOM2_CAPTURE_EVENT_CREATE
+} from '../../libs/useCaptureEvent/useCaptureEvent'
 import { createEventRequestLink } from '../../test/createEventRequestLink'
 
 import {
