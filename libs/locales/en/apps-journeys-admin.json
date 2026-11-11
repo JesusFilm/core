@@ -1773,5 +1773,17 @@
   "Select a valid From and To date to view analytics": "Select a valid From and To date to view analytics",
   "Projects per page": "Projects per page",
   "Next page": "Next page",
-  "Previous page": "Previous page"
+  "Previous page": "Previous page",
+  "Not shown in pills": "Not shown in pills",
+  "No other regions yet": "No other regions yet",
+  "Alt text must be at most {{max}} characters": "Alt text must be at most {{max}} characters",
+  "{{label}} hex": "{{label}} hex",
+  "Focal point: {{left}}% from the left, {{top}}% from the top": "Focal point: {{left}}% from the left, {{top}}% from the top",
+  "We couldn't check your role.": "We couldn't check your role.",
+  "Retry": "Retry",
+  "Open page": "Open page",
+  "The page goes live when you publish.": "The page goes live when you publish.",
+  "Add a picture in Settings": "Add a picture in Settings",
+  "Add media in Settings": "Add media in Settings",
+  "Add videos in Settings": "Add videos in Settings"
 }

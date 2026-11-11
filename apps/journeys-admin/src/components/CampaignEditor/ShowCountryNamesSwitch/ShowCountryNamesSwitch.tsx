@@ -5,11 +5,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
-import {
-  CampaignRegionSwitcherShowCountryNamesInput,
-  useCampaignRegionSwitcherBlockShowCountryNamesMutation
-} from '../../../libs/useCampaignRegionSwitcherBlockShowCountryNamesMutation'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 interface ShowCountryNamesSwitchProps {
   block: CampaignRegionSwitcherBlock
@@ -19,22 +15,12 @@ export function ShowCountryNamesSwitch({
   block
 }: ShowCountryNamesSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeShowCountryNames =
-    useCampaignRegionSwitcherBlockShowCountryNamesMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
 
   function handleShowCountryNamesChange(
     event: ChangeEvent<HTMLInputElement>
   ): void {
-    addStyle<
-      CampaignRegionSwitcherBlock,
-      CampaignRegionSwitcherShowCountryNamesInput
-    >({
-      block,
-      input: { showCountryNames: event.target.checked },
-      previous: { showCountryNames: block.showCountryNames },
-      run: writeShowCountryNames
-    })
+    addFields(block, { showCountryNames: event.target.checked })
   }
 
   return (

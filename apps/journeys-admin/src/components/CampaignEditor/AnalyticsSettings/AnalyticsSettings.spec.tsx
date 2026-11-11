@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
@@ -5,29 +6,22 @@ import {
   GetCampaign_campaign_blocks_CampaignAnalyticsBlock as AnalyticsBlock,
   GetCampaign_campaign as Campaign
 } from '../../../../__generated__/GetCampaign'
-import { CAMPAIGN_ANALYTICS_BLOCK_UPDATE_SHOW_MAP } from '../../../libs/useCampaignAnalyticsBlockShowMapMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
-import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
+import { blockOf, blockUpdateMock } from '../styleTesting'
+import {
+  CommandProbe,
+  SelectionProbe,
+  StaticEditor,
+  UndoRedo
+} from '../testing'
 
 import { AnalyticsSettings } from './AnalyticsSettings'
 
-function showMapMock(showMap: boolean): Record<string, unknown> {
-  return {
-    request: {
-      query: CAMPAIGN_ANALYTICS_BLOCK_UPDATE_SHOW_MAP,
-      variables: { id: 'landingAnalyticsId', input: { showMap } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignAnalyticsBlockUpdate: {
-          __typename: 'CampaignAnalyticsBlock',
-          id: 'landingAnalyticsId',
-          showMap
-        }
-      }
-    }))
-  }
+function showMapMock(showMap: boolean): MockLink.MockedResponse {
+  return blockUpdateMock(
+    blockOf<'CampaignAnalyticsBlock'>('landingAnalyticsId'),
+    { showMap }
+  )
 }
 
 const turnOffMock = showMapMock(false)
@@ -46,7 +40,7 @@ function RemovablePanel({ block }: { block: AnalyticsBlock }): ReactElement {
 
 function renderSettings(
   showMap = true,
-  mocks: Array<Record<string, unknown>> = [turnOffMock, turnOnMock]
+  mocks: MockLink.MockedResponse[] = [turnOffMock, turnOnMock]
 ): ReturnType<typeof render> {
   const campaignProp: Campaign = {
     ...campaign,
@@ -63,8 +57,12 @@ function renderSettings(
   if (block?.__typename !== 'CampaignAnalyticsBlock')
     throw new Error('the fixture has no analytics block')
   return render(
-    <StaticEditor campaignProp={campaignProp} mocks={mocks}>
-      <CommandUndoItem variant="button" />
+    <StaticEditor
+      campaign={campaignProp}
+      initialState={{ selectedBlockId: block.id }}
+      mocks={mocks}
+    >
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
       <RemovablePanel block={block} />

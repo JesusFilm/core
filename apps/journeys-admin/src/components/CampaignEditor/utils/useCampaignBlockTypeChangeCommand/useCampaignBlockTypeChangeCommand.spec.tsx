@@ -105,7 +105,7 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }
@@ -134,7 +134,7 @@ function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
     >
       <PendingTextSave block={slotRichText} />
       <BlocksProbe />
-      <Inspector isManager />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }
@@ -230,7 +230,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
         mocks={[deleteOldMock, failingCreate, restoreOldMock]}
       >
         <BlocksProbe />
-        <Inspector isManager />
+        <Inspector role="member" />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -256,7 +256,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
         mocks={[{ ...deleteOldMock, result: refusal }, createMock]}
       >
         <BlocksProbe />
-        <Inspector isManager />
+        <Inspector role="member" />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -287,7 +287,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
         ]}
       >
         <BlocksProbe />
-        <Inspector isManager />
+        <Inspector role="member" />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -322,7 +322,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
       >
         <UndoRedo />
         <BlocksProbe />
-        <Inspector isManager />
+        <Inspector role="member" />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -360,7 +360,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
       >
         <UndoRedo />
         <BlocksProbe />
-        <Inspector isManager />
+        <Inspector role="member" />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -393,7 +393,7 @@ describe('useCampaignBlockTypeChangeCommand', () => {
       >
         <UndoRedo />
         <BlocksProbe />
-        <Inspector isManager />
+        <Inspector role="member" />
       </QueriedEditor>
     )
     await waitFor(() =>

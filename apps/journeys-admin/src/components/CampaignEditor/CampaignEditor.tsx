@@ -18,6 +18,7 @@ import {
   CampaignEditorProvider,
   useCampaignEditor
 } from './CampaignEditorProvider'
+import { CampaignHoverProvider } from './CampaignHoverProvider'
 import { CANVAS_GUTTER, Canvas, MIN_STAGE_WIDTH } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { CanvasBanner } from './CanvasBanner'
@@ -124,7 +125,7 @@ function CampaignEditorShell({
         </Box>
       </Stack>
       <Inspector
-        isManager={isManager}
+        role={isManager ? 'manager' : 'member'}
         onDefaultLanguageChanged={handleDefaultLanguageChanged}
       />
     </Stack>
@@ -209,12 +210,14 @@ export function CampaignEditor({
         <CampaignCommandProvider>
           <MuxVideoUploadProvider>
             <TranslationRunProvider>
-              <NavigatorHoverProvider>
-                <CampaignEditorShell
-                  campaign={campaign}
-                  isManager={isManager}
-                />
-              </NavigatorHoverProvider>
+              <CampaignHoverProvider>
+                <NavigatorHoverProvider>
+                  <CampaignEditorShell
+                    campaign={campaign}
+                    isManager={isManager}
+                  />
+                </NavigatorHoverProvider>
+              </CampaignHoverProvider>
             </TranslationRunProvider>
           </MuxVideoUploadProvider>
         </CampaignCommandProvider>
