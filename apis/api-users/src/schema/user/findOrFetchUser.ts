@@ -12,6 +12,7 @@ import {
 import { logger } from '../logger'
 
 import { type AppType } from './enums/app'
+import { isEmailHeldByAnotherUser } from './findUserByEmail'
 import { isFirebaseNotFound } from './isFirebaseNotFound'
 import { verifyUser } from './verifyUser'
 
@@ -138,6 +139,14 @@ async function relinkUserToFirebaseUid(
     )
     return relinked
   } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      // The write hit a unique column another row already holds. Either a
+      // concurrent call took this userId (relinked or created its row), or a
+      // row took the normalized email after the collision check above.
+      const rowForUserId = await prisma.user.findUnique({ where: { userId } })
+      if (rowForUserId != null) return rowForUserId
+      throw new UserEmailConflictError()
+    }
     if (!isRecordNotFoundError(error)) throw error
     // Another concurrent call relinked this row between our read above
     // and this update, so the userId guard lost the race safely.
@@ -166,6 +175,11 @@ async function resolveCreateConflict(
     // (which re-reads Firebase) no longer runs for this row.
     const emailChanged = email != null && email !== racedUser.email
     if (emailVerified && (!racedUser.emailVerified || emailChanged)) {
+      if (
+        emailChanged &&
+        (await isEmailHeldByAnotherUser(email, racedUser.userId))
+      )
+        throw new UserEmailConflictError()
       try {
         return await prisma.user.update({
           where: { userId },
@@ -236,6 +250,13 @@ export async function findOrFetchUser(
     if (existingUser.emailVerified === false) {
       const firebaseUser = await auth.getUser(userId)
       if (firebaseUser.emailVerified) {
+        const syncedEmail = firebaseUser.email?.trim().toLowerCase()
+        if (
+          syncedEmail != null &&
+          syncedEmail !== existingUser.email &&
+          (await isEmailHeldByAnotherUser(syncedEmail, userId))
+        )
+          throw new UserEmailConflictError()
         const { displayName, photoURL } = resolveProviderProfile(firebaseUser)
         const split = splitDisplayName(displayName)
         try {
@@ -247,9 +268,7 @@ export async function findOrFetchUser(
                 firstName: split.firstName,
                 lastName: split.lastName
               }),
-              ...(firebaseUser.email != null && {
-                email: firebaseUser.email.trim().toLowerCase()
-              }),
+              ...(syncedEmail != null && { email: syncedEmail }),
               ...(photoURL != null && { imageUrl: photoURL })
             }
           })
@@ -292,7 +311,7 @@ export async function findOrFetchUser(
   if (data.email != null) {
     const holderRows = await prisma.$queryRaw<
       Array<{ email: string }>
-    >`SELECT email FROM "User" WHERE LOWER(email) = LOWER(${data.email}) LIMIT 1`
+    >`SELECT email FROM "User" WHERE LOWER(email) = LOWER(${data.email}) ORDER BY "createdAt" ASC, id ASC LIMIT 1`
     const holderEmail = holderRows?.[0]?.email
     if (holderEmail != null) {
       if (!emailVerified) throw new UserEmailConflictError()
