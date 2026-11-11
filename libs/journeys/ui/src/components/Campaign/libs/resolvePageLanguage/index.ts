@@ -1,5 +1,4 @@
 export {
-  CAMPAIGN_LANGUAGE_COOKIE,
   CAMPAIGN_LANGUAGE_PARAM,
   campaignLanguageCookie,
   parseAcceptLanguage,

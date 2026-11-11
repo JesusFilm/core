@@ -1690,6 +1690,7 @@
   "Open journey": "Open journey",
   "There was an error loading campaigns.": "There was an error loading campaigns.",
   "There was an error refreshing the campaign.": "There was an error refreshing the campaign.",
+  "This language has a QR code. Unlink it instead.": "This language has a QR code. Unlink it instead.",
   "Remove {{language}}?": "Remove {{language}}?",
   "Every translation into {{language}} is deleted.": "Every translation into {{language}} is deleted.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "No campaigns yet. Create one to build a landing page with a page for every region.",
@@ -1755,10 +1756,16 @@
   "All regions label": "All regions label",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)",
   "Maximum file size: 10 MB": "Maximum file size: 10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} text still has no translation in {{language}}, so it cannot become the default.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} texts still have no translation in {{language}}, so it cannot become the default.",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} is already being translated. Try again when it has finished.",
   "Unlink the journey before removing this language.": "Unlink the journey before removing this language.",
   "Delete {{language}}?": "Delete {{language}}?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.",
   "Show country names": "Show country names",
   "Countries": "Countries",
-  "Always turned off for background videos": "Always turned off for background videos"
+  "Always turned off for background videos": "Always turned off for background videos",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "Translation into {{language}} stopped. {{count}} string kept.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "Translation into {{language}} stopped. {{count}} strings kept."
 }
