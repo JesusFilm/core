@@ -19,6 +19,7 @@ import {
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
+import { sortLanguageOptions } from '@core/shared/ui/sortLanguageOptions'
 
 import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
@@ -243,31 +244,10 @@ export function HeaderAndLanguageFilter({
     onChange(ids)
   }
 
-  const options = useMemo(() => {
-    return (
-      data?.languages?.map(({ id, name }) => {
-        const localLanguageName = name.find(({ primary }) => !primary)?.value
-        const nativeLanguageName = name.find(({ primary }) => primary)?.value
-
-        return {
-          id,
-          localName: localLanguageName,
-          nativeName: nativeLanguageName
-        }
-      }) ?? []
-    )
-  }, [data?.languages])
-
-  const sortedOptions = useMemo(() => {
-    if (options.length > 0) {
-      return options.sort((a, b) => {
-        return (a.localName ?? a.nativeName ?? '').localeCompare(
-          b.localName ?? b.nativeName ?? ''
-        )
-      })
-    }
-    return []
-  }, [options])
+  const sortedOptions = useMemo(
+    () => sortLanguageOptions(convertLanguagesToOptions(data?.languages)),
+    [data?.languages]
+  )
 
   return (
     <>

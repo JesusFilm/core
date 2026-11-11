@@ -6,7 +6,6 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -32,7 +31,6 @@ import {
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
-import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
 import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
@@ -122,7 +120,6 @@ export function DefaultMenu({
   const { activeTeam } = useTeam()
   const { teamTemplateCollection } = useFlags()
   const { data: userRoleData } = useUserRoleQuery()
-  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
     skip: activeTeam?.id == null
@@ -196,9 +193,6 @@ export function DefaultMenu({
     (isPublisher && template === true)
 
   const cantManageJourney = !canManageJourney
-
-  const isLocalTemplate =
-    journey?.template === true && journey?.team?.id !== 'jfp-team'
 
   if (hasCurrentUser && isAnonymousUser) {
     return <></>
@@ -286,26 +280,13 @@ export function DefaultMenu({
           <Divider />
         </>
       )}
-      {template === true && (
-        <>
-          <TemplateActionButton
-            variant="menu-item"
-            handleCloseMenu={handleCloseMenu}
-            journey={journey}
-            refetchTemplateStats={refetchTemplateStats}
-          />
-          <Divider />
-        </>
-      )}
-      {!isLocalTemplate && (
-        <CopyToTeamMenuItem
-          id={id}
-          handleCloseMenu={handleCloseMenu}
-          handleKeepMounted={handleKeepMounted}
-          journey={journey}
-          setHasOpenDialog={setHasOpenDialog}
-        />
-      )}
+      <CopyToTeamMenuItem
+        id={id}
+        handleCloseMenu={handleCloseMenu}
+        handleKeepMounted={handleKeepMounted}
+        journey={journey}
+        setHasOpenDialog={setHasOpenDialog}
+      />
       {teamTemplateCollection === true && template === true && (
         <CopyToCollectionMenuItem
           id={id}

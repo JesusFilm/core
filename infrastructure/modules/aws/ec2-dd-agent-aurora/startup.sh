@@ -3,8 +3,9 @@
 # install curl
 apt-get update && apt-get install -y curl sudo
 
-# install datadog agent
-DD_INSTALL_ONLY=true DD_API_KEY="${datadog_api_key}" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
+# install datadog agent. Pinned to a minor so a rebuild is reproducible; the
+# Postgres check needs 7.64.0 or later for PostgreSQL 17.
+DD_AGENT_MAJOR_VERSION=7 DD_AGENT_MINOR_VERSION=84 DD_INSTALL_ONLY=true DD_API_KEY="${datadog_api_key}" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
 
 # add dd-agent to systemd-journal group
 usermod -a -G systemd-journal dd-agent

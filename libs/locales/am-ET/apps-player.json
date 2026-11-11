@@ -1,33 +1,33 @@
 {
   "RootIndexPage": {
     "pageTitle": "Player",
-    "description": "Navigate to /pl/[playlistId] to view a playlist"
+    "description": "የመዝገብ ዝርዝርን ለማየት /pl/[playlistId] ይሂዱ"
   },
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | የኢየሱስ ፊልም ፕሮጀክት"
   },
   "PlaylistRoutePage": {
-    "defaultPageTitle": "Playlist",
-    "pageTitle": "{title} by {name}",
-    "thisPlaylistIsEmpty": "This playlist is empty",
-    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
-    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
+    "defaultPageTitle": "የመዝገብ ዝርዝር",
+    "pageTitle": "{name} የ{title}",
+    "thisPlaylistIsEmpty": "ይህ የመዝገብ ዝርዝር ባዶ ነው",
+    "defaultDescription": "ጓደኛዎ እነዚህን ቪዲዮዎች ለእርስዎ ማበረታቻ እንዲሆኑ አጋርቷቸዋል። በኢየሱስ ውስጥ ሰላም ስለማግኘት የሚያበረታቱ ታሪኮችን ለማየት \"መጫወት\"ን ይጫኑ።",
+    "description": "ጓደኛዎ {name} እነዚህን ቪዲዮዎች ለእርስዎ ማበረታቻ እንዲሆኑ አጋርቷቸዋል። በኢየሱስ ውስጥ ሰላም ስለማግኘት የሚያበረታቱ ታሪኮችን ለማየት \"መጫወት\"ን ይጫኑ።"
   },
   "PlaylistPage": {
-    "noVideoAvailable": "No video available"
+    "noVideoAvailable": "ቪዲዮ አይገኝም"
   },
   "PlaylistList": {
-    "noThumbnail": "No thumbnail"
+    "noThumbnail": "ጥፍር ምስል የለም"
   },
   "StudyQuestions": {
-    "title": "Study Questions"
+    "title": "የጥናት ጥያቄዎች"
   },
   "VideoPlayer": {
-    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+    "lackOfBrowserSupport": "ይህን ቪዲዮ ለማየት እባክዎ JavaScript ያንቁ፣ እና <link>የHTML5 ቪዲዮን የሚደግፍ</link> የድር አሳሽ ወደ ዘመናዊ ስሪት ማሻሻልን ያስቡ"
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
-    "downloadOnAppStore": "Download on App Store",
-    "getItOnGooglePlay": "Get it on Google Play"
+    "sharedWithYou": "ጓደኛዎ <strong>{name}</strong> እነዚህን ቪዲዮዎች ለእርስዎ ማበረታቻ እንዲሆኑ ከእርስዎ ጋር አጋርቷቸዋል። እነዚህን ቪዲዮዎች ለማየት የተሻለው መንገድ መተግበሪያችንን ማውረድ ነው።",
+    "downloadOnAppStore": "በApp Store ላይ ያውርዱ",
+    "getItOnGooglePlay": "በGoogle Play ላይ ያግኙት"
   }
 }

@@ -1,4 +1,5 @@
-import { GetStaticPaths, GetStaticProps } from 'next'
+import { GetStaticProps } from 'next'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
@@ -21,20 +22,38 @@ import { createApolloClient } from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
+import {
+  CampaignRouteProps,
+  campaignStaticPropsFor,
+  getBlockingStaticPaths,
+  readCampaignPage
+} from '../../src/libs/resolveCampaignPage'
 
-interface HostJourneyPageProps {
+// The campaign branch only renders for a Campaign Domain; journey visitors
+// never download it.
+const CampaignRoute = dynamic(
+  async () =>
+    (
+      await import(
+        /* webpackChunkName: "CampaignRoute" */ '../../src/components/CampaignRoute'
+      )
+    ).CampaignRoute
+)
+
+interface HostedJourneyProps {
   host: string
   journey: Journey
   locale: string
   rtl: boolean
 }
 
-function HostJourneyPage({
+/** A journey on a custom domain, at `/<slug>` or as the domain's only journey at `/`. */
+export function HostedJourney({
   host,
   journey,
   locale,
   rtl
-}: HostJourneyPageProps): ReactElement {
+}: HostedJourneyProps): ReactElement {
   const router = useRouter()
   const isIframe = typeof window !== 'undefined' && window.self !== window.top
   if (isIframe) {
@@ -86,7 +105,17 @@ function HostJourneyPage({
   )
 }
 
-export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
+type HostSlugPageProps = HostedJourneyProps | CampaignRouteProps
+
+// `/<segment>` on a custom domain is a region of its campaign first, then a
+// journey slug (a region outranks a journey with the same spelling).
+function HostSlugPage(props: HostSlugPageProps): ReactElement {
+  if ('kind' in props) return <CampaignRoute {...props} />
+  return <HostedJourney {...props} />
+}
+
+/** The journey at `/<slug>` on the domain, or not found. */
+const hostSlugStaticProps: GetStaticProps<HostedJourneyProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
@@ -142,11 +171,15 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
   }
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: 'blocking'
-  }
+// Also the route of `_lang/[lang]/[journeySlug]`: a journey ignores the tag.
+export const getStaticProps: GetStaticProps<HostSlugPageProps> = async (
+  context
+) => {
+  const result = await readCampaignPage(context)
+  if (result.kind === 'notACampaign') return await hostSlugStaticProps(context)
+  return await campaignStaticPropsFor(result, context.locale)
 }
 
-export default HostJourneyPage
+export const getStaticPaths = getBlockingStaticPaths
+
+export default HostSlugPage

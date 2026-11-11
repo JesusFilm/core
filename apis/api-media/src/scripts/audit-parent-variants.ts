@@ -1,5 +1,6 @@
 import { prisma } from '@core/prisma/media/client'
 
+import { canHavePlaceholderVariant } from '../schema/videoVariant/canHavePlaceholderVariant'
 import { videoVariantContainsMedia } from '../schema/videoVariantReconciliation/videoVariantContainsMedia'
 
 export type ParentVariantAuditEntry = {
@@ -31,6 +32,7 @@ export async function auditParentVariants(): Promise<ParentVariantAuditResult> {
     select: {
       id: true,
       slug: true,
+      label: true,
       published: true,
       availableLanguages: true,
       variants: {
@@ -117,6 +119,24 @@ export async function auditParentVariants(): Promise<ParentVariantAuditResult> {
             childVideoId: qualifyingVariant.childVideoId,
             languageId,
             variantId: existingParentVariant.id,
+            action: 'addParentLanguage',
+            result: 'proposed'
+          })
+        }
+        continue
+      }
+
+      // A playable parent (featureFilm) never gets a placeholder Variant, so
+      // a segment-only language is not a gap in its Variants. The language
+      // cascade that keeps availableLanguages in sync can still have failed,
+      // so that drift is reported as a missing parent language instead.
+      if (!canHavePlaceholderVariant(parentVideo.label)) {
+        if (!parentVideo.availableLanguages.includes(languageId)) {
+          deterministicGaps.push({
+            parentVideoId: parentVideo.id,
+            childVideoId: qualifyingVariant.childVideoId,
+            languageId,
+            variantId: `${languageId}_${parentVideo.id}`,
             action: 'addParentLanguage',
             result: 'proposed'
           })

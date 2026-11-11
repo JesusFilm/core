@@ -7,7 +7,7 @@ on:
       - main
 jobs:
   affected:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -18,7 +18,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: 'pnpm'

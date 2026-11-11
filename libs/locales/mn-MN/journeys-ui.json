@@ -1,0 +1,15 @@
+{
+  "My Team": "Миний баг",
+  "Unable to create guest user. Please try again or sign in.": "Зочин хэрэглэгч үүсгэж чадсангүй. Дахин оролдох эсвэл нэвтэрнэ үү.",
+  "Failed to duplicate journey to team, please refresh the page and try again": "Аяллыг багт хуулбарлаж чадсангүй. Хуудсыг дахин ачаалж дахин оролдоно уу",
+  "Journey Translated": "Жорни орчуулагдлаа",
+  "Journey failed to load. Please refresh the page and try again.": "Аяллыг ачаалж чадсангүй. Хуудсыг дахин ачаалж дахин оролдоно уу.",
+  "Failed to load teams. Please refresh the page and try again.": "Багуудыг ачаалж чадсангүй. Хуудсыг дахин ачаалж дахин оролдоно уу.",
+  "Let's Get Started!": "Эхэлцгээе!",
+  "Get Started": "Эхлэх",
+  "A few quick edits and your template will be ready to share.": "Хэдхэн хурдан засвар хийчихвэл таны загвар хуваалцахад бэлэн болно.",
+  "A few quick edits and it's ready to share!": "Хэдхэн хурдан засвар хийхэд л хуваалцахад бэлэн болно!",
+  "Next": "Дараагийн",
+  "Search Language": "Хайх хэл",
+  "Translating": "Орчуулга"
+}

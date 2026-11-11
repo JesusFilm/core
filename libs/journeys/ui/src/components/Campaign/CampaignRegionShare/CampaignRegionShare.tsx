@@ -1,0 +1,461 @@
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import IconButton from '@mui/material/IconButton'
+import MenuItem from '@mui/material/MenuItem'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import Snackbar from '@mui/material/Snackbar'
+import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
+import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
+
+import CopyToIcon from '@core/shared/ui/icons/CopyTo'
+import Download2Icon from '@core/shared/ui/icons/Download2'
+import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
+
+import {
+  CampaignStringKey,
+  JourneyStatus
+} from '../../../../__generated__/globalTypes'
+import { useCampaignPlausible } from '../../../libs/campaignPlausible'
+import { QrCodeCanvas, downloadQrCodePng } from '../../QrCodeCanvas'
+import { bandButtonSx } from '../CampaignButton'
+import { CampaignMutedText } from '../CampaignMutedText'
+import { campaignStringOr, useCampaign } from '../CampaignProvider'
+import { CampaignSectionBand } from '../CampaignSectionBand'
+import { CampaignSectionHeading } from '../CampaignSectionHeading'
+import { hasText } from '../types'
+import type { CampaignPublic, CampaignRegion, CampaignTreeOf } from '../types'
+
+export type CampaignShareLanguage = CampaignRegion['languages'][number]
+
+/**
+ * The iframe attributes every journey preview frame carries (glossary: **Campaign Public Page**): no
+ * top navigation and no fullscreen, popups allowed so the journey's own
+ * links can open, autoplay for the first card's video.
+ */
+export const PREVIEW_IFRAME_SANDBOX =
+  'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'
+export const PREVIEW_IFRAME_ALLOW = 'autoplay'
+
+/**
+ * The preview frame's address: the root-domain embed route kept a preview
+ * with `expand=false`. An address that does not parse (a relative or
+ * scheme-less `JOURNEYS_URL`) is returned unchanged rather than throwing
+ * while the page renders.
+ */
+export function previewEmbedUrl(embedUrl: string): string {
+  let url: URL
+  try {
+    url = new URL(embedUrl)
+  } catch {
+    return embedUrl
+  }
+  url.searchParams.set('expand', 'false')
+  return url.toString()
+}
+
+/** The downloaded QR PNG's name: `<campaign slug>-<region slug>-<language bcp47>.png`. */
+export function qrCodeFileName(
+  campaign: Pick<CampaignPublic, 'slug'>,
+  region: Pick<CampaignRegion, 'slug'>,
+  language: Pick<CampaignShareLanguage, 'languageId' | 'language'>
+): string {
+  const bcp47 = language.language.bcp47 ?? language.languageId
+  return `${campaign.slug}-${region.slug}-${bcp47}.png`
+}
+
+/** A Share Link as the phone frame shows it: without its scheme. */
+export function displayShortLink(shortLinkUrl: string): string {
+  return shortLinkUrl.replace(/^https?:\/\//, '')
+}
+
+interface CampaignRegionShareProps {
+  block: CampaignTreeOf<'CampaignRegionShareBlock'>
+}
+
+/**
+ * The Share Languages the public selector offers: only those whose linked
+ * journey is live-published, in `CampaignRegionLanguage` order. An Unlinked
+ * Language is never shown to visitors.
+ */
+export function shareLanguages(
+  region: Pick<CampaignRegion, 'languages'>
+): CampaignShareLanguage[] {
+  return region.languages
+    .filter((language) => language.journeyStatus === JourneyStatus.published)
+    .sort((a, b) => a.order - b.order)
+}
+
+/**
+ * The language the selector opens on: the visitor's Page Language when the
+ * region has a journey in it, else the region's first.
+ */
+export function defaultShareLanguage(
+  languages: CampaignShareLanguage[],
+  pageLanguageId: string
+): CampaignShareLanguage | undefined {
+  return (
+    languages.find((language) => language.languageId === pageLanguageId) ??
+    languages[0]
+  )
+}
+
+/** The public selector label: the language's autonym from api-languages, else its id. */
+export function shareLanguageLabel(language: CampaignShareLanguage): string {
+  return language.language.name[0]?.value ?? language.languageId
+}
+
+interface ShareStepProps {
+  id: string
+  label: string
+  help?: string
+  children?: ReactNode
+}
+
+/** One numbered step of the panel: its Campaign String label, an optional help line, then its control. */
+function ShareStep({
+  id,
+  label,
+  help,
+  children
+}: ShareStepProps): ReactElement {
+  return (
+    <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
+      {hasText(label) && (
+        <Typography
+          variant="subtitle1"
+          component="p"
+          id={id}
+          sx={{ color: 'var(--campaign-band-heading)', whiteSpace: 'pre-line' }}
+        >
+          {label}
+        </Typography>
+      )}
+      {hasText(help) && (
+        <CampaignMutedText variant="body2">{help}</CampaignMutedText>
+      )}
+      {children}
+    </Stack>
+  )
+}
+
+/**
+ * The Region Share section: title and intro, then the four steps a visitor
+ * passes a journey on with. Step one picks a Share Language (only languages
+ * with a live-published journey, opening on the visitor's Page Language when
+ * the region has a journey in it, else the region's first); step two
+ * previews the journey in a phone frame (the root-domain embed route, kept a
+ * preview, with an Open affordance to the Share Link); step three copies
+ * the Share Link, the short link the QR encodes, with a toast; step four
+ * downloads that QR code as a 1024 px PNG. Every label and button text is a
+ * Campaign String in the Page Language; the viewer's own chrome (the Open
+ * tooltip, the Copied fallback) is i18next. With no linked language the
+ * section is title and intro only. Below `md` the panel stacks single column.
+ */
+export function CampaignRegionShare({
+  block
+}: CampaignRegionShareProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
+  const { campaign, region, string } = useCampaign()
+  const track = useCampaignPlausible()
+  const [selectedId, setSelectedId] = useState<string>()
+  const [copyResult, setCopyResult] = useState<'copied' | 'failed' | null>(null)
+  const languages = region == null ? [] : shareLanguages(region)
+  const selected =
+    languages.find((language) => language.id === selectedId) ??
+    defaultShareLanguage(languages, campaign.languageId)
+  const strings = {
+    step1: string(CampaignStringKey.step1),
+    step2: string(CampaignStringKey.step2),
+    step2help: string(CampaignStringKey.step2help),
+    step3: string(CampaignStringKey.step3),
+    step4: string(CampaignStringKey.step4)
+  }
+  const openLabel = campaignStringOr(
+    campaign.strings,
+    CampaignStringKey.open,
+    t('Open')
+  )
+  const copiedLabel = campaignStringOr(
+    campaign.strings,
+    CampaignStringKey.copied,
+    t('Copied')
+  )
+  const copyLabel = campaignStringOr(
+    campaign.strings,
+    CampaignStringKey.copy,
+    t('Copy link')
+  )
+  const downloadLabel = campaignStringOr(
+    campaign.strings,
+    CampaignStringKey.downloadQr,
+    t('Download QR code')
+  )
+  const shortLink = selected?.shortLinkUrl ?? undefined
+
+  function handleChange(event: SelectChangeEvent<string>): void {
+    setSelectedId(event.target.value)
+  }
+
+  async function copyShortLink(): Promise<void> {
+    if (shortLink == null || selected == null) return
+    // Tracking must not change the result of a successful clipboard write.
+    try {
+      await navigator.clipboard.writeText(shortLink)
+    } catch {
+      setCopyResult('failed')
+      return
+    }
+    setCopyResult('copied')
+    track('campaignShareLinkCopy', { shareLanguage: selected })
+  }
+
+  function handleCopy(): void {
+    void copyShortLink()
+  }
+
+  function handleCopyResultClose(): void {
+    setCopyResult(null)
+  }
+
+  function handleDownload(event: MouseEvent<HTMLButtonElement>): void {
+    event.preventDefault()
+    if (shortLink == null || region == null || selected == null) return
+    downloadQrCodePng(shortLink, qrCodeFileName(campaign, region, selected))
+    track('campaignQrDownload', { shareLanguage: selected })
+  }
+
+  function handleOpen(event: MouseEvent<HTMLElement>): void {
+    if (shortLink == null) return
+    track(
+      'campaignJourneyClick',
+      {
+        source: 'share',
+        journeyUrl: selected?.journeyUrl,
+        shareLanguage: selected
+      },
+      event
+    )
+  }
+
+  return (
+    <CampaignSectionBand block={block}>
+      <CampaignSectionHeading title={block.title} />
+      {hasText(block.intro) && (
+        <CampaignMutedText data-testid="CampaignRegionShareIntro">
+          {block.intro}
+        </CampaignMutedText>
+      )}
+      {selected != null && region != null && (
+        <Stack
+          spacing={4}
+          data-testid="CampaignRegionShareLanguages"
+          sx={{ alignItems: 'flex-start', width: '100%' }}
+        >
+          <ShareStep id={`${block.id}-step1`} label={strings.step1}>
+            <FormControl sx={{ minWidth: 240 }}>
+              <Select<string>
+                value={selected.id}
+                onChange={handleChange}
+                data-testid="CampaignRegionShareSelect"
+                inputProps={{
+                  'aria-label': campaignStringOr(
+                    campaign.strings,
+                    CampaignStringKey.step1,
+                    t('Language')
+                  ),
+                  'aria-labelledby': hasText(strings.step1)
+                    ? `${block.id}-step1`
+                    : undefined
+                }}
+                sx={{
+                  color: 'var(--campaign-band-text)',
+                  backgroundColor: 'var(--campaign-band-card)',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'var(--campaign-band-border)'
+                  }
+                }}
+              >
+                {languages.map((language) => (
+                  <MenuItem
+                    key={language.id}
+                    value={language.id}
+                    lang={language.language.bcp47 ?? undefined}
+                  >
+                    {shareLanguageLabel(language)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </ShareStep>
+          <Stack
+            data-testid="CampaignRegionSharePanel"
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={{ xs: 4, md: 6 }}
+            sx={{
+              width: '100%',
+              alignItems: { xs: 'stretch', md: 'flex-start' }
+            }}
+          >
+            <ShareStep
+              id={`${block.id}-step2`}
+              label={strings.step2}
+              help={strings.step2help}
+            >
+              <Stack
+                spacing={1.5}
+                data-testid="CampaignRegionSharePhone"
+                sx={{
+                  alignItems: 'center',
+                  alignSelf: { xs: 'center', md: 'flex-start' }
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'relative',
+                    width: 300,
+                    maxWidth: '100%',
+                    aspectRatio: '9 / 18',
+                    // A phone bezel around the screen. The journey embed
+                    // rounds its own outer corners at 16px and is
+                    // transparent beyond them, so the screen clips at that
+                    // same radius: a larger one shows a black sliver in each
+                    // corner, a smaller one a square notch.
+                    p: '8px',
+                    borderRadius: '24px',
+                    backgroundColor: 'var(--campaign-band-heading)',
+                    boxShadow: 6
+                  }}
+                >
+                  <Box
+                    data-testid="CampaignRegionSharePhoneScreen"
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '16px',
+                      overflow: 'hidden',
+                      clipPath: 'inset(0 round 16px)',
+                      backgroundColor: '#000000'
+                    }}
+                  >
+                    {selected.embedUrl != null && (
+                      <Box
+                        component="iframe"
+                        key={selected.id}
+                        data-testid="CampaignRegionSharePhoneIframe"
+                        src={previewEmbedUrl(selected.embedUrl)}
+                        title={selected.title ?? shareLanguageLabel(selected)}
+                        sandbox={PREVIEW_IFRAME_SANDBOX}
+                        allow={PREVIEW_IFRAME_ALLOW}
+                        loading="lazy"
+                        sx={{
+                          display: 'block',
+                          width: '100%',
+                          height: '100%',
+                          border: 0,
+                          backgroundColor: '#000000'
+                        }}
+                      />
+                    )}
+                  </Box>
+                  <Box
+                    aria-hidden
+                    data-testid="CampaignRegionSharePhoneBezel"
+                    sx={{
+                      // A composited iframe escapes the screen's rounded clip
+                      // on some displays, so the bezel is also painted over the
+                      // screen's corners from above. This must sit outside the
+                      // clipping box: a spread shadow inside it would be
+                      // clipped away with the corners.
+                      position: 'absolute',
+                      inset: '8px',
+                      borderRadius: '16px',
+                      boxShadow: '0 0 0 8px var(--campaign-band-heading)',
+                      pointerEvents: 'none',
+                      zIndex: 1
+                    }}
+                  />
+                </Box>
+                {shortLink != null && (
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{ alignItems: 'center', maxWidth: 300 }}
+                  >
+                    <Typography
+                      variant="body2"
+                      data-testid="CampaignRegionShareShortLink"
+                      noWrap
+                      sx={{ color: 'var(--campaign-band-text)' }}
+                    >
+                      {displayShortLink(shortLink)}
+                    </Typography>
+                    <Tooltip title={openLabel}>
+                      <IconButton
+                        component="a"
+                        href={shortLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={handleOpen}
+                        aria-label={openLabel}
+                        size="small"
+                        sx={{ color: 'var(--campaign-band-accent)' }}
+                      >
+                        <LinkExternalIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
+                )}
+              </Stack>
+            </ShareStep>
+            <Stack spacing={4} sx={{ flexGrow: 1, alignItems: 'flex-start' }}>
+              <ShareStep id={`${block.id}-step3`} label={strings.step3}>
+                <Button
+                  variant="contained"
+                  startIcon={<CopyToIcon />}
+                  disabled={shortLink == null}
+                  onClick={handleCopy}
+                  data-testid="CampaignRegionShareCopy"
+                  sx={{ ...bandButtonSx, whiteSpace: 'pre-line' }}
+                >
+                  {copyLabel}
+                </Button>
+              </ShareStep>
+              <ShareStep id={`${block.id}-step4`} label={strings.step4}>
+                <QrCodeCanvas value={shortLink} size={160} cornerRadius="6px" />
+                <Button
+                  variant="outlined"
+                  startIcon={<Download2Icon />}
+                  disabled={shortLink == null}
+                  onClick={handleDownload}
+                  data-testid="CampaignRegionShareDownload"
+                  sx={{
+                    color: 'var(--campaign-band-text)',
+                    borderColor: 'var(--campaign-band-border)',
+                    whiteSpace: 'pre-line'
+                  }}
+                >
+                  {downloadLabel}
+                </Button>
+              </ShareStep>
+            </Stack>
+          </Stack>
+        </Stack>
+      )}
+      <Snackbar
+        open={copyResult != null}
+        autoHideDuration={3000}
+        onClose={handleCopyResultClose}
+        message={
+          copyResult === 'failed' ? t('Could not copy the link') : copiedLabel
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        data-testid="CampaignRegionShareCopied"
+      />
+    </CampaignSectionBand>
+  )
+}

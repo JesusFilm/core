@@ -1,5 +1,13 @@
 locals {
   port = 4005
+  # Every key here must exist in the api-media Doppler config of each
+  # environment (it becomes an SSM parameter, and AWS rejects an empty value).
+  # Short-link settings that have no value yet are left out, and api-media
+  # treats each as switched off. Add them back as the values arrive (the
+  # module makes an SSM parameter per name, so the Doppler key must exist and
+  # be non-empty in every environment):
+  #   SLACK_SHORT_LINKS_BOT_TOKEN, SLACK_SHORT_LINKS_CHANNEL_ID
+  #     -> destination health alerts (logged only until then)
   environment_variables = [
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
@@ -34,6 +42,7 @@ locals {
     "PG_DATABASE_URL_MEDIA",
     "PG_DATABASE_URL_LANGUAGES",
     "PG_DATABASE_URL_JOURNEYS",
+    "PG_DATABASE_URL_USERS",
     "REDIS_PORT",
     "REDIS_URL",
     "SLACK_DATA_LANGS_CHANNEL_ID",
@@ -45,7 +54,13 @@ locals {
     "SEGMIND_API_KEY",
     "UNSPLASH_ACCESS_KEY",
     "WATCH_REVALIDATE_SECRET",
-    "WATCH_URL"
+    "WATCH_URL",
+    "SHORT_LINKS_CLICKHOUSE_DATABASE",
+    "SHORT_LINKS_CLICKHOUSE_PASSWORD",
+    "SHORT_LINKS_CLICKHOUSE_URL",
+    "SHORT_LINKS_CLICKHOUSE_USER",
+    "CLOUDFLARE_SHORT_LINKS_API_TOKEN",
+    "CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID"
   ]
   service_config = {
     name                              = "api-media"
@@ -59,6 +74,13 @@ locals {
     health_check_grace_period_seconds = 60
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
+      # Stage fails fast, like api-gateway: these were set by hand on the
+      # stage target groups while ecs-task ignored health_check drift.
+      # null = the module defaults, which is what prod has.
+      health_check_interval            = var.env == "stage" ? 5 : null
+      health_check_timeout             = var.env == "stage" ? 3 : null
+      health_check_healthy_threshold   = var.env == "stage" ? 2 : null
+      health_check_unhealthy_threshold = var.env == "stage" ? 2 : null
     })
     auto_scaling = {
       max_capacity = var.env == "stage" ? 1 : 3

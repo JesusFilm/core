@@ -1,0 +1,1 @@
+export { InlineText } from './InlineText'

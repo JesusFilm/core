@@ -71,6 +71,21 @@ const nextConfig = {
       'node_modules/esbuild-linux-64/bin'
     ]
   },
+  async headers() {
+    return [
+      {
+        // The editor canvas (journeys-admin, another origin) fetches the
+        // world atlas for the Analytics world map; public data, so any
+        // origin may read it. The public Analytics section fetches it too, so
+        // browsers keep it for a week.
+        source: '/countries-110m.json',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cache-Control', value: 'public, max-age=604800' }
+        ]
+      }
+    ]
+  },
   async rewrites() {
     return [
       {

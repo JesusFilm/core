@@ -10,6 +10,7 @@ import {
 } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import type { JourneyListEvent } from '../JourneyList'
@@ -19,6 +20,12 @@ import { SharedWithMeMode } from './DisplayModes/SharedWithMeMode/SharedWithMeMo
 import { ContentTypeOption, TeamMode } from './DisplayModes/TeamMode/TeamMode'
 
 export type ContentType = 'journeys' | 'templates'
+/**
+ * A tab of the dashboard's content tabs (`?type=`). Team Campaigns is a tab
+ * but not a journey content type: it renders the campaign list, not
+ * `renderList`, and has no status filter or sort.
+ */
+export type ContentTab = ContentType | 'campaigns'
 export type JourneyStatus = 'active' | 'archived' | 'trashed'
 
 export interface JourneyListViewProps {
@@ -81,9 +88,11 @@ export function JourneyListView({
   const router = useRouter()
   const breakpoints = useBreakpoints()
   const { activeTeam } = useTeam()
+  const { campaignBuilder } = useFlags()
   const isSharedWithMeMode = activeTeam === null
 
-  // Content type options (Journeys, Templates).
+  // Content type options (Journeys, Templates, and Campaigns when the
+  // `campaignBuilder` flag is on). Shared With Me mode renders no tabs.
   // The Collections panel lives under Team Templates and is gated by the
   // `teamTemplateCollection` flag in JourneyList.tsx.
   // Use shorter labels on mobile to prevent overflow
@@ -97,12 +106,20 @@ export function JourneyListView({
       queryParam: 'templates',
       displayValue: breakpoints.sm ? t('Team Templates') : t('Templates'),
       tabIndex: 1
-    }
+    },
+    ...(campaignBuilder === true
+      ? [
+          {
+            queryParam: 'campaigns' as const,
+            displayValue: breakpoints.sm ? t('Team Campaigns') : t('Campaigns'),
+            tabIndex: 2
+          }
+        ]
+      : [])
   ]
 
   // Get initial values from router query params
-  const contentTypeFromQuery =
-    (router?.query?.type as ContentType) ?? 'journeys'
+  const contentTypeFromQuery = (router?.query?.type as ContentTab) ?? 'journeys'
   const statusFromQuery = (router?.query?.status as JourneyStatus) ?? 'active'
 
   // State management
@@ -115,9 +132,15 @@ export function JourneyListView({
   const [selectedStatus, setSelectedStatus] =
     useState<JourneyStatus>(statusFromQuery)
 
-  // Force type=journeys in Shared With Me mode
+  // Force type=journeys in Shared With Me mode, and off a Team Campaigns
+  // link (e.g. the /campaigns redirect) while the campaignBuilder flag is off
+  const campaignsTabHidden =
+    campaignBuilder !== true && router?.query?.type === 'campaigns'
   useEffect(() => {
-    if (isSharedWithMeMode && router?.query?.type !== 'journeys') {
+    if (
+      (isSharedWithMeMode || campaignsTabHidden) &&
+      router?.query?.type !== 'journeys'
+    ) {
       void router.push(
         {
           query: {
@@ -129,12 +152,12 @@ export function JourneyListView({
         { shallow: true }
       )
     }
-  }, [isSharedWithMeMode, router?.query?.type])
+  }, [isSharedWithMeMode, campaignsTabHidden, router?.query?.type])
 
   // Sync state with router query params when they change externally
   useEffect(() => {
     const contentTypeFromRouter =
-      (router?.query?.type as ContentType) ?? 'journeys'
+      (router?.query?.type as ContentTab) ?? 'journeys'
     const statusFromRouter =
       (router?.query?.status as JourneyStatus) ?? 'active'
 
@@ -158,7 +181,7 @@ export function JourneyListView({
     selectedStatus
   ])
 
-  // Handle content type tab change (Journeys <-> Templates)
+  // Handle content type tab change (Journeys / Templates / Campaigns)
   const handleContentTypeChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
@@ -169,8 +192,10 @@ export function JourneyListView({
         contentTypeOptions.find((option) => option.tabIndex === newValue)
           ?.queryParam ?? contentTypeOptions[0].queryParam
 
-      // Trigger refetch event for the current status
-      setActiveEvent(getRefetchEvent(selectedStatus))
+      // Trigger refetch event for the current status — journey lists only;
+      // the campaign list has no status
+      if (contentTypeParam !== 'campaigns')
+        setActiveEvent(getRefetchEvent(selectedStatus))
 
       void router.push(
         {

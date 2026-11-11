@@ -5,6 +5,7 @@ module "stage" {
   internal_url_name            = "stage.internal"
   certificate_arn              = aws_acm_certificate.stage.arn
   datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
+  s3_gateway_endpoint          = true
 }
 
 module "route53_stage_central_jesusfilm_org" {
@@ -169,7 +170,6 @@ module "bastion" {
   security_group_ids = [module.stage.public_bastion_security_group_id, "sg-0d3fe6651aeda358e"]
 }
 
-
 module "cloudflared" {
   source             = "../../modules/aws/ec2-cloudflared"
   name               = "cloudflared"
@@ -194,36 +194,106 @@ module "datadog_aurora" {
   }]
 }
 
+# Stage peaks at 36 MB of cache and under 1% CPU over 14 days; a t4g.micro's
+# 0.5 GiB covers that with room, at a quarter of the t2.medium's price.
 module "redis" {
   source            = "../../modules/aws/elasticache"
   cluster_id        = "redis-stage"
   subnet_ids        = module.stage.vpc.internal_subnets
   env               = "stage"
+  node_type         = "cache.t4g.micro"
+  apply_immediately = true
   security_group_id = module.stage.ecs.internal_ecs_security_group_id
   cidr              = module.stage.cidr
   vpc_id            = module.stage.vpc.id
 }
 
+# The shared ClickHouse Cloud service: short-link scan events (`redirects`)
+# and Plausible's event store (`plausible_events_db`). Idles when stage is
+# quiet; only storage is billed while paused (the Plausible ALB health check
+# deliberately avoids ClickHouse so it can).
+module "clickhouse" {
+  source               = "../../modules/clickhouse/service"
+  env                  = "stage"
+  idle_scaling         = true
+  idle_timeout_minutes = 15
+  doppler_token        = data.aws_ssm_parameter.doppler_core_stage_token.value
+}
+
+# Renamed from the short-links-only days; the service itself is renamed in
+# place (jfp-short-links-stage -> jfp-clickhouse-stage), not replaced.
+moved {
+  from = module.short_links_clickhouse
+  to   = module.clickhouse
+}
+
+# Plausible Analytics on ECS (arm64 Fargate). Serves
+# analytics.stage.central.jesusfilm.org (the record below) and
+# plausible.stage.central.jesusfilm.org (the module's own record, for smoke
+# tests). Its events are in module.clickhouse above, reached by the
+# CLICKHOUSE_DATABASE_URL of the stg_ecs Doppler branch config; that config's
+# token must be in SSM before the first apply (modules/plausible/README.md,
+# "Prerequisites").
+module "plausible" {
+  source = "../../modules/plausible"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      # /login proves the container serves without touching ClickHouse.
+      # /api/health queries Postgres and ClickHouse on every probe, which
+      # kept waking the idle-scaled ClickHouse Cloud service every 10 s.
+      # /api/health stays the manual smoke test (modules/plausible/README.md).
+      # 302: until the first account exists, Plausible's FirstLaunchPlug
+      # redirects /login to /register. Still a serving container.
+      health_check_path    = "/login"
+      health_check_port    = "8000"
+      health_check_matcher = "200,302"
+    })
+  })
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_plausible_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_names       = ["analytics.stage.central.jesusfilm.org", "plausible.stage.central.jesusfilm.org"]
+}
+
+# The stage Plausible hostname, a CNAME to the stage public ALB. The record
+# predates this configuration, so allow_overwrite lets Terraform take it as it
+# is.
+resource "aws_route53_record" "plausible_analytics" {
+  zone_id         = module.route53_stage_central_jesusfilm_org.zone_id
+  name            = "analytics"
+  type            = "CNAME"
+  ttl             = 300
+  records         = [module.stage.public_alb.dns_name]
+  allow_overwrite = true
+}
+
 module "postgresql" {
-  source                  = "../../modules/aws/aurora"
-  name                    = "jfp-core"
-  env                     = "stage"
+  source                          = "../../modules/aws/aurora"
+  name                            = "jfp-core"
+  env                             = "stage"
+  engine_version                  = var.versions.aurora
+  enforce_major_upgrade_approval  = true
+  allow_major_version_upgrade     = var.allow_aurora_major_upgrade
+  db_cluster_parameter_group_name = split(".", var.versions.aurora)[0] == "13" ? "aurora-postgresql13-cluster-replication" : null
+  managed_parameter_group_family  = split(".", var.versions.aurora)[0] == "13" ? null : "aurora-postgresql${split(".", var.versions.aurora)[0]}"
+  db_parameter_group_name         = "default.aurora-postgresql${split(".", var.versions.aurora)[0]}"
+  managed_cluster_parameters = {
+    "rds.logical_replication"    = { value = "1", apply_method = "pending-reboot" }
+    "log_min_duration_statement" = { value = "5000", apply_method = "immediate" }
+    # PostgreSQL 13 uses 0; preserve the existing connection policy during the
+    # major upgrade rather than also changing application TLS requirements.
+    "rds.force_ssl" = { value = "0", apply_method = "immediate" }
+  }
+  storage_type      = "aurora-iopt1"
+  apply_immediately = true
+  serverlessv2_capacity = {
+    min_capacity = 0.5
+    max_capacity = 16
+  }
   doppler_token           = data.aws_ssm_parameter.doppler_core_stage_token.value
   doppler_project         = "core"
   subnet_group_name       = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id   = module.stage.private_rds_security_group_id
   PG_DATABASE_URL_ENV_VAR = "PRIVATE_DATABASE_URL"
 }
-
-module "eks" {
-  source             = "../../modules/aws/eks"
-  env                = "stage"
-  name               = "jfp-eks"
-  subnet_ids         = concat(module.stage.vpc.internal_subnets, module.stage.vpc.public_subnets)
-  security_group_ids = [module.stage.ecs.internal_ecs_security_group_id, module.stage.ecs.public_ecs_security_group_id]
-  vpc_id             = module.stage.vpc.id
-  subnet_ids_2a      = ["subnet-03bd7850c8bbe2ce9", "subnet-01f4e86883462b5ce"]
-  subnet_ids_2b      = ["subnet-0a609b33cdac65789", "subnet-09cbfc19be5214a8b"]
-  subnet_ids_2c      = ["subnet-062de12e3e3639eff", "subnet-0c394639d255c3261"]
-}
-

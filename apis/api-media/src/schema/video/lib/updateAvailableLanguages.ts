@@ -3,7 +3,7 @@
 // Handles both regular videos and collections
 // Used by video.ts and videoVariant.ts
 
-import { prisma } from '@core/prisma/media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { videoCacheReset } from '../../../lib/videoCacheReset'
 import {
@@ -11,6 +11,8 @@ import {
   videoOnlyScope
 } from '../../../workers/videoAlgoliaSync'
 import { logger } from '../../logger'
+
+type PrismaClientOrTx = typeof prisma | Prisma.TransactionClient
 
 // The rows every availableLanguages calculation reads, single or batched.
 const availableLanguagesSelect = {
@@ -55,9 +57,10 @@ function reduceAvailableLanguages(video: AvailableLanguagesSource): string[] {
 // Calculates what availableLanguages should be for a given video
 // Does NOT update the database - only calculates the correct value
 export async function calculateAvailableLanguages(
-  videoId: string
+  videoId: string,
+  client: PrismaClientOrTx = prisma
 ): Promise<string[]> {
-  const video = await prisma.video.findUnique({
+  const video = await client.video.findUnique({
     where: { id: videoId },
     select: availableLanguagesSelect
   })
@@ -94,6 +97,7 @@ export async function calculateAvailableLanguagesForVideos(
 interface AvailableLanguagesWriteOptions {
   skipCache?: boolean
   skipAlgolia?: boolean
+  client?: PrismaClientOrTx
 }
 
 // Writes one video's already-computed availableLanguages and runs the cache
@@ -105,8 +109,10 @@ async function applyAvailableLanguages(
   availableLanguages: string[],
   options: AvailableLanguagesWriteOptions
 ): Promise<string[]> {
+  const client = options.client ?? prisma
+
   // Update the video
-  await prisma.video.update({
+  await client.video.update({
     where: { id: videoId },
     data: {
       availableLanguages: {
@@ -137,7 +143,10 @@ export async function updateVideoAvailableLanguages(
   videoId: string,
   options: AvailableLanguagesWriteOptions = {}
 ): Promise<string[]> {
-  const availableLanguages = await calculateAvailableLanguages(videoId)
+  const availableLanguages = await calculateAvailableLanguages(
+    videoId,
+    options.client ?? prisma
+  )
 
   return applyAvailableLanguages(videoId, availableLanguages, options)
 }

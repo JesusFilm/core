@@ -1,13 +1,14 @@
 import { google } from '@ai-sdk/google'
 import { openai } from '@ai-sdk/openai'
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
+import { type LangfuseClient, type TextPromptClient } from '@langfuse/client'
+import { waitUntil } from '@vercel/functions'
 import {
   type LanguageModel,
   UIMessage,
   convertToModelMessages,
   streamText
 } from 'ai'
-import { Langfuse, TextPromptClient } from 'langfuse'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -15,8 +16,10 @@ import { getCardChatEnabled } from '../../../src/libs/getCardChatEnabled'
 import { getFlags } from '../../../src/libs/getFlags'
 import {
   APOLOGIST_PROMPT_NAME,
+  flushLangfuse,
   getActivePromptLabel,
-  getLangfuse
+  getLangfuse,
+  startChatGeneration
 } from '../../../src/libs/langfuse/client'
 import { logger } from '../../../src/libs/logger'
 
@@ -174,8 +177,8 @@ function resolveChatModel():
     apiKey
   })
   // Gateway-specific id format with `/` separators (see
-  // scripts/apologist-stream-test.sh). Overridable via env for rotation
-  // without redeploy.
+  // scripts/apologist-stream-test.sh). Model environment changes take effect
+  // after Journeys is redeployed with the updated variables.
   const modelId = process.env.APOLOGIST_MODEL_ID ?? 'openai/gpt/4o-mini'
   return {
     ok: true,
@@ -187,9 +190,27 @@ function resolveChatModel():
   }
 }
 
-export default async function handler(
+export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
+): Promise<void> {
+  const cancellation = new AbortController()
+  const handleRequestError = (error: Error): void => {
+    if (error.message === 'aborted') cancellation.abort()
+  }
+  req.on?.('error', handleRequestError)
+  const handling = handleChat(req, res, cancellation.signal).finally(() => {
+    req.off?.('error', handleRequestError)
+  })
+  // Vercel may otherwise freeze a cancelled request before telemetry finishes.
+  waitUntil(handling)
+  return handling
+}
+
+async function handleChat(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  requestSignal: AbortSignal
 ): Promise<void> {
   const startedAt = Date.now()
   const flags = await getFlags()
@@ -342,17 +363,16 @@ export default async function handler(
     return
   }
 
-  const trace = langfuse?.trace({
-    name: 'apologist-chat',
-    sessionId,
-    metadata: { journeyId, language, ipCountry, provider, modelId }
-  })
-  const generation = trace?.generation({
-    name: 'apologist-generation',
-    model: modelId,
-    input: modelMessages,
-    prompt: promptClient ?? undefined
-  })
+  const generation =
+    langfuse == null
+      ? null
+      : startChatGeneration({
+          sessionId,
+          metadata: { journeyId, language, ipCountry, provider, modelId },
+          model: modelId,
+          input: modelMessages,
+          prompt: promptClient ?? undefined
+        })
 
   let generationEnded = false
   const endGenerationIfPending = (
@@ -362,13 +382,50 @@ export default async function handler(
     generationEnded = true
     generation?.end(args)
   }
+  // Disconnect and terminal callbacks can overlap. They must await the same
+  // delivery: a second provider flush can see an empty queue while the first
+  // is still exporting this request's observations.
+  let generationFlush: Promise<void> | undefined
+  const flushGeneration = (): Promise<void> =>
+    (generationFlush ??= flushLangfuse())
+
+  const abortController = new AbortController()
+  let handleDisconnect: () => void
+  const disconnected = new Promise<void>((resolve) => {
+    handleDisconnect = () => {
+      if (res.writableFinished) return
+      endGenerationIfPending({
+        level: 'WARNING',
+        statusMessage: 'client disconnected'
+      })
+      abortController.abort()
+      if (requestSignal.aborted && !res.destroyed) res.end()
+      resolve()
+    }
+    res.once('close', handleDisconnect)
+    requestSignal.addEventListener('abort', handleDisconnect, { once: true })
+  })
 
   try {
+    // The browser may have left while prompt/model preparation was pending.
+    if (res.destroyed || requestSignal.aborted) {
+      handleDisconnect!()
+      await flushGeneration()
+      return
+    }
     const result = streamText({
       model: modelResult.resolved.model,
+      abortSignal: abortController.signal,
       instructions: system,
       messages: modelMessages,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
+      onAbort: async () => {
+        endGenerationIfPending({
+          level: 'WARNING',
+          statusMessage: 'stream aborted'
+        })
+        await flushGeneration()
+      },
       onError: async ({ error }) => {
         const err = error as Error
         logger.error(
@@ -387,9 +444,13 @@ export default async function handler(
           level: 'ERROR',
           statusMessage: err?.message ?? 'stream error'
         })
-        await langfuse?.flushAsync()
+        await flushGeneration()
       },
       onFinish: async ({ text, usage, finishReason }) => {
+        if (generationEnded) {
+          await flushGeneration()
+          return
+        }
         if (finishReason === 'error') {
           endGenerationIfPending({
             level: 'ERROR',
@@ -407,12 +468,15 @@ export default async function handler(
         } else {
           endGenerationIfPending({
             output: text,
-            usage:
+            usageDetails:
               usage != null
                 ? {
-                    input: usage.inputTokens,
-                    output: usage.outputTokens,
-                    unit: 'TOKENS'
+                    ...(usage.inputTokens != null && {
+                      input: usage.inputTokens
+                    }),
+                    ...(usage.outputTokens != null && {
+                      output: usage.outputTokens
+                    })
                   }
                 : undefined,
             level: 'DEFAULT'
@@ -432,13 +496,13 @@ export default async function handler(
             '[chat] completed'
           )
         }
-        await langfuse?.flushAsync()
+        await flushGeneration()
       }
     })
 
     // AI SDK 7 resolves once the stream has finished piping — awaited so the
     // handler stays alive until the response is fully written.
-    await result.pipeUIMessageStreamToResponse(res, {
+    const piping = result.pipeUIMessageStreamToResponse(res, {
       onError: (error) => {
         const err = error as Error
         // Pipe-step failures (write to closed socket etc.) are
@@ -459,6 +523,10 @@ export default async function handler(
         return 'stream failed'
       }
     })
+    // The SDK can wait forever for drain on a closed socket. A close must
+    // release the handler and flush ended spans even without an SDK callback.
+    await Promise.race([piping, disconnected])
+    if (abortController.signal.aborted) await flushGeneration()
   } catch (error) {
     const err = error as Error
     logger.error(
@@ -478,12 +546,15 @@ export default async function handler(
       level: 'ERROR',
       statusMessage: err?.message ?? 'sync throw'
     })
-    await langfuse?.flushAsync()
+    await flushGeneration()
     if (!res.headersSent) {
       res.status(500).json({ error: 'upstream streamText failed' })
     } else {
       res.end()
     }
+  } finally {
+    res.off('close', handleDisconnect!)
+    requestSignal.removeEventListener('abort', handleDisconnect!)
   }
 }
 
@@ -497,16 +568,14 @@ async function resolveSystemMessage({
   langfuse
 }: {
   language?: string
-  langfuse: Langfuse | null
+  langfuse: LangfuseClient | null
 }): Promise<{ system: string; promptClient: TextPromptClient | null }> {
   const fallback = buildFallbackSystemMessage({ language })
   if (langfuse == null) return { system: fallback, promptClient: null }
   try {
-    const promptClient = await langfuse.getPrompt(
-      APOLOGIST_PROMPT_NAME,
-      undefined,
-      { label: getActivePromptLabel() }
-    )
+    const promptClient = await langfuse.prompt.get(APOLOGIST_PROMPT_NAME, {
+      label: getActivePromptLabel()
+    })
     if (promptClient.type !== 'text') {
       logger.warn(
         `[langfuse] expected text prompt for ${APOLOGIST_PROMPT_NAME}, got ${promptClient.type} — using fallback`

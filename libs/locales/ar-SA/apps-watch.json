@@ -110,7 +110,7 @@
   "Unmute": "إلغاء الكتم",
   "Mute": "كتم الصوت",
   "Latest videos": "أحدث الفيديوهات",
-  "Latest videos in {{language}}": "Latest videos in {{language}}",
+  "Latest videos in {{language}}": "{{language}} хэл дээрх хамгийн сүүлийн үеийн видеонууд",
   "Latest videos in {{languages}}": "أحدث الفيديوهات في {{languages}}",
   "No catch here—try the other side of the boat.": "لا يوجد صيد هنا - جرّب الجانب الآخر من القارب.",
   "Try another search": "جرّب بحثاً آخر",

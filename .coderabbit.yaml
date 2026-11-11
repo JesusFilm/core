@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://storage.googleapis.com/coderabbit_public_assets/schema.v2.json
+# Every other CodeRabbit setting still comes from the organization / UI
+# config (inheritance); this file only adds one exclusion.
+inheritance: true
+reviews:
+  path_filters:
+    # Phoebe's shipped work-kind prompts, vendored unedited from the engine
+    # release (see phoebe.config.ts). Findings about them belong upstream in
+    # JesusFilm/phoebe, not in a per-repo fork of the prompts.
+    - '!.phoebe/prompts/**'

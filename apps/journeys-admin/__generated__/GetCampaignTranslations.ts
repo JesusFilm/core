@@ -1,0 +1,69 @@
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+import { CampaignTranslationFilter, CampaignTranslationGroup, CampaignTextField, CampaignTextSource } from "./globalTypes";
+
+// ====================================================
+// GraphQL query operation: GetCampaignTranslations
+// ====================================================
+
+export interface GetCampaignTranslations_campaignTranslations_target {
+  __typename: "CampaignTranslationTarget";
+  /**
+   * The block typename (`CampaignHeroBlock`, …), or `CampaignRegion`, `CampaignString` or `Campaign`.
+   */
+  typename: string;
+  blockId: string | null;
+  regionId: string | null;
+  stringId: string | null;
+  campaignId: string | null;
+}
+
+export interface GetCampaignTranslations_campaignTranslations {
+  __typename: "CampaignTranslation";
+  group: CampaignTranslationGroup;
+  field: CampaignTextField;
+  /**
+   * The field’s cap on this target, in characters.
+   */
+  maxLength: number;
+  /**
+   * The text in the campaign’s default language.
+   */
+  defaultValue: string;
+  /**
+   * The text in the requested language; null when missing.
+   */
+  value: string | null;
+  /**
+   * Who wrote `value`: a person (`human`) or the machine; null when missing.
+   */
+  source: CampaignTextSource | null;
+  /**
+   * The machine wrote `value` and was not sure of it: the line a person should check first. False for a person’s text, a confident machine line and a missing one.
+   */
+  needsReview: boolean;
+  target: GetCampaignTranslations_campaignTranslations_target;
+}
+
+export interface GetCampaignTranslations {
+  /**
+   * The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it (`source`) and whether the machine flagged its line as a guess (`needsReview`); the filters are `needsReview` (flagged machine lines), `edited` (a person’s) and `missing` (no entry). Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
+   * 
+   * Auth: campaign Read — any member or manager of the campaign’s team.
+   * 
+   * Errors:
+   * - NOT_FOUND: campaign does not resolve.
+   * - FORBIDDEN: caller is not in the team.
+   * - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.
+   */
+  campaignTranslations: GetCampaignTranslations_campaignTranslations[];
+}
+
+export interface GetCampaignTranslationsVariables {
+  campaignId: string;
+  languageId: string;
+  filter?: CampaignTranslationFilter | null;
+}

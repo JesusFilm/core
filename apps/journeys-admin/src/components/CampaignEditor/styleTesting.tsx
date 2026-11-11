@@ -1,0 +1,160 @@
+import { InMemoryCache } from '@apollo/client'
+import { parse } from 'graphql'
+import { ReactElement } from 'react'
+
+import {
+  GetCampaign_campaign_blocks as CampaignBlock,
+  GetCampaign_campaign_theme as CampaignTheme
+} from '../../../__generated__/GetCampaign'
+import { CampaignThemeUpdateInput } from '../../../__generated__/globalTypes'
+import {
+  CAMPAIGN_BLOCK_UPDATE_DOCUMENTS,
+  CampaignBlockUpdateInput,
+  CampaignUpdatableBlock,
+  campaignBlockUpdateOperation,
+  campaignBlockUpdateRow
+} from '../../libs/useCampaignBlockUpdateMutation'
+import { CAMPAIGN_PALETTE_UPDATE } from '../../libs/useCampaignPaletteUpdateMutation'
+import { CAMPAIGN_THEME_UPDATE } from '../../libs/useCampaignThemeUpdateMutation'
+
+import { useCampaignEditor } from './CampaignEditorProvider'
+import { campaign } from './data'
+import { SpyMock } from './testing'
+
+/**
+ * A mock for one block update through `useCampaignBlockUpdateMutation`:
+ * the block's typename's document, answered with the block's full row
+ * (its fields as `current` overrides them) with `input` applied.
+ */
+export function blockUpdateMock<B extends CampaignUpdatableBlock>(
+  block: B,
+  input: CampaignBlockUpdateInput<B['__typename']>,
+  current: Partial<B> = {}
+): SpyMock {
+  const row: B = { ...block, ...current }
+  return {
+    request: {
+      query: CAMPAIGN_BLOCK_UPDATE_DOCUMENTS[block.__typename],
+      variables: { id: block.id, input }
+    },
+    result: vi.fn(() => ({
+      data: {
+        [campaignBlockUpdateOperation(block.__typename)]:
+          campaignBlockUpdateRow(row, input) ?? row
+      }
+    }))
+  }
+}
+
+/** A mock for the Palette save `nextPalette` produces for `palette`. */
+export function paletteMock(palette: string[]): SpyMock {
+  return {
+    request: {
+      query: CAMPAIGN_PALETTE_UPDATE,
+      variables: { id: campaign.id, input: { palette } }
+    },
+    result: vi.fn(() => ({
+      data: {
+        campaignUpdate: { __typename: 'Campaign', id: campaign.id, palette }
+      }
+    }))
+  }
+}
+
+// Test-only fragments are parsed rather than tagged with gql, so codegen does
+// not generate types for them into the app's __generated__.
+const SECTION_STYLE = parse(`
+  fragment SectionStyle on CampaignSectionBlock {
+    backgroundKind
+    backgroundColor
+    headingColor
+    textColor
+    buttonColor
+    buttonTextColor
+    accentColor
+  }
+`)
+
+/** The nine shared fields of a block as the cache currently holds them (optimistic layer included). */
+export function readSectionStyle(
+  cache: InMemoryCache,
+  block: Pick<CampaignBlock, '__typename' | 'id'>
+): Record<string, unknown> | null {
+  return cache.readFragment({
+    id: `${block.__typename}:${block.id}`,
+    fragment: SECTION_STYLE,
+    optimistic: true
+  })
+}
+
+export function blockOf<T extends CampaignBlock['__typename']>(
+  id: string
+): Extract<CampaignBlock, { __typename: T }> {
+  const block = campaign.blocks.find((candidate) => candidate.id === id)
+  if (block == null) throw new Error(`no fixture block ${id}`)
+  return block as Extract<CampaignBlock, { __typename: T }>
+}
+
+interface WithBlockProps<T extends CampaignBlock['__typename']> {
+  blockId: string
+  typename: T
+  children: (block: Extract<CampaignBlock, { __typename: T }>) => ReactElement
+}
+
+/** Renders `children` over the block as the provider (and so the cache) currently holds it. */
+export function WithBlock<T extends CampaignBlock['__typename']>({
+  blockId,
+  typename,
+  children
+}: WithBlockProps<T>): ReactElement | null {
+  const { campaign: current } = useCampaignEditor()
+  const block = current.blocks.find((candidate) => candidate.id === blockId)
+  if (block == null || block.__typename !== typename) return null
+  return children(block as Extract<CampaignBlock, { __typename: T }>)
+}
+
+/** A mock for one Campaign Theme write: the theme row with `input` applied over `current`. */
+export function themeMock(
+  input: CampaignThemeUpdateInput,
+  current: Partial<CampaignTheme> = {}
+): SpyMock {
+  return {
+    request: {
+      query: CAMPAIGN_THEME_UPDATE,
+      variables: { id: campaign.theme.id, input }
+    },
+    result: vi.fn(() => ({
+      data: { campaignThemeUpdate: { ...campaign.theme, ...current, ...input } }
+    }))
+  }
+}
+
+const THEME_FIELDS = parse(`
+  fragment ThemeFields on CampaignTheme {
+    themeMode
+    headerFont
+    bodyFont
+    labelFont
+    primaryColor
+    accentColor
+    backgroundColor
+    surfaceColor
+    textColor
+    mutedColor
+    contrastBackgroundColor
+    contrastTextColor
+    radius
+    buttonRadius
+  }
+`)
+
+/** The Campaign Theme as the cache currently holds it (optimistic layer included). */
+export function readTheme(
+  cache: InMemoryCache
+): Record<string, unknown> | null {
+  return cache.readFragment({
+    id: `CampaignTheme:${campaign.theme.id}`,
+    fragment: THEME_FIELDS,
+    optimistic: true
+  })
+}

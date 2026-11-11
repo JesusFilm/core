@@ -55,6 +55,7 @@ describe('customDomainCheck', () => {
     name: 'example.com',
     apexName: 'example.com',
     journeyCollectionId: null,
+    campaignId: null,
     routeAllTeamJourneys: true,
     team: {
       id: 'teamId',

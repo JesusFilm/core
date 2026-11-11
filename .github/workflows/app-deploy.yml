@@ -11,13 +11,14 @@ concurrency:
   cancel-in-progress: true
 jobs:
   affected:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          filter: blob:none
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -25,7 +26,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'gh-runner-jfp-core-') && 'pnpm' || '' }}
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -61,7 +63,7 @@ jobs:
           - app: short-links
             github-ref-name: stage
             github-event-name: push
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     outputs:
@@ -85,7 +87,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'gh-runner-jfp-core-') && 'pnpm' || '' }}
+          package-manager-cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: vercel deployment
@@ -99,6 +102,7 @@ jobs:
           PLAYER_VERCEL_PROJECT_ID: ${{ secrets.PLAYER_VERCEL_PROJECT_ID }}
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
+          SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID }}
           RESOURCES_VERCEL_PROJECT_ID: ${{ secrets.RESOURCES_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
@@ -147,11 +151,16 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      # Only apps with a Playwright project take part in the E2E matrix; an
+      # input file for any other app makes the Playwright job fail on
+      # "Unsupported Playwright app".
       - name: Prepare E2E input file
+        if: ${{ hashFiles(format('apps/{0}-e2e/project.json', matrix.app)) != '' }}
         run: |
           mkdir -p e2e-input
           echo "${{ steps.deployment-url.outputs.deployment-url }}" > e2e-input/${{ matrix.app }}.txt
       - name: Upload E2E input artifact
+        if: ${{ hashFiles(format('apps/{0}-e2e/project.json', matrix.app)) != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: e2e-input-${{ matrix.app }}
@@ -160,7 +169,7 @@ jobs:
           overwrite: true
           retention-days: 2
   deploy-status:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     needs: [affected, deploy-preview]
     if: ${{ always() && github.event_name == 'pull_request' }}
     permissions:
@@ -222,7 +231,7 @@ jobs:
     if: ${{ needs.deploy-status.result == 'success' && needs.deploy-status.outputs.apps != '[]' && needs.deploy-status.outputs.apps != '' }}
     permissions:
       contents: read
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     strategy:
@@ -239,7 +248,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'gh-runner-jfp-core-') && 'pnpm' || '' }}
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -276,6 +286,10 @@ jobs:
         env:
           PLAYWRIGHT_BROWSER: ${{ steps.playwright-browser.outputs.name }}
         run: pnpm exec playwright install --with-deps "$PLAYWRIGHT_BROWSER"
+      - name: Install Playwright video support
+        if: steps.playwright-browser.outputs.name == 'chrome'
+        # Chrome is preinstalled on the runner, but retry videos need Playwright's ffmpeg.
+        run: pnpm exec playwright install ffmpeg
       - name: Run Playwright tests
         run: pnpm exec nx run ${{ matrix.app }}-e2e:e2e
         env:
@@ -322,7 +336,7 @@ jobs:
             github-ref-name: stage
           - app: short-links
             github-ref-name: stage
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     permissions:
       deployments: write
       contents: write
@@ -343,7 +357,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'gh-runner-jfp-core-') && 'pnpm' || '' }}
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -358,6 +373,7 @@ jobs:
           PLAYER_VERCEL_PROJECT_ID: ${{ secrets.PLAYER_VERCEL_PROJECT_ID }}
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID || secrets.SHORT_LINKS_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
+          SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID }}
           RESOURCES_VERCEL_PROJECT_ID: ${{ secrets.RESOURCES_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
