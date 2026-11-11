@@ -1,2 +1,0 @@
-320K	/tmp/claude-10001
-EXIT:0

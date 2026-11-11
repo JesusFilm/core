@@ -1,4 +1,0 @@
-Filesystem      Size  Used Avail Use% Mounted on
-tmpfs           2.0G  2.0G     0 100% /tmp
-overlay         1.9T  1.4T  463G  76% /
-EXIT:0

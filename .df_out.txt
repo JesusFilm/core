@@ -1,9 +1,0 @@
-Filesystem        Size  Used Avail Use% Mounted on
-overlay           1.9T  1.4T  463G  76% /
-tmpfs              64M     0   64M   0% /dev
-shm                64M  8.0K   64M   1% /dev/shm
-tmpfs             2.0G  2.0G     0 100% /tmp
-/dev/mapper/root  1.9T  1.4T  463G  76% /data/repo
-/dev/mapper/root  1.9T  1.4T  463G  76% /data/walkthroughs
-tmpfs             1.0M   24K 1000K   3% /tmp/mergetron-tokens
-tmpfs             4.0K     0  4.0K   0% /proc/acpi

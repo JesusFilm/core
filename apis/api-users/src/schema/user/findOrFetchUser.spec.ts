@@ -1041,6 +1041,29 @@ describe('findOrFetchUser', () => {
       expect(prismaMock.user.update).not.toHaveBeenCalled()
     })
 
+    it('should refuse to relink an already-lowercase holder when a mixed-case duplicate of the address exists', async () => {
+      mockFirebaseUser(true)
+      mockPreviousUidGone()
+      // The lookup happens to return the lowercase row first, so the
+      // holder's email already equals the normalized email. A second legacy
+      // row for the same address in a different case still exists.
+      const lowercaseHolder = {
+        ...legacyRow,
+        id: 'lowercaseRowId',
+        email: 'amin@email.com'
+      }
+      prismaMock.$queryRaw.mockResolvedValueOnce([
+        { email: lowercaseHolder.email, userId: lowercaseHolder.userId }
+      ])
+      prismaMock.user.findUnique.mockResolvedValueOnce(lowercaseHolder)
+      prismaMock.$queryRaw.mockResolvedValueOnce([{ id: 'mixedCaseRowId' }])
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        UserEmailConflictError
+      )
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+    })
+
     it('should refuse to relink the legacy row when Firebase has not verified the email', async () => {
       mockFirebaseUser(false)
       mockPreviousUidGone()

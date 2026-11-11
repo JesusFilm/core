@@ -110,19 +110,15 @@ async function relinkUserToFirebaseUid(
   if (holder.superAdmin) throw new UserEmailConflictError()
 
   const normalizedEmail = email.trim().toLowerCase()
-  if (
-    normalizedEmail !== holder.email &&
-    // The unique index on email is case-sensitive, so other rows that match
-    // this address only by case -- an already-lowercase row, or another
-    // legacy row in a different mixed case -- can coexist with this holder.
-    // Check every one of them, not just an exact match on the normalized
-    // string: normalizing would otherwise either raise a raw P2002 against
-    // an exact-lowercase row, or silently relink past a second legacy
-    // duplicate and leave it behind, un-relinked.
-    (await isEmailHeldByAnotherUser(normalizedEmail, holder.userId))
-  ) {
+  // The unique index on email is case-sensitive, so other rows that match
+  // this address only by case -- an already-lowercase row, or another legacy
+  // row in a different mixed case -- can coexist with this holder. Check for
+  // them case-insensitively and always, including when the holder's email is
+  // already normalized: the holder is just whichever of the duplicates the
+  // lookup returned first, so skipping the check would let a relink silently
+  // abandon a second account for the same address.
+  if (await isEmailHeldByAnotherUser(normalizedEmail, holder.userId))
     throw new UserEmailConflictError()
-  }
 
   await assertPreviousUidIsStale(holder.userId)
 
