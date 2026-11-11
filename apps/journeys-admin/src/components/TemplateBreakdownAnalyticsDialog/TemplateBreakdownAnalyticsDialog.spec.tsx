@@ -1,6 +1,13 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import {
@@ -76,11 +83,14 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     }
   })
 
-  const getTemplateFamilyStatsBreakdownMockWithArchived = createMock([
-    JourneyStatus.published,
-    JourneyStatus.draft,
-    JourneyStatus.archived
-  ])
+  const getTemplateFamilyStatsBreakdownMockWithArchived = {
+    ...createMock([
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]),
+    maxUsageCount: 2
+  }
 
   const getTemplateFamilyStatsBreakdownMockWithoutArchived = createMock([
     JourneyStatus.published,
@@ -516,7 +526,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         mocks={[
           createMock(statuses),
           createMock(statuses, '2025-12-01,2025-12-10'),
-          withoutArchived
+          withoutArchived,
+          createMock(statuses)
         ]}
       >
         <TemplateBreakdownAnalyticsDialog
@@ -539,5 +550,90 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     expect(
       screen.queryByRole('button', { name: 'Reset date range' })
     ).not.toBeInTheDocument()
+  })
+
+  it('fetches new all-time metrics after resetting instead of reusing cached values', async () => {
+    const user = userEvent.setup()
+    const statuses = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    const refreshedData: GetTemplateFamilyStatsBreakdown = {
+      templateFamilyStatsBreakdown:
+        mockSingleRowData.templateFamilyStatsBreakdown!.map((row) => ({
+          ...row,
+          stats: row.stats.map((stat) => ({
+            ...stat,
+            visitors: stat.visitors + 10
+          }))
+        }))
+    }
+    const link = new MockLink([
+      createMock(statuses),
+      createMock(statuses, '2025-12-01,2025-12-10'),
+      createMock(statuses, undefined, refreshedData)
+    ])
+    const request = vi.spyOn(link, 'request')
+    render(
+      <MockedProvider link={link}>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('template-breakdown-analytics-table')
+    selectRange('01-12-2025', '10-12-2025')
+    await screen.findByTestId('template-breakdown-analytics-table')
+    await user.click(screen.getByRole('button', { name: 'Reset date range' }))
+    await screen.findAllByText('110')
+    expect(request).toHaveBeenCalledTimes(3)
+    expect(request.mock.calls[2][0].variables.where).toEqual({
+      property: 'event:props:templateKey',
+      period: 'all'
+    })
+  })
+
+  it('hides analytics for partially typed sections and clears them with Reset', async () => {
+    const user = userEvent.setup()
+    const statuses = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    const link = new MockLink([createMock(statuses), createMock(statuses)])
+    const request = vi.spyOn(link, 'request')
+    render(
+      <MockedProvider link={link}>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('template-breakdown-analytics-table')
+    const from = within(screen.getAllByRole('group', { name: 'From' })[0])
+    await user.click(from.getByRole('spinbutton', { name: 'Day' }))
+    await user.keyboard('12')
+    await screen.findByText('Select a valid From and To date to view analytics')
+    expect(
+      screen.queryByTestId('template-breakdown-analytics-table')
+    ).not.toBeInTheDocument()
+    expect(request).toHaveBeenCalledTimes(1)
+    await user.click(screen.getByRole('button', { name: 'Reset date range' }))
+    await screen.findByTestId('template-breakdown-analytics-table')
+    expect(
+      screen.queryByRole('button', { name: 'Reset date range' })
+    ).not.toBeInTheDocument()
+    expect(
+      within(screen.getAllByRole('group', { name: 'From' })[0]).getByRole(
+        'spinbutton',
+        { name: 'Day' }
+      )
+    ).toHaveTextContent(/DD/i)
+    expect(request).toHaveBeenCalledTimes(2)
   })
 })

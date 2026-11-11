@@ -70,7 +70,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         type: [JourneyStatus],
         required: false,
         description:
-          'Filter results to only include the specified status. If null or empty, all statuses are returned.'
+          'Filter results to the specified statuses. If null or empty, all statuses except trashed and deleted are returned. Soft-deleted projects are always excluded.'
       })
     },
     resolve: async (

@@ -83,6 +83,11 @@ export function TemplateBreakdownAnalyticsDialog({
   const earliestDate = useMemo(() => parseISO(earliestStatsCollected), [])
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
+  const [fieldInputState, setFieldInputState] = useState({
+    hasInput: false,
+    isIncomplete: false
+  })
+  const [datePickerResetKey, setDatePickerResetKey] = useState(0)
   const [appliedDateRange, setAppliedDateRange] = useState<string | null>(null)
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
 
@@ -106,20 +111,23 @@ export function TemplateBreakdownAnalyticsDialog({
   const isDateRangeValid = getValidDateRange(startDate, endDate) != null
 
   const selectedDateRange = getValidDateRange(startDate, endDate)
-  const hasDateInput = startDate != null || endDate != null
-  const isRangeIncomplete = hasDateInput && !isDateRangeValid
+  const hasDateInput =
+    fieldInputState.hasInput || startDate != null || endDate != null
+  const isRangeIncomplete =
+    hasDateInput && (fieldInputState.isIncomplete || !isDateRangeValid)
   const isRangePending =
     selectedDateRange != null && selectedDateRange !== appliedDateRange
   useEffect(() => {
     if (
       !open ||
+      isRangeIncomplete ||
       selectedDateRange == null ||
       selectedDateRange === appliedDateRange
     )
       return
     const timer = setTimeout(() => setAppliedDateRange(selectedDateRange), 500)
     return () => clearTimeout(timer)
-  }, [open, selectedDateRange, appliedDateRange])
+  }, [open, selectedDateRange, appliedDateRange, isRangeIncomplete])
 
   const variables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
     () => ({
@@ -156,6 +164,7 @@ export function TemplateBreakdownAnalyticsDialog({
     GetTemplateFamilyStatsBreakdownVariables
   >(GET_TEMPLATE_FAMILY_STATS_BREAKDOWN, {
     variables,
+    fetchPolicy: 'network-only',
     skip: !open || isRangeIncomplete || isRangePending
   })
 
@@ -166,6 +175,8 @@ export function TemplateBreakdownAnalyticsDialog({
   }
 
   const handleClearDateRange = (): void => {
+    setFieldInputState({ hasInput: false, isIncomplete: false })
+    setDatePickerResetKey((key) => key + 1)
     setStartDate(null)
     setEndDate(null)
     setAppliedDateRange(null)
@@ -230,6 +241,8 @@ export function TemplateBreakdownAnalyticsDialog({
       <Box sx={{ px: 4, pb: 2 }}>
         <Stack direction="row" sx={{ alignItems: 'center' }}>
           <DateRangePicker
+            key={datePickerResetKey}
+            onInputStateChange={setFieldInputState}
             startDate={startDate}
             endDate={endDate}
             onStartDateChange={(date) => handleDateRangeChange(date, endDate)}
@@ -237,9 +250,7 @@ export function TemplateBreakdownAnalyticsDialog({
             minDate={earliestDate}
             maxDate={today}
           />
-          {(startDate != null ||
-            endDate != null ||
-            appliedDateRange != null) && (
+          {(hasDateInput || appliedDateRange != null) && (
             <Tooltip title={t('Reset date range')}>
               <IconButton
                 aria-label={t('Reset date range')}
