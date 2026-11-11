@@ -1,0 +1,3 @@
+# WARP registration and local config; never commit
+/data/
+/.env

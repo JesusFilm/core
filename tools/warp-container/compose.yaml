@@ -1,0 +1,56 @@
+# Cloudflare WARP (Zero Trust, Traffic-and-DNS mode) in a container, so only
+# the traffic you send to the proxy / forwarder ports goes through WARP.
+# The host's routing, nftables and systemd units are not touched.
+# See README.md. Everything is published on 127.0.0.1 only; never use 0.0.0.0.
+name: warp-prod
+
+services:
+  warp:
+    build:
+      # Upstream source, pinned to the commit that was read before building.
+      context: https://github.com/cmj2002/warp-docker.git#bf774bae06b31fe50e7b8542558dc0ea20db679f
+      args:
+        GOST_VERSION: '2.12.0'
+    image: local/warp-prod:bf774ba-gost2.12.0
+    container_name: warp-prod
+    restart: unless-stopped
+    cap_add: [NET_ADMIN]
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: 0
+      net.ipv4.conf.all.src_valid_mark: 1
+    environment:
+      WARP_SLEEP: '3'
+      # HTTP CONNECT and SOCKS5 on one port, inside the container netns.
+      GOST_ARGS: '-L :1080'
+    ports:
+      - '127.0.0.1:${WARP_PROXY_PORT:-11080}:1080' # SOCKS5 + HTTP proxy
+      - '127.0.0.1:15432:15432' # prod Postgres forwarder
+      - '127.0.0.1:15433:15433' # stage Postgres forwarder
+    volumes:
+      - ./data:/var/lib/cloudflare-warp # registration; keep out of git
+    networks:
+      warpnet:
+        ipv4_address: 172.31.250.2
+
+  pgfwd:
+    build:
+      context: .
+      dockerfile: pgfwd.Dockerfile
+    image: local/pgfwd:1
+    restart: 'no'
+    # Share the WARP container's netns, so socat dials out through WARP.
+    network_mode: 'service:warp'
+    depends_on:
+      warp:
+        condition: service_healthy
+    environment:
+      PROD_PG_ENDPOINT: ${PROD_PG_ENDPOINT:-}
+      STAGE_PG_ENDPOINT: ${STAGE_PG_ENDPOINT:-}
+
+networks:
+  warpnet:
+    ipam:
+      config:
+        - subnet: 172.31.250.0/24
