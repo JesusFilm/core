@@ -1658,6 +1658,7 @@
   "Open journey": "開啟旅程",
   "There was an error loading campaigns.": "載入廣告活動時發生錯誤。",
   "There was an error refreshing the campaign.": "刷新活動時發生錯誤。",
+  "This language has a QR code. Unlink it instead.": "此語言附有 QR 碼。請先解除連結。",
   "Remove {{language}}?": "刪除 {{language}} 嗎？",
   "Every translation into {{language}} is deleted.": "所有翻譯至 {{language}} 的內容均已被刪除。",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "目前尚無任何行銷活動。請建立一個行銷活動，以建立一個包含各區域專屬頁面的著陸頁。",
@@ -1723,6 +1724,8 @@
   "All regions label": "「所有地區」標籤",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "不接受此檔案類型。請上傳以下其中一種檔案格式：(PNG、JPG、GIF、SVG、HEIC 或 WebP)",
   "Maximum file size: 10 MB": "最大檔案大小：10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} 目前正在翻譯中。請待翻譯完成後再試一次。",
   "Unlink the journey before removing this language.": "在移除此語言之前，請先解除與該旅程的連結。",
   "Delete {{language}}?": "刪除 {{language}}？",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "此操作將永久移除該語言內容及其活動 QR 碼與分享連結。一旦連結被清理，先前已列印或分享的 QR 碼副本將不再進行轉址。",
@@ -1744,5 +1747,7 @@
   "First {{limit}} of {{count}} videos_other": "{{count}} 影片中的第一部： {{limit}}",
   "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} {{language}} 目前尚未提供這些文字的翻譯，因此無法設為預設值。",
   "Translated {{count}} strings into {{language}}_other": "將 {{count}} 中的字串翻譯為 {{language}}",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "已取消翻譯為 {{language}} 。保留 {{count}} 中的字串。"
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "已取消翻譯為 {{language}} 。保留 {{count}} 中的字串。",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} {{language}}網站上仍未提供這些文本的翻譯，因此無法設為預設選項。",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "已停止將內容翻譯為 {{language}} 。 {{count}} 中的字串已保留。"
 }
