@@ -11,9 +11,15 @@ import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { formatISO, isValid, parseISO, startOfToday } from 'date-fns'
+import {
+  formatISO,
+  isValid,
+  parseISO,
+  startOfDay,
+  startOfToday
+} from 'date-fns'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ArrowRotateLeft1Icon from '@core/shared/ui/icons/ArrowRotateLeft1'
@@ -80,6 +86,41 @@ export function TemplateBreakdownAnalyticsDialog({
   const [appliedDateRange, setAppliedDateRange] = useState<string | null>(null)
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
 
+  const getValidDateRange = (
+    from: Date | null,
+    to: Date | null
+  ): string | null => {
+    if (
+      from == null ||
+      to == null ||
+      !isValid(from) ||
+      !isValid(to) ||
+      startOfDay(from) < earliestDate ||
+      startOfDay(to) > today ||
+      startOfDay(from) > startOfDay(to)
+    )
+      return null
+    return `${formatISO(from, { representation: 'date' })},${formatISO(to, { representation: 'date' })}`
+  }
+
+  const isDateRangeValid = getValidDateRange(startDate, endDate) != null
+
+  const selectedDateRange = getValidDateRange(startDate, endDate)
+  const hasDateInput = startDate != null || endDate != null
+  const isRangeIncomplete = hasDateInput && !isDateRangeValid
+  const isRangePending =
+    selectedDateRange != null && selectedDateRange !== appliedDateRange
+  useEffect(() => {
+    if (
+      !open ||
+      selectedDateRange == null ||
+      selectedDateRange === appliedDateRange
+    )
+      return
+    const timer = setTimeout(() => setAppliedDateRange(selectedDateRange), 500)
+    return () => clearTimeout(timer)
+  }, [open, selectedDateRange, appliedDateRange])
+
   const variables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
     () => ({
       id: journeyId,
@@ -87,11 +128,7 @@ export function TemplateBreakdownAnalyticsDialog({
       where: {
         property: 'event:props:templateKey',
         period: appliedDateRange == null ? 'all' : 'custom',
-        date:
-          appliedDateRange ??
-          `${earliestStatsCollected},${formatISO(today, {
-            representation: 'date'
-          })}`
+        ...(appliedDateRange != null ? { date: appliedDateRange } : {})
       },
       events: [
         PlausibleEvent.journeyVisitors,
@@ -111,7 +148,7 @@ export function TemplateBreakdownAnalyticsDialog({
         ? [JourneyStatus.published, JourneyStatus.draft, JourneyStatus.archived]
         : [JourneyStatus.published, JourneyStatus.draft]
     }),
-    [journeyId, appliedDateRange, includeArchivedJourneys, today]
+    [journeyId, appliedDateRange, includeArchivedJourneys]
   )
 
   const { data, loading, error } = useQuery<
@@ -119,34 +156,13 @@ export function TemplateBreakdownAnalyticsDialog({
     GetTemplateFamilyStatsBreakdownVariables
   >(GET_TEMPLATE_FAMILY_STATS_BREAKDOWN, {
     variables,
-    skip: !open
+    skip: !open || isRangeIncomplete || isRangePending
   })
-
-  const getValidDateRange = (
-    from: Date | null,
-    to: Date | null
-  ): string | null => {
-    if (
-      from == null ||
-      to == null ||
-      !isValid(from) ||
-      !isValid(to) ||
-      from < earliestDate ||
-      to > today ||
-      from > to
-    )
-      return null
-    return `${formatISO(from, { representation: 'date' })},${formatISO(to, { representation: 'date' })}`
-  }
-
-  const isDateRangeValid = getValidDateRange(startDate, endDate) != null
 
   const handleDateRangeChange = (from: Date | null, to: Date | null): void => {
     setStartDate(from)
     setEndDate(to)
-    const range = getValidDateRange(from, to)
-    if (range != null || (from == null && to == null))
-      setAppliedDateRange(range)
+    if (from == null && to == null) setAppliedDateRange(null)
   }
 
   const handleClearDateRange = (): void => {
@@ -165,6 +181,7 @@ export function TemplateBreakdownAnalyticsDialog({
     <Dialog
       open={open}
       onClose={() => {
+        handleClearDateRange()
         setIncludeArchivedJourneys(true)
         handleClose()
       }}
@@ -241,7 +258,11 @@ export function TemplateBreakdownAnalyticsDialog({
           </Typography>
         )}
       </Box>
-      {loading ? (
+      {isRangeIncomplete ? (
+        <Typography variant="body1" align="center" sx={{ px: 4, py: 6 }}>
+          {t('Select a valid From and To date to view analytics')}
+        </Typography>
+      ) : loading || isRangePending ? (
         <Box
           sx={{
             display: 'flex',

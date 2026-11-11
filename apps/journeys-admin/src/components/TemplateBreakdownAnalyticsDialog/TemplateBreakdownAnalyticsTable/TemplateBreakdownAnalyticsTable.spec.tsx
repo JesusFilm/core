@@ -225,4 +225,28 @@ describe('TemplateBreakdownAnalyticsTable', () => {
     const cells = within(totalRow!).getAllByRole('columnheader')
     expect(cells.some((cell) => cell.textContent === '0')).toBe(true)
   })
+
+  it('paginates large families while totals still include every project', async () => {
+    const user = userEvent.setup()
+    const row = mockSingleRowData.templateFamilyStatsBreakdown![0]
+    const data = {
+      templateFamilyStatsBreakdown: Array.from({ length: 60 }, (_, index) => ({
+        ...row,
+        journeyId: `page-journey-${index}`,
+        journeyName: `Page Journey ${index}`,
+        stats: row.stats.map((stat) => ({ ...stat, visitors: 1 }))
+      }))
+    }
+    render(<TemplateBreakdownAnalyticsTable data={data} />)
+    expect(screen.getAllByRole('link')).toHaveLength(25)
+    expect(screen.getAllByText('60')).toHaveLength(2)
+    await user.click(screen.getByRole('button', { name: 'Next page' }))
+    expect(screen.getAllByRole('link')).toHaveLength(25)
+    expect(
+      screen.queryByRole('link', { name: 'Page Journey 0' })
+    ).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Next page' }))
+    expect(screen.getAllByRole('link')).toHaveLength(10)
+    expect(screen.getAllByText('60')).toHaveLength(2)
+  })
 })

@@ -1,6 +1,6 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import {
@@ -12,7 +12,6 @@ import {
   JourneyStatus,
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
-import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 
 import {
   GET_TEMPLATE_FAMILY_STATS_BREAKDOWN,
@@ -27,8 +26,6 @@ vi.mock('@mui/material/useMediaQuery', () => {
 describe('TemplateBreakdownAnalyticsDialog', () => {
   const mockHandleClose = vi.fn()
   const journeyId = 'test-journey-id'
-  const mockCurrentDate = '2025-12-24'
-  const expectedDate = `${earliestStatsCollected},${mockCurrentDate}`
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -41,7 +38,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
 
   const createMock = (
     status: JourneyStatus[],
-    date = expectedDate,
+    date: string | undefined = undefined,
     data: GetTemplateFamilyStatsBreakdown = mockSingleRowData
   ): MockLink.MockedResponse<
     GetTemplateFamilyStatsBreakdown,
@@ -54,8 +51,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         idType: IdType.databaseId,
         where: {
           property: 'event:props:templateKey',
-          period: date === expectedDate ? 'all' : 'custom',
-          date
+          period: date == null ? 'all' : 'custom',
+          ...(date != null ? { date } : {})
         },
         events: [
           PlausibleEvent.journeyVisitors,
@@ -155,8 +152,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
           idType: IdType.databaseId,
           where: {
             property: 'event:props:templateKey',
-            period: 'all',
-            date: expectedDate
+            period: 'all'
           },
           events: [
             PlausibleEvent.journeyVisitors,
@@ -206,8 +202,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
           idType: IdType.databaseId,
           where: {
             property: 'event:props:templateKey',
-            period: 'all',
-            date: expectedDate
+            period: 'all'
           },
           events: [
             PlausibleEvent.journeyVisitors,
@@ -345,8 +340,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       target: { value: '01-12-2025' }
     })
     expect(
-      screen.getByTestId('template-breakdown-analytics-table')
-    ).toBeInTheDocument()
+      screen.queryByTestId('template-breakdown-analytics-table')
+    ).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Reset date range' }))
     expect(
       screen.queryByRole('button', { name: 'Reset date range' })
@@ -404,11 +399,11 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     await screen.findByTestId('template-breakdown-analytics-table')
     selectRange(start, end)
     expect(
-      screen.queryByRole('button', { name: 'Apply' })
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByTestId('template-breakdown-analytics-table')
+      screen.getByText('Select a valid From and To date to view analytics')
     ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('template-breakdown-analytics-table')
+    ).not.toBeInTheDocument()
   })
 
   it('keeps project rows and zero totals visible when there is no activity', async () => {
@@ -428,7 +423,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
               JourneyStatus.draft,
               JourneyStatus.archived
             ],
-            expectedDate,
+            undefined,
             zeroData
           )
         ]}
@@ -446,5 +441,103 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     expect(
       screen.queryByTestId('template-breakdown-analytics-table')
     ).toBeInTheDocument()
+  })
+
+  it('debounces edits and cancels pending requests when a range becomes incomplete', async () => {
+    const status = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    const link = new MockLink([
+      createMock(status),
+      createMock(status, '2025-12-01,2025-12-12')
+    ])
+    const request = vi.spyOn(link, 'request')
+    render(
+      <MockedProvider link={link}>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('template-breakdown-analytics-table')
+    selectRange('01-12-2025', '10-12-2025')
+    fireEvent.change(screen.getByLabelText('To', { selector: 'input' }), {
+      target: { value: '11-12-2025' }
+    })
+    fireEvent.change(screen.getByLabelText('To', { selector: 'input' }), {
+      target: { value: '12-12-2025' }
+    })
+    expect(request).toHaveBeenCalledTimes(1)
+    expect(
+      screen.queryByTestId('template-breakdown-analytics-table')
+    ).not.toBeInTheDocument()
+    await screen.findByTestId('template-breakdown-analytics-table')
+    expect(request).toHaveBeenCalledTimes(2)
+    expect(request.mock.calls[1][0].variables.where.date).toBe(
+      '2025-12-01,2025-12-12'
+    )
+    fireEvent.change(screen.getByLabelText('To', { selector: 'input' }), {
+      target: { value: '13-12-2025' }
+    })
+    fireEvent.change(screen.getByLabelText('To', { selector: 'input' }), {
+      target: { value: '' }
+    })
+    expect(
+      screen.queryByTestId('template-breakdown-analytics-table')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Select a valid From and To date to view analytics')
+    ).toBeInTheDocument()
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 550))
+    })
+    expect(request).toHaveBeenCalledTimes(2)
+  })
+
+  it('resets the dates and archived filter together when the dialog closes', async () => {
+    const user = userEvent.setup()
+    const statuses = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    const withoutArchived = createMock(
+      [JourneyStatus.published, JourneyStatus.draft],
+      '2025-12-01,2025-12-10'
+    )
+    const result = vi.fn(() => ({ data: mockSingleRowData }))
+    withoutArchived.result = result
+    render(
+      <MockedProvider
+        mocks={[
+          createMock(statuses),
+          createMock(statuses, '2025-12-01,2025-12-10'),
+          withoutArchived
+        ]}
+      >
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    await screen.findByTestId('template-breakdown-analytics-table')
+    selectRange('01-12-2025', '10-12-2025')
+    await screen.findByTestId('template-breakdown-analytics-table')
+    await user.click(screen.getByRole('switch'))
+    await waitFor(() => expect(result).toHaveBeenCalledOnce())
+    await user.click(screen.getByTestId('dialog-close-button'))
+    expect(mockHandleClose).toHaveBeenCalledOnce()
+    expect(screen.getByRole('switch')).toBeChecked()
+    expect(screen.getByLabelText('From', { selector: 'input' })).toHaveValue('')
+    expect(screen.getByLabelText('To', { selector: 'input' })).toHaveValue('')
+    expect(
+      screen.queryByRole('button', { name: 'Reset date range' })
+    ).not.toBeInTheDocument()
   })
 })

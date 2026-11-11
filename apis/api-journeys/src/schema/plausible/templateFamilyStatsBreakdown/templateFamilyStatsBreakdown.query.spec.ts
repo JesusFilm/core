@@ -8,8 +8,7 @@ import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { ability } from '../../../lib/auth/ability'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
-
-import { JourneyWithAcl } from './templateFamilyStatsBreakdown.query'
+import { Journey as JourneyWithAcl } from '../../journey/journey.acl'
 
 vi.mock('axios')
 vi.mock('@core/yoga/firebaseClient', () => ({
@@ -92,6 +91,7 @@ describe('templateFamilyStatsBreakdown', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.setSystemTime(new Date('2025-12-24T12:00:00.000Z'))
     process.env = {
       ...originalEnv,
       PLAUSIBLE_URL: 'https://plausible.example',
@@ -118,6 +118,10 @@ describe('templateFamilyStatsBreakdown', () => {
       }
     })
     mockIsAxiosError.mockReturnValue(false)
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   afterAll(() => {
@@ -241,7 +245,15 @@ describe('templateFamilyStatsBreakdown', () => {
     prismaMock.journey.findUnique.mockResolvedValue(
       templateJourney as unknown as JourneyWithAcl
     )
-    prismaMock.journey.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([
+      {
+        id: 'journey-1',
+        title: 'Child',
+        status: 'published',
+        team: { title: 'Team', userTeams: [] },
+        userJourneys: []
+      }
+    ] as unknown as JourneyWithAcl[])
     ;(prismaMock.journeyVisitor.groupBy as any).mockResolvedValue([])
 
     // Both breakdown calls return a short first page, so each makes one request.
@@ -624,6 +636,10 @@ describe('templateFamilyStatsBreakdown', () => {
       userJourneys: [],
       team: { userTeams: [] }
     } as unknown as JourneyWithAcl)
+    prismaMock.journey.findMany.mockResolvedValue([
+      { id: 'journey-1', team: { userTeams: [] }, userJourneys: [] }
+    ] as unknown as JourneyWithAcl[])
+    vi.mocked(prismaMock.journeyVisitor.groupBy).mockResolvedValue([])
     mockIsAxiosError.mockReturnValueOnce(true)
     mockAxios.get.mockRejectedValueOnce({
       response: { data: { error: 'Invalid property' } }
@@ -739,9 +755,7 @@ describe('templateFamilyStatsBreakdown', () => {
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          id: {
-            in: ['template-journey-id', 'journey-1', 'journey-2', 'journey-3']
-          },
+          fromTemplateId: 'template-journey-id',
           status: { in: ['published', 'draft'] }
         })
       })
@@ -783,7 +797,6 @@ describe('templateFamilyStatsBreakdown', () => {
 
     // First `findMany`: child journeys from template (id-only)
     prismaMock.journey.findMany
-      .mockResolvedValueOnce([{ id: 'journey-1' }] as any)
       // Second `findMany`: fetch journeys with ACL data
       .mockResolvedValueOnce([
         {
@@ -852,20 +865,16 @@ describe('templateFamilyStatsBreakdown', () => {
       userJourneys: [],
       team: { userTeams: [] }
     } as unknown as JourneyWithAcl)
-    const journeys = ['template-journey-id', 'journey-1', 'journey-2'].map(
-      (id) => ({
-        id,
-        slug: id,
-        title: id,
-        status: 'published',
-        userJourneys: [],
-        teamId: 'team-1',
-        team: { title: 'Team One', userTeams: [] }
-      })
-    ) as unknown as JourneyWithAcl[]
-    prismaMock.journey.findMany
-      .mockResolvedValueOnce(journeys.slice(1))
-      .mockResolvedValueOnce(journeys)
+    const journeys = ['journey-1', 'journey-2'].map((id) => ({
+      id,
+      slug: id,
+      title: id,
+      status: 'published',
+      userJourneys: [],
+      teamId: 'team-1',
+      team: { title: 'Team One', userTeams: [] }
+    })) as unknown as JourneyWithAcl[]
+    prismaMock.journey.findMany.mockResolvedValueOnce(journeys)
     vi.mocked(prismaMock.journeyVisitor.groupBy).mockResolvedValue([])
     mockAxios.get.mockResolvedValue({ data: { results: [] } })
 
@@ -897,7 +906,7 @@ describe('templateFamilyStatsBreakdown', () => {
     expect(prismaMock.journey.findMany).toHaveBeenLastCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          id: { in: ['template-journey-id', 'journey-1', 'journey-2'] },
+          fromTemplateId: 'template-journey-id',
           deletedAt: null
         })
       })
@@ -965,7 +974,8 @@ describe('templateFamilyStatsBreakdown', () => {
   it('preserves all historical responses after reset while keeping explicit dates for Plausible', async () => {
     prismaMock.journey.findUnique.mockResolvedValue({
       id: 'template-id',
-      deletedAt: null
+      deletedAt: null,
+      createdAt: new Date('2024-06-01T00:00:00.000Z')
     } as JourneyWithAcl)
     const journey = {
       id: 'child-id',
@@ -1018,5 +1028,56 @@ describe('templateFamilyStatsBreakdown', () => {
         date: '2024-06-01,2025-12-24'
       })
     }
+  })
+
+  it('returns no data and skips analytics when the template has no children', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'template-id',
+      createdAt: new Date('2024-06-01')
+    } as JourneyWithAcl)
+    prismaMock.journey.findMany.mockResolvedValue([])
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-id',
+        where: { property: 'event:props:templateKey', period: 'all' }
+      }
+    })
+    expect(result).toMatchObject({ data: { templateFamilyStatsBreakdown: [] } })
+    expect(prismaMock.journey.findMany).toHaveBeenCalledOnce()
+    expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ fromTemplateId: 'template-id' })
+      })
+    )
+    expect(mockAxios.get).not.toHaveBeenCalled()
+    expect(prismaMock.journeyVisitor.groupBy).not.toHaveBeenCalled()
+  })
+
+  it('rejects invalid custom dates before providers, even without response metrics or children', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'template-id'
+    } as JourneyWithAcl)
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-id',
+        events: ['journeyVisitors'],
+        where: {
+          property: 'event:props:templateKey',
+          period: 'custom',
+          date: '2025-03-02,2025-03-01'
+        }
+      }
+    })
+    expect(result).toMatchObject({
+      errors: [
+        expect.objectContaining({
+          extensions: expect.objectContaining({ code: 'BAD_USER_INPUT' })
+        })
+      ]
+    })
+    expect(mockAxios.get).not.toHaveBeenCalled()
+    expect(prismaMock.journey.findMany).not.toHaveBeenCalled()
   })
 })
