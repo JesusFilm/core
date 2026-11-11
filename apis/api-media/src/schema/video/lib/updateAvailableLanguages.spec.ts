@@ -149,7 +149,7 @@ describe('removeLanguageFromVideoIfUnused', () => {
     vi.clearAllMocks()
     prismaMock.$transaction.mockImplementation(
       (async (callback: (tx: typeof prismaMock) => Promise<unknown>) =>
-        await callback(prismaMock)) as never
+        await callback(prismaMock))
     )
     prismaMock.video.update.mockResolvedValue({} as Video)
   })
