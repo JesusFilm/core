@@ -110,14 +110,17 @@ async function relinkUserToFirebaseUid(
 
   const normalizedEmail = email.trim().toLowerCase()
   if (normalizedEmail !== holder.email) {
-    // The unique index on email is case-sensitive, so a lowercase row can
-    // already coexist with this mixed-case holder. Normalizing the
-    // holder's email would collide with it and raise a raw P2002 instead
-    // of the typed conflict error below.
-    const lowercaseCollision = await prisma.user.findUnique({
-      where: { email: normalizedEmail }
-    })
-    if (lowercaseCollision != null) throw new UserEmailConflictError()
+    // The unique index on email is case-sensitive, so other rows that match
+    // this address only by case -- an already-lowercase row, or another
+    // legacy row in a different mixed case -- can coexist with this holder.
+    // Check every one of them case-insensitively, not just an exact match on
+    // the normalized string: normalizing would otherwise either raise a raw
+    // P2002 against an exact-lowercase row, or silently relink past a second
+    // legacy duplicate and leave it behind, un-relinked.
+    const otherHolders = await prisma.$queryRaw<
+      Array<{ id: string }>
+    >`SELECT id FROM "User" WHERE LOWER(email) = LOWER(${normalizedEmail}) AND id != ${holder.id} LIMIT 1`
+    if (otherHolders.length > 0) throw new UserEmailConflictError()
   }
 
   await assertPreviousUidIsStale(holder.userId)

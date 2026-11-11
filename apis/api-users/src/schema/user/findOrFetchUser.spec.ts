@@ -845,7 +845,11 @@ describe('findOrFetchUser', () => {
     it('should relink the legacy row instead of creating a duplicate', async () => {
       mockFirebaseUser(true)
       mockPreviousUidGone()
-      prismaMock.$queryRaw.mockResolvedValueOnce([{ email: legacyRow.email }])
+      // First $queryRaw call is the initial case-insensitive lookup; second
+      // is the relink's own other-holders check, which finds none.
+      prismaMock.$queryRaw
+        .mockResolvedValueOnce([{ email: legacyRow.email }])
+        .mockResolvedValueOnce([])
       // The relink's own holder read (by legacyEmail) is the second overall
       // findUnique call; the first is the beforeEach's existingUser lookup.
       prismaMock.user.findUnique.mockResolvedValueOnce(legacyRow)
@@ -881,18 +885,32 @@ describe('findOrFetchUser', () => {
 
     it('should refuse to relink when a lowercase row already holds the normalized email', async () => {
       mockFirebaseUser(true)
-      prismaMock.$queryRaw.mockResolvedValueOnce([{ email: legacyRow.email }])
-      const lowercaseHolder = {
-        ...legacyRow,
-        id: 'otherRowId',
-        userId: 'otherUid',
-        email: 'amin@email.com'
-      }
+      // First $queryRaw call is the initial case-insensitive lookup; second
+      // is the other-holders check inside the relink itself, which finds the
+      // exact-lowercase row.
+      prismaMock.$queryRaw
+        .mockResolvedValueOnce([{ email: legacyRow.email }])
+        .mockResolvedValueOnce([{ id: 'otherRowId' }])
       // Second call (beyond the beforeEach's existingUser lookup) is the
-      // relink's own holder read; third is the lowercase-collision check.
-      prismaMock.user.findUnique
-        .mockResolvedValueOnce(legacyRow)
-        .mockResolvedValueOnce(lowercaseHolder)
+      // relink's own holder read.
+      prismaMock.user.findUnique.mockResolvedValueOnce(legacyRow)
+
+      await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
+        UserEmailConflictError
+      )
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+    })
+
+    it('should refuse to relink when a second, differently-cased legacy row also matches', async () => {
+      // Two pre-existing legacy rows, 'Amin@Email.com' and 'AMIN@EMAIL.COM',
+      // can coexist because the unique index on email is case-sensitive.
+      // Whichever one the initial LIMIT 1 lookup happens to return must not
+      // be relinked while the other, un-related duplicate is left behind.
+      mockFirebaseUser(true)
+      prismaMock.$queryRaw
+        .mockResolvedValueOnce([{ email: legacyRow.email }])
+        .mockResolvedValueOnce([{ id: 'otherLegacyRowId' }])
+      prismaMock.user.findUnique.mockResolvedValueOnce(legacyRow)
 
       await expect(findOrFetchUser({}, newUid, undefined)).rejects.toThrow(
         UserEmailConflictError
