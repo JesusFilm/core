@@ -16,8 +16,8 @@ import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import {
-  removeLanguageFromVideoIfUnused,
-  updateParentCollectionLanguages
+  updateParentCollectionLanguages,
+  updateVideoAvailableLanguages
 } from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
@@ -340,44 +340,28 @@ async function checkAndRemoveEmptyParentVariant(
   // Other published children still carry this language: the parent keeps it.
   if (publishedChildVariantsCount > 0) return
 
-  // No published child variants remain in this language and the parent has an
-  // empty placeholder: remove it and the language in a single transaction.
+  // No published child variants remain in this language. A parent with an
+  // empty placeholder loses it; a parent without one (a featureFilm never has
+  // one) still lists the language only because of its segments, so it must
+  // come off too, or Arclight and Algolia keep advertising a language with
+  // nothing behind it.
   if (parentVariant) {
-    const updatedLanguages = parentVideo.availableLanguages.filter(
-      (lang) => lang !== languageId
-    )
-
-    await prisma.$transaction(async (tx) => {
-      await tx.videoVariant.delete({
-        where: { id: parentVariant.id }
-      })
-
-      await tx.video.update({
-        where: { id: parentVideoId },
-        data: { availableLanguages: updatedLanguages }
-      })
-    })
+    await prisma.videoVariant.delete({ where: { id: parentVariant.id } })
+  } else if (!parentVideo.availableLanguages.includes(languageId)) {
     return
   }
 
-  // No placeholder to delete -- a featureFilm never has one -- but the
-  // language was listed on the parent only because of its segments, so it
-  // must still come off, or Arclight and Algolia keep advertising a language
-  // with nothing behind it. removeLanguageFromVideoIfUnused leaves the
-  // language in place when the parent has a published Variant of its own in
-  // it (a dubbed film is playable without any segment).
-  if (!parentVideo.availableLanguages.includes(languageId)) return
-
-  await removeLanguageFromVideoIfUnused(parentVideoId, languageId)
-  // The featureFilm's own containers (e.g. a collection above it) computed
-  // their availableLanguages from this featureFilm's old value, so they need
-  // the same recalculation syncParentLanguage does for the add path.
+  // Recompute rather than write back a filtered copy of the array read above:
+  // that snapshot is stale by the time it is written, so a concurrent
+  // addLanguageToVideo would be silently overwritten. The recompute reads the
+  // current state and keeps the language when the parent has a published
+  // Variant of its own in it (a dubbed film is playable without any
+  // segment), and it also resets the parent's cache and Algolia record.
+  await updateVideoAvailableLanguages(parentVideoId)
+  // Containers above this parent (e.g. a collection holding a film) computed
+  // their availableLanguages from its old value, so recalculate them too --
+  // the same cascade syncParentLanguage does on the add path.
   await updateParentCollectionLanguages(parentVideoId)
-  try {
-    await videoCacheReset(parentVideoId)
-  } catch (error) {
-    logger.error({ error, parentVideoId }, 'Parent video cache reset failed')
-  }
 }
 
 export const VideoVariant = builder.prismaObject('VideoVariant', {
