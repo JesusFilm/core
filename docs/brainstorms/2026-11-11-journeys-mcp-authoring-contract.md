@@ -1,5 +1,7 @@
 # Journeys MCP authoring commands and creator review
 
+> Historical proposal. The [12 November update-only contract](./2026-11-12-journeys-mcp-update-contract.md), [editor inventory](./2026-11-12-journeys-mcp-editor-inventory.md) and [updated review](./2026-11-12-journeys-mcp-update-review.html) supersede this document's creation/adoption scope, narrow command set and old client/retention assumptions. Keep this note for its original source investigation.
+
 Date: 2026-11-11. Status: proposal ready for creator review, not an accepted design or a working MCP service.
 
 Question: can a creator make a complete draft and deliberately edit an existing draft using a small command set, without the agent reproducing Admin's GraphQL choreography?

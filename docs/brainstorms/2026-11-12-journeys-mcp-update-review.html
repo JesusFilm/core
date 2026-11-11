@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journeys MCP update workflow review</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; color: #17243a; background: #f4f6fa; }
+    body { max-width: 1120px; margin: 32px auto; padding: 0 24px 48px; }
+    h1 { font-size: 30px; margin-bottom: 8px; } h2 { font-size: 19px; }
+    p, li { line-height: 1.6; } .muted { color: #5c687a; }
+    section { background: white; border: 1px solid #dae1ed; border-radius: 10px; padding: 20px; margin-top: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 18px; }
+    dt { font-size: 12px; color: #526176; margin-top: 12px; } dd { margin: 4px 0; overflow-wrap: anywhere; }
+    button { font: inherit; color: #224f98; background: white; border: 1px solid #b3c4df; border-radius: 6px; padding: 9px 12px; margin: 4px; cursor: pointer; }
+    button:hover, button[aria-selected=true] { background: #e9f0ff; border-color: #315fa3; }
+    button:disabled { opacity: .45; cursor: default; }
+    .message { border-left: 4px solid #315fa3; background: #edf3ff; padding: 14px; line-height: 1.5; }
+    .step { padding: 12px 0; border-top: 1px solid #e1e6ee; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; max-height: 320px; overflow: auto; }
+    a { color: #224f98; } code { font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Update a draft, keep control</h1>
+  <p>This throwaway review asks whether the agreed workflow is understandable when edits conflict, a response is lost, an upload moves to Admin, or access changes. It starts with an existing journey. Each saved batch is one undo step; media attachment is a separate save.</p>
+  <p class="muted">Everything is synthetic and in memory. This is neither the MCP service nor a security test. The reviewer can see full model state even when the simulated agent is denied. It illustrates selected cases, not the complete editor operation inventory. No network calls, files, accounts or journey data are used. The demo does not simulate provider uncertainty, distributed locking, exact retention cleanup or the full upload quota.</p>
+  <section aria-live="polite"><h2>Current state</h2><div id="message" class="message"></div><div id="state" class="grid"></div><h2>Journey content</h2><div id="journey"></div></section>
+  <section><h2>Try an action</h2><div id="actions"></div></section>
+  <section><h2>Guided walkthroughs</h2><div id="tabs" role="tablist" aria-label="Walkthroughs"></div><p id="description"></p><div id="walkthrough"></div></section>
+  <section><h2>Last simulated tool outcome</h2><pre id="result"></pre><p class="muted">A committed historical receipt does not say the journey is still at that revision. A browser upload link never authorizes the person holding it.</p></section>
+<script>
+const ReviewModel = (() => {
+  const copy = value => JSON.parse(JSON.stringify(value));
+  const initial = () => ({
+    clock: 0, consentUntil: 10080, connection: 'active', granted: true, mode: 'edit', rights: true,
+    browserUser: 'owner', journey: { revision: 1, status: 'draft', heading: 'Welcome', note: 'Keep this human note', yes: 'video', no: 'end', videoPresent: true, asset: null, host: 'Original Host' },
+    readRevision: null, stack: [], cursor: 0, receipts: {}, sequence: 0, pending: null, withdrawal: null, job: null,
+    message: 'Start by reading the existing draft. The poll already routes Yes to Video and No to End.', result: null
+  });
+  const mayRead = s => s.connection === 'active' && s.clock < s.consentUntil && s.granted && s.rights;
+  const mayEdit = s => mayRead(s) && s.mode === 'edit' && s.journey.status === 'draft';
+  const show = (s, message, result = null) => { s.message = message; s.result = result; return s; };
+  const deny = (s, message = 'Current permissions, grant or consent do not allow this action.') => show(s, message, { code: 'ACCESS_DENIED_OR_NOT_FOUND' });
+  const finishWithdrawal = s => {
+    if (!s.withdrawal || s.pending) return;
+    if (s.withdrawal === 'disconnect') { s.stack = []; s.cursor = 0; s.connection = 'disconnected'; }
+    s.withdrawal = null;
+  };
+  const save = (s, patch, key, expected, accepted = false) => {
+    if (!accepted && !mayEdit(s)) return deny(s);
+    if (s.journey.status !== 'draft') return show(s, 'Published journeys cannot be changed through MCP.', { code: 'NOT_A_DRAFT' });
+    const fingerprint = JSON.stringify({ patch, expected });
+    const known = s.receipts[key];
+    if (known) {
+      if (known.fingerprint !== fingerprint) return show(s, 'That key belongs to a different request.', { code: 'IDEMPOTENCY_KEY_REUSED' });
+      return show(s, 'Recovered the original saved batch. No extra edit or undo entry.', { ...known.result, outcome: 'replayed' });
+    }
+    if (expected !== s.journey.revision) return show(s, 'The draft changed after the read. Nothing was saved. Read again before applying the intended change.', { code: 'REVISION_CONFLICT', currentRevision: s.journey.revision });
+    const before = Object.fromEntries(Object.keys(patch).map(k => [k, s.journey[k]]));
+    Object.assign(s.journey, patch); s.journey.revision++;
+    s.stack = s.stack.slice(0, s.cursor); s.stack.push({ before, after: copy(patch), label: Object.keys(patch).join(', ') });
+    if (s.stack.length > 5) s.stack.shift();
+    s.cursor = s.stack.length;
+    const result = { outcome: 'committed', operationId: key, committedRevision: s.journey.revision, changes: Object.keys(patch), undoSteps: 1 };
+    s.receipts[key] = { fingerprint, result };
+    const readable = mayRead(s);
+    finishWithdrawal(s);
+    return show(s, readable ? 'Saved one complete batch. Unchanged fields and routes remain.' : 'The already-accepted save settled. Current authority prevents releasing its private receipt.', readable ? result : { code: 'AUTHORIZATION_REQUIRED', committedDetailsWithheld: true });
+  };
+  const history = (s, redo) => {
+    if (!mayEdit(s)) return deny(s);
+    const i = redo ? s.cursor : s.cursor - 1;
+    const entry = s.stack[i];
+    if (!entry) return show(s, redo ? 'There is nothing to redo.' : 'There is nothing to undo.');
+    const check = redo ? entry.before : entry.after;
+    if (Object.keys(check).some(k => JSON.stringify(s.journey[k]) !== JSON.stringify(check[k]))) return show(s, 'A later change affects these same fields. History cannot overwrite it.', { code: 'HISTORY_CONFLICT' });
+    Object.assign(s.journey, redo ? entry.after : entry.before); s.journey.revision++; s.cursor += redo ? 1 : -1;
+    return show(s, redo ? 'Redid one saved batch, preserving unrelated changes.' : 'Undid one saved batch, preserving unrelated changes.', { outcome: 'committed', committedRevision: s.journey.revision, direction: redo ? 'redo' : 'undo' });
+  };
+  const reduce = (previous, action) => {
+    if (action === 'reset') return initial();
+    const s = copy(previous);
+    const nextKey = () => `edit-${++s.sequence}`;
+    switch (action) {
+      case 'read':
+        if (!mayRead(s)) return deny(s);
+        s.readRevision = s.journey.revision;
+        return show(s, 'Read the current authorized draft and its stable IDs.', { revision: s.readRevision, yes: s.journey.yes, no: s.journey.no });
+      case 'edit': return save(s, { heading: 'Hope starts here', yes: 'video' }, nextKey(), s.readRevision);
+      case 'otherEdit': return save(s, { heading: 'A fresh start' }, nextKey(), s.readRevision);
+      case 'lost': {
+        const expected = s.readRevision;
+        const out = save(s, { heading: 'A saved response was lost' }, 'lost-response', expected);
+        if (out.result?.outcome === 'committed') { out.lostExpected = expected; return show(out, 'The save committed, but the client lost the response. Its result is uncertain until checked.', { code: 'TRANSPORT_INTERRUPTED', operationKey: 'lost-response' }); }
+        return out;
+      }
+      case 'replay': return save(s, { heading: 'A saved response was lost' }, 'lost-response', s.lostExpected);
+      case 'humanNote': s.journey.note = 'Human updated the unrelated note'; s.journey.revision++; return show(s, 'Admin changed an unrelated note and advanced the shared revision.');
+      case 'humanHeading': s.journey.heading = 'A newer human heading'; s.journey.revision++; return show(s, 'Admin changed the same heading. Unsafe undo must now fail.');
+      case 'humanHost': s.journey.host = 'New human Host'; s.journey.revision++; return show(s, 'Admin changed the Host. MCP edits/history must preserve it.');
+      case 'deleteVideo': return save(s, { videoPresent: false, asset: null }, nextKey(), s.readRevision).result?.outcome === 'committed' ? show(s, 'Deleted the Video Step. Yes still points to its deleted ID. Report the affected route; do not repair it implicitly.', { outcome: 'committed', warning: 'ROUTE_TARGET_DELETED', affected: ['poll.yes'], committedRevision: s.journey.revision }) : s;
+      case 'repair': return save(s, { yes: 'end' }, nextKey(), s.readRevision);
+      case 'undo': return history(s, false);
+      case 'redo': return history(s, true);
+      case 'startUpload':
+        if (!mayEdit(s)) return deny(s);
+        if (s.job) return show(s, 'Recovered the same upload job. Its slot and deadline did not reset.', { jobId: s.job.id, state: s.job.state, deadlineMinute: s.job.deadline });
+        s.job = { id: 'media-job-1', state: 'waiting_for_file', deadline: s.clock + 60, user: 'owner', file: null };
+        return show(s, 'One upload slot reserved. The Admin link continues this same job.', { jobId: s.job.id, state: s.job.state, handoff: '/mcp/uploads/media-job-1', deadlineMinute: s.job.deadline });
+      case 'differentUser': s.browserUser = s.browserUser === 'owner' ? 'other' : 'owner'; return show(s, `The upload page is now signed in as ${s.browserUser === 'owner' ? 'the connection owner' : 'a different team member'}.`);
+      case 'openUpload':
+        if (!s.job || s.browserUser !== s.job.user || !mayEdit(s)) return deny(s, 'The page requires the job owner and the originating active edit grant. The link alone grants nothing.');
+        return show(s, `Opened the same job. ${Math.max(0, s.job.deadline - s.clock)} minutes remain before its original deadline.`, { jobId: s.job.id, state: s.job.state, deadlineMinute: s.job.deadline });
+      case 'upload':
+        if (!s.job || s.browserUser !== s.job.user || !mayEdit(s)) return deny(s);
+        if (s.clock >= s.job.deadline) { s.job.state = 'transfer_expired'; return show(s, 'The original one-hour transfer window expired. This attempt cannot restart.', { code: 'UPLOAD_EXPIRED' }); }
+        if (s.job.state !== 'waiting_for_file') return show(s, 'This job already accepted its one file or has ended. No second allocation.');
+        s.job.file = 'synthetic-video'; s.job.state = 'transfer_complete';
+        return show(s, 'Transfer completed through the Admin fallback. Provider processing and attachment are still separate.', { jobId: s.job.id, state: s.job.state });
+      case 'dispatch':
+        if (!s.job || !mayEdit(s)) return deny(s);
+        if (s.job.state !== 'transfer_complete') return show(s, 'A completed transfer is required before provider dispatch.');
+        s.job.state = 'processing'; return show(s, 'A fresh final check allowed provider dispatch. No journey attachment exists yet.');
+      case 'ready':
+        if (s.job?.state !== 'processing') return show(s, 'There is no dispatched job to complete.');
+        s.job.state = 'ready'; return show(s, 'Provider processing finished. The successful asset remains in the library. It is not attached automatically.');
+      case 'jobStatus':
+        if (!s.job || !mayRead(s)) return deny(s);
+        return show(s, 'Recovered the same authorized job status.', { jobId: s.job.id, state: s.job.state, assetId: s.job.state === 'ready' ? 'asset-1' : null });
+      case 'attach':
+        if (s.job?.state !== 'ready') return show(s, 'Wait for a ready asset before requesting attachment.', { code: 'MEDIA_NOT_READY' });
+        if (!s.journey.videoPresent) return show(s, 'The target Step was deleted. Clarify the destination instead of attaching somewhere else.', { code: 'INVALID_TARGET' });
+        return save(s, { asset: 'asset-1' }, nextKey(), s.readRevision);
+      case 'advance': s.clock += 61; return show(s, 'Advanced the review clock by 61 minutes. Neither consent nor upload deadlines slide.');
+      case 'expire': s.consentUntil = s.clock; return show(s, 'Consent reached its deadline. No new final authorization may succeed. An already-accepted bounded action can still settle.');
+      case 'renew':
+        if (s.connection !== 'active' || s.withdrawal) return show(s, 'A disconnected or withdrawing connection cannot be revived by renewal.');
+        s.consentUntil = s.clock + 10080; return show(s, 'Explicit owner renewal starts a new one-week period. Eligible history remains; no job restarts.');
+      case 'remove': if (s.connection !== 'active') return show(s, 'This connection is already withdrawing or disconnected.'); s.granted = false; s.withdrawal = 'remove'; finishWithdrawal(s); return show(s, s.withdrawal ? 'Journey access closed. Withdrawal is Pending while the accepted action settles.' : 'Removed journey access. Its history remains retained but inaccessible.');
+      case 'restore':
+        if (s.connection !== 'active' || s.withdrawal) return show(s, 'Finish withdrawal first. A disconnected connection is not restorable.');
+        s.granted = true; return show(s, 'The owner explicitly re-added the journey. Only eligible retained history returns under current rights.');
+      case 'view': if (s.connection !== 'active' || s.withdrawal) return show(s, 'Finish the pending connection change first.'); s.mode = s.mode === 'view' ? 'edit' : 'view'; return show(s, s.mode === 'view' ? 'View only retains history but blocks editing, upload and undo.' : 'The owner explicitly restored edit capability without extending expiry.');
+      case 'prepare':
+        if (!mayEdit(s) || s.pending) return deny(s);
+        if (s.readRevision !== s.journey.revision) return show(s, 'Read the current revision before final acceptance.', { code: 'REVISION_CONFLICT' });
+        s.pending = { patch: { heading: 'Accepted just before withdrawal' }, key: nextKey(), expected: s.readRevision };
+        return show(s, 'The short save passed its final authorization. Pause here to race it with withdrawal or expiry.');
+      case 'finish': {
+        if (!s.pending) return show(s, 'No accepted save is waiting.');
+        const pending = s.pending; s.pending = null;
+        const out = save(s, pending.patch, pending.key, pending.expected, true); finishWithdrawal(out); return out;
+      }
+      case 'disconnect': s.connection = 'withdrawing'; s.withdrawal = 'disconnect'; finishWithdrawal(s); return show(s, s.withdrawal ? 'Access closed immediately. Disconnect is Pending until the accepted save settles.' : 'Disconnected. Reversible history was discarded; saved content and successful media remain.');
+      case 'publish': s.journey.status = 'published'; s.journey.revision++; return show(s, 'A human with Manage rights published in Admin. MCP writes, undo and attachment must now fail.');
+      case 'preview':
+        if (!mayRead(s)) return deny(s);
+        return show(s, 'Authorized preview handoff. Real playback must not create visitor events, submit forms or trigger external actions.', { preview: 'authenticated Admin playback', noPublicEntitlement: true });
+      default: return show(s, 'Unknown review action.');
+    }
+  };
+  return { initial, reduce };
+})();
+const actionLabels = {
+  reset:'Reset example', read:'Read current draft', edit:'Save heading and Yes route', otherEdit:'Save another heading', lost:'Save, then lose response', replay:'Recover exact save', humanNote:'Admin changes unrelated note', humanHeading:'Admin changes heading', humanHost:'Admin changes Host', deleteVideo:'Delete Video Step only', repair:'Explicitly route Yes to End', undo:'Undo one batch', redo:'Redo one batch', startUpload:'Start or recover upload', differentUser:'Switch browser user', openUpload:'Open Admin upload link', upload:'Finish file transfer', dispatch:'Dispatch provider work', ready:'Provider becomes ready', jobStatus:'Read media job status', attach:'Explicitly attach ready video', advance:'Advance 61 minutes', expire:'Expire connection consent', renew:'Owner renews consent', remove:'Owner removes journey', restore:'Owner re-adds journey', view:'Owner toggles View only', prepare:'Accept save, pause commit', finish:'Settle accepted save', disconnect:'Owner disconnects agent', publish:'Human publishes in Admin', preview:'Get authorized preview'
+};
+const scenarios = [
+  { name:'Edit and replay', description:'One complete save, then a lost response. Exact recovery must not create another undo entry.', actions:['read','edit','read','lost','replay'] },
+  { name:'Concurrent edit', description:'An Admin change invalidates a stale save. Read again and apply the clear request while preserving unrelated work.', actions:['read','humanNote','edit','read','edit','humanHost','undo'] },
+  { name:'Undo and redo', description:'Two saved batches are two steps. A fresh save after undo clears the old redo tail; conflicting human changes prevent unsafe undo.', actions:['read','edit','read','otherEdit','undo','read','otherEdit','redo','humanHeading','undo'] },
+  { name:'Admin upload', description:'A different team member cannot use the link. The owner uploads into the same job; readiness does not attach. Attachment is another saved edit.', actions:['startUpload','differentUser','openUpload','differentUser','openUpload','upload','dispatch','ready','jobStatus','read','attach','undo'] },
+  { name:'Fixed upload deadline', description:'Opening or recovering an upload never resets its one-hour deadline or creates another job.', actions:['startUpload','advance','openUpload','startUpload','upload'] },
+  { name:'Delete and repair', description:'Delete the requested Step while preserving its incoming route. A separate explicit repair is another batch. Undo only changes recorded fields.', actions:['read','deleteVideo','read','repair','undo','undo'] },
+  { name:'Remove and restore access', description:'Removed journey history is retained but inaccessible. Explicit owner re-addition restores eligible history; View only still blocks undo.', actions:['read','edit','remove','undo','restore','view','undo','view','undo'] },
+  { name:'Pending disconnect', description:'Access closes immediately. Disconnect stays Pending while an accepted save settles, then purges even its final history entry.', actions:['read','prepare','disconnect','read','finish','renew'] },
+  { name:'Expiry and publication', description:'A pre-expiry accepted save may finish after expiry, but its private result needs renewed authority. Human publication blocks later MCP writes.', actions:['read','prepare','expire','finish','renew','read','publish','edit','preview'] },
+  { name:'Provider work survives withdrawal', description:'Known dispatched processing may finish after disconnect. It cannot attach under withdrawn authority and successful media remains.', actions:['startUpload','openUpload','upload','dispatch','disconnect','ready','jobStatus','attach'] }
+];
+let state = ReviewModel.initial(); let scenarioIndex = 0; let stepIndex = 0;
+const escapeText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const field = (label,value) => `<dt>${escapeText(label)}</dt><dd>${escapeText(value)}</dd>`;
+function render() {
+  document.getElementById('message').textContent = state.message;
+  const s=state; const j=s.journey;
+  document.getElementById('state').innerHTML = `<dl>${field('Connection',s.connection)}${field('Journey included',s.granted?'Yes':'No')}${field('Mode',s.mode)}${field('Consent',s.clock<s.consentUntil?'Active':'Expired')}${field('Withdrawal',s.withdrawal?'Pending':'None')}${field('Accepted save',s.pending?'Waiting to settle':'None')}</dl><dl>${field('Journey status',j.status)}${field('Current / last read revision',`${j.revision} / ${s.readRevision??'not read'}`)}${field('Undo / redo available',`${s.cursor} / ${s.stack.length-s.cursor}`)}${field('Retained history',`${s.stack.length} of 5 entries`)}${field('Review clock',`${s.clock} minutes`)}</dl><dl>${field('Media job',s.job?.id??'None')}${field('Media state',s.job?.state??'None')}${field('Original transfer deadline',s.job?`${s.job.deadline} minutes`:'None')}${field('Browser user',s.browserUser)}${field('Successful asset',s.job?.state==='ready'?'asset-1, retained in library':'None')}</dl>`;
+  document.getElementById('journey').innerHTML = `<dl>${field('Welcome heading',j.heading)}${field('Unrelated note',j.note)}${field('Poll routes',`Yes → ${j.yes}${j.yes==='video'&&!j.videoPresent?' [deleted Step]':''}; No → ${j.no}`)}${field('Video Step',j.videoPresent?'Present, stable ID video':'Deleted; its ID is retained for safe undo')}${field('Attached media',j.asset??'None')}${field('Host, MCP read only',j.host)}</dl>`;
+  document.getElementById('result').textContent = JSON.stringify(s.result,null,2)??'No tool outcome';
+  document.getElementById('description').textContent = scenarios[scenarioIndex].description;
+  document.getElementById('walkthrough').replaceChildren(...scenarios[scenarioIndex].actions.map((action,i)=>{
+    const row=document.createElement('div');row.className='step';const button=document.createElement('button');button.textContent=`${i+1}. ${actionLabels[action]}`;button.disabled=i!==stepIndex;button.onclick=()=>{state=ReviewModel.reduce(state,action);stepIndex++;render();};row.append(button);return row;
+  }));
+  [...document.getElementById('tabs').children].forEach((button,i)=>button.setAttribute('aria-selected',String(i===scenarioIndex)));
+}
+Object.entries(actionLabels).forEach(([action,label])=>{const button=document.createElement('button');button.textContent=label;button.onclick=()=>{state=ReviewModel.reduce(state,action);render();};document.getElementById('actions').append(button);});
+scenarios.forEach((scenario,i)=>{const button=document.createElement('button');button.setAttribute('role','tab');button.textContent=scenario.name;button.onclick=()=>{scenarioIndex=i;stepIndex=0;state=ReviewModel.initial();render();};document.getElementById('tabs').append(button);});
+render();
+</script>
+</body>
+</html>
