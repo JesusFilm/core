@@ -1658,6 +1658,7 @@
   "Open journey": "열린 여정",
   "There was an error loading campaigns.": "캠페인을 불러오는 과정에서 오류가 발생했습니다.",
   "There was an error refreshing the campaign.": "캠페인 새로 고침 중에 오류가 발생했습니다.",
+  "This language has a QR code. Unlink it instead.": "이 언어에는 QR 코드가 있습니다. 대신 연결을 해제하세요.",
   "Remove {{language}}?": "{{language}} 를 삭제할까요?",
   "Every translation into {{language}} is deleted.": "{{language}} 로 번역된 모든 내용은 삭제됩니다.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "아직 캠페인이 없습니다. 캠페인을 생성하여 각 지역별 페이지가 포함된 랜딩 페이지를 구축하세요.",
@@ -1723,6 +1724,8 @@
   "All regions label": "모든 지역 라벨",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "허용되지 않는 파일 형식입니다. 다음 형식 중 하나를 업로드해 주세요: (PNG, JPG, GIF, SVG, HEIC 또는 WebP)",
   "Maximum file size: 10 MB": "최대 파일 크기: 10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} 현재 번역 중입니다. 번역이 완료되면 다시 시도해 주세요.",
   "Unlink the journey before removing this language.": "이 언어를 삭제하기 전에 여정 연결을 해제하십시오.",
   "Delete {{language}}?": "{{language}} 를 삭제하시겠습니까?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "이렇게 하면 해당 언어와 캠페인 QR 코드 및 공유 링크가 영구적으로 삭제됩니다. 이미 인쇄되거나 공유된 QR 코드의 경우, 링크가 정리되면 더 이상 해당 페이지로 연결되지 않습니다.",
@@ -1744,5 +1747,7 @@
   "First {{limit}} of {{count}} videos_other": "{{count}} 동영상 중 첫 번째 {{limit}}",
   "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} {{language}} 에는 아직 해당 텍스트에 대한 번역이 없으므로, 이를 기본값으로 설정할 수 없습니다.",
   "Translated {{count}} strings into {{language}}_other": "{{count}} 의 문자열을 다음과 같이 번역했습니다. {{language}}",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} 로의 번역이 취소되었습니다. {{count}} 의 문자열은 그대로 유지되었습니다."
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} 로의 번역이 취소되었습니다. {{count}} 의 문자열은 그대로 유지되었습니다.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} {{language}}에는 아직 해당 텍스트에 대한 번역이 없으므로, 이를 기본값으로 설정할 수 없습니다.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "{{language}} 로의 변환이 중지되었습니다. {{count}} 의 문자열은 유지되었습니다."
 }
