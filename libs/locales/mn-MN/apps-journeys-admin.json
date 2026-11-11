@@ -1658,6 +1658,7 @@
   "Open journey": "Нээлттэй аялал",
   "There was an error loading campaigns.": "Кампанит ажил ачаалах үед алдаа гарсан.",
   "There was an error refreshing the campaign.": "Кампанийг шинэчлэхэд алдаа гарсан.",
+  "This language has a QR code. Unlink it instead.": "Энэ хэлэнд QR код байна. Үүний оронд холбоосыг нь тайл.",
   "Remove {{language}}?": "{{language}} -ийг устгах уу?",
   "Every translation into {{language}} is deleted.": "{{language}} рүү хийгдсэн бүх орчуулгыг устгана.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "Одоогоор ямар ч кампанит ажил байхгүй байна. Бүс нутаг бүрт нэг хуудастай буултын хуудас үүсгэхийн тулд нэг кампанит ажил үүсгээрэй.",
@@ -1723,6 +1724,8 @@
   "All regions label": "Бүх бүс нутгийн шошго",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Файлын төрөл хүлээн зөвшөөрөгдөхгүй байна. Дараах файлуудын аль нэгийг байршуулна уу: (PNG, JPG, GIF, SVG, HEIC эсвэл WebP)",
   "Maximum file size: 10 MB": "Файлын хамгийн их хэмжээ: 10 МБ",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} Одоо орчуулагдаж байна. Дуусмагц дахин оролдоорой.",
   "Unlink the journey before removing this language.": "Энэ хэллэгийг устгахаасаа өмнө аяллыг холбохоос салга.",
   "Delete {{language}}?": "{{language}} -ийг устгах уу?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Энэ нь кампанит ажлын QR код болон Share холбоосыг агуулсан уг текстийг байнгын журмаар устгана. Өмнө нь хэвлэгдсэн эсвэл хуваалцсан QR кодын хуулбарууд холбоосыг цэвэрлэсний дараа чиглүүлэлтийг зогсооно.",
@@ -1760,5 +1763,9 @@
   "Translated {{count}} strings into {{language}}_one": "{{count}} гэж бичигдсэн утгыг ... болгон хөрвүүлэх {{language}}",
   "Translated {{count}} strings into {{language}}_other": "{{count}} -ийн утсыг ... болгон хөрвүүлэв {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "{{language}} рүү хөрвүүлэхийг цуцалсан. {{count}} гэж үлдээв.",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} рүү хөрвүүлэхийг цуцалсан. {{count}} -ийн мөрүүдийг хадгалсан."
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "{{language}} рүү хөрвүүлэхийг цуцалсан. {{count}} -ийн мөрүүдийг хадгалсан.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} Энэхүү текст одоог хүртэл {{language}}-д орчуулгагүй байгаа тул анхдагч болж чадахгүй.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} Текстууд одоог хүртэл {{language}}-д орчуулгагүй байгаа тул үүнийг анхдагч болгож тохируулах боломжгүй.",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "{{language}} рүү хөрвүүлэхийг зогсоосон. {{count}} -ийн утгыг хадгалсан.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "{{language}} рүү хөрвүүлэхийг зогсоосон. {{count}} -ийн мөрүүдийг хадгалсан."
 }
