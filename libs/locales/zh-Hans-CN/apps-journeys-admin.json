@@ -1658,6 +1658,7 @@
   "Open journey": "开启旅程",
   "There was an error loading campaigns.": "加载广告系列时出现错误。",
   "There was an error refreshing the campaign.": "刷新活动时出现错误。",
+  "This language has a QR code. Unlink it instead.": "该语言包含一个二维码。请取消其关联。",
   "Remove {{language}}?": "删除 {{language}}？",
   "Every translation into {{language}} is deleted.": "所有翻译为 {{language}} 的内容均已被删除。",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "目前尚无广告系列。创建一个广告系列，以构建一个包含各地区独立页面的着陆页。",
@@ -1723,6 +1724,8 @@
   "All regions label": "“所有地区”标签",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "不支持此文件类型。请上传以下其中一种格式：（PNG、JPG、GIF、SVG、HEIC 或 WebP）",
   "Maximum file size: 10 MB": "最大文件大小：10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} 正在翻译中。请待翻译完成后再试一次。",
   "Unlink the journey before removing this language.": "在删除此语言之前，请先解除与该行程的关联。",
   "Delete {{language}}?": "删除 {{language}}？",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "这将永久删除该语言内容及其活动二维码和分享链接。一旦链接被清理，已打印或分享的二维码副本将不再跳转。",
@@ -1744,5 +1747,7 @@
   "First {{limit}} of {{count}} videos_other": "{{count}} 视频中的第一个 {{limit}}",
   "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} {{language}} 目前尚未提供这些文本的翻译，因此无法将其设为默认。",
   "Translated {{count}} strings into {{language}}_other": "将 {{count}} 中的字符串翻译为 {{language}}",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "已取消对 {{language}} 的翻译。保留了 {{count}} 中的字符串。"
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "已取消对 {{language}} 的翻译。保留了 {{count}} 中的字符串。",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} {{language}}上的文本目前仍无翻译，因此无法将其设为默认。",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "已停止将内容翻译为 {{language}} 。保留了 {{count}} 中的字符串。"
 }
