@@ -32,7 +32,12 @@ import {
   regionPageBlocks,
   section
 } from '../testData'
-import type { CampaignBlock, CampaignPublic, CampaignRegion } from '../types'
+import type {
+  CampaignBlock,
+  CampaignBlockOf,
+  CampaignPublic,
+  CampaignRegion
+} from '../types'
 
 import { CampaignPage } from './CampaignPage'
 
@@ -603,12 +608,12 @@ describe('CampaignPage', () => {
   describe('page heading', () => {
     function hero(
       id: string,
-      title: string,
+      title: string | null,
       overrides: Pick<
         Partial<CampaignBlock>,
         'pageId' | 'parentBlockId' | 'parentOrder'
       > = {}
-    ): CampaignBlock {
+    ): CampaignBlockOf<'CampaignHeroBlock'> {
       return section('CampaignHeroBlock', {
         id,
         pageId: LANDING_PAGE_ID,
@@ -662,6 +667,34 @@ describe('CampaignPage', () => {
         screen.getByRole('heading', { level: 2, name: 'Second hero' })
       ).toBeInTheDocument()
     })
+
+    it.each([null, '', ' \n '])(
+      'makes the first nonblank Hero title the one h1 when an earlier Hero has title %j',
+      (title) => {
+        renderPage(
+          withLanding([
+            {
+              ...hero('untitledHeroId', title),
+              description: 'Only a description'
+            },
+            hero('titledHeroId', 'First titled hero', { parentOrder: 1 }),
+            hero('laterHeroId', 'Later hero', { parentOrder: 2 })
+          ])
+        )
+
+        expect(bandIds()).toEqual([
+          'untitledHeroId',
+          'titledHeroId',
+          'laterHeroId'
+        ])
+        const headings = screen.getAllByRole('heading', { level: 1 })
+        expect(headings).toHaveLength(1)
+        expect(headings[0]).toHaveTextContent('First titled hero')
+        expect(
+          screen.getByRole('heading', { level: 2, name: 'Later hero' })
+        ).toBeInTheDocument()
+      }
+    )
 
     it("counts a Column Slot Hero in its Columns' place", () => {
       renderPage(

@@ -56,12 +56,16 @@ export interface CampaignRegionSwitcherBlockUpdate_campaignRegionSwitcherBlockUp
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  /**
+   * Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+   */
+  showCountryNames: boolean;
   titleTranslations: CampaignRegionSwitcherBlockUpdate_campaignRegionSwitcherBlockUpdate_titleTranslations[];
 }
 
 export interface CampaignRegionSwitcherBlockUpdate {
   /**
-   * Update the region switcher’s default-language title or its variant (cards, list, pills), or its Section Background and colour overrides. Only the given fields change.
+   * Update the region switcher’s default-language title, its variant (cards, list, pills), whether its country chips show names, or its Section Background and colour overrides. Only the given fields change.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
@@ -70,6 +74,7 @@ export interface CampaignRegionSwitcherBlockUpdate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `title`): over 150 characters.
    * - BAD_USER_INPUT (field: `variant`): not cards, list or pills.
+   * - BAD_USER_INPUT (field: `showCountryNames`): null.
    * - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
    * - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
    * - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).

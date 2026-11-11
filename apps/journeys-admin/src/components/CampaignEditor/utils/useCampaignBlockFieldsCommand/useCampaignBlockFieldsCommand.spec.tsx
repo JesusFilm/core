@@ -1,4 +1,5 @@
 import { MockLink } from '@apollo/client/testing'
+import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
@@ -43,6 +44,16 @@ function Probe({ minHeight }: { minHeight: number }): ReactElement {
       >
         Set height
       </button>
+      <Button
+        onClick={() => addFields({ ...hero, minHeight: 10 }, { minHeight: 80 })}
+      >
+        Second height
+      </Button>
+      <Button
+        onClick={() => addFields({ ...hero, minHeight: 10 }, { minHeight: 90 })}
+      >
+        Third height
+      </Button>
       <button onClick={() => selectBlock(hero.id)}>Select hero</button>
       <span data-testid="InlineError">{error ?? ''}</span>
       <span data-testid="MinHeight">{String(cached?.minHeight)}</span>
@@ -65,7 +76,7 @@ function renderCommand(mocks: MockLink.MockedResponse[], minHeight = 70): void {
 }
 
 describe('useCampaignBlockFieldsCommand', () => {
-  it('writes the fields, undoes to the values the cache held when the Command was added, and redoes', async () => {
+  it('writes the fields, undoes to the values the cache held when the Command first executes, and redoes', async () => {
     const execute = {
       ...blockUpdateMock(hero, { minHeight: 70 }),
       maxUsageCount: 2
@@ -85,6 +96,48 @@ describe('useCampaignBlockFieldsCommand', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(execute.result).toHaveBeenCalledTimes(2))
+  })
+
+  it('undoes rapid queued edits to the immediately preceding height and retains it across redo', async () => {
+    const first = {
+      ...blockUpdateMock(hero, { minHeight: 70 }),
+      delay: 300,
+      maxUsageCount: 2
+    }
+    const second = {
+      ...blockUpdateMock(hero, { minHeight: 80 }),
+      maxUsageCount: 3
+    }
+    const third = {
+      ...blockUpdateMock(hero, { minHeight: 90 }),
+      maxUsageCount: 2
+    }
+    renderCommand([first, second, third])
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Set height' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('MinHeight')).toHaveTextContent('70')
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Second height' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Third height' }))
+    expect(first.result).not.toHaveBeenCalled()
+    expect(second.result).not.toHaveBeenCalled()
+    expect(third.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(third.result).toHaveBeenCalledTimes(1))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('MinHeight')).toHaveTextContent('80')
+    )
+    await waitFor(() => expect(second.result).toHaveBeenCalledTimes(2))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(third.result).toHaveBeenCalledTimes(2))
+    expect(screen.getByTestId('MinHeight')).toHaveTextContent('90')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(second.result).toHaveBeenCalledTimes(3))
+    expect(screen.getByTestId('MinHeight')).toHaveTextContent('80')
   })
 
   it('returns to the selection the edit was made in on undo and redo, not on the first execute', async () => {

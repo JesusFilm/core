@@ -187,6 +187,24 @@ describe('useCampaignBlockDuplicateCommand', () => {
     })
   })
 
+  it("keeps a Region Switcher's country-name setting on its copy", () => {
+    const blocks = campaign.blocks.map((block) =>
+      block.id === 'landingSwitcherId' &&
+      block.__typename === 'CampaignRegionSwitcherBlock'
+        ? { ...block, showCountryNames: false }
+        : block
+    )
+    const switcher = blocks.find((block) => block.id === 'landingSwitcherId')!
+
+    const { copies } = duplicateBlocks(blocks, switcher, () => 'switcherCopyId')
+
+    expect(copies[0]).toMatchObject({
+      __typename: 'CampaignRegionSwitcherBlock',
+      id: 'switcherCopyId',
+      showCountryNames: false
+    })
+  })
+
   it('duplicates as one Command, showing the copy with its children at once, and selects it', async () => {
     renderEditor()
     expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()

@@ -25,6 +25,7 @@ import {
   CampaignSwitcherVariant,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
+import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQuery'
 import {
   regionLines,
   regionNeedsJourney,
@@ -51,6 +52,7 @@ interface RegionSwitcherEditProps {
   /** The switcher section this editor sits in. */
   block: Pick<CampaignBlock, 'id'> & {
     switcherVariant?: CampaignSwitcherVariant | null
+    showCountryNames?: boolean
   }
 }
 
@@ -58,6 +60,8 @@ interface RegionCardEditProps {
   region: CampaignRegion
   hostBlockId: string
   variant: CampaignSwitcherVariant
+  /** The switcher section's `showCountryNames`. */
+  showCountryNames: boolean
 }
 
 /**
@@ -74,7 +78,8 @@ interface RegionCardEditProps {
 function RegionCardEdit({
   region,
   hostBlockId,
-  variant
+  variant,
+  showCountryNames
 }: RegionCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -200,14 +205,15 @@ function RegionCardEdit({
         {lines.map((line) => {
           if (line.__typename !== 'CampaignTypographyBlock') return null
           const lineVariant = line.typographyVariant ?? TypographyVariant.body1
+          const selected = selection.block?.id === line.id
           return (
             <Box
               key={line.id}
               id={line.id}
               data-testid={`RegionLineEdit-${line.id}`}
-              data-selected={selection.block?.id === line.id}
+              data-selected={selected}
               data-hoverable
-              role="button"
+              role={selected ? undefined : 'button'}
               {...selectableProps(
                 () => selectBlock(line.id),
                 regionLineLabel(t)
@@ -217,22 +223,23 @@ function RegionCardEdit({
                 width: '100%',
                 // Room for the line's badge above it, clear of the text before it.
                 mt: 1,
-                ...(linesHidden ? { opacity: 0.5 } : {}),
+                ...(linesHidden && !selected ? { opacity: 0.5 } : {}),
                 ...HOVER_OUTLINE_SX,
-                ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
+                ...(selected ? SELECTED_OUTLINE : {})
               }}
             >
               <SelectionBadge
                 id={line.id}
                 label={regionLineLabel(t)}
-                selected={selection.block?.id === line.id}
+                selected={selected}
               />
               <InlineText
                 target={{ block: line, field: 'content' }}
                 placeholder={t('Your text')}
-                editing={selection.block?.id === line.id}
-                autoFocus={selection.block?.id === line.id}
+                editing={selected}
+                autoFocus={selected}
                 onSelect={() => selectBlock(line.id)}
+                withinSelectable
                 variant={lineVariant}
                 variantMapping={{ overline: 'p', caption: 'p' }}
                 align={line.align ?? undefined}
@@ -242,7 +249,7 @@ function RegionCardEdit({
           )
         })}
       </CampaignRegionLines>
-      <CampaignRegionCountries region={region} />
+      <CampaignRegionCountries region={region} showNames={showCountryNames} />
     </Box>
   )
 
@@ -273,11 +280,30 @@ export function RegionSwitcherEdit({
   block
 }: RegionSwitcherEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, currentRegion } = useCampaignEditor()
+  const {
+    campaign,
+    currentRegion,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const variant = block.switcherVariant ?? CampaignSwitcherVariant.cards
   const { addRegion } = useCampaignRegionCommand()
   const regions = sortedRegions(campaign.regions).filter(
     (region) => region.id !== currentRegion?.id
+  )
+
+  const countryIds = [
+    ...new Set(
+      regions.flatMap((region) =>
+        region.countries.map(({ countryId }) => countryId)
+      )
+    )
+  ].sort()
+  const { data } = useCampaignCountriesQuery({
+    ids: countryIds,
+    languageId: previewLanguageId
+  })
+  const previewCountries = new Map(
+    data?.countries.map((country) => [country.id, country])
   )
 
   function handleAdd(event: MouseEvent<HTMLButtonElement>): void {
@@ -324,9 +350,16 @@ export function RegionSwitcherEdit({
         {regions.map((region) => (
           <RegionCardEdit
             key={region.id}
-            region={region}
+            region={{
+              ...region,
+              countries: region.countries.map((entry) => ({
+                ...entry,
+                country: previewCountries.get(entry.countryId) ?? entry.country
+              }))
+            }}
             hostBlockId={block.id}
             variant={variant}
+            showCountryNames={block.showCountryNames ?? true}
           />
         ))}
       </Box>

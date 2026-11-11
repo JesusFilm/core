@@ -196,6 +196,7 @@ export function RegionCardSettings(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
+    selection,
     selection: { region },
     dispatch
   } = useCampaignEditor()
@@ -266,7 +267,15 @@ export function RegionCardSettings(): ReactElement {
           </Typography>
         )}
       </Stack>
-      <RegionSettings key={region.id} region={region} />
+      <RegionSettings
+        key={region.id}
+        region={region}
+        hostSwitcher={
+          selection.host?.__typename === 'CampaignRegionSwitcherBlock'
+            ? selection.host
+            : undefined
+        }
+      />
     </Stack>
   )
 }

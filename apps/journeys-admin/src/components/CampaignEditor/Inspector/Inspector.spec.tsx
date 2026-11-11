@@ -1116,6 +1116,91 @@ describe('Inspector', () => {
       )
     })
 
+    it('loads the saved section value and keeps country labels in the picker', async () => {
+      const savedCampaign = {
+        ...campaignWithRegions,
+        blocks: campaignWithRegions.blocks.map((block) =>
+          block.id === regionState.selectedBlockId
+            ? { ...block, showCountryNames: false }
+            : block
+        )
+      }
+      const country = {
+        __typename: 'Country',
+        id: 'DE',
+        flagPngSrc: 'https://flags.example.org/de.png',
+        name: [{ __typename: 'CountryName', value: 'Germany' }]
+      }
+      render(
+        <QueriedEditor
+          initialState={{ ...regionState, inspectorTab: 'settings' }}
+          campaign={savedCampaign}
+          mocks={[
+            {
+              request: { query: GET_CAMPAIGN_COUNTRIES },
+              result: { data: { countries: [country] } }
+            }
+          ]}
+        >
+          <Inspector role="member" />
+        </QueriedEditor>
+      )
+
+      expect(
+        await screen.findByRole('switch', { name: 'Show country names' })
+      ).not.toBeChecked()
+      const chip = screen.getByTestId('RegionCountryChip-FR')
+      expect(chip).toHaveTextContent('France')
+      expect(within(chip).getByTestId('CampaignCountryFlag')).toHaveClass(
+        'MuiChip-avatar'
+      )
+      await userEvent.click(
+        screen.getByRole('combobox', { name: 'Add country' })
+      )
+      const option = await screen.findByRole('option', { name: 'Germany' })
+      expect(within(option).getByTestId('CampaignCountryFlag')).toHaveStyle({
+        width: '20px',
+        height: '20px'
+      })
+    })
+
+    it('omits the shortcut when a region was opened without a section', () => {
+      renderInspector(
+        {
+          selectedRegionId: regionState.selectedRegionId,
+          inspectorTab: 'settings'
+        },
+        campaignWithRegions,
+        [countriesMock]
+      )
+
+      expect(screen.getByTestId('RegionSettings')).toBeInTheDocument()
+      expect(
+        screen.queryByRole('switch', { name: 'Show country names' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('keeps a region line from choosing between two switchers on its page', () => {
+      const twoSwitchers = {
+        ...campaignWithRegions,
+        blocks: campaignWithRegions.blocks.map((block) =>
+          block.id === 'regionSwitcherId'
+            ? { ...block, pageId: 'landingPageId' }
+            : block
+        )
+      }
+      renderInspector({ selectedBlockId: 'eurLineId' }, twoSwitchers, [
+        countriesMock
+      ])
+
+      fireEvent.click(screen.getByRole('button', { name: 'Europe' }))
+
+      expect(screen.getByTestId('RegionSettings')).toBeInTheDocument()
+      expect(
+        screen.queryByRole('switch', { name: 'Show country names' })
+      ).not.toBeInTheDocument()
+    })
+
     it('moves in the region order', () => {
       renderInspector(regionState, campaignWithRegions)
 

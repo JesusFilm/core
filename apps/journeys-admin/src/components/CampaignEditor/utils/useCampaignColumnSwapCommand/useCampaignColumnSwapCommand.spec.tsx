@@ -88,27 +88,29 @@ describe('useCampaignColumnSwapCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('swaps the two slots as one Command: order update on the slot, shown at once', async () => {
-    renderEditor('slotRichTextId')
+    renderEditor('slotRichTextId', [{ ...swapMock, delay: 0 }])
     await waitFor(() =>
       expect(screen.getByTestId('Block-slotLeftId')).toBeInTheDocument()
     )
     expect(parentOrderOf('slotLeftId')).toBe('0')
     expect(parentOrderOf('slotRightId')).toBe('1')
 
-    await holdRequests(() => {
+    await holdRequests(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Swap columns' }))
-    })
-
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
-    // Optimistic: renumbered before the request returns.
-    expect(parentOrderOf('slotLeftId')).toBe('1')
-    expect(parentOrderOf('slotRightId')).toBe('0')
-    expect(swapMock.result).not.toHaveBeenCalled()
-    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
-      'slotRichTextId'
     )
-    await landRequests()
-    await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+    try {
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+      // Optimistic: renumbered before the held request returns.
+      expect(parentOrderOf('slotLeftId')).toBe('1')
+      expect(parentOrderOf('slotRightId')).toBe('0')
+      expect(swapMock.result).not.toHaveBeenCalled()
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'slotRichTextId'
+      )
+    } finally {
+      await landRequests()
+    }
+    expect(swapMock.result).toHaveBeenCalled()
     expect(parentOrderOf('slotLeftId')).toBe('1')
     expect(parentOrderOf('slotRightId')).toBe('0')
   })

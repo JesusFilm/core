@@ -113,6 +113,7 @@ export function TranslationRunProvider({
   const [target, setTarget] = useState<RunTarget>()
   const [error, setError] = useState<string>()
   const translatedCountRef = useRef(0)
+  const completedRef = useRef(false)
 
   const refreshTranslations = useCallback((): void => {
     client.cache.evict({ id: 'ROOT_QUERY', fieldName: 'campaignTranslations' })
@@ -146,9 +147,11 @@ export function TranslationRunProvider({
   const { data } = useCampaignAiTranslateSubscription({
     variables: target?.variables,
     onData: ({ data: result }) => {
+      const progress = result.data?.campaignAiTranslateSubscription
       translatedCountRef.current =
-        result.data?.campaignAiTranslateSubscription.translatedCount ??
-        translatedCountRef.current
+        progress?.translatedCount ?? translatedCountRef.current
+      completedRef.current =
+        progress?.progress === 100 && progress.campaign != null
     },
     onError: (runError) => {
       const message = isRunConflict(runError)
@@ -165,6 +168,17 @@ export function TranslationRunProvider({
     onComplete: () => {
       if (target == null) return
       setTarget(undefined)
+      if (!completedRef.current) {
+        enqueueSnackbar(
+          t('Translation into {{language}} stopped. {{count}} strings kept.', {
+            count: translatedCountRef.current,
+            language: target.languageName
+          }),
+          { variant: 'info' }
+        )
+        refreshTranslations()
+        return
+      }
       enqueueSnackbar(
         t('Translated {{count}} strings into {{language}}', {
           count: translatedCountRef.current,
@@ -188,6 +202,7 @@ export function TranslationRunProvider({
     ): void => {
       if (target != null) return
       translatedCountRef.current = 0
+      completedRef.current = false
       setError(undefined)
       setTarget({ variables, languageName, options })
     },

@@ -336,6 +336,10 @@ export interface GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock {
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  /**
+   * Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+   */
+  showCountryNames: boolean;
   titleTranslations: GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock_titleTranslations[];
 }
 
@@ -1597,7 +1601,7 @@ export interface GetCampaign_campaign {
    */
   defaultLanguageId: string;
   /**
-   * First publish; never cleared by unpublish. Means "first went live", not "currently live".
+   * Last published; kept after unpublish. Stamped on every move from `draft` to `published`, so it means "last went live", not "currently live".
    */
   publishedAt: any | null;
   /**

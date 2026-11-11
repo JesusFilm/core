@@ -1,0 +1,29 @@
+name: Set up AWS CLI
+description: Make AWS CLI available on deployment runners
+runs:
+  using: composite
+  steps:
+    - name: Install AWS CLI when missing
+      shell: bash
+      run: |
+        if command -v aws >/dev/null 2>&1; then
+          aws --version
+          exit 0
+        fi
+
+        case "$(uname -m)" in
+          x86_64) aws_cli_arch=x86_64 ;;
+          aarch64|arm64) aws_cli_arch=aarch64 ;;
+          *) echo "::error::Unsupported AWS CLI architecture: $(uname -m)"; exit 1 ;;
+        esac
+
+        aws_cli_root="$(mktemp -d "${RUNNER_TEMP}/aws-cli.XXXXXX")"
+        curl --fail --silent --show-error --location --retry 3 \
+          "https://awscli.amazonaws.com/awscli-exe-linux-${aws_cli_arch}.zip" \
+          --output "${aws_cli_root}/awscliv2.zip"
+        unzip -q "${aws_cli_root}/awscliv2.zip" -d "${aws_cli_root}"
+        "${aws_cli_root}/aws/install" \
+          --install-dir "${aws_cli_root}/install" \
+          --bin-dir "${aws_cli_root}/bin"
+        echo "${aws_cli_root}/bin" >> "$GITHUB_PATH"
+        "${aws_cli_root}/bin/aws" --version

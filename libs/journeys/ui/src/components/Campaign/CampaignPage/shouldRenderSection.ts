@@ -1,5 +1,6 @@
 import { slotSection } from '../CampaignRenderer/sectionRegistry'
 import type { SectionRenderContext } from '../CampaignRenderer/sectionRegistry'
+import { hasText } from '../types'
 import type { CampaignSectionTree } from '../types'
 
 export {
@@ -46,8 +47,8 @@ export function renderedSectionIds(
 
 /**
  * The block whose heading is the page's one `h1`: the Region Header whenever
- * one renders (its region name), else the first rendered Hero (its title).
- * Null when neither renders.
+ * one renders (its region name), else the first rendered Hero with a nonblank
+ * title. Null when neither renders a heading.
  */
 export function pageHeadingBlockId(
   sections: CampaignSectionTree[],
@@ -57,6 +58,10 @@ export function pageHeadingBlockId(
   const owner =
     rendered.find(
       (section) => section.__typename === 'CampaignRegionHeaderBlock'
-    ) ?? rendered.find((section) => section.__typename === 'CampaignHeroBlock')
+    ) ??
+    rendered.find(
+      (section) =>
+        section.__typename === 'CampaignHeroBlock' && hasText(section.title)
+    )
   return owner?.id ?? null
 }

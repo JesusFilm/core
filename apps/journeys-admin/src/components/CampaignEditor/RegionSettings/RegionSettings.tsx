@@ -1,6 +1,5 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
 import Autocomplete from '@mui/material/Autocomplete'
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
@@ -10,21 +9,27 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { KeyboardEvent, ReactElement, useState } from 'react'
 
+import { CampaignCountryFlag } from '@core/journeys/ui/Campaign'
 import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 
-import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign_regions as CampaignRegion,
+  GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock
+} from '../../../../__generated__/GetCampaign'
 import { GetCampaignCountries_countries as Country } from '../../../../__generated__/GetCampaignCountries'
 import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQuery'
 import { useCampaignRegionCountryAddMutation } from '../../../libs/useCampaignRegionCountryAddMutation'
 import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
 import { SLUG_MAX_LENGTH, shapeSlug } from '../Settings'
+import { ShowCountryNamesSwitch } from '../ShowCountryNamesSwitch'
 import { characterCount } from '../utils/characterCount'
 import { useCommittedField } from '../utils/useCommittedField'
 import { useTranslatedField } from '../utils/useTranslatedField'
 
 interface RegionSettingsProps {
   region: CampaignRegion
+  hostSwitcher?: CampaignRegionSwitcherBlock
 }
 
 function countryName(country: Pick<Country, 'id' | 'name'>): string {
@@ -55,7 +60,10 @@ function fieldErrorOf(
  * length rule and the API's own messages are shown verbatim under the field
  * that failed.
  */
-export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
+export function RegionSettings({
+  region,
+  hostSwitcher
+}: RegionSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const [countryError, setCountryError] = useState<string>()
@@ -214,6 +222,9 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
         slotProps={{ htmlInput: { 'aria-label': t('Slug') } }}
       />
       <Stack spacing={2}>
+        {hostSwitcher != null && (
+          <ShowCountryNamesSwitch key={hostSwitcher.id} block={hostSwitcher} />
+        )}
         <Stack
           direction="row"
           data-testid="RegionSettingsCountries"
@@ -223,11 +234,7 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
             <Chip
               key={country.id}
               data-testid={`RegionCountryChip-${country.countryId}`}
-              avatar={
-                country.country.flagPngSrc != null ? (
-                  <Avatar src={country.country.flagPngSrc} alt="" />
-                ) : undefined
-              }
+              avatar={<CampaignCountryFlag src={country.country.flagPngSrc} />}
               label={countryName(country.country)}
               onDelete={() => {
                 void handleRemoveCountry(country)
@@ -247,13 +254,10 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
           renderOption={(props, country) => (
             <Box component="li" {...props} key={country.id}>
               <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-                {country.flagPngSrc != null && (
-                  <Avatar
-                    src={country.flagPngSrc}
-                    alt=""
-                    sx={{ width: 20, height: 20 }}
-                  />
-                )}
+                <CampaignCountryFlag
+                  src={country.flagPngSrc}
+                  sx={{ width: 20, height: 20, fontSize: 14 }}
+                />
                 <Typography component="span" variant="inherit">
                   {countryName(country)}
                 </Typography>

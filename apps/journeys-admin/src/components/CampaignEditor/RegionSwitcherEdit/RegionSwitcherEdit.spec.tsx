@@ -13,12 +13,14 @@ import {
   CampaignSwitcherVariant,
   CampaignTextSource
 } from '../../../../__generated__/globalTypes'
+import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import { CAMPAIGN_REGION_CREATE } from '../../../libs/useCampaignRegionCreateMutation'
 import { CAMPAIGN_REGION_DELETE } from '../../../libs/useCampaignRegionDeleteMutation'
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import { campaign, campaignWithRegions } from '../data'
 import { Hotkeys } from '../Hotkeys'
+import { PagesPanel } from '../PagesPanel'
 import {
   CommandProbe,
   QueriedEditor,
@@ -74,7 +76,8 @@ function renderSwitcher(
   campaignProp = campaign,
   initialState?: Partial<CampaignEditorState>,
   mocks: MockLink.MockedResponse[] = [createMock, unlistMock, deleteMock],
-  switcherVariant?: CampaignSwitcherVariant
+  switcherVariant?: CampaignSwitcherVariant,
+  showCountryNames?: boolean
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
@@ -87,7 +90,7 @@ function renderSwitcher(
       <CommandProbe />
       <RegionsProbe />
       <RegionSwitcherEdit
-        block={{ id: 'landingSwitcherId', switcherVariant }}
+        block={{ id: 'landingSwitcherId', switcherVariant, showCountryNames }}
       />
     </QueriedEditor>
   )
@@ -195,6 +198,98 @@ describe('RegionSwitcherEdit', () => {
     }
   )
 
+  it.each([
+    [CampaignSwitcherVariant.cards],
+    [CampaignSwitcherVariant.list],
+    [CampaignSwitcherVariant.pills]
+  ])(
+    'previews %s country chips as flags alone, named by their accessible name, while the section hides names',
+    async (variant) => {
+      renderSwitcher(
+        campaignWithRegions,
+        { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+        [],
+        variant,
+        false
+      )
+
+      const card = await screen.findByTestId('RegionCardEdit-eurRegionId')
+      expect(
+        within(card).getByTestId('CampaignRegionCountries')
+      ).toHaveAttribute('data-show-names', 'false')
+      expect(
+        within(card).getByRole('img', { name: 'France' })
+      ).toBeInTheDocument()
+      expect(
+        within(card).getByTestId('CampaignRegionCountries')
+      ).not.toHaveTextContent('France')
+    }
+  )
+
+  it.each([true, false])(
+    'updates country labels when the preview language changes (names shown: %s)',
+    async (showCountryNames) => {
+      const country = campaignWithRegions.regions[0].countries[0].country
+      function countryNamesMock(languageId: string, names: string[]) {
+        return {
+          request: {
+            query: GET_CAMPAIGN_COUNTRIES,
+            variables: { ids: [country.id], languageId }
+          },
+          result: {
+            data: {
+              countries: [
+                {
+                  ...country,
+                  name: names.map((value) => ({
+                    __typename: 'CountryName',
+                    value
+                  }))
+                }
+              ]
+            }
+          }
+        }
+      }
+      render(
+        <QueriedEditor
+          campaign={campaignWithRegions}
+          mocks={[
+            countryNamesMock('529', ['France']),
+            countryNamesMock('496', ['France', 'République française'])
+          ]}
+        >
+          <PagesPanel />
+          <RegionSwitcherEdit
+            block={{ id: 'landingSwitcherId', showCountryNames }}
+          />
+        </QueriedEditor>
+      )
+      const cards = within(
+        await screen.findByTestId('RegionCardEdit-eurRegionId')
+      )
+      if (showCountryNames) expect(cards.getByText('France')).toBeVisible()
+      else expect(cards.getByRole('img', { name: 'France' })).toBeVisible()
+
+      fireEvent.mouseDown(
+        screen.getByRole('combobox', { name: 'Preview language' })
+      )
+      fireEvent.click(screen.getByRole('option', { name: 'Français' }))
+
+      if (showCountryNames) {
+        expect(await cards.findByText('République française')).toBeVisible()
+      } else {
+        const flag = await cards.findByRole('img', {
+          name: 'République française'
+        })
+        fireEvent.mouseOver(flag)
+        expect(await screen.findByRole('tooltip')).toHaveTextContent(
+          'République française'
+        )
+      }
+    }
+  )
+
   it('keeps a Region Line selectable and editable in the pills variant', async () => {
     renderSwitcher(
       campaignWithRegions,
@@ -211,6 +306,15 @@ describe('RegionSwitcherEdit', () => {
     await waitFor(() =>
       expect(screen.getByRole('textbox', { name: 'Your text' })).toBeVisible()
     )
+    const line = screen.getByTestId('RegionLineEdit-eurLineId')
+    expect(line).not.toHaveStyle({ opacity: '0.5' })
+    expect(within(line).getByTestId('SelectionBadge')).toHaveAttribute(
+      'data-state',
+      'selected'
+    )
+
+    fireEvent.click(screen.getByTestId('RegionCardEdit-eurRegionId'))
+    expect(line).toHaveStyle({ opacity: '0.5' })
   })
 
   it('fades a pill’s Region Lines and notes they are not shown in pills', async () => {
@@ -448,12 +552,18 @@ describe('RegionSwitcherEdit', () => {
 
       const line = screen.getByTestId('RegionLineEdit-eurLineId')
       expect(line).toHaveAttribute('role', 'button')
+      const text = within(line).getByTestId('InlineText-content')
+      expect(text).not.toHaveAttribute('role', 'button')
+      expect(text).not.toHaveAttribute('tabindex')
       fireEvent.keyDown(line, { key })
 
       expect(screen.getByTestId('SelectionKind')).toHaveTextContent('text')
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
         'eurLineId'
       )
+      const field = within(line).getByRole('textbox', { name: 'Your text' })
+      expect(field.closest('[role="button"], button')).toBeNull()
+      expect(fireEvent.keyDown(field, { key })).toBe(true)
     }
   )
 

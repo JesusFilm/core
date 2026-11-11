@@ -4,6 +4,12 @@ variable "env" {
 }
 
 # VPC
+variable "s3_gateway_endpoint" {
+  type        = bool
+  default     = false
+  description = "Passed to the VPC module; see its variable of the same name."
+}
+
 variable "cidr" {
   type        = string
   description = "VPC CIDR"

@@ -42,8 +42,15 @@ export function YouTubeDetails({
     fetchYouTubeVideo
   )
 
+  // A card's background video never shows captions, so neither does its
+  // preview. Its saved subtitle language is kept, just not shown.
+  const isBackgroundVideo =
+    activeVideoBlock != null && activeVideoBlock.parentOrder == null
+
   // Get subtitle language ID from the active video block
-  const subtitleLanguageId = activeVideoBlock?.subtitleLanguage?.id ?? null
+  const subtitleLanguageId = isBackgroundVideo
+    ? null
+    : (activeVideoBlock?.subtitleLanguage?.id ?? null)
 
   // Fetch closed captions using custom hook
   const { languages: captionLanguages, loading: captionsLoading } =
@@ -123,6 +130,7 @@ export function YouTubeDetails({
   // Handle when subtitles are available but none selected
   useEffect(() => {
     if (
+      !isBackgroundVideo &&
       data != null &&
       !captionsLoading &&
       captionLanguages.length > 0 &&
@@ -146,6 +154,7 @@ export function YouTubeDetails({
       })
     }
   }, [
+    isBackgroundVideo,
     data,
     captionsLoading,
     captionLanguages,

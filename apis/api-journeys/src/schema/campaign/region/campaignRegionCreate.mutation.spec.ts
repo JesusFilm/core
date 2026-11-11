@@ -223,9 +223,10 @@ describe('campaignRegionCreate', () => {
         uniqueViolation(shape, ['id'])
       )
       prismaMock.campaignRegion.findUnique.mockResolvedValue({
+        ...campaignFactory().withRegion('New region').build().regions[0],
         id: CLIENT_ID,
         campaignId: 'otherCampaignId'
-      } as never)
+      })
 
       const result = await create(CLIENT_ID)
 

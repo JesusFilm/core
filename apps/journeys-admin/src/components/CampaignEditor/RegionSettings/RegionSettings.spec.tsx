@@ -8,6 +8,8 @@ import {
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 
+import { FALLBACK_FLAG } from '@core/journeys/ui/Campaign'
+
 import { CampaignTextSource } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import { CAMPAIGN_REGION_COUNTRY_ADD } from '../../../libs/useCampaignRegionCountryAddMutation'
@@ -228,6 +230,20 @@ describe('RegionSettings', () => {
       'src',
       'https://flags.example.org/fr.png'
     )
+  })
+
+  it('shows the fallback flag beside the name on a country chip with no flag', () => {
+    renderSettings({
+      ...eurRegion,
+      countries: eurRegion.countries.map((country) => ({
+        ...country,
+        country: { ...country.country, flagPngSrc: null }
+      }))
+    })
+
+    const chip = screen.getByTestId('RegionCountryChip-FR')
+    expect(chip.querySelector('img')).not.toBeInTheDocument()
+    expect(chip).toHaveTextContent(`${FALLBACK_FLAG}France`)
   })
 
   it('counts the name and the slug against their caps', () => {

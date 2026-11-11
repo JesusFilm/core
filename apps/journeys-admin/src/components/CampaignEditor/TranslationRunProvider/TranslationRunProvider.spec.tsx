@@ -193,6 +193,67 @@ describe('TranslationRunProvider', () => {
     expect(screen.getByTestId('Run')).toHaveTextContent('idle')
   })
 
+  it.each([
+    { progress: 40, campaign: false },
+    { progress: 100, campaign: false },
+    { progress: 40, campaign: true }
+  ])(
+    'treats completion without a terminal payload as stopped: %j',
+    async ({ progress, campaign }) => {
+      const subscriptionLink = new MockSubscriptionLink()
+      const campaignRead: SpyMock = {
+        ...getCampaignMock,
+        result: vi.fn(() => getCampaignMock.result),
+        maxUsageCount: 2
+      }
+      renderWithMocks(
+        subscriptionLink,
+        [swapMock, campaignRead],
+        <CampaignReader />
+      )
+      await screen.findByTestId('Campaign')
+      fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
+
+      await emitSubscription(
+        subscriptionLink,
+        report(progress, 'Translating', 6, campaign),
+        true
+      )
+
+      expect(screen.getByTestId('Run')).toHaveTextContent('idle')
+      expect(
+        screen.getByText('Translation into Français stopped. 6 strings kept.')
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText('Translated 6 strings into Français')
+      ).not.toBeInTheDocument()
+      expect(swapped).not.toHaveBeenCalled()
+      expect(defaultLanguageChanged).not.toHaveBeenCalled()
+      await waitFor(() => expect(campaignRead.result).toHaveBeenCalledTimes(2))
+    }
+  )
+
+  it('resets the terminal event flag before another run starts', async () => {
+    const link = new MockSubscriptionLink()
+    renderProvider(link)
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+    await emitSubscription(
+      link,
+      report(100, 'Translation completed!', 12, true),
+      true
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Start Spanish' }))
+    await emitSubscription(link, report(40, 'Translating', 3), true)
+
+    expect(
+      screen.getByText('Translation into Español stopped. 3 strings kept.')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Translated 3 strings into Español')
+    ).not.toBeInTheDocument()
+  })
+
   it('stops the subscription on Cancel and says how many strings were kept', async () => {
     const link = new MockSubscriptionLink()
     const unsubscribed = vi.fn()

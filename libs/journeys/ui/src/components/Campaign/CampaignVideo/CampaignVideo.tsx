@@ -130,7 +130,7 @@ export function CampaignVideo({
           textAlign: 'start'
         }}
       >
-        <CampaignVideoFrame poster={details.poster} />
+        <CampaignVideoFrame poster={details.poster} eager={eager} />
         <Stack spacing={0.5} sx={{ p: 3 }}>
           {details.title != null && (
             <Typography

@@ -1,3 +1,5 @@
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { ReactElement, useState } from 'react'
@@ -6,11 +8,23 @@ import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_regions_languages as CampaignRegionLanguage
 } from '../../../../../__generated__/GetCampaign'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  JourneyStatus
+} from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
-import { useCampaignEditor } from '../../CampaignEditorProvider'
+import {
+  CampaignEditorState,
+  useCampaignEditor
+} from '../../CampaignEditorProvider'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../../data'
-import { CommandProbe, QueriedEditor, SpyMock, UndoRedo } from '../../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SelectionProbe,
+  SpyMock,
+  UndoRedo
+} from '../../testing'
 import { messageOf } from '../messageOf'
 
 import { useCampaignRegionLanguageLinkCommand } from './useCampaignRegionLanguageLinkCommand'
@@ -168,19 +182,111 @@ function Harness(): ReactElement {
 
 function renderHarness(
   mocks: SpyMock[],
-  campaignProp: Campaign = campaignWithRegions
+  campaignProp: Campaign = campaignWithRegions,
+  initialState?: Partial<CampaignEditorState>
 ): ReturnType<typeof render> {
   return render(
-    <QueriedEditor campaign={campaignProp} mocks={mocks}>
+    <QueriedEditor
+      campaign={campaignProp}
+      mocks={mocks}
+      initialState={initialState}
+    >
       <UndoRedo />
       <CommandProbe />
+      <SelectionProbe />
+      <FocusControl />
       <Harness />
     </QueriedEditor>
   )
 }
 
+function FocusControl(): ReactElement {
+  const { state, dispatch } = useCampaignEditor()
+  return (
+    <>
+      <Typography data-testid="PreviewLanguage">
+        {state.previewLanguageId}
+      </Typography>
+      <Button
+        onClick={() => {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            pageKind: CampaignPageKind.landing
+          })
+          dispatch({
+            type: 'SetPreviewLanguageAction',
+            previewLanguageId: '529'
+          })
+        }}
+      >
+        Open landing page
+      </Button>
+    </>
+  )
+}
+
 describe('useCampaignRegionLanguageLinkCommand', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  it('restores the originating focus for undo and redo after navigating during a delayed swap', async () => {
+    const swap = updateMock(eurEnglish.id, { url: FRENCH_URL }, swappedEnglish)
+    swap.delay = 150
+    const undo = updateMock(
+      eurEnglish.id,
+      { journeyId: 'eurJourneyId' },
+      eurEnglish
+    )
+    const redo = updateMock(
+      eurEnglish.id,
+      { journeyId: 'frJourneyId' },
+      swappedEnglish
+    )
+    const selectedBlockId = campaignWithRegions.blocks.find(
+      (block) => block.__typename === 'CampaignRegionShareBlock'
+    )?.id
+    expect(selectedBlockId).toBeDefined()
+    renderHarness([swap, undo, redo], campaignWithRegions, {
+      pageKind: CampaignPageKind.regionTemplate,
+      regionId: 'eurRegionId',
+      selectedBlockId,
+      selectedRegionId: 'eurRegionId',
+      previewLanguageId: '496'
+    })
+    await screen.findByTestId('English')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Swap English' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Open landing page' }))
+    expect(swap.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('PageKind')).toHaveTextContent(
+      CampaignPageKind.landing
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    )
+    expect(screen.getByTestId('PageKind')).toHaveTextContent(
+      CampaignPageKind.landing
+    )
+
+    for (const [action, mutation] of [
+      ['Undo', undo],
+      ['Redo', redo]
+    ] as const) {
+      fireEvent.click(screen.getByRole('button', { name: action }))
+      await waitFor(() => expect(mutation.result).toHaveBeenCalledTimes(1))
+      expect(screen.getByTestId('PageKind')).toHaveTextContent(
+        CampaignPageKind.regionTemplate
+      )
+      expect(screen.getByTestId('RegionId')).toHaveTextContent('eurRegionId')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        selectedBlockId!
+      )
+      expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+        'eurRegionId'
+      )
+      expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
+      fireEvent.click(screen.getByRole('button', { name: 'Open landing page' }))
+    }
+  })
 
   it('links a Share Language as one Command; undo unlinks it and redo links the same journey by id', async () => {
     const linkMock = updateMock(eurFrench.id, { url: FRENCH_URL }, linkedFrench)

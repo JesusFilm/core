@@ -173,7 +173,7 @@ describe('campaignRegionDelete', () => {
       .mockResolvedValueOnce(
         campaignRegionWithAcl(fixture, 'eurRegionId', { listed: false })
       )
-      .mockResolvedValueOnce({ listed: true } as never)
+      .mockResolvedValueOnce({ ...fixture.regions[0], listed: true })
 
     const result = await remove()
 
