@@ -115,7 +115,7 @@ const deleteMock = {
 }
 
 const journey = {
-  __typename: 'Journey',
+  __typename: 'Journey' as const,
   id: 'frJourneyId',
   title: 'Campagne en Europe',
   description: null,
@@ -168,39 +168,64 @@ const resolveMock = {
   result: vi.fn(() => ({ data: { journey } }))
 }
 
+const linkedFrench: typeof eurFrench = {
+  ...eurFrench,
+  journeyId: 'frJourneyId',
+  title: 'Campagne en Europe',
+  description: null,
+  snapshotEdited: false,
+  qrCodeId: 'frQrCodeId',
+  journey,
+  qrCode: {
+    __typename: 'QrCode',
+    id: 'frQrCodeId',
+    shortLink: {
+      __typename: 'ShortLink',
+      id: 'frShortLinkId',
+      pathname: 'eur-fr',
+      domain: { __typename: 'ShortLinkDomain', hostname: 'short.nextstep.is' }
+    }
+  }
+}
+
 const linkMock = {
   request: {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
     variables: {
-      id: 'eurRegionId-496',
+      id: eurFrench.id,
       input: { url: 'https://admin.nextstep.is/journeys/frJourneyId' }
     }
   },
   result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
+  }))
+}
+
+const firstUnlinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: eurFrench.id, input: { journeyId: null } }
+  },
+  result: vi.fn(() => ({
     data: {
       campaignRegionLanguageUpdate: {
-        ...eurFrench,
-        journeyId: 'frJourneyId',
-        title: 'Campagne en Europe',
-        description: null,
-        snapshotEdited: false,
-        qrCodeId: 'frQrCodeId',
-        journey,
-        qrCode: {
-          __typename: 'QrCode',
-          id: 'frQrCodeId',
-          shortLink: {
-            __typename: 'ShortLink',
-            id: 'frShortLinkId',
-            pathname: 'eur-fr',
-            domain: {
-              __typename: 'ShortLinkDomain',
-              hostname: 'short.nextstep.is'
-            }
-          }
-        }
+        ...linkedFrench,
+        journeyId: null,
+        journey: null,
+        title: null,
+        description: null
       }
     }
+  }))
+}
+
+const firstRelinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: eurFrench.id, input: { journeyId: 'frJourneyId' } }
+  },
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
   }))
 }
 
@@ -401,6 +426,8 @@ function renderShare(
           accessibleJourneysMock,
           resolveBySlugMock,
           linkMock,
+          firstUnlinkMock,
+          firstRelinkMock,
           linkFailureMock,
           unlinkMock,
           swapMock,
@@ -770,7 +797,7 @@ describe('ShareSectionEdit', () => {
     ).toBeNull()
   })
 
-  it('links the first journey as a plain save, so there is nothing to undo', async () => {
+  it('links the first journey as a Command, undo keeps its QR code and redo restores the journey', async () => {
     renderShare()
 
     const french = await screen.findByTestId('ShareLanguageRow-496')
@@ -792,7 +819,26 @@ describe('ShareSectionEdit', () => {
       ).toHaveTextContent('Campagne en Europe')
     )
     expect(linkMock.result).toHaveBeenCalledTimes(1)
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(firstUnlinkMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(screen.getByTestId('ShareLanguageRow-496')).toHaveAttribute(
+        'data-state',
+        'unlinked'
+      )
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(firstRelinkMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toHaveTextContent('Campagne en Europe')
+    )
   })
 
   it('swaps as one Command: undo links the previous journey again and puts back the snapshot the author edited', async () => {
