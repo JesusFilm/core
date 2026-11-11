@@ -53,7 +53,7 @@ resource "clickhouse_service" "this" {
   tags = {
     env     = var.env
     service = "clickhouse"
-    tenants = "short-links plausible"
+    tenants = "short-links_plausible"
   }
 
   # A destroy deletes every scan event and all of Plausible's history; the
