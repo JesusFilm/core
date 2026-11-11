@@ -2,15 +2,16 @@ import { TFunction } from 'next-i18next/pages'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import type { EventLabelOption } from '../eventLabels'
+import type { CustomTrackingLabels, EventLabelOption } from '../eventLabels'
 import { eventLabelOptions } from '../eventLabels'
 
 export function getCurrentEventLabel(
   t: TFunction,
   selectedBlock?: TreeBlock,
-  videoActionType?: 'start' | 'complete'
+  videoActionType?: 'start' | 'complete',
+  labels?: CustomTrackingLabels | null
 ): EventLabelOption {
-  const options = eventLabelOptions(t)
+  const options = eventLabelOptions(t, labels)
   if (selectedBlock == null) return options[0]
 
   const selectedEventLabelType =
