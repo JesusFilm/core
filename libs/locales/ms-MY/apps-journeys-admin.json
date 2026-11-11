@@ -1658,6 +1658,7 @@
   "Open journey": "Perjalanan terbuka",
   "There was an error loading campaigns.": "Terdapat ralat semasa memuatkan kempen.",
   "There was an error refreshing the campaign.": "Telah berlaku ralat semasa menyegarkan kempen.",
+  "This language has a QR code. Unlink it instead.": "Bahasa ini mempunyai kod QR. Sebaliknya, pautkan ia.",
   "Remove {{language}}?": "Buang {{language}}?",
   "Every translation into {{language}} is deleted.": "Setiap terjemahan ke dalam {{language}} dipadamkan.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "Belum ada kempen lagi. Buat satu untuk membina halaman pendaratan dengan satu halaman untuk setiap rantau.",
@@ -1723,6 +1724,8 @@
   "All regions label": "Semua label rantau",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Tipe fail tidak diterima. Sila muat naik salah satu daripada berikut: (PNG, JPG, GIF, SVG, HEIC, atau WebP)",
   "Maximum file size: 10 MB": "Saiz fail maksimum: 10 MB",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} Sedang diterjemahkan. Cuba semula apabila ia selesai.",
   "Unlink the journey before removing this language.": "Pisahkan perjalanan sebelum membuang bahasa ini.",
   "Delete {{language}}?": "Padam {{language}}?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Ini akan membuang bahasa tersebut secara kekal beserta kod QR kempen dan pautan kongsi. Salinan kod QR yang telah dicetak atau dikongsi akan berhenti mengalihkan setelah pautan itu dibersihkan.",
@@ -1744,5 +1747,7 @@
   "First {{limit}} of {{count}} videos_other": "Pertama {{limit}} daripada video {{count}}",
   "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} Teks-teks belum mempunyai terjemahan dalam {{language}} , jadi ia tidak boleh menjadi lalai.",
   "Translated {{count}} strings into {{language}}_other": "Menerjemahkan rentetan {{count}} ke dalam {{language}}",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Terjemahan ke dalam {{language}} dibatalkan. Rentetan {{count}} dikekalkan."
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Terjemahan ke dalam {{language}} dibatalkan. Rentetan {{count}} dikekalkan.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} Teks masih belum mempunyai terjemahan dalam {{language}}, jadi ia tidak boleh menjadi lalai.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "Terjemahan ke dalam {{language}} dihentikan. Rentetan {{count}} dikekalkan."
 }
