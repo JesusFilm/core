@@ -1,199 +1,96 @@
-import type { ApolloClient } from '@apollo/client'
+import { ApolloClient, CombinedGraphQLErrors } from '@apollo/client'
 
 import { campaignPublic } from '@core/journeys/ui/Campaign/testData'
 
-import {
-  fetchCampaignPublicInPageLanguage,
-  fetchCampaignPublicInPageLanguageByHostname
-} from './getCampaignPublic'
-
-const french = {
-  ...campaignPublic,
-  languageId: '496',
-  language: { __typename: 'Language' as const, id: '496', bcp47: 'fr' },
-  title: 'Campagne 2026'
-}
+import { GET_CAMPAIGN_PUBLIC, apolloCampaignReader } from './getCampaignPublic'
 
 function client(): { query: ReturnType<typeof vi.fn> } & ApolloClient {
-  const query = vi.fn(
-    async ({ variables }: { variables: { languageId: string | null } }) => ({
-      data: {
-        campaignPublic: variables.languageId === '496' ? french : campaignPublic
-      }
-    })
-  )
+  const query = vi.fn(() => Promise.resolve({ data: { campaignPublic } }))
   return { query } as unknown as {
     query: ReturnType<typeof vi.fn>
   } & ApolloClient
 }
 
-describe('fetchCampaignPublicInPageLanguage', () => {
-  it('reads once when the tag names the campaign default', async () => {
+function notFoundError(): CombinedGraphQLErrors {
+  return new CombinedGraphQLErrors({
+    errors: [{ message: 'not found', extensions: { code: 'NOT_FOUND' } }]
+  } as ConstructorParameters<typeof CombinedGraphQLErrors>[0])
+}
+
+describe('apolloCampaignReader', () => {
+  it('reads a campaign by slug in the language it is given', async () => {
     const apollo = client()
-    const result = await fetchCampaignPublicInPageLanguage(
-      apollo,
-      'outreach-2026',
-      'en'
-    )
-    expect(result?.campaign).toBe(campaignPublic)
-    expect(result?.language).toEqual({
-      languageId: '529',
-      bcp47: 'en',
-      source: 'param'
-    })
-    expect(apollo.query).toHaveBeenCalledTimes(1)
-  })
 
-  it('reads once with no tag at all, the campaign default', async () => {
-    const apollo = client()
-    const result = await fetchCampaignPublicInPageLanguage(
-      apollo,
-      'outreach-2026'
-    )
-    expect(result?.language).toEqual({
-      languageId: '529',
-      bcp47: 'en',
-      source: 'default'
-    })
-    expect(apollo.query).toHaveBeenCalledTimes(1)
-  })
-
-  it('reads again in the named language when it is not the default', async () => {
-    const apollo = client()
-    const result = await fetchCampaignPublicInPageLanguage(
-      apollo,
-      'outreach-2026',
-      'fr'
-    )
-    expect(result?.campaign.title).toBe('Campagne 2026')
-    expect(result?.language).toEqual({
-      languageId: '496',
-      bcp47: 'fr',
-      source: 'param'
-    })
-    expect(apollo.query).toHaveBeenCalledTimes(2)
-    expect(apollo.query.mock.calls[1][0].variables).toEqual({
-      slug: 'outreach-2026',
-      languageId: '496'
-    })
-  })
-
-  it('reads again with the language id when the campaign default is not the fallback Watch text language', async () => {
-    const inFrench = { ...french, defaultLanguageId: '496' }
-    const query = vi.fn(async () => ({
-      data: { campaignPublic: inFrench }
-    }))
-    const apollo = { query } as unknown as ApolloClient
-
-    const result = await fetchCampaignPublicInPageLanguage(
-      apollo,
-      'outreach-2026'
+    const campaign = await apolloCampaignReader(apollo)(
+      { slug: 'outreach-2026' },
+      '496'
     )
 
-    expect(result?.language.languageId).toBe('496')
-    expect(query).toHaveBeenCalledTimes(2)
-    expect(query.mock.calls[1]).toEqual([
+    expect(campaign).toBe(campaignPublic)
+    expect(apollo.query).toHaveBeenCalledWith(
       expect.objectContaining({
+        query: GET_CAMPAIGN_PUBLIC,
         variables: { slug: 'outreach-2026', languageId: '496' }
       })
-    ])
-  })
-
-  it('reads the default for a tag that is not a campaign language', async () => {
-    const apollo = client()
-    const result = await fetchCampaignPublicInPageLanguage(
-      apollo,
-      'outreach-2026',
-      'de'
     )
-    expect(result?.language).toEqual({
-      languageId: '529',
-      bcp47: 'en',
-      source: 'default'
-    })
   })
 
-  it('is null for an unpublished or malformed slug', async () => {
+  it('reads the campaign of a hostname in the campaign default', async () => {
     const apollo = client()
-    apollo.query.mockResolvedValueOnce({ data: { campaignPublic: null } })
-    expect(await fetchCampaignPublicInPageLanguage(apollo, 'draft')).toBeNull()
-    expect(
-      await fetchCampaignPublicInPageLanguage(apollo, 'Not A Slug')
-    ).toBeNull()
-  })
-})
 
-describe('a read that fails for a reason other than not found', () => {
-  it('reaches the caller of the slug read', async () => {
-    const apollo = client()
-    apollo.query.mockRejectedValueOnce(new Error('socket hang up'))
-    await expect(
-      fetchCampaignPublicInPageLanguage(apollo, 'christmas-2026')
-    ).rejects.toThrow('socket hang up')
-  })
+    await apolloCampaignReader(apollo)({ hostname: 'outreach.example.org' })
 
-  it('reaches the caller of the hostname read', async () => {
-    const apollo = client()
-    apollo.query.mockRejectedValueOnce(new Error('socket hang up'))
-    await expect(
-      fetchCampaignPublicInPageLanguageByHostname(
-        apollo,
-        'christmas.example.org'
-      )
-    ).rejects.toThrow('socket hang up')
-  })
-})
-
-describe('fetchCampaignPublicInPageLanguageByHostname', () => {
-  it('resolves the Page Language against the root campaign of the hostname', async () => {
-    const apollo = client()
-    const result = await fetchCampaignPublicInPageLanguageByHostname(
-      apollo,
-      'outreach.example.org',
-      'fr'
-    )
-    expect(result?.campaign.title).toBe('Campagne 2026')
-    expect(result?.language).toEqual({
-      languageId: '496',
-      bcp47: 'fr',
-      source: 'param'
-    })
     expect(apollo.query.mock.calls[0][0].variables).toEqual({
       hostname: 'outreach.example.org',
       languageId: null
     })
-    expect(apollo.query.mock.calls[1][0].variables).toEqual({
-      hostname: 'outreach.example.org',
-      languageId: '496'
-    })
   })
 
-  it('stops after the one default read when wanted rejects the root campaign', async () => {
+  it('aborts a read after five seconds through the fetch signal', async () => {
+    const timeout = vi.spyOn(AbortSignal, 'timeout')
     const apollo = client()
-    const wanted = vi.fn().mockReturnValue(false)
-    expect(
-      await fetchCampaignPublicInPageLanguageByHostname(
-        apollo,
-        'outreach.example.org',
-        'fr',
-        wanted
-      )
-    ).toBeNull()
-    expect(wanted).toHaveBeenCalledWith(campaignPublic)
-    expect(apollo.query).toHaveBeenCalledTimes(1)
+
+    await apolloCampaignReader(apollo)({ slug: 'outreach-2026' })
+
+    expect(timeout).toHaveBeenCalledWith(5_000)
+    expect(apollo.query.mock.calls[0][0].context.fetchOptions.signal).toBe(
+      timeout.mock.results[0].value
+    )
+    timeout.mockRestore()
   })
 
-  it('is null when the domain has no published root campaign', async () => {
+  it('is null without a query for a malformed slug or an empty hostname', async () => {
     const apollo = client()
-    apollo.query.mockResolvedValueOnce({ data: { campaignPublic: null } })
+    const read = apolloCampaignReader(apollo)
+
+    expect(await read({ slug: 'Not A Slug' })).toBeNull()
+    expect(await read({ hostname: '' })).toBeNull()
+    expect(apollo.query).not.toHaveBeenCalled()
+  })
+
+  it('is null for a draft or unknown campaign', async () => {
+    const apollo = client()
+    apollo.query.mockRejectedValueOnce(notFoundError())
+
     expect(
-      await fetchCampaignPublicInPageLanguageByHostname(
-        apollo,
-        'outreach.example.org'
+      await apolloCampaignReader(apollo)({ slug: 'draft-2026' })
+    ).toBeNull()
+  })
+
+  it('throws any other failure, a timeout included', async () => {
+    const apollo = client()
+    apollo.query
+      .mockRejectedValueOnce(new Error('socket hang up'))
+      .mockRejectedValueOnce(
+        new DOMException('The operation was aborted.', 'AbortError')
       )
-    ).toBeNull()
-    expect(
-      await fetchCampaignPublicInPageLanguageByHostname(apollo, '')
-    ).toBeNull()
+    const read = apolloCampaignReader(apollo)
+
+    await expect(read({ slug: 'christmas-2026' })).rejects.toThrow(
+      'socket hang up'
+    )
+    await expect(read({ hostname: 'christmas.example.org' })).rejects.toThrow(
+      'The operation was aborted.'
+    )
   })
 })

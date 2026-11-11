@@ -5,7 +5,7 @@ import {
   CampaignLanguageRemove,
   CampaignLanguageRemoveVariables
 } from '../../../__generated__/CampaignLanguageRemove'
-import { CAMPAIGN_LANGUAGE_FIELDS } from '../useCampaignLanguageAddMutation'
+import { CAMPAIGN_LANGUAGE_FIELDS } from '../useCampaignQuery'
 
 /** Remove a Page Language; refused for the default or the last language (`CONFLICT`). */
 export const CAMPAIGN_LANGUAGE_REMOVE = gql`

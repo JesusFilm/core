@@ -1,10 +1,15 @@
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { campaignStringKeysFor } from '@core/journeys/ui/Campaign/libs/campaignStrings'
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
@@ -12,16 +17,11 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import {
-  CAMPAIGN_STRING_CAP,
-  textLength
-} from '../Canvas/InlineText/InlineText'
+import { characterCount } from '../utils/characterCount'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
 
-type Translate = (key: string) => string
-
 /** Where the page shows a Campaign String, as the field's label. */
-export function stringKeyLabel(t: Translate, key: CampaignStringKey): string {
+export function stringKeyLabel(t: TFunction, key: CampaignStringKey): string {
   switch (key) {
     case CampaignStringKey.allRegions:
       return t('All regions label')
@@ -83,10 +83,13 @@ function WordingField({ string }: WordingFieldProps): ReactElement {
       onFocus={handleFocus}
       onBlur={handleBlur}
       error={error != null}
-      helperText={error ?? `${textLength(value)} / ${CAMPAIGN_STRING_CAP}`}
+      helperText={
+        error ??
+        characterCount(t, textLength(value), TRANSLATED_FIELDS.string.value)
+      }
       slotProps={{
         htmlInput: {
-          maxLength: CAMPAIGN_STRING_CAP,
+          maxLength: TRANSLATED_FIELDS.string.value,
           'data-testid': `WordingField-${string.key}`
         },
         formHelperText: error != null ? { role: 'alert' } : undefined

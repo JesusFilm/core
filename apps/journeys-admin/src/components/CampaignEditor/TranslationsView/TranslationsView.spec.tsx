@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import {
   act,
   fireEvent,
@@ -11,7 +12,7 @@ import { ComponentProps, ReactElement } from 'react'
 
 import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
-import { CampaignTranslations_campaignTranslations as Row } from '../../../../__generated__/CampaignTranslations'
+import { GetCampaignTranslations_campaignTranslations as Row } from '../../../../__generated__/GetCampaignTranslations'
 import {
   CampaignTextField,
   CampaignTextSource,
@@ -28,9 +29,19 @@ import {
   useCampaignEditor
 } from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { SelectionProbe, StaticEditor } from '../testing'
+import {
+  QueriedEditor,
+  SelectionProbe,
+  SpyMock,
+  StaticEditor,
+  holdRequests,
+  landRequests
+} from '../testing'
 
-import { TranslationsView } from './TranslationsView'
+import {
+  TRANSLATIONS_REFRESH_DELAY,
+  TranslationsView
+} from './TranslationsView'
 
 const FRENCH = '496'
 const SPANISH = '21028'
@@ -120,10 +131,18 @@ const europe = row({
 // Deliberately out of view order: the view must group, not trust the order.
 const rows = [europe, regionIntro, heroEyebrow, heroTitle, copyLink]
 
+/** Runs the list's refresh delay out on the fake clock, lets any read it sends land, and gives the real clock back. */
+async function waitOutRefreshDelay(): Promise<void> {
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(TRANSLATIONS_REFRESH_DELAY)
+  })
+  await landRequests()
+}
+
 function listMock(
   languageId: string,
   result: Row[] = rows
-): Record<string, unknown> {
+): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_TRANSLATIONS,
@@ -142,7 +161,7 @@ function setMock(
   languageId: string,
   value: string,
   response: Array<{ languageId: string; value: string }> | string
-): Record<string, unknown> {
+): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_TRANSLATION_SET,
@@ -184,7 +203,7 @@ function SelectBlockButton({ id }: { id: string }): ReactElement {
 }
 
 function renderView(
-  mocks: Array<Record<string, unknown>>,
+  mocks: MockLink.MockedResponse[],
   campaignProp = campaign,
   viewProps: Partial<ComponentProps<typeof TranslationsView>> = {},
   initialState?: Partial<CampaignEditorState>
@@ -192,7 +211,7 @@ function renderView(
   return render(
     <StaticEditor
       mocks={mocks}
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       initialState={initialState}
     >
       <SelectionProbe />
@@ -216,6 +235,8 @@ describe('TranslationsView', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = vi.fn()
   })
+
+  afterEach(() => vi.useRealTimers())
 
   describe('the canvas and the list point at each other', () => {
     it('selects the line’s block on the canvas from its target button', async () => {
@@ -327,22 +348,18 @@ describe('TranslationsView', () => {
         block.id === 'heroId' ? { ...block, title: 'A new hero title' } : block
       )
     }
+    vi.useFakeTimers()
     rerender(
-      <StaticEditor mocks={mocks} campaignProp={changed}>
+      <StaticEditor mocks={mocks} campaign={changed}>
         <SelectionProbe />
         <SelectBlockButton id="regionHeaderId" />
         <TranslationsView campaign={changed} initialLanguageId={FRENCH} />
       </StaticEditor>
     )
+    await waitOutRefreshDelay()
 
     expect(
-      await screen.findByTestId(
-        `TranslationRow-${rowKey(newExtra)}`,
-        {},
-        {
-          timeout: 4000
-        }
-      )
+      await screen.findByTestId(`TranslationRow-${rowKey(newExtra)}`)
     ).toBeInTheDocument()
   })
 
@@ -369,14 +386,15 @@ describe('TranslationsView', () => {
           : block
       )
     }
+    vi.useFakeTimers()
     rerender(
-      <StaticEditor mocks={mocks} campaignProp={translated}>
+      <StaticEditor mocks={mocks} campaign={translated}>
         <SelectionProbe />
         <SelectBlockButton id="regionHeaderId" />
         <TranslationsView campaign={translated} initialLanguageId={FRENCH} />
       </StaticEditor>
     )
-    await act(() => new Promise((resolve) => setTimeout(resolve, 2000)))
+    await waitOutRefreshDelay()
 
     // A second read would have no mock and would surface as an error.
     expect(screen.queryByRole('alert')).toBeNull()
@@ -530,7 +548,81 @@ describe('TranslationsView', () => {
     expect(write.result).not.toHaveBeenCalled()
   })
 
-  it("shows the API's message verbatim and restores the text when a write is refused", async () => {
+  it('keeps the field’s other languages in the cache while a save is in flight', async () => {
+    const translated = {
+      ...campaign,
+      blocks: campaign.blocks.map((block) =>
+        block.id === 'heroId'
+          ? {
+              ...block,
+              titleTranslations: [
+                {
+                  __typename: 'TranslatedValue' as const,
+                  languageId: FRENCH,
+                  value: "Partagez l'histoire de Campagne",
+                  source: CampaignTextSource.machine
+                },
+                {
+                  __typename: 'TranslatedValue' as const,
+                  languageId: SPANISH,
+                  value: 'Comparte la historia',
+                  source: CampaignTextSource.human
+                }
+              ]
+            }
+          : block
+      )
+    }
+    const write = setMock(heroTitle, FRENCH, 'Racontez l’histoire', [
+      { languageId: SPANISH, value: 'Comparte la historia' },
+      { languageId: FRENCH, value: 'Racontez l’histoire' }
+    ])
+
+    function HeroTitleTranslations(): ReactElement {
+      const { campaign: current } = useCampaignEditor()
+      const hero = current.blocks.find((block) => block.id === 'heroId')
+      const list =
+        hero?.__typename === 'CampaignHeroBlock' ? hero.titleTranslations : []
+      return (
+        <span data-testid="HeroTitleTranslations">
+          {[...list]
+            .sort((a, b) => a.languageId.localeCompare(b.languageId))
+            .map((entry) => `${entry.languageId}:${entry.value}`)
+            .join('|')}
+        </span>
+      )
+    }
+
+    function CachedView(): ReactElement {
+      const { campaign: current } = useCampaignEditor()
+      return <TranslationsView campaign={current} initialLanguageId={FRENCH} />
+    }
+
+    render(
+      <QueriedEditor campaign={translated} mocks={[listMock(FRENCH), write]}>
+        <HeroTitleTranslations />
+        <CachedView />
+      </QueriedEditor>
+    )
+    await screen.findByTestId('TranslationGroup-landing')
+
+    const field = screen.getByRole('textbox', { name: 'Hero · Title' })
+    fireEvent.change(field, { target: { value: 'Racontez l’histoire' } })
+    await holdRequests(() => fireEvent.blur(field))
+
+    // Optimistic: the one entry merged into the list, the other kept.
+    expect(screen.getByTestId('HeroTitleTranslations')).toHaveTextContent(
+      '21028:Comparte la historia|496:Racontez l’histoire'
+    )
+    expect(write.result).not.toHaveBeenCalled()
+    await landRequests()
+    expect(write.result).toHaveBeenCalled()
+    expect(screen.getByTestId('HeroTitleTranslations')).toHaveTextContent(
+      '21028:Comparte la historia|496:Racontez l’histoire'
+    )
+  })
+
+  it("shows the API's message verbatim on the refused text when a write is refused", async () => {
     const write = setMock(
       heroTitle,
       FRENCH,
@@ -547,7 +639,7 @@ describe('TranslationsView', () => {
     expect(
       await screen.findByText('title must be at most 150 characters')
     ).toBeInTheDocument()
-    expect(field).toHaveValue("Partagez l'histoire de Campagne")
+    expect(field).toHaveValue('x'.repeat(10))
   })
 
   it('reads another language when it is picked', async () => {
@@ -614,6 +706,15 @@ describe('TranslationsView', () => {
     expect(field).toHaveAttribute('lang', 'ar')
   })
 
+  it('lets a translator break a line in any field, a single-line one too', async () => {
+    renderView([listMock(FRENCH)])
+    await screen.findByTestId('TranslationGroup-interface')
+
+    expect(screen.getByRole('textbox', { name: 'Region · Name' }).tagName).toBe(
+      'TEXTAREA'
+    )
+  })
+
   it('offers the default language nothing and asks for a language first', () => {
     renderView([], { ...campaign, languages: [campaign.languages[0]] })
 
@@ -629,7 +730,7 @@ describe('TranslationsView', () => {
     function sweepMock(
       languageId: string,
       outcome: 'complete' | 'error' = 'complete'
-    ): Record<string, unknown> & { result: ReturnType<typeof vi.fn> } {
+    ): SpyMock {
       return {
         request: {
           query: CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION,

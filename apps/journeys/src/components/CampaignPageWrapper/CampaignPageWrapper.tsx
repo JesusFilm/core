@@ -4,26 +4,22 @@ import Head from 'next/head'
 import PlausibleProvider from 'next-plausible'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
-import {
-  CampaignPage,
-  CampaignSeo,
-  campaignBasePath,
-  campaignFontsHref,
-  createCampaignTheme
-} from '@core/journeys/ui/Campaign'
+import { CampaignPage } from '@core/journeys/ui/Campaign/CampaignPage'
+import { CampaignSeo } from '@core/journeys/ui/Campaign/CampaignSeo'
+import { createCampaignTheme } from '@core/journeys/ui/Campaign/libs/createCampaignTheme'
 import type {
   CampaignPublic,
-  CampaignRegion,
-  WorldMapShapes
-} from '@core/journeys/ui/Campaign'
+  CampaignRegion
+} from '@core/journeys/ui/Campaign/types'
 import {
   campaignPlausibleProps,
   campaignSiteId,
   teamSiteId
 } from '@core/journeys/ui/campaignPlausible'
-import { getLocaleRTL } from '@core/shared/ui/rtl'
+import { googleFontsHref } from '@core/journeys/ui/fonts/googleFontsHref'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
+import { getPageRTL } from '../../libs/getPageRTL'
 import { CampaignLanguageRedirect } from '../CampaignLanguageRedirect'
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'your.nextstep.is'
@@ -32,12 +28,6 @@ interface CampaignPageWrapperProps {
   campaign: CampaignPublic
   pageKind: CampaignPageKind
   region?: CampaignRegion | null
-  worldMap?: WorldMapShapes | null
-  /**
-   * Where region links point: the root-domain `/campaign/<slug>` path by
-   * default, `''` on a Campaign Domain where regions sit at `/<slug>`.
-   */
-  basePath?: string
   children?: ReactNode
 }
 
@@ -58,11 +48,9 @@ export function CampaignPageWrapper({
   campaign,
   pageKind,
   region = null,
-  worldMap = null,
-  basePath = campaignBasePath(campaign.slug),
   children
 }: CampaignPageWrapperProps): ReactElement {
-  const rtl = getLocaleRTL(campaign.language.bcp47 ?? '')
+  const rtl = getPageRTL({ campaign })
   const theme = useMemo(
     () => createCampaignTheme(campaign.theme, rtl),
     [campaign.theme, rtl]
@@ -77,7 +65,7 @@ export function CampaignPageWrapper({
       pageviewProps={campaignPlausibleProps(campaign, region)}
     >
       <Head>
-        <link rel="stylesheet" href={campaignFontsHref(campaign.theme)} />
+        <link rel="stylesheet" href={googleFontsHref(campaign.theme)} />
       </Head>
       <CampaignLanguageRedirect campaign={campaign} />
       <CampaignSeo
@@ -88,13 +76,7 @@ export function CampaignPageWrapper({
       />
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <CampaignPage
-          campaign={campaign}
-          pageKind={pageKind}
-          region={region}
-          basePath={basePath}
-          worldMap={worldMap}
-        />
+        <CampaignPage campaign={campaign} pageKind={pageKind} region={region} />
         {children}
       </ThemeProvider>
     </PlausibleProvider>
