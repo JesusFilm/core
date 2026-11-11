@@ -1658,6 +1658,7 @@
   "Open journey": "Un voyage ouvert à tous",
   "There was an error loading campaigns.": "Une erreur s'est produite lors du chargement des campagnes.",
   "There was an error refreshing the campaign.": "Une erreur s'est produite lors de l'actualisation de la campagne.",
+  "This language has a QR code. Unlink it instead.": "Cette langue comporte un code QR. Supprime plutôt le lien.",
   "Remove {{language}}?": "Supprimer « {{language}} » ?",
   "Every translation into {{language}} is deleted.": "Toutes les traductions vers « {{language}} » sont supprimées.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "Il n'y a pas encore de campagnes. Crée-en une pour mettre en place une page d'accueil avec une page pour chaque région.",
@@ -1723,6 +1724,8 @@
   "All regions label": "Étiquette « Toutes les régions »",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Type de fichier non pris en charge. Merci de télécharger l'un des formats suivants : (PNG, JPG, GIF, SVG, HEIC ou WebP)",
   "Maximum file size: 10 MB": "Taille maximale du fichier : 10 Mo",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} La traduction est déjà en cours. Réessaie quand elle sera terminée.",
   "Unlink the journey before removing this language.": "Désactive le parcours avant de supprimer cette langue.",
   "Delete {{language}}?": "Supprimer « {{language}} » ?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Ça supprime définitivement le texte, ainsi que le code QR et le lien de partage de la campagne. Les copies du code QR déjà imprimées ou partagées ne redirigeront plus une fois que le lien aura été supprimé.",
@@ -1760,5 +1763,9 @@
   "Translated {{count}} strings into {{language}}_one": "J'ai traduit la chaîne « {{count}} » en {{language}}",
   "Translated {{count}} strings into {{language}}_other": "J'ai traduit les chaînes de caractères de « {{count}} » en {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "La traduction vers « {{language}} » a été annulée. La chaîne « {{count}} » a été conservée.",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "La traduction vers {{language}} a été annulée. Les chaînes de caractères de {{count}} ont été conservées."
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "La traduction vers {{language}} a été annulée. Les chaînes de caractères de {{count}} ont été conservées.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} Ce texte n'a toujours pas de traduction sur {{language}}, donc il ne peut pas devenir la valeur par défaut.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} Ces textes n'ont toujours pas de traduction sur {{language}}, donc ça ne peut pas devenir la version par défaut.",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "La traduction vers « {{language}} » a été interrompue. La chaîne « {{count}} » a été conservée.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "La traduction vers {{language}} a été interrompue. Les chaînes de caractères de {{count}} ont été conservées."
 }
