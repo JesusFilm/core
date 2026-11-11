@@ -297,10 +297,7 @@ export function StaticEditor({
       {...(link != null
         ? { link }
         : {
-            mocks: [
-              ...mocks,
-              previewCountriesMock(campaign)
-            ]
+            mocks: [...mocks, previewCountriesMock(campaign)]
           })}
       cache={cache}
     >
