@@ -1658,6 +1658,7 @@
   "Open journey": "Открытое путешествие",
   "There was an error loading campaigns.": "Произошла ошибка при загрузке кампаний.",
   "There was an error refreshing the campaign.": "Произошла ошибка при обновлении кампании.",
+  "This language has a QR code. Unlink it instead.": "У этого языка есть QR-код. Лучше отвяжи его.",
   "Remove {{language}}?": "Удалить « {{language}}»?",
   "Every translation into {{language}} is deleted.": "Все переводы на {{language}} удаляются.",
   "No campaigns yet. Create one to build a landing page with a page for every region.": "Пока нет кампаний. Создай одну, чтобы сделать целевую страницу со страницами для каждого региона.",
@@ -1723,6 +1724,8 @@
   "All regions label": "Метка «Все регионы»",
   "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "Неподдерживаемый тип файла. Загрузи один из следующих форматов: (PNG, JPG, GIF, SVG, HEIC или WebP)",
   "Maximum file size: 10 MB": "Максимальный размер файла: 10 МБ",
+  "{{first}} · {{second}}": "{{first}} · {{second}}",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} Сейчас идет перевод. Попробуй позже, когда он закончится.",
   "Unlink the journey before removing this language.": "Прежде чем удалить этот язык, отмени привязку к маршруту.",
   "Delete {{language}}?": "Удалить « {{language}}»?",
   "This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.": "Это навсегда удалит текст вместе с QR-кодом кампании и ссылкой для публикации. Уже напечатанные или распространенные копии QR-кода перестанут перенаправлять пользователей после очистки ссылки.",
@@ -1792,5 +1795,13 @@
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "Перевод на {{language}} отменён.  Строка из {{count}} оставлена.",
   "Translation into {{language}} cancelled. {{count}} strings kept._few": "Перевод на {{language}} отменён.  Строки из {{count}} оставлены.",
   "Translation into {{language}} cancelled. {{count}} strings kept._many": "Перевод на {{language}} отменён.  Строки из {{count}} оставлены.",
-  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Перевод на {{language}} отменён.  Строки из {{count}} оставлены."
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Перевод на {{language}} отменён.  Строки из {{count}} оставлены.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "{{count}} Текст до сих пор не переведён на сайте {{language}}, поэтому он не может стать текстом по умолчанию.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._few": "{{count}} Тексты до сих пор не переведены на сайте {{language}}, поэтому он не может стать вариантом по умолчанию.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._many": "{{count}} Тексты до сих пор не переведены на сайте {{language}}, поэтому он не может стать вариантом по умолчанию.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} Тексты до сих пор не переведены на сайте {{language}}, поэтому он не может стать вариантом по умолчанию.",
+  "Translation into {{language}} stopped. {{count}} strings kept._one": "Перевод в формат {{language}} прерван.  Строка в формате {{count}} сохранена.",
+  "Translation into {{language}} stopped. {{count}} strings kept._few": "Перевод на {{language}} прекращён.  Строки из {{count}} сохранены.",
+  "Translation into {{language}} stopped. {{count}} strings kept._many": "Перевод на {{language}} прекращён.  Строки из {{count}} сохранены.",
+  "Translation into {{language}} stopped. {{count}} strings kept._other": "Перевод на {{language}} прекращён.  Строки из {{count}} сохранены."
 }
