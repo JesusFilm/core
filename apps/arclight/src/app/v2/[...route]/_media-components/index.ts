@@ -356,10 +356,15 @@ mediaComponents.openapi(route, async (c) => {
       )
 
       const variant = video.variants[0]
+      // Matches updateVideoInAlgolia's isAlgoliaVideoDownloadable rule: the
+      // raw `downloadable` flag alone isn't enough, since it defaults to
+      // true even for a variant with no media and no download rows. This
+      // also replaces the old blanket collection/series override, which no
+      // longer matches what the Algolia index reports for the same video.
       const isDownloadable =
-        video.label === 'collection' || video.label === 'series'
-          ? false
-          : (variant?.downloadable ?? false)
+        (variant?.downloadable ?? false) &&
+        variant?.hls != null &&
+        (variant?.downloads.length ?? 0) > 0
 
       const titleContent = getPreferredContent(video.title, metadataLanguages)
       const shortDescriptionContent = getPreferredContent(
