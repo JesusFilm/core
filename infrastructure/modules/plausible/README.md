@@ -6,7 +6,7 @@ public ALB. Plan: `docs/plans/2026-10-14-002-feat-plausible-on-ecs-graviton-plan
 Its PostgreSQL is in the Core Database.
 
 Its events are in the environment's ClickHouse Cloud service
-(`module.<env>.module.short_links_clickhouse`), database `plausible_events_db`,
+(`jfp-clickhouse-<env>`, `module.<env>.module.clickhouse`), database `plausible_events_db`,
 as the user `plausible` (`clickhouse-cloud/users.sql`).
 
 |                                             | stage                                        | prod                                                   |
@@ -72,7 +72,7 @@ Then apply the rest: `tofu apply -target=module.<env>.module.plausible`.
 ## Preparing the event store
 
 The target is the environment's ClickHouse Cloud service
-(`module.<env>.module.short_links_clickhouse`), which also holds the
+(`jfp-clickhouse-<env>`, `module.<env>.module.clickhouse`), which also holds the
 short-links `redirects` database. Its HTTPS URL and `default` password are
 `SHORT_LINKS_CLICKHOUSE_URL` and `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD` in
 the `core` Doppler project. Plausible gets its own database and user.
