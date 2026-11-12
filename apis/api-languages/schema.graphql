@@ -214,6 +214,7 @@ interface User {
 type WessImportResult {
   success: Boolean!
   languagesImported: Int!
+  nativeNamesImported: Int!
   countriesImported: Int!
   countryLanguagesImported: Int!
   message: String!
