@@ -29,10 +29,12 @@ export function useCurrentUserLazyQuery(): {
   loading: boolean
   error?: Error
 } {
-  const [loadUser, { data, loading, error }] =
-    useLazyQuery<GetCurrentUser>(GET_CURRENT_USER, {
+  const [loadUser, { data, loading, error }] = useLazyQuery<GetCurrentUser>(
+    GET_CURRENT_USER,
+    {
       fetchPolicy: 'network-only'
-    })
+    }
+  )
 
   if (data?.me != null) {
     return { loadUser, data: data.me, loading, error }
