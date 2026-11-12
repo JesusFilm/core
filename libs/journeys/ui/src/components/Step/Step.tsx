@@ -47,6 +47,10 @@ interface StepProps extends TreeBlock<StepFields> {
   wrappers?: WrappersProps
 }
 
+/**
+ * Renders a Step and records views during active, unwrapped playback.
+ * Captures use its Card's tag and ID while Plausible retains the Step payload.
+ */
 export function Step({
   id: blockId,
   children,
