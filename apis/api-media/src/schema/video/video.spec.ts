@@ -2826,7 +2826,7 @@ describe('video', () => {
         // tx.* calls land on the same spies the tests assert against.
         prismaMock.$transaction.mockImplementation(
           (async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
-            await transaction(prismaMock)) as any
+            await transaction(prismaMock))
         )
       })
 
@@ -3120,7 +3120,7 @@ describe('video', () => {
         // its tx.* calls land on the same spies the tests assert against.
         prismaMock.$transaction.mockImplementation(
           (async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
-            await transaction(prismaMock)) as any
+            await transaction(prismaMock))
         )
       })
 
