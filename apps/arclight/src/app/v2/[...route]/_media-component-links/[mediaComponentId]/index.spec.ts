@@ -71,6 +71,11 @@ const cases: Array<[string, FakeVariant | null, boolean]> = [
     { ...withDownloads, hls: '', dash: '' },
     false
   ],
+  [
+    'only distro download rows',
+    { ...withDownloads, downloads: [{ quality: 'distroLow', size: 100 }] },
+    false
+  ],
   ['a false flag', { ...withDownloads, downloadable: false }, false],
   ['no variant', null, false]
 ]
