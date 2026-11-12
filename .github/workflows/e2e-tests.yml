@@ -33,7 +33,8 @@ permissions:
 jobs:
   deploy-and-test:
     if: inputs.TargetTests == 'all-e2e' || github.event_name == 'schedule'
-    runs-on: jfp-proxmox-core
+    # journeys-admin's long e2e-full run is cancelled on the shared Proxmox pool; keep it on a hosted runner until that is resolved
+    runs-on: ${{ matrix.app == 'journeys-admin' && 'ubuntu-latest' || 'jfp-proxmox-core' }}
     strategy:
       fail-fast: false
       matrix:
