@@ -131,7 +131,7 @@ describe('GET /media-components/:mediaComponentId', () => {
             lengthInMilliseconds: 7673728,
             language: { bcp47: 'en' },
             downloadable: true,
-            downloads: []
+            downloads: [{ quality: 'low', size: 585287114 }]
           }
         })
       }
@@ -146,6 +146,32 @@ describe('GET /media-components/:mediaComponentId', () => {
       componentType: 'content',
       contentType: 'video',
       isDownloadable: true
+    })
+  })
+
+  it('does not report a Variant as downloadable when it has no download rows', async () => {
+    queryMock.mockResolvedValue({
+      data: {
+        video: baseVideo({
+          id: '1_jf-0-0',
+          label: 'featureFilm',
+          variant: {
+            hls: 'https://example.com/jf.m3u8',
+            lengthInMilliseconds: 7673728,
+            language: { bcp47: 'en' },
+            downloadable: true,
+            downloads: []
+          }
+        })
+      }
+    })
+
+    const res = await app.request('/media-components/1_jf-0-0')
+
+    expect(res.status).toBe(200)
+    expect(await res.json()).toMatchObject({
+      componentType: 'content',
+      isDownloadable: false
     })
   })
 
