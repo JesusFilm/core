@@ -1,6 +1,9 @@
-import { Video } from '@core/prisma/media/client'
+import { vi } from 'vitest'
+
+import { Prisma } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
+import { logger } from '../../../lib/logger'
 
 import { seedVideoLanguages } from './videoLanguage'
 
@@ -10,18 +13,82 @@ interface VideoRow {
   children: Array<{ availableLanguages: string[] }>
 }
 
+// seedVideoLanguages issues two distinct findMany shapes: the plain id scan
+// (no `select.variants`) and the batched recompute's selected-payload read.
+// Typing the mock implementations against the real args/return types -
+// rather than `any` - keeps a fixture that drifts from videoLanguage.ts's
+// actual `select` a compile error, with the widening confined to the mock
+// boundary (the as*Result helpers below, which every fixture in this file
+// is already narrower than).
+type SeedVideoFindManyArgs = Prisma.VideoFindManyArgs
+
+function isRecomputeArgs(args: SeedVideoFindManyArgs): boolean {
+  return args.select?.variants != null
+}
+
+// `where.id` is typed as `StringFilter | string` since Prisma also allows a
+// bare equality match - the recompute's chunked reads only ever pass the
+// `{ in }` form, so that's the only shape narrowed here. `in` itself admits
+// a `FieldRef` (a column-to-column comparison) alongside a literal array -
+// the recompute only ever constructs it from a literal array of ids.
+function idsFromArgs(args: SeedVideoFindManyArgs): string[] {
+  const idFilter = args.where?.id
+  if (typeof idFilter !== 'object' || idFilter == null || !('in' in idFilter)) {
+    return []
+  }
+  return Array.isArray(idFilter.in) ? idFilter.in : []
+}
+
+// The deep mock's findMany/update/$transaction signatures return
+// PrismaPromise, not a plain Promise - mockResolvedValue(Once) handles that
+// wrapping internally, but a `mockImplementation` callback must produce it
+// explicitly. These confine that one bit of widening to the mock boundary,
+// leaving every fixture above typed and compile-checked against the real
+// selected-payload shape.
+function asFindManyResult(
+  rows: unknown
+): ReturnType<typeof prismaMock.video.findMany> {
+  return Promise.resolve(rows) as unknown as ReturnType<
+    typeof prismaMock.video.findMany
+  >
+}
+
+function asUpdateResult(
+  row: unknown
+): ReturnType<typeof prismaMock.video.update> {
+  return Promise.resolve(row) as unknown as ReturnType<
+    typeof prismaMock.video.update
+  >
+}
+
+function asTransactionResult(
+  value: unknown
+): ReturnType<typeof prismaMock.$transaction> {
+  return Promise.resolve(value)
+}
+
+// `$transaction` is overloaded (an array of queries, or an interactive
+// callback) - this job only ever uses the array form, but a
+// `mockImplementation` callback must satisfy the whole overloaded type,
+// not just the branch under test. Typing the parameter `unknown` (rather
+// than casting the mock itself) accepts either call shape while the cast
+// stays confined to this one, deliberately-narrowed boundary.
+function givenTransactionPassesThrough(): void {
+  prismaMock.$transaction.mockImplementation((updates: unknown) =>
+    asTransactionResult(Promise.all(updates as Array<Promise<unknown>>))
+  )
+}
+
 // seedVideoLanguages reads twice: once for the id list, once for the batched
 // recompute. Serve both from the same fixture so a test only declares rows.
 function givenVideos(rows: VideoRow[]): void {
-  ;(prismaMock.video.findMany as any).mockImplementation(
-    async ({ select }: { select?: Record<string, unknown> }) =>
-      select?.variants == null
-        ? (rows.map(({ id }) => ({ id })) as unknown as Video[])
-        : rows
+  prismaMock.video.findMany.mockImplementation(
+    (args: SeedVideoFindManyArgs = {}) =>
+      asFindManyResult(
+        isRecomputeArgs(args) ? rows : rows.map(({ id }) => ({ id }))
+      )
   )
-  ;(prismaMock.$transaction as any).mockImplementation(
-    async (updates: Array<Promise<unknown>>) => Promise.all(updates)
-  )
+  givenTransactionPassesThrough()
 }
 
 describe('seedVideoLanguages', () => {
@@ -74,15 +141,11 @@ describe('seedVideoLanguages', () => {
     // Updating a since-deleted id would fail (and roll back) the whole
     // batch's transaction, so it must be skipped rather than updated with
     // an empty array.
-    ;(prismaMock.video.findMany as any).mockImplementation(
-      async ({ select }: { select?: Record<string, unknown> }) =>
-        select?.variants == null
-          ? ([{ id: 'vanished' }] as unknown as Video[])
-          : []
+    prismaMock.video.findMany.mockImplementation(
+      (args: SeedVideoFindManyArgs = {}) =>
+        asFindManyResult(isRecomputeArgs(args) ? [] : [{ id: 'vanished' }])
     )
-    ;(prismaMock.$transaction as any).mockImplementation(
-      async (updates: Array<Promise<unknown>>) => Promise.all(updates)
-    )
+    givenTransactionPassesThrough()
 
     await seedVideoLanguages()
 
@@ -162,47 +225,39 @@ describe('seedVideoLanguages', () => {
       ].map((row) => [row.id, row])
     )
 
-    ;(prismaMock.video.findMany as any).mockImplementation(
-      async ({
-        select,
-        where
-      }: {
-        select?: Record<string, unknown>
-        where?: { id: { in: string[] } }
-      }) => {
-        if (select?.variants == null) {
-          return [...store.keys()].map((id) => ({ id })) as unknown as Video[]
+    prismaMock.video.findMany.mockImplementation(
+      (args: SeedVideoFindManyArgs = {}) => {
+        if (!isRecomputeArgs(args)) {
+          return asFindManyResult([...store.keys()].map((id) => ({ id })))
         }
-        const ids = where?.id.in ?? []
-        return ids.map((id) => {
-          const row = store.get(id) as StatefulRow
-          return {
-            id,
-            variants: row.variants,
-            children: row.childIds.map((childId) => ({
-              availableLanguages: (store.get(childId) as StatefulRow)
-                .availableLanguages
-            }))
-          }
-        })
+        const ids = idsFromArgs(args)
+        return asFindManyResult(
+          ids.map((id) => {
+            const row = store.get(id) as StatefulRow
+            return {
+              id,
+              variants: row.variants,
+              children: row.childIds.map((childId) => ({
+                availableLanguages: (store.get(childId) as StatefulRow)
+                  .availableLanguages
+              }))
+            }
+          })
+        )
       }
     )
-    ;(prismaMock.video.update as any).mockImplementation(
-      async ({
-        where,
-        data
-      }: {
-        where: { id: string }
-        data: { availableLanguages: string[] }
-      }) => {
-        ;(store.get(where.id) as StatefulRow).availableLanguages =
-          data.availableLanguages
-        return {} as unknown as Video
+    prismaMock.video.update.mockImplementation(
+      (args: Prisma.VideoUpdateArgs) => {
+        const availableLanguages = (
+          args.data as { availableLanguages?: string[] }
+        ).availableLanguages
+        ;(
+          store.get(args.where.id as string) as StatefulRow
+        ).availableLanguages = availableLanguages ?? []
+        return asUpdateResult({})
       }
     )
-    ;(prismaMock.$transaction as any).mockImplementation(
-      async (updates: Array<Promise<unknown>>) => Promise.all(updates)
-    )
+    givenTransactionPassesThrough()
 
     await seedVideoLanguages()
 
@@ -224,25 +279,17 @@ describe('seedVideoLanguages', () => {
     }))
     const recomputeCallSizes: number[] = []
 
-    ;(prismaMock.video.findMany as any).mockImplementation(
-      async ({
-        select,
-        where
-      }: {
-        select?: Record<string, unknown>
-        where?: { id: { in: string[] } }
-      }) => {
-        if (select?.variants == null) {
-          return rows.map(({ id }) => ({ id })) as unknown as Video[]
+    prismaMock.video.findMany.mockImplementation(
+      (args: SeedVideoFindManyArgs = {}) => {
+        if (!isRecomputeArgs(args)) {
+          return asFindManyResult(rows.map(({ id }) => ({ id })))
         }
-        const ids = where?.id.in ?? []
+        const ids = idsFromArgs(args)
         recomputeCallSizes.push(ids.length)
-        return rows.filter((row) => ids.includes(row.id))
+        return asFindManyResult(rows.filter((row) => ids.includes(row.id)))
       }
     )
-    ;(prismaMock.$transaction as any).mockImplementation(
-      async (updates: Array<Promise<unknown>>) => Promise.all(updates)
-    )
+    givenTransactionPassesThrough()
 
     await seedVideoLanguages()
 
@@ -257,5 +304,49 @@ describe('seedVideoLanguages', () => {
       where: { id: `video-${rowCount - 1}` },
       data: { availableLanguages: ['529'] }
     })
+  })
+
+  it('retries a video whose write exhausted its retries, instead of treating the unwritten value as already converged', async () => {
+    // A batch that exhausts its retries never persists its intended value.
+    // If the next pass's diff compared against that unwritten value, an
+    // unchanged input would recompute the same value and be wrongly called
+    // converged - leaking the never-written value forever. Fail every
+    // transaction during the first recompute pass, then let it succeed:
+    // a correct implementation must still retry on the next pass.
+    vi.useFakeTimers()
+    try {
+      let recomputePasses = 0
+      prismaMock.video.findMany.mockImplementation(
+        (args: SeedVideoFindManyArgs = {}) => {
+          if (!isRecomputeArgs(args)) {
+            return asFindManyResult([{ id: 'flaky' }])
+          }
+          recomputePasses++
+          return asFindManyResult([
+            { id: 'flaky', variants: [{ languageId: '529' }], children: [] }
+          ])
+        }
+      )
+      prismaMock.$transaction.mockImplementation(() =>
+        recomputePasses >= 2
+          ? asTransactionResult([])
+          : Promise.reject(new Error('transaction boom'))
+      )
+      const loggerErrorSpy = vi.spyOn(logger, 'error')
+
+      const seeded = seedVideoLanguages()
+      await vi.runAllTimersAsync()
+      await seeded
+
+      // Three recompute passes: one that fails to write, one that retries
+      // and succeeds, and one final pass that finds nothing left to change.
+      expect(recomputePasses).toBe(3)
+      expect(loggerErrorSpy).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.stringContaining('hit MAX_PASSES')
+      )
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

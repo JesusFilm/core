@@ -239,11 +239,14 @@ interface ParentDependencyOrder {
 // and the collection that contains that series. The collection then needs
 // the series' freshly recomputed languages, not the pre-update value a
 // single batched snapshot would otherwise freeze in. Orders the batch by
-// that containment - restricted to this batch, via childIds, the same field
-// videoVariant.ts and reconcileParentVariants treat as authoritative for
-// parent/child lookups - so dependents are written after what they depend
-// on, and reports which parents have such a dependency so the caller knows
-// to re-derive them instead of trusting the batched value.
+// that containment - restricted to this batch, via each parent's actual
+// `children` relation (not the persisted `childIds` scalar, which is "for
+// child sort order" only per schema.prisma and can list ids a create/update
+// never actually connected, e.g. a child that didn't exist yet - describing
+// a cycle between two parents that aren't really one) - so dependents are
+// written after what they depend on, and reports which parents have such a
+// dependency so the caller knows to re-derive them instead of trusting the
+// batched value.
 function orderParentsByDependency(
   parentIds: string[],
   childIdsByParentId: Map<string, string[]>
@@ -304,12 +307,16 @@ function orderParentsByDependency(
 // Ensures collections always reflect the union of their children's languages
 //
 // The parents are recomputed from one batched lookup rather than a lookup
-// each, kept to the same two-read budget as before by asking this single
-// query for childIds too. A parent with no sibling dependency in this batch
-// uses that snapshot value directly; a parent that depends on a sibling
-// (see orderParentsByDependency above) is written after that sibling and
-// re-derived with a fresh read at that point, so it picks up the sibling's
-// just-written value rather than the snapshot's stale one.
+// each. Dependency detection needs a second batched lookup of its own - the
+// actual `children` relation, unfiltered by published, since that's what a
+// create/update call actually connected and what determines write order -
+// rather than reusing availableLanguagesSelect's published-only children,
+// which would miss an unpublished sibling dependency. A parent with no
+// sibling dependency in this batch uses the snapshot value directly; a
+// parent that depends on a sibling (see orderParentsByDependency above) is
+// written after that sibling and re-derived with a fresh read at that
+// point, so it picks up the sibling's just-written value rather than the
+// snapshot's stale one.
 //
 // The writes stay per-parent: the Algolia enqueue and cache reset are
 // per-video side effects, and keeping the updates separate preserves the
@@ -324,16 +331,25 @@ export async function updateParentCollectionLanguages(
     return
   }
 
-  const parents = await prisma.video.findMany({
-    where: { id: { in: parentIds } },
-    select: { id: true, childIds: true, ...availableLanguagesSelect }
-  })
+  const [parents, parentChildren] = await Promise.all([
+    prisma.video.findMany({
+      where: { id: { in: parentIds } },
+      select: { id: true, ...availableLanguagesSelect }
+    }),
+    prisma.video.findMany({
+      where: { id: { in: parentIds } },
+      select: { id: true, children: { select: { id: true } } }
+    })
+  ])
 
   const availableLanguagesByVideoId = new Map(
     parents.map((video) => [video.id, reduceAvailableLanguages(video)])
   )
   const childIdsByParentId = new Map(
-    parents.map((video) => [video.id, video.childIds])
+    parentChildren.map((video) => [
+      video.id,
+      video.children.map((child) => child.id)
+    ])
   )
   const { orderedParentIds, parentsWithSiblingDependency } =
     orderParentsByDependency(parentIds, childIdsByParentId)

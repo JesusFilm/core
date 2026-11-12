@@ -237,14 +237,15 @@ describe('updateParentCollectionLanguages', () => {
     deletedVariantIds: []
   }
 
-  // This path reads twice, in order: findContainerParentIds for the id
-  // list, then the batched recompute. Queuing two `Once` values keeps each
-  // call typed as a plain Video[] resolution rather than needing a
-  // `mockImplementation` callback (whose return type Prisma's mock typing
-  // demands be a PrismaPromise, not a plain Promise). None of these parents
-  // contain each other here, so childIds is empty and every parent resolves
-  // from the batched snapshot alone — see the dedicated diamond-dependency
-  // test below for the case where childIds is non-empty.
+  // This path reads three times, in order: findContainerParentIds for the id
+  // list, the batched availableLanguages recompute, and the batched real
+  // `children` relation read dependency ordering needs. Queuing `Once`
+  // values keeps each call typed as a plain Video[] resolution rather than
+  // needing a `mockImplementation` callback (whose return type Prisma's mock
+  // typing demands be a PrismaPromise, not a plain Promise). None of these
+  // parents contain each other here, so every parent resolves from the
+  // batched snapshot alone — see the dedicated diamond-dependency test below
+  // for the case where a parent does contain another.
   function mockParentCascadeQueries(parents: ContainerParentPayload[]): void {
     prismaMock.video.findMany.mockResolvedValueOnce(
       parents as unknown as Video[]
@@ -253,10 +254,12 @@ describe('updateParentCollectionLanguages', () => {
       parents.map(({ id }) => ({
         id,
         label: 'collection',
-        childIds: [],
         variants: [],
         children: [{ availableLanguages: ['529'] }]
       })) as unknown as Video[]
+    )
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      parents.map(({ id }) => ({ id, children: [] })) as unknown as Video[]
     )
   }
 
@@ -300,7 +303,8 @@ describe('updateParentCollectionLanguages', () => {
 
   it('issues a bounded number of read queries no matter how many parents', async () => {
     // A per-parent recompute made reads grow with the container count. The
-    // batched lookup keeps them at two: the id scan and the recompute.
+    // batched lookup keeps them at three: the id scan, the availableLanguages
+    // recompute, and the real-children read dependency ordering needs.
     const readsByParentCount = new Map<number, number>()
 
     for (const parentCount of [1, 5, 25]) {
@@ -322,7 +326,7 @@ describe('updateParentCollectionLanguages', () => {
       expect(prismaMock.video.update).toHaveBeenCalledTimes(parentCount)
     }
 
-    expect([...readsByParentCount.values()]).toEqual([2, 2, 2])
+    expect([...readsByParentCount.values()]).toEqual([3, 3, 3])
     expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
   })
 
@@ -351,17 +355,22 @@ describe('updateParentCollectionLanguages', () => {
       {
         id: 'parent-1',
         label: 'collection',
-        childIds: [],
         variants: [],
         children: [{ availableLanguages: ['529'] }]
       },
       {
         id: 'parent-2',
         label: 'collection',
-        childIds: ['parent-1'],
         variants: [],
         children: [{ availableLanguages: ['old-lang'] }]
       }
+    ] as unknown as Video[])
+    // Dependency ordering comes from each parent's real `children` relation,
+    // not the persisted `childIds` scalar - parent-2 really does contain
+    // parent-1, so it must be written after it and re-derived.
+    prismaMock.video.findMany.mockResolvedValueOnce([
+      { id: 'parent-1', children: [] },
+      { id: 'parent-2', children: [{ id: 'parent-1' }] }
     ] as unknown as Video[])
     // The fresh read for parent-2 happens after parent-1 is written, so it
     // reflects parent-1's new, not snapshot, languages.

@@ -1,6 +1,7 @@
 import { prisma } from '@core/prisma/media/client'
 
 import { calculateAvailableLanguagesForVideos } from '../../../../schema/video/lib/updateAvailableLanguages'
+import { logger } from '../../../lib/logger'
 
 const BATCH_SIZE = 100
 const MAX_RETRIES = 3
@@ -85,22 +86,34 @@ function diffPass(
 // scan and this recompute has no map entry, and updating a since-deleted
 // row would fail the whole batch's transaction (and every retry of it).
 // Skipping it here means the rest of the batch still gets updated.
+//
+// Returns the ids whose batch exhausted its retries, so the caller can
+// retry them on a later pass rather than treating their (unwritten)
+// computed value as already persisted.
 async function writeAvailableLanguages(
   availableLanguagesByVideoId: Map<string, string[]>
-): Promise<void> {
+): Promise<Set<string>> {
   const updates = Array.from(
     availableLanguagesByVideoId,
     ([id, availableLanguages]) => ({ id, availableLanguages })
   )
 
+  const failedIds = new Set<string>()
   for (let i = 0; i < updates.length; i += BATCH_SIZE) {
     const batch = updates.slice(i, i + BATCH_SIZE)
     try {
       await updateBatch(batch)
     } catch (error) {
-      console.error(`Failed to process batch ${i / BATCH_SIZE + 1}:`, error)
+      logger.error(
+        { error, batchNumber: i / BATCH_SIZE + 1 },
+        'seedVideoLanguages: failed to process batch'
+      )
+      for (const { id } of batch) {
+        failedIds.add(id)
+      }
     }
   }
+  return failedIds
 }
 
 // Reseeds every video's availableLanguages using the same canonical
@@ -122,6 +135,11 @@ export async function seedVideoLanguages(): Promise<void> {
   const videoIds = videos.map(({ id }) => id)
 
   let previousPass: Map<string, string[]> | null = null
+  // Ids whose last write exhausted its retries. Their computed value was
+  // never actually persisted, so they must be retried even on a pass where
+  // diffPass alone would call them unchanged (it only compares computed
+  // values, which are identical because nothing about their inputs moved).
+  let unresolvedIds = new Set<string>()
   let converged = false
   for (let pass = 0; pass < MAX_PASSES; pass++) {
     const currentPass = await computeAvailableLanguagesByVideoId(videoIds)
@@ -130,19 +148,26 @@ export async function seedVideoLanguages(): Promise<void> {
     // entry here either, and so is simply never written - matching
     // writeAvailableLanguages' own map-driven skip of vanished rows.
     const changed = diffPass(currentPass, previousPass)
+    for (const id of unresolvedIds) {
+      const availableLanguages = currentPass.get(id)
+      if (availableLanguages != null) {
+        changed.set(id, availableLanguages)
+      }
+    }
 
     if (changed.size === 0) {
       converged = true
       break
     }
 
-    await writeAvailableLanguages(changed)
+    unresolvedIds = await writeAvailableLanguages(changed)
     previousPass = currentPass
   }
 
   if (!converged) {
-    console.error(
-      `seedVideoLanguages: hit MAX_PASSES (${MAX_PASSES}) without converging`
+    logger.error(
+      { maxPasses: MAX_PASSES },
+      'seedVideoLanguages: hit MAX_PASSES without converging'
     )
   }
 }
