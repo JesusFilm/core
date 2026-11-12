@@ -2,6 +2,10 @@ import { ApolloLink } from '@apollo/client'
 import { Kind } from 'graphql'
 import { Observable } from 'rxjs'
 
+/**
+ * Records event requests and returns minimal successful event responses.
+ * Tests can fail captures or leave interactions pending to verify independence.
+ */
 export function createEventRequestLink({
   failCaptures = false,
   pendingInteractions = false

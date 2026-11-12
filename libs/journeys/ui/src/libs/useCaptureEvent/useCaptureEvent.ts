@@ -227,6 +227,11 @@ export type CaptureEventSender = (
   input: CaptureEventInput
 ) => void
 
+/**
+ * Returns a stable sender using the existing Apollo client and authentication.
+ * Each supported occurrence gets its own UUID, retained across Apollo retries.
+ * Missing Steps and unsupported tags are ignored; capture failures are contained.
+ */
 export function useCaptureEvent(): CaptureEventSender {
   const client = useApolloClient()
   return useCallback(
