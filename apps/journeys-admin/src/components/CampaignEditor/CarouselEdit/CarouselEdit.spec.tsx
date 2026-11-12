@@ -15,9 +15,9 @@ import {
   VideoLabel
 } from '../../../../__generated__/globalTypes'
 import { mswServer } from '../../../../test/mswServer'
+import { CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE } from '../../../libs/useCampaignBlockUpdateMutation'
 import { CAMPAIGN_VIDEO_BLOCK_CREATE } from '../../../libs/useCampaignVideoBlockCreateMutation'
 import { CAMPAIGN_VIDEO_CAROUSEL_BLOCK_PLAYLIST_IMPORT } from '../../../libs/useCampaignVideoCarouselBlockPlaylistImportMutation'
-import { CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE_VIDEO } from '../../../libs/useCampaignVideoCarouselBlockUpdateMutation'
 import { GET_CAMPAIGN_WATCH_VIDEO } from '../../../libs/useCampaignWatchVideoQuery'
 import { getVideosWithOffsetAndUrl } from '../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromYouTube/VideoFromYouTube.handlers'
 import { campaign } from '../data'
@@ -102,7 +102,7 @@ const watchMock = {
 
 const setWatchMock = {
   request: {
-    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE_VIDEO,
+    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE,
     variables: {
       id: 'carouselId',
       input: { url: WATCH_URL, eyebrow: 'Collection', title: 'Outreach films' }
@@ -115,7 +115,7 @@ const setWatchMock = {
 
 const clearWatchMock = {
   request: {
-    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE_VIDEO,
+    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE,
     variables: { id: 'carouselId', input: { videoId: null } }
   },
   result: vi.fn(() => ({
@@ -220,7 +220,7 @@ const watchSeriesMock = {
 
 const setWatchWithTextMock = {
   request: {
-    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE_VIDEO,
+    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE,
     variables: {
       id: 'carouselId',
       input: {

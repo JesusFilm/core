@@ -1,6 +1,3 @@
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
-
 import { lighten } from '@mui/material/styles'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -9,22 +6,17 @@ import { I18nContext } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 
-import { buildWorldMap } from './buildWorldMap'
-import type { WorldAtlasTopology, WorldMapShapes } from './buildWorldMap'
+import { worldAtlas } from '../../../../test/worldAtlas'
+
+import {
+  WORLD_MAP_HEIGHT,
+  WORLD_MAP_WIDTH,
+  buildWorldMap
+} from './buildWorldMap'
+import type { WorldMapShapes } from './buildWorldMap'
 import { WorldMap } from './WorldMap'
 
-const atlas = JSON.parse(
-  readFileSync(
-    resolve(
-      __dirname,
-      '../../../../../../../../apps/journeys/public/countries-110m.json'
-    ),
-    'utf8'
-  )
-) as WorldAtlasTopology
-
 const accentColor = '#EF3340'
-const neutralColor = '#222222'
 const WORLD_TRANSFORM = 'translate(0.0px, 0.0px) scale(1.000)'
 
 const i18n = createInstance()
@@ -69,7 +61,6 @@ function map(
         zoomToHighlighted={zoomToHighlighted}
         visitors={visitors}
         accentColor={accentColor}
-        neutralColor={neutralColor}
         locale="en"
       />
     </I18nContext.Provider>
@@ -85,7 +76,7 @@ function transformOf(): string {
 }
 
 describe('buildWorldMap', () => {
-  const shapes = buildWorldMap(atlas)
+  const shapes = buildWorldMap(worldAtlas)
 
   it('projects every country of the atlas but Antarctica into a path string', () => {
     const ids = shapes.countries.map((country) => country.id)
@@ -95,8 +86,8 @@ describe('buildWorldMap', () => {
     expect(shapes.countries.every((country) => country.d.startsWith('M'))).toBe(
       true
     )
-    expect(shapes.width).toBe(960)
-    expect(shapes.height).toBeGreaterThan(400)
+    expect(shapes.width).toBe(WORLD_MAP_WIDTH)
+    expect(shapes.height).toBe(WORLD_MAP_HEIGHT)
   })
 
   it('keeps the shapes the atlas leaves unnumbered, without an id', () => {
@@ -109,7 +100,7 @@ describe('buildWorldMap', () => {
   })
 
   it('builds once per atlas', () => {
-    expect(buildWorldMap(atlas)).toBe(shapes)
+    expect(buildWorldMap(worldAtlas)).toBe(shapes)
   })
 
   it('serialises as plain data', () => {
@@ -118,7 +109,7 @@ describe('buildWorldMap', () => {
 })
 
 describe('WorldMap', () => {
-  const shapes = buildWorldMap(atlas)
+  const shapes = buildWorldMap(worldAtlas)
 
   describe('colouring', () => {
     it('shades the highlighted countries in four steps of the accent, lighter with more visitors', () => {
@@ -180,7 +171,7 @@ describe('WorldMap', () => {
         })
       )
       const swatch = document.createElement('div')
-      swatch.style.fill = neutralColor
+      swatch.style.fill = 'var(--campaign-band-card)'
       expect(fillOf('WorldMapCountry-840')).toBe(swatch.style.fill)
       expect(fillOf('WorldMapCountry-124')).toBe(swatch.style.fill)
       expect(screen.getByTestId('WorldMapCountry-840')).not.toHaveAttribute(

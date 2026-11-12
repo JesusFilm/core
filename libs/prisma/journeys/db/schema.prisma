@@ -467,6 +467,9 @@ model Journey {
   qrCode                          QrCode[]
   Event                           Event[]
   journeyEventsExportLogs         JourneyEventsExportLog[]
+  custom1Label                    String?
+  custom2Label                    String?
+  custom3Label                    String?
   fromTemplateId                  String?
   journeyTheme                    JourneyTheme?
   journeyCustomizationDescription String?

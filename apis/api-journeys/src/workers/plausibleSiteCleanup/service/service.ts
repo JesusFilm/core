@@ -201,18 +201,22 @@ interface PassResult {
   orphaned: number
   rows: number
   failedBatches: number
+  /** Domains in the batches that failed. */
+  failedDomains: Set<string>
   sample: string[]
 }
 
 /**
  * Pages through every api-journeys site and runs the pass over the orphans,
- * a few batches at a time. A failed batch is logged and skipped, since the next run
- * finds its sites again; several failures in a row end the run.
+ * a few batches at a time, leaving out the domains in `skip`. A failed batch is
+ * logged and skipped, since the next run finds its sites again; several
+ * failures in a row end the run.
  */
 async function runPass(
   name: PassName,
   dryRun: boolean,
-  logger?: Logger
+  logger?: Logger,
+  skip: ReadonlySet<string> = new Set()
 ): Promise<PassResult> {
   const pass = PASSES[name]
   const result: PassResult = {
@@ -220,6 +224,7 @@ async function runPass(
     orphaned: 0,
     rows: 0,
     failedBatches: 0,
+    failedDomains: new Set(),
     sample: []
   }
   let consecutiveFailures = 0
@@ -233,7 +238,9 @@ async function runPass(
     result.checked += sites.length
     after = sites[sites.length - 1].id
 
-    const domains = await orphanedDomains(sites)
+    const domains = (await orphanedDomains(sites)).filter(
+      (domain) => !skip.has(domain)
+    )
     result.orphaned += domains.length
     result.sample.push(...domains.slice(0, SAMPLE_SIZE - result.sample.length))
 
@@ -253,6 +260,7 @@ async function runPass(
           const batch = group[index]
           lastError = outcome.reason
           result.failedBatches++
+          batch.forEach((domain) => result.failedDomains.add(domain))
           consecutiveFailures++
           logger?.warn(
             {
@@ -313,7 +321,9 @@ export async function service(
   }
 
   const prepared = await runPass('prepare', false, logger)
-  const deleted = await runPass('delete', false, logger)
+  // A site whose rows weren't cleared would make its delete read goals and
+  // setup_help_emails in full again; it waits for the next run instead.
+  const deleted = await runPass('delete', false, logger, prepared.failedDomains)
   logger?.info(
     {
       checked: deleted.checked,

@@ -11,6 +11,7 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { useJourneyCustomTrackingLabels } from '../../../../../../../../libs/useTemplateLabelsQuery'
 import { videoBlockSourceToLabel } from '../../../../../../../VisitorInfo/VisitorJourneysList/utils/videoBlockSourceToLabel'
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
@@ -26,11 +27,20 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
 
   const { dispatch } = useEditor()
   const { journey } = useJourney()
+  const customLabels = useJourneyCustomTrackingLabels()
   const { editJourneyTrackingMetrics } = useFlags()
 
   const selectedAction = getAction(t, block.action?.__typename)
-  const startEventLabel = getEventLabelOption(t, block.eventLabel).label
-  const endEventLabel = getEventLabelOption(t, block.endEventLabel).label
+  const startEventLabel = getEventLabelOption(
+    t,
+    block.eventLabel,
+    customLabels
+  ).label
+  const endEventLabel = getEventLabelOption(
+    t,
+    block.endEventLabel,
+    customLabels
+  ).label
 
   useEffect(() => {
     dispatch({

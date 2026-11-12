@@ -5,5 +5,6 @@ export {
 } from './TranslationRunProvider'
 export type {
   TranslationRun,
-  TranslationRunContextValue
+  TranslationRunContextValue,
+  TranslationRunOptions
 } from './TranslationRunProvider'

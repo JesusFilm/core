@@ -1,8 +1,8 @@
 import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
 import { MockLink } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { parse } from 'graphql'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import {
   LANDING_PAGE_ID,
@@ -11,9 +11,9 @@ import {
 } from '@core/journeys/ui/Campaign/testData'
 
 import {
-  CampaignTranslations,
-  CampaignTranslationsVariables
-} from '../../../../../__generated__/CampaignTranslations'
+  GetCampaignTranslations,
+  GetCampaignTranslationsVariables
+} from '../../../../../__generated__/GetCampaignTranslations'
 import {
   CampaignPageKind,
   CampaignTextSource,
@@ -22,22 +22,19 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { DebounceLink } from '../../../../libs/apolloClient/DebounceLink'
 import {
-  CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
-  CAMPAIGN_REGION_HEADER_BLOCK_UPDATE_TEXT,
   CampaignTextBlock,
   CampaignTextField,
   blockTranslations,
   isCampaignTextBlock,
   translationValue
 } from '../../../../libs/useCampaignBlockTextMutation'
+import { CAMPAIGN_HERO_BLOCK_UPDATE } from '../../../../libs/useCampaignBlockUpdateMutation'
 import { CAMPAIGN_STRING_UPDATE } from '../../../../libs/useCampaignStringUpdateMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
 import {
   CAMPAIGN_TRANSLATIONS,
   campaignTranslationsVariables
 } from '../../../../libs/useCampaignTranslationsQuery'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import {
   CampaignEditorState,
   useCampaignEditor
@@ -48,23 +45,21 @@ import {
   campaignWithColumns,
   withEmptyTranslations
 } from '../../data'
+import { blockOf, blockUpdateMock } from '../../styleTesting'
 import {
   CommandProbe,
+  PreviewLanguageSwitch,
   QueriedEditor,
   SelectionProbe,
+  SpyMock,
+  StaticEditor,
+  UndoRedo,
   campaignCache,
   getCampaignMock,
   getCampaignMockFor
 } from '../../testing'
 
-import {
-  textDebounceKey,
-  useCampaignTextCommand
-} from './useCampaignTextCommand'
-
-const hero = campaign.blocks.find(
-  (block) => block.id === 'heroId'
-) as CampaignTextBlock
+import { useCampaignTextCommand } from './useCampaignTextCommand'
 
 /** One inline field over the block as the cache currently holds it. */
 function Field({
@@ -103,32 +98,36 @@ function BoundField({
   )
 }
 
-interface Mock {
-  request: Record<string, unknown>
-  result: ReturnType<typeof vi.fn>
-  delay?: number
-  maxUsageCount?: number
+/** Shows the landing page: a view change, not a Command. */
+function ShowLanding(): ReactElement {
+  const { dispatch } = useCampaignEditor()
+  return (
+    <button
+      onClick={() =>
+        dispatch({
+          type: 'SetPageKindAction',
+          pageKind: CampaignPageKind.landing
+        })
+      }
+    >
+      Show landing
+    </button>
+  )
 }
 
-function heroMock(title: string): Mock {
-  return {
-    request: {
-      query: CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
-      variables: { id: 'heroId', input: { title } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignHeroBlockUpdate: {
-          __typename: 'CampaignHeroBlock',
-          id: 'heroId',
-          eyebrow: 'Outreach 2026',
-          title,
-          description:
-            'Pick your region to find a journey in your language, ready to share.'
-        }
-      }
-    }))
-  }
+/** The field, until the panel holding it closes. */
+function ClosableField(): ReactElement {
+  const [open, setOpen] = useState(true)
+  return (
+    <>
+      <button onClick={() => setOpen(false)}>Close panel</button>
+      {open && <Field blockId="heroId" field="title" />}
+    </>
+  )
+}
+
+function heroMock(title: string): SpyMock {
+  return blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), { title })
 }
 
 const HERO_TITLE = gql`
@@ -148,7 +147,7 @@ function readTitle(cache: InMemoryCache): string | undefined {
 }
 
 function renderField(
-  mocks: Mock[],
+  mocks: SpyMock[],
   options: {
     blockId?: string
     field?: CampaignTextField
@@ -158,7 +157,7 @@ function renderField(
 ): ReturnType<typeof render> {
   const link = ApolloLink.from([
     new DebounceLink(500),
-    new MockLink([getCampaignMock, ...mocks] as never)
+    new MockLink([getCampaignMock, ...mocks])
   ])
   return render(
     <QueriedEditor
@@ -166,10 +165,10 @@ function renderField(
       cache={options.cache ?? campaignCache()}
       initialState={options.initialState}
     >
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <SelectionProbe />
+      <ShowLanding />
       <Field
         blockId={options.blockId ?? 'heroId'}
         field={options.field ?? 'title'}
@@ -204,12 +203,6 @@ describe('useCampaignTextCommand', () => {
     await waitFor(() => expect(mocks[2].result).toHaveBeenCalled())
     expect(mocks[0].result).not.toHaveBeenCalled()
     expect(mocks[1].result).not.toHaveBeenCalled()
-  })
-
-  it('keys the debounce by typename, block and field', () => {
-    expect(textDebounceKey(hero, 'title')).toBe(
-      'CampaignHeroBlock:heroId:title'
-    )
   })
 
   it('undoes by writing the previous value back through the same mutation, optimistically', async () => {
@@ -247,7 +240,7 @@ describe('useCampaignTextCommand', () => {
       {
         ...heroMock('Hello'),
         request: {
-          query: CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
+          query: CAMPAIGN_HERO_BLOCK_UPDATE,
           variables: { id: 'heroId', input: { title: 'Hello ' } }
         }
       }
@@ -317,35 +310,29 @@ describe('useCampaignTextCommand', () => {
       regionHeader?.__typename === 'CampaignRegionHeaderBlock'
         ? regionHeader.intro
         : ''
-    function introMock(value: string | null): Mock {
-      return {
-        request: {
-          query: CAMPAIGN_REGION_HEADER_BLOCK_UPDATE_TEXT,
-          variables: { id: 'regionHeaderId', input: { intro: value } }
-        },
-        result: vi.fn(() => ({
-          data: {
-            campaignRegionHeaderBlockUpdate: {
-              __typename: 'CampaignRegionHeaderBlock',
-              id: 'regionHeaderId',
-              intro: value
-            }
-          }
-        }))
-      }
+    function introMock(value: string | null): SpyMock {
+      return blockUpdateMock(
+        blockOf<'CampaignRegionHeaderBlock'>('regionHeaderId'),
+        { intro: value }
+      )
     }
     const mocks = [introMock('Hello'), introMock(intro)]
     renderField(mocks, {
       blockId: 'regionHeaderId',
       field: 'intro',
-      initialState: { pageKind: CampaignPageKind.landing }
+      initialState: {
+        pageKind: CampaignPageKind.regionTemplate,
+        selectedBlockId: 'regionHeaderId'
+      }
     })
     const input = await screen.findByRole('textbox', { name: 'intro' })
 
     fireEvent.focus(input)
     fireEvent.change(input, { target: { value: 'Hello' } })
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Show landing' }))
     expect(screen.getByTestId('PageKind')).toHaveTextContent('landing')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('')
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
@@ -356,8 +343,77 @@ describe('useCampaignTextCommand', () => {
     await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
   })
 
+  it('reports a refused undo in the snackbar once the field has unmounted', async () => {
+    const mocks = [
+      heroMock('New title'),
+      {
+        ...heroMock('Share the story of Outreach'),
+        result: vi.fn(() => ({
+          errors: [{ message: 'The block was deleted in another tab' }]
+        }))
+      }
+    ]
+    render(
+      <QueriedEditor
+        link={ApolloLink.from([
+          new DebounceLink(500),
+          new MockLink([getCampaignMock, ...mocks])
+        ])}
+        initialState={{ selectedBlockId: 'heroId' }}
+      >
+        <UndoRedo />
+        <ClosableField />
+      </QueriedEditor>
+    )
+    const input = await screen.findByRole('textbox', { name: 'title' })
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'New title' } })
+    await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+    fireEvent.blur(input)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close panel' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(
+      await screen.findByText('The block was deleted in another tab')
+    ).toBeInTheDocument()
+  })
+
+  it('keeps the typed text when a refetch answered with older text lands while the save is pending', async () => {
+    const save = heroMock('Typed title')
+    const cache = campaignCache()
+    const link = ApolloLink.from([new DebounceLink(500), new MockLink([save])])
+    function editorWithTitle(title: string): ReactElement {
+      return (
+        <StaticEditor
+          link={link}
+          cache={cache}
+          campaign={{
+            ...campaign,
+            blocks: campaign.blocks.map((block) =>
+              block.id === 'heroId' ? { ...block, title } : block
+            )
+          }}
+          initialState={{ selectedBlockId: 'heroId' }}
+        >
+          <Field blockId="heroId" field="title" />
+        </StaticEditor>
+      )
+    }
+    const { rerender } = render(editorWithTitle('Share the story of Outreach'))
+    const input = screen.getByRole('textbox', { name: 'title' })
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Typed title' } })
+    // The refetch's response carries the text from before the keystroke.
+    rerender(editorWithTitle('Refetched older title'))
+
+    expect(input).toHaveValue('Typed title')
+    await waitFor(() => expect(save.result).toHaveBeenCalled())
+  })
+
   it('surfaces the API message verbatim when a save fails and rolls the value back', async () => {
-    const failing: Mock = {
+    const failing: SpyMock = {
       ...heroMock('Bad'),
       result: vi.fn(() => ({
         errors: [{ message: 'title must be at most 150 characters' }]
@@ -399,7 +455,7 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
   }: {
     string: (typeof campaignStrings)[number]
   }): ReactElement {
-    const { value, fallback, handleChange, handleFocus, handleBlur } =
+    const { value, fallback, error, handleChange, handleFocus, handleBlur } =
       useCampaignTextCommand({ string })
     return (
       <>
@@ -411,11 +467,12 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
+        {error != null && <span role="alert">{error}</span>}
       </>
     )
   }
 
-  function stringMock(value: string): Mock {
+  function stringMock(value: string): SpyMock {
     return {
       request: {
         query: CAMPAIGN_STRING_UPDATE,
@@ -439,7 +496,7 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     field: string,
     value: string,
     translations: Array<{ languageId: string; value: string }>
-  ): Mock {
+  ): SpyMock {
     return {
       request: {
         query: CAMPAIGN_TRANSLATION_SET,
@@ -460,18 +517,18 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
   }
 
   function renderWith(
-    mocks: Mock[],
+    mocks: SpyMock[],
     children: ReactElement,
     initialState?: Partial<CampaignEditorState>
   ): ReturnType<typeof render> & { cache: InMemoryCache } {
     const cache = campaignCache()
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([getCampaignMock, ...mocks] as never)
+      new MockLink([getCampaignMock, ...mocks])
     ])
     const rendered = render(
       <QueriedEditor link={link} cache={cache} initialState={initialState}>
-        <CommandUndoItem variant="button" />
+        <UndoRedo />
         <CommandProbe />
         <SelectionProbe />
         <PreviewLanguageProbe />
@@ -487,6 +544,158 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     } = useCampaignEditor()
     return <span data-testid="PreviewLanguage">{previewLanguageId}</span>
   }
+
+  it.each([
+    { target: 'block', refused: false },
+    { target: 'block', refused: true },
+    { target: 'string', refused: false },
+    { target: 'string', refused: true }
+  ])(
+    'switches $target text to English during a pending French save, refused=$refused',
+    async ({ target, refused }) => {
+      const isBlock = target === 'block'
+      const french = {
+        ...translationMock(
+          isBlock ? { blockId: 'heroId' } : { stringId: copy.id },
+          isBlock ? 'title' : 'value',
+          'Campagne',
+          [{ languageId: '496', value: 'Campagne' }]
+        ),
+        delay: 100,
+        ...(refused
+          ? {
+              result: vi.fn(() => ({
+                errors: [{ message: 'French save refused' }]
+              }))
+            }
+          : {})
+      }
+      const english = {
+        ...(isBlock ? heroMock('English draft') : stringMock('English draft')),
+        delay: 1000
+      }
+      renderWith(
+        [french, english],
+        <>
+          <PreviewLanguageSwitch languageIds={['529', '496']} />
+          {isBlock ? (
+            <Field blockId="heroId" field="title" />
+          ) : (
+            <StringField stringKey="copy" />
+          )}
+        </>,
+        { previewLanguageId: '496' }
+      )
+      const input = await screen.findByRole('textbox', {
+        name: isBlock ? 'title' : 'copy'
+      })
+      vi.useFakeTimers()
+      try {
+        fireEvent.focus(input)
+        fireEvent.change(input, { target: { value: 'Campagne' } })
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(500)
+        })
+        expect(french.result).not.toHaveBeenCalled()
+
+        fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+        expect(input).toHaveValue(
+          isBlock ? 'Share the story of Outreach' : 'Copy link'
+        )
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+        fireEvent.change(input, { target: { value: 'English draft' } })
+        expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(100)
+        })
+        expect(french.result).toHaveBeenCalled()
+        expect(english.result).not.toHaveBeenCalled()
+        expect(input).toHaveValue('English draft')
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1500)
+        })
+        expect(english.result).toHaveBeenCalled()
+        expect(input).toHaveValue('English draft')
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      } finally {
+        vi.useRealTimers()
+      }
+    }
+  )
+
+  it('adopts new English cache data while the French save is still debounced', async () => {
+    const save = translationMock({ blockId: 'heroId' }, 'title', 'Campagne', [
+      { languageId: '496', value: 'Campagne' }
+    ])
+    const link = ApolloLink.from([new DebounceLink(500), new MockLink([save])])
+    const cache = campaignCache()
+    function editorWithTitle(title: string): ReactElement {
+      return (
+        <StaticEditor
+          link={link}
+          cache={cache}
+          campaign={{
+            ...campaign,
+            blocks: campaign.blocks.map((block) =>
+              block.id === 'heroId' ? { ...block, title } : block
+            )
+          }}
+          initialState={{ previewLanguageId: '496' }}
+        >
+          <PreviewLanguageSwitch languageIds={['529']} />
+          <Field blockId="heroId" field="title" />
+        </StaticEditor>
+      )
+    }
+    const { rerender } = render(editorWithTitle('English'))
+    const input = screen.getByRole('textbox', { name: 'title' })
+    vi.useFakeTimers()
+    try {
+      fireEvent.change(input, { target: { value: 'Campagne' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+      expect(input).toHaveValue('English')
+
+      rerender(editorWithTitle('Updated English'))
+
+      expect(save.result).not.toHaveBeenCalled()
+      expect(input).toHaveValue('Updated English')
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000)
+      })
+      expect(save.result).toHaveBeenCalled()
+      expect(input).toHaveValue('Updated English')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('clears an existing French refusal when switching to English', async () => {
+    const refused = {
+      ...translationMock({ blockId: 'heroId' }, 'title', 'Campagne', []),
+      result: vi.fn(() => ({ errors: [{ message: 'French save refused' }] }))
+    }
+    renderWith(
+      [refused],
+      <>
+        <PreviewLanguageSwitch languageIds={['529']} />
+        <Field blockId="heroId" field="title" />
+      </>,
+      { previewLanguageId: '496' }
+    )
+    const input = await screen.findByRole('textbox', { name: 'title' })
+    fireEvent.change(input, { target: { value: 'Campagne' } })
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'French save refused'
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+
+    expect(input).toHaveValue('Share the story of Outreach')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
 
   it('edits a Campaign String in the default language as one Command through campaignStringUpdate', async () => {
     const mocks = [stringMock('Copy the link'), stringMock('Copy link')]
@@ -570,35 +779,37 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     ]
     const cache = campaignCache()
     const variables = campaignTranslationsVariables(campaign.id, '496')
-    cache.writeQuery<CampaignTranslations, CampaignTranslationsVariables>({
-      query: CAMPAIGN_TRANSLATIONS,
-      variables,
-      data: {
-        campaignTranslations: [
-          {
-            __typename: 'CampaignTranslation',
-            group: CampaignTranslationGroup.landing,
-            field: TranslationField.title,
-            maxLength: 150,
-            defaultValue: 'Share the story of Outreach',
-            value: "Partagez l'histoire",
-            source: CampaignTextSource.machine,
-            needsReview: true,
-            target: {
-              __typename: 'CampaignTranslationTarget',
-              typename: 'CampaignHeroBlock',
-              blockId: 'heroId',
-              regionId: null,
-              stringId: null,
-              campaignId: null
+    cache.writeQuery<GetCampaignTranslations, GetCampaignTranslationsVariables>(
+      {
+        query: CAMPAIGN_TRANSLATIONS,
+        variables,
+        data: {
+          campaignTranslations: [
+            {
+              __typename: 'CampaignTranslation',
+              group: CampaignTranslationGroup.landing,
+              field: TranslationField.title,
+              maxLength: 150,
+              defaultValue: 'Share the story of Outreach',
+              value: "Partagez l'histoire",
+              source: CampaignTextSource.machine,
+              needsReview: true,
+              target: {
+                __typename: 'CampaignTranslationTarget',
+                typename: 'CampaignHeroBlock',
+                blockId: 'heroId',
+                regionId: null,
+                stringId: null,
+                campaignId: null
+              }
             }
-          }
-        ]
+          ]
+        }
       }
-    })
+    )
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([getCampaignMock, ...mocks] as never)
+      new MockLink([getCampaignMock, ...mocks])
     ])
     render(
       <QueriedEditor
@@ -617,7 +828,10 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
 
     await waitFor(() =>
       expect(
-        cache.readQuery<CampaignTranslations, CampaignTranslationsVariables>({
+        cache.readQuery<
+          GetCampaignTranslations,
+          GetCampaignTranslationsVariables
+        >({
           query: CAMPAIGN_TRANSLATIONS,
           variables
         })?.campaignTranslations[0]
@@ -746,10 +960,7 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
       const cache = campaignCache()
       const link = ApolloLink.from([
         new DebounceLink(500),
-        new MockLink([
-          getCampaignMockFor(translatableCampaign),
-          translation
-        ] as never)
+        new MockLink([getCampaignMockFor(translatableCampaign), translation])
       ])
       render(
         <QueriedEditor

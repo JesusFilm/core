@@ -1,6 +1,7 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { formatISO } from 'date-fns'
 import { type MockedFunction } from 'vitest'
@@ -14,6 +15,7 @@ import {
   JourneyStatus,
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
+import { TEMPLATE_LABELS } from '../../libs/useTemplateLabelsQuery'
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 
 import {
@@ -47,7 +49,9 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
   })
 
   const createMock = (
-    status: JourneyStatus[]
+    status: JourneyStatus[],
+    templateId = journeyId,
+    data = mockSingleRowData
   ): MockLink.MockedResponse<
     GetTemplateFamilyStatsBreakdown,
     GetTemplateFamilyStatsBreakdownVariables
@@ -55,7 +59,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     request: {
       query: GET_TEMPLATE_FAMILY_STATS_BREAKDOWN,
       variables: {
-        id: journeyId,
+        id: templateId,
         idType: IdType.databaseId,
         where: {
           property: 'event:props:templateKey',
@@ -80,7 +84,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       }
     },
     result: {
-      data: mockSingleRowData
+      data
     }
   })
 
@@ -95,9 +99,138 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     JourneyStatus.draft
   ])
 
+  const createLabelsMock = (
+    templateId = journeyId,
+    custom1Label: string | null = null
+  ) => ({
+    request: {
+      query: TEMPLATE_LABELS,
+      variables: { id: templateId }
+    },
+    result: {
+      data: {
+        adminJourney: {
+          __typename: 'Journey' as const,
+          id: templateId,
+          custom1Label,
+          custom2Label: null,
+          custom3Label: null
+        }
+      }
+    }
+  })
+
+  const customTrackingData: GetTemplateFamilyStatsBreakdown = {
+    templateFamilyStatsBreakdown:
+      mockSingleRowData.templateFamilyStatsBreakdown!.map((row) => ({
+        ...row,
+        stats: [
+          ...row.stats,
+          {
+            __typename: 'TemplateFamilyStatsEventResponse',
+            event: PlausibleEvent.custom1Capture,
+            visitors: 12
+          },
+          {
+            __typename: 'TemplateFamilyStatsEventResponse',
+            event: PlausibleEvent.custom2Capture,
+            visitors: 5
+          }
+        ]
+      }))
+  }
+
+  it('loads names for the passed template outside the editor and observes cache updates', async () => {
+    const cache = new InMemoryCache()
+    const statuses = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          createMock(statuses, journeyId, customTrackingData),
+          createLabelsMock(journeyId, 'Conversations')
+        ]}
+      >
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open={true}
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+
+    expect(await screen.findByText('Conversations')).toBeInTheDocument()
+    expect(screen.getByText('Custom Tracking 2')).toBeInTheDocument()
+    expect(screen.getAllByText('12')).toHaveLength(2)
+
+    act(() => {
+      cache.writeQuery({
+        query: TEMPLATE_LABELS,
+        variables: { id: journeyId },
+        data: createLabelsMock(journeyId, 'Follow-ups').result.data
+      })
+    })
+
+    expect(await screen.findByText('Follow-ups')).toBeInTheDocument()
+    expect(screen.queryByText('Conversations')).not.toBeInTheDocument()
+    expect(screen.getAllByText('12')).toHaveLength(2)
+
+    act(() => {
+      cache.writeQuery({
+        query: TEMPLATE_LABELS,
+        variables: { id: journeyId },
+        data: createLabelsMock().result.data
+      })
+    })
+
+    expect(await screen.findByText('Custom Tracking 1')).toBeInTheDocument()
+    expect(screen.queryByText('Follow-ups')).not.toBeInTheDocument()
+  })
+
+  it('uses each report template ID to load independent names', async () => {
+    const secondId = 'another-template'
+    const statuses = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    const mocks = [
+      createMock(statuses, journeyId, customTrackingData),
+      createLabelsMock(journeyId, 'Conversations'),
+      createMock(statuses, secondId, customTrackingData),
+      createLabelsMock(secondId, 'Follow-ups')
+    ]
+    const renderDialog = (id: string) => (
+      <MockedProvider mocks={mocks}>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={id}
+          open={true}
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+    const { rerender } = render(renderDialog(journeyId))
+    expect(await screen.findByText('Conversations')).toBeInTheDocument()
+
+    rerender(renderDialog(secondId))
+
+    expect(await screen.findByText('Follow-ups')).toBeInTheDocument()
+    expect(screen.queryByText('Conversations')).not.toBeInTheDocument()
+    expect(screen.getByText('Custom Tracking 2')).toBeInTheDocument()
+  })
+
   it('should call query with archived journeys included by default', async () => {
     render(
-      <MockedProvider mocks={[getTemplateFamilyStatsBreakdownMockWithArchived]}>
+      <MockedProvider
+        mocks={[
+          getTemplateFamilyStatsBreakdownMockWithArchived,
+          createLabelsMock()
+        ]}
+      >
         <TemplateBreakdownAnalyticsDialog
           journeyId={journeyId}
           open={true}
@@ -120,7 +253,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       <MockedProvider
         mocks={[
           getTemplateFamilyStatsBreakdownMockWithArchived,
-          getTemplateFamilyStatsBreakdownMockWithoutArchived
+          getTemplateFamilyStatsBreakdownMockWithoutArchived,
+          createLabelsMock()
         ]}
       >
         <TemplateBreakdownAnalyticsDialog
@@ -186,7 +320,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     }
 
     render(
-      <MockedProvider mocks={[loadingMock]}>
+      <MockedProvider mocks={[loadingMock, createLabelsMock()]}>
         <TemplateBreakdownAnalyticsDialog
           journeyId={journeyId}
           open={true}
@@ -238,7 +372,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     }
 
     render(
-      <MockedProvider mocks={[errorMock]}>
+      <MockedProvider mocks={[errorMock, createLabelsMock()]}>
         <TemplateBreakdownAnalyticsDialog
           journeyId={journeyId}
           open={true}

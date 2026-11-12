@@ -37,7 +37,9 @@ delete pass sends four batches at once. We don't add the indexes because
 Plausible owns that schema.
 
 A failed batch is logged (`plausible site cleanup batch failed`) and skipped;
-the next run finds those sites again. Five failures in a row end the run.
+the next run finds those sites again. If a batch fails in the first pass, its
+sites are left out of the second pass too, so they aren't deleted with their
+rows still in place. Five failures in a row end the run.
 Progress is logged every ten pages (`plausible site cleanup progress`), and the
 run ends with `plausible site cleanup finished`. A large backlog takes hours.
 
