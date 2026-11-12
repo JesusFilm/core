@@ -11,6 +11,7 @@ import {
   getPreferredItems
 } from '../../../../lib/getLanguageIdsFromTags'
 import { getImageUrl } from '../../../../lib/imageHelper'
+import { isMediaComponentDownloadable } from '../../../../lib/mediaComponentDownloadable'
 import { getComponentType } from '../../../../lib/mediaComponentType'
 
 import { mediaComponent } from './[mediaComponentId]'
@@ -364,15 +365,7 @@ mediaComponents.openapi(route, async (c) => {
 
       const variant = video.variants[0]
       const componentType = getComponentType(variant?.hls, variant?.dash)
-      // Matches updateVideoInAlgolia's isAlgoliaVideoDownloadable rule: the
-      // raw `downloadable` flag alone isn't enough, since it defaults to
-      // true even for a variant with no media and no download rows. This
-      // also replaces the old blanket collection/series override, which no
-      // longer matches what the Algolia index reports for the same video.
-      const isDownloadable =
-        componentType === 'content' &&
-        (variant?.downloadable ?? false) &&
-        (variant?.downloads.length ?? 0) > 0
+      const isDownloadable = isMediaComponentDownloadable(variant)
 
       const titleContent = getPreferredContent(video.title, metadataLanguages)
       const shortDescriptionContent = getPreferredContent(

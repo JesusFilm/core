@@ -3,6 +3,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { isMediaComponentDownloadable } from '../../../../../lib/mediaComponentDownloadable'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 const GET_VIDEO_CHILDREN = graphql(`
@@ -56,6 +57,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variants(input: { languageId: "529" }) {
           hls
+          dash
           lengthInMilliseconds
           language {
             id
@@ -116,6 +118,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variants(input: { languageId: "529" }) {
           hls
+          dash
           lengthInMilliseconds
           language {
             id
@@ -334,7 +337,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                     },
                     lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
                     containsCount: childrenCount,
-                    isDownloadable: variant?.downloadable ?? false,
+                    isDownloadable: isMediaComponentDownloadable(variant),
                     downloadSizes: {
                       approximateSmallDownloadSizeInBytes:
                         variant?.downloads?.find((d) => d.quality === 'low')
@@ -423,7 +426,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                           lengthInMilliseconds:
                             variant?.lengthInMilliseconds ?? 0,
                           containsCount: childrenCount,
-                          isDownloadable: variant?.downloadable ?? false,
+                          isDownloadable: isMediaComponentDownloadable(variant),
                           downloadSizes: {
                             approximateSmallDownloadSizeInBytes:
                               variant?.downloads?.find(
