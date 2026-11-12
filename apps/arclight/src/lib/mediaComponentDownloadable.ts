@@ -35,7 +35,8 @@ export function isMediaComponentDownloadable(
   if (variant?.downloadable !== true) return false
   return (
     variant.downloads?.some(
-      ({ quality }) => quality == null || !DISTRO_DOWNLOAD_QUALITIES.has(quality)
+      ({ quality }) =>
+        quality == null || !DISTRO_DOWNLOAD_QUALITIES.has(quality)
     ) ?? false
   )
 }
