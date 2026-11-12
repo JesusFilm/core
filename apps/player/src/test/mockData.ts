@@ -8,7 +8,7 @@ export const createMockPlaylistItem = (
       duration: number
       language: {
         id: string
-        name: { value: string }[]
+        name: { value: string; primary: boolean }[]
       }
       video: {
         id: string
@@ -28,7 +28,7 @@ export const createMockPlaylistItem = (
     duration: 3600,
     language: {
       id: 'lang-1',
-      name: [{ value: 'English' }]
+      name: [{ value: 'English', primary: true }]
     },
     video: {
       id: 'video-1',

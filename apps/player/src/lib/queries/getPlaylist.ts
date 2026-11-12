@@ -23,6 +23,7 @@ export const GET_PLAYLIST = graphql(`
                 id
                 name {
                   value
+                  primary
                 }
               }
               video {
