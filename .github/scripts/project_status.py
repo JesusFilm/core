@@ -9,6 +9,7 @@ import re
 import subprocess
 import time
 from dataclasses import dataclass, field
+from datetime import datetime
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -341,7 +342,7 @@ def next_steps_item(github: GitHub, issue_id: str) -> dict | None:
         "projectItems",
         "id isArchived project { id } "
         'fieldValueByName(name: "Status") { '
-        "... on ProjectV2ItemFieldSingleSelectValue { name } }",
+        "... on ProjectV2ItemFieldSingleSelectValue { name updatedAt } }",
         ", includeArchived: true",
     )
     return next((item for item in items if item["project"]["id"] == PROJECT_ID), None)
@@ -378,7 +379,9 @@ class ProjectStatuses:
             for label in self.github.connection(node_id, "Issue", "labels", "name")
         }
 
-    def set_issue(self, node_id: str, status: str, only_if_unset=False):
+    def set_issue(
+        self, node_id: str, status: str, only_if_unset=False, *, review_at: str = ""
+    ):
         """Update existing Next Steps issue cards only."""
         if MANUAL_LABEL in self.labels(node_id):
             print(f"Skipping {node_id}: {MANUAL_LABEL}")
@@ -390,8 +393,13 @@ class ProjectStatuses:
         if item["isArchived"] and status != "Done":
             print(f"Skipping archived item {node_id}")
             return
-        previous = ((item or {}).get("fieldValueByName") or {}).get("name")
+        value = item.get("fieldValueByName") or {}
+        previous = value.get("name")
         if previous == status or (only_if_unset and previous):
+            return
+        if review_at and not newer_activity(review_at, value.get("updatedAt")):
+            # Recovery must not undo a later pickup, manual move or PR event.
+            print(f"Skipping {node_id}: status is newer than the recovered review")
             return
         if self.github.dry_run:
             print(f"Would set Issue {node_id}: {previous or '(unset)'} -> {status}")
@@ -467,6 +475,90 @@ def initialize_triage(github: GitHub):
             break
 
 
+def newer_activity(activity_at: str, status_at: str | None) -> bool:
+    """Missing status timestamps cannot prove an old event is safe to replay."""
+    return bool(
+        activity_at
+        and status_at
+        and datetime.fromisoformat(activity_at) > datetime.fromisoformat(status_at)
+    )
+
+
+def recover_reviews(github: GitHub):
+    """Recover review events missing a collector on an old or conflicting PR ref.
+
+    The schedule runs trusted main code, independent of the PR's merge ref. Use
+    Status field timestamps, rather than a rolling time window, so delays do not
+    lose events and old reviews cannot repeatedly undo coding pickup/status moves.
+    """
+    items = github.connection(
+        PROJECT_ID,
+        "ProjectV2",
+        "items",
+        'isArchived fieldValueByName(name: "Status") { '
+        "... on ProjectV2ItemFieldSingleSelectValue { name updatedAt } } "
+        "content { ... on Issue { number state repository { nameWithOwner } } }",
+        ", archivedStates: [NOT_ARCHIVED]",
+    )
+    status_times = {}
+    for item in items:
+        issue = item.get("content") or {}
+        if (
+            not item["isArchived"]
+            and issue.get("state") == "OPEN"
+            and issue.get("repository", {}).get("nameWithOwner") == REPOSITORY
+        ):
+            status_at = (item.get("fieldValueByName") or {}).get("updatedAt")
+            if status_at:
+                status_times[issue["number"]] = status_at
+    if not status_times:
+        return
+
+    repository = github.graphql(
+        'query { repository(owner: "JesusFilm", name: "core") { id } }'
+    )["repository"]
+    pulls = github.connection(
+        repository["id"],
+        "Repository",
+        "pullRequests",
+        "id body updatedAt "
+        + PR_TRUST_FIELDS
+        + " closingIssuesReferences(first: 100) { nodes { number "
+        "repository { nameWithOwner } } pageInfo { hasNextPage } }",
+        ", states: [OPEN]",
+    )
+    for pull in pulls:
+        if not trusted_pr(pull):
+            continue
+        links = pull["closingIssuesReferences"]
+        # More than 100 native links is necessarily an ambiguous issue mapping.
+        if links.get("pageInfo", {}).get("hasNextPage"):
+            continue
+        numbers = closing_issue_numbers(pull["body"])
+        numbers.update(
+            issue["number"]
+            for issue in links["nodes"]
+            if issue["repository"]["nameWithOwner"] == REPOSITORY
+        )
+        if not any(
+            number in status_times
+            and newer_activity(pull["updatedAt"], status_times[number])
+            for number in numbers
+        ):
+            continue
+        # Reuse all live mapping, multi-PR, trust and opt-out checks. Discovery
+        # above is only an optimization; it never supplies authority to write.
+        run(
+            github,
+            "review_recovery",
+            {
+                "repository": {"full_name": REPOSITORY},
+                "action": "review_updated",
+                "pull_request": {"node_id": pull["id"]},
+            },
+        )
+
+
 def run(github: GitHub, event_name: str, event: dict):
     repository = (event.get("repository") or {}).get("full_name") or os.environ.get(
         "GITHUB_REPOSITORY"
@@ -475,6 +567,7 @@ def run(github: GitHub, event_name: str, event: dict):
         return
     if event_name == "schedule":
         initialize_triage(github)
+        recover_reviews(github)
         return
     action = event["action"]
     if event_name == "issues":
@@ -487,7 +580,11 @@ def run(github: GitHub, event_name: str, event: dict):
             ProjectStatuses(github).set_issue(issue_id, "Triage", only_if_unset=True)
         return
 
-    if event_name not in {"pull_request_target", "pull_request_review"}:
+    if event_name not in {
+        "pull_request_target",
+        "pull_request_review",
+        "review_recovery",
+    }:
         return
     if event_name == "pull_request_review" and (
         action == "submitted" and event["review"]["state"].lower() == "commented"
@@ -499,6 +596,8 @@ def run(github: GitHub, event_name: str, event: dict):
     )
     if not trusted_pr(current):
         print("Skipping PR: author and head repository are outside the trusted scope")
+        return
+    if event_name == "review_recovery" and current["state"] != "OPEN":
         return
     # Cancellation never updates the issue, even when processing was delayed.
     if action == "closed" and not event["pull_request"].get("merged"):
@@ -613,7 +712,35 @@ def run(github: GitHub, event_name: str, event: dict):
     status = pull_request_status(pr, policy_action)
     if status is None:
         return
-    statuses.set_issue(issue["id"], status)
+    review_at = ""
+    if event_name == "review_recovery":
+        # Recover submitted decisions only. Dismissals/pushes have their own
+        # event semantics and an old review must never undo either one.
+        review_at = max(
+            (
+                review.submitted_at
+                for review in pr.reviews
+                if review.commit_id == pr.head
+                and review.state
+                in ({"APPROVED"} if status == "Approved" else {"CHANGES_REQUESTED"})
+            ),
+            default="",
+        )
+        if (
+            not review_at
+            or (
+                pr.last_approval_dismissed_at
+                and status != "Approved"
+                and not newer_activity(review_at, pr.last_approval_dismissed_at)
+            )
+            or status not in {"Approved", "Changes requested", "In review"}
+        ):
+            return
+        latest = github.node(pr_id, "PullRequest", "state headRefOid")
+        if latest["state"] != "OPEN" or latest["headRefOid"] != pr.head:
+            print(f"Skipping {pr_id}: PR changed during review recovery")
+            return
+    statuses.set_issue(issue["id"], status, review_at=review_at)
 
 
 if __name__ == "__main__":

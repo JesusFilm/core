@@ -24,6 +24,7 @@ class MemoryGitHub(GitHub):
         super().__init__()
         self.pr = {
             "id": "pr",
+            "updatedAt": "2026-11-10T02:00:00Z",
             "state": "OPEN",
             "headRefOid": "head",
             "body": "",
@@ -47,6 +48,7 @@ class MemoryGitHub(GitHub):
         self.added = []
         self.labels = {"pr": set(), "issue": set()}
         self.statuses = {}
+        self.status_updated_at = {"issue": "2026-11-10T00:00:00Z"}
         self.archived = set()
         self.writes = []
         self.declared_pull_requests = set()
@@ -92,7 +94,10 @@ class MemoryGitHub(GitHub):
                     "id": node_id if project == PROJECT_ID else "other:" + node_id,
                     "project": {"id": project},
                     "isArchived": node_id in self.archived,
-                    "fieldValueByName": {"name": self.statuses[node_id]}
+                    "fieldValueByName": {
+                        "name": self.statuses[node_id],
+                        "updatedAt": self.status_updated_at.get(node_id),
+                    }
                     if self.statuses.get(node_id)
                     else None,
                 }
@@ -105,7 +110,10 @@ class MemoryGitHub(GitHub):
                 [
                     {
                         "isArchived": "issue" in self.archived,
-                        "fieldValueByName": {"name": self.statuses["issue"]}
+                        "fieldValueByName": {
+                            "name": self.statuses["issue"],
+                            "updatedAt": self.status_updated_at.get("issue"),
+                        }
                         if self.statuses.get("issue")
                         else None,
                         "content": self.issue,
@@ -115,6 +123,9 @@ class MemoryGitHub(GitHub):
                 else []
             )
         return {
+            "pullRequests": [
+                dict(self.pr, closingIssuesReferences={"nodes": self.issues})
+            ],
             "latestOpinionatedReviews": self.reviews,
             "reviewRequests": self.requests,
             "timelineItems": self.cross_references
@@ -125,6 +136,8 @@ class MemoryGitHub(GitHub):
         }[name]
 
     def graphql(self, query, **variables):
+        if "repository(owner:" in query and "{ id }" in query:
+            return {"repository": {"id": "repository"}}
         if "issue(number:" in query or "issueOrPullRequest(number:" in query:
             number = variables["number"]
             field = (
@@ -291,6 +304,211 @@ class HandlerTests(unittest.TestCase):
         payload = event("closed")
         payload["pull_request"].update(merged=True, base={"ref": base})
         self.handle(payload=payload)
+
+    def test_schedule_recovers_change_request_without_a_review_workflow_run(self):
+        # #10131 had a real current-head review but no collector workflow on its
+        # old stack ref. Only the trusted main-branch schedule can reach here.
+        self.github.statuses["issue"] = "In review"
+        self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.statuses["issue"], "Changes requested")
+        self.assertEqual(self.github.writes, [("issue", "Changes requested")])
+
+    def test_schedule_recovers_approval_and_deduplicates_repeated_checks(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.reviews = [api_review()]
+        self.handle(event_name="schedule")
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [("issue", "Approved")])
+
+    def test_recovery_preserves_a_later_pickup_or_manual_status_move(self):
+        for status in ["In progress", "QA", "In review", "Done"]:
+            for changed_at in ["2026-11-10T01:00:00Z", "2026-11-10T01:30:00Z"]:
+                with self.subTest(status=status, changed_at=changed_at):
+                    self.setUp()
+                    self.github.statuses["issue"] = status
+                    self.github.status_updated_at["issue"] = changed_at
+                    self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+                    self.handle(event_name="schedule")
+                    self.assertEqual(self.github.writes, [])
+
+    def test_recovery_does_not_guess_when_status_timestamp_is_missing(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.status_updated_at.clear()
+        self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [])
+
+    def test_recovery_ignores_non_decisions_and_reviews_of_earlier_heads(self):
+        for review in [
+            api_review(state="COMMENTED"),
+            api_review(state="DISMISSED"),
+            api_review(state="CHANGES_REQUESTED", head="old-head"),
+            api_review(head="old-head"),
+        ]:
+            with self.subTest(review=review):
+                self.setUp()
+                self.github.statuses["issue"] = "In review"
+                self.github.reviews = [review]
+                self.handle(event_name="schedule")
+                self.assertEqual(self.github.writes, [])
+
+    def test_recovery_does_not_restore_a_review_before_approval_dismissal(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+        self.github.dismissals = [
+            {
+                "createdAt": "2026-11-10T01:30:00Z",
+                "previousReviewState": "APPROVED",
+                "review": {"id": "old-approval"},
+            }
+        ]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [])
+
+    def test_recovery_preserves_an_approval_when_another_is_dismissed_later(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.reviews = [api_review(author="alice")]
+        self.github.dismissals = [
+            {
+                "createdAt": "2026-11-10T01:30:00Z",
+                "previousReviewState": "APPROVED",
+                "review": {"id": "bob-approval"},
+            }
+        ]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [("issue", "Approved")])
+
+    def test_unrelated_newer_change_request_does_not_refresh_an_old_approval(self):
+        self.github.statuses["issue"] = "In progress"
+        self.github.status_updated_at["issue"] = "2026-11-10T01:15:00Z"
+        self.github.reviews = [
+            api_review(author="alice"),
+            api_review(author="carol", state="CHANGES_REQUESTED", submitted="2026-11-10T01:45:00Z"),
+        ]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [])
+
+    def test_recovery_uses_the_existing_pending_reviewer_policy(self):
+        self.github.statuses["issue"] = "In progress"
+        self.github.reviews = [api_review(author="alice", state="CHANGES_REQUESTED")]
+        self.github.requests = [{"requestedReviewer": {"id": "alice"}}]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [("issue", "In review")])
+
+    def test_recovery_respects_manual_opt_out_and_archival(self):
+        for manual, archived in [(True, False), (False, True)]:
+            with self.subTest(manual=manual, archived=archived):
+                self.setUp()
+                self.github.statuses["issue"] = "In review"
+                self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+                if manual:
+                    self.github.labels["issue"].add(MANUAL_LABEL)
+                if archived:
+                    self.github.archived.add("issue")
+                self.handle(event_name="schedule")
+                self.assertEqual(self.github.writes, [])
+
+    def test_recovery_preserves_ambiguous_issue_and_implementation_mappings(self):
+        for ambiguous_issues in [True, False]:
+            with self.subTest(ambiguous_issues=ambiguous_issues):
+                self.setUp()
+                self.github.statuses["issue"] = "In review"
+                self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+                if ambiguous_issues:
+                    self.github.issues.append(dict(self.github.issue, id="second-issue"))
+                else:
+                    self.github.linked_prs.append(dict(self.github.pr, id="another-pr"))
+                self.handle(event_name="schedule")
+                self.assertEqual(self.github.writes, [])
+
+    def test_recovery_supports_explicit_stack_closing_declarations(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.pr["body"] = "Closes #1"
+        self.github.pr["baseRefName"] = "phoebe/parent"
+        self.github.issues = []
+        self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [("issue", "Changes requested")])
+
+    def test_recovery_ignores_ordinary_mentions_and_untrusted_forks(self):
+        for untrusted in [True, False]:
+            with self.subTest(untrusted=untrusted):
+                self.setUp()
+                self.github.statuses["issue"] = "In review"
+                self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+                if untrusted:
+                    self.github.pr.update(
+                        authorAssociation="NONE",
+                        headRepository={"nameWithOwner": "outside/core"},
+                    )
+                else:
+                    self.github.issues = []
+                    self.github.pr["body"] = "Related to #1"
+                self.handle(event_name="schedule")
+                self.assertEqual(self.github.writes, [])
+
+    def test_recovery_never_creates_cards_or_updates_closed_or_foreign_issues(self):
+        for issue_changes, memberships in [
+            ({}, []),
+            ({}, ["other-project"]),
+            ({"state": "CLOSED"}, [PROJECT_ID]),
+            ({"repository": {"nameWithOwner": "outside/repo"}}, [PROJECT_ID]),
+        ]:
+            with self.subTest(issue_changes=issue_changes, memberships=memberships):
+                self.setUp()
+                self.github.issue.update(issue_changes)
+                self.github.project_memberships["issue"] = memberships
+                self.github.statuses["issue"] = "In review"
+                self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+                self.handle(event_name="schedule")
+                self.assertEqual(self.github.writes, [])
+                self.assertEqual(self.github.added, [])
+
+    def test_recovery_rechecks_status_immediately_before_writing(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+        original = self.github.connection
+
+        def concurrent_pickup(*args, **kwargs):
+            if args[2] == "latestOpinionatedReviews":
+                self.github.statuses["issue"] = "In progress"
+                self.github.status_updated_at["issue"] = "2026-11-10T01:30:00Z"
+            return original(*args, **kwargs)
+
+        with patch.object(self.github, "connection", side_effect=concurrent_pickup):
+            self.handle(event_name="schedule")
+        self.assertEqual(self.github.statuses["issue"], "In progress")
+        self.assertEqual(self.github.writes, [])
+
+    def test_recovery_rechecks_pr_state_and_head_before_writing(self):
+        for changes in [{"state": "CLOSED"}, {"state": "MERGED"}, {"headRefOid": "new"}]:
+            with self.subTest(changes=changes):
+                self.setUp()
+                self.github.statuses["issue"] = "In review"
+                self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+                original = self.github.node
+                calls = 0
+
+                def concurrent_change(node_id, node_type, selection):
+                    nonlocal calls
+                    calls += 1
+                    result = dict(original(node_id, node_type, selection))
+                    if calls > 1:
+                        result.update(changes)
+                    return result
+
+                with patch.object(self.github, "node", side_effect=concurrent_change):
+                    self.handle(event_name="schedule")
+                self.assertEqual(self.github.writes, [])
+
+    def test_recovery_dry_run_does_not_mutate_the_issue(self):
+        self.github.dry_run = True
+        self.github.statuses["issue"] = "In review"
+        self.github.reviews = [api_review(state="CHANGES_REQUESTED")]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.statuses["issue"], "In review")
+        self.assertEqual(self.github.writes, [])
 
     def test_new_issue_enters_triage_without_overwriting_later_work(self):
         self.handle(event_name="issues")
