@@ -91,9 +91,11 @@ export function VideoCreateForm({
     slug: string()
       .trim()
       .required('Slug is required')
-      .test('lowercase-no-spaces', function lowercaseNoSpaces(value) {
+      .test('valid-slug-format', function validSlugFormat(value) {
         if (value == null || value === '') return true
-        const hasUppercase = /[A-Z]/.test(value)
+        // Matches the letter/number classes isPublicSlug (api-media) accepts,
+        // so this form doesn't reject slugs the server would allow.
+        const hasUppercase = /\p{Lu}/u.test(value)
         const hasSpaces = /\s/.test(value)
         if (hasUppercase && hasSpaces) {
           return this.createError({
@@ -108,6 +110,23 @@ export function VideoCreateForm({
         if (hasSpaces) {
           return this.createError({
             message: 'Slug cannot contain spaces'
+          })
+        }
+        // Anything left over that isn't a lowercase letter, number or hyphen
+        // (underscores included) is not a public-style slug.
+        if (/[^\p{L}\p{N}-]/u.test(value)) {
+          return this.createError({
+            message:
+              'Slug can only contain lowercase letters, numbers and hyphens'
+          })
+        }
+        // isPublicSlug (api-media) also requires hyphens to separate
+        // non-empty letter/number runs, so leading, trailing or doubled
+        // hyphens would be rejected by the server too.
+        if (/^-|-$|--/.test(value)) {
+          return this.createError({
+            message:
+              'Slug cannot start or end with a hyphen, or contain repeated hyphens'
           })
         }
         return true
