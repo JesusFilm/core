@@ -228,6 +228,62 @@ describe('GET /media-components', () => {
     })
   })
 
+  it('reports a DASH-only Variant with download rows as downloadable, matching the Algolia rule', async () => {
+    mediaPrismaMock.video.findMany.mockResolvedValue([
+      {
+        ...jesusVideo(undefined),
+        id: '1_jf-dash-downloads',
+        variants: [
+          {
+            languageId: '529',
+            published: true,
+            hls: '',
+            dash: 'https://example.com/jf.mpd',
+            lengthInMilliseconds: 7673728,
+            downloadable: true,
+            downloads: [{ quality: 'low', size: 1000 }]
+          }
+        ]
+      }
+    ] as never)
+
+    const res = await app.request('/media-components?ids=1_jf-dash-downloads')
+
+    const [video] = (await res.json())._embedded.mediaComponents
+    expect(video).toMatchObject({
+      componentType: 'content',
+      isDownloadable: true
+    })
+  })
+
+  it('is not downloadable when a non-container Variant has the flag and media but no download rows', async () => {
+    mediaPrismaMock.video.findMany.mockResolvedValue([
+      {
+        ...jesusVideo(undefined),
+        id: '1_jf-no-downloads',
+        variants: [
+          {
+            languageId: '529',
+            published: true,
+            hls: 'https://example.com/jf.m3u8',
+            dash: null,
+            lengthInMilliseconds: 7673728,
+            downloadable: true,
+            downloads: []
+          }
+        ]
+      }
+    ] as never)
+
+    const res = await app.request('/media-components?ids=1_jf-no-downloads')
+
+    const [video] = (await res.json())._embedded.mediaComponents
+    expect(video).toMatchObject({
+      componentType: 'content',
+      isDownloadable: false
+    })
+  })
+
   describe.each(['collection', 'series'])('a %s', (label) => {
     function containerVideo(downloadable: boolean) {
       return {

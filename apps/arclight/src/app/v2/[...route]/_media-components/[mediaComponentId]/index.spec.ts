@@ -203,4 +203,30 @@ describe('GET /media-components/:mediaComponentId', () => {
       contentType: 'video'
     })
   })
+
+  it('reports a DASH-only Variant with download rows as downloadable, matching the Algolia rule', async () => {
+    queryMock.mockResolvedValue({
+      data: {
+        video: baseVideo({
+          id: '1_jf-dash-only',
+          label: 'featureFilm',
+          variant: {
+            hls: '',
+            dash: 'https://example.com/jf.mpd',
+            lengthInMilliseconds: 7673728,
+            language: { bcp47: 'en' },
+            downloadable: true,
+            downloads: [{ quality: 'low', size: 1000 }]
+          }
+        })
+      }
+    })
+
+    const res = await app.request('/media-components/1_jf-dash-only')
+
+    expect(await res.json()).toMatchObject({
+      componentType: 'content',
+      isDownloadable: true
+    })
+  })
 })
