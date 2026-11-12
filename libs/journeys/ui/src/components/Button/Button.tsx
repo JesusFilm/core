@@ -16,6 +16,7 @@ import {
   ButtonAlignment,
   ButtonClickEventCreateInput,
   ButtonVariant,
+  CaptureEventTrigger,
   ChatOpenEventCreateInput
 } from '../../../__generated__/globalTypes'
 import { getNextStepSlug, handleAction } from '../../libs/action'
@@ -31,6 +32,7 @@ import {
   templateKeyify
 } from '../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../libs/rtl'
+import { useCaptureEvent } from '../../libs/useCaptureEvent/useCaptureEvent'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 
@@ -119,6 +121,7 @@ export function Button({
   >(CHAT_OPEN_EVENT_CREATE)
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
+  const captureEventCreate = useCaptureEvent()
   const { renderMode, journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
@@ -166,6 +169,7 @@ export function Button({
       : 'button'
     : 'button'
 
+  /** Sends click analytics and the Button's tagged capture in playback modes. */
   function createClickEvent(): void {
     if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuidv4()
@@ -212,6 +216,10 @@ export function Button({
           }
         })
         fireCaptureEvent(plausible, eventLabel, {
+          capture: {
+            send: captureEventCreate,
+            trigger: CaptureEventTrigger.buttonClick
+          },
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           input,
           stepId: input.stepId ?? '',
@@ -225,6 +233,7 @@ export function Button({
     }
   }
 
+  /** Sends chat analytics and the Button's tagged capture in playback modes. */
   function createChatEvent(): void {
     if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuidv4()
@@ -265,6 +274,10 @@ export function Button({
           }
         })
         fireCaptureEvent(plausible, eventLabel, {
+          capture: {
+            send: captureEventCreate,
+            trigger: CaptureEventTrigger.buttonClick
+          },
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           input,
           stepId: input.stepId ?? '',

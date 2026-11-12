@@ -28,6 +28,11 @@ import {
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
+import {
+  CUSTOM1_CAPTURE_EVENT_CREATE,
+  CUSTOM2_CAPTURE_EVENT_CREATE
+} from '../../libs/useCaptureEvent/useCaptureEvent'
+import { createEventRequestLink } from '../../test/createEventRequestLink'
 
 import {
   ButtonFields,
@@ -877,7 +882,10 @@ describe('Button', () => {
   })
 
   it('should call plausible with eventLabel for buttonClick events', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
+    mockUuidv4
+      .mockReset()
+      .mockReturnValueOnce('uuid')
+      .mockReturnValueOnce('capture-uuid')
     const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
@@ -900,9 +908,26 @@ describe('Button', () => {
       }
     }))
 
+    const captureVariables = vi.fn(() => true)
+    const captureResult = vi.fn(() => ({
+      data: {
+        custom1CaptureEventCreate: {
+          id: 'capture-uuid',
+          __typename: 'Custom1CaptureEvent'
+        }
+      }
+    }))
+    const captureMock = {
+      request: {
+        query: CUSTOM1_CAPTURE_EVENT_CREATE,
+        variables: captureVariables
+      },
+      result: captureResult
+    }
     render(
       <MockedProvider
         mocks={[
+          captureMock,
           {
             request: {
               query: BUTTON_CLICK_EVENT_CREATE,
@@ -965,10 +990,23 @@ describe('Button', () => {
         })
       }
     })
+
+    await waitFor(() => expect(captureResult).toHaveBeenCalledTimes(1))
+    expect(captureVariables).toHaveBeenCalledWith({
+      input: {
+        id: expect.any(String),
+        blockId: 'button',
+        stepId: 'step.id',
+        trigger: 'buttonClick'
+      }
+    })
   })
 
   it('should call plausible with eventLabel for chatButtonClick events', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
+    mockUuidv4
+      .mockReset()
+      .mockReturnValueOnce('uuid')
+      .mockReturnValueOnce('capture-uuid')
     const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
@@ -999,9 +1037,26 @@ describe('Button', () => {
       }
     }))
 
+    const captureVariables = vi.fn(() => true)
+    const captureResult = vi.fn(() => ({
+      data: {
+        custom2CaptureEventCreate: {
+          id: 'capture-uuid',
+          __typename: 'Custom2CaptureEvent'
+        }
+      }
+    }))
+    const captureMock = {
+      request: {
+        query: CUSTOM2_CAPTURE_EVENT_CREATE,
+        variables: captureVariables
+      },
+      result: captureResult
+    }
     render(
       <MockedProvider
         mocks={[
+          captureMock,
           {
             request: {
               query: CHAT_OPEN_EVENT_CREATE,
@@ -1056,6 +1111,16 @@ describe('Button', () => {
           target: 'chat',
           journeyId: 'journey.id'
         })
+      }
+    })
+
+    await waitFor(() => expect(captureResult).toHaveBeenCalledTimes(1))
+    expect(captureVariables).toHaveBeenCalledWith({
+      input: {
+        id: expect.any(String),
+        blockId: 'button',
+        stepId: 'step.id',
+        trigger: 'buttonClick'
       }
     })
   })
@@ -1742,5 +1807,81 @@ describe('Button', () => {
 
       expect(screen.getByRole('button')).toHaveTextContent('Child of God')
     })
+  })
+
+  it.each([
+    ['default', BlockEventLabel.custom1, 1],
+    ['embed', BlockEventLabel.custom1, 1],
+    ['admin', BlockEventLabel.custom1, 0],
+    ['customize', BlockEventLabel.custom1, 0],
+    ['default', null, 0],
+    ['default', BlockEventLabel.share, 0],
+    ['default', BlockEventLabel.inviteFriend, 0]
+  ] as const)(
+    'sends %s button tag %s under the existing capture conditions',
+    async (renderMode, eventLabel, count) => {
+      mockUuidv4.mockReset().mockReturnValue('uuid')
+      mockUsePlausible.mockReturnValue(vi.fn())
+      blockHistoryVar([activeBlock])
+      const { link, requests } = createEventRequestLink()
+      render(
+        <MockedProvider link={link}>
+          <JourneyProvider value={{ journey, renderMode }}>
+            <Button {...block} eventLabel={eventLabel} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(screen.getByRole('button'))
+      await waitFor(() =>
+        expect(
+          requests.filter(({ name }) => name.includes('Capture'))
+        ).toHaveLength(count)
+      )
+      expect(
+        requests.filter(({ name }) => name === 'ButtonClickEventCreate')
+      ).toHaveLength(renderMode === 'default' || renderMode === 'embed' ? 1 : 0)
+    }
+  )
+
+  it('navigates with a failed capture and pending interaction, and uses a new UUID for the next click', async () => {
+    mockUuidv4
+      .mockReset()
+      .mockReturnValueOnce('interaction-1')
+      .mockReturnValueOnce('capture-1')
+      .mockReturnValueOnce('interaction-2')
+      .mockReturnValueOnce('capture-2')
+    const plausible = vi.fn()
+    mockUsePlausible.mockReturnValue(plausible)
+    vi.mocked(handleAction).mockClear()
+    blockHistoryVar([activeBlock])
+    const { link, requests } = createEventRequestLink({
+      failCaptures: true,
+      pendingInteractions: true
+    })
+    const content = (
+      <MockedProvider link={link}>
+        <JourneyProvider value={{ journey }}>
+          <Button {...block} eventLabel={BlockEventLabel.custom1} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const view = render(content)
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(requests).toHaveLength(2))
+    expect(vi.mocked(handleAction)).toHaveBeenCalledTimes(1)
+    view.rerender(content)
+    expect(requests).toHaveLength(2)
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(requests).toHaveLength(4))
+    expect(requests.map(({ input }) => input.id)).toEqual([
+      'interaction-1',
+      'capture-1',
+      'interaction-2',
+      'capture-2'
+    ])
+    expect(
+      plausible.mock.calls.filter(([name]) => name === 'custom1Capture')
+    ).toHaveLength(2)
+    expect(vi.mocked(handleAction)).toHaveBeenCalledTimes(2)
   })
 })
