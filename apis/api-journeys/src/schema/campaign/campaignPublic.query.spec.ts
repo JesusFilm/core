@@ -1101,6 +1101,8 @@ describe('campaignPublic', () => {
         ...journeyRow(id, slug),
         primaryImageBlock: {
           id: `${id}-image`,
+          journeyId: id,
+          deletedAt: null,
           src: `https://imagedelivery.net/${id}/public`,
           alt: `${slug} image`
         },
@@ -1163,6 +1165,54 @@ describe('campaignPublic', () => {
       expect(prismaMock.journey.findMany).toHaveBeenCalledTimes(1)
     })
 
+    it('omits an archived never-published journey and its snapshots', async () => {
+      const fixture = publishedFixture()
+      fixture.blocks = [
+        ...fixture.blocks,
+        journeyItem(fixture, 'PRIVATE-CARD', 'privateJourney', 0)
+      ] as never
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+      prismaMock.journey.findMany.mockResolvedValue([
+        journeyLive('privateJourney', 'private-journey', {
+          status: 'archived',
+          firstPublishedAt: null
+        })
+      ] as never)
+      const result = await publicClient({
+        document: CAMPAIGN_PUBLIC_JOURNEYS,
+        variables: { slug: 'outreach-2026' }
+      })
+      expect(result).not.toHaveProperty('errors')
+      expect(JSON.stringify(result)).not.toContain('PRIVATE-CARD')
+      expect(JSON.stringify(result)).not.toContain('privateJourney')
+    })
+
+    it('does not expose a private foreign image through a public journey card', async () => {
+      const fixture = publishedFixture()
+      fixture.blocks = [
+        ...fixture.blocks,
+        journeyItem(fixture, 'publicItem', 'publicJourney', 0)
+      ] as never
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+      prismaMock.journey.findMany.mockResolvedValue([
+        journeyLive('publicJourney', 'public-journey', {
+          primaryImageBlock: {
+            id: 'foreign-image',
+            journeyId: 'privateJourney',
+            deletedAt: null,
+            src: 'PRIVATE-IMAGE-SOURCE',
+            alt: 'PRIVATE-IMAGE-ALT'
+          }
+        })
+      ] as never)
+      const result = await publicClient({
+        document: CAMPAIGN_PUBLIC_JOURNEYS,
+        variables: { slug: 'outreach-2026' }
+      })
+      expect(result).not.toHaveProperty('errors')
+      expect(JSON.stringify(result)).not.toContain('PRIVATE-IMAGE')
+    })
+
     it('keeps a card whose journey is archived, with its address', async () => {
       const fixture = publishedFixture()
       fixture.blocks = [
@@ -1172,7 +1222,8 @@ describe('campaignPublic', () => {
       prismaMock.campaign.findFirst.mockResolvedValue(fixture)
       prismaMock.journey.findMany.mockResolvedValue([
         journeyLive('archivedJourneyId', 'archived-journey', {
-          status: 'archived'
+          status: 'archived',
+          firstPublishedAt: new Date('2026-01-01')
         })
       ] as never)
 

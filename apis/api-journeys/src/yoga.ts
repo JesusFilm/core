@@ -67,6 +67,11 @@ export const yoga = createYoga<
   },
   plugins: [
     tracingPlugin,
+    {
+      onResponse: ({ response }) => {
+        response.headers.set('Cache-Control', 'private, no-store')
+      }
+    },
     useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
@@ -84,6 +89,9 @@ export const yoga = createYoga<
           session: () => null,
           cache,
           ttlPerSchemaCoordinate: {
+            Journey: 0,
+            'Query._entities': 0,
+            'Query.journeySimpleGet': 0,
             'Journey.blockTypenames': 0,
             'Query.adminJourney': 0,
             'Query.adminJourneys': 0,

@@ -88,6 +88,7 @@ describe('processUserIds', () => {
     primaryImageBlockId: null,
     teamId: 'teamId',
     plausibleToken: null,
+    firstPublishedAt: null,
     publishedAt: new Date('2021-11-19T12:34:56.647Z'),
     createdAt: new Date('2021-11-19T12:34:56.647Z'),
     updatedAt: new Date('2021-11-19T12:34:56.647Z'),

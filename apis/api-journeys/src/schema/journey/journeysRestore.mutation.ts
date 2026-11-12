@@ -42,10 +42,21 @@ builder.mutationField('journeysRestore', (t) =>
           manageableJourneys.map(async (journey) =>
             prisma.journey.update({
               ...query,
-              where: { id: journey.id, updatedAt: journey.updatedAt },
+              where: {
+                id: journey.id,
+                updatedAt: journey.updatedAt,
+                status: journey.status,
+                firstPublishedAt: journey.firstPublishedAt
+              },
               data: {
-                status: JourneyStatus.published,
-                publishedAt: new Date(),
+                status:
+                  journey.status !== JourneyStatus.draft &&
+                  journey.firstPublishedAt != null
+                    ? JourneyStatus.published
+                    : JourneyStatus.draft,
+                archivedAt: null,
+                trashedAt: null,
+                deletedAt: null,
                 updatedAt: journey.updatedAt
               }
             })

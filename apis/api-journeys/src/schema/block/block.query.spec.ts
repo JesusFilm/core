@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql'
 import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../test/client'
+import { mockJourneyRead } from '../../../test/journeyReadFixture'
 import { Action, ability } from '../../lib/auth/ability'
 import { fetchBlockWithJourneyAcl } from '../../lib/auth/fetchBlockWithJourneyAcl'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
@@ -49,6 +50,7 @@ describe('block', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJourneyRead()
   })
 
   it('returns the block when authorized', async () => {

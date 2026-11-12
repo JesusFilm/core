@@ -120,6 +120,20 @@ describe('campaignJourneyBlockCreate', () => {
     })
   })
 
+  it('refuses another team’s archived never-published journey before copying content', async () => {
+    prismaMock.journey.findFirst.mockResolvedValue(
+      journeyRow({
+        status: 'archived',
+        firstPublishedAt: null,
+        title: 'PRIVATE-CARD-SOURCE'
+      }) as never
+    )
+    const result = await create('https://admin.nextstep.is/journeys/journeyId')
+    expect(result).toHaveProperty('errors')
+    expect(JSON.stringify(result)).not.toContain('PRIVATE-CARD-SOURCE')
+    expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+  })
+
   it('resolves a public URL on any domain by slug of any team', async () => {
     const result = await create(
       'https://stories.example.org/outreach-story?lang=es'

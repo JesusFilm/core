@@ -1,7 +1,9 @@
 import { builder } from '../builder'
+import { canReadJourney } from '../journey/journeyReadAccess'
 
 export const JourneyThemeRef = builder.prismaObject('JourneyTheme', {
   shareable: true,
+  authScopes: (theme, context) => canReadJourney(theme.journeyId, context),
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     journeyId: t.exposeID('journeyId', { nullable: false }),

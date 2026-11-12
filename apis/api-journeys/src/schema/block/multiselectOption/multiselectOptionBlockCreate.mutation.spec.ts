@@ -1,6 +1,7 @@
 import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../../test/client'
+import { mockJourneyRead } from '../../../../test/journeyReadFixture'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
 import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithAclIncludes'
@@ -46,6 +47,7 @@ describe('multiselectOptionBlockCreate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJourneyRead()
     prismaMock.block.findMany.mockResolvedValue([])
     prismaMock.block.findUnique.mockResolvedValue({
       id: 'blockId',

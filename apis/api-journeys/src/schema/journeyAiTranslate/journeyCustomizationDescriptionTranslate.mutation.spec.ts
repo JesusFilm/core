@@ -55,6 +55,7 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     >
 
   const mockJourney = {
+    status: 'published',
     id: 'journey-1',
     title: 'Test Journey',
     journeyCustomizationDescription:

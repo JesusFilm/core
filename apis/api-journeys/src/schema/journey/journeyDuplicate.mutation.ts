@@ -277,6 +277,7 @@ builder.mutationField('journeyDuplicate', (t) =>
                     'creatorImageBlockId',
                     'creatorDescription',
                     'publishedAt',
+                    'firstPublishedAt',
                     'hostId',
                     'teamId',
                     'createdAt',
@@ -295,6 +296,10 @@ builder.mutationField('journeyDuplicate', (t) =>
                   title: duplicateTitle,
                   status: duplicateStatus,
                   publishedAt:
+                    duplicateStatus === JourneyStatus.published
+                      ? new Date()
+                      : null,
+                  firstPublishedAt:
                     duplicateStatus === JourneyStatus.published
                       ? new Date()
                       : null,

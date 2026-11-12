@@ -2,6 +2,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { BlockEventLabel, VideoBlockSource } from '../../enums'
+import { requireJourneyRead } from '../../journey/journeyReadAccess'
 import { Language } from '../../language/language'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
@@ -128,7 +129,12 @@ youTube source: videoId, title, description, and duration present`,
 
 builder.asEntity(VideoBlock, {
   key: builder.selection<{ id: string }>('id'),
-  resolveReference: async (ref) => {
-    return await prisma.block.findUnique({ where: { id: ref.id } })
+  resolveReference: async (ref, context) => {
+    const block = await prisma.block.findUnique({
+      where: { id: ref.id, deletedAt: null }
+    })
+    if (block == null) return null
+    await requireJourneyRead(block.journeyId, context)
+    return block
   }
 })

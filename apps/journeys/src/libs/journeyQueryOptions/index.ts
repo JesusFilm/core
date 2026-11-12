@@ -1,1 +1,4 @@
-export { JOURNEY_STATUS_EXCLUDE_DRAFT } from './journeyQueryOptions'
+export {
+  JOURNEY_STATUS_EXCLUDE_DRAFT,
+  requirePublicJourney
+} from './journeyQueryOptions'

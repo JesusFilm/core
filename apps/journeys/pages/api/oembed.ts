@@ -6,7 +6,10 @@ import { GetJourney } from '../../__generated__/GetJourney'
 import { IdType } from '../../__generated__/globalTypes'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
-import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
+import {
+  JOURNEY_STATUS_EXCLUDE_DRAFT,
+  requirePublicJourney
+} from '../../src/libs/journeyQueryOptions'
 
 const apolloClient = createApolloClient()
 
@@ -18,6 +21,7 @@ export default async function Handler(
     const journeySlug = req.query.url?.toString().split('/').pop()
     const { data } = await apolloClient.query<GetJourney>({
       query: GET_JOURNEY,
+      fetchPolicy: 'no-cache',
       variables: {
         id: journeySlug,
         idType: IdType.slug,
@@ -30,6 +34,7 @@ export default async function Handler(
     // policy rejects rather than resolving without data, so this narrows
     // the type rather than guarding a reachable branch.
     if (data == null) throw new Error('GetJourney returned no data')
+    requirePublicJourney(data.journey)
 
     // this should match apps/journeys-admin/src/components/Editor/Properties/JourneyLink/EmbedJourneyDialog/EmbedJourneyDialog.tsx
     const providerUrl = `https://${

@@ -1,6 +1,7 @@
 import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../../test/client'
+import { mockJourneyRead } from '../../../../test/journeyReadFixture'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
 import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithAclIncludes'
@@ -44,6 +45,7 @@ describe('multiselectBlockCreate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJourneyRead()
     prismaMock.block.findMany.mockResolvedValue([])
     // Prevent Pothos Prisma plugin from attempting to call unmocked prisma methods
     prismaMock.block.findUnique.mockResolvedValue({

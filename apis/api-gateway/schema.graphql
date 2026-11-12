@@ -1790,7 +1790,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     """
     events: [PlausibleEvent!]
     """
-    Filter results to only include the specified status. If null or empty, all statuses are returned.
+    Filter results to the specified statuses. If null or empty, all statuses except trashed and deleted are returned. Soft-deleted projects are always excluded.
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 

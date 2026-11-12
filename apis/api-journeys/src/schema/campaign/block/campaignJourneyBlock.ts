@@ -6,6 +6,7 @@ import {
 
 import { builder } from '../../builder'
 import { JourneyStatus } from '../../journey/enums/journeyStatus'
+import { isJourneyPublic } from '../../journey/journeyReadAccess'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyPublicUrl
@@ -63,12 +64,21 @@ export async function loadJourneyLivesByIds(
     include: INCLUDE_JOURNEY_LIVE
   })
   for (const journey of journeys) {
-    const status = journey.deletedAt == null ? journey.status : null
+    const status =
+      journey.deletedAt == null && isJourneyPublic(journey)
+        ? journey.status
+        : null
     const image = journey.primaryImageBlock
     lives.set(journey.id, {
       status,
       url: isJourneyVisible(status) ? getJourneyPublicUrl(journey) : null,
-      image: image?.src != null ? { src: image.src, alt: image.alt } : null
+      image:
+        status != null &&
+        image?.src != null &&
+        image.journeyId === journey.id &&
+        image.deletedAt == null
+          ? { src: image.src, alt: image.alt }
+          : null
     })
   }
   return lives

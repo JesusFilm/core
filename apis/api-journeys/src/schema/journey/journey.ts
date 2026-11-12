@@ -16,6 +16,11 @@ import { UserJourneyRef } from '../userJourney/userJourney'
 
 import { JourneyMenuButtonIcon } from './enums'
 import { Action, journeyAcl } from './journey.acl'
+import {
+  canReadJourney,
+  isJourneyPublic,
+  requireJourneyRead
+} from './journeyReadAccess'
 import { getSimpleJourney, updateSimpleJourney } from './simple'
 
 const Tag = builder.externalRef('Tag', builder.selection<{ id: string }>('id'))
@@ -29,6 +34,8 @@ Tag.implement({
 
 export const JourneyRef = builder.prismaObject('Journey', {
   shareable: true,
+  authScopes: (journey, context) =>
+    isJourneyPublic(journey) || canReadJourney(journey.id, context),
   fields: (t) => ({
     id: t.exposeID('id', { shareable: true, nullable: false }),
     title: t.exposeString('title', {
@@ -360,7 +367,8 @@ export const JourneyRef = builder.prismaObject('Journey', {
 // Register as a federated entity
 builder.asEntity(JourneyRef, {
   key: builder.selection<{ id: string }>('id'),
-  resolveReference: async (ref) => {
+  resolveReference: async (ref, context) => {
+    await requireJourneyRead(ref.id, context)
     return prisma.journey.findUnique({
       where: { id: ref.id }
     })
@@ -373,7 +381,10 @@ builder.queryField('journeySimpleGet', (t) =>
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (_parent, { id }) => getSimpleJourney(id)
+    resolve: async (_parent, { id }, context) => {
+      await requireJourneyRead(id, context)
+      return getSimpleJourney(id)
+    }
   })
 )
 

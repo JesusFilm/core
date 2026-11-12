@@ -73,6 +73,7 @@ describe('journeyDuplicate', () => {
       chatButtons: []
     }
     const duplicate = {
+      status: 'published',
       id: 'duplicateJourneyId',
       teamId: 'teamId',
       userJourneys: [],

@@ -37,10 +37,14 @@ builder.mutationField('journeyPublish', (t) =>
 
         return await prisma.journey.update({
           ...query,
-          where: { id: journeyId },
+          where: { id: journeyId, status: journey.status },
           data: {
             status: JourneyStatus.published,
-            publishedAt: new Date()
+            publishedAt: new Date(),
+            firstPublishedAt: journey.firstPublishedAt ?? new Date(),
+            archivedAt: null,
+            trashedAt: null,
+            deletedAt: null
           }
         })
       }

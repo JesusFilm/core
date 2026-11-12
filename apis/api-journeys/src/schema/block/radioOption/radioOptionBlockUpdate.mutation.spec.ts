@@ -1,6 +1,7 @@
 import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../../test/client'
+import { mockJourneyRead } from '../../../../test/journeyReadFixture'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
 import { fetchBlockWithJourneyAcl } from '../../../lib/auth/fetchBlockWithJourneyAcl'
@@ -43,6 +44,7 @@ describe('radioOptionBlockUpdate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJourneyRead()
   })
 
   it('updates radio option block when authorized', async () => {
