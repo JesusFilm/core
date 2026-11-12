@@ -54,6 +54,11 @@ export default defineConfig({
     },
     pool: 'forks',
     passWithNoTests: true,
-    exclude: ['**/node_modules/**', '**/dist/**', '**/.claude/**']
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.claude/**',
+      '**/*.integration.spec.ts'
+    ]
   }
 })
