@@ -45,7 +45,7 @@ Run against an **empty, disposable localhost database named `privacy_test`**. Th
 ```bash
 JOURNEY_PRIVACY_TEST_DATABASE_URL=postgresql://USER:PASSWORD@localhost:PORT/privacy_test \
   pnpm exec vitest run --root apis/api-journeys \
-  --config "$PWD/apis/api-journeys/vitest.integration.config.mts"
+  --config "$PWD/apis/api-journeys/vitest.privacy.config.mts"
 ```
 
 The normal Vitest config excludes `integration/`; the ready gate and ordinary CI still run the mock-database HTTP regressions, cache regressions, existing template visibility tests and viewer page-data tests. The integration command is an additional required check for this change. No browser, gateway-issuer, staging CDN purge or real-client release acceptance is claimed by these local tests. Those deployment checks remain required before this slice's rollout and the final release gate.

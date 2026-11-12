@@ -475,8 +475,18 @@ model Journey {
   googleSheetsSync                GoogleSheetsSync[]
   templateGalleryPageTemplates    TemplateGalleryPageTemplate[] @relation("JourneyTemplateGalleryPageTemplate")
   campaignRegionLanguages         CampaignRegionLanguage[]
+  revision                        JourneyRevision?
 
   @@index(title)
+}
+
+// Database triggers advance this once per writing transaction, including old
+// Admin binaries. This is shared content state, not an MCP history counter.
+model JourneyRevision {
+  journeyId         String  @id
+  revision          BigInt  @default(0)
+  lastTransactionId BigInt?
+  journey           Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -647,6 +657,12 @@ model Block {
   @@index(journeyId)
   @@index(parentOrder(sort: Asc))
   @@index(typename)
+  @@index(parentBlockId)
+  @@index(nextBlockId)
+  @@index(startIconId)
+  @@index(endIconId)
+  @@index(submitIconId)
+  @@index(integrationId)
 }
 
 model Action {
@@ -670,6 +686,7 @@ model Action {
 
   @@index(parentBlockId)
   @@index(journeyId)
+  @@index(blockId)
 }
 
 model JourneysEmailPreference {

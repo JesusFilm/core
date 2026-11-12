@@ -58,7 +58,8 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/.claude/**',
-      '**/integration/**'
+      '**/integration/**',
+      '**/*.integration.spec.ts'
     ]
   }
 })

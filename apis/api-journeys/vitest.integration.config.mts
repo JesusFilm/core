@@ -1,20 +1,24 @@
+import { resolve } from 'node:path'
+
+import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
-import config from './vitest.config.mts'
-
 export default defineConfig({
-  ...config,
+  plugins: [tsconfigPaths({ root: resolve(__dirname, '../..') })],
+  resolve: {
+    dedupe: ['graphql'],
+    alias: [
+      { find: /^.+\/env$/, replacement: resolve(__dirname, 'test/env.mock.ts') }
+    ]
+  },
   test: {
-    ...config.test,
-    include: ['integration/**/*.spec.ts'],
-    exclude: ['**/node_modules/**'],
-    setupFiles: ['./test/reactEmailRenderMock.ts', './test/bullmqMock.ts'],
-    env: {
-      PG_DATABASE_URL_JOURNEYS:
-        process.env.JOURNEY_PRIVACY_TEST_DATABASE_URL ?? ''
-    },
-    coverage: { enabled: false },
-    testTimeout: 30_000,
-    hookTimeout: 60_000
+    globals: true,
+    environment: 'node',
+    env: { NODE_ENV: 'test' },
+    include: ['**/*.integration.spec.ts'],
+    setupFiles: [resolve(__dirname, 'test/bullmqMock.ts')],
+    hookTimeout: 60000,
+    testTimeout: 15000,
+    coverage: { enabled: false }
   }
 })
