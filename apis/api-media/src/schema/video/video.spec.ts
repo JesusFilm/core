@@ -3912,6 +3912,72 @@ describe('video', () => {
         )
       })
 
+      it('should derive the previous slug and renamed variants from the lock-held re-read, not the pre-lock snapshot', async () => {
+        // Simulates a second rename of the same video waking up after a
+        // first one has already committed: the pre-lock `currentVideo` read
+        // (first call) still sees the old DB state, but the re-read taken
+        // after lockVideo serializes behind the first transaction (second
+        // call) sees what it actually committed. If the code fell back to
+        // the pre-lock snapshot for `previousSlug` or the variant list, it
+        // would record an alias the first transaction already created (a
+        // unique-constraint failure) and slice variant slugs against the
+        // wrong prefix.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique
+          .mockResolvedValueOnce({
+            published: false,
+            publishedAt: new Date('2023-01-01'),
+            slug: 'old-slug',
+            variants: [
+              {
+                id: 'variantId',
+                slug: 'old-slug/en',
+                languageId: 'en',
+                published: true
+              }
+            ]
+          } as any)
+          .mockResolvedValueOnce({
+            slug: 'already-renamed',
+            variants: [
+              {
+                id: 'variantId',
+                slug: 'already-renamed/en',
+                languageId: 'en',
+                published: true
+              }
+            ]
+          } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          slug: 'new-slug'
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'new-slug'
+            }
+          }
+        })
+
+        expect(prismaMock.videoSlug.create).toHaveBeenCalledWith({
+          data: { value: 'already-renamed', videoId: 'id' }
+        })
+        expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+          where: { id: 'variantId' },
+          data: { slug: 'new-slug/en' }
+        })
+      })
+
       it('should map a concurrent slug collision to NotUniqueError instead of a raw 500', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',

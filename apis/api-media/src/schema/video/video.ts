@@ -41,7 +41,11 @@ import {
   updateVideoAvailableLanguages
 } from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
-import { assertSlugNotAliasOfOtherVideo, lockVideoSlug } from './lib/videoSlug'
+import {
+  assertSlugNotAliasOfOtherVideo,
+  lockVideo,
+  lockVideoSlug
+} from './lib/videoSlug'
 
 // Helper function to check if video viewing is restricted for the current platform
 function isVideoViewRestricted(
@@ -933,13 +937,23 @@ builder.mutationFields((t) => ({
           // `string | null | undefined` across the closure boundary.
           const newSlug = input.slug
           video = await prisma.$transaction(async (tx) => {
-            // Re-read the slug fresh, under lock, rather than trusting the
-            // `currentVideo` snapshot taken before any lock was held - that
-            // snapshot is exactly what let a concurrent create/rename of a
-            // different video race this one onto the same slug value.
+            // Serialize concurrent renames of this *same* video before
+            // reading anything - see lockVideo's doc comment for why the
+            // slug-value lock below can't do this on its own.
+            await lockVideo(tx, input.id)
+
+            // Re-read the slug (and variants) fresh, now that the lock
+            // above guarantees no concurrent rename of this video can
+            // still be in flight - rather than trusting the `currentVideo`
+            // snapshot taken before any lock was held, which is exactly
+            // what let a concurrent rename race this one onto a stale
+            // previous slug.
             const fresh = await tx.video.findUnique({
               where: { id: input.id },
-              select: { slug: true }
+              select: {
+                slug: true,
+                variants: { select: { id: true, slug: true } }
+              }
             })
             const lockKeys = Array.from(
               new Set(compact([newSlug, fresh?.slug]))
@@ -955,7 +969,7 @@ builder.mutationFields((t) => ({
               // variant-creation time and never recomputed from the parent. Renaming
               // the video must resync every variant's slug prefix so the new slug is
               // actually reachable through the variant-based idType:slug lookup.
-              const renamedVariants = (currentVideo?.variants ?? []).filter(
+              const renamedVariants = (fresh?.variants ?? []).filter(
                 (variant) => variant.slug.startsWith(`${previousSlug}/`)
               )
               renamedVariantIds = renamedVariants.map((variant) => variant.id)
