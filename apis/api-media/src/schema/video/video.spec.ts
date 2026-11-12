@@ -2825,8 +2825,8 @@ describe('video', () => {
         // interactive transaction - hand the callback prismaMock so its
         // tx.* calls land on the same spies the tests assert against.
         prismaMock.$transaction.mockImplementation(
-          (async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
-            await transaction(prismaMock))
+          async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
+            await transaction(prismaMock)
         )
       })
 
@@ -3119,8 +3119,8 @@ describe('video', () => {
         // array-of-promises form - hand the callback the same prismaMock so
         // its tx.* calls land on the same spies the tests assert against.
         prismaMock.$transaction.mockImplementation(
-          (async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
-            await transaction(prismaMock))
+          async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
+            await transaction(prismaMock)
         )
       })
 
