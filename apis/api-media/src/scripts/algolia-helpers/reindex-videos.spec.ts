@@ -6,12 +6,15 @@ vi.mock('../../workers/videoAlgoliaSync/queue', () => ({
   queue: { close: vi.fn() }
 }))
 
-vi.mock('../../lib/algolia/reindexVideosInAlgolia/reindexVideosInAlgolia', async () => {
-  const actual = await vi.importActual<
-    typeof import('../../lib/algolia/reindexVideosInAlgolia/reindexVideosInAlgolia')
-  >('../../lib/algolia/reindexVideosInAlgolia/reindexVideosInAlgolia')
-  return { ...actual, reindexVideosInAlgolia: vi.fn() }
-})
+vi.mock(
+  '../../lib/algolia/reindexVideosInAlgolia/reindexVideosInAlgolia',
+  async () => {
+    const actual = await vi.importActual<
+      typeof import('../../lib/algolia/reindexVideosInAlgolia/reindexVideosInAlgolia')
+    >('../../lib/algolia/reindexVideosInAlgolia/reindexVideosInAlgolia')
+    return { ...actual, reindexVideosInAlgolia: vi.fn() }
+  }
+)
 
 const mockedReindex = vi.mocked(reindexVideosInAlgolia)
 const base = ['node', 'reindex-videos.ts']

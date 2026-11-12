@@ -147,7 +147,9 @@ describe('reconcileGeneratedParentVariant', () => {
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('series-1')
     expect(
       vi.mocked(updateVideoInAlgolia).mock.invocationCallOrder[0]
-    ).toBeGreaterThan(prismaMock.videoVariant.update.mock.invocationCallOrder[0])
+    ).toBeGreaterThan(
+      prismaMock.videoVariant.update.mock.invocationCallOrder[0]
+    )
     expect(
       vi.mocked(updateVideoInAlgolia).mock.invocationCallOrder[0]
     ).toBeGreaterThan(

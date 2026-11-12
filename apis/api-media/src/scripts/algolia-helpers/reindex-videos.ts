@@ -24,7 +24,6 @@ import {
 } from '../../lib/algolia/reindexVideosInAlgolia/reindexVideosInAlgolia'
 import { logger } from '../../logger'
 import { queue } from '../../workers/videoAlgoliaSync/queue'
-
 import { hasFlag } from '../cliFlags'
 
 export function getFlagValue(argv: string[], name: string): string | undefined {
@@ -41,9 +40,7 @@ export async function main(argv = process.argv): Promise<void> {
   const afterVideoId = getFlagValue(argv, 'after')
   const batchSizeFlag = getFlagValue(argv, 'batch-size')
   const batchSize = assertValidReindexBatchSize(
-    batchSizeFlag != null
-      ? Number(batchSizeFlag)
-      : DEFAULT_REINDEX_BATCH_SIZE
+    batchSizeFlag != null ? Number(batchSizeFlag) : DEFAULT_REINDEX_BATCH_SIZE
   )
 
   logger.info(
