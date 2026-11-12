@@ -11,6 +11,7 @@ import {
   CaptureEventTypename
 } from './captureTypes'
 
+/** Fail GraphQL resolution when a required capture snapshot field is missing. */
 function requiredSnapshot<T>(value: T | null): T {
   if (value == null) throw new Error('Capture snapshot is missing')
   return value

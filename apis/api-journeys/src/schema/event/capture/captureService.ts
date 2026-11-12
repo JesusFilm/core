@@ -11,6 +11,7 @@ import {
   CaptureEventTypename
 } from './captureTypes'
 
+/** Reject a capture whose block, tag, trigger or containing Step is invalid. */
 function invalidContext(): never {
   throw new GraphQLError(
     'Capture does not match the current block, tag or step',
@@ -20,6 +21,10 @@ function invalidContext(): never {
   )
 }
 
+/**
+ * Return the saved snapshot for a matching retry, or null for a new occurrence.
+ * Reject reuse of an occurrence ID by another visitor or capture context.
+ */
 async function existingOccurrence(
   userId: string,
   typename: CaptureEventTypename,
@@ -48,6 +53,11 @@ async function existingOccurrence(
   return existing
 }
 
+/**
+ * Validate the played journey context and persist an explicit capture occurrence.
+ * Resolve visitor and family attribution server-side. Matching retries, including
+ * concurrent deliveries, return the original snapshot without adding activity.
+ */
 export async function createCaptureEvent(
   userId: string,
   typename: CaptureEventTypename,
