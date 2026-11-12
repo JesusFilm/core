@@ -93,7 +93,10 @@ describe('seedVideoLanguages', () => {
     // This job runs over the whole Video table, so its read cost must not
     // scale with the catalog. Deriving each video through a per-id lookup
     // made this O(rows) - 401 reads for 400 videos - and got worse with
-    // every title added. The batched lookup keeps it flat at two.
+    // every title added. The batched lookup keeps it flat regardless of
+    // row count: one id scan, then one recompute pass that writes, then a
+    // second recompute pass that finds nothing left to change and stops
+    // without writing again.
     const readsByRowCount = new Map<number, number>()
 
     for (const rowCount of [10, 100, 400]) {
@@ -117,8 +120,95 @@ describe('seedVideoLanguages', () => {
       )
     }
 
-    expect([...readsByRowCount.values()]).toEqual([2, 2, 2])
+    expect([...readsByRowCount.values()]).toEqual([3, 3, 3])
     expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('converges a multi-level hierarchy over several passes instead of zeroing out the top', async () => {
+    // A single pass reads every child's *currently stored* availableLanguages,
+    // so a 3-level hierarchy (collection > series > episode) only has its
+    // leaf corrected on the first pass - the series and collection above it
+    // would still compute from stale pre-fix values and stay wrong. This
+    // fixture starts every container with a stale (empty) stored value, the
+    // kind of drift this job exists to repair, and asserts the whole chain
+    // ends up correct, not just the leaf.
+    interface StatefulRow {
+      id: string
+      variants: Array<{ languageId: string }>
+      childIds: string[]
+      availableLanguages: string[]
+    }
+
+    const store = new Map<string, StatefulRow>(
+      [
+        {
+          id: 'episode',
+          variants: [{ languageId: '529' }],
+          childIds: [],
+          availableLanguages: []
+        },
+        {
+          id: 'series',
+          variants: [],
+          childIds: ['episode'],
+          availableLanguages: []
+        },
+        {
+          id: 'collection',
+          variants: [],
+          childIds: ['series'],
+          availableLanguages: []
+        }
+      ].map((row) => [row.id, row])
+    )
+
+    ;(prismaMock.video.findMany as any).mockImplementation(
+      async ({
+        select,
+        where
+      }: {
+        select?: Record<string, unknown>
+        where?: { id: { in: string[] } }
+      }) => {
+        if (select?.variants == null) {
+          return [...store.keys()].map((id) => ({ id })) as unknown as Video[]
+        }
+        const ids = where?.id.in ?? []
+        return ids.map((id) => {
+          const row = store.get(id) as StatefulRow
+          return {
+            id,
+            variants: row.variants,
+            children: row.childIds.map((childId) => ({
+              availableLanguages: (store.get(childId) as StatefulRow)
+                .availableLanguages
+            }))
+          }
+        })
+      }
+    )
+    ;(prismaMock.video.update as any).mockImplementation(
+      async ({
+        where,
+        data
+      }: {
+        where: { id: string }
+        data: { availableLanguages: string[] }
+      }) => {
+        ;(store.get(where.id) as StatefulRow).availableLanguages =
+          data.availableLanguages
+        return {} as unknown as Video
+      }
+    )
+    ;(prismaMock.$transaction as any).mockImplementation(
+      async (updates: Array<Promise<unknown>>) => Promise.all(updates)
+    )
+
+    await seedVideoLanguages()
+
+    expect(store.get('episode')?.availableLanguages).toEqual(['529'])
+    expect(store.get('series')?.availableLanguages).toEqual(['529'])
+    expect(store.get('collection')?.availableLanguages).toEqual(['529'])
   })
 
   it('chunks the batched recompute once the catalog exceeds a single read chunk', async () => {
@@ -156,7 +246,9 @@ describe('seedVideoLanguages', () => {
 
     await seedVideoLanguages()
 
-    expect(recomputeCallSizes).toEqual([5000, 1])
+    // Two passes over this flat fixture: the first writes every row, the
+    // second recomputes identically and finds nothing left to change.
+    expect(recomputeCallSizes).toEqual([5000, 1, 5000, 1])
     expect(prismaMock.video.update).toHaveBeenCalledWith({
       where: { id: 'video-0' },
       data: { availableLanguages: ['529'] }
