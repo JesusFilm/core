@@ -11,6 +11,7 @@ import {
   CaptureEventTypename
 } from './captureTypes'
 
+/** Fail GraphQL resolution when a required capture snapshot field is missing. */
 function requiredSnapshot<T>(value: T | null): T {
   if (value == null) throw new Error('Capture snapshot is missing')
   return value
@@ -54,6 +55,7 @@ for (const typename of Object.keys(CAPTURE_EVENTS) as CaptureEventTypename[]) {
         type: CaptureEventTrigger,
         nullable: false,
         select: { captureTrigger: true },
+        /** Resolve the saved trigger enum or fail if the snapshot is invalid. */
         resolve: (event) =>
           requiredSnapshot(
             CAPTURE_EVENT_TRIGGERS.find(
