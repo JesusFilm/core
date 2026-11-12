@@ -931,7 +931,7 @@ builder.mutationFields((t) => ({
           }
         } satisfies Prisma.VideoUpdateArgs
 
-        if (input.slug != null && input.slug !== currentVideo?.slug) {
+        if (input.slug != null) {
           // Narrowed to a plain `string` so it stays narrowed inside the
           // transaction closure below - `input.slug` itself widens back to
           // `string | null | undefined` across the closure boundary.
@@ -945,9 +945,15 @@ builder.mutationFields((t) => ({
             // Re-read the slug (and variants) fresh, now that the lock
             // above guarantees no concurrent rename of this video can
             // still be in flight - rather than trusting the `currentVideo`
-            // snapshot taken before any lock was held, which is exactly
-            // what let a concurrent rename race this one onto a stale
-            // previous slug.
+            // snapshot taken before any lock was held. Whether a rename is
+            // even needed is also decided from this fresh read, not from
+            // `currentVideo?.slug`: that snapshot is taken before any lock
+            // is held, so a concurrent rename could land between the
+            // snapshot and this transaction and make the snapshot stale,
+            // which previously let this call fall through to the unlocked
+            // `prisma.video.update` branch below with its own `input.slug`
+            // still writing `Video.slug` directly - no lock, no alias
+            // bookkeeping, no recheck (see PR #9978 review thread).
             const fresh = await tx.video.findUnique({
               where: { id: input.id },
               select: {

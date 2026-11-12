@@ -3978,6 +3978,71 @@ describe('video', () => {
         })
       })
 
+      it('should take the lock-protected rename path even when the pre-lock snapshot matches the requested slug', async () => {
+        // Simulates the race from the PR #9978 review thread: this call's
+        // own `input.slug` happens to equal the pre-lock snapshot's slug
+        // (e.g. a stale client retry), but a concurrent rename has already
+        // moved the video on to a different slug and aliased this one by
+        // the time the lock is acquired. The branch decision must not
+        // trust that stale, pre-lock snapshot - it has to take the
+        // lock-protected path regardless and let the fresh, lock-held
+        // re-read decide what actually changed. If it instead fell
+        // through to a bare `prisma.video.update`, none of the assertions
+        // below (transaction, alias bookkeeping, variant resync) would
+        // have happened at all.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique
+          .mockResolvedValueOnce({
+            published: false,
+            publishedAt: new Date('2023-01-01'),
+            slug: 'old-slug',
+            variants: []
+          } as any)
+          .mockResolvedValueOnce({
+            slug: 'newer-slug',
+            variants: [
+              {
+                id: 'variantId',
+                slug: 'newer-slug/en',
+                languageId: 'en',
+                published: true
+              }
+            ]
+          } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          slug: 'old-slug'
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'old-slug'
+            }
+          }
+        })
+
+        expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
+        expect(prismaMock.videoSlug.create).toHaveBeenCalledWith({
+          data: { value: 'newer-slug', videoId: 'id' }
+        })
+        expect(prismaMock.videoSlug.deleteMany).toHaveBeenCalledWith({
+          where: { value: 'old-slug', videoId: 'id' }
+        })
+        expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+          where: { id: 'variantId' },
+          data: { slug: 'old-slug/en' }
+        })
+      })
+
       it('should map a concurrent slug collision to NotUniqueError instead of a raw 500', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -4240,7 +4305,11 @@ describe('video', () => {
 
         expect(prismaMock.video.update).toHaveBeenCalledTimes(2)
         expect(prismaMock.videoSlug.create).not.toHaveBeenCalled()
-        expect(prismaMock.$transaction).not.toHaveBeenCalled()
+        // The first call still takes the lock-protected rename path (it
+        // can't know the slug is unchanged until the fresh, lock-held read
+        // below); the second call has no slug input at all, so it skips
+        // the transaction entirely.
+        expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
       })
 
       it('should allow slug update with same value when publishedAt is not null', async () => {
