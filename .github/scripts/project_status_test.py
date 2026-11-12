@@ -366,6 +366,29 @@ class HandlerTests(unittest.TestCase):
         self.handle(event_name="schedule")
         self.assertEqual(self.github.writes, [])
 
+    def test_recovery_preserves_an_approval_when_another_is_dismissed_later(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.reviews = [api_review(author="alice")]
+        self.github.dismissals = [
+            {
+                "createdAt": "2026-11-10T01:30:00Z",
+                "previousReviewState": "APPROVED",
+                "review": {"id": "bob-approval"},
+            }
+        ]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [("issue", "Approved")])
+
+    def test_unrelated_newer_change_request_does_not_refresh_an_old_approval(self):
+        self.github.statuses["issue"] = "In progress"
+        self.github.status_updated_at["issue"] = "2026-11-10T01:15:00Z"
+        self.github.reviews = [
+            api_review(author="alice"),
+            api_review(author="carol", state="CHANGES_REQUESTED", submitted="2026-11-10T01:45:00Z"),
+        ]
+        self.handle(event_name="schedule")
+        self.assertEqual(self.github.writes, [])
+
     def test_recovery_uses_the_existing_pending_reviewer_policy(self):
         self.github.statuses["issue"] = "In progress"
         self.github.reviews = [api_review(author="alice", state="CHANGES_REQUESTED")]

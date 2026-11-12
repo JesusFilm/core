@@ -721,7 +721,8 @@ def run(github: GitHub, event_name: str, event: dict):
                 review.submitted_at
                 for review in pr.reviews
                 if review.commit_id == pr.head
-                and review.state in {"APPROVED", "CHANGES_REQUESTED"}
+                and review.state
+                in ({"APPROVED"} if status == "Approved" else {"CHANGES_REQUESTED"})
             ),
             default="",
         )
@@ -729,6 +730,7 @@ def run(github: GitHub, event_name: str, event: dict):
             not review_at
             or (
                 pr.last_approval_dismissed_at
+                and status != "Approved"
                 and not newer_activity(review_at, pr.last_approval_dismissed_at)
             )
             or status not in {"Approved", "Changes requested", "In review"}
