@@ -5,6 +5,9 @@ import type { FrameLocator, Locator, Page } from 'playwright-core'
 export const DEFAULT_HERO_TITLE = 'Share the story'
 export const NEW_REGION_NAME = 'New region'
 export const CAMPAIGN_LANGUAGE = 'English'
+// Must stay wider than `EDITOR_MIN_WIDTH` (journeys-admin `CampaignEditor`), below which the
+// editor only shows "Open this on a larger screen"; the chrome-desktop project's 1280px is too narrow.
+export const CAMPAIGN_EDITOR_VIEWPORT = { width: 1920, height: 1080 }
 // Kept in sync with `REGION_SECTION_SEED` (api-journeys `campaign/seed/sections.ts`)
 const REGION_SHARE_TITLE = 'Share this journey'
 
