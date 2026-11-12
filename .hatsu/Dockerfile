@@ -6,7 +6,7 @@
 # stack with namespaced ports/DB (ENG-3719). Vera's tickets will make this
 # real; until then it documents the intended base.
 
-FROM node:22.23.5-bookworm-slim
+FROM node:22.23.5-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee
 
 # Match the VM toolchain (ENG-3701): pnpm via corepack, git for worktrees.
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends \

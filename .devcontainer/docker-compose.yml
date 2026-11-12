@@ -5,7 +5,7 @@ include:
   - ../docker-compose.services.yml
 services:
   bootstrap:
-    image: node:22.23.5-bookworm
+    image: node:22.23.5-bookworm@sha256:e13726ca604184d7a91fcacab1fc09eefd642dc28e79ac34e85540dd93b78cfb
     volumes:
       - core-workspace:/workspaces
       - core-node-user:/home/node
