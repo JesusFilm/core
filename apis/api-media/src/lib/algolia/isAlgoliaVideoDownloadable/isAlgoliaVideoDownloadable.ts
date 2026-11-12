@@ -30,6 +30,13 @@ export function hasAlgoliaPlayableMedia(
  * example a generated parent Variant stored with hls: '' / dash: '' and no
  * downloads, where the column defaults to true) must not be trusted.
  *
+ * A download row of any quality counts, deliberately including the distro*
+ * qualities (renditions made for distribution centers). The caller must pass
+ * every download row, not just low and high. The consequence: a Variant whose
+ * only rows are distro* is downloadable here, although clients that look up
+ * low/high (the downloadSizes fields) will find no file for it. Exclude
+ * distro* here if that proves wrong in production data.
+ *
  * Shared by the indexer and checkVideoInAlgolia so reconciliation computes
  * the same expected value the indexer writes.
  */

@@ -348,6 +348,51 @@ describe('videoAlgolia', () => {
         expect(result).toHaveProperty('data.checkVideoInAlgolia.ok', true)
       })
 
+      it('should expect a video with only distro download rows to be downloadable, matching the indexer', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          label: 'featureFilm',
+          restrictViewPlatforms: [],
+          keywords: [],
+          variants: [
+            {
+              hls: 'https://example.com/video.m3u8',
+              dash: '',
+              lengthInMilliseconds: 120000,
+              downloadable: true,
+              downloads: [{ quality: 'distroLow' }]
+            }
+          ]
+        } as any)
+
+        getObjectSpy.mockResolvedValue({
+          objectID: 'videoId',
+          mediaComponentId: 'videoId',
+          subType: 'featureFilm',
+          componentType: 'content',
+          contentType: 'video',
+          lengthInMilliseconds: 120000,
+          isDownloadable: true,
+          restrictViewArclight: false,
+          keywords: []
+        })
+
+        const result = await authClient({
+          document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
+          variables: { videoId: 'videoId' }
+        })
+
+        expect(result).toHaveProperty('data.checkVideoInAlgolia.ok', true)
+      })
+
       it('should keep a collection/series with its own media and downloads downloadable', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',

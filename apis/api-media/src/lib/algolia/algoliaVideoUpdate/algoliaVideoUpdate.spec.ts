@@ -472,6 +472,57 @@ describe('algoliaVideoUpdate', () => {
     }
   )
 
+  // Deliberate (see isAlgoliaVideoDownloadable): every download quality
+  // counts, including distro*, but downloadSizes only reads low and high.
+  it('reports a video with only distro download rows as downloadable, with zero sizes', async () => {
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      id: 'distro-only-id',
+      label: 'featureFilm',
+      primaryLanguageId: '529',
+      childIds: [],
+      restrictDownloadPlatforms: [],
+      published: true,
+      restrictViewPlatforms: [],
+      title: [{ value: 'Distro Only', languageId: '529' }],
+      description: [],
+      studyQuestions: [],
+      bibleCitation: [],
+      keywords: [],
+      images: [],
+      availableLanguages: [],
+      variants: [
+        {
+          published: true,
+          hls: 'https://example.com/distro.m3u8',
+          dash: '',
+          lengthInMilliseconds: 1000,
+          downloadable: true,
+          downloads: [
+            { quality: 'distroLow', size: 100 },
+            { quality: 'distroHigh', size: 900 }
+          ]
+        }
+      ]
+    } as any)
+
+    await updateVideoInAlgolia('distro-only-id', mockLogger)
+
+    expect(saveObjectsSpy).toHaveBeenCalledWith({
+      indexName: 'test-videos',
+      objects: [
+        expect.objectContaining({
+          objectID: 'distro-only-id',
+          isDownloadable: true,
+          downloadSizes: {
+            approximateSmallDownloadSizeInBytes: 0,
+            approximateLargeDownloadSizeInBytes: 0
+          }
+        })
+      ],
+      waitForTasks: true
+    })
+  })
+
   it('does not report a non-container video without playable media as downloadable', async () => {
     prismaMock.video.findUnique.mockResolvedValueOnce({
       id: 'no-media-id',
