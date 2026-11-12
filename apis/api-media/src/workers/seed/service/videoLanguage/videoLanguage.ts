@@ -36,7 +36,6 @@ async function updateBatch(
       await new Promise((resolve) => setTimeout(resolve, 1000))
       return updateBatch(videos, retries + 1)
     }
-    console.error('Failed to update batch after retries:', error)
     throw error
   }
 }
