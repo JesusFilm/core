@@ -4,15 +4,25 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { formatISO } from 'date-fns'
+import {
+  formatISO,
+  isValid,
+  parseISO,
+  startOfDay,
+  startOfToday
+} from 'date-fns'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import X2Icon from '@core/shared/ui/icons/X2'
 
 import {
   GetTemplateFamilyStatsBreakdown,
@@ -24,6 +34,7 @@ import {
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
+import { DateRangePicker } from '../JourneyVisitorsList/FilterDrawer/ExportDialog/DateRangePicker'
 
 import { InfoIcon } from './InfoIcon'
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
@@ -68,18 +79,64 @@ export function TemplateBreakdownAnalyticsDialog({
 }: TemplateBreakdownAnalyticsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [includeArchivedJourneys, setIncludeArchivedJourneys] = useState(true)
+  const today = useMemo(() => startOfToday(), [])
+  const earliestDate = useMemo(() => parseISO(earliestStatsCollected), [])
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
+  const [fieldInputState, setFieldInputState] = useState({
+    hasInput: false,
+    isIncomplete: false
+  })
+  const [datePickerResetKey, setDatePickerResetKey] = useState(0)
+  const [appliedDateRange, setAppliedDateRange] = useState<string | null>(null)
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
 
-  const defaultVariables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
+  const getValidDateRange = (
+    from: Date | null,
+    to: Date | null
+  ): string | null => {
+    if (
+      from == null ||
+      to == null ||
+      !isValid(from) ||
+      !isValid(to) ||
+      startOfDay(from) < earliestDate ||
+      startOfDay(to) > today ||
+      startOfDay(from) > startOfDay(to)
+    )
+      return null
+    return `${formatISO(from, { representation: 'date' })},${formatISO(to, { representation: 'date' })}`
+  }
+
+  const isDateRangeValid = getValidDateRange(startDate, endDate) != null
+
+  const selectedDateRange = getValidDateRange(startDate, endDate)
+  const hasDateInput =
+    fieldInputState.hasInput || startDate != null || endDate != null
+  const isRangeIncomplete =
+    hasDateInput && (fieldInputState.isIncomplete || !isDateRangeValid)
+  const isRangePending =
+    selectedDateRange != null && selectedDateRange !== appliedDateRange
+  useEffect(() => {
+    if (
+      !open ||
+      isRangeIncomplete ||
+      selectedDateRange == null ||
+      selectedDateRange === appliedDateRange
+    )
+      return
+    const timer = setTimeout(() => setAppliedDateRange(selectedDateRange), 500)
+    return () => clearTimeout(timer)
+  }, [open, selectedDateRange, appliedDateRange, isRangeIncomplete])
+
+  const variables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
     () => ({
       id: journeyId,
       idType: IdType.databaseId,
       where: {
         property: 'event:props:templateKey',
-        period: 'custom',
-        date: `${earliestStatsCollected},${formatISO(new Date(), {
-          representation: 'date'
-        })}`
+        period: appliedDateRange == null ? 'all' : 'custom',
+        ...(appliedDateRange != null ? { date: appliedDateRange } : {})
       },
       events: [
         PlausibleEvent.journeyVisitors,
@@ -95,38 +152,34 @@ export function TemplateBreakdownAnalyticsDialog({
         PlausibleEvent.custom2Capture,
         PlausibleEvent.custom3Capture
       ],
-      status: [
-        JourneyStatus.published,
-        JourneyStatus.draft,
-        JourneyStatus.archived
-      ]
+      status: includeArchivedJourneys
+        ? [JourneyStatus.published, JourneyStatus.draft, JourneyStatus.archived]
+        : [JourneyStatus.published, JourneyStatus.draft]
     }),
-    [journeyId]
+    [journeyId, appliedDateRange, includeArchivedJourneys]
   )
 
-  const { data, loading, error, refetch } = useQuery<
+  const { data, loading, error } = useQuery<
     GetTemplateFamilyStatsBreakdown,
     GetTemplateFamilyStatsBreakdownVariables
   >(GET_TEMPLATE_FAMILY_STATS_BREAKDOWN, {
-    variables: defaultVariables,
-    skip: !open
+    variables,
+    fetchPolicy: 'network-only',
+    skip: !open || isRangeIncomplete || isRangePending
   })
 
-  const handleToggleArchivedJourneys = (): void => {
-    const newIncludeArchived = !includeArchivedJourneys
-    setIncludeArchivedJourneys(newIncludeArchived)
-    if (open) {
-      void refetch({
-        ...defaultVariables,
-        status: newIncludeArchived
-          ? [
-              JourneyStatus.published,
-              JourneyStatus.draft,
-              JourneyStatus.archived
-            ]
-          : [JourneyStatus.published, JourneyStatus.draft]
-      })
-    }
+  const handleDateRangeChange = (from: Date | null, to: Date | null): void => {
+    setStartDate(from)
+    setEndDate(to)
+    if (from == null && to == null) setAppliedDateRange(null)
+  }
+
+  const handleClearDateRange = (): void => {
+    setFieldInputState({ hasInput: false, isIncomplete: false })
+    setDatePickerResetKey((key) => key + 1)
+    setStartDate(null)
+    setEndDate(null)
+    setAppliedDateRange(null)
   }
 
   const noData =
@@ -139,6 +192,7 @@ export function TemplateBreakdownAnalyticsDialog({
     <Dialog
       open={open}
       onClose={() => {
+        handleClearDateRange()
         setIncludeArchivedJourneys(true)
         handleClose()
       }}
@@ -163,7 +217,7 @@ export function TemplateBreakdownAnalyticsDialog({
             control={
               <Switch
                 checked={includeArchivedJourneys}
-                onChange={handleToggleArchivedJourneys}
+                onChange={(_, checked) => setIncludeArchivedJourneys(checked)}
               />
             }
             label={t('Include archived projects')}
@@ -184,7 +238,43 @@ export function TemplateBreakdownAnalyticsDialog({
         }
       }}
     >
-      {loading ? (
+      <Box sx={{ px: 4, pb: 2 }}>
+        <Stack direction="row" sx={{ alignItems: 'center' }}>
+          <DateRangePicker
+            key={datePickerResetKey}
+            onInputStateChange={setFieldInputState}
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={(date) => handleDateRangeChange(date, endDate)}
+            onEndDateChange={(date) => handleDateRangeChange(startDate, date)}
+            minDate={earliestDate}
+            maxDate={today}
+          />
+          <Tooltip title={t('Reset date range')}>
+            <Box component="span" sx={{ display: 'inline-flex' }}>
+              <IconButton
+                aria-label={t('Reset date range')}
+                onClick={handleClearDateRange}
+                disabled={!hasDateInput && appliedDateRange == null}
+              >
+                <X2Icon />
+              </IconButton>
+            </Box>
+          </Tooltip>
+        </Stack>
+        {startDate != null && endDate != null && !isDateRangeValid && (
+          <Typography variant="body2" color="error" role="alert">
+            {t(
+              'Select a valid date range. The start date must be on or before the end date.'
+            )}
+          </Typography>
+        )}
+      </Box>
+      {isRangeIncomplete ? (
+        <Typography variant="body1" align="center" sx={{ px: 4, py: 6 }}>
+          {t('Select a valid From and To date to view analytics')}
+        </Typography>
+      ) : loading || isRangePending ? (
         <Box
           sx={{
             display: 'flex',

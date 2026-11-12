@@ -18,7 +18,7 @@ describe('InfoIcon', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', {
-        name: 'Rows and columns with zero activity are hidden'
+        name: 'Columns with zero activity are hidden'
       })
     ).toBeInTheDocument()
   })
