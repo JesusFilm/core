@@ -1,0 +1,43 @@
+name: Journey revision integration
+
+on:
+  pull_request:
+    branches: [main, feature/*]
+    paths:
+      - 'apis/api-journeys/**'
+      - 'libs/prisma/journeys/**'
+      - '.github/workflows/journey-revisions.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  revisions:
+    runs-on: jfp-proxmox-core
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: revision-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec nx run-many -t prisma-generate --all
+      - name: Verify existing writers, migration and concurrent publication
+        run: pnpm exec vitest run --root apis/api-journeys --config "$PWD/apis/api-journeys/vitest.integration.config.mts"
+        env:
+          JOURNEY_REVISION_TEST_DATABASE_URL: postgresql://postgres:revision-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
