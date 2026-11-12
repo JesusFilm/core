@@ -54,7 +54,8 @@ export function isAlgoliaVideoDownloadable(
   const downloadable = variant?.downloadable ?? false
   const hasDownloads =
     variant?.downloads?.some(
-      ({ quality }) => quality == null || !DISTRO_DOWNLOAD_QUALITIES.has(quality)
+      ({ quality }) =>
+        quality == null || !DISTRO_DOWNLOAD_QUALITIES.has(quality)
     ) ?? false
   return downloadable && hasAlgoliaPlayableMedia(variant) && hasDownloads
 }
