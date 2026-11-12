@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import {
   CampaignBlockUpdateInput,
@@ -23,6 +23,7 @@ export interface CampaignBlockFieldsCommand {
   ) => void
   /** The API's message, verbatim, when the last save failed. */
   error?: string
+  /** Clear the inline error and invalidate pending refusal callbacks. */
   clearError: () => void
 }
 
@@ -37,7 +38,11 @@ export function useCampaignBlockFieldsCommand(): CampaignBlockFieldsCommand {
   const { addCampaignCommand } = useCampaignCommand()
   const { update, previousFields } = useCampaignBlockUpdateMutation()
   const [error, setError] = useState<string>()
-  const clearError = useCallback(() => setError(undefined), [])
+  const errorGeneration = useRef(0)
+  const clearError = useCallback(() => {
+    errorGeneration.current++
+    setError(undefined)
+  }, [])
 
   function addFields<B extends CampaignUpdatableBlock>(
     block: B,
@@ -47,6 +52,7 @@ export function useCampaignBlockFieldsCommand(): CampaignBlockFieldsCommand {
     > = async (fields) => await update(block, fields)
   ): void {
     setError(undefined)
+    const generation = errorGeneration.current
     let previous: CampaignBlockUpdateInput<B['__typename']> | undefined
     addCampaignCommand({
       execute: async () => {
@@ -57,7 +63,10 @@ export function useCampaignBlockFieldsCommand(): CampaignBlockFieldsCommand {
         if (previous == null) return
         return await send(previous)
       }
-    }).catch((mutationError: unknown) => setError(messageOf(mutationError)))
+    }).catch((mutationError: unknown) => {
+      if (generation !== errorGeneration.current) return
+      setError(messageOf(mutationError))
+    })
   }
 
   return { addFields, error, clearError }
