@@ -139,6 +139,7 @@ builder.queryField('journeyVisitorExport', (t) => {
             'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
         })
       },
+      /** Export authorized visitor responses as CSV, excluding capture occurrences. */
       resolve: async (_, { journeyId, filter, select, timezone }, context) => {
         // Use user's timezone or default to UTC
         const userTimezone = timezone ?? 'UTC'

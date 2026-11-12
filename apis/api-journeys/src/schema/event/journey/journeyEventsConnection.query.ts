@@ -61,6 +61,7 @@ const JourneyEventsConnectionRef = builder
     })
   })
 
+/** Combine access and optional date/type filters while always excluding captures. */
 function generateEventsWhere(
   journeyId: string,
   filter: {
