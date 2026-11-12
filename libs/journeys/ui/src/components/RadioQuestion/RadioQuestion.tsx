@@ -110,6 +110,7 @@ export function RadioQuestion({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
+  /** Records the selection, attributing captures to the selected RadioOption. */
   const handleClick = (
     radioOptionBlockId: string,
     radioOptionLabel: string
