@@ -4,6 +4,7 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
+import { INTERACTION_EVENT_FILTER } from '../event/capture/captureTypes'
 import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { computeConnectedBlockIds } from './export/connectivity'
@@ -138,6 +139,7 @@ builder.queryField('journeyVisitorExport', (t) => {
             'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
         })
       },
+      /** Export authorized visitor responses as CSV, excluding capture occurrences. */
       resolve: async (_, { journeyId, filter, select, timezone }, context) => {
         // Use user's timezone or default to UTC
         const userTimezone = timezone ?? 'UTC'
@@ -190,6 +192,7 @@ builder.queryField('journeyVisitorExport', (t) => {
         // Build base event filter and apply connectivity filter by default
         const eventWhere: Prisma.EventWhereInput = {
           journeyId: journeyId,
+          AND: [INTERACTION_EVENT_FILTER],
           blockId:
             includeOld === true
               ? { not: null }

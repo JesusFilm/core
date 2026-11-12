@@ -199,6 +199,10 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
 }
 
 const event: Event = {
+  captureIdentity: null,
+  captureTag: null,
+  captureTrigger: null,
+  templateFamilyId: null,
   id: 'event 1',
   typename: 'event',
   journeyId: 'journeyId',

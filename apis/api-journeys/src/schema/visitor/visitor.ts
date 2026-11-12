@@ -6,6 +6,7 @@ import {
 
 import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
+import { INTERACTION_EVENT_FILTER } from '../event/capture/captureTypes'
 import { EventInterface } from '../event/event'
 
 import { VisitorStatus } from './enums'
@@ -28,7 +29,8 @@ export const VisitorRef = builder.prismaObject('Visitor', {
     userAgent: t.field({
       type: UserAgentRef,
       nullable: true,
-      resolve: (visitor) => visitor.userAgent as any
+      resolve: (visitor) =>
+        visitor.userAgent as typeof UserAgentRef.$inferType | null
     }),
     countryCode: t.exposeString('countryCode', { nullable: true }),
     name: t.exposeString('name', { nullable: true }),
@@ -54,12 +56,13 @@ export const VisitorRef = builder.prismaObject('Visitor', {
     events: t.field({
       type: [EventInterface],
       nullable: false,
+      /** Return interaction events accessible to this team member or journey owner. */
       resolve: async (visitor, _args, context) => {
         if (context.type !== 'authenticated') return []
 
         const userId = context.user.id
         const events = await prisma.event.findMany({
-          where: { visitorId: visitor.id },
+          where: { visitorId: visitor.id, ...INTERACTION_EVENT_FILTER },
           include: {
             journey: {
               include: {

@@ -1,5 +1,7 @@
 import { Event, PrismaClient, Visitor } from '@core/prisma/journeys/client'
 
+import { INTERACTION_EVENT_FILTER } from '../../../schema/event/capture/captureTypes'
+
 import { JourneyWithTeamAndUserJourney } from './prisma.types'
 
 interface EmailDetailsResult {
@@ -9,6 +11,7 @@ interface EmailDetailsResult {
     | null
 }
 
+/** Load notification recipients and visitor interaction events, excluding captures. */
 export async function fetchEmailDetails(
   prismaService: PrismaClient,
   journeyId: string,
@@ -40,7 +43,7 @@ export async function fetchEmailDetails(
         id: true,
         createdAt: true,
         duration: true,
-        events: true
+        events: { where: INTERACTION_EVENT_FILTER }
       }
     })
   ])

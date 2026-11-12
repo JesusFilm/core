@@ -1,4 +1,4 @@
-import { ExecutionResult } from 'graphql'
+import { ExecutionResult, parse } from 'graphql'
 import { type MockedFunction, vi } from 'vitest'
 
 import { Visitor } from '@core/prisma/journeys/client'
@@ -7,6 +7,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { INTERACTION_EVENT_FILTER } from '../event/capture/captureTypes'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -288,6 +289,30 @@ describe('visitor', () => {
     expect((prismaMock.visitor as any).findUniqueOrThrow).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: 'visitorId' }
+      })
+    )
+  })
+
+  it('excludes capture rows from the visitor interaction timeline', async () => {
+    const visitor = createMockVisitor({ userId: mockUser.id })
+    prismaMock.visitor.findUnique.mockResolvedValue(visitor)
+    prismaMock.visitor.findUniqueOrThrow.mockResolvedValue(visitor)
+    prismaMock.event.findMany.mockResolvedValue([])
+
+    const result = await authClient({
+      document: parse(`
+        query VisitorInteractions {
+          visitor(id: "visitorId") {
+            events { id __typename }
+          }
+        }
+      `)
+    })
+
+    expect(result).toEqual({ data: { visitor: { events: [] } } })
+    expect(prismaMock.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { visitorId: visitor.id, ...INTERACTION_EVENT_FILTER }
       })
     )
   })
