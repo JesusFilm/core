@@ -961,6 +961,10 @@ builder.mutationFields((t) => ({
         } satisfies Prisma.VideoUpdateArgs
 
         if (input.slug != null && input.slug !== currentVideo?.slug) {
+          // Narrowed to a plain `string` so it stays narrowed inside the
+          // transaction closure below - `input.slug` itself widens back to
+          // `string | null | undefined` across the closure boundary.
+          const newSlug = input.slug
           video = await prisma.$transaction(async (tx) => {
             // Re-read the slug fresh, under lock, rather than trusting the
             // `currentVideo` snapshot taken before any lock was held - that
@@ -971,15 +975,15 @@ builder.mutationFields((t) => ({
               select: { slug: true }
             })
             const lockKeys = Array.from(
-              new Set(compact([input.slug, fresh?.slug]))
+              new Set(compact([newSlug, fresh?.slug]))
             ).sort()
             for (const slug of lockKeys) {
               await lockVideoSlug(tx, slug)
             }
-            await assertSlugNotAliasOfOtherVideo(input.slug, input.id, tx)
+            await assertSlugNotAliasOfOtherVideo(newSlug, input.id, tx)
 
             const previousSlug = fresh?.slug
-            if (previousSlug != null && input.slug !== previousSlug) {
+            if (previousSlug != null && newSlug !== previousSlug) {
               // VideoVariant.slug is `${video.slug}/${languageSlug}`, set once at
               // variant-creation time and never recomputed from the parent. Renaming
               // the video must resync every variant's slug prefix so the new slug is
@@ -992,13 +996,13 @@ builder.mutationFields((t) => ({
                 data: { value: previousSlug, videoId: input.id }
               })
               await tx.videoSlug.deleteMany({
-                where: { value: input.slug, videoId: input.id }
+                where: { value: newSlug, videoId: input.id }
               })
               for (const variant of renamedVariants) {
                 await tx.videoVariant.update({
                   where: { id: variant.id },
                   data: {
-                    slug: `${input.slug}${variant.slug.slice(previousSlug.length)}`
+                    slug: `${newSlug}${variant.slug.slice(previousSlug.length)}`
                   }
                 })
               }
