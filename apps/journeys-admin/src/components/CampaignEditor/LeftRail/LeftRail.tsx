@@ -115,8 +115,8 @@ function PanelToggle({
  * open, docked beside the rail), the link to the Campaign Report, and at the
  * bottom undo, redo, the Desktop / Phone view and the Publish button.
  * Undo and redo run the one Command history; the view toggle is never a
- * Command. While a machine-translation run is in flight the back button asks
- * before leaving, since leaving stops the run.
+ * Command. While a machine-translation run is in flight the Back and Report
+ * links ask before leaving, since leaving stops the run.
  */
 export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -124,16 +124,19 @@ export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
   const { run } = useTranslationRun()
   const { campaign } = useCampaignEditor()
   const [leaveOpen, setLeaveOpen] = useState(false)
+  const [leaveHref, setLeaveHref] = useState(CAMPAIGNS_HREF)
+  const reportHref = `/campaigns/${campaign.id}/reports`
 
-  function handleBackClick(event: MouseEvent): void {
+  function handleLeaveLinkClick(event: MouseEvent, href: string): void {
     if (run == null) return
     event.preventDefault()
+    setLeaveHref(href)
     setLeaveOpen(true)
   }
 
   function handleLeave(): void {
     setLeaveOpen(false)
-    void router.push(CAMPAIGNS_HREF)
+    void router.push(leaveHref)
   }
 
   function handleViewChange(
@@ -165,7 +168,7 @@ export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
           <IconButton
             component={NextLink}
             href={CAMPAIGNS_HREF}
-            onClick={handleBackClick}
+            onClick={(event) => handleLeaveLinkClick(event, CAMPAIGNS_HREF)}
             aria-label={t('Back to campaigns')}
           >
             <ArrowLeftIcon />
@@ -184,7 +187,8 @@ export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
         <Tooltip title={t('Report')} placement="right" arrow>
           <IconButton
             component={NextLink}
-            href={`/campaigns/${campaign.id}/reports`}
+            href={reportHref}
+            onClick={(event) => handleLeaveLinkClick(event, reportHref)}
             aria-label={t('Report')}
           >
             <BarGroup3Icon />

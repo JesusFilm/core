@@ -220,8 +220,8 @@ export function createApolloClient(token?: string): ApolloClient {
 }
 
 /**
- * Whether the browser client holds a debounced write (a text edit inside its
- * debounce) that has not been sent yet: a reload now would drop it.
+ * Whether the browser client holds a queued or unacknowledged debounced write
+ * that a reload could drop.
  */
 export function hasPendingDebouncedWrites(): boolean {
   return browserDebounceLink?.hasPending() ?? false

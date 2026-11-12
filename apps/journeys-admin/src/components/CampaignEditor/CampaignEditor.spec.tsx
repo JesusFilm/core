@@ -705,47 +705,53 @@ describe('CampaignEditor', () => {
     expect(within(connect).getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('says the role could not be checked when GetCurrentUser fails, and Retry with a manager answer enables the manager controls', async () => {
-    const managerAnswer = vi.fn(() => currentUserMock.result)
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: { query: GET_CURRENT_USER },
-            error: new Error('Network error')
-          },
-          { request: { query: GET_CURRENT_USER }, result: managerAnswer }
-        ]}
-      >
-        <SnackbarProvider>
-          <CampaignEditor campaign={campaign} />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+  it.each([
+    { error: new Error('Network error') },
+    { result: { data: { me: null } } }
+  ])(
+    'offers a working role retry after an unsuccessful GetCurrentUser response: %j',
+    async (response) => {
+      const managerAnswer = vi.fn(() => currentUserMock.result)
+      render(
+        <MockedProvider
+          mocks={[
+            {
+              request: { query: GET_CURRENT_USER },
+              ...response
+            },
+            { request: { query: GET_CURRENT_USER }, result: managerAnswer }
+          ]}
+        >
+          <SnackbarProvider>
+            <CampaignEditor campaign={campaign} />
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
 
-    const notices = await screen.findAllByTestId('ManagerRoleNotice')
-    expect(notices[0]).toHaveTextContent("We couldn't check your role.")
-    expect(
-      screen.getByRole('button', { name: 'Delete campaign' })
-    ).toBeDisabled()
-    expect(
-      within(screen.getByTestId('CampaignDomain')).getByRole('button', {
-        name: 'Connect'
-      })
-    ).toBeDisabled()
-
-    fireEvent.click(within(notices[0]).getByRole('button', { name: 'Retry' }))
-
-    await waitFor(() =>
+      const notices = await screen.findAllByTestId('ManagerRoleNotice')
+      expect(notices[0]).toHaveTextContent("We couldn't check your role.")
       expect(
         screen.getByRole('button', { name: 'Delete campaign' })
-      ).toBeEnabled()
-    )
-    expect(managerAnswer).toHaveBeenCalled()
-    expect(screen.queryByTestId('ManagerRoleNotice')).not.toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: 'Domain Name' })).toBeEnabled()
-  })
+      ).toBeDisabled()
+      expect(
+        within(screen.getByTestId('CampaignDomain')).getByRole('button', {
+          name: 'Connect'
+        })
+      ).toBeDisabled()
+
+      fireEvent.click(within(notices[0]).getByRole('button', { name: 'Retry' }))
+
+      await waitFor(() =>
+        expect(
+          screen.getByRole('button', { name: 'Delete campaign' })
+        ).toBeEnabled()
+      )
+      expect(managerAnswer).toHaveBeenCalled()
+      expect(screen.queryByTestId('ManagerRoleNotice')).not.toBeInTheDocument()
+      expect(screen.getByRole('textbox', { name: 'Domain Name' })).toBeEnabled()
+    }
+  )
 
   it('asks before the page unloads while a text write is pending, and not otherwise', () => {
     renderEditor()

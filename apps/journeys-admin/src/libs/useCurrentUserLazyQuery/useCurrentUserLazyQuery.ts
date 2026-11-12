@@ -21,7 +21,7 @@ export const GET_CURRENT_USER = gql`
 /**
  * The signed-in user, loaded on demand. Until `me` answers, `data` is a
  * fallback user with an empty id; `loading` and `error` tell an unanswered
- * query from a failed one.
+ * query from a failed one. A settled null user is a retryable error.
  */
 export function useCurrentUserLazyQuery(): {
   loadUser: useLazyQuery.ExecFunction<GetCurrentUser, OperationVariables>
@@ -30,7 +30,9 @@ export function useCurrentUserLazyQuery(): {
   error?: Error
 } {
   const [loadUser, { data, loading, error }] =
-    useLazyQuery<GetCurrentUser>(GET_CURRENT_USER)
+    useLazyQuery<GetCurrentUser>(GET_CURRENT_USER, {
+      fetchPolicy: 'network-only'
+    })
 
   if (data?.me != null) {
     return { loadUser, data: data.me, loading, error }
@@ -40,6 +42,10 @@ export function useCurrentUserLazyQuery(): {
     loadUser,
     data: { __typename: 'AuthenticatedUser', id: '', email: '' },
     loading,
-    error
+    error:
+      error ??
+      (data?.me === null
+        ? new Error('Current user was not returned')
+        : undefined)
   }
 }

@@ -118,18 +118,44 @@ describe('LeftRail', () => {
     )
   })
 
-  it('goes back straight away while no run is in flight', () => {
-    render(<Harness />)
+  it.each(['Back to campaigns', 'Report'])(
+    'follows %s straight away while no run is in flight',
+    (name) => {
+      render(<Harness />)
 
-    const notPrevented = fireEvent.click(
-      screen.getByRole('link', { name: 'Back to campaigns' })
-    )
+      const notPrevented = fireEvent.click(screen.getByRole('link', { name }))
 
-    expect(notPrevented).toBe(true)
-    expect(screen.queryByTestId('CampaignLeaveDialog')).not.toBeInTheDocument()
-  })
+      expect(notPrevented).toBe(true)
+      expect(
+        screen.queryByTestId('CampaignLeaveDialog')
+      ).not.toBeInTheDocument()
+    }
+  )
 
   describe('while a run is in flight', () => {
+    it('confirms Report navigation and preserves the chosen destination after Stay', async () => {
+      render(<RunningHarness />)
+      clickBack()
+      fireEvent.click(screen.getByRole('button', { name: 'Stay' }))
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('CampaignLeaveDialog')
+        ).not.toBeInTheDocument()
+      )
+
+      expect(
+        fireEvent.click(screen.getByRole('link', { name: 'Report' }))
+      ).toBe(false)
+      expect(push).not.toHaveBeenCalled()
+      expect(screen.getByTestId('CampaignLeaveDialog')).toHaveTextContent(
+        'The translation into Français stops.'
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Leave' }))
+
+      expect(push).toHaveBeenCalledWith(`/campaigns/${campaign.id}/reports`)
+    })
+
     function clickBack(): boolean {
       return fireEvent.click(
         screen.getByRole('link', { name: 'Back to campaigns' })
