@@ -29,7 +29,8 @@ export const VisitorRef = builder.prismaObject('Visitor', {
     userAgent: t.field({
       type: UserAgentRef,
       nullable: true,
-      resolve: (visitor) => visitor.userAgent as any
+      resolve: (visitor) =>
+        visitor.userAgent as typeof UserAgentRef.$inferType | null
     }),
     countryCode: t.exposeString('countryCode', { nullable: true }),
     name: t.exposeString('name', { nullable: true }),
@@ -55,6 +56,7 @@ export const VisitorRef = builder.prismaObject('Visitor', {
     events: t.field({
       type: [EventInterface],
       nullable: false,
+      /** Return interaction events accessible to this team member or journey owner. */
       resolve: async (visitor, _args, context) => {
         if (context.type !== 'authenticated') return []
 

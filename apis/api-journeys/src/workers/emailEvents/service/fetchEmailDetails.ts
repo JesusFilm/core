@@ -11,6 +11,7 @@ interface EmailDetailsResult {
     | null
 }
 
+/** Load notification recipients and visitor interaction events, excluding captures. */
 export async function fetchEmailDetails(
   prismaService: PrismaClient,
   journeyId: string,
