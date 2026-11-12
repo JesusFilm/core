@@ -61,7 +61,11 @@ const cases: Array<[string, FakeVariant | null, boolean]> = [
     { ...withDownloads, hls: '', dash: 'https://example.com/v.mpd' },
     true
   ],
-  ['the flag and HLS but no download rows', { ...withDownloads, downloads: [] }, false],
+  [
+    'the flag and HLS but no download rows',
+    { ...withDownloads, downloads: [] },
+    false
+  ],
   [
     'the flag and download rows but no HLS or DASH (generated parent variant)',
     { ...withDownloads, hls: '', dash: '' },
