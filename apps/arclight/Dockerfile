@@ -30,4 +30,7 @@ RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm@10.33.2 --ac
 RUN pnpm add -g next
 RUN pnpm install --prod --silent
 RUN pnpm add sharp pino dd-trace next-logger @prisma/client @prisma/adapter-pg dotenv prisma --silent
+# Fetch the native migration engine during the build, before offline startup.
+RUN pnpm exec prisma --version
+
 ENTRYPOINT ["./docker-entrypoint.sh"]

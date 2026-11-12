@@ -20,4 +20,7 @@ COPY ./apis/api-languages/docker-entrypoint.sh ./docker-entrypoint.sh
 RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN pnpm install --prod --silent
 
+# Fetch the native migration engine during the build, before offline startup.
+RUN pnpm exec prisma --version
+
 ENTRYPOINT ["./docker-entrypoint.sh"]
