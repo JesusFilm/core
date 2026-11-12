@@ -550,6 +550,89 @@ describe('LanguageAutocomplete', () => {
     expect(options[0]).toHaveTextContent('French')
   })
 
+  describe('showLanguageId', () => {
+    const sameNamedLanguages: Language[] = [
+      {
+        id: '53400',
+        slug: 'dari',
+        name: [
+          { value: 'Dari', primary: false },
+          { value: 'فارسی', primary: true }
+        ]
+      },
+      {
+        id: '117014',
+        slug: 'dari-4',
+        name: [
+          { value: 'Dari', primary: false },
+          { value: 'فارسی', primary: true }
+        ]
+      }
+    ]
+
+    it('should tell same-named languages apart by id', () => {
+      const { getByRole, getAllByRole } = render(
+        <LanguageAutocomplete
+          onChange={vi.fn()}
+          languages={sameNamedLanguages}
+          showLanguageId
+        />
+      )
+      fireEvent.focus(getByRole('combobox'))
+      fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+
+      const options = getAllByRole('option')
+      expect(options).toHaveLength(2)
+      expect(options.map((option) => option.textContent)).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('ID 53400'),
+          expect.stringContaining('ID 117014')
+        ])
+      )
+    })
+
+    it('should filter by language id', () => {
+      const { getByRole, getAllByRole } = render(
+        <LanguageAutocomplete
+          onChange={vi.fn()}
+          languages={sameNamedLanguages}
+          showLanguageId
+        />
+      )
+      fireEvent.focus(getByRole('combobox'))
+      fireEvent.change(getByRole('combobox'), { target: { value: '53400' } })
+
+      const options = getAllByRole('option')
+      expect(options).toHaveLength(1)
+      expect(options[0]).toHaveTextContent('ID 53400')
+    })
+
+    it('should include the id in the selected value', () => {
+      const { getByRole } = render(
+        <LanguageAutocomplete
+          onChange={vi.fn()}
+          value={{ id: '53400', localName: 'Dari', nativeName: 'فارسی' }}
+          languages={sameNamedLanguages}
+          showLanguageId
+        />
+      )
+      expect(getByRole('combobox')).toHaveValue('Dari (53400)')
+    })
+
+    it('should not show or match ids by default', () => {
+      const { getByRole, queryAllByRole } = render(
+        <LanguageAutocomplete
+          onChange={vi.fn()}
+          languages={sameNamedLanguages}
+        />
+      )
+      fireEvent.focus(getByRole('combobox'))
+      fireEvent.change(getByRole('combobox'), { target: { value: '53400' } })
+
+      expect(queryAllByRole('option')).toHaveLength(0)
+    })
+  })
+
   it('should give two-line options a taller row than single-line options', async () => {
     const twoLineLanguages: Language[] = [
       {
