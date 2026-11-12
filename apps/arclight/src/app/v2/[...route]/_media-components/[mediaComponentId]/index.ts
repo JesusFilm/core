@@ -278,14 +278,6 @@ mediaComponent.openapi(route, async (c) => {
         video.variant?.dash
       )
 
-      // Matches updateVideoInAlgolia's isAlgoliaVideoDownloadable rule: the
-      // raw `downloadable` flag alone isn't enough, since it defaults to
-      // true even for a variant with no media and no download rows.
-      const isDownloadable =
-        componentType === 'content' &&
-        (video.variant?.downloadable ?? false) &&
-        (video.variant?.downloads.length ?? 0) > 0
-
       const responseData = {
         mediaComponentId,
         componentType,
@@ -310,7 +302,8 @@ mediaComponent.openapi(route, async (c) => {
         },
         lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
         containsCount: video.childrenCount,
-        isDownloadable,
+        isDownloadable:
+          componentType === 'content' && (video.variant?.downloadable ?? false),
         downloadSizes: {
           approximateSmallDownloadSizeInBytes:
             video.variant?.downloads.find((d) => d.quality === 'low')?.size ??

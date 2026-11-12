@@ -364,15 +364,12 @@ mediaComponents.openapi(route, async (c) => {
 
       const variant = video.variants[0]
       const componentType = getComponentType(variant?.hls, variant?.dash)
-      // Matches updateVideoInAlgolia's isAlgoliaVideoDownloadable rule: the
-      // raw `downloadable` flag alone isn't enough, since it defaults to
-      // true even for a variant with no media and no download rows. This
-      // also replaces the old blanket collection/series override, which no
-      // longer matches what the Algolia index reports for the same video.
+      // Same rule as the detail route: the published English Variant's flag,
+      // but only for content. A container has no video file of its own, so
+      // its (possibly generated) parent Variant must not offer a download
+      // whose URL would 404.
       const isDownloadable =
-        componentType === 'content' &&
-        (variant?.downloadable ?? false) &&
-        (variant?.downloads.length ?? 0) > 0
+        componentType === 'content' && (variant?.downloadable ?? false)
 
       const titleContent = getPreferredContent(video.title, metadataLanguages)
       const shortDescriptionContent = getPreferredContent(
