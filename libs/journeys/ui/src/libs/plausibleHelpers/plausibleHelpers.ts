@@ -228,6 +228,11 @@ interface FireCaptureEventOptions<TInput extends object> {
   journeyId?: string
 }
 
+/**
+ * Sends a supported tag's Plausible goal and optional backend capture together.
+ * A capture block override attributes Card views without changing Plausible props.
+ * Null and unsupported tags send neither event.
+ */
 export function fireCaptureEvent<TInput extends object>(
   plausible: ReturnType<typeof usePlausible<JourneyPlausibleEvents>>,
   eventLabel: BlockEventLabel | null | undefined,

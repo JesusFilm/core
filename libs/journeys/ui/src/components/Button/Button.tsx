@@ -169,6 +169,7 @@ export function Button({
       : 'button'
     : 'button'
 
+  /** Sends click analytics and the Button's tagged capture in playback modes. */
   function createClickEvent(): void {
     if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuidv4()
@@ -232,6 +233,7 @@ export function Button({
     }
   }
 
+  /** Sends chat analytics and the Button's tagged capture in playback modes. */
   function createChatEvent(): void {
     if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuidv4()

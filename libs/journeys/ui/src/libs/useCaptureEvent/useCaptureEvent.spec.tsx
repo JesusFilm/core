@@ -46,6 +46,7 @@ const mappings = [
   [BlockEventLabel.custom3, 'Custom3', 'custom3Capture']
 ] as const
 
+/** Mounts the sender with a request recorder and optional retry or failure paths. */
 function setup({ retry = false, fail = false } = {}) {
   const requests: {
     name: string

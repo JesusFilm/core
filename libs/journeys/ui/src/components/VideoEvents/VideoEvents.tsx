@@ -120,6 +120,10 @@ export interface VideoEventsProps {
   endEventLabel?: BlockEventLabel | null
 }
 
+/**
+ * Binds video lifecycle analytics to the player and removes listeners on cleanup.
+ * Start and completion captures each fire at most once per mounted instance.
+ */
 export function VideoEvents({
   player,
   blockId,
@@ -437,6 +441,7 @@ export function VideoEvents({
 
   // START event
   useEffect(() => {
+    /** Records playback start, guarding tagged captures before React rerenders. */
     function startListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
@@ -720,6 +725,7 @@ export function VideoEvents({
 
   // COMPLETE event
   useEffect(() => {
+    /** Records completion with the end tag and guards repeated capture callbacks. */
     function completeListener(): void {
       const id = uuidv4()
       // + 2 to current time to prevent race condition between videoComplete and stepView events
