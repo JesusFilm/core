@@ -5,7 +5,7 @@
 // See tools/langfuse-export/README.md for credentials + the full flag list.
 //
 // Default deliverable (NES-1719): the insights-explorer bundle.
-//   fetch (traces -> observations by traceId) -> normalize -> sanitise
+//   fetch (v2 observations -> local trace projection) -> normalize -> sanitise
 //   -> facets (deterministic keyword vocabulary) -> enrich (LLM per-session
 //   themes) -> dataset (lossless corpus) -> explorer (offline HTML viewer)
 //   -> zip (dataset + viewer, opens by double-clicking from file://).

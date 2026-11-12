@@ -9,6 +9,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockUser } from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
+import { mockTransaction } from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { promptOf } from '../../../../test/promptOf'
 import { logger } from '../../../logger'
@@ -198,9 +199,7 @@ describe('campaignMachineTranslate', () => {
       userId: mockUser.id,
       roles: []
     })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.findUnique.mockResolvedValue(campaign)
     prismaMock.campaignBlock.findFirst.mockImplementation(
       (async ({ where }: any) =>
@@ -292,10 +291,9 @@ describe('campaignMachineTranslate', () => {
 
       expect(blockWrites().heroId.titleTranslations).toBeUndefined()
       await run({ mode: 'all', languageId: SPANISH })
-      const spanishTitle = blockWrites().heroId.titleTranslations
-      expect(spanishTitle[FRENCH]).toEqual({
-        value: 'Titre de la personne',
-        source: 'human'
+      expect(blockWrites().heroId.titleTranslations).toEqual({
+        [FRENCH]: { value: 'Titre de la personne', source: 'human' },
+        [SPANISH]: { value: 'FR heroId title', source: 'machine' }
       })
     })
   })

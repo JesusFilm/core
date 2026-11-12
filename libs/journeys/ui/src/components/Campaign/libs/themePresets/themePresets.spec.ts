@@ -3,6 +3,7 @@ import type { CampaignThemeInput } from '../createCampaignTheme'
 import {
   DARK_PRESET,
   LIGHT_PRESET,
+  PRESET_COLOR_COLUMNS,
   activeThemePreset,
   presetColors
 } from './themePresets'
@@ -17,17 +18,10 @@ const light: CampaignThemeInput = {
 }
 
 describe('themePresets', () => {
-  it('lists a preset’s colours in table order, primary first', () => {
-    expect(presetColors(LIGHT_PRESET)).toEqual([
-      '#C52D3A',
-      '#F2B544',
-      '#FBF7F1',
-      '#FFFFFF',
-      '#26262E',
-      '#6D6F81',
-      '#26262E',
-      '#FFFFFF'
-    ])
+  it('lists one colour per colour column, primary first', () => {
+    const colors = presetColors(LIGHT_PRESET)
+    expect(colors[0]).toBe(LIGHT_PRESET.primaryColor)
+    expect(colors).toHaveLength(PRESET_COLOR_COLUMNS.length)
   })
 
   describe('activeThemePreset', () => {

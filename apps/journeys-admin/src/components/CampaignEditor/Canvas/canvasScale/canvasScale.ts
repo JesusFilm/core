@@ -12,8 +12,8 @@ export const MIN_CANVAS_SCALE = 0.5
 /** The narrowest stage the Desktop frame fits at the floor scale. */
 export const MIN_STAGE_WIDTH = DESKTOP_FRAME_WIDTH * MIN_CANVAS_SCALE
 
-/** The canvas's padding, in px, either side of the stage. */
-export const CANVAS_GUTTER = 32
+/** The canvas's padding, in px, either side of the stage: theme spacing 4 under the admin theme's 4 px unit. */
+export const CANVAS_GUTTER = 16
 
 export function frameWidthOf(view: CanvasView): number {
   return view === 'phone' ? PHONE_FRAME_WIDTH : DESKTOP_FRAME_WIDTH

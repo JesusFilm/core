@@ -1,8 +1,4 @@
-export {
-  textDebounceKey,
-  textDebounceKeyPrefix,
-  useCampaignTextCommand
-} from './useCampaignTextCommand'
+export { useCampaignTextCommand } from './useCampaignTextCommand'
 export type {
   CampaignTextCommand,
   CampaignTextTarget

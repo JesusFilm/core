@@ -1,13 +1,18 @@
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { isCampaignLanguage } from '@core/journeys/ui/Campaign/libs/translatedField'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 import { SlugTakenError } from '../templateGalleryPage/generateUniqueSlug'
 
 import { authorizeCampaign } from './authorizeCampaign'
 import { CampaignRef } from './campaign'
+import { CampaignWrite, campaignWrite } from './campaignWrite'
 import { badUserInput } from './errors'
 import { CampaignUpdateInput } from './inputs'
-import { enqueueCampaignSlugRevalidation } from './revalidateCampaign'
+import {
+  queuePageSetChange,
+  snapshotCampaignAddress
+} from './revalidateCampaign'
 import { validateCampaignSlug } from './slug'
 import { swapDefaultLanguage } from './translation/defaultLanguageSwap'
 import {
@@ -20,6 +25,25 @@ import {
 } from './validation'
 
 const DEFAULT_LANGUAGE_SWAP_TIMEOUT_MS = 30_000
+
+/**
+ * Run `update` inside `write`; when it moves the slug, snapshot the Campaign
+ * Address around it and queue the page-set change after commit. The other
+ * settings leave the page set alone, so they read no snapshot.
+ */
+async function updateAddress<T>(
+  { tx, afterCommit }: CampaignWrite,
+  id: string,
+  movesSlug: boolean,
+  update: () => Promise<T>
+): Promise<T> {
+  if (!movesSlug) return await update()
+  const before = await snapshotCampaignAddress(tx, id)
+  const updated = await update()
+  const after = await snapshotCampaignAddress(tx, id)
+  afterCommit(async () => await queuePageSetChange(before, after))
+  return updated
+}
 
 builder.mutationField('campaignUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -36,8 +60,7 @@ builder.mutationField('campaignUpdate', (t) =>
     resolve: async (query, _parent, { id: rawId, input }, context) => {
       const id = String(rawId)
       const campaign = await authorizeCampaign(id, 'update', context.user, {
-        languages: true,
-        regions: true
+        languages: true
       })
 
       const title = assertNotNull(input.title, 'title')
@@ -64,9 +87,7 @@ builder.mutationField('campaignUpdate', (t) =>
         defaultLanguageId === undefined ? null : String(defaultLanguageId)
       if (
         newDefaultLanguageId != null &&
-        !campaign.languages.some(
-          (language) => language.languageId === newDefaultLanguageId
-        )
+        !isCampaignLanguage(campaign, newDefaultLanguageId)
       )
         throw badUserInput(
           'defaultLanguageId must be one of the campaign languages',
@@ -81,33 +102,48 @@ builder.mutationField('campaignUpdate', (t) =>
           'title'
         )
 
+      // Both paths write the Campaign row, whose `updatedAt` is `@updatedAt`,
+      // so neither needs the touch.
       try {
         const updated = changesDefaultLanguage
-          ? await prisma.$transaction(
-              async (tx) => {
-                const swapped = await swapDefaultLanguage(
-                  tx,
-                  id,
-                  newDefaultLanguageId
-                )
-                return await tx.campaign.update({
-                  ...query,
-                  where: { id },
-                  data: {
-                    ...swapped,
-                    ...data,
-                    defaultLanguageId: newDefaultLanguageId
-                  }
-                })
-              },
+          ? await campaignWrite(
+              id,
+              { textRows: true, campaignRow: true, touch: false },
+              async (write) =>
+                await updateAddress(write, id, slug != null, async () => {
+                  const swapped = await swapDefaultLanguage(
+                    write.tx,
+                    id,
+                    newDefaultLanguageId
+                  )
+                  return await write.tx.campaign.update({
+                    ...query,
+                    where: { id },
+                    data: {
+                      ...swapped,
+                      ...data,
+                      defaultLanguageId: newDefaultLanguageId
+                    }
+                  })
+                }),
               { timeout: DEFAULT_LANGUAGE_SWAP_TIMEOUT_MS }
             )
-          : await prisma.campaign.update({ ...query, where: { id }, data })
-        if (slug != null)
-          await enqueueCampaignSlugRevalidation(
-            { ...campaign, slug },
-            campaign.slug
-          )
+          : await campaignWrite(
+              id,
+              { touch: false },
+              async (write) =>
+                await updateAddress(
+                  write,
+                  id,
+                  slug != null,
+                  async () =>
+                    await write.tx.campaign.update({
+                      ...query,
+                      where: { id },
+                      data
+                    })
+                )
+            )
         return updated
       } catch (error) {
         if (isUniqueViolation(error, 'slug')) throw new SlugTakenError()

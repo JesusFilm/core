@@ -9,15 +9,26 @@ import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
-import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
+import {
+  enqueueVideoAlgoliaSync,
+  videoOnlyScope
+} from '../../workers/videoAlgoliaSync'
 import { builder, toPrismaDateTimeFilter } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
+import {
+  updateParentCollectionLanguages,
+  updateVideoAvailableLanguages
+} from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
+import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
+import { syncParentLanguage } from '../videoVariantReconciliation/reconcileParentVariants'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
+import { videoVariantAwaitsMux } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
 
+import { canHavePlaceholderVariant } from './canHavePlaceholderVariant'
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
@@ -69,7 +80,7 @@ export async function createEmptyParentVariant(
   const [parentVideo, existingVariantWithLanguage] = await Promise.all([
     prisma.video.findUnique({
       where: { id: parentVideoId },
-      select: { slug: true, availableLanguages: true }
+      select: { slug: true }
     }),
     languageSlug
       ? null
@@ -104,12 +115,10 @@ export async function createEmptyParentVariant(
     )
   }
 
-  // Create empty variant for parent video and update available languages in a single transaction
-  const currentLanguages = parentVideo.availableLanguages || []
-  const updatedLanguages = Array.from(
-    new Set([...currentLanguages, languageId])
-  )
-
+  // Create empty variant for parent video and update available languages in a single transaction.
+  // The language update is a single atomic UPDATE (not a findUnique-then-set)
+  // so it can't lose a concurrent caller's own append to the same array --
+  // see addLanguageToVideo's doc comment in updateAvailableLanguages.ts.
   const newVariant = await prisma.$transaction(async (tx) => {
     const variant = await tx.videoVariant.create({
       data: {
@@ -128,10 +137,12 @@ export async function createEmptyParentVariant(
       }
     })
 
-    await tx.video.update({
-      where: { id: parentVideoId },
-      data: { availableLanguages: updatedLanguages }
-    })
+    await tx.$executeRaw`
+      UPDATE "Video"
+      SET "availableLanguages" = array_append(COALESCE("availableLanguages", ARRAY[]::TEXT[]), ${languageId})
+      WHERE id = ${parentVideoId}
+        AND NOT (${languageId} = ANY(COALESCE("availableLanguages", ARRAY[]::TEXT[])))
+    `
 
     return variant
   })
@@ -156,7 +167,7 @@ export async function handleParentVariantCreation(
           has: videoId
         }
       },
-      select: { id: true }
+      select: { id: true, label: true, availableLanguages: true }
     }),
     prisma.videoVariant.findFirst({
       where: {
@@ -166,6 +177,9 @@ export async function handleParentVariantCreation(
       select: { published: true }
     })
   ])
+  const containerParents = parentVideos.filter((parent) =>
+    canHavePlaceholderVariant(parent.label)
+  )
 
   // Only create parent variants if:
   // 1. Video exists and is not a feature film
@@ -179,6 +193,33 @@ export async function handleParentVariantCreation(
     !childVariant?.published ||
     parentVideos.length === 0
   ) {
+    return
+  }
+
+  // Cascade the new language to every parent that doesn't list it yet --
+  // including featureFilm parents, which aggregate their segments' languages
+  // but (unlike collection/series) never get a placeholder Variant -- so
+  // availableLanguages stays correct even when no parent is eligible for one.
+  // A parent that already lists the language is skipped: syncParentLanguage
+  // is an UPDATE, a recompute of every container above it (queuing Algolia)
+  // and a cache revalidation, none of which change anything for it.
+  const parentsMissingLanguage = parentVideos.filter(
+    (parent) => !parent.availableLanguages.includes(languageId)
+  )
+  await Promise.allSettled(
+    parentsMissingLanguage.map(async (parent) => {
+      try {
+        await syncParentLanguage(parent.id, languageId)
+      } catch (error) {
+        logger.error(
+          { error, parentId: parent.id },
+          'Failed to cascade language to parent'
+        )
+      }
+    })
+  )
+
+  if (containerParents.length === 0) {
     return
   }
 
@@ -207,7 +248,7 @@ export async function handleParentVariantCreation(
   }
 
   // Create empty variants for all parent videos in parallel
-  const promises = parentVideos.map((parent) =>
+  const promises = containerParents.map((parent) =>
     createEmptyParentVariant(parent.id, languageId, languageSlug).catch(
       (error) => {
         console.error(
@@ -299,24 +340,60 @@ async function checkAndRemoveEmptyParentVariant(
     })
   ])
 
-  // If no published child variants exist in this language and we have an empty parent variant, remove it
-  if (publishedChildVariantsCount === 0 && parentVariant) {
-    // Delete the empty parent variant and update available languages in a single transaction
-    const updatedLanguages = parentVideo.availableLanguages.filter(
-      (lang) => lang !== languageId
-    )
+  // Other published children still carry this language: the parent keeps it.
+  if (publishedChildVariantsCount > 0) return
 
+  // No published child variants remain in this language. A parent with an
+  // empty placeholder loses it; a parent without one (a featureFilm never has
+  // one) still lists the language only because of its segments, so it must
+  // come off too, or Arclight and Algolia keep advertising a language with
+  // nothing behind it.
+  if (
+    parentVariant == null &&
+    !parentVideo.availableLanguages.includes(languageId)
+  ) {
+    return
+  }
+
+  // Recompute rather than write back a filtered copy of the array read above:
+  // that snapshot is stale by the time it is written, so a concurrent
+  // addLanguageToVideo would be silently overwritten. The recompute reads the
+  // current state and keeps the language when the parent has a published
+  // Variant of its own in it (a dubbed film is playable without any
+  // segment), and it also resets the parent's cache and Algolia record.
+  //
+  // The placeholder delete and the recompute+write run in one transaction so
+  // a crash between them can never leave the placeholder gone while
+  // availableLanguages still lists the language -- a drift
+  // audit-parent-variants.ts does not detect, since it only looks for
+  // languages that are missing, not stale ones left over-listed.
+  //
+  // Cache reset and Algolia sync are network/queue calls, not DB writes, so
+  // they stay out of the transaction -- running them inside it would hold
+  // the row lock open for unrelated I/O and risk tripping Prisma's
+  // interactive-transaction timeout.
+  if (parentVariant != null) {
     await prisma.$transaction(async (tx) => {
-      await tx.videoVariant.delete({
-        where: { id: parentVariant.id }
-      })
-
-      await tx.video.update({
-        where: { id: parentVideoId },
-        data: { availableLanguages: updatedLanguages }
+      await tx.videoVariant.delete({ where: { id: parentVariant.id } })
+      await updateVideoAvailableLanguages(parentVideoId, {
+        client: tx,
+        skipCache: true,
+        skipAlgolia: true
       })
     })
+    await enqueueVideoAlgoliaSync(parentVideoId, videoOnlyScope, logger)
+    try {
+      await videoCacheReset(parentVideoId)
+    } catch (error) {
+      console.error('Cache reset error:', error)
+    }
+  } else {
+    await updateVideoAvailableLanguages(parentVideoId)
   }
+  // Containers above this parent (e.g. a collection holding a film) computed
+  // their availableLanguages from its old value, so recalculate them too --
+  // the same cascade syncParentLanguage does on the add path.
+  await updateParentCollectionLanguages(parentVideoId)
 }
 
 export const VideoVariant = builder.prismaObject('VideoVariant', {
@@ -424,7 +501,10 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
       nullable: false,
       description: 'version control for master video file'
     }),
-    video: t.relation('video')
+    video: t.relation('video'),
+    reconciliation: t
+      .withAuth({ isPublisher: true })
+      .relation('reconciliation', { nullable: true })
   })
 })
 
@@ -596,7 +676,10 @@ builder.mutationFields((t) => ({
           published: true,
           videoId: true,
           languageId: true,
-          edition: true
+          edition: true,
+          hls: true,
+          share: true,
+          muxVideo: { select: { readyToStream: true } }
         }
       })
 
@@ -612,6 +695,33 @@ builder.mutationFields((t) => ({
             select: { id: true }
           })) != null
         : true
+
+      // Unpublishing takes effect immediately. Publishing does too, unless a
+      // linked Mux asset is still transcoding with nothing else playable (see
+      // videoVariantAwaitsMux) -- that publish is left to reconciliation,
+      // which publishes the Variant as soon as Mux is ready. This is
+      // evaluated against this same call's own hls/share/muxVideoId, not just
+      // the pre-update row, so publishing and relinking usable media in one
+      // request publishes immediately instead of waiting on reconciliation.
+      const awaitingMux = videoVariantAwaitsMux({
+        hls: input.hls ?? currentVariant.hls,
+        share: input.share ?? currentVariant.share,
+        muxVideo:
+          input.muxVideoId != null
+            ? await prisma.muxVideo.findUnique({
+                where: { id: input.muxVideoId },
+                select: { readyToStream: true }
+              })
+            : currentVariant.muxVideo
+      })
+      const nextPublished =
+        input.published === true
+          ? awaitingMux
+            ? undefined
+            : true
+          : input.published === false
+            ? false
+            : undefined
 
       let updated: PrismaVideoVariant
       try {
@@ -629,10 +739,7 @@ builder.mutationFields((t) => ({
             videoId: input.videoId ?? undefined,
             edition: input.edition ?? undefined,
             downloadable: input.downloadable ?? undefined,
-            published:
-              input.published === undefined
-                ? undefined
-                : currentVariant.published,
+            published: nextPublished,
             muxVideoId: input.muxVideoId ?? undefined,
             assetId: input.assetId ?? undefined,
             version: input.version ?? undefined,
@@ -658,11 +765,35 @@ builder.mutationFields((t) => ({
       // Handle parent variant changes if published status changed
       const wasPublished = currentVariant.published
       const isNowPublished = input.published ?? currentVariant.published
+      // An explicit unpublish must reach reconciliation even when the
+      // published column does not change, so it overwrites any pending
+      // deferred-publish intent left there by an earlier request -- otherwise
+      // reconciliation would still publish the Variant once Mux is ready. A
+      // deferred publish needs the same treatment: nextPublished stays
+      // undefined while Mux is still processing, so the column itself does
+      // not change either.
+      const explicitUnpublish = input.published === false
+      const deferredPublish =
+        input.published === true && nextPublished === undefined
 
-      if (wasPublished !== isNowPublished || languageChanged) {
-        const reason = languageChanged
-          ? 'video-variant-language-change'
-          : 'video-variant-publication-change'
+      if (
+        wasPublished !== isNowPublished ||
+        explicitUnpublish ||
+        deferredPublish ||
+        languageChanged
+      ) {
+        // A fresh explicit `published` value always wins over a language
+        // change: requestVideoVariantReconciliation treats
+        // video-variant-language-change as a reason that must not carry a
+        // publish intent (it exists to protect a pending toggle from being
+        // clobbered by a stale upload), so routing a real new intent through
+        // it would silently drop that intent instead.
+        const reason =
+          input.published !== undefined
+            ? 'video-variant-publication-change'
+            : languageChanged
+              ? 'video-variant-language-change'
+              : 'video-variant-publication-change'
         try {
           await requestVideoVariantReconciliation({
             videoVariantId: updated.id,
@@ -670,7 +801,10 @@ builder.mutationFields((t) => ({
             languageId: nextLanguageId,
             edition: input.edition ?? currentVariant.edition,
             published: isNowPublished,
-            reason
+            reason,
+            // Only an explicit toggle knows the Variant's media state here; a
+            // bare language change keeps whatever the row already records.
+            awaitingMux: input.published !== undefined ? awaitingMux : undefined
           })
         } catch (error) {
           console.error('Video variant reconciliation request error:', error)
@@ -684,6 +818,25 @@ builder.mutationFields((t) => ({
               reason
             }
           })
+        }
+      }
+
+      // A publish/Draft applied to the column above is applied to the
+      // Video's languages and its parents right away too, even when the
+      // column was already at that value: the editor's explicit toggle is
+      // also how a Video whose language went missing gets it back. It runs
+      // after the reconciliation request so that request's createdAt reset
+      // already makes any sweep run still in flight on this row step aside.
+      // A failure here is not fatal: the requested reconciliation repeats
+      // these same writes on the next sweep, and alerts if they keep failing.
+      if (nextPublished !== undefined) {
+        try {
+          await applyVariantPublication(updated)
+        } catch (error) {
+          logger.error(
+            { error, videoVariantId: updated.id, published: updated.published },
+            'Video variant publication apply failed; left to reconciliation'
+          )
         }
       }
 
@@ -720,7 +873,14 @@ builder.mutationFields((t) => ({
         // Log the error but don't throw it
         console.error('Cache reset error:', error)
       }
-      return updated
+      // `updated` was read before reconciliation was requested, so re-read
+      // to return the request just made: videos-admin reads the response's
+      // `reconciliation` to tell a publish waiting on Mux from one that
+      // already applied.
+      return await prisma.videoVariant.findUniqueOrThrow({
+        ...query,
+        where: { id: updated.id }
+      })
     }
   }),
   videoVariantDelete: t.withAuth({ isPublisher: true }).prismaField({

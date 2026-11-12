@@ -1,1 +1,1 @@
-export { otherSlotOf, useColumnSwapCommand } from './useColumnSwapCommand'
+export { useCampaignColumnSwapCommand as useColumnSwapCommand } from '../useCampaignColumnSwapCommand'

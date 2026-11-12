@@ -22,20 +22,22 @@ import {
 } from '../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 import { TranslationRunContext } from '../TranslationRunProvider'
+import { CampaignRole } from '../utils/campaignRole'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 import { Inspector } from '.'
 
 interface InspectorStoryProps {
   initialState?: Partial<CampaignEditorState>
   campaignProp?: Campaign
-  isManager?: boolean
+  role?: CampaignRole
 }
 
 /** The Inspector over a campaign fixture, in its 328 px column. */
 function InspectorStory({
   initialState,
   campaignProp = campaign,
-  isManager = true
+  role = 'manager'
 }: InspectorStoryProps): ReactElement {
   return (
     <MockedProvider>
@@ -44,13 +46,15 @@ function InspectorStory({
           campaign={campaignProp}
           initialState={initialState}
         >
-          <TranslationRunContext.Provider
-            value={{ start: () => undefined, cancel: () => undefined }}
-          >
-            <Box sx={{ display: 'flex', height: 720 }}>
-              <Inspector isManager={isManager} />
-            </Box>
-          </TranslationRunContext.Provider>
+          <CampaignCommandProvider>
+            <TranslationRunContext.Provider
+              value={{ start: () => undefined, cancel: () => undefined }}
+            >
+              <Box sx={{ display: 'flex', height: 720 }}>
+                <Inspector role={role} />
+              </Box>
+            </TranslationRunContext.Provider>
+          </CampaignCommandProvider>
         </CampaignEditorProvider>
       </CommandProvider>
     </MockedProvider>

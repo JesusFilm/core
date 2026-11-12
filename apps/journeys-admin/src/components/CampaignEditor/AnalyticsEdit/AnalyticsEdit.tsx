@@ -4,10 +4,15 @@ import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 
 import { CampaignAnalyticsPanel } from '@core/journeys/ui/Campaign'
+import { useWorldMap } from '@core/journeys/ui/Campaign/CampaignAnalytics/WorldMap/useWorldMap'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
-import { useWorldMap } from '../../../libs/useWorldMap'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+
+/** The viewer serves the atlas; the canvas, on another origin, fetches it across. */
+const ATLAS_URL = `${
+  process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+}/countries-110m.json`
 
 interface AnalyticsEditProps {
   /** The Analytics section this editor sits in. */
@@ -25,7 +30,7 @@ interface AnalyticsEditProps {
 export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
   const { campaign, currentRegion } = useCampaignEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const { shapes: worldMap, error: worldMapError } = useWorldMap(block.showMap)
+  const worldMap = useWorldMap(block.showMap, ATLAS_URL)
 
   return (
     <Box
@@ -42,7 +47,7 @@ export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
         worldMap={worldMap}
         accentColor={block.accentColor ?? campaign.theme.accentColor}
       />
-      {worldMapError != null && (
+      {worldMap.error != null && (
         <Alert severity="warning" sx={{ mt: 2 }}>
           {t('The map could not be loaded. Try again later.')}
         </Alert>

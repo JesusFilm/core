@@ -1,3 +1,4 @@
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   CampaignSpecResult,
   authClient,
@@ -7,7 +8,10 @@ import {
   CampaignFixture,
   campaignFactory
 } from '../../../../test/campaignFactory'
-import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import {
   UNIQUE_VIOLATION_SHAPES,
@@ -19,6 +23,8 @@ import { CAMPAIGN_REGIONS_MAX } from '../validation'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 describe('campaignRegionCreate', () => {
   const CLIENT_ID = '0b8f3e5c-6d2a-4f1e-9c7b-3a5d8e2f1c40'
@@ -37,9 +43,11 @@ describe('campaignRegionCreate', () => {
   `)
 
   let fixture: CampaignFixture
+  let writes: CampaignWriteCall[]
 
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     prismaMock.campaignRegion.findMany.mockResolvedValue([])
     prismaMock.journey.findMany.mockResolvedValue([])
     prismaMock.campaignRegion.count.mockResolvedValue(0)
@@ -94,10 +102,14 @@ describe('campaignRegionCreate', () => {
     )
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
     expect(prismaMock.campaignRegionCountry.create).not.toHaveBeenCalled()
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-      where: { id: 'campaignId' },
-      data: { updatedAt: expect.any(Date) }
-    })
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { structure: true },
+        jobs: [],
+        touched: true
+      }
+    ])
   })
 
   it('suffixes the slug and appends the order after existing regions', async () => {
@@ -138,16 +150,15 @@ describe('campaignRegionCreate', () => {
     })
   })
 
-  it('takes the structure lock before it counts the regions for the order', async () => {
+  it('counts the regions for the order under the structure lock', async () => {
     prismaMock.campaignRegion.count.mockResolvedValue(3)
 
     const result = await create()
 
     expect(result.data.campaignRegionCreate.order).toBe(3)
-    expectStructureLockFirst()
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignRegion.count.mock.invocationCallOrder[0]
-    )
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { structure: true }
+    ])
     expect(prismaMock.campaignRegion.count).toHaveBeenCalledWith({
       where: { campaignId: 'campaignId' }
     })
@@ -158,7 +169,7 @@ describe('campaignRegionCreate', () => {
 
     const result = await create()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: `a campaign has at most ${CAMPAIGN_REGIONS_MAX} regions`,
       extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' }
     })
@@ -180,7 +191,7 @@ describe('campaignRegionCreate', () => {
     async (id) => {
       const result = await create(id)
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'id must be a UUID',
         extensions: { code: 'BAD_USER_INPUT', field: 'id' }
       })
@@ -212,13 +223,14 @@ describe('campaignRegionCreate', () => {
         uniqueViolation(shape, ['id'])
       )
       prismaMock.campaignRegion.findUnique.mockResolvedValue({
+        ...campaignFactory().withRegion('New region').build().regions[0],
         id: CLIENT_ID,
         campaignId: 'otherCampaignId'
-      } as never)
+      })
 
       const result = await create(CLIENT_ID)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })
@@ -232,11 +244,11 @@ describe('campaignRegionCreate', () => {
       const withoutId = await create()
       const withId = await create(CLIENT_ID)
 
-      expect(withoutId.errors[0].extensions).toMatchObject({
+      expect(withoutId.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'slug'
       })
-      expect(withId.errors[0].extensions).toMatchObject({
+      expect(withId.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'slug'
       })
@@ -250,7 +262,7 @@ describe('campaignRegionCreate', () => {
 
       const result = await create(CLIENT_ID)
 
-      expect(result.errors[0].extensions).toEqual({})
+      expect(result.errors?.[0].extensions).toEqual({})
       expect(prismaMock.campaignRegion.findUnique).not.toHaveBeenCalled()
     })
   })
@@ -262,8 +274,9 @@ describe('campaignRegionCreate', () => {
 
     const result = await create()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegion.create).not.toHaveBeenCalled()
+    expect(writes).toEqual([])
   })
 
   it('throws NOT_FOUND for an unknown campaign', async () => {
@@ -271,6 +284,17 @@ describe('campaignRegionCreate', () => {
 
     const result = await create()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+  })
+
+  it('queues no revalidation on a published campaign: a new region waits for the ISR window', async () => {
+    prismaMock.campaign.findUnique.mockResolvedValue(
+      campaignFactory().published().build()
+    )
+
+    const result = await create()
+
+    expect(result.errors).toBeUndefined()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 })

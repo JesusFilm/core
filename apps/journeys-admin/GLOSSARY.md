@@ -1,6 +1,6 @@
 # Journeys Admin
 
-The creator-facing authoring surface (`apps/journeys-admin`): where a signed-in creator builds, manages, shares, and measures Journeys, and where Publishers curate the template library. It owns no content or measurement entities — **Journey**, **Block**, **Step**, **Card**, **Team**, **Template**, and the role vocabularies belong to [Journeys](../../apis/api-journeys/GLOSSARY.md), and **Visitor**/**Event** data belongs to [Journey Analytics](../../apis/api-journeys/GLOSSARY-analytics.md). What this context owns is the _authoring experience_: the Editor's spatial model, the journey-list lifecycle actions, the sharing/adoption flows, and the report surfaces.
+The creator-facing authoring surface (`apps/journeys-admin`): where a signed-in creator builds, manages, shares, and measures Journeys, and where Publishers curate the template library. It owns no content or measurement entities — **Journey**, **Block**, **Step**, **Card**, **Team**, **Template**, and the role vocabularies belong to [Journeys](../../apis/api-journeys/GLOSSARY.md), and **Visitor**/**Event** data belongs to [Journey Analytics](../../apis/api-journeys/GLOSSARY-analytics.md). What this context owns is the _authoring experience_: the Editor's spatial model, the journey-list lifecycle actions, the sharing/adoption flows, and the report surfaces, plus the **Campaign Editor** for a **Campaign**, the **Team Campaigns** tab that lists them, and the **Campaign Domain** section of a Campaign's Settings.
 
 ## Language
 
@@ -73,12 +73,12 @@ The Campaign Editor's rendering of the open Campaign Page at a fixed Desktop or 
 _Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
 
 **Left Rail**:
-The narrow column of icon buttons beside the Campaign Canvas: back to the **Team Campaigns** tab, the panel toggles **Add**, **Pages**, **Navigator** and **Localize** in that order, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is always open (Add on first open), docked beside the rail rather than over the canvas. A toggle or shortcut opens its panel in place of the open one; a second click or shortcut on the open panel changes nothing, and Escape only steps the selection up, never the panel.
+The narrow column of icon buttons beside the Campaign Canvas: back to the **Team Campaigns** tab, the panel toggles **Add**, **Pages**, **Navigator** and **Localize** in that order, a link to the **Campaign Report**, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is always open (Add on first open), docked beside the rail rather than over the canvas. A toggle or shortcut opens its panel in place of the open one; a second click or shortcut on the open panel changes nothing, and Escape only steps the selection up, never the panel.
 _Avoid_: toolbar, sidebar, top bar
 
 **Inspector**:
-The persistent right panel for the selection: a breadcrumb and an actions row (move, duplicate, delete), then a **Style** tab and a **Settings** tab. With nothing selected it holds the Campaign's own theme (Style) and settings (Settings), which have no Left Rail panel of their own.
-_Avoid_: properties (the journey editor's Drawer), details panel, side panel, settings panel / theme panel
+The persistent right panel for the selection: a breadcrumb and an actions row (move, duplicate, delete), then a **Style** tab and a **Settings** tab. With nothing selected it holds the Campaign's own theme (Style) and settings (Settings), which have no Left Rail panel of their own. The theme panel, style panel and settings panel (`ThemePanel/`, `StylePanel/`, `Settings/`) are the Inspector's bodies, not panels of their own. A text or button Extra's header adds an "Inherits from {{host}}" link that selects the section it belongs to. A Column Slot, carousel card, journey card or region card has no Style of its own: its Style tab says "Styled by its section", with a Select link to that section.
+_Avoid_: properties (the journey editor's Drawer), details panel, side panel
 
 **Value Indicator**:
 The dot beside a Style row: orange for a value inherited from the band or theme, blue for a value set on the block. Reset clears the block's own value, so it inherits again and the dot returns to orange.
@@ -93,15 +93,14 @@ The Left Rail panel showing the open page as a tree of exactly what the Campaign
 _Avoid_: outline, layers, tree view (the component)
 
 **Add Panel**:
-The Left Rail panel listing the Sections, Extras and Region Lines that can be added; a click adds the type in place relative to the selection. An insert point preset from the canvas (between two sections, or an empty Column Slot) overrides the selection for the next add.
+The Left Rail panel listing what can be added, in the groups shown on screen: Sections, Extras and Region (`Add line`); a click adds the type in place relative to the selection. An insert point preset from the canvas (between two sections, or an empty Column Slot) overrides the selection for the next add.
 _Avoid_: element library, palette (the colour one)
 
 **Localize Panel**:
 The Left Rail panel with two tabs, **Languages** and **Translations**. Changing the default language opens it on Translations with the promotion notice.
-_Avoid_: languages panel, translations view (now its tabs)
 
 **Languages Panel**:
-The Localize Panel's first tab: the Campaign's Page Languages with Remove on each, and the shared language autocomplete to add one, which also starts the Machine Translation run for that language with progress. Add and remove go straight to the API and are never Commands.
+The Localize Panel's first tab: the Campaign's Page Languages with Remove on each, and the shared language autocomplete to add one, which also starts the Machine Translation run for that language with progress when the language is machine-translatable (`isMachineTranslatable`). Add and remove go straight to the API and are never Commands.
 _Avoid_: language settings, locale picker
 
 **Translations View**:
@@ -109,7 +108,7 @@ The Localize Panel's second tab: one non-default Campaign language at a time, ev
 _Avoid_: translation manager, review queue
 
 **Preview Language**:
-The Pages Panel select that sets which Campaign language the Campaign Canvas renders, falling back to marked default-language text where a translation is missing. Editing text in a non-default language writes a human translation as one Command; in the default language the same edit writes the field itself.
+Which Campaign language the Campaign Canvas renders, set by the Pages Panel select or by a language's Preview button in the Languages Panel, falling back to marked default-language text where a translation is missing. Editing text in a non-default language writes a human translation as one Command; in the default language the same edit writes the field itself.
 _Avoid_: canvas language, view language, locale
 
 **Publish button**:
@@ -196,9 +195,17 @@ _Avoid_: dashboard (ambiguous between the Power BI and Plausible surfaces)
 The embedded business-intelligence dashboard behind Journeys Analytics, in four variants: multiple/single journey × full/summary detail.
 _Avoid_: report (unqualified)
 
-**Plausible Embed Dashboard**:
-The other embedded analytics surface: a single journey's Plausible dashboard iframe, authorized by the journey's `plausibleToken`. Event-level stats, distinct backend from Power BI.
+**Plausible Embed Frame**:
+The other embedded analytics surface: a Plausible site's own dashboard in an iframe, through its shared link and authorized by its `plausibleToken`, restyled for the admin. Event-level stats, distinct backend from Power BI. Until the dashboard has drawn it says the report is loading, failed to load, or, loaded with no token because the site is not created yet, is being set up. The **Plausible Embed Dashboard** and the **Campaign Report** each show one.
 _Avoid_: conflating with the Power BI Report
+
+**Plausible Embed Dashboard**:
+A single journey's Plausible Embed Frame, on that journey's reports page.
+_Avoid_: using it for the generic frame or for the Campaign Report
+
+**Campaign Report**:
+A Campaign's site traffic at `/campaigns/<id>/reports`: the **Plausible Embed Frame** of the Campaign's own Plausible site, so Plausible's default reports (visitors, page views, bounce rate, pages, sources, countries, devices) plus the goals and properties the **Campaign Plausible site** (api-journeys glossary) defines, with nothing built on top. Opened from the Left Rail's Report button and each Team Campaigns card, behind `campaignBuilder`, for anyone with campaign Read; until the Campaign's site exists it says the report is being set up. Private, unlike the public Analytics section.
+_Avoid_: analytics, campaign analytics (the public Analytics section and its **Campaign Stats** already use that word), campaign stats
 
 **Visitor Timeline**:
 The per-Visitor interaction history shown on a visitor card, built from upstream Events and labeled in admin terms: **Chat Started** (a ChatOpenEvent), **Submitted Text** (a text response), **Poll Answers** and **Multiselect Answers** (question submissions).

@@ -1,62 +1,33 @@
 import { ReactElement } from 'react'
 
-import { CampaignAnalytics } from '../CampaignAnalytics'
 import { CampaignButton } from '../CampaignButton'
-import { CampaignColumns } from '../CampaignColumns'
-import { CampaignFeaturedMedia } from '../CampaignFeaturedMedia'
-import { CampaignHero } from '../CampaignHero'
-import { CampaignImage } from '../CampaignImage'
-import { CampaignJourneyList } from '../CampaignJourneyList'
-import { CampaignRegionHeader } from '../CampaignRegionHeader'
-import { CampaignRegionShare } from '../CampaignRegionShare'
-import { CampaignRegionSwitcher } from '../CampaignRegionSwitcher'
-import { CampaignRichText } from '../CampaignRichText'
 import { CampaignTypography } from '../CampaignTypography'
-import { CampaignVideoCarousel } from '../CampaignVideoCarousel'
+import { isPageSection } from '../types'
 import type { CampaignTree } from '../types'
+
+import { CampaignPageSection } from './sectionRegistry'
 
 interface CampaignRendererProps {
   block: CampaignTree
 }
 
 /**
- * One component per campaign typename behind a single switch. Header and
- * footer are Campaign Chrome, rendered by the page's chrome slots rather
- * than as sections, and a Campaign Video only ever fills a Media Slot
- * (rendered by its section), so they and any unknown typename render
- * nothing.
+ * One component per campaign typename: the two Extras here, and the 11 page
+ * sections through the section registry. Header and footer are Campaign
+ * Chrome, rendered by the page's chrome slots rather than as sections, a
+ * Campaign Video only ever fills a Media Slot (rendered by its section), and
+ * Column Slots and Journey cards render through their section, so they
+ * render nothing here.
  */
 export function CampaignRenderer({
   block
 }: CampaignRendererProps): ReactElement | null {
   switch (block.__typename) {
-    case 'CampaignHeroBlock':
-      return <CampaignHero block={block} />
-    case 'CampaignRegionSwitcherBlock':
-      return <CampaignRegionSwitcher block={block} />
-    case 'CampaignVideoCarouselBlock':
-      return <CampaignVideoCarousel block={block} />
-    case 'CampaignFeaturedMediaBlock':
-      return <CampaignFeaturedMedia block={block} />
-    case 'CampaignJourneyListBlock':
-      return <CampaignJourneyList block={block} />
-    case 'CampaignAnalyticsBlock':
-      return <CampaignAnalytics block={block} />
-    case 'CampaignRegionHeaderBlock':
-      return <CampaignRegionHeader block={block} />
-    case 'CampaignRegionShareBlock':
-      return <CampaignRegionShare block={block} />
-    case 'CampaignRichTextBlock':
-      return <CampaignRichText block={block} />
-    case 'CampaignColumnsBlock':
-      return <CampaignColumns block={block} />
-    case 'CampaignImageBlock':
-      return <CampaignImage block={block} />
     case 'CampaignTypographyBlock':
       return <CampaignTypography block={block} />
     case 'CampaignButtonBlock':
       return <CampaignButton block={block} />
-    default:
-      return null
   }
+  if (!isPageSection(block)) return null
+  return <CampaignPageSection block={block} />
 }

@@ -1,21 +1,20 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import { CampaignImageSlot } from '../../../../../__generated__/globalTypes'
-import { useCampaignImageBlockCreateMutation } from '../../../../libs/useCampaignImageBlockCreateMutation'
 import {
   CampaignMediaOwner,
-  CampaignMediaSlotInput,
-  useCampaignMediaSlotMutation
-} from '../../../../libs/useCampaignMediaSlotMutation'
+  useCampaignBlockUpdateMutation
+} from '../../../../libs/useCampaignBlockUpdateMutation'
+import { useCampaignImageBlockCreateMutation } from '../../../../libs/useCampaignImageBlockCreateMutation'
 import { useCampaignVideoBlockCreateMutation } from '../../../../libs/useCampaignVideoBlockCreateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import type { CampaignMediaPick } from '../../Pickers/MediaPasteField'
 import {
-  CampaignStyleCommand,
-  useCampaignStyleCommand
-} from '../useCampaignStyleCommand'
+  CampaignBlockFieldsCommand,
+  useCampaignBlockFieldsCommand
+} from '../useCampaignBlockFieldsCommand'
 
-export interface CampaignMediaCommand extends CampaignStyleCommand {
+export interface CampaignMediaCommand extends CampaignBlockFieldsCommand {
   /** Fill (or replace) the owner's Media Slot with a picked video or image as one Command. */
   addMediaPick: (owner: CampaignMediaOwner, pick: CampaignMediaPick) => void
   /** Empty the owner's Media Slot as one Command. */
@@ -38,8 +37,8 @@ export function useCampaignMediaCommand(): CampaignMediaCommand {
   const { campaign } = useCampaignEditor()
   const createVideo = useCampaignVideoBlockCreateMutation(campaign.id)
   const createImage = useCampaignImageBlockCreateMutation(campaign.id)
-  const writeMediaSlot = useCampaignMediaSlotMutation()
-  const styleCommand = useCampaignStyleCommand()
+  const { update } = useCampaignBlockUpdateMutation()
+  const fieldsCommand = useCampaignBlockFieldsCommand()
 
   function addMediaPick(
     owner: CampaignMediaOwner,
@@ -48,43 +47,33 @@ export function useCampaignMediaCommand(): CampaignMediaCommand {
     const mediaId = uuidv4()
     let created = false
 
-    async function create(current: CampaignMediaOwner): Promise<unknown> {
+    async function create(): Promise<unknown> {
       if ('src' in pick)
         return await createImage({
           id: mediaId,
-          owner: current,
+          owner,
           slot: CampaignImageSlot.media,
           src: pick.src
         })
-      return await createVideo({ id: mediaId, owner: current, pick })
+      return await createVideo({ id: mediaId, owner, pick })
     }
 
-    styleCommand.addStyle<CampaignMediaOwner, CampaignMediaSlotInput>({
-      block: owner,
-      input: { mediaBlockId: mediaId },
-      previous: { mediaBlockId: owner.mediaBlockId },
-      async run(current, next) {
-        if (created || next.mediaBlockId !== mediaId)
-          return await writeMediaSlot(current, next)
-        created = true
-        try {
-          return await create(current)
-        } catch (error) {
-          created = false
-          throw error
-        }
+    fieldsCommand.addFields(owner, { mediaBlockId: mediaId }, async (next) => {
+      if (created || next.mediaBlockId !== mediaId)
+        return await update(owner, next)
+      created = true
+      try {
+        return await create()
+      } catch (error) {
+        created = false
+        throw error
       }
     })
   }
 
   function clearMedia(owner: CampaignMediaOwner): void {
-    styleCommand.addStyle<CampaignMediaOwner, CampaignMediaSlotInput>({
-      block: owner,
-      input: { mediaBlockId: null },
-      previous: { mediaBlockId: owner.mediaBlockId },
-      run: writeMediaSlot
-    })
+    fieldsCommand.addFields(owner, { mediaBlockId: null })
   }
 
-  return { ...styleCommand, addMediaPick, clearMedia }
+  return { ...fieldsCommand, addMediaPick, clearMedia }
 }

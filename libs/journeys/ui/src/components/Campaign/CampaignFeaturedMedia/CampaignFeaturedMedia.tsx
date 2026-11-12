@@ -7,7 +7,7 @@ import { CampaignFeaturedMediaLayout } from '../../../../__generated__/globalTyp
 import { CampaignMediaSplit } from '../CampaignMediaSlot'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
-import { hasText } from '../types'
+import { hasSectionHeading } from '../types'
 import type { CampaignTreeOf } from '../types'
 
 interface CampaignFeaturedMediaProps {
@@ -35,8 +35,7 @@ export function CampaignFeaturedMedia({
   block
 }: CampaignFeaturedMediaProps): ReactElement {
   const bullets = featuredMediaBullets(block.bullets)
-  const hasHeading =
-    hasText(block.eyebrow) || hasText(block.title) || hasText(block.description)
+  const hasHeading = hasSectionHeading(block)
 
   return (
     <CampaignSectionBand block={block}>

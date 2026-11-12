@@ -1,16 +1,21 @@
+import {
+  type CampaignLanguages,
+  isCampaignLanguage,
+  isTranslationLanguage,
+  withHumanTranslation
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import { prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
 import { CampaignAclSubject, campaignAcl } from '../campaign.acl'
-import { lockCampaign, touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { badUserInput, forbidden, notFound } from '../errors'
 import {
   TranslatedValueRef,
   TranslatedValueShape,
   TranslationsJson,
-  parseTranslations,
   toTranslatedValues
 } from '../translatedValue'
 import { assertLength } from '../validation'
@@ -76,42 +81,19 @@ async function loadTarget({
 }
 
 /**
- * The next `<field>Translations` JSON: `value` as a human entry for
- * `languageId`, or the entry removed when `value` is empty.
- */
-export function withTranslation(
-  current: unknown,
-  languageId: string,
-  value: string
-): TranslationsJson {
-  const json = parseTranslations(current)
-  if (value === '') {
-    delete json[languageId]
-    return json
-  }
-  json[languageId] = { value, source: 'human' }
-  return json
-}
-
-/**
  * Refuse `languageId` unless it is a campaign language other than the
  * default: `BAD_USER_INPUT`, field `languageId`.
  */
 function assertTranslationLanguage(
-  campaign: {
-    defaultLanguageId: string
-    languages: Array<{ languageId: string }>
-  },
+  campaign: CampaignLanguages,
   languageId: string
 ): void {
-  if (
-    !campaign.languages.some((language) => language.languageId === languageId)
-  )
+  if (!isCampaignLanguage(campaign, languageId))
     throw badUserInput(
       'languageId must be one of the campaign languages',
       'languageId'
     )
-  if (languageId === campaign.defaultLanguageId)
+  if (!isTranslationLanguage(campaign, languageId))
     throw badUserInput(
       'languageId must not be the default language; edit the field itself instead',
       'languageId'
@@ -120,13 +102,13 @@ function assertTranslationLanguage(
 
 /**
  * Lock the target row, read its current `<column>` JSON and write the merged
- * entry back in one transaction. The read happens under the lock, not in
+ * entry back in one Campaign Write. The read happens under the lock, not in
  * `loadTarget`, so two writes to the same field in different languages
  * serialize instead of overwriting each other's JSON. The campaign row is
- * then locked (after the target row, the order the default-language swap and
- * block edits take) and the language checked again, so a swap that made
+ * locked too and the language checked again, so a swap that made
  * `languageId` the default, or a removal of the language, while this write
- * waited is refused rather than leaving an entry under the default.
+ * waited is refused rather than leaving an entry under the default. A
+ * `campaign` target writes the Campaign row itself, so it skips the touch.
  */
 async function writeTranslation(
   target: TranslationTarget,
@@ -134,23 +116,28 @@ async function writeTranslation(
   languageId: string,
   value: string
 ): Promise<TranslationsJson> {
-  return await prisma.$transaction(async (tx) => {
-    const model = TRANSLATION_TARGETS[target.kind]
-    await model.lock(tx, [target.id])
-    const current = await model.select(tx, target.id, { [column]: true })
-    if (current == null) throw notFound(`${target.kind} not found`)
-    await lockCampaign(tx, target.campaign.id)
-    const campaign = await tx.campaign.findUnique({
-      where: { id: target.campaign.id },
-      select: { defaultLanguageId: true, languages: true }
-    })
-    if (campaign == null) throw notFound('campaign not found')
-    assertTranslationLanguage(campaign, languageId)
-    const json = withTranslation(current[column], languageId, value)
-    await model.update(tx, target.id, { [column]: json })
-    if (target.kind !== 'campaign') await touchCampaign(tx, target.campaign.id)
-    return json
-  })
+  return await campaignWrite(
+    target.campaign.id,
+    {
+      targets: [{ kind: target.kind, id: target.id }],
+      campaignRow: true,
+      touch: target.kind !== 'campaign'
+    },
+    async ({ tx }) => {
+      const model = TRANSLATION_TARGETS[target.kind]
+      const current = await model.select(tx, target.id, { [column]: true })
+      if (current == null) throw notFound(`${target.kind} not found`)
+      const campaign = await tx.campaign.findUnique({
+        where: { id: target.campaign.id },
+        select: { defaultLanguageId: true, languages: true }
+      })
+      if (campaign == null) throw notFound('campaign not found')
+      assertTranslationLanguage(campaign, languageId)
+      const json = withHumanTranslation(current[column], languageId, value)
+      await model.update(tx, target.id, { [column]: json })
+      return json
+    }
+  )
 }
 
 export async function setCampaignTranslation(

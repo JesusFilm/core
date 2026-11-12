@@ -4,21 +4,19 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { SxProps, Theme } from '@mui/material/styles'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { Children, ReactElement, ReactNode } from 'react'
+import { Children, MouseEvent, ReactElement, ReactNode, useState } from 'react'
 
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
-import { campaignPageHref, useCampaign } from '../CampaignProvider'
+import { useCampaignPlausible } from '../../../libs/campaignPlausible'
+import { campaignRegionHref, useCampaign } from '../CampaignProvider'
+import { regionLineTexts } from '../CampaignRegionHeader'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
-import { CampaignTypography } from '../CampaignTypography'
+import { campaignCardSx } from '../libs/campaignSx'
+import type { StyleObject } from '../libs/campaignSx'
 import type { CampaignRegion, CampaignTreeOf } from '../types'
-
-/** A plain style object: it spreads into another `sx`, unlike the array and function forms of `SxProps`. */
-type StyleObject = Exclude<
-  SxProps<Theme>,
-  ReadonlyArray<unknown> | ((theme: Theme) => unknown)
->
 
 interface CampaignRegionSwitcherProps {
   block: CampaignTreeOf<'CampaignRegionSwitcherBlock'>
@@ -93,10 +91,9 @@ export function regionFrameSx(variant: CampaignSwitcherVariant): StyleObject {
     // A pill's rounded ends eat into its sides, so its name and flags get more room than a card's content.
     px: pill ? 4 : 3,
     py: pill ? 1.5 : 3,
+    ...campaignCardSx,
     borderRadius: pill ? 999 : 1,
-    textAlign: 'left',
-    backgroundColor: 'var(--campaign-band-card)',
-    border: '1px solid var(--campaign-band-border)'
+    textAlign: 'start'
   }
 }
 
@@ -147,45 +144,116 @@ export function CampaignRegionLines({
   )
 }
 
+/** The stand-in for a flag with no image, or one that fails to load. */
+export const FALLBACK_FLAG = '⛳️'
+
+interface CampaignCountryFlagProps {
+  className?: string
+  src: string | null | undefined
+  sx?: StyleObject
+}
+
+/**
+ * A country's flag as a decorative avatar: its image, or ⛳️ when the source
+ * is null or empty or the image fails to load. The name always travels
+ * beside it, visibly or as the accessible name, so the flag stays silent.
+ */
+export function CampaignCountryFlag({
+  className,
+  src,
+  sx
+}: CampaignCountryFlagProps): ReactElement {
+  const [failedSrc, setFailedSrc] = useState<string>()
+  const flagSrc =
+    src == null || src === '' || src === failedSrc ? undefined : src
+  return (
+    <Avatar
+      className={className}
+      src={flagSrc}
+      alt=""
+      data-testid="CampaignCountryFlag"
+      data-fallback={flagSrc == null}
+      slotProps={{ img: { onError: () => setFailedSrc(flagSrc) } }}
+      sx={{ bgcolor: 'transparent', ...sx }}
+    >
+      <Box component="span" aria-hidden="true">
+        {FALLBACK_FLAG}
+      </Box>
+    </Avatar>
+  )
+}
+
 interface CampaignRegionCountriesProps {
   /** Any region shape carrying its country chips; the editor's admin region fits too. */
   region: Pick<CampaignRegion, 'countries'>
+  /** The Region Switcher section's `showCountryNames`: off shows each country as its flag alone. */
+  showNames?: boolean
   size?: 'small' | 'medium'
 }
 
-/** The region's country chips: flag and translated name from api-languages. */
+/**
+ * The region's countries: each a chip with its flag and its translated name
+ * from api-languages, or, while the section hides names, its flag alone with
+ * the name as its tooltip and accessible name.
+ */
 export function CampaignRegionCountries({
   region,
+  showNames = true,
   size = 'small'
 }: CampaignRegionCountriesProps): ReactElement | null {
   const countries = [...region.countries].sort((a, b) => a.order - b.order)
   if (countries.length === 0) return null
+  // Match the avatar MUI gives a named Chip of the same size.
+  const flagSize = size === 'small' ? 18 : 24
   return (
     <Stack
       direction="row"
       component="span"
       data-testid="CampaignRegionCountries"
+      data-show-names={showNames}
       sx={{ flexWrap: 'wrap', gap: 0.5 }}
     >
-      {countries.map((country) => (
-        <Chip
-          key={country.id}
-          component="span"
-          size={size}
-          data-testid="CampaignRegionCountry"
-          avatar={
-            country.country.flagPngSrc != null ? (
-              <Avatar src={country.country.flagPngSrc} alt="" />
-            ) : undefined
-          }
-          label={countryLabel(country)}
-          sx={{
-            color: 'var(--campaign-band-text)',
-            borderColor: 'var(--campaign-band-border)'
-          }}
-          variant="outlined"
-        />
-      ))}
+      {countries.map((country) => {
+        const label = countryLabel(country)
+        if (!showNames)
+          return (
+            <Tooltip key={country.id} title={label}>
+              <Box
+                component="span"
+                role="img"
+                aria-label={label}
+                data-testid="CampaignRegionCountry"
+                sx={{ display: 'inline-flex' }}
+              >
+                <CampaignCountryFlag
+                  src={country.country.flagPngSrc}
+                  sx={{
+                    boxSizing: 'border-box',
+                    width: flagSize,
+                    height: flagSize,
+                    fontSize: flagSize * 0.6,
+                    border: '1px solid var(--campaign-band-border)'
+                  }}
+                />
+              </Box>
+            </Tooltip>
+          )
+        return (
+          <Chip
+            key={country.id}
+            component="span"
+            size={size}
+            data-testid="CampaignRegionCountry"
+            avatar={<CampaignCountryFlag src={country.country.flagPngSrc} />}
+            label={label}
+            sx={{
+              color: 'var(--campaign-band-text)',
+              borderColor: 'var(--campaign-band-border)'
+            }}
+            variant="outlined"
+          />
+        )
+      })}
     </Stack>
   )
 }
@@ -193,17 +261,29 @@ export function CampaignRegionCountries({
 interface CampaignRegionCardProps {
   region: CampaignRegion
   variant: CampaignSwitcherVariant
+  showCountryNames: boolean
   href: string
 }
 
 function CampaignRegionCard({
   region,
   variant,
+  showCountryNames,
   href
 }: CampaignRegionCardProps): ReactElement {
+  const track = useCampaignPlausible()
+  const [keyboardFocused, setKeyboardFocused] = useState(false)
+
+  function handleClick(event: MouseEvent<HTMLElement>): void {
+    track('campaignRegionClick', { targetRegion: region }, event)
+  }
+
   return (
     <ButtonBase
       href={href}
+      onClick={handleClick}
+      onFocusVisible={() => setKeyboardFocused(true)}
+      onBlur={() => setKeyboardFocused(false)}
       data-testid={`CampaignRegionCard-${region.id}`}
       sx={regionFrameSx(variant)}
     >
@@ -216,13 +296,12 @@ function CampaignRegionCard({
         {region.name}
       </Typography>
       <CampaignRegionLines variant={variant}>
-        {region.lines.map((line) =>
-          line.__typename === 'CampaignTypographyBlock' ? (
-            <CampaignTypography key={line.id} block={line} />
-          ) : null
-        )}
+        {regionLineTexts(region.lines)}
       </CampaignRegionLines>
-      <CampaignRegionCountries region={region} />
+      <CampaignRegionCountries
+        region={region}
+        showNames={showCountryNames || keyboardFocused}
+      />
     </ButtonBase>
   )
 }
@@ -230,13 +309,14 @@ function CampaignRegionCard({
 /**
  * The Region Switcher: every listed region, by `order`, as cards, a list or
  * pills (`variant`), each with its name as heading, its Region Lines beneath
- * and its country chips with flags. The current region is hidden on its own
- * page. Skipped by the page when no region is listed.
+ * and its country chips with flags, named unless the section's
+ * `showCountryNames` is off. The current region is hidden on its own page.
+ * Skipped by the page when no region is listed.
  */
 export function CampaignRegionSwitcher({
   block
 }: CampaignRegionSwitcherProps): ReactElement {
-  const { campaign, basePath, region: current } = useCampaign()
+  const { campaign, region: current } = useCampaign()
   const regions = switcherRegions(campaign.regions, current)
   const variant = block.switcherVariant ?? CampaignSwitcherVariant.cards
 
@@ -253,7 +333,8 @@ export function CampaignRegionSwitcher({
             key={region.id}
             region={region}
             variant={variant}
-            href={campaignPageHref(`${basePath}/${region.slug}`, campaign)}
+            showCountryNames={block.showCountryNames}
+            href={campaignRegionHref(campaign, region.slug)}
           />
         ))}
       </Box>

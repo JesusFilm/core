@@ -6,6 +6,7 @@ import {
   mockUser
 } from '../../../test/campaignBlockSetup'
 import { CampaignFixture, campaignFactory } from '../../../test/campaignFactory'
+import { mockTransaction } from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -63,9 +64,7 @@ describe('campaignThemeUpdate', () => {
       userId: mockUser.id,
       roles: []
     })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     mockTheme()
   })
 
@@ -127,7 +126,7 @@ describe('campaignThemeUpdate', () => {
 
   it('refuses null on a column that cannot be null and leaves an omitted one alone', async () => {
     const nulled = await update({ primaryColor: null })
-    expect(nulled.errors[0]).toMatchObject({
+    expect(nulled.errors?.[0]).toMatchObject({
       message: 'primaryColor cannot be null',
       extensions: { code: 'BAD_USER_INPUT', field: 'primaryColor' }
     })
@@ -173,7 +172,7 @@ describe('campaignThemeUpdate', () => {
 
       for (const bad of [null, '', 'red', '#12345678']) {
         const result = await update({ [column]: bad })
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'BAD_USER_INPUT',
           field: column
         })
@@ -199,7 +198,7 @@ describe('campaignThemeUpdate', () => {
 
       for (const bad of ['', 'Comic Sans', 'montserrat']) {
         const result = await update({ [column]: bad })
-        expect(result.errors[0].extensions).toMatchObject({
+        expect(result.errors?.[0].extensions).toMatchObject({
           code: 'BAD_USER_INPUT',
           field: column
         })
@@ -219,13 +218,13 @@ describe('campaignThemeUpdate', () => {
       expect(accepted.data.campaignThemeUpdate[column]).toBe(valid)
 
       const rejected = await update({ [column]: invalid })
-      expect(rejected.errors[0].message).toContain(
+      expect(rejected.errors?.[0].message).toContain(
         `Value "${invalid}" does not exist in "${enumName}" enum`
       )
       expect(rejected.data).toBeUndefined()
 
       const nulled = await update({ [column]: null })
-      expect(nulled.errors[0].extensions).toMatchObject({
+      expect(nulled.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: column
       })
@@ -238,7 +237,7 @@ describe('campaignThemeUpdate', () => {
 
     const result = await update({ radius: 'square' }, 'missing')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignTheme.update).not.toHaveBeenCalled()
   })
 
@@ -247,7 +246,7 @@ describe('campaignThemeUpdate', () => {
 
     const result = await update({ radius: 'square' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignTheme.update).not.toHaveBeenCalled()
   })
 })

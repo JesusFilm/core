@@ -25,6 +25,7 @@ const COLUMNS_COPY_ID = 'f594bc44-c5a8-480d-b7ea-cbd7a72e98f5'
 const SLOT_LEFT_COPY_ID = 'c0766f79-1f71-495f-b289-b8708e0222c7'
 const SLOT_RIGHT_COPY_ID = '42850655-d582-4511-9770-f3c69a746f54'
 const SLOT_HERO_COPY_ID = 'e55e9041-3b12-4000-b0f4-496845a0c5ee'
+const SWITCHER_COPY_ID = '6b0e1c4a-5f3d-4e8b-9a27-3c1d2e4f5a6b'
 
 describe('campaignBlockDuplicate', () => {
   const DUPLICATE = graphql(`
@@ -185,6 +186,56 @@ describe('campaignBlockDuplicate', () => {
     })
   })
 
+  it('copies a region switcher’s showCountryNames onto the copy as its own column', async () => {
+    const DUPLICATE_SWITCHER = graphql(`
+      mutation CampaignBlockDuplicateSwitcher(
+        $id: ID!
+        $idMap: [CampaignBlockDuplicateIdMapInput!]
+      ) {
+        campaignBlockDuplicate(id: $id, idMap: $idMap) {
+          id
+          ... on CampaignRegionSwitcherBlock {
+            showCountryNames
+          }
+        }
+      }
+    `)
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'landingSwitcherId', {
+        showCountryNames: false
+      })
+    )
+    setLive(
+      fixture.blocks.map((block) =>
+        block.id === 'landingSwitcherId'
+          ? { ...block, showCountryNames: false }
+          : block
+      )
+    )
+
+    const result = await authClient({
+      document: DUPLICATE_SWITCHER,
+      variables: {
+        id: 'landingSwitcherId',
+        idMap: [{ oldId: 'landingSwitcherId', newId: SWITCHER_COPY_ID }]
+      }
+    })
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        id: SWITCHER_COPY_ID,
+        typename: 'CampaignRegionSwitcherBlock',
+        showCountryNames: false
+      }),
+      include: { action: true }
+    })
+    expect(result.data.campaignBlockDuplicate).toContainEqual({
+      id: SWITCHER_COPY_ID,
+      showCountryNames: false
+    })
+  })
+
   it('remaps slot columns and action targets that point inside the copy', async () => {
     const hero = fixture.blocks.find((block) => block.id === 'heroId')!
     // An owned Media Slot block: `parentOrder: null`, named by the hero's
@@ -290,7 +341,7 @@ describe('campaignBlockDuplicate', () => {
 
       const result = await duplicate(id)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })
@@ -374,7 +425,7 @@ describe('campaignBlockDuplicate', () => {
   ])('refuses %s (BAD_USER_INPUT, idMap)', async (_label, idMap) => {
     const result = await duplicate('heroId', idMap)
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'idMap'
     })
@@ -391,7 +442,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('slotId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -427,7 +478,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('slotHeroId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -443,7 +494,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('regionPageId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -454,7 +505,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('gone')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -467,7 +518,7 @@ describe('campaignBlockDuplicate', () => {
 
     const result = await duplicate('heroId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 })

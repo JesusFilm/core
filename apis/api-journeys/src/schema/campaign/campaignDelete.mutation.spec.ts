@@ -5,6 +5,10 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { mockQueueAdd } from '../../../test/bullmqMock'
 import { authClient, mockUser } from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { deleteVercelDomain } from '../customDomain/service'
@@ -12,10 +16,13 @@ import { logger } from '../logger'
 import { deleteShortLink } from '../qrCode/qrCode.service'
 
 import { fetchLanguage } from './gatewayClient'
+import { CAMPAIGN_ADDRESS_SELECT } from './revalidateCampaign'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('./campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 vi.mock('../qrCode/qrCode.service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../qrCode/qrCode.service')>()),
@@ -43,6 +50,8 @@ describe('campaignDelete', () => {
     }
   `)
 
+  let writes: CampaignWriteCall[]
+
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
@@ -51,9 +60,7 @@ describe('campaignDelete', () => {
       userId: mockUser.id,
       roles: []
     })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    writes = fakeCampaignWrite(prismaMock)
     prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([])
   })
 
@@ -82,6 +89,20 @@ describe('campaignDelete', () => {
     expect(prismaMock.campaignPage.deleteMany).not.toHaveBeenCalled()
     expect(deleteShortLink).not.toHaveBeenCalled()
     expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+    // No touch: the Campaign row is gone. The short link deletes, the
+    // revalidation and the Vercel removal wait for the commit.
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { touch: false },
+        jobs: [
+          expect.any(Function),
+          expect.any(Function),
+          expect.any(Function)
+        ],
+        touched: false
+      }
+    ])
   })
 
   it("deletes every Share Language's QR row before the campaign and queues its short link delete", async () => {
@@ -137,6 +158,7 @@ describe('campaignDelete', () => {
     expect(prismaMock.campaign.delete).toHaveBeenCalledTimes(1)
     expect(prismaMock.customDomain.delete).not.toHaveBeenCalled()
     expect(deleteVercelDomain).toHaveBeenCalledWith('outreach.example.org')
+    // Not lock order: Vercel hears of the delete only once the row is gone.
     expect(
       vi.mocked(deleteVercelDomain).mock.invocationCallOrder[0]
     ).toBeGreaterThan(prismaMock.campaign.delete.mock.invocationCallOrder[0])
@@ -190,6 +212,7 @@ describe('campaignDelete', () => {
   it('revalidates every page of a published campaign, domain root and _lang pages included, once the delete committed', async () => {
     const published = campaignFactory({ role: 'manager' })
       .withRegion('EUR')
+      .withLanguage('21028')
       .published()
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue({
@@ -197,10 +220,6 @@ describe('campaignDelete', () => {
       customDomains: [{ id: 'customDomainId', name: 'outreach.example.org' }]
     } as any)
     prismaMock.campaign.delete.mockResolvedValue(published)
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      { languageId: '529' },
-      { languageId: '21028' }
-    ] as any)
     vi.mocked(fetchLanguage)
       .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
       .mockResolvedValueOnce({ id: '21028', bcp47: 'es' })
@@ -224,6 +243,36 @@ describe('campaignDelete', () => {
       '/outreach.example.org/_lang/en/eur',
       '/outreach.example.org/_lang/es',
       '/outreach.example.org/_lang/es/eur'
+    ])
+  })
+
+  it('queues the before set though the language rows cascade away: the address is read before the delete', async () => {
+    const published = campaignFactory({ role: 'manager' })
+      .withLanguage('21028')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(published)
+    prismaMock.campaign.delete.mockResolvedValue(published)
+    vi.mocked(fetchLanguage)
+      .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
+      .mockResolvedValueOnce({ id: '21028', bcp47: 'es' })
+
+    await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })
+
+    const snapshotRead = prismaMock.campaign.findUnique.mock.calls.findIndex(
+      ([args]) => args.select === CAMPAIGN_ADDRESS_SELECT
+    )
+    expect(
+      prismaMock.campaign.findUnique.mock.invocationCallOrder[snapshotRead]
+    ).toBeLessThan(prismaMock.campaign.delete.mock.invocationCallOrder[0])
+    expect(prismaMock.campaignLanguage.findMany).not.toHaveBeenCalled()
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/_lang/en',
+      '/home/campaign/outreach-2026/_lang/es'
     ])
   })
 
@@ -256,8 +305,9 @@ describe('campaignDelete', () => {
       variables: { id: 'campaignId' }
     })
 
-    expect(result.errors[0].message).toBe('delete failed')
+    expect(result.errors?.[0].message).toBe('delete failed')
     expect(mockQueueAdd).not.toHaveBeenCalled()
+    expect(writes[0].jobs).toEqual([])
   })
 
   it('throws FORBIDDEN for a member', async () => {

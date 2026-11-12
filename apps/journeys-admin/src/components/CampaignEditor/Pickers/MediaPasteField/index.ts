@@ -1,8 +1,5 @@
-export {
-  MediaPasteField,
-  isWatchContainer,
-  videoLabelName
-} from './MediaPasteField'
+export { MediaPasteField } from './MediaPasteField'
+export { isWatchContainer, videoLabelName } from './videoLabel'
 export type { ResolvedVideo } from './MediaPasteField'
 export type { CampaignMediaPick } from './MediaPasteField'
 export { parseMediaUrl, parsePlaylistUrl } from './parseMediaUrl'

@@ -1,10 +1,9 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { http } from 'msw'
 import { ReactElement } from 'react'
 import { SWRConfig } from 'swr'
-
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import {
   VideoBlockSource,
@@ -28,19 +27,16 @@ vi.mock(
   '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/AddByFile',
   () => ({
     AddByFile: ({
-      onChange
+      onChange,
+      uploadKey
     }: {
       onChange: (id: string) => void
-    }): ReactElement => {
-      const {
-        state: { selectedBlock }
-      } = useEditor()
-      return (
-        <button type="button" onClick={() => onChange('muxVideoId')}>
-          {`Upload under ${selectedBlock?.id ?? ''}`}
-        </button>
-      )
-    }
+      uploadKey?: string
+    }): ReactElement => (
+      <button type="button" onClick={() => onChange('muxVideoId')}>
+        {`Upload under ${uploadKey ?? ''}`}
+      </button>
+    )
   })
 )
 
@@ -134,12 +130,12 @@ const getPlaylist = http.get(
 let uploadOptions: UseImageUploadOptions | undefined
 
 function renderField(
-  mocks: Array<Record<string, unknown>> = [],
+  mocks: MockLink.MockedResponse[] = [],
   onPickPlaylist?: (url: string) => void
 ): ReturnType<typeof vi.fn> {
   const onPick = vi.fn()
   render(
-    <MockedProvider mocks={mocks as never}>
+    <MockedProvider mocks={mocks}>
       <SWRConfig value={{ provider: () => new Map() }}>
         <MediaPasteField
           teamId="teamId"

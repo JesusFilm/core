@@ -58,6 +58,15 @@ describe('LeftRail', () => {
     ).toHaveAttribute('href', '/?type=campaigns')
   })
 
+  it("links to the campaign's Report", () => {
+    render(<Harness />)
+
+    expect(screen.getByRole('link', { name: 'Report' })).toHaveAttribute(
+      'href',
+      `/campaigns/${campaign.id}/reports`
+    )
+  })
+
   it('switches between the Pages, Add and Localize panels, one open at a time, starting on Add', () => {
     render(<Harness />)
     const pages = screen.getByRole('button', { name: 'Pages' })

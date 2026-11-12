@@ -26,6 +26,7 @@ describe('campaignRegionSwitcherBlockUpdate', () => {
         id
         title
         variant
+        showCountryNames
       }
     }
   `)
@@ -59,7 +60,7 @@ describe('campaignRegionSwitcherBlockUpdate', () => {
 
       const result = await update({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -85,6 +86,57 @@ describe('campaignRegionSwitcherBlockUpdate', () => {
     }
   })
 
+  it.each([false, true])(
+    'stores showCountryNames %s on this section alone',
+    async (showCountryNames) => {
+      const result = await update({ showCountryNames })
+
+      expect(result.errors).toBeUndefined()
+      expect(
+        result.data.campaignRegionSwitcherBlockUpdate.showCountryNames
+      ).toBe(showCountryNames)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: 'landingSwitcherId' },
+        data: { showCountryNames },
+        include: { action: true }
+      })
+    }
+  )
+
+  it('reads a legacy null showCountryNames as true', async () => {
+    const result = await update({ title: 'Regions' })
+
+    expect(result.data.campaignRegionSwitcherBlockUpdate.showCountryNames).toBe(
+      true
+    )
+  })
+
+  it('refuses showCountryNames: null (BAD_USER_INPUT, showCountryNames) and leaves an omitted one alone', async () => {
+    const nulled = await update({ showCountryNames: null })
+
+    expect(nulled.errors?.[0]).toMatchObject({
+      message: 'showCountryNames cannot be null',
+      extensions: { code: 'BAD_USER_INPUT', field: 'showCountryNames' }
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+
+    const hidden = campaignBlockWithAcl(fixture, 'landingSwitcherId', {
+      showCountryNames: false
+    })
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(hidden)
+    mockCampaignBlockWrites(hidden)
+    const omitted = await update({ title: 'Regions', variant: 'pills' })
+
+    expect(omitted.errors).toBeUndefined()
+    expect(
+      prismaMock.campaignBlock.update.mock.calls[0][0].data.showCountryNames
+    ).toBeUndefined()
+    expect(
+      omitted.data.campaignRegionSwitcherBlockUpdate.showCountryNames
+    ).toBe(false)
+  })
+
   it('throws NOT_FOUND when the id is not a live CampaignRegionSwitcherBlock', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'heroButtonId')
@@ -92,7 +144,7 @@ describe('campaignRegionSwitcherBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -106,7 +158,7 @@ describe('campaignRegionSwitcherBlockUpdate', () => {
 
     const result = await update({ title: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })
