@@ -1188,6 +1188,17 @@ describe('videoVariant', () => {
         }
       `)
 
+      beforeEach(() => {
+        // videoVariantCreate locks the claimed video-slug prefix and rechecks
+        // it inside an interactive transaction - hand the callback
+        // prismaMock so its tx.* calls land on the same spies the tests
+        // assert against.
+        prismaMock.$transaction.mockImplementation(
+          async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
+            await transaction(prismaMock)
+        )
+      })
+
       it('should create a new video variant and reset caches', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -1636,6 +1647,56 @@ describe('videoVariant', () => {
           id: 'unpublished-id'
         })
       })
+
+      it('should reject a slug whose video prefix is an alias of a different video', async () => {
+        // The variant slug's `<videoSlug>/<languageSlug>` prefix frees up
+        // once the owning video renames away from it, so without this check
+        // another video's variant could claim it and hijack the redirect.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoSlug.findUnique.mockResolvedValue({
+          id: 'aliasId',
+          value: 'old-slug',
+          videoId: 'other-video',
+          createdAt: new Date()
+        })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              lengthInMilliseconds: 123456,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'old-slug/en',
+              videoId: 'videoId',
+              share: 'share',
+              downloadable: true
+            }
+          }
+        })
+
+        expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors', [
+          expect.objectContaining({
+            message: 'Video slug already exists',
+            extensions: expect.objectContaining({
+              code: 'NOT_UNIQUE_ERROR',
+              location: [expect.objectContaining({ path: ['input', 'slug'] })]
+            })
+          })
+        ])
+      })
     })
 
     describe('videoVariantUpdate', () => {
@@ -1653,6 +1714,14 @@ describe('videoVariant', () => {
           (async () =>
             await prismaMock.videoVariant.update.mock.results.at(-1)
               ?.value) as never
+        )
+        // videoVariantUpdate locks the claimed video-slug prefix and
+        // rechecks it inside an interactive transaction - hand the callback
+        // prismaMock so its tx.* calls land on the same spies the tests
+        // assert against.
+        prismaMock.$transaction.mockImplementation(
+          async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
+            await transaction(prismaMock)
         )
       })
 
@@ -2402,6 +2471,46 @@ describe('videoVariant', () => {
 
         // Verify cache reset function was not called
         expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
+      })
+
+      it('should reject a slug whose video prefix is an alias of a different video', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          published: true,
+          videoId: 'videoId',
+          languageId: 'languageId'
+        } as any)
+        prismaMock.videoSlug.findUnique.mockResolvedValue({
+          id: 'aliasId',
+          value: 'old-slug',
+          videoId: 'other-video',
+          createdAt: new Date()
+        })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_UPDATE_MUTATION,
+          variables: {
+            input: { id: 'id', slug: 'old-slug/en' }
+          }
+        })
+
+        expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors', [
+          expect.objectContaining({
+            message: 'Video slug already exists',
+            extensions: expect.objectContaining({
+              code: 'NOT_UNIQUE_ERROR',
+              location: [expect.objectContaining({ path: ['input', 'slug'] })]
+            })
+          })
+        ])
       })
     })
 
