@@ -33,8 +33,9 @@ permissions:
 jobs:
   deploy-and-test:
     if: inputs.TargetTests == 'all-e2e' || github.event_name == 'schedule'
-    # journeys-admin's long e2e-full run is cancelled on the shared Proxmox pool; keep it on a hosted runner until that is resolved
-    runs-on: ${{ matrix.app == 'journeys-admin' && 'ubuntu-latest' || 'jfp-proxmox-core' }}
+    # journeys-admin e2e-full times out on the shared Proxmox pool; free hosted runner (public repo) until that is fixed.
+    # Pinned to 24.04: the repo's Playwright version does not support ubuntu-latest's 26.04 image.
+    runs-on: ${{ matrix.app == 'journeys-admin' && 'ubuntu-24.04' || 'jfp-proxmox-core' }}
     strategy:
       fail-fast: false
       matrix:
@@ -184,7 +185,8 @@ jobs:
   E2E_Tests:
     if: inputs.TargetTests != 'all-e2e' && github.event_name != 'schedule'
     timeout-minutes: 60
-    runs-on: jfp-proxmox-core
+    # Same runner rule as deploy-and-test, so a manual journeys-admin run matches the daily one.
+    runs-on: ${{ matrix.test-suite == 'journeys-admin-e2e' && 'ubuntu-24.04' || 'jfp-proxmox-core' }}
     strategy:
       matrix:
         test-suite: ${{ fromJSON(format('["{0}"]', inputs.TargetTests)) }}
