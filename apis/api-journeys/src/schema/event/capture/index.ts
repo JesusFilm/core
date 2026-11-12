@@ -55,6 +55,7 @@ for (const typename of Object.keys(CAPTURE_EVENTS) as CaptureEventTypename[]) {
         type: CaptureEventTrigger,
         nullable: false,
         select: { captureTrigger: true },
+        /** Resolve the saved trigger enum or fail if the snapshot is invalid. */
         resolve: (event) =>
           requiredSnapshot(
             CAPTURE_EVENT_TRIGGERS.find(
