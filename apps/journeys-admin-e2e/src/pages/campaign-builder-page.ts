@@ -65,7 +65,12 @@ export class CampaignBuilderPage {
 
     const dialog = this.page.getByRole('dialog')
     await dialog.getByRole('textbox', { name: 'Title' }).fill(title)
-    await dialog.getByPlaceholder('Search Language').fill(languageName)
+    const languageInput = dialog.getByRole('combobox', {
+      name: 'Search Language'
+    })
+    // The dialog pre-selects English, and typing the value already shown doesn't open the options list.
+    await languageInput.clear()
+    await languageInput.fill(languageName)
     await this.page
       .getByRole('option', { name: languageName, exact: true })
       .click()
