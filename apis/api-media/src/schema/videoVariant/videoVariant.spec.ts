@@ -1697,6 +1697,60 @@ describe('videoVariant', () => {
           })
         ])
       })
+
+      it('should catch a slug claimed by another video between the pre-check and the write', async () => {
+        // Same TOCTOU as videoCreate/videoUpdate: the unlocked pre-check
+        // sees no alias, but another video's create/rename for the same
+        // slug lands before this one acquires the slug's advisory lock. The
+        // locked recheck, run just before the write, must still catch it.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoSlug.findUnique
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce({
+            id: 'aliasId',
+            value: 'old-slug',
+            videoId: 'other-video',
+            createdAt: new Date()
+          })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              lengthInMilliseconds: 123456,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'old-slug/en',
+              videoId: 'videoId',
+              share: 'share',
+              downloadable: true
+            }
+          }
+        })
+
+        expect(prismaMock.videoSlug.findUnique).toHaveBeenCalledTimes(2)
+        expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors', [
+          expect.objectContaining({
+            message: 'Video slug already exists',
+            extensions: expect.objectContaining({
+              code: 'NOT_UNIQUE_ERROR',
+              location: [expect.objectContaining({ path: ['input', 'slug'] })]
+            })
+          })
+        ])
+      })
     })
 
     describe('videoVariantUpdate', () => {
@@ -2500,6 +2554,53 @@ describe('videoVariant', () => {
           }
         })
 
+        expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors', [
+          expect.objectContaining({
+            message: 'Video slug already exists',
+            extensions: expect.objectContaining({
+              code: 'NOT_UNIQUE_ERROR',
+              location: [expect.objectContaining({ path: ['input', 'slug'] })]
+            })
+          })
+        ])
+      })
+
+      it('should catch a slug claimed by another video between the pre-check and the write', async () => {
+        // Same TOCTOU as videoVariantCreate: the unlocked pre-check sees no
+        // alias, but another video's create/rename for the same slug lands
+        // before this one acquires the slug's advisory lock. The locked
+        // recheck, run just before the write, must still catch it.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.findUnique.mockResolvedValue({
+          published: true,
+          videoId: 'videoId',
+          languageId: 'languageId'
+        } as any)
+        prismaMock.videoSlug.findUnique
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce({
+            id: 'aliasId',
+            value: 'old-slug',
+            videoId: 'other-video',
+            createdAt: new Date()
+          })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_UPDATE_MUTATION,
+          variables: {
+            input: { id: 'id', slug: 'old-slug/en' }
+          }
+        })
+
+        expect(prismaMock.videoSlug.findUnique).toHaveBeenCalledTimes(2)
         expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors', [
