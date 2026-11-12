@@ -1,4 +1,4 @@
-FROM node:24-alpine3.23
+FROM node:24.22.3-alpine3.23
 
 EXPOSE 4003
 
