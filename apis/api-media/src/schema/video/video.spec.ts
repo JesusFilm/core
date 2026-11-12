@@ -2820,6 +2820,16 @@ describe('video', () => {
         }
       `)
 
+      beforeEach(() => {
+        // videoCreate locks the claimed slug and rechecks it inside an
+        // interactive transaction - hand the callback prismaMock so its
+        // tx.* calls land on the same spies the tests assert against.
+        prismaMock.$transaction.mockImplementation(
+          (async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
+            await transaction(prismaMock)) as any
+        )
+      })
+
       it('should reject a slug that is an alias of a different video', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -2849,6 +2859,57 @@ describe('video', () => {
             }
           }
         })
+        expect(prismaMock.video.create).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors', [
+          expect.objectContaining({
+            message: 'Video slug already exists',
+            extensions: expect.objectContaining({
+              code: 'NOT_UNIQUE_ERROR',
+              location: [expect.objectContaining({ path: ['input', 'slug'] })]
+            })
+          })
+        ])
+      })
+
+      it('should catch a slug claimed by another video between the pre-check and the write', async () => {
+        // Same TOCTOU as videoUpdate: the unlocked pre-check sees no alias,
+        // but another video's create/rename for the same slug value lands
+        // before this one acquires the slug's advisory lock. The locked
+        // recheck, run just before the write, must still catch it.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoSlug.findUnique
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce({
+            id: 'aliasId',
+            value: 'slug',
+            videoId: 'other',
+            createdAt: new Date()
+          })
+
+        const result = await authClient({
+          document: CREATE_VIDEO_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.featureFilm,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: [],
+              originId: 'originId'
+            }
+          }
+        })
+
+        expect(prismaMock.videoSlug.findUnique).toHaveBeenCalledTimes(2)
         expect(prismaMock.video.create).not.toHaveBeenCalled()
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors', [
@@ -3053,9 +3114,13 @@ describe('video', () => {
       `)
 
       beforeEach(() => {
+        // videoUpdate now runs the slug-rename write as an interactive
+        // transaction (locking the slug value first), rather than the old
+        // array-of-promises form - hand the callback the same prismaMock so
+        // its tx.* calls land on the same spies the tests assert against.
         prismaMock.$transaction.mockImplementation(
-          (async (operations: Promise<unknown>[]) =>
-            await Promise.all(operations)) as any
+          (async (transaction: (tx: typeof prismaMock) => Promise<unknown>) =>
+            await transaction(prismaMock)) as any
         )
       })
 
@@ -3882,6 +3947,59 @@ describe('video', () => {
           }
         })
 
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors', [
+          expect.objectContaining({
+            message: 'Video slug already exists',
+            extensions: expect.objectContaining({
+              code: 'NOT_UNIQUE_ERROR',
+              location: [expect.objectContaining({ path: ['input', 'slug'] })]
+            })
+          })
+        ])
+      })
+
+      it('should catch a slug claimed by another video between the pre-check and the write', async () => {
+        // The pre-check and the write are not atomic by themselves: a
+        // concurrent create/rename of a *different* video can insert a
+        // VideoSlug alias for this exact value in between. Simulate that by
+        // having the unlocked pre-check see no alias, then the locked
+        // recheck (run after acquiring the slug's advisory lock, just
+        // before the write) see one that landed in the meantime.
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: false,
+          publishedAt: new Date('2023-01-01'),
+          slug: 'old-slug',
+          variants: []
+        } as any)
+        prismaMock.videoSlug.findUnique
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce({
+            id: 'aliasId',
+            value: 'new-slug',
+            videoId: 'other',
+            createdAt: new Date()
+          })
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'new-slug'
+            }
+          }
+        })
+
+        expect(prismaMock.videoSlug.findUnique).toHaveBeenCalledTimes(2)
+        expect(prismaMock.video.update).not.toHaveBeenCalled()
         expect(result).toHaveProperty('data', null)
         expect(result).toHaveProperty('errors', [
           expect.objectContaining({

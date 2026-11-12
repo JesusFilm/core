@@ -714,12 +714,15 @@ builder.queryFields((t) => ({
   })
 }))
 
+type PrismaClientOrTx = typeof prisma | Prisma.TransactionClient
+
 async function assertSlugNotAliasOfOtherVideo(
   slug: string | null | undefined,
-  videoId: string
+  videoId: string,
+  client: PrismaClientOrTx = prisma
 ): Promise<void> {
   if (slug == null) return
-  const alias = await prisma.videoSlug.findUnique({
+  const alias = await client.videoSlug.findUnique({
     where: { value: slug },
     select: { videoId: true }
   })
@@ -727,6 +730,22 @@ async function assertSlugNotAliasOfOtherVideo(
   throw new NotUniqueError('Video slug already exists', [
     { path: ['input', 'slug'], value: slug }
   ])
+}
+
+// assertSlugNotAliasOfOtherVideo only sees committed rows at the instant it
+// runs - without this, a concurrent create/rename targeting the same slug
+// value can commit between the check and the write, leaving the slug live
+// on one video while VideoSlug still aliases it to another (TOCTOU; see
+// PR #9978 review thread). Taking this lock first, inside the same
+// transaction as the check and the write, serializes any two calls that
+// touch the same slug value so the second one's check always sees the
+// first one's committed effect.
+async function lockVideoSlug(
+  tx: Prisma.TransactionClient,
+  slug: string
+): Promise<void> {
+  // $executeRaw, not $queryRaw: pg_advisory_xact_lock returns void, which Prisma cannot deserialize.
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${'video-slug:' + slug}))`
 }
 
 builder.mutationFields((t) => ({
@@ -737,6 +756,9 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // Fast-fail pre-check outside any lock, so an obviously-taken slug
+      // doesn't pay for opening a transaction. The authoritative recheck
+      // happens under lock just before the write, below.
       await assertSlugNotAliasOfOtherVideo(input.slug, input.id)
 
       // Handle child relation synchronization if childIds is provided
@@ -769,9 +791,13 @@ builder.mutationFields((t) => ({
       }
 
       try {
-        const video = await prisma.video.create({
-          ...query,
-          data
+        const video = await prisma.$transaction(async (tx) => {
+          await lockVideoSlug(tx, input.slug)
+          await assertSlugNotAliasOfOtherVideo(input.slug, input.id, tx)
+          return await tx.video.create({
+            ...query,
+            data
+          })
         })
         await enqueueVideoAlgoliaSync(video.id, videoOnlyScope, logger)
 
@@ -814,6 +840,9 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // Fast-fail pre-check outside any lock, so an obviously-taken slug
+      // doesn't pay for opening a transaction. The authoritative recheck
+      // happens under lock just before the write, below.
       await assertSlugNotAliasOfOtherVideo(input.slug, input.id)
 
       // Get current video data to check if published status is changing and to record the previous slug
@@ -930,42 +959,52 @@ builder.mutationFields((t) => ({
             children: true
           }
         } satisfies Prisma.VideoUpdateArgs
-        const previousSlug = currentVideo?.slug
-        if (
-          input.slug != null &&
-          previousSlug != null &&
-          input.slug !== previousSlug
-        ) {
-          // VideoVariant.slug is `${video.slug}/${languageSlug}`, set once at
-          // variant-creation time and never recomputed from the parent. Renaming
-          // the video must resync every variant's slug prefix so the new slug is
-          // actually reachable through the variant-based idType:slug lookup.
-          const renamedVariants = (currentVideo?.variants ?? []).filter(
-            (variant) => variant.slug.startsWith(`${previousSlug}/`)
-          )
-          renamedVariantIds = renamedVariants.map((variant) => variant.id)
-          const variantSlugUpdates = renamedVariants.map((variant) =>
-            prisma.videoVariant.update({
-              where: { id: variant.id },
-              data: {
-                slug: `${input.slug}${variant.slug.slice(previousSlug.length)}`
-              }
+
+        if (input.slug != null && input.slug !== currentVideo?.slug) {
+          video = await prisma.$transaction(async (tx) => {
+            // Re-read the slug fresh, under lock, rather than trusting the
+            // `currentVideo` snapshot taken before any lock was held - that
+            // snapshot is exactly what let a concurrent create/rename of a
+            // different video race this one onto the same slug value.
+            const fresh = await tx.video.findUnique({
+              where: { id: input.id },
+              select: { slug: true }
             })
-          )
-          const videoUpdateQuery = prisma.video.update(videoUpdateArgs)
-          const results = await prisma.$transaction([
-            prisma.videoSlug.create({
-              data: { value: previousSlug, videoId: input.id }
-            }),
-            prisma.videoSlug.deleteMany({
-              where: { value: input.slug, videoId: input.id }
-            }),
-            ...variantSlugUpdates,
-            videoUpdateQuery
-          ])
-          video = results[results.length - 1] as Awaited<
-            typeof videoUpdateQuery
-          >
+            const lockKeys = Array.from(
+              new Set(compact([input.slug, fresh?.slug]))
+            ).sort()
+            for (const slug of lockKeys) {
+              await lockVideoSlug(tx, slug)
+            }
+            await assertSlugNotAliasOfOtherVideo(input.slug, input.id, tx)
+
+            const previousSlug = fresh?.slug
+            if (previousSlug != null && input.slug !== previousSlug) {
+              // VideoVariant.slug is `${video.slug}/${languageSlug}`, set once at
+              // variant-creation time and never recomputed from the parent. Renaming
+              // the video must resync every variant's slug prefix so the new slug is
+              // actually reachable through the variant-based idType:slug lookup.
+              const renamedVariants = (currentVideo?.variants ?? []).filter(
+                (variant) => variant.slug.startsWith(`${previousSlug}/`)
+              )
+              renamedVariantIds = renamedVariants.map((variant) => variant.id)
+              await tx.videoSlug.create({
+                data: { value: previousSlug, videoId: input.id }
+              })
+              await tx.videoSlug.deleteMany({
+                where: { value: input.slug, videoId: input.id }
+              })
+              for (const variant of renamedVariants) {
+                await tx.videoVariant.update({
+                  where: { id: variant.id },
+                  data: {
+                    slug: `${input.slug}${variant.slug.slice(previousSlug.length)}`
+                  }
+                })
+              }
+            }
+            return await tx.video.update(videoUpdateArgs)
+          })
         } else {
           video = await prisma.video.update(videoUpdateArgs)
         }
