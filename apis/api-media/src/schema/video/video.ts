@@ -40,8 +40,8 @@ import {
   findContainerParentIds,
   updateVideoAvailableLanguages
 } from './lib/updateAvailableLanguages'
-import { assertSlugNotAliasOfOtherVideo, lockVideoSlug } from './lib/videoSlug'
 import { videosFilter } from './lib/videosFilter'
+import { assertSlugNotAliasOfOtherVideo, lockVideoSlug } from './lib/videoSlug'
 
 // Helper function to check if video viewing is restricted for the current platform
 function isVideoViewRestricted(

@@ -585,9 +585,7 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _parent, { input }) => {
       const publicationIntent = input.published ?? true
-      const videoSlugPrefix = extractVideoSlugPrefixFromVariantSlug(
-        input.slug
-      )
+      const videoSlugPrefix = extractVideoSlugPrefixFromVariantSlug(input.slug)
 
       // Fast-fail pre-check outside any lock, so an obviously-taken slug
       // doesn't pay for opening a transaction. The authoritative recheck
