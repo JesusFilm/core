@@ -17,6 +17,8 @@ import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { keyify, templateKeyify } from '../../libs/plausibleHelpers'
+import { CUSTOM1_CAPTURE_EVENT_CREATE } from '../../libs/useCaptureEvent/useCaptureEvent'
+import { createEventRequestLink } from '../../test/createEventRequestLink'
 
 import { StepFields } from './__generated__/StepFields'
 import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
@@ -169,7 +171,7 @@ const block: TreeBlock<StepFields> = {
 describe('Step', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUuidv4.mockReturnValueOnce('uuid')
+    mockUuidv4.mockReset().mockReturnValue('uuid')
     blockHistoryVar([])
     treeBlocksVar([])
   })
@@ -285,6 +287,10 @@ describe('Step', () => {
   })
 
   it('should call plausible with the capture goal for card eventLabel', async () => {
+    mockUuidv4
+      .mockReset()
+      .mockReturnValueOnce('uuid')
+      .mockReturnValueOnce('capture-uuid')
     const mockPlausible = vi.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
@@ -313,8 +319,24 @@ describe('Step', () => {
     treeBlocksVar([blockWithCardBlock])
     blockHistoryVar([blockWithCardBlock])
 
-    render(
-      <MockedProvider mocks={[mockStepViewEventCreate]}>
+    const captureVariables = vi.fn(() => true)
+    const captureResult = vi.fn(() => ({
+      data: {
+        custom1CaptureEventCreate: {
+          id: 'capture-uuid',
+          __typename: 'Custom1CaptureEvent'
+        }
+      }
+    }))
+    const captureMock = {
+      request: {
+        query: CUSTOM1_CAPTURE_EVENT_CREATE,
+        variables: captureVariables
+      },
+      result: captureResult
+    }
+    const view = render(
+      <MockedProvider mocks={[mockStepViewEventCreate, captureMock]}>
         <JourneyProvider value={{ journey }}>
           <Step {...blockWithCardBlock} />
         </JourneyProvider>
@@ -353,6 +375,23 @@ describe('Step', () => {
       BlockEventLabel.custom1,
       expect.anything()
     )
+
+    view.rerender(
+      <MockedProvider mocks={[mockStepViewEventCreate, captureMock]}>
+        <JourneyProvider value={{ journey }}>
+          <Step {...blockWithCardBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(captureResult).toHaveBeenCalledTimes(1))
+    expect(captureVariables).toHaveBeenCalledWith({
+      input: {
+        id: expect.any(String),
+        blockId: 'Card1',
+        stepId: 'Step1',
+        trigger: 'stepView'
+      }
+    })
   })
 
   it('fires only pageview for a card whose eventLabel has no capture goal', async () => {
@@ -575,4 +614,57 @@ describe('Step', () => {
 
     expect(document.title).toBe('Step 1 (my journey)')
   })
+
+  it.each([
+    ['default', false, true, 1],
+    ['embed', false, true, 1],
+    ['admin', false, true, 0],
+    ['customize', false, true, 0],
+    ['default', true, true, 0],
+    ['default', false, false, 0]
+  ] as const)(
+    'preserves step view suppression in %s with wrappers=%s and active=%s',
+    async (renderMode, wrapped, active, count) => {
+      mockUsePlausible.mockReturnValue(vi.fn())
+      const step: TreeBlock<StepFields> = {
+        ...block,
+        children: [
+          {
+            __typename: 'CardBlock',
+            id: 'Card1',
+            parentBlockId: block.id,
+            parentOrder: 0,
+            backgroundColor: null,
+            coverBlockId: null,
+            themeMode: null,
+            themeName: null,
+            fullscreen: false,
+            backdropBlur: null,
+            eventLabel: BlockEventLabel.custom1,
+            children: [],
+            showAssistant: null,
+            expandChatByDefault: null
+          }
+        ]
+      }
+      treeBlocksVar([step])
+      blockHistoryVar(active ? [step] : [])
+      const { link, requests } = createEventRequestLink()
+      render(
+        <MockedProvider link={link}>
+          <JourneyProvider value={{ journey, renderMode }}>
+            <Step {...step} wrappers={wrapped ? {} : undefined} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(
+          requests.filter(({ name }) => name.includes('Capture'))
+        ).toHaveLength(count)
+      )
+      expect(
+        requests.filter(({ name }) => name === 'StepViewEventCreate')
+      ).toHaveLength(count)
+    }
+  )
 })

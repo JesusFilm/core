@@ -18,7 +18,7 @@ export interface GetJourneyVisitors_visitors_edges_node_visitor {
 }
 
 export interface GetJourneyVisitors_visitors_edges_node_events_JourneyEvent {
-  __typename: "JourneyEvent" | "ButtonClickEvent" | "ChatOpenEvent" | "JourneyViewEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "SignUpSubmissionEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent";
+  __typename: "JourneyEvent" | "ChristDecisionCaptureEvent" | "GospelStartCaptureEvent" | "GospelCompleteCaptureEvent" | "PrayerRequestCaptureEvent" | "RsvpCaptureEvent" | "SpecialVideoStartCaptureEvent" | "SpecialVideoCompleteCaptureEvent" | "Custom1CaptureEvent" | "Custom2CaptureEvent" | "Custom3CaptureEvent" | "ButtonClickEvent" | "ChatOpenEvent" | "JourneyViewEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "SignUpSubmissionEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent";
   id: string;
   createdAt: any;
   label: string | null;

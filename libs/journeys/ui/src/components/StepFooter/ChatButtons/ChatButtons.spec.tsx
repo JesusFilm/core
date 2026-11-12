@@ -17,6 +17,7 @@ import {
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { keyify, templateKeyify } from '../../../libs/plausibleHelpers'
+import { createEventRequestLink } from '../../../test/createEventRequestLink'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
 
@@ -333,5 +334,28 @@ describe('ChatButtons', () => {
       </MockedProvider>
     )
     expect(getByTestId('MessageTypingIcon')).toBeInTheDocument()
+  })
+
+  it('sends only the existing footer chat interaction without a capture', async () => {
+    window.open = vi.fn()
+    blockHistoryVar([stepBlock])
+    const plausible = vi.fn()
+    mockUsePlausible.mockReturnValue(plausible)
+    const { link, requests } = createEventRequestLink()
+    const { getAllByRole } = render(
+      <MockedProvider link={link}>
+        <JourneyProvider value={{ journey: { ...journey, chatButtons } }}>
+          <ChatButtons />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getAllByRole('button')[0])
+    await waitFor(() => expect(requests).toHaveLength(1))
+    expect(requests[0].name).toBe('ChatButtonEventCreate')
+    expect(plausible).toHaveBeenCalledTimes(1)
+    expect(plausible).toHaveBeenCalledWith(
+      'footerChatButtonClick',
+      expect.any(Object)
+    )
   })
 })

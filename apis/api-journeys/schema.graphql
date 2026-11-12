@@ -3020,6 +3020,14 @@ input CampaignVideoCarouselBlockUpdateInput {
   accentColor: String
 }
 
+enum CaptureEventTrigger {
+  stepView
+  buttonClick
+  radioQuestionSubmit
+  videoStart
+  videoComplete
+}
+
 type CardBlock implements Block
   @shareable
 {
@@ -3160,6 +3168,36 @@ input ChatOpenEventCreateInput {
   value: MessagePlatform
 }
 
+type ChristDecisionCaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input ChristDecisionCaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
 enum ContactActionType {
   call
   text
@@ -3178,6 +3216,96 @@ input CreateGoogleSheetsSyncInput {
   spreadsheetId: ID!
   sheetName: String!
   folderId: String
+}
+
+type Custom1CaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input Custom1CaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
+type Custom2CaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input Custom2CaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
+type Custom3CaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input Custom3CaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
 }
 
 type CustomDomain
@@ -3341,6 +3469,66 @@ type GoogleSheetsSync {
 input GoogleSheetsSyncsFilter {
   journeyId: ID
   integrationId: ID
+}
+
+type GospelCompleteCaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input GospelCompleteCaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
+type GospelStartCaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input GospelStartCaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
 }
 
 enum GridAlignItems {
@@ -5436,6 +5624,16 @@ type Mutation {
   customDomainDelete(id: ID!): CustomDomain!
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainCreate(input: CustomDomainCreateInput!): CustomDomain!
+  christDecisionCaptureEventCreate(input: ChristDecisionCaptureEventCreateInput!): ChristDecisionCaptureEvent!
+  gospelStartCaptureEventCreate(input: GospelStartCaptureEventCreateInput!): GospelStartCaptureEvent!
+  gospelCompleteCaptureEventCreate(input: GospelCompleteCaptureEventCreateInput!): GospelCompleteCaptureEvent!
+  prayerRequestCaptureEventCreate(input: PrayerRequestCaptureEventCreateInput!): PrayerRequestCaptureEvent!
+  rsvpCaptureEventCreate(input: RsvpCaptureEventCreateInput!): RsvpCaptureEvent!
+  specialVideoStartCaptureEventCreate(input: SpecialVideoStartCaptureEventCreateInput!): SpecialVideoStartCaptureEvent!
+  specialVideoCompleteCaptureEventCreate(input: SpecialVideoCompleteCaptureEventCreateInput!): SpecialVideoCompleteCaptureEvent!
+  custom1CaptureEventCreate(input: Custom1CaptureEventCreateInput!): Custom1CaptureEvent!
+  custom2CaptureEventCreate(input: Custom2CaptureEventCreateInput!): Custom2CaptureEvent!
+  custom3CaptureEventCreate(input: Custom3CaptureEventCreateInput!): Custom3CaptureEvent!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
@@ -5991,6 +6189,36 @@ type PowerBiEmbed
   expiration: String!
 }
 
+type PrayerRequestCaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input PrayerRequestCaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
 type QrCode
   @shareable
 {
@@ -6338,6 +6566,36 @@ enum Role {
   publisher
 }
 
+type RsvpCaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input RsvpCaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
 type ShortLink
   @key(fields: "id")
   @extends
@@ -6409,6 +6667,66 @@ input SpacerBlockCreateInput {
 input SpacerBlockUpdateInput {
   parentBlockId: ID
   spacing: Int
+}
+
+type SpecialVideoCompleteCaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input SpecialVideoCompleteCaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
+}
+
+type SpecialVideoStartCaptureEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: ID!
+  stepId: ID!
+  captureIdentity: String!
+  captureTag: BlockEventLabel!
+  trigger: CaptureEventTrigger!
+  templateFamilyId: ID
+}
+
+input SpecialVideoStartCaptureEventCreateInput {
+  """Unique occurrence UUID. Reuse only when retrying this capture."""
+  id: ID!
+
+  """
+  Actual tagged Card, Button, selected RadioOption or Video ID in the played journey.
+  """
+  blockId: ID!
+
+  """Containing Step ID in the played journey."""
+  stepId: ID!
+  trigger: CaptureEventTrigger!
 }
 
 type StepBlock implements Block
