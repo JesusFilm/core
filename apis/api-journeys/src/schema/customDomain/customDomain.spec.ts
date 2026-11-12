@@ -76,6 +76,8 @@ describe('CustomDomain.campaignId', () => {
     vi.clearAllMocks()
     prismaMock.journey.findUnique.mockResolvedValue({
       id: 'journeyId',
+      status: 'published',
+      firstPublishedAt: new Date('2026-01-01'),
       teamId: 'teamId',
       team: {
         id: 'teamId',

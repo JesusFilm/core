@@ -1,6 +1,7 @@
 import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../../test/client'
+import { mockJourneyRead } from '../../../../test/journeyReadFixture'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
 import { fetchJourneyWithAclIncludes } from '../../../lib/auth/fetchJourneyWithAclIncludes'
@@ -46,6 +47,7 @@ describe('textResponseBlockCreate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJourneyRead()
     ;(fetchJourneyWithAclIncludes as any).mockResolvedValue({ id: 'journeyId' })
     mockAbility.mockReturnValue(true)
     prismaMock.block.findMany.mockResolvedValue([])

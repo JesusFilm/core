@@ -1,6 +1,7 @@
 import { type MockedFunction, vi } from 'vitest'
 
 import { getClient } from '../../../../test/client'
+import { mockJourneyRead } from '../../../../test/journeyReadFixture'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -57,6 +58,7 @@ describe('stepBlockPositionUpdate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJourneyRead()
   })
 
   it('returns empty array when input is empty', async () => {

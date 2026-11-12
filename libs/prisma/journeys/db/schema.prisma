@@ -414,6 +414,7 @@ model Journey {
   createdAt                       DateTime                      @default(now())
   deletedAt                       DateTime?
   publishedAt                     DateTime?
+  firstPublishedAt                DateTime?
   trashedAt                       DateTime?
   featuredAt                      DateTime?
   status                          JourneyStatus

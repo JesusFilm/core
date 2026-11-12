@@ -53,6 +53,7 @@ describe('journeyTransferFromAnonymous', () => {
   })
 
   const mockJourney = {
+    status: 'published',
     id: 'journeyId',
     teamId: 'anonTeamId',
     userJourneys: [

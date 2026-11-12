@@ -48,6 +48,7 @@ builder.mutationField('journeyCreate', (t) =>
                   slug,
                   status: 'published',
                   publishedAt: new Date(),
+                  firstPublishedAt: new Date(),
                   themeMode: input.themeMode ?? undefined,
                   themeName: input.themeName ?? undefined,
                   description: input.description ?? undefined,

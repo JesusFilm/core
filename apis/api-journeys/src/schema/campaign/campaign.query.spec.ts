@@ -312,6 +312,7 @@ describe('campaign', () => {
       id,
       slug: id,
       status,
+      firstPublishedAt: status === 'draft' ? null : new Date('2026-01-01'),
       deletedAt: null,
       team: { id: 'otherTeamId', customDomains: [] },
       journeyCollectionJourneys: [],
@@ -343,7 +344,7 @@ describe('campaign', () => {
       }),
       expect.objectContaining({
         id: 'cardTwo',
-        journeyStatus: 'draft',
+        journeyStatus: null,
         journeyUrl: null
       }),
       expect.objectContaining({

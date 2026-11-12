@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import { getClient } from '../../../test/client'
+import { mockJourneyRead } from '../../../test/journeyReadFixture'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
@@ -42,6 +43,7 @@ describe('blockDeleteAction mutation', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJourneyRead()
   })
 
   describe('success', () => {

@@ -11,6 +11,7 @@ import { builder } from '../builder'
 import { IdType } from './enums/idType'
 import { JourneysQueryOptions } from './inputs'
 import { JourneyRef } from './journey'
+import { isJourneyPublic } from './journeyReadAccess'
 
 builder.queryField('journey', (t) =>
   t.prismaField({
@@ -85,7 +86,7 @@ builder.queryField('journey', (t) =>
         ...query,
         where: filter
       })
-      if (journey == null)
+      if (journey == null || !isJourneyPublic(journey))
         throw new GraphQLError('journey not found', {
           extensions: { code: 'NOT_FOUND' }
         })

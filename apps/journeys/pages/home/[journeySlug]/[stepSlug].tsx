@@ -23,7 +23,10 @@ import { WebsiteView } from '../../../src/components/WebsiteView'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getFlags } from '../../../src/libs/getFlags'
 import { isJourneyNotFoundError } from '../../../src/libs/isJourneyNotFoundError'
-import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../../src/libs/journeyQueryOptions'
+import {
+  JOURNEY_STATUS_EXCLUDE_DRAFT,
+  requirePublicJourney
+} from '../../../src/libs/journeyQueryOptions'
 
 interface StepPageProps {
   journey: Journey
@@ -124,6 +127,7 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
     // policy rejects rather than resolving without data, so this narrows
     // the type rather than guarding a reachable branch.
     if (data == null) throw new Error('GetJourney returned no data')
+    requirePublicJourney(data.journey)
 
     if (data.journey.website !== true) {
       return {

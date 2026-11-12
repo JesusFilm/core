@@ -96,6 +96,7 @@ describe('journeyAiTranslateCreate mutation', () => {
   }
 
   const mockJourney = {
+    status: 'published',
     id: mockJourneyId,
     title: 'Original Journey Title',
     description: 'Original journey description',

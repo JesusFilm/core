@@ -2,6 +2,7 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
+import { isJourneyPublic } from '../journey/journeyReadAccess'
 import { journeyInclude as INCLUDE_JOURNEY_ACL } from '../plausible/journeyAccess'
 
 import { badUserInput, forbidden } from './errors'
@@ -102,7 +103,8 @@ async function findLinkableJourney<
     },
     include
   })
-  if (journey == null) throw badUserInput(notFoundMessage(statuses), field)
+  if (journey == null || !isJourneyPublic(journey))
+    throw badUserInput(notFoundMessage(statuses), field)
   return journey
 }
 

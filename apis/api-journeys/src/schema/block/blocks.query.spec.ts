@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import { getClient } from '../../../test/client'
+import { mockJourneyRead } from '../../../test/journeyReadFixture'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -33,6 +34,7 @@ describe('blocks', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJourneyRead()
   })
 
   it('returns blocks when authorized', async () => {
