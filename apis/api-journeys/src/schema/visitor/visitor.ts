@@ -55,6 +55,7 @@ export const VisitorRef = builder.prismaObject('Visitor', {
     events: t.field({
       type: [EventInterface],
       nullable: false,
+      /** Return interaction events accessible to this team member or journey owner. */
       resolve: async (visitor, _args, context) => {
         if (context.type !== 'authenticated') return []
 
