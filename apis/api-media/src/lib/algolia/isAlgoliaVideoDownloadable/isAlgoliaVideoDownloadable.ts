@@ -1,8 +1,17 @@
+// Renditions made for distribution centers. They are partner-specific
+// alternates of low/sd/high, served only to one API key, so they are not a
+// download most clients can fetch.
+const DISTRO_DOWNLOAD_QUALITIES = new Set([
+  'distroLow',
+  'distroSd',
+  'distroHigh'
+])
+
 export interface AlgoliaDownloadableVariant {
   hls?: string | null
   dash?: string | null
   downloadable?: boolean | null
-  downloads?: unknown[] | null
+  downloads?: Array<{ quality?: string | null }> | null
 }
 
 /**
@@ -30,12 +39,11 @@ export function hasAlgoliaPlayableMedia(
  * example a generated parent Variant stored with hls: '' / dash: '' and no
  * downloads, where the column defaults to true) must not be trusted.
  *
- * A download row of any quality counts, deliberately including the distro*
- * qualities (renditions made for distribution centers). The caller must pass
- * every download row, not just low and high. The consequence: a Variant whose
- * only rows are distro* is downloadable here, although clients that look up
- * low/high (the downloadSizes fields) will find no file for it. Exclude
- * distro* here if that proves wrong in production data.
+ * A download row of any quality counts except the distro* qualities
+ * (distroLow, distroSd, distroHigh), which are alternates of low/sd/high for
+ * one partner. A Variant whose only rows are distro* is therefore not
+ * downloadable. The caller must pass every download row, not just low and
+ * high, so that fhd, qhd, uhd and sd rows still count.
  *
  * Shared by the indexer and checkVideoInAlgolia so reconciliation computes
  * the same expected value the indexer writes.
@@ -44,6 +52,9 @@ export function isAlgoliaVideoDownloadable(
   variant: AlgoliaDownloadableVariant | null | undefined
 ): boolean {
   const downloadable = variant?.downloadable ?? false
-  const hasDownloads = (variant?.downloads?.length ?? 0) > 0
+  const hasDownloads =
+    variant?.downloads?.some(
+      ({ quality }) => quality == null || !DISTRO_DOWNLOAD_QUALITIES.has(quality)
+    ) ?? false
   return downloadable && hasAlgoliaPlayableMedia(variant) && hasDownloads
 }

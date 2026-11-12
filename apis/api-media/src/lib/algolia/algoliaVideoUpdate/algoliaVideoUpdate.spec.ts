@@ -472,18 +472,21 @@ describe('algoliaVideoUpdate', () => {
     }
   )
 
-  // Deliberate (see isAlgoliaVideoDownloadable): every download quality
-  // counts, including distro*, but downloadSizes only reads low and high.
-  it('reports a video with only distro download rows as downloadable, with zero sizes', async () => {
-    prismaMock.video.findUnique.mockResolvedValueOnce({
-      id: 'distro-only-id',
+  // See isAlgoliaVideoDownloadable: distro* rows are partner-specific
+  // alternates of low/sd/high and do not count on their own.
+  function videoWithDownloads(
+    id: string,
+    downloads: Array<{ quality: string; size: number }>
+  ) {
+    return {
+      id,
       label: 'featureFilm',
       primaryLanguageId: '529',
       childIds: [],
       restrictDownloadPlatforms: [],
       published: true,
       restrictViewPlatforms: [],
-      title: [{ value: 'Distro Only', languageId: '529' }],
+      title: [{ value: id, languageId: '529' }],
       description: [],
       studyQuestions: [],
       bibleCitation: [],
@@ -493,17 +496,23 @@ describe('algoliaVideoUpdate', () => {
       variants: [
         {
           published: true,
-          hls: 'https://example.com/distro.m3u8',
+          hls: 'https://example.com/v.m3u8',
           dash: '',
           lengthInMilliseconds: 1000,
           downloadable: true,
-          downloads: [
-            { quality: 'distroLow', size: 100 },
-            { quality: 'distroHigh', size: 900 }
-          ]
+          downloads
         }
       ]
-    } as any)
+    } as any
+  }
+
+  it('does not report a video with only distro download rows as downloadable', async () => {
+    prismaMock.video.findUnique.mockResolvedValueOnce(
+      videoWithDownloads('distro-only-id', [
+        { quality: 'distroLow', size: 100 },
+        { quality: 'distroHigh', size: 900 }
+      ])
+    )
 
     await updateVideoInAlgolia('distro-only-id', mockLogger)
 
@@ -512,11 +521,54 @@ describe('algoliaVideoUpdate', () => {
       objects: [
         expect.objectContaining({
           objectID: 'distro-only-id',
+          isDownloadable: false,
+          downloadSizes: {}
+        })
+      ],
+      waitForTasks: true
+    })
+  })
+
+  it('reports a video as downloadable when a standard row sits beside distro rows, with sizes from low and high only', async () => {
+    prismaMock.video.findUnique.mockResolvedValueOnce(
+      videoWithDownloads('distro-and-standard-id', [
+        { quality: 'distroLow', size: 100 },
+        { quality: 'low', size: 200 },
+        { quality: 'high', size: 800 }
+      ])
+    )
+
+    await updateVideoInAlgolia('distro-and-standard-id', mockLogger)
+
+    expect(saveObjectsSpy).toHaveBeenCalledWith({
+      indexName: 'test-videos',
+      objects: [
+        expect.objectContaining({
+          objectID: 'distro-and-standard-id',
           isDownloadable: true,
           downloadSizes: {
-            approximateSmallDownloadSizeInBytes: 0,
-            approximateLargeDownloadSizeInBytes: 0
+            approximateSmallDownloadSizeInBytes: 200,
+            approximateLargeDownloadSizeInBytes: 800
           }
+        })
+      ],
+      waitForTasks: true
+    })
+  })
+
+  it('reports a video with only a 1080p row as downloadable', async () => {
+    prismaMock.video.findUnique.mockResolvedValueOnce(
+      videoWithDownloads('fhd-only-id', [{ quality: 'fhd', size: 5000 }])
+    )
+
+    await updateVideoInAlgolia('fhd-only-id', mockLogger)
+
+    expect(saveObjectsSpy).toHaveBeenCalledWith({
+      indexName: 'test-videos',
+      objects: [
+        expect.objectContaining({
+          objectID: 'fhd-only-id',
+          isDownloadable: true
         })
       ],
       waitForTasks: true

@@ -24,16 +24,38 @@ describe('isAlgoliaVideoDownloadable', () => {
     }
   )
 
-  // Deliberate: a distro* row is a real file, so it counts, even though a
-  // Variant with only these has no low/high row for downloadSizes to read.
+  // distro* rows are partner-specific alternates of low/sd/high, so they do
+  // not count on their own.
   it.each(['distroLow', 'distroSd', 'distroHigh'])(
-    'counts a %s download row, deliberately',
+    'does not count a %s download row on its own',
     (quality) => {
       expect(
         isAlgoliaVideoDownloadable({ ...realMedia, downloads: [{ quality }] })
-      ).toBe(true)
+      ).toBe(false)
     }
   )
+
+  it('does not count a Variant whose only rows are distro*', () => {
+    expect(
+      isAlgoliaVideoDownloadable({
+        ...realMedia,
+        downloads: [
+          { quality: 'distroLow' },
+          { quality: 'distroSd' },
+          { quality: 'distroHigh' }
+        ]
+      })
+    ).toBe(false)
+  })
+
+  it('counts a standard row that sits beside distro* rows', () => {
+    expect(
+      isAlgoliaVideoDownloadable({
+        ...realMedia,
+        downloads: [{ quality: 'distroLow' }, { quality: 'fhd' }]
+      })
+    ).toBe(true)
+  })
 
   it('accepts a DASH-only stream', () => {
     expect(

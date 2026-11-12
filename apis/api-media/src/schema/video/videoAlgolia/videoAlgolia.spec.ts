@@ -348,7 +348,7 @@ describe('videoAlgolia', () => {
         expect(result).toHaveProperty('data.checkVideoInAlgolia.ok', true)
       })
 
-      it('should expect a video with only distro download rows to be downloadable, matching the indexer', async () => {
+      it('should expect a video with only distro download rows to be not downloadable, matching the indexer', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -380,7 +380,7 @@ describe('videoAlgolia', () => {
           componentType: 'content',
           contentType: 'video',
           lengthInMilliseconds: 120000,
-          isDownloadable: true,
+          isDownloadable: false,
           restrictViewArclight: false,
           keywords: []
         })
