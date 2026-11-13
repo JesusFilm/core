@@ -5,6 +5,9 @@ import type { FrameLocator, Locator, Page } from 'playwright-core'
 export const DEFAULT_HERO_TITLE = 'Share the story'
 export const NEW_REGION_NAME = 'New region'
 export const CAMPAIGN_LANGUAGE = 'English'
+// Must stay wider than `EDITOR_MIN_WIDTH` (journeys-admin `CampaignEditor`), below which the
+// editor only shows "Open this on a larger screen"; the chrome-desktop project's 1280px is too narrow.
+export const CAMPAIGN_EDITOR_VIEWPORT = { width: 1920, height: 1080 }
 // Kept in sync with `REGION_SECTION_SEED` (api-journeys `campaign/seed/sections.ts`)
 const REGION_SHARE_TITLE = 'Share this journey'
 
@@ -65,7 +68,12 @@ export class CampaignBuilderPage {
 
     const dialog = this.page.getByRole('dialog')
     await dialog.getByRole('textbox', { name: 'Title' }).fill(title)
-    await dialog.getByPlaceholder('Search Language').fill(languageName)
+    const languageInput = dialog.getByRole('combobox', {
+      name: 'Search Language'
+    })
+    // The dialog pre-selects English, and typing the value already shown doesn't open the options list.
+    await languageInput.clear()
+    await languageInput.fill(languageName)
     await this.page
       .getByRole('option', { name: languageName, exact: true })
       .click()

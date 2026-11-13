@@ -1,6 +1,11 @@
 import { expect, test } from '../../fixtures/authenticated'
-import { DEFAULT_HERO_TITLE } from '../../pages/campaign-builder-page'
+import {
+  CAMPAIGN_EDITOR_VIEWPORT,
+  DEFAULT_HERO_TITLE
+} from '../../pages/campaign-builder-page'
 import { CampaignPage } from '../../pages/campaign-page'
+
+test.use({ viewport: CAMPAIGN_EDITOR_VIEWPORT })
 
 /**
  * Campaign builder: create -> edit hero -> add region -> link journey ->
