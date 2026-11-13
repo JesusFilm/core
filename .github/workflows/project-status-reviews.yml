@@ -1,0 +1,21 @@
+name: Project status reviews
+
+on:
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions: {}
+
+jobs:
+  collect-event:
+    runs-on: ubuntu-latest
+    steps:
+      # No checkout, secrets, or contributor code. The writer validates this JSON.
+      - run: |
+          mkdir -p "$RUNNER_TEMP/project-status-review"
+          cp "$GITHUB_EVENT_PATH" "$RUNNER_TEMP/project-status-review/event.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: project-status-review
+          path: ${{ runner.temp }}/project-status-review/event.json
+          retention-days: 1
