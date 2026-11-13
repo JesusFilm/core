@@ -109,7 +109,6 @@ Remove the entire directory including source code, Dockerfile, infrastructure/, 
 | `.github/workflows/main.yml`                             | Remove `DOPPLER_CMS_TOKEN` line (L56)                                                                         |
 | `.github/workflows/ecs-frontend-deploy-prod-worker.yml`  | Remove `DOPPLER_CMS_TOKEN` from `workflow_call.secrets` declaration (L35) AND from secrets passthrough (L104) |
 | `.github/workflows/ecs-frontend-deploy-stage-worker.yml` | Remove `DOPPLER_CMS_TOKEN` from `workflow_call.secrets` declaration (L35) AND from secrets passthrough (L104) |
-| `.github/workflows/ai-build-spike.yml`                   | Remove "cms" from rejected-domains list (L102, optional)                                                      |
 
 #### B4. Clean up root config and dev tooling
 

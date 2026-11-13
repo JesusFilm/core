@@ -38,7 +38,7 @@ The current open Crowdin PR (#8888) has been blocked for 24+ days because the Da
 
 - `crowdin.yml` (root) — Crowdin SaaS config: PR title `chore: new crowdin translations`, branch `00-00-CI-chore-i10n-updates`, assignee `crowdin-bot`
 - `.github/workflows/crowdin.yml` — existing Crowdin download workflow (does not create PRs, `create_pull_request: false`)
-- `.github/workflows/ai-build-spike.yml` (lines 41-46) — established pattern for generating a CI Bot GitHub App token via `actions/create-github-app-token@v1` with `CI_BOT_APP_ID` / `CI_BOT_PRIVATE_KEY`
+- `.github/workflows/crowdin-auto-merge.yml` — generates a CI Bot GitHub App token via `actions/create-github-app-token@v1` with `CI_BOT_APP_ID` / `CI_BOT_PRIVATE_KEY`
 - `.github/workflows/housekeeping-cron.yml` — cron + `workflow_dispatch` pattern with Blacksmith runners
 - `dangerfile.ts` (lines 51-74) — enforces assignee (line 51-53) and reviewer/review (lines 68-74) on all PRs
 - `.github/merge-bot.yml` — existing merge bot for `stage` branch only, not applicable here
@@ -54,7 +54,7 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 
 ## Key Technical Decisions
 
-- **Use CI Bot App token (not `GITHUB_TOKEN`) for approval**: `GITHUB_TOKEN` cannot approve PRs from workflows it triggers. The CI Bot App is an established pattern in this repo (`ai-build-spike.yml`) and its token can submit approval reviews.
+- **Use CI Bot App token (not `GITHUB_TOKEN`) for approval**: `GITHUB_TOKEN` cannot approve PRs from workflows it triggers. The CI Bot App token can submit approval reviews.
 - **Separate workflow file**: Keep the auto-merge concern separate from the existing `crowdin.yml` sync workflow. Different triggers, different responsibilities.
 - **File-path safety guard**: Before approving, verify that all changed files are under `libs/locales/`. This prevents auto-merging if someone pushes non-translation changes to the Crowdin branch.
 - **Use `gh pr merge --auto --squash`**: This enqueues the PR into the existing merge queue rather than bypassing branch protection. All required status checks still run.
@@ -90,7 +90,7 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 
 - Trigger on `schedule` (weekly Friday 01:00 UTC: `cron: '0 1 * * 5'`) and `workflow_dispatch`
 - Set `permissions: contents: write, pull-requests: write`
-- Use `actions/create-github-app-token@v1` with `CI_BOT_APP_ID` / `CI_BOT_PRIVATE_KEY` (mirror `ai-build-spike.yml` pattern)
+- Use `actions/create-github-app-token@v1` with `CI_BOT_APP_ID` / `CI_BOT_PRIVATE_KEY`
 - Find the open PR using `gh pr list` filtering by head branch `00-00-CI-chore-i10n-updates` and state `open`
 - If no PR found, exit gracefully with a logged message
 - Validate changed files using `gh pr diff` or `gh api` — check that every changed file path starts with `libs/locales/`
@@ -105,7 +105,7 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 **Patterns to follow:**
 
 - `.github/workflows/housekeeping-cron.yml` — cron + `workflow_dispatch` structure, permissions block
-- `.github/workflows/ai-build-spike.yml` (lines 41-46) — GitHub App token generation pattern
+- `.github/workflows/crowdin-auto-merge.yml` — GitHub App token generation
 
 **Test scenarios:**
 
@@ -135,7 +135,7 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 | Risk                                                  | Mitigation                                                                                                                           |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | Auto-merge must be enabled in repo settings           | Verify this is enabled; if not, the `--auto` flag will fail with a clear error                                                       |
-| CI Bot App token may not have PR approval permissions | The app is already used to create PRs in `ai-build-spike.yml`; confirm it has `pull_requests: write`                                 |
+| CI Bot App token may not have PR approval permissions | Confirm the app has `pull_requests: write`                                                                                           |
 | Crowdin PR branch name changes                        | The branch name `00-00-CI-chore-i10n-updates` is configured in `crowdin.yml` (root); if changed there, this workflow must be updated |
 | Non-locale files pushed to the Crowdin branch         | The file-path safety guard (R2) prevents merging in this case                                                                        |
 
@@ -143,4 +143,4 @@ No prior documented solutions for CI/CD automation or Crowdin workflow improveme
 
 - Linear ticket: [ENG-3672](https://linear.app/jesus-film-project/issue/ENG-3672/auto-approve-and-auto-merge-weekly-crowdin-translation-pr)
 - Related ticket: [ENG-3565](https://linear.app/jesus-film-project/issue/ENG-3565/investigate-cursor-rulesscriptskills-to-improve-quality-control-in) (Crowdin quality control)
-- Related code: `crowdin.yml`, `.github/workflows/crowdin.yml`, `.github/workflows/ai-build-spike.yml`, `dangerfile.ts`
+- Related code: `crowdin.yml`, `.github/workflows/crowdin.yml`, `.github/workflows/crowdin-auto-merge.yml`, `dangerfile.ts`

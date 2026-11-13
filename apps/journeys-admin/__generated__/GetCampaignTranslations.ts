@@ -6,10 +6,10 @@
 import { CampaignTranslationFilter, CampaignTranslationGroup, CampaignTextField, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: CampaignTranslations
+// GraphQL query operation: GetCampaignTranslations
 // ====================================================
 
-export interface CampaignTranslations_campaignTranslations_target {
+export interface GetCampaignTranslations_campaignTranslations_target {
   __typename: "CampaignTranslationTarget";
   /**
    * The block typename (`CampaignHeroBlock`, …), or `CampaignRegion`, `CampaignString` or `Campaign`.
@@ -21,7 +21,7 @@ export interface CampaignTranslations_campaignTranslations_target {
   campaignId: string | null;
 }
 
-export interface CampaignTranslations_campaignTranslations {
+export interface GetCampaignTranslations_campaignTranslations {
   __typename: "CampaignTranslation";
   group: CampaignTranslationGroup;
   field: CampaignTextField;
@@ -45,10 +45,10 @@ export interface CampaignTranslations_campaignTranslations {
    * The machine wrote `value` and was not sure of it: the line a person should check first. False for a person’s text, a confident machine line and a missing one.
    */
   needsReview: boolean;
-  target: CampaignTranslations_campaignTranslations_target;
+  target: GetCampaignTranslations_campaignTranslations_target;
 }
 
-export interface CampaignTranslations {
+export interface GetCampaignTranslations {
   /**
    * The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it (`source`) and whether the machine flagged its line as a guess (`needsReview`); the filters are `needsReview` (flagged machine lines), `edited` (a person’s) and `missing` (no entry). Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
    * 
@@ -59,10 +59,10 @@ export interface CampaignTranslations {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.
    */
-  campaignTranslations: CampaignTranslations_campaignTranslations[];
+  campaignTranslations: GetCampaignTranslations_campaignTranslations[];
 }
 
-export interface CampaignTranslationsVariables {
+export interface GetCampaignTranslationsVariables {
   campaignId: string;
   languageId: string;
   filter?: CampaignTranslationFilter | null;

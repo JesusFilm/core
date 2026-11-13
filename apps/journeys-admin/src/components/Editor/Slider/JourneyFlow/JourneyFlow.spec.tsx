@@ -365,96 +365,103 @@ describe('JourneyFlow', () => {
     expect(mockUpdate).toHaveBeenCalledWith(mockUpdateExecute)
   })
 
-  it('should update social preview node position during reset/undo/redo', async () => {
-    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
+  it.each([
+    { initialSocialNodeX: 100, initialSocialNodeY: 200 },
+    { initialSocialNodeX: null, initialSocialNodeY: null },
+    { initialSocialNodeX: 100, initialSocialNodeY: null },
+    { initialSocialNodeX: null, initialSocialNodeY: 200 }
+  ])(
+    'should update social preview node position during reset/undo/redo from %j',
+    async ({ initialSocialNodeX, initialSocialNodeY }) => {
+      const result = vi
+        .fn()
+        .mockReturnValue(mockGetStepBlocksWithPosition.result)
 
-    // Mock for journey update
-    const mockJourneyUpdate = vi.fn()
-    const mockJourneyResult =
-      vi.fn() as unknown as useMutation.Result<JourneySettingsUpdate>
-    mockUseJourneyUpdateMutation.mockReturnValue([
-      mockJourneyUpdate,
-      mockJourneyResult
-    ])
+      // Mock for journey update
+      const mockJourneyUpdate = vi.fn()
+      const mockJourneyResult =
+        vi.fn() as unknown as useMutation.Result<JourneySettingsUpdate>
+      mockUseJourneyUpdateMutation.mockReturnValue([
+        mockJourneyUpdate,
+        mockJourneyResult
+      ])
 
-    const initialSocialNodeX = 100
-    const initialSocialNodeY = 200
-
-    render(
-      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...defaultJourney,
-                socialNodeX: initialSocialNodeX,
-                socialNodeY: initialSocialNodeY
-              }
-            }}
-          >
-            <EditorProvider
-              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+      render(
+        <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  ...defaultJourney,
+                  socialNodeX: initialSocialNodeX,
+                  socialNodeY: initialSocialNodeY
+                }
+              }}
             >
-              <MuxVideoUploadProvider>
-                <Box sx={{ width: '100vw', height: '100vh' }}>
-                  <CommandUndoItem variant="button" />
-                  <CommandRedoItem variant="button" />
-                  <JourneyFlow />
-                </Box>
-              </MuxVideoUploadProvider>
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <CommandUndoItem variant="button" />
+                    <CommandRedoItem variant="button" />
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
 
-    const mockJourneyUpdateExecute = {
-      variables: {
-        id: defaultJourney.id,
-        input: {
-          socialNodeX: DEFAULT_SOCIAL_NODE_X,
-          socialNodeY: DEFAULT_SOCIAL_NODE_Y
-        }
-      },
-      optimisticResponse: {
-        journeyUpdate: {
-          ...defaultJourney,
-          socialNodeX: DEFAULT_SOCIAL_NODE_X,
-          socialNodeY: DEFAULT_SOCIAL_NODE_Y
-        }
-      }
-    }
-
-    const mockJourneyUpdateUndo = {
-      variables: {
-        id: defaultJourney.id,
-        input: {
-          socialNodeX: initialSocialNodeX,
-          socialNodeY: initialSocialNodeY
-        }
-      },
-      optimisticResponse: {
-        journeyUpdate: {
-          ...defaultJourney,
-          socialNodeX: initialSocialNodeX,
-          socialNodeY: initialSocialNodeY
+      const mockJourneyUpdateExecute = {
+        variables: {
+          id: defaultJourney.id,
+          input: {
+            socialNodeX: DEFAULT_SOCIAL_NODE_X,
+            socialNodeY: DEFAULT_SOCIAL_NODE_Y
+          }
+        },
+        optimisticResponse: {
+          journeyUpdate: {
+            ...defaultJourney,
+            socialNodeX: DEFAULT_SOCIAL_NODE_X,
+            socialNodeY: DEFAULT_SOCIAL_NODE_Y
+          }
         }
       }
+
+      const mockJourneyUpdateUndo = {
+        variables: {
+          id: defaultJourney.id,
+          input: {
+            socialNodeX: initialSocialNodeX ?? DEFAULT_SOCIAL_NODE_X,
+            socialNodeY: initialSocialNodeY ?? DEFAULT_SOCIAL_NODE_Y
+          }
+        },
+        optimisticResponse: {
+          journeyUpdate: {
+            ...defaultJourney,
+            socialNodeX: initialSocialNodeX ?? DEFAULT_SOCIAL_NODE_X,
+            socialNodeY: initialSocialNodeY ?? DEFAULT_SOCIAL_NODE_Y
+          }
+        }
+      }
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByTestId('ArrowRefresh6Icon'))
+      expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateExecute)
+      mockJourneyUpdate.mockClear()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateUndo)
+      mockJourneyUpdate.mockClear()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateExecute)
     }
-
-    await waitFor(() => expect(result).toHaveBeenCalled())
-
-    fireEvent.click(screen.getByTestId('ArrowRefresh6Icon'))
-    expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateExecute)
-    mockJourneyUpdate.mockClear()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateUndo)
-    mockJourneyUpdate.mockClear()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    expect(mockJourneyUpdate).toHaveBeenCalledWith(mockJourneyUpdateExecute)
-  })
+  )
 
   it('should hide new step button if in analytics mode', async () => {
     const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
