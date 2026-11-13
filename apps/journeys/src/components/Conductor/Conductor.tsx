@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { useMutation } from '@apollo/client/react'
-import Box from '@mui/material/Box'
+import GlobalStyles from '@mui/material/GlobalStyles'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
@@ -51,6 +51,30 @@ export const JOURNEY_VISITOR_UPDATE = gql`
     }
   }
 `
+// Safari on a phone only hides its toolbar when the page itself scrolls. In
+// landscape the page is made a little taller than the screen so a swipe up
+// can hide it, and the journey is pinned so the extra height never shows.
+// 500px is taller than any phone on its side but shorter than a tablet.
+const PHONE_LANDSCAPE =
+  '@media (orientation: landscape) and (pointer: coarse) and (max-height: 500px)'
+
+// The two halves only work together: the page scrolls, the journey stays put
+const toolbarCollapseStyles = {
+  page: {
+    // 100px of scroll is enough for Safari to treat a swipe up as a page scroll
+    [PHONE_LANDSCAPE]: { height: 'calc(100lvh + 100px)' }
+  },
+  journey: {
+    [PHONE_LANDSCAPE]: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '100dvh'
+    }
+  }
+} as const
+
 interface ConductorProps {
   blocks: TreeBlock[]
 }
@@ -193,28 +217,29 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [journey])
 
+  const avoidsNotch = renderMode === 'default' || renderMode === 'embed'
   const mobileNotchStyling: SxProps = {
     width: {
-      xs:
-        renderMode === 'default' || renderMode === 'embed'
-          ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
-          : '100%',
+      xs: avoidsNotch
+        ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
+        : '100%',
       lg: 'auto'
     },
-    left:
-      renderMode === 'default' || renderMode === 'embed'
-        ? 'env(safe-area-inset-left)'
-        : undefined,
-    right:
-      renderMode === 'default' || renderMode === 'embed'
-        ? 'env(safe-area-inset-right)'
-        : undefined
+    left: avoidsNotch ? 'env(safe-area-inset-left)' : undefined,
+    right: avoidsNotch ? 'env(safe-area-inset-right)' : undefined
   }
 
   const stepTheme = getStepTheme(activeBlock, journey)
 
+  // Embeds are left alone: scrolling inside an iframe cannot hide the toolbar
+  const canCollapseToolbar = renderMode === 'default'
+
   return (
     <HotkeysProvider>
+      {/* Safari tints the areas around its toolbars from the page background */}
+      <GlobalStyles
+        styles={{ body: { backgroundColor: theme.palette.common.black } }}
+      />
       <HotkeyNavigation rtl={rtl} />
       <ThemeProvider
         themeName={ThemeName.journeyUi}
@@ -229,82 +254,81 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             justifyContent: 'center',
             height: '100dvh',
             background: theme.palette.grey[900],
-            overflow: 'hidden'
+            overflow: 'hidden',
+            ...(canCollapseToolbar && toolbarCollapseStyles.page)
           }}
         >
-          <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-            <Stack
+          <Stack
+            sx={{
+              maxHeight: {
+                // 80px to allow for the gap between card and top/bottom of the viewport
+                lg: 'calc(100svh - 80px)'
+              },
+              height: {
+                xs: '100%',
+                // 102px to allow for the gap between card and top/bottom of the viewport
+                lg: 'calc(54.25vw + 102px)'
+              },
+              px: { lg: 6 },
+              ...(canCollapseToolbar && toolbarCollapseStyles.journey)
+            }}
+          >
+            <StepHeader
               sx={{
-                maxHeight: {
-                  xs: '100svh',
-                  // 80px to allow for the gap between card and top/bottom of the viewport
-                  lg: 'calc(100svh - 80px)'
-                },
-                height: {
-                  xs: 'inherit',
-                  // 102px to allow for the gap between card and top/bottom of the viewport
-                  lg: 'calc(54.25vw + 102px)'
-                },
-                px: { lg: 6 }
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
               }}
+            />
+            <ThemeProvider
+              {...stepTheme}
+              locale={locale}
+              rtl={rtl}
+              fontFamilies={fontFamilies}
+              nested
             >
-              <StepHeader
+              <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
+                <DynamicCardList blocks={blocks} />
+              </SwipeNavigation>
+            </ThemeProvider>
+            <NavigationButton
+              variant={rtl ? 'next' : 'previous'}
+              alignment="left"
+            />
+            <NavigationButton
+              variant={rtl ? 'previous' : 'next'}
+              alignment="right"
+            />
+            <StepFooter
+              selectedStep={activeBlock}
+              sx={{
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
+              }}
+            />
+            {/* Mobile chat drawer. Rendered alongside (not instead of)
+                the StepFooter: closed it sits off-screen and the
+                footer's chat-button row — including the AiChatButton
+                that opens it — stays visible; open it slides up over
+                the footer. Stays mounted so the conversation survives
+                close → reopen. */}
+            {showPinnedChat && (
+              <PinnedChatBar
                 sx={{
                   ...mobileNotchStyling,
                   display: {
                     xs: showHeaderFooter ? 'flex' : 'none',
-                    lg: 'flex'
+                    sm: 'none'
                   }
                 }}
               />
-              <ThemeProvider
-                {...stepTheme}
-                locale={locale}
-                rtl={rtl}
-                fontFamilies={fontFamilies}
-                nested
-              >
-                <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
-                  <DynamicCardList blocks={blocks} />
-                </SwipeNavigation>
-              </ThemeProvider>
-              <NavigationButton
-                variant={rtl ? 'next' : 'previous'}
-                alignment="left"
-              />
-              <NavigationButton
-                variant={rtl ? 'previous' : 'next'}
-                alignment="right"
-              />
-              <StepFooter
-                selectedStep={activeBlock}
-                sx={{
-                  ...mobileNotchStyling,
-                  display: {
-                    xs: showHeaderFooter ? 'flex' : 'none',
-                    lg: 'flex'
-                  }
-                }}
-              />
-              {/* Mobile chat drawer. Rendered alongside (not instead of)
-                  the StepFooter: closed it sits off-screen and the
-                  footer's chat-button row — including the AiChatButton
-                  that opens it — stays visible; open it slides up over
-                  the footer. Stays mounted so the conversation survives
-                  close → reopen. */}
-              {showPinnedChat && (
-                <PinnedChatBar
-                  sx={{
-                    ...mobileNotchStyling,
-                    display: {
-                      xs: showHeaderFooter ? 'flex' : 'none',
-                      sm: 'none'
-                    }
-                  }}
-                />
-              )}
-            </Stack>
-          </Box>
+            )}
+          </Stack>
         </Stack>
       </ThemeProvider>
     </HotkeysProvider>
