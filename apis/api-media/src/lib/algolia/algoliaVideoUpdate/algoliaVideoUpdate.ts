@@ -3,6 +3,7 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/media/client'
 
 import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
+import { isAlgoliaVideoDownloadable } from '../isAlgoliaVideoDownloadable/isAlgoliaVideoDownloadable'
 import { getLanguages } from '../languages'
 
 export async function updateVideoInAlgolia(
@@ -72,6 +73,7 @@ export async function updateVideoInAlgolia(
           select: {
             id: true,
             hls: true,
+            dash: true,
             lengthInMilliseconds: true,
             downloadable: true,
             downloads: {
@@ -112,10 +114,7 @@ export async function updateVideoInAlgolia(
       `Found video: ${video.label} with ${video.variants.length} variants`
     )
 
-    const isDownloadable =
-      video.label === 'collection' || video.label === 'series'
-        ? false
-        : (video.variants[0]?.downloadable ?? false)
+    const isDownloadable = isAlgoliaVideoDownloadable(video.variants[0])
 
     const titles = video.title.map((title) => ({
       value: title.value,
