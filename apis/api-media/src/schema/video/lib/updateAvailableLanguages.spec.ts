@@ -8,6 +8,8 @@ import { enqueueVideoAlgoliaSync } from '../../../workers/videoAlgoliaSync'
 
 import {
   addLanguageToVideo,
+  calculateAvailableLanguages,
+  calculateAvailableLanguagesForVideos,
   findContainerParentIds,
   removeLanguageFromVideoIfUnused,
   updateParentCollectionLanguages,
@@ -40,6 +42,15 @@ type AvailableLanguagesVideoPayload = Prisma.VideoGetPayload<{
   }
 }>
 
+type BatchedAvailableLanguagesVideoPayload = Prisma.VideoGetPayload<{
+  select: {
+    id: true
+    label: true
+    variants: { select: { languageId: true } }
+    children: { select: { availableLanguages: true } }
+  }
+}>
+
 type ContainerParentPayload = Prisma.VideoGetPayload<{
   select: { id: true }
 }>
@@ -57,6 +68,12 @@ function mockCalculateAvailableLanguagesQuery(
 
 function mockContainerParentQuery(parents: ContainerParentPayload[]): void {
   prismaMock.video.findMany.mockResolvedValueOnce(parents as unknown as Video[])
+}
+
+function mockBatchedAvailableLanguagesQuery(
+  videos: BatchedAvailableLanguagesVideoPayload[]
+): void {
+  prismaMock.video.findMany.mockResolvedValueOnce(videos as unknown as Video[])
 }
 
 const containerParents: ContainerParentPayload[] = [
@@ -212,32 +229,234 @@ describe('findContainerParentIds', () => {
 })
 
 describe('updateParentCollectionLanguages', () => {
+  const videoOnlySyncScope = {
+    syncVideoRecord: true,
+    syncAllVariants: false,
+    syncPublishedFlag: false,
+    dirtyVariantIds: [],
+    deletedVariantIds: []
+  }
+
+  // This path reads three times, in order: findContainerParentIds for the id
+  // list, the batched availableLanguages recompute, and the batched real
+  // `children` relation read dependency ordering needs. Queuing `Once`
+  // values keeps each call typed as a plain Video[] resolution rather than
+  // needing a `mockImplementation` callback (whose return type Prisma's mock
+  // typing demands be a PrismaPromise, not a plain Promise). None of these
+  // parents contain each other here, so every parent resolves from the
+  // batched snapshot alone — see the dedicated diamond-dependency test below
+  // for the case where a parent does contain another.
+  function mockParentCascadeQueries(parents: ContainerParentPayload[]): void {
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      parents as unknown as Video[]
+    )
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      parents.map(({ id }) => ({
+        id,
+        label: 'collection',
+        variants: [],
+        children: [{ availableLanguages: ['529'] }]
+      })) as unknown as Video[]
+    )
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      parents.map(({ id }) => ({ id, children: [] })) as unknown as Video[]
+    )
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    prismaMock.video.update.mockResolvedValue({} as unknown as Video)
+    mockedVideoCacheReset.mockResolvedValue(undefined)
+  })
+
   it('enqueues an Algolia sync for every parent found', async () => {
-    mockContainerParentQuery(containerParents)
+    mockParentCascadeQueries(containerParents)
 
     await updateParentCollectionLanguages('child-id')
 
     expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
       'parent-1',
-      {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: false,
-        dirtyVariantIds: [],
-        deletedVariantIds: []
-      },
+      videoOnlySyncScope,
       expect.anything()
     )
     expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
       'parent-2',
-      {
-        syncVideoRecord: true,
-        syncAllVariants: false,
-        syncPublishedFlag: false,
-        dirtyVariantIds: [],
-        deletedVariantIds: []
-      },
+      videoOnlySyncScope,
       expect.anything()
     )
+  })
+
+  it('writes each parent the languages the batched lookup resolved', async () => {
+    mockParentCascadeQueries(containerParents)
+
+    await updateParentCollectionLanguages('child-id')
+
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'parent-1' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'parent-2' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+  })
+
+  it('issues a bounded number of read queries no matter how many parents', async () => {
+    // A per-parent recompute made reads grow with the container count. The
+    // batched lookup keeps them at three: the id scan, the availableLanguages
+    // recompute, and the real-children read dependency ordering needs.
+    const readsByParentCount = new Map<number, number>()
+
+    for (const parentCount of [1, 5, 25]) {
+      vi.clearAllMocks()
+      mockParentCascadeQueries(
+        Array.from({ length: parentCount }, (_, index) => ({
+          id: `parent-${index}`
+        }))
+      )
+
+      await updateParentCollectionLanguages('child-id')
+
+      readsByParentCount.set(
+        parentCount,
+        prismaMock.video.findMany.mock.calls.length +
+          prismaMock.video.findUnique.mock.calls.length
+      )
+      // the write side stays per-parent on purpose
+      expect(prismaMock.video.update).toHaveBeenCalledTimes(parentCount)
+    }
+
+    expect([...readsByParentCount.values()]).toEqual([3, 3, 3])
+    expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('does not query for languages when the video has no container parents', async () => {
+    mockParentCascadeQueries([])
+
+    await updateParentCollectionLanguages('orphan-id')
+
+    expect(prismaMock.video.findMany).toHaveBeenCalledTimes(1)
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
+  })
+
+  it('re-derives a parent that itself contains another parent in the same batch', async () => {
+    // Diamond shape: child-id sits directly inside both parent-1 and
+    // parent-2, and parent-2 also directly contains parent-1 (e.g. a clip
+    // in both a series and the collection that contains that series). The
+    // batched snapshot below freezes parent-1's pre-update languages
+    // ('old-lang') into parent-2's children — if parent-2 just wrote that
+    // snapshot value, it would silently keep a language parent-1 no longer
+    // has. parent-2 must instead be written after parent-1 and re-derived
+    // from a fresh read picking up parent-1's new value.
+    prismaMock.video.findMany.mockResolvedValueOnce(
+      containerParents as unknown as Video[]
+    )
+    prismaMock.video.findMany.mockResolvedValueOnce([
+      {
+        id: 'parent-1',
+        label: 'collection',
+        variants: [],
+        children: [{ availableLanguages: ['529'] }]
+      },
+      {
+        id: 'parent-2',
+        label: 'collection',
+        variants: [],
+        children: [{ availableLanguages: ['old-lang'] }]
+      }
+    ] as unknown as Video[])
+    // Dependency ordering comes from each parent's real `children` relation,
+    // not the persisted `childIds` scalar - parent-2 really does contain
+    // parent-1, so it must be written after it and re-derived.
+    prismaMock.video.findMany.mockResolvedValueOnce([
+      { id: 'parent-1', children: [] },
+      { id: 'parent-2', children: [{ id: 'parent-1' }] }
+    ] as unknown as Video[])
+    // The fresh read for parent-2 happens after parent-1 is written, so it
+    // reflects parent-1's new, not snapshot, languages.
+    prismaMock.video.findUnique.mockResolvedValueOnce({
+      label: 'collection',
+      variants: [],
+      children: [{ availableLanguages: ['529'] }]
+    } as unknown as Video)
+
+    await updateParentCollectionLanguages('child-id')
+
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'parent-1' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'parent-2' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+
+    const updateOrder = prismaMock.video.update.mock.calls.map(
+      ([{ where }]) => where.id
+    )
+    expect(updateOrder).toEqual(['parent-1', 'parent-2'])
+    expect(prismaMock.video.findUnique).toHaveBeenCalledTimes(1)
+    expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
+      where: { id: 'parent-2' },
+      select: expect.objectContaining({ variants: expect.anything() })
+    })
+  })
+})
+
+describe('calculateAvailableLanguagesForVideos', () => {
+  // Rows the single-video and batched entry points must both reduce the
+  // same way: a container deriving from a child, and a leaf deriving from
+  // its own published variants.
+  const rows: BatchedAvailableLanguagesVideoPayload[] = [
+    {
+      id: 'container',
+      label: 'series',
+      variants: [],
+      children: [{ availableLanguages: ['529', '496'] }]
+    },
+    {
+      id: 'leaf',
+      label: 'episode',
+      variants: [{ languageId: '496' }, { languageId: '21754' }],
+      children: []
+    }
+  ]
+
+  it('resolves the whole set with a single query', async () => {
+    mockBatchedAvailableLanguagesQuery(rows)
+
+    const result = await calculateAvailableLanguagesForVideos([
+      'container',
+      'leaf'
+    ])
+
+    expect(prismaMock.video.findMany).toHaveBeenCalledTimes(1)
+    expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: { in: ['container', 'leaf'] } }
+      })
+    )
+    expect(result.get('container')).toEqual(['496', '529'])
+    expect(result.get('leaf')).toEqual(['496', '21754'])
+  })
+
+  it('agrees with calculateAvailableLanguages for the same row', async () => {
+    // Guards the one-code-path goal: if the two entry points ever diverge,
+    // the batched seed and the per-video write paths would disagree.
+    mockBatchedAvailableLanguagesQuery([rows[0]])
+    mockCalculateAvailableLanguagesQuery(rows[0])
+
+    const batched = await calculateAvailableLanguagesForVideos(['container'])
+
+    expect(batched.get('container')).toEqual(
+      await calculateAvailableLanguages('container')
+    )
+  })
+
+  it('queries nothing for an empty id set', async () => {
+    const result = await calculateAvailableLanguagesForVideos([])
+
+    expect(result.size).toBe(0)
+    expect(prismaMock.video.findMany).not.toHaveBeenCalled()
   })
 })
