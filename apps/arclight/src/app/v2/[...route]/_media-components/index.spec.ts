@@ -356,10 +356,26 @@ describe('GET /media-components', () => {
     // names arclight (api-media hides it from that client), so the list must
     // not return it either.
     const storedVideos = [
-      { ...jesusVideo(undefined), id: 'hidden', restrictViewPlatforms: ['arclight', 'watch'] },
-      { ...jesusVideo(undefined), id: 'hidden-watch-order', restrictViewPlatforms: ['watch', 'arclight'] },
-      { ...jesusVideo(undefined), id: 'shown-other-platform', restrictViewPlatforms: ['journeys'] },
-      { ...jesusVideo(undefined), id: 'shown-unrestricted', restrictViewPlatforms: [] }
+      {
+        ...jesusVideo(undefined),
+        id: 'hidden',
+        restrictViewPlatforms: ['arclight', 'watch']
+      },
+      {
+        ...jesusVideo(undefined),
+        id: 'hidden-watch-order',
+        restrictViewPlatforms: ['watch', 'arclight']
+      },
+      {
+        ...jesusVideo(undefined),
+        id: 'shown-other-platform',
+        restrictViewPlatforms: ['journeys']
+      },
+      {
+        ...jesusVideo(undefined),
+        id: 'shown-unrestricted',
+        restrictViewPlatforms: []
+      }
     ]
 
     // Applies the route's own NOT / has filter the way Prisma would.
@@ -368,7 +384,8 @@ describe('GET /media-components', () => {
     }) {
       const hidden = where.NOT?.restrictViewPlatforms?.has
       return storedVideos.filter(
-        (video) => hidden == null || !video.restrictViewPlatforms.includes(hidden)
+        (video) =>
+          hidden == null || !video.restrictViewPlatforms.includes(hidden)
       )
     }
 
