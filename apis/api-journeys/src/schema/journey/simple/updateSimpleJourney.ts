@@ -22,7 +22,6 @@ const ALLOWED_IMAGE_HOSTNAMES = [
   'images.unsplash.com',
   'imagizer.imageshack.com',
   'i.ytimg.com',
-  'd1wl257kev7hsz.cloudfront.net',
   'imagedelivery.net',
   'image.mux.com'
 ]

@@ -591,5 +591,66 @@ describe('updateSimpleJourney', () => {
         'https://images.unsplash.com/photo-123456789'
       )
     })
+
+    it('no longer trusts the retired d1wl CloudFront host and uploads its images to Cloudflare', async () => {
+      const mockImageId = 'cloudflare-copy-of-d1wl-image'
+      // drop any once-implementation the previous test left queued
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockReset()
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockImplementation(
+        async () =>
+          await Promise.resolve({
+            data: {
+              createCloudflareUploadByUrl: {
+                id: mockImageId
+              }
+            }
+          })
+      )
+
+      const testData = {
+        ...simple,
+        cards: [
+          {
+            ...simple.cards[0],
+            image: {
+              src: 'https://d1wl257kev7hsz.cloudfront.net/images/header.jpg',
+              alt: 'test',
+              width: 150,
+              height: 150,
+              blurhash: ''
+            },
+            backgroundImage: {
+              // subdomains of the retired host were accepted too
+              src: 'https://cdn.d1wl257kev7hsz.cloudfront.net/images/bg.jpg',
+              alt: 'bg',
+              width: 200,
+              height: 200,
+              blurhash: ''
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, testData)
+
+      expect(ApolloClient.prototype.mutate).toHaveBeenCalledTimes(2)
+      expect(ApolloClient.prototype.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variables: {
+            url: 'https://d1wl257kev7hsz.cloudfront.net/images/header.jpg'
+          }
+        })
+      )
+      const imageBlockCalls = txMock.block.create.mock.calls.filter(
+        ([data]: any[]) => data.data.typename === 'ImageBlock'
+      )
+      expect(imageBlockCalls).toHaveLength(2)
+      for (const call of imageBlockCalls) {
+        expect(call[0].data.src).toBe(
+          `https://imagedelivery.net/test-cloudflare-account-hash/${mockImageId}/public`
+        )
+        expect(call[0].data.src).not.toContain('d1wl257kev7hsz')
+      }
+    })
   })
 })
