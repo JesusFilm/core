@@ -5,6 +5,7 @@ import { graphql } from '@core/shared/gql'
 
 import { makeClient } from './libs/apollo/makeClient'
 import { authConfig } from './libs/auth'
+import { accountCheckFailed, signInErrorParam } from './libs/auth/signInError'
 
 const GET_AUTH = graphql(`
   query me {
@@ -86,6 +87,18 @@ export function getAuthorizedRedirectPath(
   return undefined
 }
 
+async function fetchPublisherAccess(token: string): Promise<PublisherAccess> {
+  const { data } = await makeClient({
+    headers: { Authorization: `JWT ${token}` }
+  }).query({
+    query: GET_AUTH
+  })
+
+  if (data?.me?.__typename !== 'AuthenticatedUser') return getPublisherAccess()
+
+  return getPublisherAccess(data.me.mediaUserRoles, data.me.languageUserRoles)
+}
+
 export default async function proxy(
   req: NextRequest
 ): Promise<NextResponse<unknown>> {
@@ -108,19 +121,23 @@ export default async function proxy(
       maxAge: 12 * 60 * 60 * 24 // Twelve days
     },
     handleValidToken: async ({ token }, headers) => {
-      const { data } = await makeClient({
-        headers: { Authorization: `JWT ${token}` }
-      }).query({
-        query: GET_AUTH
-      })
+      let access: PublisherAccess
+      try {
+        access = await fetchPublisherAccess(token)
+      } catch (error) {
+        // Left to the library's handleError, this sends the user to sign-in
+        // with no explanation: signed in to Firebase, unable to get further.
+        console.error('proxy: me query failed for a signed-in user', error)
 
-      const access =
-        data?.me?.__typename === 'AuthenticatedUser'
-          ? getPublisherAccess(
-              data.me.mediaUserRoles,
-              data.me.languageUserRoles
-            )
-          : getPublisherAccess()
+        if (req.nextUrl.searchParams.has(signInErrorParam)) {
+          return NextResponse.next({ request: { headers } })
+        }
+
+        req.nextUrl.pathname = authPage
+        req.nextUrl.searchParams.set(signInErrorParam, accountCheckFailed)
+        return NextResponse.redirect(req.nextUrl)
+      }
+
       const redirectPath = getAuthorizedRedirectPath(
         req.nextUrl.pathname,
         access

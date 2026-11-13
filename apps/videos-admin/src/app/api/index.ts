@@ -7,10 +7,14 @@ export async function login(token: string): Promise<void> {
     Authorization: `Bearer ${token}`
   }
 
-  await fetch('/api/login', {
+  const response = await fetch('/api/login', {
     method: 'GET',
     headers
   })
+
+  // /api/login is where the session cookie is set. Without it every page
+  // request bounces back to sign-in, so a failure here must reach the user.
+  if (!response.ok) throw new Error('Login Failed')
 }
 
 export async function loginWithCredential(
@@ -44,7 +48,11 @@ export async function refreshToken(): Promise<string | null> {
 
   if (currentUser != null) {
     const idToken = await currentUser.getIdToken(true)
-    await login(idToken)
+    // Callers only need the fresh ID token; a failed cookie sync must not
+    // fail them (e.g. an in-flight video upload).
+    await login(idToken).catch((error: unknown) => {
+      console.warn('Failed to refresh session cookie', { error })
+    })
     return idToken
   }
 
