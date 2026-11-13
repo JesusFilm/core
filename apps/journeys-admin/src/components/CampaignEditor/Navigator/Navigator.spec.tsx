@@ -6,20 +6,29 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Profiler, ReactElement } from 'react'
 
 import { GET_CAMPAIGN_STATS } from '@core/journeys/ui/Campaign'
 import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { CampaignHoverProvider } from '../CampaignHoverProvider'
 import { Canvas } from '../Canvas'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 import { Hotkeys } from '../Hotkeys'
-import { SelectionProbe, StaticEditor, frameBody } from '../testing'
+import {
+  BlocksProbe,
+  QueriedEditor,
+  SelectionProbe,
+  SpyMock,
+  StaticEditor,
+  frameBody
+} from '../testing'
 
 import { Navigator } from './Navigator'
-import { NavigatorHoverProvider } from './NavigatorHover'
 
 const statsMock = {
   request: { query: GET_CAMPAIGN_STATS, variables: { id: campaign.id } },
@@ -63,11 +72,11 @@ function renderNavigator({
 }: RenderNavigatorProps = {}): ReturnType<typeof render> {
   return render(
     <StaticEditor
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       initialState={initialState}
       mocks={[statsMock, statsMock, statsMock]}
     >
-      <NavigatorHoverProvider>
+      <CampaignHoverProvider>
         <Hotkeys />
         <SelectionProbe />
         <PanelProbe />
@@ -86,7 +95,7 @@ function renderNavigator({
             />
           </Profiler>
         )}
-      </NavigatorHoverProvider>
+      </CampaignHoverProvider>
     </StaticEditor>
   )
 }
@@ -99,8 +108,8 @@ function queryRow(id: string): HTMLElement | null {
   return screen.queryByTestId(`NavigatorRow-${id}`)
 }
 
-function content(item: HTMLElement): HTMLElement {
-  return item.querySelector('.MuiTreeItem-content') as HTMLElement
+function content(id: string): HTMLElement {
+  return screen.getByTestId(`NavigatorRowContent-${id}`)
 }
 
 describe('Navigator', () => {
@@ -191,7 +200,7 @@ describe('Navigator', () => {
       ;(body.querySelector('#heroId') as HTMLElement).scrollIntoView =
         scrollIntoView
 
-      fireEvent.click(content(row('heroId')))
+      fireEvent.click(content('heroId'))
 
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
       expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' })
@@ -203,7 +212,7 @@ describe('Navigator', () => {
         initialState: { selectedBlockId: 'eurLineId' }
       })
 
-      fireEvent.click(content(row('landingSwitcherId__afrRegionId')))
+      fireEvent.click(content('landingSwitcherId__afrRegionId'))
 
       expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
       expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
@@ -218,9 +227,7 @@ describe('Navigator', () => {
       renderNavigator()
 
       fireEvent.click(
-        row('landingJourneyListId').querySelector(
-          '.MuiTreeItem-iconContainer'
-        ) as HTMLElement
+        screen.getByTestId('NavigatorRowExpand-landingJourneyListId')
       )
 
       expect(row('landingJourneyListId')).toHaveAttribute(
@@ -365,7 +372,7 @@ describe('Navigator', () => {
 
       expect(row('columnsId')).toHaveAttribute('aria-expanded', 'true')
       expect(row('slotRichTextId')).toBeInTheDocument()
-      expect(content(row('slotRichTextId'))).toHaveAttribute('data-selected')
+      expect(content('slotRichTextId')).toHaveAttribute('data-selected')
     })
 
     it('expands every row on Option+Z and collapses them on the next', () => {
@@ -414,10 +421,10 @@ describe('Navigator', () => {
       const body = await frameBody(baseElement, 'CanvasSection-heroId')
       const hero = body.querySelector('#heroId') as HTMLElement
 
-      fireEvent.mouseEnter(content(row('heroId')))
+      fireEvent.mouseEnter(content('heroId'))
       expect(hero).toHaveAttribute('data-hovered')
 
-      fireEvent.mouseLeave(content(row('heroId')))
+      fireEvent.mouseLeave(content('heroId'))
       expect(hero).not.toHaveAttribute('data-hovered')
     })
 
@@ -442,21 +449,97 @@ describe('Navigator', () => {
         withCanvas: true,
         onCanvasRender
       })
-      const body = await frameBody(baseElement, 'CanvasSection-heroId')
+      // The last render the canvas makes on its own: the analytics stats land.
+      const body = await frameBody(baseElement, 'CampaignAnalyticsList')
       const hero = body.querySelector('#heroId') as HTMLElement
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 50))
-      })
       onCanvasRender.mockClear()
 
       fireEvent.mouseOver(hero)
-      fireEvent.mouseEnter(content(row('footerId')))
-      fireEvent.mouseLeave(content(row('footerId')))
+      fireEvent.mouseEnter(content('footerId'))
+      fireEvent.mouseLeave(content('footerId'))
       fireEvent.mouseOver(
         body.querySelector('#landingSwitcherId') as HTMLElement
       )
 
       expect(onCanvasRender).not.toHaveBeenCalled()
     })
+  })
+})
+
+describe('Navigator drag', () => {
+  // jsdom lays nothing out: stack the rows 40 px apart in tree order, so the
+  // keyboard sensor finds the sibling below the dragged row.
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      function (this: HTMLElement): DOMRect {
+        const rows = Array.from(
+          document.querySelectorAll('[data-testid^="NavigatorRow-"]')
+        )
+        const owner = this.closest('[data-testid^="NavigatorRow-"]')
+        const top = owner == null ? 0 : rows.indexOf(owner) * 40
+        return {
+          x: 0,
+          y: top,
+          top,
+          left: 0,
+          bottom: top + 32,
+          right: 240,
+          width: 240,
+          height: 32,
+          toJSON: () => ({})
+        }
+      }
+    )
+  })
+
+  afterEach(() => vi.restoreAllMocks())
+
+  it('moves a section down a place with the keyboard as one order Command', async () => {
+    const orderMock: SpyMock = {
+      request: {
+        query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+        variables: { id: 'heroId', parentOrder: 1 }
+      },
+      result: vi.fn(() => ({
+        data: {
+          campaignBlockOrderUpdate: [
+            'landingSwitcherId',
+            'heroId',
+            'carouselId',
+            'landingJourneyListId',
+            'landingAnalyticsId'
+          ].map((id, parentOrder) => ({
+            __typename: campaign.blocks.find((block) => block.id === id)!
+              .__typename,
+            id,
+            parentOrder
+          }))
+        }
+      }))
+    }
+    render(
+      <QueriedEditor mocks={[orderMock]}>
+        <BlocksProbe />
+        <Navigator />
+      </QueriedEditor>
+    )
+    const hero = await screen.findByTestId('NavigatorDragHandle-heroId')
+    act(() => hero.focus())
+
+    await userEvent.keyboard('[Space]')
+    expect(hero).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.keyboard('[ArrowDown]')
+    expect(
+      within(row('landingSwitcherId')).getByTestId('NavigatorDropTarget')
+    ).toHaveAttribute('data-drop-edge', 'after')
+    await userEvent.keyboard('[Space]')
+
+    expect(screen.getByTestId('Block-heroId')).toHaveTextContent(
+      'CampaignHeroBlock||1|'
+    )
+    expect(screen.getByTestId('Block-landingSwitcherId')).toHaveTextContent(
+      'CampaignRegionSwitcherBlock||0|'
+    )
+    await waitFor(() => expect(orderMock.result).toHaveBeenCalled())
   })
 })

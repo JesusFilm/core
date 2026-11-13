@@ -7,6 +7,33 @@ import {
 } from './useCurrentUserLazyQuery'
 
 describe('useCurrentUserLazyQuery', () => {
+  it('exposes a settled null user as an error instead of an unanswered query', async () => {
+    const { result } = renderHook(() => useCurrentUserLazyQuery(), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          mocks={[
+            {
+              request: { query: GET_CURRENT_USER },
+              result: { data: { me: null } }
+            }
+          ]}
+        >
+          {children}
+        </MockedProvider>
+      )
+    })
+    expect(result.current.error).toBeUndefined()
+
+    await act(async () => {
+      await result.current.loadUser()
+    })
+
+    expect(result.current.loading).toBe(false)
+    expect(result.current.error).toEqual(
+      new Error('Current user was not returned')
+    )
+  })
+
   it('should return current user when called', async () => {
     const { result } = renderHook(() => useCurrentUserLazyQuery(), {
       wrapper: ({ children }) => (

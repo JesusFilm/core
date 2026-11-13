@@ -1134,7 +1134,7 @@ describe('Inspector', () => {
       render(
         <QueriedEditor
           initialState={{ ...regionState, inspectorTab: 'settings' }}
-          campaignData={savedCampaign}
+          campaign={savedCampaign}
           mocks={[
             {
               request: { query: GET_CAMPAIGN_COUNTRIES },

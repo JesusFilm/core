@@ -253,7 +253,7 @@ describe('RegionSwitcherEdit', () => {
       }
       render(
         <QueriedEditor
-          campaignProp={campaignWithRegions}
+          campaign={campaignWithRegions}
           mocks={[
             countryNamesMock('529', ['France']),
             countryNamesMock('496', ['France', 'République française'])

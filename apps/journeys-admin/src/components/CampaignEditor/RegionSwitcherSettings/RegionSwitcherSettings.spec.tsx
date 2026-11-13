@@ -193,7 +193,7 @@ describe('RegionSwitcherSettings', () => {
     }
     render(
       <QueriedEditor
-        campaignProp={campaignWithRegions}
+        campaign={campaignWithRegions}
         initialState={{ selectedBlockId: hostId, inspectorTab: 'settings' }}
         mocks={[countries, hide, show, undo, redo]}
       >

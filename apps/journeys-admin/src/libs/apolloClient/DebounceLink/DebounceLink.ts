@@ -70,10 +70,12 @@ export class DebounceLink extends ApolloLink {
     })
   }
 
-  /** Whether any debounce key holds a request that has not been forwarded yet. */
+  /** Whether any debounced request is queued or still waiting for a response. */
   public hasPending(): boolean {
     return Object.values(this.debounceInfo).some(
-      (info) => info.queuedObservers.length > 0
+      (info) =>
+        info.queuedObservers.length > 0 ||
+        Object.keys(info.runningSubscriptions).length > 0
     )
   }
 
@@ -157,26 +159,30 @@ export class DebounceLink extends ApolloLink {
     const currentObservers = [...info.queuedObservers]
     const groupId = info.currentGroupId
 
-    const subscription = forward(operation).subscribe({
-      next: (value) => {
-        currentObservers.forEach((observer) => observer.next?.(value))
-      },
-      error: (error) => {
-        currentObservers.forEach((observer) => observer.error?.(error))
-        this.cleanup(debounceKey, groupId)
-      },
-      complete: () => {
-        currentObservers.forEach((observer) => observer.complete?.())
-        this.cleanup(debounceKey, groupId)
-      }
-    })
-
+    // Register before subscribing: a downstream link may complete synchronously.
+    const subscription = new Subscription()
     info.runningSubscriptions[groupId] = {
       subscription,
       observers: currentObservers
     }
     info.queuedObservers = []
     info.currentGroupId++
+
+    subscription.add(
+      forward(operation).subscribe({
+        next: (value) => {
+          currentObservers.forEach((observer) => observer.next?.(value))
+        },
+        error: (error) => {
+          currentObservers.forEach((observer) => observer.error?.(error))
+          this.cleanup(debounceKey, groupId)
+        },
+        complete: () => {
+          currentObservers.forEach((observer) => observer.complete?.())
+          this.cleanup(debounceKey, groupId)
+        }
+      })
+    )
   }
 
   private readonly unsubscribe = (

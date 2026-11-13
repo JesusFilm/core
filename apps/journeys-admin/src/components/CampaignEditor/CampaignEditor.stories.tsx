@@ -50,29 +50,29 @@ async function openPagesPanel(): Promise<void> {
   await userEvent.click(await screen.findByRole('button', { name: 'Pages' }))
 }
 
-/** At 1348 px, the minimum, the Pages panel is docked beside the rail and the Desktop frame fits between it and the Inspector at 0.5. */
+/** At 1316 px, the minimum, the Pages panel is docked beside the rail and the Desktop frame fits between it and the Inspector at 0.5. */
 export const PanelDockedAtMinimum: Story = {
   parameters: { chromatic: { viewports: [EDITOR_MIN_WIDTH] } },
   play: openPagesPanel
 }
 
-/** At 1440 px the Pages panel is docked beside the rail, the frame at about 0.58. */
+/** At 1440 px the Pages panel is docked beside the rail, the frame at about 0.60. */
 export const PanelDockedAt1440: Story = {
   parameters: { chromatic: { viewports: [1440] } },
   play: openPagesPanel
 }
 
-/** The Desktop frame is 1200 px wide inside, scaled to 0.5 to fit between the docked Add panel and the Inspector at the 1348 px minimum. */
+/** The Desktop frame is 1200 px wide inside, scaled to 0.5 to fit between the docked Add panel and the Inspector at the 1316 px minimum. */
 export const ScaledFrameAtMinimum: Story = {
   parameters: { chromatic: { viewports: [EDITOR_MIN_WIDTH] } }
 }
 
-/** About 0.58 at 1440 px. */
+/** About 0.60 at 1440 px. */
 export const ScaledFrameAt1440: Story = {
   parameters: { chromatic: { viewports: [1440] } }
 }
 
-/** About 0.98 at 1920 px. */
+/** Unscaled at 1920 px. */
 export const ScaledFrameAt1920: Story = {
   parameters: { chromatic: { viewports: [1920] } }
 }
