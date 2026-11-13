@@ -76,7 +76,11 @@ const cases: Array<[string, FakeVariant | null, boolean]> = [
     { ...flaggedWithMedia, hls: null, dash: null, downloads: [] },
     false
   ],
-  ['media but a false flag', { ...flaggedWithMedia, downloadable: false }, false],
+  [
+    'media but a false flag',
+    { ...flaggedWithMedia, downloadable: false },
+    false
+  ],
   ['no variant', null, false]
 ]
 
