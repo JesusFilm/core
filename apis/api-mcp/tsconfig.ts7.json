@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.ts7.json",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "es2022",
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}
