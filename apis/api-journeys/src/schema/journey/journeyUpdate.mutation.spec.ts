@@ -177,7 +177,10 @@ describe('journeyUpdate', () => {
       expect.objectContaining({
         include: expect.objectContaining({
           team: {
-            include: { customDomains: { where: { campaignId: null } } }
+            include: {
+              userTeams: true,
+              customDomains: { where: { campaignId: null } }
+            }
           }
         })
       })

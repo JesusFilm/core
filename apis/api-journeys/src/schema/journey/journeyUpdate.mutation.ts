@@ -24,6 +24,7 @@ builder.mutationField('journeyUpdate', (t) =>
     .prismaField({
       type: JourneyRef,
       nullable: false,
+      grantScopes: (_parent, args) => [`journey:update-labels:${args.id}`],
       args: {
         id: t.arg({ type: 'ID', required: true }),
         input: t.arg({ type: JourneyUpdateInput, required: true })
@@ -48,6 +49,31 @@ builder.mutationField('journeyUpdate', (t) =>
           })
 
         const input = { ...args.input }
+        for (const field of [
+          'custom1Label',
+          'custom2Label',
+          'custom3Label'
+        ] as const) {
+          if (input[field] === undefined) continue
+          if (journey.template !== true)
+            throw new GraphQLError(
+              'custom tracking display labels require a template',
+              {
+                extensions: { code: 'BAD_USER_INPUT', field }
+              }
+            )
+
+          const label = input[field]?.trim() || null
+          if (label != null && Array.from(label).length > 100)
+            throw new GraphQLError(
+              'custom tracking display labels must be at most 100 characters',
+              {
+                extensions: { code: 'BAD_USER_INPUT', field }
+              }
+            )
+          input[field] = label
+        }
+
         if (input.slug != null)
           input.slug = slugify(input.slug, { lower: true, strict: true })
         if (input.slug != null && isReservedJourneySlug(input.slug))
@@ -84,7 +110,10 @@ builder.mutationField('journeyUpdate', (t) =>
               include: {
                 ...query.include,
                 team: {
-                  include: { customDomains: { where: TEAM_DOMAINS_WHERE } }
+                  include: {
+                    userTeams: true,
+                    customDomains: { where: TEAM_DOMAINS_WHERE }
+                  }
                 }
               },
               data: {
