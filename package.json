@@ -384,7 +384,7 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
-    "next": "16.3.8",
+    "next": "16.4.1",
     "react-is": "^19.0.0",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
