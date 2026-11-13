@@ -1,0 +1,5 @@
+**
+!dist
+!dist/apis
+!dist/apis/api-mcp
+!dist/apis/api-mcp/main.cjs

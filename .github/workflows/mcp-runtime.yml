@@ -1,0 +1,76 @@
+name: MCP portable runtime
+
+on:
+  pull_request:
+    branches: [main, feature/*]
+    paths:
+      - 'apis/api-mcp/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/mcp-runtime.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mcp-runtime-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  qualify-image:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 20
+    env:
+      MCP_EVIDENCE_DIRECTORY: /tmp/phoebe-issue-10572/image-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm exec nx build api-mcp
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and load the portable release image
+        id: image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apis/api-mcp/Dockerfile
+          platforms: linux/amd64
+          load: true
+          push: false
+          provenance: false
+          tags: journeys-mcp:qualification-${{ github.sha }}
+      - name: Qualify the release endpoint and record image identity
+        env:
+          MCP_IMAGE_ID: ${{ steps.image.outputs.imageid }}
+          MCP_IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$MCP_EVIDENCE_DIRECTORY"
+          docker image inspect "$MCP_IMAGE_ID" --format '{"id":"{{.Id}}","os":"{{.Os}}","architecture":"{{.Architecture}}"}' > "$MCP_EVIDENCE_DIRECTORY/image.json"
+          node -e 'const fs = require("node:fs"); const p = process.env.MCP_EVIDENCE_DIRECTORY + "/image.json"; const image = JSON.parse(fs.readFileSync(p)); if (!/^sha256:[a-f0-9]{64}$/.test(process.env.MCP_IMAGE_DIGEST)) throw new Error("Missing build manifest digest"); image.manifestDigest = process.env.MCP_IMAGE_DIGEST; fs.writeFileSync(p, JSON.stringify(image, null, 2));'
+          container_id=$(docker run --rm -d -p 127.0.0.1::4010 -e MCP_HOST=0.0.0.0 -e MCP_AUTH_MODE=disabled -e MCP_PUBLIC_URL=http://127.0.0.1:4010/mcp "$MCP_IMAGE_ID")
+          trap 'docker logs "$container_id" > "$MCP_EVIDENCE_DIRECTORY/runtime.log" 2>&1 || true; docker stop --time 15 "$container_id" >/dev/null 2>&1 || true' EXIT
+          endpoint="http://$(docker port "$container_id" 4010/tcp)/mcp"
+          ready=false
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent --max-time 2 "${endpoint%/mcp}/ready" >/dev/null; then
+              ready=true
+              break
+            fi
+            sleep 0.25
+          done
+          test "$ready" = true
+          pnpm exec tsx apis/api-mcp/test/qualify-image.ts "$endpoint"
+          cat "$MCP_EVIDENCE_DIRECTORY/image.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload local image qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-image-qualification
+          path: /tmp/phoebe-issue-10572/image-${{ github.run_id }}
+          if-no-files-found: error

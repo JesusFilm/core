@@ -1,0 +1,11 @@
+{
+  "name": "api-mcp",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@modelcontextprotocol/node": "2.1.2",
+    "@modelcontextprotocol/server": "2.4.0",
+    "pino": "9.6.0",
+    "zod": "4.3.5"
+  }
+}
