@@ -350,4 +350,79 @@ describe('GET /media-components', () => {
       }
     })
   })
+
+  describe('videos restricted from arclight', () => {
+    // The detail route returns 404 for a video whose restrictViewPlatforms
+    // names arclight (api-media hides it from that client), so the list must
+    // not return it either.
+    const storedVideos = [
+      { ...jesusVideo(undefined), id: 'hidden', restrictViewPlatforms: ['arclight', 'watch'] },
+      { ...jesusVideo(undefined), id: 'hidden-watch-order', restrictViewPlatforms: ['watch', 'arclight'] },
+      { ...jesusVideo(undefined), id: 'shown-other-platform', restrictViewPlatforms: ['journeys'] },
+      { ...jesusVideo(undefined), id: 'shown-unrestricted', restrictViewPlatforms: [] }
+    ]
+
+    // Applies the route's own NOT / has filter the way Prisma would.
+    function visibleFor(where: {
+      NOT?: { restrictViewPlatforms?: { has?: string } }
+    }) {
+      const hidden = where.NOT?.restrictViewPlatforms?.has
+      return storedVideos.filter(
+        (video) => hidden == null || !video.restrictViewPlatforms.includes(hidden)
+      )
+    }
+
+    beforeEach(() => {
+      mediaPrismaMock.video.findMany.mockImplementation(((args: {
+        where: Parameters<typeof visibleFor>[0]
+      }) => Promise.resolve(visibleFor(args.where))) as never)
+      mediaPrismaMock.video.count.mockImplementation(((args: {
+        where: Parameters<typeof visibleFor>[0]
+      }) => Promise.resolve(visibleFor(args.where).length)) as never)
+    })
+
+    it('leaves them out of the list', async () => {
+      const res = await app.request('/media-components')
+
+      const ids = (await res.json())._embedded.mediaComponents.map(
+        (component: { mediaComponentId: string }) => component.mediaComponentId
+      )
+      expect(ids).toEqual(['shown-other-platform', 'shown-unrestricted'])
+    })
+
+    it('leaves them out of the total, so paging matches the list', async () => {
+      const res = await app.request('/media-components')
+
+      expect((await res.json()).total).toBe(2)
+    })
+
+    it('keeps the restriction when videos are asked for by id', async () => {
+      await app.request('/media-components?ids=hidden,shown-unrestricted')
+
+      const expected = {
+        where: expect.objectContaining({
+          id: { in: ['hidden', 'shown-unrestricted'] },
+          NOT: { restrictViewPlatforms: { has: 'arclight' } }
+        })
+      }
+      expect(mediaPrismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining(expected)
+      )
+      expect(mediaPrismaMock.video.count).toHaveBeenCalledWith(expected)
+    })
+
+    it('sends the same filter to the page query and the count query', async () => {
+      await app.request('/media-components?subTypes=episode')
+
+      const expected = {
+        where: expect.objectContaining({
+          NOT: { restrictViewPlatforms: { has: 'arclight' } }
+        })
+      }
+      expect(mediaPrismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining(expected)
+      )
+      expect(mediaPrismaMock.video.count).toHaveBeenCalledWith(expected)
+    })
+  })
 })
