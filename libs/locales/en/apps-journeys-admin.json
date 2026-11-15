@@ -1785,5 +1785,13 @@
   "The page goes live when you publish.": "The page goes live when you publish.",
   "Add a picture in Settings": "Add a picture in Settings",
   "Add media in Settings": "Add media in Settings",
-  "Add videos in Settings": "Add videos in Settings"
+  "Add videos in Settings": "Add videos in Settings",
+  "You don't have access to this campaign": "You don't have access to this campaign",
+  "Ask a manager of its team to add you.": "Ask a manager of its team to add you.",
+  "{{label}} ({{shortcut}})": "{{label}} ({{shortcut}})",
+  "{{label}}: {{percent}}%": "{{label}}: {{percent}}%",
+  "Leave the editor?": "Leave the editor?",
+  "Stay": "Stay",
+  "Leave": "Leave",
+  "The translation into {{language}} stops.": "The translation into {{language}} stops."
 }
