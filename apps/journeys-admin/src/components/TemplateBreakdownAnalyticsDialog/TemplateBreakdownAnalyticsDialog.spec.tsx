@@ -596,10 +596,16 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       JourneyStatus.archived
     ]
     const link = new MockLink([
+      createLabelsMock(),
       createMock(status),
       createMock(status, '2025-12-01,2025-12-12')
     ])
     const request = vi.spyOn(link, 'request')
+    const analyticsRequests = () =>
+      request.mock.calls.filter(
+        ([operation]) =>
+          operation.operationName === 'GetTemplateFamilyStatsBreakdown'
+      )
     render(
       <MockedProvider link={link}>
         <TemplateBreakdownAnalyticsDialog
@@ -617,13 +623,13 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     fireEvent.change(screen.getByLabelText('To', { selector: 'input' }), {
       target: { value: '12-12-2025' }
     })
-    expect(request).toHaveBeenCalledTimes(1)
+    expect(analyticsRequests()).toHaveLength(1)
     expect(
       screen.queryByTestId('template-breakdown-analytics-table')
     ).not.toBeInTheDocument()
     await screen.findByTestId('template-breakdown-analytics-table')
-    expect(request).toHaveBeenCalledTimes(2)
-    expect(request.mock.calls[1][0].variables.where.date).toBe(
+    expect(analyticsRequests()).toHaveLength(2)
+    expect(analyticsRequests()[1][0].variables.where.date).toBe(
       '2025-12-01,2025-12-12'
     )
     fireEvent.change(screen.getByLabelText('To', { selector: 'input' }), {
@@ -641,7 +647,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 550))
     })
-    expect(request).toHaveBeenCalledTimes(2)
+    expect(analyticsRequests()).toHaveLength(2)
   })
 
   it('resets the dates and archived filter together when the dialog closes', async () => {
@@ -706,11 +712,17 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         }))
     }
     const link = new MockLink([
+      createLabelsMock(),
       createMock(statuses),
       createMock(statuses, '2025-12-01,2025-12-10'),
       createMock(statuses, undefined, refreshedData)
     ])
     const request = vi.spyOn(link, 'request')
+    const analyticsRequests = () =>
+      request.mock.calls.filter(
+        ([operation]) =>
+          operation.operationName === 'GetTemplateFamilyStatsBreakdown'
+      )
     render(
       <MockedProvider link={link}>
         <TemplateBreakdownAnalyticsDialog
@@ -725,8 +737,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     await screen.findByTestId('template-breakdown-analytics-table')
     await user.click(screen.getByRole('button', { name: 'Reset date range' }))
     await screen.findAllByText('110')
-    expect(request).toHaveBeenCalledTimes(3)
-    expect(request.mock.calls[2][0].variables.where).toEqual({
+    expect(analyticsRequests()).toHaveLength(3)
+    expect(analyticsRequests()[2][0].variables.where).toEqual({
       property: 'event:props:templateKey',
       period: 'all'
     })
@@ -739,8 +751,17 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       JourneyStatus.draft,
       JourneyStatus.archived
     ]
-    const link = new MockLink([createMock(statuses), createMock(statuses)])
+    const link = new MockLink([
+      createLabelsMock(),
+      createMock(statuses),
+      createMock(statuses)
+    ])
     const request = vi.spyOn(link, 'request')
+    const analyticsRequests = () =>
+      request.mock.calls.filter(
+        ([operation]) =>
+          operation.operationName === 'GetTemplateFamilyStatsBreakdown'
+      )
     render(
       <MockedProvider link={link}>
         <TemplateBreakdownAnalyticsDialog
@@ -758,7 +779,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     expect(
       screen.queryByTestId('template-breakdown-analytics-table')
     ).not.toBeInTheDocument()
-    expect(request).toHaveBeenCalledTimes(1)
+    expect(analyticsRequests()).toHaveLength(1)
     await user.click(screen.getByRole('button', { name: 'Reset date range' }))
     await screen.findByTestId('template-breakdown-analytics-table')
     expect(
@@ -770,6 +791,6 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         { name: 'Day' }
       )
     ).toHaveTextContent(/DD/i)
-    expect(request).toHaveBeenCalledTimes(2)
+    expect(analyticsRequests()).toHaveLength(2)
   })
 })
