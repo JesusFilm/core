@@ -123,6 +123,10 @@ model Event {
   journeyId               String?
   blockId                 String?
   stepId                  String?
+  captureIdentity         String?
+  captureTag              EventLabel?
+  captureTrigger          String?
+  templateFamilyId        String?
   createdAt               DateTime          @default(now())
   label                   String?
   value                   String?

@@ -13,6 +13,7 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
+import { INTERACTION_EVENT_FILTER } from '../../../schema/event/capture/captureTypes'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { JourneyWithTeamAndUserJourney } from './prisma.types'
@@ -143,6 +144,10 @@ describe('fetchEmailDetails', () => {
     journeyId: 'journeyId',
     blockId: 'blockId',
     stepId: 'stepId',
+    captureIdentity: null,
+    captureTag: null,
+    captureTrigger: null,
+    templateFamilyId: null,
     createdAt: new Date('2024-05-27T23:39:28.000Z'),
     label: 'Step 1',
     value: 'Test',
@@ -254,7 +259,7 @@ describe('fetchEmailDetails', () => {
         id: true,
         createdAt: true,
         duration: true,
-        events: true
+        events: { where: INTERACTION_EVENT_FILTER }
       }
     })
   })
