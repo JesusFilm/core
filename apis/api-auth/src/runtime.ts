@@ -9,8 +9,8 @@ import { type AccessMode, calculateExpiry, durations } from './consent'
 import type { Identity, ReadEligibility } from './identity'
 import { createProvider } from './provider'
 import {
-  type Database,
   type AuditAction,
+  type Database,
   assertEnvironment,
   assertRuntimeRole,
   audit,
