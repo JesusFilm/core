@@ -591,6 +591,21 @@ describe('durable issuer integration', () => {
         ).toBe(403)
       })
 
+      it.each([
+        ['code_verifier', 'incorrect-verifier-with-at-least-thirty-two-bytes'],
+        ['redirect_uri', 'https://client.example/unregistered'],
+        ['resource', 'https://unrelated.example/mcp']
+      ])(
+        'rejects an incorrect %s during token exchange',
+        async (parameter, value) => {
+          const body = await approvedCode()
+          body.set(parameter, value)
+          const denied = await request('/token', { method: 'POST', body })
+          expect(denied.status).toBe(400)
+          expect(await denied.json()).not.toHaveProperty('access_token')
+        }
+      )
+
       it('denies without selecting resources and creates no usable authorization', async () => {
         const uid = await interaction()
         const view = (await (
