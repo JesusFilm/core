@@ -1,0 +1,1 @@
+export { AgentConsent } from './AgentConsent'

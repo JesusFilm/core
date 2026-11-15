@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/__generated__/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AuthEnvironment {
+  id        String @id
+  binding   String
+}
+
+model OAuthArtifact {
+  model      String
+  id         String
+  payload    Json
+  grantId    String?
+  userCode   String?
+  uid        String?
+  expiresAt  DateTime?
+  consumedAt DateTime?
+
+  @@id([model, id])
+  @@index([grantId])
+  @@index([model, userCode])
+  @@index([model, uid])
+  @@index([expiresAt])
+}
+
+model AgentConnection {
+  id                  String   @id @default(uuid())
+  grantId             String   @unique
+  userId              String
+  clientId            String
+  environment         String
+  mode                String
+  journeyIds          String[]
+  version             Int      @default(1)
+  expiresAt           DateTime
+  approvedAt          DateTime
+  revokedAt           DateTime?
+  firebaseAuthTime     Int
+  firebaseCreatedAt   String
+
+  @@index([userId, clientId])
+  @@index([expiresAt])
+}
+
+model ConsentReview {
+  interactionId String   @id
+  userId        String
+  clientId      String
+  csrfHash      String
+  reviewHash    String?
+  mode          String?
+  duration      String?
+  journeyIds    String[]
+  approvedAt    DateTime?
+  expiresAt     DateTime?
+  validUntil    DateTime
+  consumedAt    DateTime?
+  generation    Int      @default(0)
+}
+
+model AuthorizationGate {
+  id         String  @id
+  generation Int     @default(0)
+  open       Boolean @default(true)
+}
+
+model SecurityAudit {
+  id         String   @id @default(uuid())
+  action     String
+  outcome    String
+  occurredAt DateTime
+  expiresAt  DateTime
+  userId     String?
+  clientId   String?
+  journeyIds String[]
+
+  @@index([expiresAt])
+}
