@@ -1,19 +1,14 @@
-import Alert from '@mui/material/Alert'
-import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignHeroBlock as CampaignHeroBlock } from '../../../../__generated__/GetCampaign'
-import {
-  CampaignHeroMinHeightInput,
-  useCampaignHeroBlockMinHeightMutation
-} from '../../../libs/useCampaignHeroBlockMinHeightMutation'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { CommandError } from '../CommandError'
+import { SliderRow } from '../SliderRow'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 /** The slider moves in steps of five percent of the viewport height. */
-export const HERO_MIN_HEIGHT_STEP = 5
+const HERO_MIN_HEIGHT_STEP = 5
 
 interface HeroSettingsProps {
   /** The hero this editor edits. */
@@ -29,68 +24,35 @@ interface HeroSettingsProps {
  */
 export function HeroSettings({ block }: HeroSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeMinHeight = useCampaignHeroBlockMinHeightMutation()
-  const [value, setValue] = useState(block.minHeight ?? 0)
-
-  useEffect(() => {
-    setValue(block.minHeight ?? 0)
-  }, [block.minHeight])
-
+  const { addFields, error } = useCampaignBlockFieldsCommand()
   function label(percent: number): string {
     return percent === 0 ? t('Auto') : `${percent}%`
   }
 
-  function handleCommit(_event: unknown, next: number | number[]): void {
-    const percent = Array.isArray(next) ? next[0] : next
+  function handleCommit(percent: number): void {
     const minHeight = percent === 0 ? null : percent
     if (minHeight === block.minHeight) return
-    addStyle<CampaignHeroBlock, CampaignHeroMinHeightInput>({
-      block,
-      input: { minHeight },
-      previous: { minHeight: block.minHeight },
-      run: writeMinHeight
-    })
+    addFields(block, { minHeight })
   }
 
   return (
     <Stack spacing={2} data-testid="HeroSettings" data-block-id={block.id}>
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
-      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-        <Typography variant="subtitle2" id={`hero-height-${block.id}`}>
-          {t('Height')}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          data-testid="HeroHeightValue"
-        >
-          {label(value)}
-        </Typography>
-      </Stack>
-      <Slider
-        aria-labelledby={`hero-height-${block.id}`}
-        value={value}
+      <CommandError error={error} />
+      <SliderRow
+        key={block.id}
+        id={`hero-height-${block.id}`}
+        label={t('Height')}
+        value={block.minHeight ?? 0}
         min={0}
         max={100}
         step={HERO_MIN_HEIGHT_STEP}
-        valueLabelDisplay="auto"
-        valueLabelFormat={label}
-        onChange={(_event, next) =>
-          setValue(Array.isArray(next) ? next[0] : next)
-        }
-        onChangeCommitted={handleCommit}
-        sx={{ mx: 1, width: 'auto' }}
-      />
-      <Typography variant="caption" color="text.secondary">
-        {t(
+        format={label}
+        helperText={t(
           'The least of the screen the hero fills, with its text centred. Auto keeps it as tall as its text.'
         )}
-      </Typography>
+        valueTestId="HeroHeightValue"
+        onCommit={handleCommit}
+      />
     </Stack>
   )
 }

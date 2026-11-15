@@ -7,11 +7,16 @@ import TextField from '@mui/material/TextField'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next/pages'
 import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
 
 import { hasText } from '@core/journeys/ui/Campaign'
+import {
+  LINK_URL_MAX_LENGTH,
+  urlLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
@@ -23,17 +28,16 @@ import {
   CampaignButtonAction,
   CampaignButtonBlock
 } from '../../../libs/useCampaignBlockActionMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { textLength } from '../Canvas/InlineText'
+import { blockLabel } from '../utils/blockLabel'
+import { characterCount } from '../utils/characterCount'
+import { isHttpsUrl } from '../utils/isHttpsUrl'
+import { regionDisplayName } from '../utils/regionDisplayName'
+import { pageSections } from '../utils/sectionTypes'
 import { useCampaignActionCommand } from '../utils/useCampaignActionCommand'
-
-/** The API rejects a web address longer than 2048 characters. */
-export const LINK_URL_MAX_LENGTH = 2048
+import { useCommittedField } from '../utils/useCommittedField'
 
 type LinkKind = 'link' | 'scroll' | 'region'
-type Translate = (key: string) => string
-
 function kindOf(action: CampaignButtonAction | null): LinkKind {
   switch (action?.__typename) {
     case 'CampaignScrollToBlockAction':
@@ -46,35 +50,9 @@ function kindOf(action: CampaignButtonAction | null): LinkKind {
 }
 
 /** A section is listed by its title when it has one, else by its type. */
-export function sectionLabel(t: Translate, block: CampaignBlock): string {
+export function sectionLabel(t: TFunction, block: CampaignBlock): string {
   if ('title' in block && hasText(block.title)) return block.title
   return blockLabel(t, block.__typename)
-}
-
-/** The top-level blocks of a page in order: the sections a button can scroll to. */
-export function pageSections(
-  blocks: CampaignBlock[],
-  pageId: string | undefined
-): CampaignBlock[] {
-  if (pageId == null) return []
-  return sortBy(
-    blocks.filter(
-      (block) =>
-        block.pageId === pageId &&
-        block.parentBlockId == null &&
-        block.parentOrder != null
-    ),
-    'parentOrder'
-  )
-}
-
-/** The https scheme is the only rule the editor checks before the API does. */
-export function isHttpsUrl(value: string): boolean {
-  try {
-    return new URL(value).protocol === 'https:'
-  } catch {
-    return false
-  }
 }
 
 interface LinkLabel {
@@ -83,11 +61,12 @@ interface LinkLabel {
   missing: boolean
 }
 
-/** What the link reads for an action: the address, the section, the region, or what is missing. */
+/** What the link reads for an action: the address, the section, the region (in the Preview Language), or what is missing. */
 export function linkLabel(
-  t: Translate,
+  t: TFunction,
   action: CampaignButtonAction | null,
-  campaign: Pick<Campaign, 'blocks' | 'regions'>
+  campaign: Pick<Campaign, 'blocks' | 'regions' | 'defaultLanguageId'>,
+  previewLanguageId: string
 ): LinkLabel {
   switch (action?.__typename) {
     case 'CampaignLinkAction':
@@ -107,7 +86,14 @@ export function linkLabel(
               (candidate) => candidate.id === action.regionId
             )
       if (region == null) return { label: t('Missing region'), missing: true }
-      return { label: region.name, missing: false }
+      return {
+        label: regionDisplayName(
+          region,
+          previewLanguageId,
+          campaign.defaultLanguageId
+        ),
+        missing: false
+      }
     }
     default:
       return { label: t('No link'), missing: false }
@@ -129,29 +115,40 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
-    state: { pageKind }
+    state: { pageKind, previewLanguageId }
   } = useCampaignEditor()
   const { addAction } = useCampaignActionCommand()
   const action = block.action
   const savedUrl = action?.__typename === 'CampaignLinkAction' ? action.url : ''
   const [pickedKind, setPickedKind] = useState<LinkKind>()
-  const [url, setUrl] = useState(savedUrl)
   const [error, setError] = useState<string>()
+  const url = useCommittedField({
+    committed: savedUrl,
+    validate: (value) =>
+      isHttpsUrl(value)
+        ? undefined
+        : t('Enter an address starting with https://'),
+    save: handleSaveLink
+  })
 
   useEffect(() => {
-    setUrl(savedUrl)
     setPickedKind(undefined)
   }, [action?.__typename, savedUrl])
 
   const kind = pickedKind ?? kindOf(action)
-  const { label, missing } = linkLabel(t, action, campaign)
+  const { label, missing } = linkLabel(t, action, campaign, previewLanguageId)
   // A chrome button shows on every page; it scrolls within the page on the canvas.
   const pageId =
     block.pageId ?? campaign.pages.find((page) => page.kind === pageKind)?.id
   const sections = pageSections(campaign.blocks, pageId)
   const regions = sortBy(campaign.regions, 'order')
+  const urlError = url.error ?? error
 
-  function commit(next: CampaignButtonAction | null): void {
+  /** Write the action; a refusal keeps the kind and `typedUrl` the author was on. */
+  function commit(
+    next: CampaignButtonAction | null,
+    typedUrl = url.value
+  ): void {
     setError(undefined)
     addAction({
       block,
@@ -161,32 +158,29 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
         // The rollback puts the old action back, which would otherwise take
         // the kind picker, and what the author typed in it, with it.
         setPickedKind(kind)
-        setUrl(url)
+        url.onChange(typedUrl)
         setError(message)
       }
     })
   }
 
-  function handleSaveLink(): void {
-    const trimmed = url.trim()
-    if (!isHttpsUrl(trimmed)) {
-      setError(t('Enter an address starting with https://'))
-      return
-    }
-    if (action?.__typename === 'CampaignLinkAction' && action.url === trimmed)
-      return
-    commit({
-      __typename: 'CampaignLinkAction',
-      parentBlockId: block.id,
-      url: trimmed,
-      target: action?.__typename === 'CampaignLinkAction' ? action.target : null
-    })
+  function handleSaveLink(trimmed: string): void {
+    commit(
+      {
+        __typename: 'CampaignLinkAction',
+        parentBlockId: block.id,
+        url: trimmed,
+        target:
+          action?.__typename === 'CampaignLinkAction' ? action.target : null
+      },
+      trimmed
+    )
   }
 
   function handleUrlKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
     if (event.key !== 'Enter') return
     event.preventDefault()
-    handleSaveLink()
+    url.onBlur()
   }
 
   function handlePickSection(blockId: string): void {
@@ -257,19 +251,22 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
             fullWidth
             label={t('Web address')}
             placeholder="https://"
-            value={url}
+            value={url.value}
             onChange={(event) => {
-              setUrl(event.target.value)
+              url.onChange(event.target.value)
               setError(undefined)
             }}
             onKeyDown={handleUrlKeyDown}
-            error={error != null}
-            helperText={error ?? `${textLength(url)} / ${LINK_URL_MAX_LENGTH}`}
+            error={urlError != null}
+            helperText={
+              urlError ??
+              characterCount(t, urlLength(url.value), LINK_URL_MAX_LENGTH)
+            }
             slotProps={{
-              formHelperText: error != null ? { role: 'alert' } : undefined
+              formHelperText: urlError != null ? { role: 'alert' } : undefined
             }}
           />
-          <Button variant="contained" onClick={handleSaveLink}>
+          <Button variant="contained" onClick={url.onBlur}>
             {t('Save')}
           </Button>
         </Stack>
@@ -309,7 +306,13 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
                 }
                 onClick={() => handlePickRegion(region.id)}
               >
-                <ListItemText primary={region.name} />
+                <ListItemText
+                  primary={regionDisplayName(
+                    region,
+                    previewLanguageId,
+                    campaign.defaultLanguageId
+                  )}
+                />
               </ListItemButton>
             ))}
           </List>

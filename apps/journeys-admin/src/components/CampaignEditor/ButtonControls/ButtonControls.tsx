@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -10,19 +9,21 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../__generated__/globalTypes'
+import { AlignRow } from '../AlignRow'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
-import { AlignRow, StyleRow } from '../StyleRow'
-import { useCampaignExtraStyleCommand } from '../utils/useCampaignExtraStyleCommand'
-import { useHostBand } from '../utils/useHostBand'
+import { CommandError } from '../CommandError'
+import { StyleRow } from '../StyleRow'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
+import { useCampaignHostBand } from '../utils/useCampaignHostBand'
 
-export const BUTTON_VARIANTS = [
+const BUTTON_VARIANTS = [
   ButtonVariant.contained,
   ButtonVariant.outlined,
   ButtonVariant.text
 ] as const
 
-export const BUTTON_SIZES = [
+const BUTTON_SIZES = [
   ButtonSize.small,
   ButtonSize.medium,
   ButtonSize.large
@@ -43,8 +44,8 @@ interface ButtonControlsProps {
 export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addButtonStyle, error } = useCampaignExtraStyleCommand()
-  const band = useHostBand()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
+  const band = useCampaignHostBand()
 
   const variantLabels: Record<ButtonVariant, string> = {
     contained: t('Contained'),
@@ -61,21 +62,17 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
 
   function handleVariant(_event: unknown, variant: ButtonVariant | null): void {
     if (variant == null || variant === currentVariant) return
-    addButtonStyle(block, { variant })
+    addFields(block, { variant })
   }
 
   function handleSize(_event: unknown, size: ButtonSize | null): void {
     if (size == null || size === currentSize) return
-    addButtonStyle(block, { size })
+    addFields(block, { size })
   }
 
   return (
     <Stack spacing={4} data-testid="ButtonControls">
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <StyleRow label={t('Variant')}>
         <ToggleButtonGroup
           exclusive
@@ -110,7 +107,7 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
       </StyleRow>
       <AlignRow
         value={block.align}
-        onChange={(align) => addButtonStyle(block, { align })}
+        onChange={(align) => addFields(block, { align })}
       />
       <ColourRows<ButtonColourField>
         label={t('Colours')}
@@ -130,8 +127,8 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
         ]}
         rowTestId="ButtonColourRow"
         pickerTestId="ButtonColour"
-        onCommit={(field, hex) => addButtonStyle(block, { [field]: hex })}
-        onReset={(field) => addButtonStyle(block, { [field]: null })}
+        onCommit={(field, hex) => addFields(block, { [field]: hex })}
+        onReset={(field) => addFields(block, { [field]: null })}
       />
     </Stack>
   )

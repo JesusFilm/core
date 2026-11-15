@@ -20,6 +20,8 @@ import { getVideoDuration } from './utils/getVideoDuration/getVideoDuration'
 
 interface AddByFileProps {
   onChange: (id: string, shouldCloseDrawer?: boolean) => void
+  /** What the upload task is keyed by; the selected video block when omitted. */
+  uploadKey?: string
 }
 
 type customErrorCode =
@@ -27,7 +29,10 @@ type customErrorCode =
   | 'file-duration-too-short'
   | 'general-upload-error'
 
-export function AddByFile({ onChange }: AddByFileProps): ReactElement {
+export function AddByFile({
+  onChange,
+  uploadKey
+}: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -43,7 +48,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
 
   const { getUploadStatus, addUploadTask } = useMuxVideoUpload()
 
-  const videoBlockId = selectedBlock?.id ?? null
+  const videoBlockId = uploadKey ?? selectedBlock?.id ?? null
   const uploadTask = videoBlockId != null ? getUploadStatus(videoBlockId) : null
 
   const [errorType, setErrorType] = useState<customErrorCode | null>(null)

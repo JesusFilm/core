@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useCallback } from 'react'
@@ -15,10 +14,8 @@ import {
   regionNameVariant,
   switcherLayoutSx
 } from '@core/journeys/ui/Campaign'
-import DragIcon from '@core/shared/ui/icons/Drag'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
@@ -29,27 +26,27 @@ import {
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
 import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQuery'
-import { regionCardLabel, regionLineLabel } from '../blockLabel'
 import {
   regionLines,
   regionNeedsJourney,
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
+import { CanvasDragHandle } from '../Canvas/CanvasDragHandle'
 import { EditorNote } from '../Canvas/EditorNote'
-import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
+import {
+  ADMIN_PRIMARY,
+  HOVER_OUTLINE_SX,
+  SELECTED_OUTLINE
+} from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { selectableProps } from '../Canvas/selectable'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
+import { regionCardLabel, regionLineLabel } from '../utils/blockLabel'
+import { regionCardId } from '../utils/regionCardId'
 import { regionDisplayName } from '../utils/regionDisplayName'
 import { regionLineColor } from '../utils/regionLineColor'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
-
-const SELECTED_OUTLINE = {
-  outline: `2px solid ${adminPrimary.main}`,
-  outlineOffset: -2
-}
 
 interface RegionSwitcherEditProps {
   /** The switcher section this editor sits in. */
@@ -70,9 +67,10 @@ interface RegionCardEditProps {
 /**
  * One region card on the canvas: the name (with a "Needs journey" badge
  * while any of its Share Languages is unlinked), its Region Lines as inline
- * text and its country chips, named as the section's setting says. Clicking
- * the card selects the region; clicking a line selects that line, which then
- * edits in place as any typography.
+ * text and its country chips. Clicking the card selects the region; clicking
+ * a line selects that line (Enter or Space on either does the same), which then edits in place as any typography.
+ * A pill keeps its lines editable though the public pill never shows them:
+ * faded, with a note under the card saying so.
  * The handle on its right edge drags the card onto another card to
  * take that card's place in the region order, one Command through the
  * canvas's drag context.
@@ -96,6 +94,9 @@ function RegionCardEdit({
   const lines = regionLines(campaign.blocks, region.id)
   const lineSelected = lines.some((line) => line.id === selection.block?.id)
   const muted = !region.listed && !selected && !lineSelected
+  const linesHidden =
+    variant === CampaignSwitcherVariant.pills &&
+    lines.some((line) => line.__typename === 'CampaignTypographyBlock')
   const dragId = `region:${region.id}`
   const dragData = { regionId: region.id }
   const { setNodeRef: setDroppableRef, isOver } = useDroppable({
@@ -117,21 +118,23 @@ function RegionCardEdit({
     [setDroppableRef, setDraggableRef]
   )
 
-  function handleClick(event: MouseEvent<HTMLElement>): void {
-    event.stopPropagation()
-    selectRegion(region.id, hostBlockId)
-  }
-
-  return (
+  const card = (
     <Box
       ref={setCardRef}
-      id={`${hostBlockId}__${region.id}`}
+      id={regionCardId(hostBlockId, region.id)}
       data-testid={`RegionCardEdit-${region.id}`}
       data-selected={selected}
       data-unlisted={!region.listed}
       data-drop-target={isOver || undefined}
       data-hoverable
-      onClick={handleClick}
+      {...selectableProps(
+        () => selectRegion(region.id, hostBlockId),
+        `${regionCardLabel(t)}: ${regionDisplayName(
+          region,
+          previewLanguageId,
+          campaign.defaultLanguageId
+        )}`
+      )}
       sx={[
         regionFrameSx(variant),
         {
@@ -142,43 +145,28 @@ function RegionCardEdit({
           ...(selected ? SELECTED_OUTLINE : {}),
           ...(isDragging ? { opacity: 0.6 } : {}),
           ...(isOver && !isDragging
-            ? { outline: `2px dashed ${adminPrimary.main}`, outlineOffset: -2 }
+            ? { outline: `2px dashed ${ADMIN_PRIMARY.main}`, outlineOffset: -2 }
             : {})
         }
       ]}
     >
       <SelectionBadge
-        id={`${hostBlockId}__${region.id}`}
+        id={regionCardId(hostBlockId, region.id)}
         label={regionCardLabel(t)}
         selected={selected}
         borderWidth={1}
       />
-      <Box
-        ref={setActivatorNodeRef}
-        {...listeners}
-        {...attributes}
-        aria-label={t('Drag region')}
-        data-testid={`RegionCardDragHandle-${region.id}`}
-        onClick={(event: MouseEvent<HTMLElement>) => event.stopPropagation()}
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          right: 4,
-          transform: 'translateY(-50%)',
-          display: 'flex',
-          p: 0.5,
-          borderRadius: 1,
-          bgcolor: 'background.paper',
-          color: adminPrimary.main,
-          boxShadow: 1,
-          cursor: isDragging ? 'grabbing' : 'grab',
-          touchAction: 'none',
-          opacity: selected ? 1 : 0,
-          '[data-hoverable]:hover > &, &:focus-visible': { opacity: 1 }
-        }}
-      >
-        <DragIcon fontSize="small" />
-      </Box>
+      <CanvasDragHandle
+        activatorRef={setActivatorNodeRef}
+        listeners={listeners}
+        attributes={attributes}
+        label={t('Drag region')}
+        testId={`RegionCardDragHandle-${region.id}`}
+        dragging={isDragging}
+        visible={selected}
+        position={{ top: '50%', right: 4, transform: 'translateY(-50%)' }}
+        stopClick
+      />
       <Stack
         direction="row"
         spacing={1}
@@ -217,37 +205,41 @@ function RegionCardEdit({
         {lines.map((line) => {
           if (line.__typename !== 'CampaignTypographyBlock') return null
           const lineVariant = line.typographyVariant ?? TypographyVariant.body1
+          const selected = selection.block?.id === line.id
           return (
             <Box
               key={line.id}
               id={line.id}
               data-testid={`RegionLineEdit-${line.id}`}
-              data-selected={selection.block?.id === line.id}
+              data-selected={selected}
               data-hoverable
-              onClick={(event: MouseEvent<HTMLElement>) => {
-                event.stopPropagation()
-                selectBlock(line.id)
-              }}
+              role={selected ? undefined : 'button'}
+              {...selectableProps(
+                () => selectBlock(line.id),
+                regionLineLabel(t)
+              )}
               sx={{
                 position: 'relative',
                 width: '100%',
                 // Room for the line's badge above it, clear of the text before it.
                 mt: 1,
+                ...(linesHidden && !selected ? { opacity: 0.5 } : {}),
                 ...HOVER_OUTLINE_SX,
-                ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
+                ...(selected ? SELECTED_OUTLINE : {})
               }}
             >
               <SelectionBadge
                 id={line.id}
                 label={regionLineLabel(t)}
-                selected={selection.block?.id === line.id}
+                selected={selected}
               />
               <InlineText
                 target={{ block: line, field: 'content' }}
                 placeholder={t('Your text')}
-                editing={selection.block?.id === line.id}
-                autoFocus={selection.block?.id === line.id}
+                editing={selected}
+                autoFocus={selected}
                 onSelect={() => selectBlock(line.id)}
+                withinSelectable
                 variant={lineVariant}
                 variantMapping={{ overline: 'p', caption: 'p' }}
                 align={line.align ?? undefined}
@@ -260,6 +252,17 @@ function RegionCardEdit({
       <CampaignRegionCountries region={region} showNames={showCountryNames} />
     </Box>
   )
+
+  if (!linesHidden) return card
+
+  return (
+    <Stack spacing={0.5} sx={{ alignItems: 'flex-start' }}>
+      {card}
+      <EditorNote testId={`RegionLinesHidden-${region.id}`}>
+        {t('Not shown in pills')}
+      </EditorNote>
+    </Stack>
+  )
 }
 
 /**
@@ -269,7 +272,9 @@ function RegionCardEdit({
  * outline and the line being edited stay at full strength) so its Navigator
  * row can hover and select it, and the "+ Add"
  * that runs `campaignRegionCreate` as a Command. With no region to show the
- * section reads "Add your first region".
+ * section reads "Add your first region", or "No other regions yet" on the
+ * Region Page of the campaign's only region (the public page hides the band
+ * there).
  */
 export function RegionSwitcherEdit({
   block
@@ -326,7 +331,11 @@ export function RegionSwitcherEdit({
         data-testid="RegionSwitcherEmpty"
         sx={{ alignItems: 'flex-start' }}
       >
-        <EditorNote>{t('Add your first region')}</EditorNote>
+        <EditorNote>
+          {campaign.regions.length > 0
+            ? t('No other regions yet')
+            : t('Add your first region')}
+        </EditorNote>
         {addButton}
       </Stack>
     )

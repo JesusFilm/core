@@ -2,9 +2,10 @@ module.exports = {
   client: {
     includes: ['./pages/**', './src/**', '../../libs/journeys/ui/**'],
     excludes: [
-      './**/*.test.tsx',
-      './**/*.test.ts',
-      './src/components/CampaignEditor/testing.tsx'
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.spec.ts',
+      '**/*.spec.tsx'
     ],
     service: {
       name: 'api-gateway',

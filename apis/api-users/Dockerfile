@@ -1,4 +1,4 @@
-FROM node:24-alpine3.23
+FROM node:24.22.3-alpine3.23@sha256:3946fb783fdce8a2812136ea694bc95c698c4f4096f3fd18568dc27a8ac389dc
 
 EXPOSE 4002
 
@@ -19,5 +19,8 @@ COPY ./apis/api-users/docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN pnpm install --prod --silent
+
+# Fetch the native migration engine during the build, before offline startup.
+RUN pnpm exec prisma --version
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

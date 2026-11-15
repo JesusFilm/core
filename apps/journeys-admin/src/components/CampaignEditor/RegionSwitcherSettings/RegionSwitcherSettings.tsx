@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -8,12 +7,9 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
-import {
-  CampaignRegionSwitcherVariantInput,
-  useCampaignRegionSwitcherBlockVariantMutation
-} from '../../../libs/useCampaignRegionSwitcherBlockVariantMutation'
+import { CommandError } from '../CommandError'
 import { ShowCountryNamesSwitch } from '../ShowCountryNamesSwitch'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 interface RegionSwitcherSettingsProps {
   block: CampaignRegionSwitcherBlock
@@ -29,17 +25,11 @@ export function RegionSwitcherSettings({
   block
 }: RegionSwitcherSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeVariant = useCampaignRegionSwitcherBlockVariantMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
 
   function handleChange(variant: CampaignSwitcherVariant | null): void {
     if (variant == null || variant === block.switcherVariant) return
-    addStyle<CampaignRegionSwitcherBlock, CampaignRegionSwitcherVariantInput>({
-      block,
-      input: { variant },
-      previous: { variant: block.switcherVariant },
-      run: writeVariant
-    })
+    addFields(block, { variant })
   }
 
   return (
@@ -48,11 +38,7 @@ export function RegionSwitcherSettings({
       data-testid="RegionSwitcherSettings"
       data-block-id={block.id}
     >
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <Typography variant="subtitle2">{t('Variant')}</Typography>
       <ToggleButtonGroup
         value={block.switcherVariant}

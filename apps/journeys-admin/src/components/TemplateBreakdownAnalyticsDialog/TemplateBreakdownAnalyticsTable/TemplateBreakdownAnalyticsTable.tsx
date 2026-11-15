@@ -6,6 +6,7 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
+import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
 import TableSortLabel from '@mui/material/TableSortLabel'
 import Typography from '@mui/material/Typography'
@@ -52,6 +53,8 @@ export function TemplateBreakdownAnalyticsTable({
   error,
   customTrackingLabels
 }: TemplateBreakdownAnalyticsTableProps): ReactElement | null {
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(25)
   const [orderBy, setOrderBy] = useState<SortableColumn>('views')
   const [order, setOrder] = useState<Order>('desc')
   const { t } = useTranslation('apps-journeys-admin')
@@ -104,6 +107,7 @@ export function TemplateBreakdownAnalyticsTable({
 
   const handleRequestSort = (property: SortableColumn): void => {
     const isAsc = orderBy === property && order === 'asc'
+    setPage(0)
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
   }
@@ -114,7 +118,15 @@ export function TemplateBreakdownAnalyticsTable({
 
   const { totalRow, regularRows, restrictedRow, columnsWithZeros } =
     processedData
-  const displayRows = regularRows.slice(0, 10)
+
+  const currentPage = Math.min(
+    page,
+    Math.max(0, Math.ceil(regularRows.length / rowsPerPage) - 1)
+  )
+  const visibleRows = regularRows.slice(
+    currentPage * rowsPerPage,
+    (currentPage + 1) * rowsPerPage
+  )
 
   const columnHeaders = getColumnHeaders(t, customTrackingLabels)
   const visibleColumnHeaders = columnHeaders.filter(
@@ -323,7 +335,7 @@ export function TemplateBreakdownAnalyticsTable({
             }}
           >
             {/* Regular Rows */}
-            {displayRows.map((row) => (
+            {visibleRows.map((row) => (
               <TableRow key={row.journeyId}>
                 <TableCell
                   sx={{
@@ -475,6 +487,22 @@ export function TemplateBreakdownAnalyticsTable({
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        component="div"
+        count={regularRows.length}
+        page={currentPage}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[25, 50, 100]}
+        labelRowsPerPage={t('Projects per page')}
+        getItemAriaLabel={(type) =>
+          type === 'next' ? t('Next page') : t('Previous page')
+        }
+        onPageChange={(_, nextPage) => setPage(nextPage)}
+        onRowsPerPageChange={(event) => {
+          setRowsPerPage(Number(event.target.value))
+          setPage(0)
+        }}
+      />
     </Box>
   )
 }

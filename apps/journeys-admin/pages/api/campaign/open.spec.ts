@@ -307,6 +307,31 @@ describe('campaign/open', () => {
     expect(redirect).toHaveBeenCalledWith(307, 'https://outreach.example.org')
   })
 
+  it('leaves a language whose bcp47 tag the proxy never routes out of the refreshed paths', async () => {
+    mockCampaign({
+      ...publishedCampaign,
+      languages: [
+        ...publishedCampaign.languages,
+        {
+          __typename: 'CampaignLanguage',
+          id: 'junkId',
+          language: {
+            __typename: 'Language',
+            id: '99999',
+            bcp47: 'english language'
+          }
+        }
+      ]
+    })
+    const { res } = mockResponse()
+    await handler(openReq(), res)
+
+    expect(revalidatedPaths()).toHaveLength(12)
+    expect(
+      revalidatedPaths().filter((path) => path.includes('english'))
+    ).toEqual([])
+  })
+
   it('redirects to the root-domain address when the campaign has no Campaign Domain', async () => {
     mockCampaign({ ...publishedCampaign, customDomains: [] })
     const { res, redirect } = mockResponse()

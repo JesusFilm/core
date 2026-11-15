@@ -7,6 +7,7 @@ import {
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { builder } from '../builder'
 import { logger } from '../logger'
+import { canHavePlaceholderVariant } from '../videoVariant/canHavePlaceholderVariant'
 import {
   createEmptyParentVariant,
   handleParentVariantCreation
@@ -266,6 +267,7 @@ async function computeMissingParentLanguages(
     where: { id: parentId },
     select: {
       id: true,
+      label: true,
       variants: { select: { languageId: true } },
       children: {
         where: { published: true },
@@ -283,6 +285,10 @@ async function computeMissingParentLanguages(
   if (parent == null) {
     throw new Error(`Video with id ${parentId} not found`)
   }
+
+  // A playable parent (featureFilm) never gets placeholder Variants, so no
+  // language is ever "missing" from it.
+  if (!canHavePlaceholderVariant(parent.label)) return []
 
   const existingLanguageIds = new Set(
     parent.variants.map(({ languageId }: { languageId: string }) => languageId)

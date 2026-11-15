@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
@@ -6,11 +5,13 @@ import { ChangeEvent, ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignTypographyBlock as TypographyBlock } from '../../../../__generated__/GetCampaign'
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
+import { AlignRow } from '../AlignRow'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
-import { AlignRow, StyleRow } from '../StyleRow'
-import { useCampaignExtraStyleCommand } from '../utils/useCampaignExtraStyleCommand'
-import { useHostBand } from '../utils/useHostBand'
+import { CommandError } from '../CommandError'
+import { StyleRow } from '../StyleRow'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
+import { useCampaignHostBand } from '../utils/useCampaignHostBand'
 
 /** The twelve variants Size walks, largest first. */
 export const TEXT_SIZES = [
@@ -46,8 +47,8 @@ interface TextControlsProps {
 export function TextControls({ block }: TextControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addTextStyle, error } = useCampaignExtraStyleCommand()
-  const band = useHostBand()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
+  const band = useCampaignHostBand()
 
   const sizeLabels: Record<TypographyVariant, string> = {
     h1: t('Heading 1'),
@@ -71,16 +72,12 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
   function handleSize(event: ChangeEvent<HTMLInputElement>): void {
     const variant = event.target.value as TypographyVariant
     if (variant === currentSize) return
-    addTextStyle(block, { variant })
+    addFields(block, { variant })
   }
 
   return (
     <Stack spacing={4} data-testid="TextControls">
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <StyleRow label={t('Size')}>
         <TextField
           select
@@ -102,7 +99,7 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
       </StyleRow>
       <AlignRow
         value={block.align}
-        onChange={(align) => addTextStyle(block, { align })}
+        onChange={(align) => addFields(block, { align })}
       />
       <ColourRows
         label={t('Colour')}
@@ -116,8 +113,8 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
         ]}
         rowTestId="TextColourRow"
         pickerTestId="TextColour"
-        onCommit={(_key, hex) => addTextStyle(block, { color: hex })}
-        onReset={() => addTextStyle(block, { color: null })}
+        onCommit={(_key, hex) => addFields(block, { color: hex })}
+        onReset={() => addFields(block, { color: null })}
       />
     </Stack>
   )
