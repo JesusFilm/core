@@ -1,0 +1,5 @@
+**
+!dist
+!dist/apis
+!dist/apis/api-auth
+!dist/apis/api-auth/main.mjs

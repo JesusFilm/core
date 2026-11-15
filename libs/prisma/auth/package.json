@@ -1,0 +1,5 @@
+{
+  "name": "@core/prisma-auth",
+  "private": true,
+  "type": "module"
+}

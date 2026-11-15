@@ -1,0 +1,19 @@
+{
+  "name": "api-auth",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "oidc-provider": "9.15.0",
+    "ipaddr.js": "2.5.0",
+    "undici": "6.23.0",
+    "firebase-admin": "^14.2.0",
+    "@prisma/client": "^7.0.0",
+    "@prisma/adapter-pg": "^7.0.0",
+    "pino": "9.6.0",
+    "zod": "4.3.5"
+  },
+  "devDependencies": {
+    "@types/oidc-provider": "9.13.1"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "extends": "../../../tsconfig.base.ts7.json",
+  "compilerOptions": { "noEmit": true, "types": ["node"] },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
