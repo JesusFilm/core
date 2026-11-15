@@ -56,6 +56,22 @@ vi.mock('./verifyUser', () => ({
   verifyUser: vi.fn().mockResolvedValue(true)
 }))
 
+// The email resolvers look the row up with a raw LOWER(email) = LOWER($1)
+// query (see findUserByEmail) and then load it by primary key.
+function mockEmailLookup(row: { id: string }): void {
+  prismaMock.$queryRaw.mockResolvedValueOnce([{ id: row.id }])
+  prismaMock.user.findUnique.mockResolvedValueOnce(row as never)
+}
+
+function expectCaseInsensitiveEmailLookup(email: string, id: string): void {
+  const [strings, ...values] = prismaMock.$queryRaw.mock
+    .calls[0] as unknown as [TemplateStringsArray, ...unknown[]]
+  expect(strings.join('?')).toContain('LOWER(email) = LOWER(?)')
+  expect(values).toEqual([email])
+  expect(prismaMock.user.findUnique).toHaveBeenCalledWith({ where: { id } })
+  expect(prismaMock.user.findFirst).not.toHaveBeenCalled()
+}
+
 describe('api-users', () => {
   const client = getClient()
 
@@ -359,18 +375,14 @@ describe('api-users', () => {
 
     it('should query user if interop token is valid', async () => {
       getUserFromPayloadMock.mockReturnValueOnce(null)
-      prismaMock.user.findUnique.mockResolvedValue(user)
+      mockEmailLookup(user)
       const data = await authClient({
         document: USER_QUERY,
         variables: {
           email: 'abc@example.com'
         }
       })
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
-        where: {
-          email: 'abc@example.com'
-        }
-      })
+      expectCaseInsensitiveEmailLookup('abc@example.com', user.id)
       expect(data).toHaveProperty(
         'data.userByEmail',
         omit(user, ['createdAt', 'userId'])
@@ -530,20 +542,18 @@ describe('api-users', () => {
     })
 
     it('should impersonate a user', async () => {
-      prismaMock.user.findUnique
-        .mockResolvedValueOnce({ ...user, superAdmin: true })
-        .mockResolvedValueOnce(user)
+      prismaMock.user.findUnique.mockResolvedValueOnce({
+        ...user,
+        superAdmin: true
+      })
+      mockEmailLookup(user)
       const data = await authClient({
         document: USER_IMPERSONATE_MUTATION,
         variables: {
           email: 'abc@example.com'
         }
       })
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
-        where: {
-          email: 'abc@example.com'
-        }
-      })
+      expectCaseInsensitiveEmailLookup('abc@example.com', user.id)
       expect(data).toHaveProperty('data.userImpersonate', '1234')
     })
 
@@ -574,7 +584,7 @@ describe('api-users', () => {
     `)
 
     it('should query user if interop token is valid', async () => {
-      prismaMock.user.findUnique.mockResolvedValue(user)
+      mockEmailLookup(user)
       const data = await client({
         document: VALIDATE_EMAIL_MUTATION,
         variables: {
@@ -582,11 +592,7 @@ describe('api-users', () => {
           token: 'token'
         }
       })
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
-        where: {
-          email: 'abc@example.com'
-        }
-      })
+      expectCaseInsensitiveEmailLookup('abc@example.com', user.id)
       expect(data).toHaveProperty('data.validateEmail', {
         ...omit(user, ['createdAt', 'userId']),
         emailVerified: true
@@ -594,7 +600,7 @@ describe('api-users', () => {
     })
 
     it('should throw when user not found', async () => {
-      prismaMock.user.findUnique.mockResolvedValue(null)
+      prismaMock.$queryRaw.mockResolvedValue([])
       const data = await client({
         document: VALIDATE_EMAIL_MUTATION,
         variables: {

@@ -42,7 +42,7 @@ function renderPicker(
   mock = accessibleMock()
 ) {
   render(
-    <MockedProvider mocks={[mock] as never}>
+    <MockedProvider mocks={[mock]}>
       <JourneyPicker onLink={onLink} />
     </MockedProvider>
   )
@@ -122,7 +122,7 @@ describe('JourneyPicker', () => {
 
   it('offers only the journeys in the given statuses', async () => {
     render(
-      <MockedProvider mocks={[accessibleMock()] as never}>
+      <MockedProvider mocks={[accessibleMock()]}>
         <JourneyPicker
           onLink={vi.fn(async () => undefined)}
           statuses={[JourneyStatus.published]}

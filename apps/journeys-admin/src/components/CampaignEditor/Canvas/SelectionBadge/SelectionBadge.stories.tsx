@@ -8,9 +8,9 @@ import { userEvent, within } from 'storybook/test'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
-  CanvasHoverReporter,
-  NavigatorHoverProvider
-} from '../../Navigator/NavigatorHover'
+  CampaignHoverProvider,
+  CanvasHoverReporter
+} from '../../CampaignHoverProvider'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 
 import { SelectionBadge, SelectionBadgePlacement } from '.'
@@ -67,7 +67,7 @@ function SelectionBadgeStory({
   selectedId
 }: SelectionBadgeStoryProps): ReactElement {
   return (
-    <NavigatorHoverProvider>
+    <CampaignHoverProvider>
       <CanvasHoverReporter document={document} />
       <Stack spacing={4} sx={{ width, pt: 4, pb: 2, px: 2 }}>
         <BlockStand
@@ -104,7 +104,7 @@ function SelectionBadgeStory({
           </Stack>
         </BlockStand>
       </Stack>
-    </NavigatorHoverProvider>
+    </CampaignHoverProvider>
   )
 }
 

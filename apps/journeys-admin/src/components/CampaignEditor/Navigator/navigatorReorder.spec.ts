@@ -8,7 +8,12 @@ import {
   CampaignChildPlacement,
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
-import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
+import {
+  campaign,
+  campaignWithColumns,
+  campaignWithRegions,
+  eurLine
+} from '../data'
 
 import {
   droppablesInGroupOf,
@@ -218,6 +223,30 @@ describe('planReorder', () => {
           'landingSwitcherId__eurRegionId__eurLineId'
         )
       ).toBeUndefined()
+    })
+  })
+
+  describe('Region Lines', () => {
+    it('reorders a line among its region’s lines through the block order', () => {
+      const withTwoLines: Campaign = {
+        ...campaignWithRegions,
+        blocks: [
+          ...campaignWithRegions.blocks,
+          { ...eurLine, id: 'eurSecondLineId', parentOrder: 1 }
+        ]
+      }
+
+      expect(
+        plan(
+          withTwoLines,
+          'landingSwitcherId__eurRegionId__eurSecondLineId',
+          'landingSwitcherId__eurRegionId__eurLineId'
+        )
+      ).toEqual({
+        kind: 'block',
+        block: expect.objectContaining({ id: 'eurSecondLineId' }),
+        parentOrder: 0
+      })
     })
   })
 })

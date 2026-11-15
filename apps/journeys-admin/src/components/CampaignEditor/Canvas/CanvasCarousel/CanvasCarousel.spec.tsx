@@ -13,7 +13,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { campaign, withEmptyTranslations } from '../../data'
 import { StaticEditor } from '../../testing'
-import type { CanvasBlock } from '../CanvasSection'
+import type { CanvasBlock } from '../canvasBlock'
 
 import { CanvasCarousel } from './CanvasCarousel'
 
@@ -26,7 +26,7 @@ const items = Array.from({ length: 8 }, (_, index) => ({
 
 const withCards: Campaign = {
   ...campaign,
-  blocks: [...campaign.blocks, ...(items as never[])]
+  blocks: [...campaign.blocks, ...items]
 }
 
 function renderCarousel(source: Campaign = withCards) {
@@ -34,7 +34,7 @@ function renderCarousel(source: Campaign = withCards) {
     (candidate) => candidate.id === 'carouselId'
   ) as Extract<CanvasBlock, { __typename: 'CampaignVideoCarouselBlock' }>
   return render(
-    <StaticEditor campaignProp={source}>
+    <StaticEditor campaign={source}>
       <CanvasCarousel block={block} />
     </StaticEditor>
   )
@@ -85,10 +85,12 @@ describe('CanvasCarousel', () => {
     expect(scrollBy).toHaveBeenCalledWith({ left: 600, behavior: 'smooth' })
   })
 
-  it('shows no arrows on the placeholder while there is nothing to show', () => {
+  it('shows no arrows on the placeholder, which points at Settings, while there is nothing to show', () => {
     renderCarousel(campaign)
 
-    expect(screen.getByTestId('CanvasCarouselPlaceholder')).toBeInTheDocument()
+    expect(screen.getByTestId('CanvasCarouselPlaceholder')).toHaveTextContent(
+      'Add videos in Settings'
+    )
     expect(
       screen.queryByRole('button', { name: 'Next videos' })
     ).not.toBeInTheDocument()
@@ -128,12 +130,12 @@ describe('CanvasCarousel Campaign Strings', () => {
       ...campaign,
       blocks: campaign.blocks.map((block) =>
         block.id === 'carouselId'
-          ? ({
+          ? {
               ...block,
               videoId: 'collectionId',
               videoVariantLanguageId: '529',
               video: collection
-            } as never)
+            }
           : block
       ),
       strings: campaign.strings.map((string) =>

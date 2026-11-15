@@ -15,7 +15,7 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignStringKey } from '../../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { campaignStringText } from '../../ShareSectionEdit/ShareSectionEdit'
+import { campaignStringText } from '../../utils/campaignStringText'
 import { EditorNote } from '../EditorNote'
 
 /** The title a Media Slot video shows: the override (or text captured at pick), else the Watch video's own. */
@@ -37,7 +37,7 @@ interface CanvasMediaProps {
 /**
  * A Media Slot as the editor previews it: an image, a video's poster with
  * its title (and "<n> videos" for a Watch video with children), or a dashed
- * placeholder pointing at Edit when the slot is empty.
+ * placeholder pointing at Settings when the slot is empty.
  */
 export function CanvasMedia({
   media,
@@ -155,7 +155,7 @@ export function CanvasMedia({
         color: 'var(--campaign-band-muted)'
       }}
     >
-      <EditorNote>{t('Add media from Edit')}</EditorNote>
+      <EditorNote>{t('Add media in Settings')}</EditorNote>
     </Box>
   )
 }

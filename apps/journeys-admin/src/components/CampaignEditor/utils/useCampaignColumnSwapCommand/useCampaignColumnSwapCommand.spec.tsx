@@ -23,7 +23,6 @@ function slotRows(order: string[]): Array<Record<string, unknown>> {
 }
 
 const swapMock = {
-  delay: 100,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'slotLeftId', parentOrder: 1 }
@@ -34,7 +33,6 @@ const swapMock = {
 }
 
 const swapBackMock = {
-  delay: 100,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'slotLeftId', parentOrder: 0 }
@@ -45,7 +43,6 @@ const swapBackMock = {
 }
 
 const swapFromRightMock = {
-  delay: 100,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'slotRightId', parentOrder: 0 }
@@ -78,7 +75,7 @@ function renderEditor(
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }

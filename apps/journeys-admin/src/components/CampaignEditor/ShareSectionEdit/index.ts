@@ -1,5 +1,2 @@
-export {
-  ShareSectionEdit,
-  addLanguageOptions,
-  regionLanguageLabel
-} from './ShareSectionEdit'
+export { ShareSectionEdit, addLanguageOptions } from './ShareSectionEdit'
+export { regionLanguageLabel } from './shareLanguage'

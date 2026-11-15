@@ -1,5 +1,6 @@
 export {
   campaignDomainName,
+  campaignOpenPageHref,
   campaignPublicAddress,
   campaignShareLink,
   journeyPreviewAddress

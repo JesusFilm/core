@@ -17,6 +17,3 @@ export type {
   CampaignTextTypename,
   CampaignTranslatedValue
 } from './campaignTextFields'
-
-export * from './useCampaignBlockTextMutation'
-export { campaignTextCap } from './legacyCampaignTextCap'

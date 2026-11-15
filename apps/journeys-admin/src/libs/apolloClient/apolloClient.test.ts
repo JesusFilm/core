@@ -175,7 +175,7 @@ describe('SSELink', () => {
     })
   })
 
-  it('creates the client without retries for CampaignAiTranslateSubscription', () => {
+  it('creates the client with the retry attempts the operation context sets', () => {
     const link = new SSELink('http://localhost:4000')
 
     link
@@ -188,7 +188,7 @@ describe('SSELink', () => {
           `,
           variables: {},
           operationName: 'CampaignAiTranslateSubscription',
-          getContext: () => ({})
+          getContext: () => ({ retryAttempts: 0 })
         }),
         () => EMPTY
       )
@@ -199,7 +199,7 @@ describe('SSELink', () => {
     )
   })
 
-  it('keeps the library retry default for other subscriptions', () => {
+  it('keeps the library retry default when the context sets none', () => {
     const link = new SSELink('http://localhost:4000')
 
     link

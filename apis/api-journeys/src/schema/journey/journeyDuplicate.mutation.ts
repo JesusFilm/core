@@ -303,6 +303,16 @@ builder.mutationField('journeyDuplicate', (t) =>
                   trashedAt: null,
                   deletedAt: null,
                   template: duplicateAsTemplate,
+                  // Only template duplicates retain their own snapshot of definitions.
+                  custom1Label: duplicateAsTemplate
+                    ? journey.custom1Label
+                    : null,
+                  custom2Label: duplicateAsTemplate
+                    ? journey.custom2Label
+                    : null,
+                  custom3Label: duplicateAsTemplate
+                    ? journey.custom3Label
+                    : null,
                   customizable: duplicateAsTemplate
                     ? (journey.customizable ?? false)
                     : false,

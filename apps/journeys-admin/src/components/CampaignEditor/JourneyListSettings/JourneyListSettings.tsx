@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -8,11 +7,8 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyListBlock as CampaignJourneyListBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignJourneyListDisplay } from '../../../../__generated__/globalTypes'
-import {
-  CampaignJourneyListDisplayInput,
-  useCampaignJourneyListBlockDisplayMutation
-} from '../../../libs/useCampaignJourneyListBlockDisplayMutation'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { CommandError } from '../CommandError'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 interface JourneyListSettingsProps {
   block: CampaignJourneyListBlock
@@ -27,17 +23,11 @@ export function JourneyListSettings({
   block
 }: JourneyListSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeDisplay = useCampaignJourneyListBlockDisplayMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
 
   function handleChange(display: CampaignJourneyListDisplay | null): void {
     if (display == null || display === block.display) return
-    addStyle<CampaignJourneyListBlock, CampaignJourneyListDisplayInput>({
-      block,
-      input: { display },
-      previous: { display: block.display },
-      run: writeDisplay
-    })
+    addFields(block, { display })
   }
 
   return (
@@ -46,11 +36,7 @@ export function JourneyListSettings({
       data-testid="JourneyListSettings"
       data-block-id={block.id}
     >
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <Typography variant="subtitle2">{t('Display')}</Typography>
       <ToggleButtonGroup
         value={block.display}

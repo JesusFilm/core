@@ -2,7 +2,10 @@ import { RenderResult, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 
-import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
+import {
+  contrastText,
+  transformCampaignBlocks
+} from '@core/journeys/ui/Campaign'
 import { headerLogoBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
@@ -11,12 +14,19 @@ import {
   CampaignStringKey
 } from '../../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { campaign, campaignWithColumns, campaignWithRegions } from '../../data'
-import { newSectionBlock } from '../../sectionTypes'
+import {
+  campaign,
+  campaignWithColumns,
+  campaignWithRegions,
+  withEmptyTranslations
+} from '../../data'
+import { blockOf } from '../../styleTesting'
 import { SelectionProbe, StaticEditor, frameBody } from '../../testing'
+import { newSectionBlock } from '../../utils/sectionTypes'
 import { Canvas } from '../Canvas'
+import type { CanvasBlock } from '../canvasBlock'
 
-import { CanvasBlock, CanvasSection } from './CanvasSection'
+import { CanvasSection } from './CanvasSection'
 
 function chromeBlock(
   source: Campaign,
@@ -38,7 +48,7 @@ const withLogo: Campaign = {
         ? { ...block, logoBlockId: 'headerLogoId' }
         : block
     ),
-    headerLogoBlock as never
+    withEmptyTranslations(headerLogoBlock)
   ]
 }
 
@@ -47,15 +57,20 @@ const withoutNavButtons: Campaign = {
   blocks: campaign.blocks.filter((block) => block.parentBlockId !== 'headerId')
 }
 
+/** The header with its Resources nav button swapped for a typography block in the same place. */
 const withHeaderText: Campaign = {
   ...campaign,
   blocks: campaign.blocks.map((block) =>
     block.id === 'navResourcesId'
-      ? ({
-          ...block,
-          __typename: 'CampaignTypographyBlock',
+      ? {
+          ...blockOf<'CampaignTypographyBlock'>('journeyListNoteId'),
+          id: block.id,
+          pageId: block.pageId,
+          regionId: block.regionId,
+          parentBlockId: block.parentBlockId,
+          parentOrder: block.parentOrder,
           content: 'Not a nav button'
-        } as never)
+        }
       : block
   )
 }
@@ -92,7 +107,7 @@ function renderChrome(
 ): RenderResult {
   return render(
     <StaticEditor
-      campaignProp={source}
+      campaign={source}
       initialState={{ selectedBlockId, previewLanguageId: '529' }}
     >
       <SelectionProbe />
@@ -107,7 +122,7 @@ describe('CanvasSection header', () => {
     function renderRegionHeader(source: Campaign): void {
       render(
         <StaticEditor
-          campaignProp={source}
+          campaign={source}
           initialState={{
             pageKind: CampaignPageKind.regionTemplate,
             regionId: 'eurRegionId',
@@ -365,6 +380,24 @@ describe('CanvasSection footer', () => {
       ).toBeNull()
     })
 
+    it('spaces its lines as the public footer does', () => {
+      const copyright = campaign.blocks.find(
+        (block) => block.id === 'footerCopyrightId'
+      )
+      const twoLines: Campaign = {
+        ...campaign,
+        blocks: [
+          ...campaign.blocks,
+          { ...copyright, id: 'footerSecondLineId', parentOrder: 3 } as never
+        ]
+      }
+      renderChrome('CampaignFooterBlock', twoLines)
+
+      expect(screen.getByTestId('CanvasExtra-footerSecondLineId')).toHaveStyle({
+        marginTop: '4px'
+      })
+    })
+
     it('renders no row for a footer without children', () => {
       const emptyFooter: Campaign = {
         ...campaign,
@@ -375,7 +408,9 @@ describe('CanvasSection footer', () => {
       renderChrome('CampaignFooterBlock', emptyFooter)
 
       expect(screen.queryByTestId('CanvasFooterRow')).not.toBeInTheDocument()
-      expect(screen.getByTestId('CanvasSection-footerId')).toBeInTheDocument()
+      expect(screen.getByTestId('CanvasSection-footerId')).toHaveStyle({
+        minHeight: '16px'
+      })
     })
 
     it('selects a footer link on click', () => {
@@ -407,7 +442,7 @@ describe('CanvasSection region header', () => {
   it('shows the previewed region’s name and its lines, read-only', () => {
     render(
       <StaticEditor
-        campaignProp={campaignWithRegions}
+        campaign={campaignWithRegions}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
@@ -440,7 +475,7 @@ describe('CanvasSection region header', () => {
   ): void {
     render(
       <StaticEditor
-        campaignProp={campaignProp}
+        campaign={campaignProp}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
@@ -493,6 +528,61 @@ describe('CanvasSection region header', () => {
   })
 })
 
+describe('CanvasSection body text', () => {
+  function bodySection(
+    typename: 'CampaignRichTextBlock' | 'CampaignFeaturedMediaBlock',
+    fields: Record<string, string>
+  ): CanvasBlock {
+    return {
+      ...newSectionBlock(typename, {
+        id: 'bodyTextId',
+        campaignId: campaign.id,
+        pageId: 'landingPageId',
+        parentOrder: 0
+      }),
+      ...fields,
+      children: [],
+      cover: null,
+      media: null
+    } as unknown as CanvasBlock
+  }
+
+  function renderSection(block: CanvasBlock): RenderResult {
+    return render(
+      <StaticEditor initialState={{ previewLanguageId: '529' }}>
+        <CanvasSection block={block} />
+      </StaticEditor>
+    )
+  }
+
+  it('shows Rich Text as one paragraph per blank-line run', () => {
+    renderSection(
+      bodySection('CampaignRichTextBlock', {
+        richTextContent: 'First.\n\nSecond.'
+      })
+    )
+
+    expect(
+      screen
+        .getAllByTestId('InlineTextParagraph')
+        .map((paragraph) => paragraph.textContent)
+    ).toEqual(['First.', 'Second.'])
+  })
+
+  it('shows Featured Media bullets as a list', () => {
+    renderSection(
+      bodySection('CampaignFeaturedMediaBlock', {
+        bullets: 'Free to share\nIn over 1,800 languages'
+      })
+    )
+
+    expect(screen.getByTestId('InlineText-bullets').tagName).toBe('UL')
+    expect(
+      screen.getAllByRole('listitem').map((item) => item.textContent)
+    ).toEqual(['Free to share', 'In over 1,800 languages'])
+  })
+})
+
 describe('CanvasSection rich text in a column slot', () => {
   const emptyRichText: Campaign = {
     ...campaignWithColumns,
@@ -506,7 +596,7 @@ describe('CanvasSection rich text in a column slot', () => {
   function renderColumns(selectedBlockId?: string): RenderResult {
     return render(
       <StaticEditor
-        campaignProp={emptyRichText}
+        campaign={emptyRichText}
         initialState={{ selectedBlockId, previewLanguageId: '529' }}
       >
         <SelectionProbe />
@@ -575,4 +665,78 @@ describe('CanvasSection button label', () => {
 
     expect(input).toHaveValue('Choose your region\nnow')
   })
+
+  it('gives a contained button with its own colour and no label colour the contrast label', () => {
+    const whiteButtonHero = transformCampaignBlocks(
+      campaign.blocks.map((block) =>
+        block.id === 'heroButtonId'
+          ? ({
+              ...block,
+              buttonVariant: null,
+              color: '#FFFFFF',
+              labelColor: null
+            } as never)
+          : block
+      )
+    ).find((block) => block.id === 'heroId') as CanvasBlock
+    render(
+      <StaticEditor>
+        <CanvasSection block={whiteButtonHero} />
+      </StaticEditor>
+    )
+
+    expect(contrastText('#FFFFFF')).toBe('rgba(0, 0, 0, 0.87)')
+    expect(screen.getByTestId('CanvasButton')).toHaveStyle({
+      backgroundColor: '#FFFFFF',
+      color: contrastText('#FFFFFF')
+    })
+  })
+})
+
+describe('CanvasSection keyboard', () => {
+  const hero = transformCampaignBlocks(campaign.blocks).find(
+    (block) => block.id === 'heroId'
+  ) as CanvasBlock
+
+  function renderHero(): void {
+    render(
+      <StaticEditor initialState={{ previewLanguageId: '529' }}>
+        <SelectionProbe />
+        <CanvasSection block={hero} />
+      </StaticEditor>
+    )
+  }
+
+  it('makes the section focusable and labelled, without a button role', () => {
+    renderHero()
+
+    const section = screen.getByTestId('CanvasSection-heroId')
+    expect(section).toHaveAttribute('tabindex', '0')
+    expect(section).toHaveAttribute('aria-label', 'Hero')
+    expect(section).not.toHaveAttribute('role')
+  })
+
+  it.each(['Enter', ' '])('selects the section on %j', (key) => {
+    renderHero()
+
+    fireEvent.keyDown(screen.getByTestId('CanvasSection-heroId'), { key })
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+  })
+
+  it.each(['Enter', ' '])(
+    'selects an Extra, a button, on %j and not its section',
+    (key) => {
+      renderHero()
+      const extra = screen.getByTestId('CanvasExtra-heroButtonId')
+      expect(extra).toHaveAttribute('role', 'button')
+      expect(extra).toHaveAttribute('tabindex', '0')
+
+      fireEvent.keyDown(extra, { key })
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'heroButtonId'
+      )
+    }
+  )
 })
