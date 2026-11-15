@@ -119,7 +119,6 @@ async function signInFromAuthorization(
 test.use({ trace: 'off', video: 'off', screenshot: 'off' })
 
 test.describe('local agent connection @manual', () => {
-
   test('sign in, approve selected View only access and rotate credentials', async ({
     page,
     request,
