@@ -26,7 +26,9 @@ import { Card } from '.'
 
 // Resolve Next's browser-only dynamic imports in the Vitest component environment.
 vi.mock('next/dynamic', async () => {
-  const { lazy, Suspense } = await import(/* webpackChunkName: "react" */ 'react')
+  const { lazy, Suspense } = await import(
+    /* webpackChunkName: "react" */ 'react'
+  )
   type LoadedComponent = ComponentType<Record<string, unknown>>
   return {
     default: (loader: () => Promise<LoadedComponent>) => {
