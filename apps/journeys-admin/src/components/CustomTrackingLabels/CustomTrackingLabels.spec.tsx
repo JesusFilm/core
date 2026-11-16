@@ -3,6 +3,7 @@ import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { SnackbarProvider } from 'notistack'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -20,6 +21,7 @@ import {
 import { JOURNEY_SETTINGS_WITH_LABELS_UPDATE } from '../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { TEMPLATE_LABELS } from '../../libs/useTemplateLabelsQuery'
 import { EventLabel } from '../Editor/Slider/Settings/CanvasDetails/Properties/controls/EventLabel'
+import { ThemeProvider } from '../ThemeProvider'
 
 import { CustomTrackingLabels } from './CustomTrackingLabels'
 
@@ -94,41 +96,45 @@ describe('CustomTrackingLabels', () => {
     withTrackingDropdown?: boolean
   } = {}) {
     return render(
-      <MockedProvider
-        cache={cache}
-        mocks={[createLabelsMock(), createRolesMock(roles), ...mocks]}
-      >
-        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
-          {withTrackingDropdown ? (
-            <EditorProvider
-              initialState={{
-                selectedBlock: {
-                  __typename: 'CardBlock',
-                  id: 'card',
-                  parentBlockId: 'step',
-                  parentOrder: 0,
-                  coverBlockId: null,
-                  backgroundColor: null,
-                  themeMode: null,
-                  themeName: null,
-                  fullscreen: false,
-                  backdropBlur: null,
-                  eventLabel: BlockEventLabel.custom1,
-                  showAssistant: null,
-                  expandChatByDefault: null,
-                  children: []
-                }
-              }}
-            >
-              <CommandProvider>
-                <EventLabel />
-              </CommandProvider>
-            </EditorProvider>
-          ) : (
-            <CustomTrackingLabels />
-          )}
-        </JourneyProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider
+          cache={cache}
+          mocks={[createLabelsMock(), createRolesMock(roles), ...mocks]}
+        >
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
+              {withTrackingDropdown ? (
+                <EditorProvider
+                  initialState={{
+                    selectedBlock: {
+                      __typename: 'CardBlock',
+                      id: 'card',
+                      parentBlockId: 'step',
+                      parentOrder: 0,
+                      coverBlockId: null,
+                      backgroundColor: null,
+                      themeMode: null,
+                      themeName: null,
+                      fullscreen: false,
+                      backdropBlur: null,
+                      eventLabel: BlockEventLabel.custom1,
+                      showAssistant: null,
+                      expandChatByDefault: null,
+                      children: []
+                    }
+                  }}
+                >
+                  <CommandProvider>
+                    <EventLabel />
+                  </CommandProvider>
+                </EditorProvider>
+              ) : (
+                <CustomTrackingLabels />
+              )}
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
   }
 

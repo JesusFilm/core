@@ -141,6 +141,49 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       }))
   }
 
+  it('warns when labels fail and retries them without interrupting successful stats', async () => {
+    const user = userEvent.setup()
+    const statuses = [
+      JourneyStatus.published,
+      JourneyStatus.draft,
+      JourneyStatus.archived
+    ]
+    const statsResult = vi.fn(() => ({ data: customTrackingData }))
+    render(
+      <MockedProvider
+        mocks={[
+          { ...createMock(statuses), result: statsResult },
+          {
+            request: createLabelsMock().request,
+            error: new Error('Labels unavailable')
+          },
+          createLabelsMock(journeyId, 'Conversations')
+        ]}
+      >
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+
+    const warning = await screen.findByRole('alert')
+    expect(warning).toHaveTextContent('Unable to load custom tracking labels')
+    expect(
+      screen.getByTestId('template-breakdown-analytics-table')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Custom Tracking 1')).toBeInTheDocument()
+    expect(screen.getAllByText('12')).toHaveLength(2)
+
+    await user.click(within(warning).getByRole('button', { name: 'Retry' }))
+
+    expect(await screen.findByText('Conversations')).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.getAllByText('12')).toHaveLength(2)
+    expect(statsResult).toHaveBeenCalledOnce()
+  })
+
   it('loads names for the passed template outside the editor and observes cache updates', async () => {
     const cache = new InMemoryCache()
     const statuses = [
@@ -435,6 +478,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     render(
       <MockedProvider
         mocks={[
+          createLabelsMock(),
           getTemplateFamilyStatsBreakdownMockWithArchived,
           filteredMock,
           withoutArchivedMock,
@@ -467,7 +511,12 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
   it('keeps reset visible and enables it when a date is entered', async () => {
     const user = userEvent.setup()
     render(
-      <MockedProvider mocks={[getTemplateFamilyStatsBreakdownMockWithArchived]}>
+      <MockedProvider
+        mocks={[
+          createLabelsMock(),
+          getTemplateFamilyStatsBreakdownMockWithArchived
+        ]}
+      >
         <TemplateBreakdownAnalyticsDialog
           journeyId={journeyId}
           open
@@ -504,6 +553,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     render(
       <MockedProvider
         mocks={[
+          createLabelsMock(),
           getTemplateFamilyStatsBreakdownMockWithArchived,
           createMock(withArchived, '2025-12-01,2025-12-10', {
             templateFamilyStatsBreakdown: []
@@ -534,7 +584,12 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     ['01-12-2025', '']
   ])('prevents applying an invalid range %s to %s', async (start, end) => {
     render(
-      <MockedProvider mocks={[getTemplateFamilyStatsBreakdownMockWithArchived]}>
+      <MockedProvider
+        mocks={[
+          createLabelsMock(),
+          getTemplateFamilyStatsBreakdownMockWithArchived
+        ]}
+      >
         <TemplateBreakdownAnalyticsDialog
           journeyId={journeyId}
           open
@@ -563,6 +618,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     render(
       <MockedProvider
         mocks={[
+          createLabelsMock(),
           createMock(
             [
               JourneyStatus.published,
@@ -666,6 +722,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     render(
       <MockedProvider
         mocks={[
+          createLabelsMock(),
           createMock(statuses),
           createMock(statuses, '2025-12-01,2025-12-10'),
           withoutArchived,
