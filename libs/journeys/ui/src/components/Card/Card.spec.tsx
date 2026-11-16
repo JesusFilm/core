@@ -26,7 +26,6 @@ import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
 import { Card } from './Card'
-
 import {
   action,
   block,
