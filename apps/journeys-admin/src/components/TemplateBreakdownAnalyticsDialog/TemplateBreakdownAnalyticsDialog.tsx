@@ -38,6 +38,7 @@ import { DateRangePicker } from '../JourneyVisitorsList/FilterDrawer/ExportDialo
 
 import { InfoIcon } from './InfoIcon'
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
+import { getBrowserDateFormat } from './getBrowserDateFormat'
 
 interface TemplateBreakdownAnalyticsDialogProps {
   journeyId: string
@@ -78,6 +79,10 @@ export function TemplateBreakdownAnalyticsDialog({
   handleClose
 }: TemplateBreakdownAnalyticsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [dateFormat, setDateFormat] = useState('dd-MM-yyyy')
+  useEffect(() => {
+    setDateFormat(getBrowserDateFormat())
+  }, [])
   const [includeArchivedJourneys, setIncludeArchivedJourneys] = useState(true)
   const today = useMemo(() => startOfToday(), [])
   const earliestDate = useMemo(() => parseISO(earliestStatsCollected), [])
@@ -242,6 +247,7 @@ export function TemplateBreakdownAnalyticsDialog({
         <Stack direction="row" sx={{ alignItems: 'center' }}>
           <DateRangePicker
             key={datePickerResetKey}
+            format={dateFormat}
             onInputStateChange={setFieldInputState}
             startDate={startDate}
             endDate={endDate}

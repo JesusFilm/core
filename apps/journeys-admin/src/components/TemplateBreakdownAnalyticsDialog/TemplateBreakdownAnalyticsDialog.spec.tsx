@@ -31,15 +31,19 @@ vi.mock('@mui/material/useMediaQuery', () => {
 })
 
 describe('TemplateBreakdownAnalyticsDialog', () => {
+  const formatToParts = Intl.DateTimeFormat.prototype.formatToParts
   const mockHandleClose = vi.fn()
   const journeyId = 'test-journey-id'
 
   beforeEach(() => {
     vi.clearAllMocks()
     vi.setSystemTime(new Date(2025, 11, 24, 12))
+    // Keep the existing range regression cases on the fallback format.
+    vi.spyOn(Intl.DateTimeFormat.prototype, 'formatToParts').mockReturnValue([])
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.useRealTimers()
   })
 
@@ -269,6 +273,133 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       target: { value: end }
     })
   }
+
+  describe.each([
+    ['en-US', ['Month', 'Day', 'Year'], '05/04/2026', '05/06/2026'],
+    ['en-NZ', ['Day', 'Month', 'Year'], '04/05/2026', '06/05/2026'],
+    ['ja-JP', ['Year', 'Month', 'Day'], '2026/05/04', '2026/05/06'],
+    ['en', ['Month', 'Day', 'Year'], '05/04/2026', '05/06/2026']
+  ])('browser locale %s', (locale, sectionOrder, fromValue, toValue) => {
+    beforeEach(() => {
+      vi.setSystemTime(new Date(2026, 4, 15, 12))
+      vi.mocked(Intl.DateTimeFormat.prototype.formatToParts).mockReturnValue(
+        formatToParts.call(
+          new Intl.DateTimeFormat(locale, {
+            calendar: 'gregory',
+            numberingSystem: 'latn',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }),
+          new Date(2026, 4, 4)
+        )
+      )
+    })
+
+    const renderLocalizedDialog = () => {
+      const status = [
+        JourneyStatus.published,
+        JourneyStatus.draft,
+        JourneyStatus.archived
+      ]
+      const link = new MockLink([
+        { ...createMock(status), maxUsageCount: 2 },
+        createMock(status, '2026-05-04,2026-05-06')
+      ])
+      const request = vi.spyOn(link, 'request')
+      render(
+        <MockedProvider link={link}>
+          <TemplateBreakdownAnalyticsDialog
+            journeyId={journeyId}
+            open
+            handleClose={mockHandleClose}
+          />
+        </MockedProvider>
+      )
+      return request
+    }
+
+    it('shows matching hints, parses typed dates, and resets to all time', async () => {
+      const user = userEvent.setup()
+      const request = renderLocalizedDialog()
+      await screen.findByTestId('template-breakdown-analytics-table')
+      for (const label of ['From', 'To']) {
+        const field = within(screen.getAllByRole('group', { name: label })[0])
+        expect(
+          field
+            .getAllByRole('spinbutton')
+            .map((section) => section.getAttribute('aria-label'))
+        ).toEqual(sectionOrder)
+        for (const [section, hint] of [
+          ['Day', 'DD'],
+          ['Month', 'MM'],
+          ['Year', 'YYYY']
+        ]) {
+          expect(
+            field.getByRole('spinbutton', { name: section })
+          ).toHaveTextContent(hint)
+        }
+      }
+      for (const [label, day] of [
+        ['From', '04'],
+        ['To', '06']
+      ]) {
+        const field = within(screen.getAllByRole('group', { name: label })[0])
+        for (const [section, value] of [
+          ['Month', '05'],
+          ['Day', day],
+          ['Year', '2026']
+        ]) {
+          await user.click(field.getByRole('spinbutton', { name: section }))
+          await user.keyboard(value)
+        }
+      }
+      await screen.findByTestId('template-breakdown-analytics-table')
+      expect(request).toHaveBeenCalledTimes(2)
+      expect(screen.getByLabelText('From', { selector: 'input' })).toHaveValue(
+        fromValue
+      )
+      expect(screen.getByLabelText('To', { selector: 'input' })).toHaveValue(
+        toValue
+      )
+      expect(request.mock.calls[1][0].variables.where.date).toBe(
+        '2026-05-04,2026-05-06'
+      )
+      await user.click(screen.getByRole('button', { name: 'Reset date range' }))
+      await screen.findByTestId('template-breakdown-analytics-table')
+      expect(request.mock.calls[2][0].variables.where).toEqual({
+        property: 'event:props:templateKey',
+        period: 'all'
+      })
+    })
+
+    it('sends the same ISO range when days are selected in the calendar', async () => {
+      const user = userEvent.setup()
+      const request = renderLocalizedDialog()
+      await screen.findByTestId('template-breakdown-analytics-table')
+      await user.click(
+        screen.getAllByRole('button', { name: 'Choose date' })[0]
+      )
+      await user.click(screen.getByRole('gridcell', { name: '4' }))
+      await user.click(screen.getByRole('button', { name: 'OK' }))
+      await user.click(
+        await screen.findByRole('button', { name: 'Choose date' })
+      )
+      await user.click(screen.getByRole('gridcell', { name: '6' }))
+      await user.click(screen.getByRole('button', { name: 'OK' }))
+      await screen.findByTestId('template-breakdown-analytics-table')
+      expect(request).toHaveBeenCalledTimes(2)
+      expect(request.mock.calls[1][0].variables.where.date).toBe(
+        '2026-05-04,2026-05-06'
+      )
+      expect(screen.getByLabelText('From', { selector: 'input' })).toHaveValue(
+        fromValue
+      )
+      expect(screen.getByLabelText('To', { selector: 'input' })).toHaveValue(
+        toValue
+      )
+    })
+  })
 
   it('applies a date range to all metrics and preserves it when toggling archived projects', async () => {
     const user = userEvent.setup()
