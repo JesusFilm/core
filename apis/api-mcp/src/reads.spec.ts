@@ -24,6 +24,7 @@ describe('versioned owning-service results', () => {
     vi.stubGlobal('fetch', fetchMock)
     fetchMock.mockResolvedValueOnce(Response.json({ credential: 'signed' }))
   })
+
   afterEach(() => vi.unstubAllGlobals())
 
   it('binds output acceptance to the complete versioned page and response', async () => {
@@ -36,7 +37,7 @@ describe('versioned owning-service results', () => {
     )
     const body = Buffer.from(JSON.stringify({ structuredContent: data }))
     await reads.authorizeOutput(body)
-    expect(JSON.parse(String(fetchMock.mock.calls[2][1]?.body))).toEqual({
+    expect(JSON.parse(fetchMock.mock.calls[2][1]?.body as string)).toEqual({
       request,
       stage: 'output',
       dataHash: fingerprint(data),
