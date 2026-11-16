@@ -112,6 +112,8 @@ nx run-many -t codegen
 
 This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `resources`, `journeys-ui`, and `shared-gql`.
 
+Outside this repo, `jesusfilm/forge` (where `watch` now lives) queries the production gateway at runtime, and nothing in this repo checks those queries. Before removing or renaming a gateway field, argument or type, search forge for it.
+
 #### Troubleshooting
 
 ##### "Environment is non-interactive" error during migration
