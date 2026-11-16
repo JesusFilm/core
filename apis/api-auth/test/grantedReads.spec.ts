@@ -589,6 +589,136 @@ describe('granted journey read authorization', () => {
         expect(denied.body).not.toContain('private-read-b-sentinel')
       })
 
+      it.each(['2026-07-28', '2025-11-25'])(
+        'returns contract version 1 on list, all read views and denied results on %s',
+        async (version) => {
+          const results = [
+            await call('journeys_list', {}, accessToken, version)
+          ]
+          for (const view of ['outline', 'steps', 'settings'])
+            results.push(
+              await call(
+                'journey_read',
+                { journeyId: 'read-a', view },
+                accessToken,
+                version
+              )
+            )
+          for (const result of results) {
+            expect(result.status).toBe(200)
+            expect(JSON.parse(result.body)).toMatchObject({
+              result: { structuredContent: { contractVersion: '1' } }
+            })
+            expect(JSON.parse(result.body).result.isError).not.toBe(true)
+          }
+          const denied = await call(
+            'journey_read',
+            { journeyId: 'read-b', view: 'settings' },
+            accessToken,
+            version
+          )
+          expect(JSON.parse(denied.body)).toMatchObject({
+            result: {
+              isError: true,
+              structuredContent: {
+                contractVersion: '1',
+                code: 'ACCESS_DENIED_OR_NOT_FOUND'
+              }
+            }
+          })
+        }
+      )
+
+      it('includes the result version in owner size bounds and fresh output hashes', async () => {
+        const request = { tool: 'journeys_list', input: { limit: 20 } }
+        const exchanged = await internal(
+          'exchange',
+          { token: accessToken, request },
+          exchangeSecret
+        )
+        const { credential } = (await exchanged.json()) as {
+          credential: string
+        }
+        const relay = (body: Record<string, unknown>) =>
+          fetch(`${gatewayUrl}/mcp/reads`, {
+            method: 'POST',
+            headers: {
+              Authorization: `MCP ${credential}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ request, ...body })
+          })
+        const response = await relay({ stage: 'read' })
+        expect(response.status).toBe(200)
+        const { data } = (await response.json()) as {
+          data: { contractVersion: string; journeys: Array<{ title: string }> }
+        }
+        expect(data.contractVersion).toBe('1')
+        const output = {
+          stage: 'output',
+          outputHash: 'a'.repeat(64),
+          dataHash: fingerprint(data)
+        }
+        expect(
+          (
+            await relay({
+              ...output,
+              dataHash: fingerprint({ ...data, contractVersion: '2' })
+            })
+          ).status
+        ).toBe(403)
+        const accepted = await relay(output)
+        expect(accepted.status).toBe(200)
+        const { permitId } = (await accepted.json()) as { permitId: string }
+        expect(
+          (await internal('settle', { permitId }, exchangeSecret)).status
+        ).toBe(200)
+
+        const originalTitle = data.journeys[0].title
+        const fixedBytes =
+          Buffer.byteLength(JSON.stringify(data)) -
+          Buffer.byteLength(originalTitle)
+        const ownerRead = () => {
+          const body = JSON.stringify({ request, stage: 'read' })
+          return fetch(`${ownerUrl}/mcp/reads`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-mcp-context': credential,
+              'x-mcp-signature': internalSignature(
+                credential,
+                body,
+                internalSecret
+              )
+            },
+            body
+          })
+        }
+        try {
+          await journeys.journey.update({
+            where: { id: 'read-a' },
+            data: { title: 'x'.repeat(524288 - fixedBytes) }
+          })
+          const atLimit = await ownerRead()
+          expect(atLimit.status).toBe(200)
+          expect(
+            Buffer.byteLength(JSON.stringify((await atLimit.json()).data))
+          ).toBe(524288)
+          await journeys.journey.update({
+            where: { id: 'read-a' },
+            data: { title: 'x'.repeat(524289 - fixedBytes) }
+          })
+          const overLimit = await ownerRead()
+          expect(overLimit.status).toBe(403)
+          expect(await overLimit.json()).toEqual({ error: 'LIMIT_EXCEEDED' })
+        } finally {
+          await journeys.journey.update({
+            where: { id: 'read-a' },
+            data: { title: originalTitle }
+          })
+        }
+      })
+
       it('keeps distinct OAuth identities and denies a public URL without a resource grant', async () => {
         const bob = await consent('bob', ['read-foreign'])
         expect((await readA()).body).toContain('read-a-text-sentinel')

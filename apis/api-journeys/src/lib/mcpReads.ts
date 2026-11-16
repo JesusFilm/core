@@ -9,6 +9,7 @@ import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
 import {
   type ReadCredential,
   type ReadRequest,
+  type ReadResult,
   type ReadTrust,
   boundedJson,
   fingerprint,
@@ -16,6 +17,7 @@ import {
   postJson,
   readTransportRequest,
   readTrustSchema,
+  resultContractVersion,
   safeReadError,
   sameSecret,
   serviceUrl,
@@ -598,10 +600,11 @@ function typedAction(
     return { ...base, type: 'ChatAction', chatUrl: action.chatUrl }
   return { ...base, type: 'LinkAction', url: action.url, target: action.target }
 }
-function boundedResult(value: unknown): unknown {
-  if (Buffer.byteLength(JSON.stringify(value)) > 524288)
+function boundedResult(value: Record<string, unknown>): ReadResult {
+  const result = { contractVersion: resultContractVersion, ...value }
+  if (Buffer.byteLength(JSON.stringify(result)) > 524288)
     throw new Error('LIMIT_EXCEEDED')
-  return value
+  return result
 }
 
 export function useJourneyMcpReads(

@@ -1,8 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/server'
 
 import {
+  type ReadResult,
   journeyInput,
   listInput,
+  resultContractVersion,
   safeReadError
 } from '@core/yoga/mcp/readContract'
 
@@ -23,10 +25,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     }
   )
   if (!reads) return server
-  const result = async (
-    read: () => Promise<Record<string, unknown>>,
-    summary: string
-  ) => {
+  const result = async (read: () => Promise<ReadResult>, summary: string) => {
     try {
       const data = await read()
       return {
@@ -47,6 +46,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
           }
         ],
         structuredContent: {
+          contractVersion: resultContractVersion,
           code,
           ...(code === 'LIMIT_EXCEEDED'
             ? {

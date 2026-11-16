@@ -2,8 +2,10 @@ import { z } from 'zod'
 
 import {
   type ReadRequest,
+  type ReadResult,
   fingerprint,
-  postJson
+  postJson,
+  readResult
 } from '@core/yoga/mcp/readContract'
 
 import type { McpConfig } from './config'
@@ -27,7 +29,7 @@ export function createReadSession(
       `Bearer ${config.exchangeSecret!}`
     )
   return {
-    async read(request: ReadRequest): Promise<Record<string, unknown>> {
+    async read(request: ReadRequest): Promise<ReadResult> {
       const { credential } = z
         .object({ credential: z.string() })
         .parse(
@@ -38,7 +40,7 @@ export function createReadSession(
           )
         )
       const response = z
-        .object({ data: z.record(z.string(), z.unknown()) })
+        .object({ data: readResult })
         .parse(
           await postJson(
             new URL('/mcp/reads', config.gatewayUrl).href,

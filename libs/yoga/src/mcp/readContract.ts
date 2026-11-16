@@ -11,6 +11,12 @@ import {
 
 import { z } from 'zod'
 
+export const resultContractVersion = '1' as const
+export const readResult = z
+  .object({ contractVersion: z.literal(resultContractVersion) })
+  .catchall(z.unknown())
+export type ReadResult = z.infer<typeof readResult>
+
 const id = z.string().min(1).max(200)
 export const listInput = z
   .object({
