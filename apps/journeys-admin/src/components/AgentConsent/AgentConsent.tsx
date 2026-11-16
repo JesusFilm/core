@@ -23,8 +23,16 @@ interface ConsentDetails {
   redirectUri: string
   csrf: string
   journeys: Array<{ id: string; title: string; canEdit: boolean }>
+  reconnectableConnections?: Array<{
+    id: string
+    version: number
+    journeyIds: string[]
+    mode: 'view' | 'edit'
+    expiresAt: string
+  }>
 }
 interface ConsentReview {
+  reconnect?: boolean
   reviewToken: string
   expiresAt: string
   mode: 'view' | 'edit'
@@ -47,6 +55,8 @@ export function AgentConsent({
   const [mode, setMode] = useState<'view' | 'edit'>('edit')
   const [duration, setDuration] = useState('week')
   const [review, setReview] = useState<ConsentReview>()
+  const [reconnect, setReconnect] =
+    useState<NonNullable<ConsentDetails['reconnectableConnections']>[number]>()
   const [error, setError] = useState(false)
   const [busy, setBusy] = useState(false)
 
@@ -83,6 +93,7 @@ export function AgentConsent({
           setDetails(result)
           setReview(undefined)
           setSelected([])
+          setReconnect(undefined)
           setError(false)
         }
       })
@@ -109,7 +120,10 @@ export function AgentConsent({
           csrf: details.csrf,
           journeyIds: selected,
           mode,
-          duration
+          duration,
+          ...(reconnect
+            ? { connectionId: reconnect.id, expectedVersion: reconnect.version }
+            : {})
         })
       )
     } catch {
@@ -171,9 +185,32 @@ export function AgentConsent({
           </Typography>
           {!review ? (
             <>
+              {details.reconnectableConnections?.map((connection) => (
+                <Button
+                  key={connection.id}
+                  disabled={busy}
+                  onClick={() => {
+                    setReconnect(connection)
+                    setMode(connection.mode)
+                    setSelected(connection.journeyIds)
+                  }}
+                >
+                  {t('Reconnect connection {{id}}', {
+                    id: connection.id
+                  })}
+                </Button>
+              ))}
+              {reconnect && (
+                <Alert severity="info">
+                  {t(
+                    'Reconnecting keeps the existing expiry and selected access. It does not renew consent.'
+                  )}
+                </Alert>
+              )}
               <FormControl>
                 <FormLabel id="agent-access-mode">{t('Access')}</FormLabel>
                 <RadioGroup
+                  aria-disabled={Boolean(reconnect)}
                   aria-labelledby="agent-access-mode"
                   value={mode}
                   onChange={(event) => {
@@ -184,11 +221,13 @@ export function AgentConsent({
                   <FormControlLabel
                     value="view"
                     control={<Radio />}
+                    disabled={Boolean(reconnect)}
                     label={t('View only')}
                   />
                   <FormControlLabel
                     value="edit"
                     control={<Radio />}
+                    disabled={Boolean(reconnect)}
                     label={t('View and edit drafts')}
                   />
                 </RadioGroup>
@@ -211,7 +250,10 @@ export function AgentConsent({
                       control={
                         <Checkbox
                           checked={selected.includes(journey.id)}
-                          disabled={mode === 'edit' && !journey.canEdit}
+                          disabled={
+                            Boolean(reconnect) ||
+                            (mode === 'edit' && !journey.canEdit)
+                          }
                           onChange={(_event, checked) =>
                             setSelected((current) =>
                               checked
@@ -236,6 +278,7 @@ export function AgentConsent({
                   {t('Connection duration')}
                 </FormLabel>
                 <Select
+                  disabled={Boolean(reconnect)}
                   aria-labelledby="agent-consent-duration"
                   value={duration}
                   onChange={(event) => setDuration(event.target.value)}
@@ -246,6 +289,17 @@ export function AgentConsent({
                   <MenuItem value="year">{t('One year')}</MenuItem>
                 </Select>
               </FormControl>
+              {reconnect && (
+                <Button
+                  disabled={busy}
+                  onClick={() => {
+                    setReconnect(undefined)
+                    setSelected([])
+                  }}
+                >
+                  {t('Create a separate connection')}
+                </Button>
+              )}
               <Button
                 variant="contained"
                 disabled={busy || selected.length === 0}
@@ -275,11 +329,13 @@ export function AgentConsent({
                   { expiry: new Date(review.expiresAt).toISOString() }
                 )}
               </Typography>
-              <Typography>
-                {t(
-                  'Review this deadline and approve within one minute. If the review expires, review your selection again.'
-                )}
-              </Typography>
+              {!review.reconnect && (
+                <Typography>
+                  {t(
+                    'Review this deadline and approve within one minute. If the review expires, review your selection again.'
+                  )}
+                </Typography>
+              )}
               <Button
                 variant="contained"
                 disabled={busy}

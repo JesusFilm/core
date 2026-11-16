@@ -17,6 +17,8 @@ export const requestGateSnapshots = new AsyncLocalStorage<
 export const digest = (value: string): string =>
   createHash('sha256').update(value).digest('hex')
 
+export class AuthorizationChanged extends Error {}
+
 export async function databaseTime(db: Database | Transaction): Promise<Date> {
   const [row] = await db.$queryRaw<
     Array<{ time: Date }>
@@ -53,7 +55,7 @@ export async function assertRuntimeRole(db: Database): Promise<void> {
     throw new Error('Restricted runtime database role required')
   const [permissions] = await db.$queryRaw<Array<{ allowed: boolean }>>`
     SELECT bool_and(has_table_privilege(current_user, quote_ident(name), privilege)) AS allowed
-    FROM unnest(ARRAY['AuthEnvironment', 'OAuthArtifact', 'AgentConnection', 'ConsentReview', 'AuthorizationGate', 'SecurityAudit', 'ReadPermit']) AS tables(name)
+    FROM unnest(ARRAY['AuthEnvironment', 'OAuthArtifact', 'AgentConnection', 'ConsentReview', 'AgentRenewalReview', 'AuthorizationGate', 'SecurityAudit', 'ReadPermit']) AS tables(name)
     CROSS JOIN unnest(ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE']) AS privileges(privilege)`
   if (!permissions?.allowed)
     throw new Error('Auth storage permissions unavailable')
@@ -300,7 +302,7 @@ export async function captureGates(
       create: { id },
       update: {}
     })
-    if (!gate.open) throw new Error('Authorization unavailable')
+    if (!gate.open) throw new AuthorizationChanged('Authorization unavailable')
     gates.push({ id: gate.id, generation: gate.generation })
   }
   return gates
@@ -318,7 +320,7 @@ export async function lockGates(
     >`
       SELECT generation, open FROM "AuthorizationGate" WHERE id = ${gate.id} FOR UPDATE`
     if (!current?.open || current.generation !== gate.generation)
-      throw new Error('Authorization changed')
+      throw new AuthorizationChanged('Authorization changed')
   }
 }
 
@@ -332,6 +334,8 @@ export type AuditAction =
   | 'read_exchange'
   | 'read_accept'
   | 'output_accept'
+  | 'connection_view'
+  | 'renewal'
 export async function audit(
   db: Database | Transaction,
   action: AuditAction,
@@ -374,5 +378,8 @@ export async function cleanup(db: Database): Promise<void> {
   })
   await db.securityAudit.deleteMany({ where: { expiresAt: { lte: now } } })
   await db.consentReview.deleteMany({ where: { validUntil: { lte: now } } })
+  await db.agentRenewalReview.deleteMany({
+    where: { validUntil: { lte: now } }
+  })
   await db.oAuthArtifact.deleteMany({ where: { expiresAt: { lte: now } } })
 }

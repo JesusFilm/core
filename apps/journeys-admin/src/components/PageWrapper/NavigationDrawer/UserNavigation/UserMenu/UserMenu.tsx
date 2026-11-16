@@ -15,6 +15,7 @@ import { ReactElement, useState } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 import Mail1 from '@core/shared/ui/icons/Mail1'
+import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { GetMe_me_AuthenticatedUser as ApiUser } from '../../../../../../__generated__/GetMe'
 import { User } from '../../../../../libs/auth'
@@ -94,6 +95,15 @@ export function UserMenu({
             await router.push(`/email-preferences/${apiUser.email}`)
           }
           testId="EmailPreferences"
+        />
+        <MenuItem
+          label={t('Connected agents')}
+          icon={<LinkIcon />}
+          onClick={async () => {
+            handleProfileClose()
+            await router.push('/agents')
+          }}
+          testId="ConnectedAgents"
         />
         <MenuItem
           label={t('Language')}

@@ -43,6 +43,7 @@ model AgentConnection {
   revokedAt           DateTime?
   firebaseAuthTime     Int
   firebaseCreatedAt   String
+  credentialsPending Boolean @default(false)
 
   @@index([userId, clientId])
   @@index([expiresAt])
@@ -62,6 +63,23 @@ model ConsentReview {
   validUntil    DateTime
   consumedAt    DateTime?
   generation    Int      @default(0)
+  connectionId  String?
+  connectionVersion Int?
+}
+
+model AgentRenewalReview {
+  id                String   @id
+  connectionId      String
+  connectionVersion Int
+  userId            String
+  clientId          String
+  sessionHash       String
+  duration          String
+  previewExpiresAt  DateTime
+  validUntil        DateTime
+  consumedAt        DateTime?
+
+  @@index([validUntil])
 }
 
 model AuthorizationGate {

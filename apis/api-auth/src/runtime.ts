@@ -5,18 +5,27 @@ import pino, { type Logger } from 'pino'
 import { z } from 'zod'
 
 import type { AuthConfig } from './config'
-import { type AccessMode, calculateExpiry, durations } from './consent'
+import { ConnectionFailure, createConnectionManagement } from './connections'
+import {
+  type AccessMode,
+  calculateExpiry,
+  createAgentGrant,
+  durations
+} from './consent'
+import { createEligibilityReader } from './eligibility'
 import type { Identity, ReadEligibility } from './identity'
 import { createProvider } from './provider'
 import { createReadAuthority } from './reads'
 import {
   type AuditAction,
+  AuthorizationChanged,
   type Database,
   assertEnvironment,
   assertRuntimeRole,
   audit,
   captureGates,
   cleanup,
+  connectionGateIds,
   databaseTime,
   digest,
   lockGates,
@@ -31,6 +40,8 @@ class HttpFailure extends Error {
 }
 
 function securityAction(path: string): AuditAction | undefined {
+  if (path === '/connections') return 'connection_view'
+  if (path.startsWith('/connections/')) return 'renewal'
   if (path === '/token') return 'token'
   if (path === '/token/introspection') return 'introspection'
   if (path === '/reg') return 'registration'
@@ -56,7 +67,9 @@ const selectionSchema = z
     csrf: z.string().min(32).max(128),
     journeyIds: z.array(z.string().min(1).max(128)).min(1).max(50),
     mode: z.enum(['view', 'edit']),
-    duration: z.enum(durations)
+    duration: z.enum(durations),
+    connectionId: z.string().uuid().optional(),
+    expectedVersion: z.number().int().positive().optional()
   })
   .strict()
 const decisionSchema = z
@@ -91,6 +104,14 @@ export async function createRuntime(
   )
   provider.proxy = config.AUTH_ENVIRONMENT !== 'local'
   const readAuthority = createReadAuthority(config, db, identity, provider)
+  const currentRights = createEligibilityReader(db, identity, eligibility)
+  const manageConnections = createConnectionManagement(
+    config,
+    db,
+    identity,
+    eligibility,
+    provider
+  )
   let draining = false
   const publicHost = new URL(config.AUTH_ISSUER).host
 
@@ -171,6 +192,47 @@ export async function createRuntime(
         ).catch(() => undefined)
         ctx.status = 403
         ctx.body = { error: 'ACCESS_DENIED_OR_NOT_FOUND' }
+      }
+      return
+    }
+    if (ctx.path === '/connections' || ctx.path.startsWith('/connections/')) {
+      try {
+        if (ctx.method !== 'POST' || origin !== config.AUTH_ADMIN_ORIGIN)
+          throw new ConnectionFailure(403)
+        const result = await manageConnections(
+          ctx.path,
+          ctx.get('Authorization'),
+          ctx.cookies.get('agent_management', { signed: false }),
+          await jsonBody(ctx.req)
+        )
+        if (result.cookie)
+          ctx.cookies.set('agent_management', result.cookie, {
+            signed: false,
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: config.AUTH_ENVIRONMENT !== 'local',
+            path: '/connections',
+            maxAge: 600000,
+            overwrite: true
+          })
+        ctx.body = result.body
+      } catch (error) {
+        await audit(
+          db,
+          ctx.path === '/connections' ? 'connection_view' : 'renewal',
+          'denied'
+        ).catch(() => undefined)
+        ctx.status =
+          error instanceof AuthorizationChanged
+            ? 409
+            : error instanceof ConnectionFailure || error instanceof HttpFailure
+              ? error.status
+              : error instanceof z.ZodError || error instanceof SyntaxError
+                ? 400
+                : 503
+        ctx.body = {
+          error: ctx.status === 409 ? 'review_again' : 'request_denied'
+        }
       }
       return
     }
@@ -286,6 +348,25 @@ export async function createRuntime(
           clientId: client.clientId,
           redirectUri: details.params.redirect_uri,
           journeys,
+          reconnectableConnections: (
+            await db.agentConnection.findMany({
+              where: {
+                userId: evidence.userId,
+                clientId: verifiedClient,
+                environment: config.AUTH_ENVIRONMENT,
+                revokedAt: null,
+                expiresAt: { gt: await databaseTime(db) },
+                firebaseCreatedAt: evidence.createdAt
+              },
+              take: 100
+            })
+          ).map((connection) => ({
+            id: connection.id,
+            version: connection.version,
+            journeyIds: connection.journeyIds,
+            mode: connection.mode,
+            expiresAt: connection.expiresAt.toISOString()
+          })),
           csrf,
           duration: 'week'
         }
@@ -300,18 +381,59 @@ export async function createRuntime(
         throw new HttpFailure(403)
       if (route[2] === 'review') {
         const selection = selectionSchema.parse(body)
+        const reconnect = selection.connectionId
+          ? await db.agentConnection.findFirst({
+              where: {
+                id: selection.connectionId,
+                userId: evidence.userId,
+                clientId: verifiedClient,
+                environment: config.AUTH_ENVIRONMENT,
+                firebaseCreatedAt: evidence.createdAt
+              }
+            })
+          : null
+        if (
+          selection.connectionId &&
+          (!reconnect ||
+            reconnect.revokedAt ||
+            reconnect.version !== selection.expectedVersion ||
+            reconnect.mode !== selection.mode ||
+            reconnect.journeyIds.length !== selection.journeyIds.length ||
+            !reconnect.journeyIds.every((id) =>
+              selection.journeyIds.includes(id)
+            ))
+        )
+          throw new HttpFailure(409)
         if (new Set(selection.journeyIds).size !== selection.journeyIds.length)
           throw new HttpFailure(400)
         const gates = await captureGates(db, [
           `account:${evidence.userId}`,
-          ...selection.journeyIds.map((id) => `journey:${id}`)
+          ...selection.journeyIds.map((id) => `journey:${id}`),
+          ...(reconnect ? connectionGateIds(reconnect) : [])
         ])
         await identity.check(evidence)
-        const journeys = await eligibility(token, evidence.userId)
+        const journeys = reconnect
+          ? (
+              await currentRights({
+                token,
+                evidence,
+                journeyIds: selection.journeyIds,
+                gates
+              })
+            ).journeys
+          : await eligibility(token, evidence.userId)
         assertSelection(journeys, selection.journeyIds, selection.mode)
         const reviewToken = randomBytes(32).toString('base64url')
         const review = await db.$transaction(async (transaction) => {
           await lockGates(transaction, gates)
+          if (reconnect) {
+            await transaction.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${reconnect.id} FOR SHARE`
+            const current = await transaction.agentConnection.findUniqueOrThrow(
+              { where: { id: reconnect.id } }
+            )
+            if (current.version !== reconnect.version || current.revokedAt)
+              throw new HttpFailure(409)
+          }
           const now = await databaseTime(transaction)
           const updated = await transaction.consentReview.updateMany({
             where: {
@@ -325,7 +447,11 @@ export async function createRuntime(
               duration: selection.duration,
               journeyIds: selection.journeyIds,
               approvedAt: now,
-              expiresAt: calculateExpiry(now, selection.duration),
+              expiresAt:
+                reconnect?.expiresAt ??
+                calculateExpiry(now, selection.duration),
+              connectionId: reconnect?.id ?? null,
+              connectionVersion: reconnect?.version ?? null,
               generation: { increment: 1 },
               validUntil: new Date(now.getTime() + 60000)
             }
@@ -340,7 +466,8 @@ export async function createRuntime(
           expiresAt: review.expiresAt!.toISOString(),
           mode: review.mode,
           journeyIds: review.journeyIds,
-          duration: review.duration
+          duration: review.duration,
+          reconnect: Boolean(reconnect)
         }
         return
       }
@@ -380,14 +507,29 @@ export async function createRuntime(
       const approvedMode = z.enum(['view', 'edit']).parse(existing.mode)
       const gates = await captureGates(db, [
         `account:${evidence.userId}`,
-        ...existing.journeyIds.map((id) => `journey:${id}`)
+        ...existing.journeyIds.map((id) => `journey:${id}`),
+        ...(existing.connectionId
+          ? [`connection:${existing.connectionId}`]
+          : [])
       ])
-      const journeys = await eligibility(token, evidence.userId)
+      const journeys = existing.connectionId
+        ? (
+            await currentRights({
+              token,
+              evidence,
+              journeyIds: existing.journeyIds,
+              gates
+            })
+          ).journeys
+        : await eligibility(token, evidence.userId)
       assertSelection(journeys, existing.journeyIds, approvedMode)
       await identity.check(evidence)
       const grantId = await db.$transaction(
         async (transaction) => {
           await lockGates(transaction, gates)
+          if (existing.connectionId) {
+            await transaction.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${existing.connectionId} FOR UPDATE`
+          }
           await transaction.$queryRaw`SELECT "interactionId" FROM "ConsentReview" WHERE "interactionId" = ${details.uid} FOR UPDATE`
           const now = await databaseTime(transaction)
           const expiresAt = existing.expiresAt
@@ -408,20 +550,41 @@ export async function createRuntime(
             data: { consumedAt: now }
           })
           if (consumed.count !== 1) throw new HttpFailure(409)
-          return transactionScope.run(transaction, async () => {
-            const grant = new provider.Grant({
-              accountId: evidence.userId,
-              clientId: verifiedClient!
+          if (existing.connectionId) {
+            const connection =
+              await transaction.agentConnection.findUniqueOrThrow({
+                where: { id: existing.connectionId }
+              })
+            if (
+              connection.userId !== evidence.userId ||
+              connection.clientId !== verifiedClient ||
+              connection.environment !== config.AUTH_ENVIRONMENT ||
+              connection.firebaseCreatedAt !== evidence.createdAt ||
+              connection.version !== existing.connectionVersion ||
+              connection.revokedAt ||
+              connection.expiresAt <= now ||
+              connection.expiresAt.getTime() !== expiresAt.getTime()
+            )
+              throw new HttpFailure(409)
+            await transaction.agentConnection.update({
+              where: { id: connection.id },
+              data: { credentialsPending: false }
             })
-            const scope =
-              approvedMode === 'edit'
-                ? 'journeys:read journeys:edit'
-                : 'journeys:read'
-            grant.addResourceScope(config.AUTH_AUDIENCE, scope)
-            if (approvedMode === 'view')
-              grant.rejectResourceScope(config.AUTH_AUDIENCE, 'journeys:edit')
-            grant.addOIDCScope('offline_access')
-            const id = await grant.save()
+            await audit(transaction, 'consent', 'allowed', {
+              userId: evidence.userId,
+              clientId: verifiedClient,
+              journeyIds: connection.journeyIds
+            })
+            return connection.grantId
+          }
+          return transactionScope.run(transaction, async () => {
+            const id = await createAgentGrant(
+              provider,
+              config.AUTH_AUDIENCE,
+              evidence.userId,
+              verifiedClient!,
+              approvedMode
+            )
             await transaction.agentConnection.create({
               data: {
                 grantId: id,
@@ -467,11 +630,13 @@ export async function createRuntime(
         clientId: verifiedClient
       }).catch(() => undefined)
       ctx.status =
-        error instanceof HttpFailure
-          ? error.status
-          : error instanceof z.ZodError || error instanceof SyntaxError
-            ? 400
-            : 503
+        error instanceof AuthorizationChanged
+          ? 409
+          : error instanceof HttpFailure
+            ? error.status
+            : error instanceof z.ZodError || error instanceof SyntaxError
+              ? 400
+              : 503
       ctx.body = {
         error: ctx.status === 409 ? 'review_again' : 'request_denied'
       }

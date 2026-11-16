@@ -81,7 +81,8 @@ const responseSchema = z.object({
             title: z.string(),
             status: z.enum(['draft', 'published']),
             deletedAt: z.string().nullable(),
-            template: z.boolean().nullable()
+            template: z.boolean().nullable(),
+            team: z.object({ id: z.string() })
           })
         )
         .max(5000)
@@ -91,6 +92,7 @@ const responseSchema = z.object({
 
 export interface EligibleJourney {
   id: string
+  teamId: string
   title: string
   canEdit: boolean
 }
@@ -113,7 +115,7 @@ export function gatewayEligibility(config: AuthConfig): ReadEligibility {
         query: `query AgentConsentEligibility {
         getJourneyProfile { userId acceptedTermsAt }
         adminJourneys(allAccessible: true, template: false, status: [draft, published]) {
-          id title status template deletedAt
+          id title status template deletedAt team { id }
         }
       }`
       })
@@ -149,6 +151,7 @@ export function gatewayEligibility(config: AuthConfig): ReadEligibility {
       .filter((journey) => !journey.deletedAt && !journey.template)
       .map((journey) => ({
         id: journey.id,
+        teamId: journey.team.id,
         title: journey.title,
         canEdit: journey.status === 'draft'
       }))

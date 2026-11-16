@@ -30,8 +30,22 @@ try {
     },
     eligibility: async (_token, userId) =>
       userId === 'alice'
-        ? [{ id: 'draft-a', title: 'Synthetic draft', canEdit: true }]
-        : [{ id: 'bob-draft', title: 'Bob draft', canEdit: true }],
+        ? [
+            {
+              id: 'draft-a',
+              title: 'Synthetic draft',
+              teamId: 'read-team',
+              canEdit: true
+            }
+          ]
+        : [
+            {
+              id: 'bob-draft',
+              title: 'Bob draft',
+              teamId: 'read-team',
+              canEdit: true
+            }
+          ],
     logger: pino({ enabled: false })
   })
   runtime.server.listen(0, '127.0.0.1', () => {

@@ -1,6 +1,25 @@
+import type OidcProvider from 'oidc-provider'
+
 export const durations = ['day', 'week', 'month', 'year'] as const
 export type Duration = (typeof durations)[number]
 export type AccessMode = 'view' | 'edit'
+
+export async function createAgentGrant(
+  provider: OidcProvider,
+  audience: string,
+  userId: string,
+  clientId: string,
+  mode: AccessMode
+): Promise<string> {
+  const grant = new provider.Grant({ accountId: userId, clientId })
+  grant.addResourceScope(
+    audience,
+    mode === 'edit' ? 'journeys:read journeys:edit' : 'journeys:read'
+  )
+  if (mode === 'view') grant.rejectResourceScope(audience, 'journeys:edit')
+  grant.addOIDCScope('offline_access')
+  return grant.save()
+}
 
 export function calculateExpiry(start: Date, duration: string): Date {
   if (!durations.includes(duration as Duration)) {

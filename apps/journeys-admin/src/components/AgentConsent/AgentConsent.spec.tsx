@@ -143,4 +143,69 @@ describe('AgentConsent', () => {
       screen.queryByRole('button', { name: 'Approve connection' })
     ).not.toBeInTheDocument()
   })
+  it('reconnects a renewed identity without allowing its access or expiry to change', async () => {
+    const requests: Array<Record<string, unknown>> = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init: RequestInit) => {
+        requests.push(
+          JSON.parse(init.body as string) as Record<string, unknown>
+        )
+        return new Response(
+          JSON.stringify(
+            url.endsWith('/details')
+              ? {
+                  clientName: 'Agent',
+                  clientId: 'client-a',
+                  redirectUri: 'https://client.example/callback',
+                  csrf: 'csrf',
+                  journeys: [
+                    { id: 'draft-a', title: 'Draft A', canEdit: true }
+                  ],
+                  reconnectableConnections: [
+                    {
+                      id: 'renewed-connection',
+                      version: 4,
+                      journeyIds: ['draft-a'],
+                      mode: 'view',
+                      expiresAt: '2027-01-01T00:00:00.000Z'
+                    }
+                  ]
+                }
+              : {
+                  reviewToken: 'review',
+                  reconnect: true,
+                  expiresAt: '2027-01-01T00:00:00.000Z',
+                  mode: 'view',
+                  duration: 'week',
+                  journeyIds: ['draft-a']
+                }
+          )
+        )
+      })
+    )
+    render(
+      <AgentConsent issuer="https://auth.example" interaction="reconnect" />
+    )
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'Reconnect connection renewed-connection'
+      })
+    )
+    expect(screen.getByRole('checkbox', { name: 'Draft A' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: 'Draft A' })).toBeDisabled()
+    expect(screen.getByRole('radio', { name: 'View only' })).toBeChecked()
+    expect(screen.getByRole('combobox')).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Review connection' }))
+    expect(await screen.findByText(/2027-01-01T00:00:00.000Z/)).toBeVisible()
+    expect(requests[1]).toMatchObject({
+      connectionId: 'renewed-connection',
+      expectedVersion: 4,
+      journeyIds: ['draft-a'],
+      mode: 'view'
+    })
+  })
 })

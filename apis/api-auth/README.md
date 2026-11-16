@@ -1,6 +1,6 @@
 # Agent sign-in and consent
 
-Implements first approval in [#10549](https://github.com/JesusFilm/core/issues/10549), under [#10157](https://github.com/JesusFilm/core/issues/10157). `api-auth` owns OAuth state and application grants in the separate auth logical database. It does not replace api-users. [Granted reads and restricted exchange](../api-mcp/GRANTED_READS.md) are implemented by #10573. Renewal, withdrawal and account-change coordination remain with their implementing slices.
+Implements first approval in [#10549](https://github.com/JesusFilm/core/issues/10549), under [#10157](https://github.com/JesusFilm/core/issues/10157). `api-auth` owns OAuth state and application grants in the separate auth logical database. It does not replace api-users. [Granted reads and restricted exchange](../api-mcp/GRANTED_READS.md) are implemented by #10573. [Personal connections and renewal](CONNECTIONS.md) are implemented by #10574. Withdrawal and account-change coordination remain with their implementing slices.
 
 The pinned implementation is [oidc-provider 9.15.0](https://github.com/panva/node-oidc-provider/tree/v9.15.0). Development interactions and in-memory persistence are disabled. Supports pre-registered public web clients, public DCR and allowlisted CIMD draft-03. Requires PKCE S256 and exact redirects, binds the MCP resource audience, authenticates introspection and rotates refresh tokens. External clients receive opaque five-minute MCP tokens, never Firebase credentials.
 
