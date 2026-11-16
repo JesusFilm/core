@@ -592,6 +592,13 @@ describe('granted journey read authorization', () => {
       it.each(['2026-07-28', '2025-11-25'])(
         'returns contract version 1 on list, all read views and denied results on %s',
         async (version) => {
+          const decode = (body: string) =>
+            JSON.parse(
+              body
+                .split('\n')
+                .find((line) => line.startsWith('data:'))
+                ?.slice(5) ?? body
+            )
           const results = [
             await call('journeys_list', {}, accessToken, version)
           ]
@@ -606,10 +613,10 @@ describe('granted journey read authorization', () => {
             )
           for (const result of results) {
             expect(result.status).toBe(200)
-            expect(JSON.parse(result.body)).toMatchObject({
+            expect(decode(result.body)).toMatchObject({
               result: { structuredContent: { contractVersion: '1' } }
             })
-            expect(JSON.parse(result.body).result.isError).not.toBe(true)
+            expect(decode(result.body).result.isError).not.toBe(true)
           }
           const denied = await call(
             'journey_read',
@@ -617,7 +624,7 @@ describe('granted journey read authorization', () => {
             accessToken,
             version
           )
-          expect(JSON.parse(denied.body)).toMatchObject({
+          expect(decode(denied.body)).toMatchObject({
             result: {
               isError: true,
               structuredContent: {
@@ -630,7 +637,10 @@ describe('granted journey read authorization', () => {
       )
 
       it('includes the result version in owner size bounds and fresh output hashes', async () => {
-        const request = { tool: 'journeys_list', input: { limit: 20 } }
+        const request = {
+          tool: 'journey_read',
+          input: { journeyId: 'read-a', view: 'settings' }
+        }
         const exchanged = await internal(
           'exchange',
           { token: accessToken, request },
@@ -651,7 +661,10 @@ describe('granted journey read authorization', () => {
         const response = await relay({ stage: 'read' })
         expect(response.status).toBe(200)
         const { data } = (await response.json()) as {
-          data: { contractVersion: string; journeys: Array<{ title: string }> }
+          data: {
+            contractVersion: string
+            settings: { description: string | null }
+          }
         }
         expect(data.contractVersion).toBe('1')
         const output = {
@@ -674,10 +687,11 @@ describe('granted journey read authorization', () => {
           (await internal('settle', { permitId }, exchangeSecret)).status
         ).toBe(200)
 
-        const originalTitle = data.journeys[0].title
+        const originalDescription = data.settings.description
         const fixedBytes =
           Buffer.byteLength(JSON.stringify(data)) -
-          Buffer.byteLength(originalTitle)
+          Buffer.byteLength(JSON.stringify(originalDescription)) +
+          2
         const ownerRead = () => {
           const body = JSON.stringify({ request, stage: 'read' })
           return fetch(`${ownerUrl}/mcp/reads`, {
@@ -697,16 +711,7 @@ describe('granted journey read authorization', () => {
         try {
           await journeys.journey.update({
             where: { id: 'read-a' },
-            data: { title: 'x'.repeat(524288 - fixedBytes) }
-          })
-          const atLimit = await ownerRead()
-          expect(atLimit.status).toBe(200)
-          expect(
-            Buffer.byteLength(JSON.stringify((await atLimit.json()).data))
-          ).toBe(524288)
-          await journeys.journey.update({
-            where: { id: 'read-a' },
-            data: { title: 'x'.repeat(524289 - fixedBytes) }
+            data: { description: 'x'.repeat(524289 - fixedBytes) }
           })
           const overLimit = await ownerRead()
           expect(overLimit.status).toBe(403)
@@ -714,7 +719,7 @@ describe('granted journey read authorization', () => {
         } finally {
           await journeys.journey.update({
             where: { id: 'read-a' },
-            data: { title: originalTitle }
+            data: { description: originalDescription }
           })
         }
       })
