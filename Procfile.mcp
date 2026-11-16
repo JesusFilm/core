@@ -1,0 +1,2 @@
+auth: pnpm exec nx serve api-auth
+mcp: pnpm exec nx serve api-mcp

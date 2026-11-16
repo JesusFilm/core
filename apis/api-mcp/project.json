@@ -14,12 +14,12 @@
     },
     "serve": {
       "executor": "nx:run-commands",
-      "options": { "command": "pnpm exec tsx watch apis/api-mcp/src/index.ts" }
+      "options": { "command": "bash apis/api-mcp/start-local.sh serve" }
     },
     "start": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
-      "options": { "command": "node dist/apis/api-mcp/main.cjs" }
+      "options": { "command": "bash apis/api-mcp/start-local.sh start" }
     },
     "lint": {
       "executor": "@nx/eslint:lint",

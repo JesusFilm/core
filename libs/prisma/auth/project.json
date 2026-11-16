@@ -1,0 +1,27 @@
+{
+  "name": "prisma-auth",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/prisma/auth/src",
+  "projectType": "library",
+  "tags": ["type:prisma", "scope:auth"],
+  "targets": {
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec prisma generate --schema libs/prisma/auth/db/schema.prisma"
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec prisma migrate deploy --config libs/prisma/auth/prisma.config.ts"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm tsc7 -p libs/prisma/auth/tsconfig.ts7.json"
+      }
+    }
+  }
+}
