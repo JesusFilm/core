@@ -1,6 +1,8 @@
+import { ApolloLink } from '@apollo/client'
 import { MockLink } from '@apollo/client/testing'
 import Button from '@mui/material/Button'
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -10,6 +12,7 @@ import {
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
+import { Observable, type Subscription } from 'rxjs'
 
 import { IdType, JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH } from '../../../../libs/useCampaignJourneyBlockSnapshotRefreshMutation'
@@ -22,7 +25,8 @@ import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
-  UndoRedo
+  UndoRedo,
+  getCampaignMockFor
 } from '../../testing'
 import { useCampaignBlockFieldsCommand } from '../useCampaignBlockFieldsCommand'
 
@@ -145,13 +149,15 @@ function Harness(): ReactElement {
 async function renderHarness(
   journeyResponse: ReturnType<typeof journeyMock>,
   extraMocks: MockLink.MockedResponse[] = [],
-  campaignProp = editedCampaign
+  campaignProp = editedCampaign,
+  link?: ApolloLink
 ): Promise<void> {
   render(
     <SnackbarProvider>
       <QueriedEditor
         mocks={[journeyResponse, ...extraMocks]}
         campaign={campaignProp}
+        link={link}
         initialState={{ selectedBlockId: CARD_ID }}
       >
         <UndoRedo />
@@ -212,12 +218,9 @@ describe('useCampaignJourneyBlockSnapshotRefreshCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('captures each queued refresh snapshot at execution and retains it through replay', async () => {
-    const slow = {
-      ...blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), {
-        minHeight: 70
-      }),
-      delay: 500
-    }
+    const slow = blockUpdateMock(blockOf<'CampaignHeroBlock'>('heroId'), {
+      minHeight: 70
+    })
     const refresh = { ...refreshMock, maxUsageCount: 3 }
     const restoreRefreshed = {
       ...blockUpdateMock(card, {
@@ -227,11 +230,24 @@ describe('useCampaignJourneyBlockSnapshotRefreshCommand', () => {
       }),
       maxUsageCount: 2
     }
-    await renderHarness(
-      { ...journeyMock(liveJourney), maxUsageCount: 2 },
-      [slow, refresh, restoreRefreshed, restoreUneditedMock],
-      campaign
-    )
+    const journeyResponse = { ...journeyMock(liveJourney), maxUsageCount: 2 }
+    const mocks = [slow, refresh, restoreRefreshed, restoreUneditedMock]
+    let release: (() => void) | undefined
+    const holdFirstSave = new ApolloLink((operation, forward) => {
+      if (operation.variables.id !== 'heroId') return forward(operation)
+      return new Observable((observer) => {
+        let subscription: Subscription | undefined
+        release = () => {
+          subscription = forward(operation).subscribe(observer)
+        }
+        return () => subscription?.unsubscribe()
+      })
+    })
+    const link = ApolloLink.from([
+      holdFirstSave,
+      new MockLink([getCampaignMockFor(campaign), journeyResponse, ...mocks])
+    ])
+    await renderHarness(journeyResponse, mocks, campaign, link)
     fireEvent.click(screen.getByRole('button', { name: 'Slow unrelated edit' }))
     fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
     await waitFor(() =>
@@ -243,6 +259,8 @@ describe('useCampaignJourneyBlockSnapshotRefreshCommand', () => {
     )
     expect(slow.result).not.toHaveBeenCalled()
     expect(refresh.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(release).toBeDefined())
+    await act(async () => release!())
     await waitFor(() => expect(refresh.result).toHaveBeenCalledTimes(2))
 
     for (let replay = 1; replay <= 2; replay++) {
