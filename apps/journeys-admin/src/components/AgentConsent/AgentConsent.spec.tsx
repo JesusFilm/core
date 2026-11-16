@@ -143,6 +143,7 @@ describe('AgentConsent', () => {
       screen.queryByRole('button', { name: 'Approve connection' })
     ).not.toBeInTheDocument()
   })
+
   it('reconnects a renewed identity without allowing its access or expiry to change', async () => {
     const requests: Array<Record<string, unknown>> = []
     vi.stubGlobal(

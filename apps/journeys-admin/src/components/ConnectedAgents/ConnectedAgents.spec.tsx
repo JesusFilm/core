@@ -29,6 +29,7 @@ const connection = {
 
 describe('ConnectedAgents', () => {
   beforeEach(() => authStateReady.mockResolvedValue(undefined))
+
   afterEach(() => vi.unstubAllGlobals())
 
   it('waits for the browser session and shows current grant metadata without management controls for withdrawal', async () => {

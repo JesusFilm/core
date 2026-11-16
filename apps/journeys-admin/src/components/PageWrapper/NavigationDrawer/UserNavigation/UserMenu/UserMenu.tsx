@@ -13,9 +13,9 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import LinkIcon from '@core/shared/ui/icons/Link'
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 import Mail1 from '@core/shared/ui/icons/Mail1'
-import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { GetMe_me_AuthenticatedUser as ApiUser } from '../../../../../../__generated__/GetMe'
 import { User } from '../../../../../libs/auth'
