@@ -124,6 +124,7 @@
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",
+      "exclude": ["libs/yoga/src/mcp/package.json"],
       "options": {
         "targetName": "eslint:lint"
       }

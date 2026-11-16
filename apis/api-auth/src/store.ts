@@ -53,7 +53,7 @@ export async function assertRuntimeRole(db: Database): Promise<void> {
     throw new Error('Restricted runtime database role required')
   const [permissions] = await db.$queryRaw<Array<{ allowed: boolean }>>`
     SELECT bool_and(has_table_privilege(current_user, quote_ident(name), privilege)) AS allowed
-    FROM unnest(ARRAY['AuthEnvironment', 'OAuthArtifact', 'AgentConnection', 'ConsentReview', 'AuthorizationGate', 'SecurityAudit']) AS tables(name)
+    FROM unnest(ARRAY['AuthEnvironment', 'OAuthArtifact', 'AgentConnection', 'ConsentReview', 'AuthorizationGate', 'SecurityAudit', 'ReadPermit']) AS tables(name)
     CROSS JOIN unnest(ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE']) AS privileges(privilege)`
   if (!permissions?.allowed)
     throw new Error('Auth storage permissions unavailable')
@@ -329,6 +329,9 @@ export type AuditAction =
   | 'token'
   | 'introspection'
   | 'registration'
+  | 'read_exchange'
+  | 'read_accept'
+  | 'output_accept'
 export async function audit(
   db: Database | Transaction,
   action: AuditAction,
@@ -355,6 +358,20 @@ export async function audit(
 
 export async function cleanup(db: Database): Promise<void> {
   const now = await databaseTime(db)
+  await db.readPermit.deleteMany({
+    where: {
+      OR: [
+        {
+          status: 'prepared',
+          preparedAt: { lte: new Date(now.getTime() - 86400000) }
+        },
+        {
+          status: 'settled',
+          settledAt: { lte: new Date(now.getTime() - 90 * 86400000) }
+        }
+      ]
+    }
+  })
   await db.securityAudit.deleteMany({ where: { expiresAt: { lte: now } } })
   await db.consentReview.deleteMany({ where: { validUntil: { lte: now } } })
   await db.oAuthArtifact.deleteMany({ where: { expiresAt: { lte: now } } })

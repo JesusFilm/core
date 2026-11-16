@@ -8,6 +8,7 @@ import type { AuthConfig } from './config'
 import { type AccessMode, calculateExpiry, durations } from './consent'
 import type { Identity, ReadEligibility } from './identity'
 import { createProvider } from './provider'
+import { createReadAuthority } from './reads'
 import {
   type AuditAction,
   type Database,
@@ -89,6 +90,7 @@ export async function createRuntime(
     identity
   )
   provider.proxy = config.AUTH_ENVIRONMENT !== 'local'
+  const readAuthority = createReadAuthority(config, db, identity, provider)
   let draining = false
   const publicHost = new URL(config.AUTH_ISSUER).host
 
@@ -151,6 +153,25 @@ export async function createRuntime(
       ctx.set('Access-Control-Allow-Methods', 'GET, POST')
       ctx.set('Access-Control-Allow-Headers', 'Authorization, Content-Type')
       ctx.status = origin === config.AUTH_ADMIN_ORIGIN ? 204 : 403
+      return
+    }
+    if (ctx.path.startsWith('/internal/reads/')) {
+      try {
+        if (ctx.method !== 'POST' || origin) throw new HttpFailure(403)
+        ctx.body = await readAuthority(
+          ctx.path,
+          ctx.get('Authorization'),
+          await jsonBody(ctx.req)
+        )
+      } catch {
+        await audit(
+          db,
+          ctx.path.endsWith('/exchange') ? 'read_exchange' : 'read_accept',
+          'denied'
+        ).catch(() => undefined)
+        ctx.status = 403
+        ctx.body = { error: 'ACCESS_DENIED_OR_NOT_FOUND' }
+      }
       return
     }
     const route =

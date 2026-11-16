@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { type ServerResponse, createServer } from 'node:http'
 
 import { hostHeaderValidation, toWebRequest } from '@modelcontextprotocol/node'
@@ -9,6 +10,7 @@ import pino, { type Logger } from 'pino'
 
 import { type McpConfig } from './config'
 import { createProtocolServer } from './protocol'
+import { createReadSession } from './reads'
 
 function respond(res: ServerResponse, status: number, message: string): void {
   if (res.writableEnded || res.destroyed) return
@@ -44,6 +46,7 @@ export function createRuntime(
   options: { factory?: McpServerFactory; logger?: Logger } = {}
 ) {
   const logger = options.logger ?? pino({ name: 'api-mcp', base: undefined })
+  const executorId = randomUUID()
   const validateHost = hostHeaderValidation([config.publicUrl.hostname])
   let draining = false
   const active = new Set<AbortController>()
@@ -73,12 +76,31 @@ export function createRuntime(
         JSON.stringify({
           status:
             req.url === '/health' ? 'live' : ready ? 'ready' : 'unavailable',
-          dataTools: false
+          dataTools: Boolean(config.exchangeSecret)
         })
       )
       return
     }
     if (!validateHost(req, res)) return
+    if (
+      config.exchangeSecret &&
+      req.url ===
+        `/.well-known/oauth-protected-resource${config.publicUrl.pathname}` &&
+      req.method === 'GET'
+    ) {
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store'
+      })
+      res.end(
+        JSON.stringify({
+          resource: config.publicUrl.href,
+          authorization_servers: [config.issuerUrl!.origin],
+          scopes_supported: ['journeys:read']
+        })
+      )
+      return
+    }
     if (req.headers.origin && req.headers.origin !== config.publicUrl.origin) {
       respond(res, 403, 'Origin denied')
       return
@@ -101,14 +123,29 @@ export function createRuntime(
       return
     }
     const abort = new AbortController()
+    const token = /^Bearer ([^\s]+)$/.exec(req.headers.authorization ?? '')?.[1]
+    if (config.exchangeSecret && !token) {
+      res.setHeader(
+        'WWW-Authenticate',
+        `Bearer resource_metadata="${config.publicUrl.origin}/.well-known/oauth-protected-resource${config.publicUrl.pathname}"`
+      )
+      respond(res, 401, 'AUTHORIZATION_REQUIRED')
+      return
+    }
+    const reads = config.exchangeSecret
+      ? createReadSession(config, token!, executorId)
+      : undefined
     active.add(abort)
-    const handler = createMcpHandler(options.factory ?? createProtocolServer, {
-      legacy: 'stateless',
-      responseMode: 'json',
-      maxSubscriptions: 0,
-      maxRequestBodySize: config.maxRequestBytes,
-      onerror: () => logger.warn({ event: 'protocol_rejected' })
-    })
+    const handler = createMcpHandler(
+      options.factory ?? (() => createProtocolServer(reads)),
+      {
+        legacy: 'stateless',
+        responseMode: 'json',
+        maxSubscriptions: 0,
+        maxRequestBodySize: config.maxRequestBytes,
+        onerror: () => logger.warn({ event: 'protocol_rejected' })
+      }
+    )
     handlers.add(handler)
     const timer = setTimeout(() => {
       abort.abort()
@@ -120,6 +157,9 @@ export function createRuntime(
       abort.abort()
       active.delete(abort)
       handlers.delete(handler)
+      void reads
+        ?.settleOutput()
+        .catch(() => logger.warn({ event: 'output_settlement_pending' }))
       void handler
         .close()
         .catch(() => logger.warn({ event: 'protocol_close_failed' }))
@@ -146,6 +186,7 @@ export function createRuntime(
       if (abort.signal.aborted) return
       const response = await handler.fetch(request)
       const body = await boundedBody(response, config.maxResponseBytes)
+      await reads?.authorizeOutput(body)
       if (abort.signal.aborted || res.writableEnded || res.destroyed) return
       res.writeHead(response.status, {
         'Content-Type':
@@ -184,7 +225,11 @@ export function createRuntime(
         resolve()
       })
     })
-    logger.info({ event: 'listening', dataTools: false })
+    logger.info({
+      event: 'listening',
+      dataTools: Boolean(config.exchangeSecret),
+      executorId
+    })
   }
 
   function beginDrain(): void {

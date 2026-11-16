@@ -4,6 +4,8 @@ packages:
   - libs/**
   - tools/**
   - workers/**
+  # Node module scope for the shared read contract, not a workspace package.
+  - '!libs/yoga/src/mcp'
 
 onlyBuiltDependencies:
   - '@apollo/protobufjs'

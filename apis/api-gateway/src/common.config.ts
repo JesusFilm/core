@@ -4,6 +4,7 @@ import {
 } from '@graphql-hive/gateway'
 
 import logger from './logger'
+import { gatewayReadsEnvironment, useMcpReads } from './mcpReads'
 
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
@@ -14,6 +15,7 @@ export const commonConfig = defineConfig({
   port: 4000,
   graphqlEndpoint: '/',
   healthCheckEndpoint: '/health',
+  plugins: () => [useMcpReads(gatewayReadsEnvironment(process.env))],
   propagateHeaders: {
     fromClientToSubgraphs: ({ request, subgraphName }) => {
       const headers: Record<string, string> = {
@@ -25,6 +27,13 @@ export const commonConfig = defineConfig({
       }
       if (subgraphName === 'api-analytics')
         headers.authorization = request.headers.get('authorization') ?? ''
+      // Journeys must reject an external bearer instead of treating it as a
+      // public request. Preserve analytics' existing Bearer authentication.
+      if (
+        subgraphName === 'api-journeys-modern' &&
+        /^Bearer /i.test(request.headers.get('authorization') ?? '')
+      )
+        headers.authorization = request.headers.get('authorization')!
 
       return headers
     }

@@ -9,6 +9,7 @@ describe('MCP configuration', () => {
   it.each([
     {},
     { ...valid, MCP_AUTH_MODE: 'enabled' },
+    { ...valid, MCP_AUTH_MODE: 'granted-reads' },
     { ...valid, MCP_PUBLIC_URL: 'http://example.com/mcp' },
     { ...valid, MCP_PUBLIC_URL: 'https://user:secret@example.com/mcp' },
     { ...valid, MCP_PUBLIC_URL: 'https://example.com/ready' },
@@ -33,5 +34,18 @@ describe('MCP configuration', () => {
     expect(result.publicUrl.pathname).toBe('/agents/mcp')
     expect(result.requestDeadlineMs).toBe(20000)
     expect(result.gatewayUrl?.hostname).toBe('gateway.example.com')
+  })
+
+  it('requires all granted-read participants and a separate exchange credential', () => {
+    const result = readConfig({
+      ...valid,
+      MCP_AUTH_MODE: 'granted-reads',
+      MCP_ISSUER_URL: 'http://127.0.0.1:4011',
+      MCP_GATEWAY_URL: 'http://127.0.0.1:4000',
+      MCP_EXCHANGE_CLIENT_SECRET: 'synthetic-read-exchange-credential-32bytes'
+    })
+    expect(result.exchangeSecret).toBe(
+      'synthetic-read-exchange-credential-32bytes'
+    )
   })
 })

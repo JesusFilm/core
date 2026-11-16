@@ -82,3 +82,26 @@ model SecurityAudit {
 
   @@index([expiresAt])
 }
+
+model ReadPermit {
+  id             String   @id @default(uuid())
+  connectionId   String
+  grantVersion   Int
+  requestId      String
+  requestHash    String
+  stage          String
+  executor       String
+  executorId     String
+  journeyIds     String[]
+  gates          Json
+  status         String   @default("prepared")
+  preparedAt     DateTime
+  acceptedAt     DateTime?
+  settledAt      DateTime?
+  outputHash     String?
+
+  @@index([connectionId, status])
+  @@index([requestId, stage])
+  @@index([status, settledAt])
+  @@index([status, preparedAt])
+}
