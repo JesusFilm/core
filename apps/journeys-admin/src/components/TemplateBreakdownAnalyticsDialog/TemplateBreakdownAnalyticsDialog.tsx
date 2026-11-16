@@ -36,9 +36,9 @@ import {
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 import { DateRangePicker } from '../JourneyVisitorsList/FilterDrawer/ExportDialog/DateRangePicker'
 
+import { getBrowserDateFormat } from './getBrowserDateFormat'
 import { InfoIcon } from './InfoIcon'
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
-import { getBrowserDateFormat } from './getBrowserDateFormat'
 
 interface TemplateBreakdownAnalyticsDialogProps {
   journeyId: string
