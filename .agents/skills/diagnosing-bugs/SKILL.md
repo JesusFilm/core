@@ -21,7 +21,7 @@ If the redacted output is not enough to diagnose the bug, say so and ask the use
 
 **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
 
-Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
+Spend disproportionate effort here: work through the options below before concluding that no loop can be built.
 
 ### Ways to construct one, in roughly this order
 

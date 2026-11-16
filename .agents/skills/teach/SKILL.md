@@ -38,7 +38,7 @@ You should be careful to split between two types of learning:
 - **Fluency strength**: in-the-moment retrieval of knowledge
 - **Storage strength**: long-term retention of knowledge
 
-Fluency can give the user an illusory sense of mastery, but storage strength is the real goal. Try to design lessons which build long-term retention by desirable difficulty:
+Fluency can give the user an illusory sense of mastery, but storage strength is the real goal. Design lessons that build long-term retention through desirable difficulty:
 
 - Using retrieval practice (recall from memory)
 - Spacing (distributing practice over time)

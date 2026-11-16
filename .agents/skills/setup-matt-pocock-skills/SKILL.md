@@ -73,7 +73,8 @@ Let them edit before writing.
 
 **Pick the file to edit:**
 
-- If `CLAUDE.md` exists, edit it.
+- If either file already has an `## Agent skills` block, edit that file.
+- Else if `CLAUDE.md` exists and does more than import `AGENTS.md` (`@AGENTS.md`), edit it.
 - Else if `AGENTS.md` exists, edit it.
 - If neither exists, ask the user which one to create; don't pick for them.
 

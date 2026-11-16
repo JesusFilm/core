@@ -41,7 +41,7 @@ ComponentName/
 
 - Always use MUI components (`Box`, `Typography`, `Button`, etc.) — never bare HTML tags.
 - Use `styled()` from `@mui/material/styles` for custom styling.
-- Accessibility is mandatory: `tabIndex`, `aria-label`, `onClick`, `onKeyDown` on interactive elements.
+- Accessibility is mandatory: interactive elements must work by keyboard and screen reader. MUI and native interactive components already handle focus and key activation; add `tabIndex`, `role`, `aria-label` and `onKeyDown` yourself only on a non-interactive element made clickable.
 - Early returns to reduce nesting.
 
 ## Provider stack
