@@ -16,7 +16,7 @@ function renderBanner(
   return render(
     <MockedProvider>
       <SnackbarProvider>
-        <StaticEditor campaignProp={campaignProp} initialState={initialState}>
+        <StaticEditor campaign={campaignProp} initialState={initialState}>
           <CanvasBanner />
         </StaticEditor>
       </SnackbarProvider>

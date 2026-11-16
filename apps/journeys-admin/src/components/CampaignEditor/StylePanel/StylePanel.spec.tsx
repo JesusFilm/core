@@ -16,18 +16,23 @@ import {
   CAMPAIGN_IMAGE_BLOCK_CREATE,
   newOwnedImageBlock
 } from '../../../libs/useCampaignImageBlockCreateMutation'
-import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../libs/useCloudflareUploadByUrlMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL } from '../../../libs/useCloudflareTeamUploadByUrlMutation'
+import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
-import { nextPalette } from '../PaletteColorPicker'
 import {
-  StyleMock,
   WithBlock,
   blockOf,
-  paletteMock,
-  sectionStyleMock
+  blockUpdateMock,
+  paletteMock
 } from '../styleTesting'
-import { CommandProbe, QueriedEditor } from '../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SpyMock,
+  UndoRedo,
+  holdRequests,
+  landRequests
+} from '../testing'
 
 import { StylePanel } from './StylePanel'
 
@@ -50,7 +55,7 @@ const SRC = `${STORED}/public`
 
 const uploadByUrlMock = {
   request: {
-    query: CREATE_CLOUDFLARE_UPLOAD_BY_URL,
+    query: CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL,
     variables: { url: PASTED, teamId: 'teamId' }
   },
   result: vi.fn(() => ({
@@ -88,10 +93,10 @@ const coverCreateMock = {
   }))
 }
 
-function renderPanel(mocks: StyleMock[]): ReturnType<typeof render> {
+function renderPanel(mocks: SpyMock[]): ReturnType<typeof render> {
   return render(
     <QueriedEditor mocks={mocks} initialState={{ selectedBlockId: 'heroId' }}>
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <WithBlock blockId="heroId" typename="CampaignHeroBlock">
         {(block) => <StylePanel block={block} />}
@@ -113,32 +118,32 @@ describe('StylePanel', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
+  afterEach(() => vi.useRealTimers())
+
   describe('Background', () => {
     it('writes a chosen kind as one Command with an optimistic response', async () => {
       const mocks = [
-        {
-          ...sectionStyleMock(hero, {
-            backgroundKind: CampaignBackgroundKind.surface
-          }),
-          delay: 200
-        }
+        blockUpdateMock(hero, {
+          backgroundKind: CampaignBackgroundKind.surface
+        })
       ]
       renderPanel(mocks)
       const none = await screen.findByRole('button', { name: 'None' })
       expect(none).toHaveAttribute('aria-pressed', 'true')
 
-      fireEvent.click(screen.getByRole('button', { name: 'Surface' }))
+      await holdRequests(() =>
+        fireEvent.click(screen.getByRole('button', { name: 'Surface' }))
+      )
 
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
       // The optimistic response flips the selection before the request returns.
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: 'Surface' })).toHaveAttribute(
-          'aria-pressed',
-          'true'
-        )
+      expect(screen.getByRole('button', { name: 'Surface' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
       )
       expect(mocks[0].result).not.toHaveBeenCalled()
-      await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+      await landRequests()
+      expect(mocks[0].result).toHaveBeenCalled()
     })
 
     it('offers the image kind: choosing it without a cover shows the picker and writes nothing yet', async () => {
@@ -162,6 +167,22 @@ describe('StylePanel', () => {
       expect(screen.queryByRole('group', { name: 'Overlay' })).toBeNull()
     })
 
+    it('closes the cover picker with no Command when the kind the section already has is picked', async () => {
+      renderPanel([])
+      await screen.findByRole('button', { name: 'None' })
+      fireEvent.click(screen.getByRole('button', { name: 'Image' }))
+      expect(screen.getByTestId('StyleCoverPicker')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'None' }))
+
+      expect(screen.queryByTestId('StyleCoverPicker')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'None' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    })
+
     it('sets the cover and overlay as one Command when a picture is kept; undo restores the previous kind', async () => {
       const imageInput = {
         backgroundKind: CampaignBackgroundKind.image,
@@ -171,8 +192,8 @@ describe('StylePanel', () => {
       const mocks = [
         uploadByUrlMock,
         coverCreateMock,
-        sectionStyleMock(hero, imageInput),
-        sectionStyleMock(
+        blockUpdateMock(hero, imageInput),
+        blockUpdateMock(
           hero,
           {
             backgroundKind: hero.backgroundKind,
@@ -181,7 +202,7 @@ describe('StylePanel', () => {
           },
           imageInput
         ),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundOverlay: CampaignBackgroundOverlay.heavy },
           imageInput
@@ -236,21 +257,21 @@ describe('StylePanel', () => {
 
     it('commits the custom colour on picker blur, and undo restores the previous colour and kind', async () => {
       const mocks = [
-        sectionStyleMock(hero, {
+        blockUpdateMock(hero, {
           backgroundKind: CampaignBackgroundKind.custom
         }),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundColor: '#123456' },
           { backgroundKind: CampaignBackgroundKind.custom }
         ),
         paletteMock(nextPalette(campaign.palette, '#123456')),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundColor: null },
           { backgroundKind: CampaignBackgroundKind.custom }
         ),
-        sectionStyleMock(hero, { backgroundKind: hero.backgroundKind })
+        blockUpdateMock(hero, { backgroundKind: hero.backgroundKind })
       ]
       renderPanel(mocks)
 
@@ -284,16 +305,16 @@ describe('StylePanel', () => {
   describe('Custom colour pick', () => {
     it('commits a palette pick at once as one Command, and undo reverses that one pick', async () => {
       const mocks = [
-        sectionStyleMock(hero, {
+        blockUpdateMock(hero, {
           backgroundKind: CampaignBackgroundKind.custom
         }),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundColor: '#F2B544' },
           { backgroundKind: CampaignBackgroundKind.custom }
         ),
         paletteMock(nextPalette(campaign.palette, '#F2B544')),
-        sectionStyleMock(
+        blockUpdateMock(
           hero,
           { backgroundColor: null },
           { backgroundKind: CampaignBackgroundKind.custom }
@@ -319,9 +340,9 @@ describe('StylePanel', () => {
   describe('Colours', () => {
     it('writes each override as one Command and clears it with null', async () => {
       const mocks = [
-        sectionStyleMock(hero, { textColor: '#ABCDEF' }),
+        blockUpdateMock(hero, { textColor: '#ABCDEF' }),
         paletteMock(nextPalette(campaign.palette, '#ABCDEF')),
-        sectionStyleMock(hero, { textColor: null }, { textColor: '#ABCDEF' })
+        blockUpdateMock(hero, { textColor: null }, { textColor: '#ABCDEF' })
       ]
       renderPanel(mocks)
       fireEvent.click(await screen.findByRole('tab', { name: 'Colours' }))
@@ -332,7 +353,7 @@ describe('StylePanel', () => {
         'inherited'
       )
       fireEvent.click(row)
-      const input = screen.getByRole('textbox', { name: 'Text hex' })
+      const input = await screen.findByRole('textbox', { name: 'Text hex' })
       fireEvent.change(input, { target: { value: 'abcdef' } })
       fireEvent.keyDown(input, { key: 'Enter' })
 
@@ -383,6 +404,27 @@ describe('StylePanel', () => {
     })
   })
 
+  describe('tabs', () => {
+    it('names each tab’s panel, and labels the panel by its tab', async () => {
+      renderPanel([])
+      const background = await screen.findByRole('tab', { name: 'Background' })
+      const colours = screen.getByRole('tab', { name: 'Colours' })
+
+      expect(background).toHaveAttribute('aria-controls', 'style-panel')
+      expect(colours).toHaveAttribute('aria-controls', 'style-panel')
+      expect(screen.getByRole('tabpanel')).toHaveAttribute('id', 'style-panel')
+      expect(screen.getByRole('tabpanel', { name: 'Background' })).toBe(
+        screen.getByTestId('StyleBackgroundTab')
+      )
+
+      fireEvent.click(colours)
+
+      expect(screen.getByRole('tabpanel', { name: 'Colours' })).toBe(
+        screen.getByTestId('StyleColoursTab')
+      )
+    })
+  })
+
   describe('validation', () => {
     it('pre-validates only the hex format and writes nothing for a bad value', async () => {
       renderPanel([])
@@ -397,8 +439,8 @@ describe('StylePanel', () => {
     })
 
     it('shows the API’s message verbatim when it refuses a value', async () => {
-      const failing: StyleMock = {
-        ...sectionStyleMock(hero, { headingColor: '#AABBCC' }),
+      const failing: SpyMock = {
+        ...blockUpdateMock(hero, { headingColor: '#AABBCC' }),
         result: vi.fn(() => ({
           errors: [{ message: 'headingColor is not allowed on this band' }]
         }))

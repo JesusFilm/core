@@ -36,7 +36,7 @@ function renderMedia(
   }
 
   render(
-    <StaticEditor campaignProp={source} initialState={{ previewLanguageId }}>
+    <StaticEditor campaign={source} initialState={{ previewLanguageId }}>
       <CanvasMedia media={withEmptyTranslations(watchParentVideoBlock)} />
     </StaticEditor>
   )
@@ -65,5 +65,16 @@ describe('CanvasMedia playlist wording', () => {
     renderMedia(' ')
 
     expect(screen.getByText('61 videos')).toBeInTheDocument()
+  })
+
+  it('points an empty Media Slot at Settings', () => {
+    render(
+      <StaticEditor campaign={campaign}>
+        <CanvasMedia media={null} />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('CanvasMediaPlaceholder')).toHaveTextContent(
+      'Add media in Settings'
+    )
   })
 })

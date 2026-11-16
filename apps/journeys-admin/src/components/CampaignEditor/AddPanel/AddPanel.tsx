@@ -12,9 +12,9 @@ import { ReactElement, ReactNode, useState } from 'react'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
-import { blockLabel } from '../blockLabel'
-import { blockIcon } from '../Inspector/blockIcon'
 import { LeftPanelBody } from '../LeftPanel'
+import { blockIcon } from '../utils/blockIcon'
+import { blockLabel } from '../utils/blockLabel'
 import { useCampaignAddCommand } from '../utils/useCampaignAddCommand'
 
 interface AddGroupProps {

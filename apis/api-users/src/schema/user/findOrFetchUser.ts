@@ -12,6 +12,7 @@ import {
 import { logger } from '../logger'
 
 import { type AppType } from './enums/app'
+import { isEmailHeldByAnotherUser } from './findUserByEmail'
 import { isFirebaseNotFound } from './isFirebaseNotFound'
 import { verifyUser } from './verifyUser'
 
@@ -75,71 +76,85 @@ async function assertPreviousUidIsStale(previousUserId: string): Promise<void> {
 // UserJourney, UserTeam, UserRole, JourneyProfile; api-media: UserMediaRole,
 // UserMediaProfile) stay keyed to the old UID, so the user gets their profile
 // back but not their journeys, teams or roles.
+//
+// No step here runs inside a `prisma.$transaction`: the update's own WHERE
+// guard (id + userId + email + superAdmin) is what makes the write safe under
+// a concurrent relink or email change, not transactional isolation (Postgres'
+// default Read Committed gives each statement its own snapshot regardless).
+// A wrapping transaction would only hold a pooled connection open across the
+// `assertPreviousUidIsStale` network round-trip below without adding any
+// correctness, and could abort on Prisma's interactive-transaction timeout if
+// Firebase is slow.
 async function relinkUserToFirebaseUid(
   email: string,
   userId: string
 ): Promise<User> {
-  return await prisma.$transaction(async (tx) => {
-    const holder = await tx.user.findUnique({ where: { email } })
-    if (holder == null) {
-      // Another concurrent call may have already relinked this exact
-      // mixed-case email and normalized the row's email to lowercase as
-      // part of that write, so this lookup by the original string no
-      // longer matches anything. Check by userId before giving up, same
-      // recovery as the update-conflict branch below.
-      const relinkedByOtherCall = await tx.user.findUnique({
-        where: { userId }
-      })
-      if (relinkedByOtherCall != null) return relinkedByOtherCall
-      throw new Error('User row holding the email disappeared during re-link')
-    }
-    if (holder.userId === userId) return holder
-    // A superAdmin row's email can be orphaned (e.g. the admin moved on and
-    // the address was reassigned), so an unrelated person later verifying it
-    // must not inherit the privilege. Surface the same conflict as an
-    // unverified email instead of relinking.
-    if (holder.superAdmin) throw new UserEmailConflictError()
+  const holder = await prisma.user.findUnique({ where: { email } })
+  if (holder == null) {
+    // Another concurrent call may have already relinked this exact
+    // mixed-case email and normalized the row's email to lowercase as
+    // part of that write, so this lookup by the original string no
+    // longer matches anything. Check by userId before giving up, same
+    // recovery as the update-conflict branch below.
+    const relinkedByOtherCall = await prisma.user.findUnique({
+      where: { userId }
+    })
+    if (relinkedByOtherCall != null) return relinkedByOtherCall
+    throw new Error('User row holding the email disappeared during re-link')
+  }
+  if (holder.userId === userId) return holder
+  // A superAdmin row's email can be orphaned (e.g. the admin moved on and
+  // the address was reassigned), so an unrelated person later verifying it
+  // must not inherit the privilege. Surface the same conflict as an
+  // unverified email instead of relinking.
+  if (holder.superAdmin) throw new UserEmailConflictError()
 
-    const normalizedEmail = email.trim().toLowerCase()
-    if (normalizedEmail !== holder.email) {
-      // The unique index on email is case-sensitive, so a lowercase row can
-      // already coexist with this mixed-case holder. Normalizing the
-      // holder's email would collide with it and raise a raw P2002 instead
-      // of the typed conflict error below.
-      const lowercaseCollision = await tx.user.findUnique({
-        where: { email: normalizedEmail }
-      })
-      if (lowercaseCollision != null) throw new UserEmailConflictError()
-    }
+  const normalizedEmail = email.trim().toLowerCase()
+  // The unique index on email is case-sensitive, so other rows that match
+  // this address only by case -- an already-lowercase row, or another legacy
+  // row in a different mixed case -- can coexist with this holder. Check for
+  // them case-insensitively and always, including when the holder's email is
+  // already normalized: the holder is just whichever of the duplicates the
+  // lookup returned first, so skipping the check would let a relink silently
+  // abandon a second account for the same address.
+  if (await isEmailHeldByAnotherUser(normalizedEmail, holder.userId))
+    throw new UserEmailConflictError()
 
-    await assertPreviousUidIsStale(holder.userId)
+  await assertPreviousUidIsStale(holder.userId)
 
-    try {
-      const relinked = await tx.user.update({
-        where: {
-          id: holder.id,
-          userId: holder.userId,
-          email,
-          superAdmin: false
-        },
-        data: { userId, emailVerified: true, email: normalizedEmail }
-      })
-      logger.warn(
-        { userRowId: holder.id, previousUserId: holder.userId, userId },
-        'findOrFetchUser: re-linked User on verified email'
-      )
-      return relinked
-    } catch (error) {
-      if (!isRecordNotFoundError(error)) throw error
-      // Another concurrent call relinked this row between our read above
-      // and this update, so the userId guard lost the race safely.
-      const relinkedByOtherCall = await tx.user.findUnique({
-        where: { userId }
-      })
-      if (relinkedByOtherCall == null) throw error
-      return relinkedByOtherCall
+  try {
+    const relinked = await prisma.user.update({
+      where: {
+        id: holder.id,
+        userId: holder.userId,
+        email,
+        superAdmin: false
+      },
+      data: { userId, emailVerified: true, email: normalizedEmail }
+    })
+    logger.warn(
+      { userRowId: holder.id, previousUserId: holder.userId, userId },
+      'findOrFetchUser: re-linked User on verified email'
+    )
+    return relinked
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      // The write hit a unique column another row already holds. Either a
+      // concurrent call took this userId (relinked or created its row), or a
+      // row took the normalized email after the collision check above.
+      const rowForUserId = await prisma.user.findUnique({ where: { userId } })
+      if (rowForUserId != null) return rowForUserId
+      throw new UserEmailConflictError()
     }
-  })
+    if (!isRecordNotFoundError(error)) throw error
+    // Another concurrent call relinked this row between our read above
+    // and this update, so the userId guard lost the race safely.
+    const relinkedByOtherCall = await prisma.user.findUnique({
+      where: { userId }
+    })
+    if (relinkedByOtherCall == null) throw error
+    return relinkedByOtherCall
+  }
 }
 
 // The create lost to a unique constraint. Either a concurrent call already
@@ -159,6 +174,11 @@ async function resolveCreateConflict(
     // (which re-reads Firebase) no longer runs for this row.
     const emailChanged = email != null && email !== racedUser.email
     if (emailVerified && (!racedUser.emailVerified || emailChanged)) {
+      if (
+        emailChanged &&
+        (await isEmailHeldByAnotherUser(email, racedUser.userId))
+      )
+        throw new UserEmailConflictError()
       try {
         return await prisma.user.update({
           where: { userId },
@@ -229,6 +249,13 @@ export async function findOrFetchUser(
     if (existingUser.emailVerified === false) {
       const firebaseUser = await auth.getUser(userId)
       if (firebaseUser.emailVerified) {
+        const syncedEmail = firebaseUser.email?.trim().toLowerCase()
+        if (
+          syncedEmail != null &&
+          syncedEmail !== existingUser.email &&
+          (await isEmailHeldByAnotherUser(syncedEmail, userId))
+        )
+          throw new UserEmailConflictError()
         const { displayName, photoURL } = resolveProviderProfile(firebaseUser)
         const split = splitDisplayName(displayName)
         try {
@@ -240,9 +267,7 @@ export async function findOrFetchUser(
                 firstName: split.firstName,
                 lastName: split.lastName
               }),
-              ...(firebaseUser.email != null && {
-                email: firebaseUser.email.trim().toLowerCase()
-              }),
+              ...(syncedEmail != null && { email: syncedEmail }),
               ...(photoURL != null && { imageUrl: photoURL })
             }
           })
@@ -284,12 +309,16 @@ export async function findOrFetchUser(
   // than pattern matching, it needs no `%`/`_` wildcard escaping either.
   if (data.email != null) {
     const holderRows = await prisma.$queryRaw<
-      Array<{ email: string }>
-    >`SELECT email FROM "User" WHERE LOWER(email) = LOWER(${data.email}) LIMIT 1`
-    const holderEmail = holderRows?.[0]?.email
-    if (holderEmail != null) {
+      Array<{ email: string; userId: string }>
+    >`SELECT email, "userId" FROM "User" WHERE LOWER(email) = LOWER(${data.email}) ORDER BY "createdAt" ASC, id ASC LIMIT 1`
+    const holder = holderRows?.[0]
+    // A holder already keyed to this UID is not a conflict: a concurrent call
+    // created this user's row after the lookup by UID above (the Firebase
+    // call widens that window). Fall through to create, which fails on the
+    // unique UID and lets resolveCreateConflict return and sync that row.
+    if (holder != null && holder.userId !== userId) {
       if (!emailVerified) throw new UserEmailConflictError()
-      return await relinkUserToFirebaseUid(holderEmail, userId)
+      return await relinkUserToFirebaseUid(holder.email, userId)
     }
   }
 

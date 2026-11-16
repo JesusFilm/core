@@ -76,6 +76,9 @@ describe('findUserByEmail', () => {
     const [strings, ...values] = prismaMock.$queryRaw.mock
       .calls[0] as unknown as [TemplateStringsArray, ...unknown[]]
     expect(strings.join('?')).toContain('LOWER(email) = LOWER(?)')
+    // Case-variant duplicates exist (the unique index is case-sensitive), so
+    // the pick must be deterministic: oldest row first.
+    expect(strings.join('?')).toContain('ORDER BY "createdAt" ASC, id ASC')
     expect(values).toEqual(['john_smith@x.com'])
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       select: { id: true },

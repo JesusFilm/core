@@ -90,7 +90,7 @@ function renderEditor(
       <UndoRedo />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }
@@ -107,7 +107,7 @@ function renderWithPendingText(
     >
       <PendingTextSave block={pendingBlock} />
       <BlocksProbe />
-      <Inspector isManager />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }
