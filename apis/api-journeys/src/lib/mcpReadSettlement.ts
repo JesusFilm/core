@@ -1,0 +1,42 @@
+import type { PrismaClient } from '@core/prisma/journeys/client'
+import { postJson } from '@core/yoga/mcp/readContract'
+
+interface SettlementConfig {
+  authorityUrl: string
+  authoritySecret: string
+}
+
+/** Acquire the same owner-database row lock as execution before fencing it.
+ * Neither an absent receipt nor a timeout alone proves that execution stopped.
+ */
+export async function reconcileJourneyReads(
+  db: PrismaClient,
+  config: SettlementConfig,
+  permitId?: string
+): Promise<void> {
+  const pending = await db.mcpReadExecution.findMany({
+    where: { reportedAt: null, ...(permitId ? { id: permitId } : {}) },
+    orderBy: { createdAt: 'asc' },
+    take: 100
+  })
+  for (const execution of pending) {
+    await db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "McpReadExecution" WHERE id = ${execution.id} FOR UPDATE`
+      await tx.mcpReadExecution.updateMany({
+        where: { id: execution.id, status: 'prepared' },
+        data: { status: 'fenced', completedAt: new Date() }
+      })
+    })
+    // The transaction either committed its bounded read receipt or we acquired
+    // its execution lock and durably prohibited every delayed executor.
+    await postJson(
+      new URL('/internal/reads/fence', config.authorityUrl).href,
+      { executorId: execution.executorId, executor: 'journeys' },
+      `Bearer ${config.authoritySecret}`
+    )
+    await db.mcpReadExecution.update({
+      where: { id: execution.id },
+      data: { reportedAt: new Date() }
+    })
+  }
+}

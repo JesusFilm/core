@@ -123,3 +123,50 @@ model ReadPermit {
   @@index([status, settledAt])
   @@index([status, preparedAt])
 }
+
+model AgentAccessReview {
+  id                String   @id
+  connectionId      String
+  connectionVersion Int
+  userId            String
+  clientId          String
+  sessionHash       String
+  mode              String
+  journeyIds        String[]
+  validUntil        DateTime
+  consumedAt        DateTime?
+
+  @@index([validUntil])
+}
+
+model ConnectionChange {
+  id              String   @id @default(uuid())
+  connectionId    String
+  expectedVersion Int
+  version         Int
+  kind            String
+  mode            String
+  journeyIds      String[]
+  gateGeneration  Int
+  status          String   @default("pending")
+  requestedAt     DateTime
+  completedAt     DateTime?
+
+  @@unique([connectionId, expectedVersion])
+  @@index([status])
+}
+
+// Owning history/result features consume this durable intent after draining.
+model ConnectionHistoryPurge {
+  connectionId String   @id
+  changeId     String   @unique
+  requestedAt  DateTime
+  completedAt  DateTime?
+}
+
+// A per-request sender's explicit terminal evidence, never a lease or heartbeat.
+model ReadExecutor {
+  id        String   @id
+  executor  String
+  fencedAt  DateTime?
+}

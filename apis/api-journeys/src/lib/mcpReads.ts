@@ -24,6 +24,8 @@ import {
   verifyReadCredential
 } from '@core/yoga/mcp/readContract'
 
+import { reconcileJourneyReads } from './mcpReadSettlement'
+
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
 
 export interface JourneyReadsConfig extends ReadTrust {
@@ -197,15 +199,16 @@ export function createJourneyReadHandler(
   db: PrismaClient,
   logger?: Pick<Logger, 'info'>
 ) {
-  const executorId = randomUUID()
-  logger?.info({ event: 'mcp_read_executor_started', executorId })
   const authority = (action: string, body: unknown) =>
     postJson(
       new URL(`/internal/reads/${action}`, config.authorityUrl).href,
       body,
       `Bearer ${config.authoritySecret}`
     )
-  return async (request: Request): Promise<Response> => {
+  const handler = async (request: Request): Promise<Response> => {
+    const executorId = randomUUID()
+    logger?.info({ event: 'mcp_read_executor_started', executorId })
+    let readPermit: string | undefined
     let verifiedCredential: string | undefined
     let pendingPermit: string | undefined
     try {
@@ -256,8 +259,20 @@ export function createJourneyReadHandler(
         })
       )
       pendingPermit = permitId
+      if (body.stage === 'read') {
+        await db.mcpReadExecution.create({ data: { id: permitId, executorId } })
+        readPermit = permitId
+      }
       const result = await db.$transaction(
         async (tx) => {
+          if (readPermit) {
+            await tx.$queryRaw`SELECT id FROM "McpReadExecution" WHERE id = ${readPermit} FOR UPDATE`
+            const execution = await tx.mcpReadExecution.findUniqueOrThrow({
+              where: { id: readPermit }
+            })
+            if (execution.status !== 'prepared')
+              throw new Error('Access denied')
+          }
           const ordered = [...resources].sort((a, b) =>
             a.id < b.id ? -1 : a.id > b.id ? 1 : 0
           )
@@ -302,6 +317,11 @@ export function createJourneyReadHandler(
           if (body.stage === 'output' && fingerprint(data) !== body.dataHash)
             throw new Error('Access denied')
           await authority('accept', { credential, permitId })
+          if (readPermit)
+            await tx.mcpReadExecution.update({
+              where: { id: readPermit },
+              data: { status: 'settled', completedAt: new Date() }
+            })
           return data
         },
         { isolationLevel: 'RepeatableRead', timeout: 20000 }
@@ -313,12 +333,16 @@ export function createJourneyReadHandler(
         )
       // A successful transaction is positive evidence the bounded read settled.
       // If either response is lost, leave the durable permit unresolved.
-      await authority('settle', { permitId })
+      await reconcileJourneyReads(db, config, permitId)
       return Response.json(
         { data: result },
         { headers: { 'Cache-Control': 'private, no-store' } }
       )
     } catch (error) {
+      if (readPermit)
+        await reconcileJourneyReads(db, config, readPermit).catch(
+          () => undefined
+        )
       await authority('deny', {
         credential: verifiedCredential,
         permitId: pendingPermit
@@ -330,6 +354,9 @@ export function createJourneyReadHandler(
       )
     }
   }
+  return Object.assign(handler, {
+    reconcile: () => reconcileJourneyReads(db, config)
+  })
 }
 
 type ReadJourney = Prisma.JourneyGetPayload<{ include: { revision: true } }>
@@ -610,7 +637,20 @@ function boundedResult(value: Record<string, unknown>): ReadResult {
 export function useJourneyMcpReads(
   handler?: ReturnType<typeof createJourneyReadHandler>
 ): Plugin {
+  let timer: ReturnType<typeof setInterval> | undefined
   return {
+    onYogaInit() {
+      if (!handler) return
+      const recover = () => {
+        void handler.reconcile().catch(() => undefined)
+      }
+      recover()
+      timer = setInterval(recover, 60000)
+      timer.unref()
+    },
+    onDispose() {
+      clearInterval(timer)
+    },
     async onRequest(payload) {
       const { request } = payload
       if (new URL(request.url, 'http://yoga').pathname === '/mcp/reads') {

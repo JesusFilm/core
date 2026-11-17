@@ -77,7 +77,12 @@ export function createReadSession(
     },
     async settleOutput(): Promise<void> {
       outputClosed = true
-      for (const permitId of permits) await settle(permitId)
+      // Positive evidence for this guarded sender, including lost accept responses.
+      await postJson(
+        `${config.issuerUrl!.origin}/internal/reads/fence`,
+        { executorId, executor: 'mcp' },
+        `Bearer ${config.exchangeSecret!}`
+      )
     }
   }
 }
