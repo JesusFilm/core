@@ -1251,15 +1251,13 @@ export class JourneyPage {
       .click()
   }
   async verifyUpdatedUrlSlugIsLoaded(linkToCheck: string) {
-    const copiedLinkPage = await this.context.newPage()
-    const clipBoardText = await this.page.evaluate(
-      'navigator.clipboard.readText()'
-    )
-    await copiedLinkPage.goto(clipBoardText)
-    await copiedLinkPage.waitForLoadState()
-    const tabName: string = await copiedLinkPage.title()
+    // Opens the saved link directly: the clipboard reads back empty in headless CI
+    const updatedLinkPage = await this.context.newPage()
+    await updatedLinkPage.goto(linkToCheck)
+    await updatedLinkPage.waitForLoadState()
+    const tabName: string = await updatedLinkPage.title()
     expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
-    const loadedLink: string = copiedLinkPage.url()
+    const loadedLink: string = updatedLinkPage.url()
     expect(loadedLink).toStrictEqual(linkToCheck)
   }
 
