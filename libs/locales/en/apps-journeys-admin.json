@@ -1835,5 +1835,15 @@
   "Reconnecting keeps the renewed expiry and selected access. It does not renew consent again.": "Reconnecting keeps the renewed expiry and selected access. It does not renew consent again.",
   "Create a separate connection": "Create a separate connection",
   "Reconnect connection {{id}}": "Reconnect connection {{id}}",
-  "Reconnecting keeps the existing expiry and selected access. It does not renew consent.": "Reconnecting keeps the existing expiry and selected access. It does not renew consent."
+  "Reconnecting keeps the existing expiry and selected access. It does not renew consent.": "Reconnecting keeps the existing expiry and selected access. It does not renew consent.",
+  "Pending: new work is blocked while accepted operations settle. Refresh to check completion.": "Pending: new work is blocked while accepted operations settle. Refresh to check completion.",
+  "Change complete": "Change complete",
+  "Change access for connection {{id}}": "Change access for connection {{id}}",
+  "Disconnect connection {{id}}": "Disconnect connection {{id}}",
+  "Disconnect stops new work immediately. The change stays Pending until accepted work settles. Reversible history will be discarded. Saved journeys and successful media are kept.": "Disconnect stops new work immediately. The change stays Pending until accepted work settles. Reversible history will be discarded. Saved journeys and successful media are kept.",
+  "Access changes keep the same connection and expiry. Removed journeys retain eligible history. View only prevents edits, media creation and undo/redo.": "Access changes keep the same connection and expiry. Removed journeys retain eligible history. View only prevents edits, media creation and undo/redo.",
+  "Review access change": "Review access change",
+  "Confirm disconnect": "Confirm disconnect",
+  "Approve access change": "Approve access change",
+  "Journey titles are unavailable. You can still disconnect a connection.": "Journey titles are unavailable. You can still disconnect a connection."
 }

@@ -528,6 +528,7 @@ describe('connection management boundaries', () => {
       })
     ).toBeDisabled()
   })
+
   it('keeps owner disconnect available when journey titles cannot be loaded', async () => {
     vi.stubGlobal(
       'fetch',
