@@ -19,19 +19,22 @@ test.use({ viewport: CAMPAIGN_EDITOR_VIEWPORT })
  * Setup:
  * - Needs `campaignBuilder` on for the Playwright User (evaluated per user);
  *   it is on for everyone on stage, where the Daily E2E runs.
- * - The Playwright User must be a manager of its active team: the
- *   `campaignBuilder` fixture deletes the campaign at the end of the run, and
- *   Delete campaign is offered to managers only.
- * - The journey linked is the one whose slug ends CAMPAIGN_E2E_JOURNEY_URL
- *   (default: the public Fact or Fiction journey the journeys-e2e suite
- *   already depends on). Only the path counts: the API ignores the host and
- *   looks the slug up in its own database, where it must be published.
+ * - The Playwright User must be a manager of PLAYWRIGHT_TEAM_NAME, which
+ *   `goToCampaigns` selects: the `campaignBuilder` fixture deletes the
+ *   campaign at the end of the run, and Delete campaign is offered to
+ *   managers only.
+ * - The journey linked is the one whose slug ends CAMPAIGN_E2E_JOURNEY_URL.
+ *   Only the path counts: the API ignores the host and looks the slug up in
+ *   its own database, where it must be published. Linking needs the
+ *   Playwright User to be able to edit it, so the default is a stage journey
+ *   in a Playwright team, owned by a real account: the e2eCleanup sweep
+ *   deletes every journey a playwright*@example.com account owns.
  * - The public checks run on the viewer the admin links to
  *   (`NEXT_PUBLIC_JOURNEYS_URL`), which must read the same API.
  */
 const JOURNEY_URL =
   process.env.CAMPAIGN_E2E_JOURNEY_URL ??
-  'https://your.nextstep.is/fact-or-fiction'
+  'https://your-stage.nextstep.is/untitled-journey-cb51353e-a2fe-4f35-9875-630cd5a9b36e'
 // The e2eCleanup sweep finds a leftover campaign by this exact prefix
 // followed by Date.now() (`PLAYWRIGHT_CAMPAIGN_TITLE_PREFIXES`)
 const CAMPAIGN_TITLE = `Playwright campaign ${Date.now()}`

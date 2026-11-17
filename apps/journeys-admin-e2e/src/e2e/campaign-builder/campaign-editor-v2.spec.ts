@@ -20,10 +20,10 @@ test.use({ viewport: CAMPAIGN_EDITOR_VIEWPORT })
  * Setup:
  * - Needs `campaignBuilder` on for the Playwright User (evaluated per user);
  *   it is on for everyone on stage, where the Daily E2E runs.
- * - The Playwright User must be a manager of its active team: the
- *   `campaignBuilder` fixture deletes the campaign at the end of the run, and
- *   Delete campaign is offered to managers only. (Publish is open to any
- *   member or manager.)
+ * - The Playwright User must be a manager of PLAYWRIGHT_TEAM_NAME, which
+ *   `goToCampaigns` selects: the `campaignBuilder` fixture deletes the
+ *   campaign at the end of the run, and Delete campaign is offered to
+ *   managers only. (Publish is open to any member or manager.)
  * - The public checks run on the viewer the admin links to
  *   (`NEXT_PUBLIC_JOURNEYS_URL`), which must read the same API.
  */
