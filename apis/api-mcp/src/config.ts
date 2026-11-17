@@ -10,6 +10,7 @@ export interface McpConfig {
   maxResponseBytes: number
   maxConcurrentRequests: number
   admissionEnabled: boolean
+  exchangeSecret?: string
 }
 
 function integer(
@@ -45,12 +46,22 @@ function endpoint(value: string | undefined, name: string): URL {
 }
 
 export function readConfig(env: NodeJS.ProcessEnv): McpConfig {
-  if (env.MCP_AUTH_MODE !== 'disabled') {
+  if (!['disabled', 'granted-reads'].includes(env.MCP_AUTH_MODE ?? '')) {
     throw new Error(
       'MCP_AUTH_MODE must be disabled until identity is integrated'
     )
   }
   const publicUrl = endpoint(env.MCP_PUBLIC_URL, 'MCP_PUBLIC_URL')
+  const readsEnabled = env.MCP_AUTH_MODE === 'granted-reads'
+  if (
+    readsEnabled &&
+    (!env.MCP_ISSUER_URL ||
+      !env.MCP_GATEWAY_URL ||
+      (env.MCP_EXCHANGE_CLIENT_SECRET?.length ?? 0) < 32)
+  )
+    throw new Error(
+      'Granted reads require issuer, gateway and exchange credentials'
+    )
   if (['/', '/health', '/ready'].includes(publicUrl.pathname)) {
     throw new Error('MCP_PUBLIC_URL requires a distinct MCP path')
   }
@@ -77,6 +88,7 @@ export function readConfig(env: NodeJS.ProcessEnv): McpConfig {
     maxRequestBytes: integer(env, 'MCP_MAX_REQUEST_BYTES', 262144, 1048576),
     maxResponseBytes: integer(env, 'MCP_MAX_RESPONSE_BYTES', 1048576, 4194304),
     maxConcurrentRequests: integer(env, 'MCP_MAX_CONCURRENT_REQUESTS', 64, 256),
-    admissionEnabled: env.MCP_ADMISSION_ENABLED !== 'false'
+    admissionEnabled: env.MCP_ADMISSION_ENABLED !== 'false',
+    exchangeSecret: readsEnabled ? env.MCP_EXCHANGE_CLIENT_SECRET : undefined
   }
 }

@@ -40,6 +40,9 @@ const configuration = z.object({
     ),
   AUTH_INTROSPECTION_CLIENT_ID: z.string().min(1),
   AUTH_INTROSPECTION_CLIENT_SECRET: z.string().min(32),
+  AUTH_EXCHANGE_CLIENT_SECRET: z.string().min(32).optional(),
+  AUTH_READ_OWNER_SECRET: z.string().min(32).optional(),
+  AUTH_READ_GATEWAY_AUDIENCE: z.string().url().optional(),
   PG_DATABASE_URL_AUTH: z.string().url(),
   AUTH_HOST: z.string().default('127.0.0.1'),
   AUTH_PORT: z.coerce.number().int().min(1).max(65535).default(4011),
@@ -66,6 +69,23 @@ export type AuthConfig = z.infer<typeof configuration>
 
 export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
   const config = configuration.parse(env)
+  const readSettings = [
+    config.AUTH_EXCHANGE_CLIENT_SECRET,
+    config.AUTH_READ_OWNER_SECRET,
+    config.AUTH_READ_GATEWAY_AUDIENCE
+  ]
+  if (readSettings.some(Boolean) && !readSettings.every(Boolean))
+    throw new Error('Incomplete granted-read configuration')
+  if (config.AUTH_READ_GATEWAY_AUDIENCE === config.AUTH_AUDIENCE)
+    throw new Error('Separate gateway audience required')
+  if (
+    config.AUTH_EXCHANGE_CLIENT_SECRET &&
+    (config.AUTH_EXCHANGE_CLIENT_SECRET ===
+      config.AUTH_INTROSPECTION_CLIENT_SECRET ||
+      config.AUTH_READ_OWNER_SECRET === config.AUTH_EXCHANGE_CLIENT_SECRET ||
+      config.AUTH_READ_OWNER_SECRET === config.AUTH_INTROSPECTION_CLIENT_SECRET)
+  )
+    throw new Error('Separate service credentials required')
   if (env.PG_DATABASE_URL_AUTH_MIGRATION)
     throw new Error('Migration authority in runtime')
   if (
@@ -79,7 +99,10 @@ export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
       config.AUTH_ISSUER,
       config.AUTH_ADMIN_ORIGIN,
       config.AUTH_AUDIENCE,
-      config.AUTH_GATEWAY_URL
+      config.AUTH_GATEWAY_URL,
+      ...(config.AUTH_READ_GATEWAY_AUDIENCE
+        ? [config.AUTH_READ_GATEWAY_AUDIENCE]
+        : [])
     ]) {
       if (new URL(value).protocol !== 'https:')
         throw new Error('HTTPS required')
@@ -91,7 +114,13 @@ export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
       throw new Error('Verified database TLS required')
     }
   }
-  for (const value of [config.AUTH_AUDIENCE, config.AUTH_GATEWAY_URL]) {
+  for (const value of [
+    config.AUTH_AUDIENCE,
+    config.AUTH_GATEWAY_URL,
+    ...(config.AUTH_READ_GATEWAY_AUDIENCE
+      ? [config.AUTH_READ_GATEWAY_AUDIENCE]
+      : [])
+  ]) {
     const url = new URL(value)
     if (
       !['http:', 'https:'].includes(url.protocol) ||

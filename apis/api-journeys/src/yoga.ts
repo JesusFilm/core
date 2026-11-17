@@ -18,11 +18,18 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 
 import { env } from './env'
+import {
+  createJourneyReadHandler,
+  journeyReadsEnvironment,
+  useJourneyMcpReads
+} from './lib/mcpReads'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/authScopes'
 
 export const cache = createInMemoryCache()
+
+const readConfig = journeyReadsEnvironment(process.env, env.JOURNEYS_ADMIN_URL)
 
 export const yoga = createYoga<
   Record<string, unknown>,
@@ -66,6 +73,11 @@ export const yoga = createYoga<
     }
   },
   plugins: [
+    useJourneyMcpReads(
+      readConfig
+        ? createJourneyReadHandler(readConfig, prisma, logger)
+        : undefined
+    ),
     tracingPlugin,
     {
       onResponse: ({ response }) => {

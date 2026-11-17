@@ -1,6 +1,6 @@
 # Journeys MCP local runtime
 
-This workspace implements the protocol/runtime part of [#10572](https://github.com/JesusFilm/core/issues/10572), under [#10157](https://github.com/JesusFilm/core/issues/10157). The release has an empty tool catalog. It cannot read journeys, accept identity tokens, contact providers, write content or manage grants/history. Authentication and owning-service authorization must be implemented and tested before adding any data tool. Public URLs and guest access supply no authority.
+This workspace implements the portable runtime and granted journey reads, under [#10157](https://github.com/JesusFilm/core/issues/10157). `disabled` mode has an empty tool catalog. `granted-reads` mode registers only `journeys_list` and `journey_read`, with the separate issuer, restricted exchange, gateway and owning Journeys API. See [granted-read setup and verification](GRANTED_READS.md). Public URLs and guest access supply no authority. Editing, source discovery, media, history and preview tools remain unavailable.
 
 ## Start locally
 
@@ -43,22 +43,23 @@ SDK pins follow the [selected official release](https://github.com/modelcontextp
 
 All configuration is supplied at runtime. URL settings reject credentials, query strings and fragments. They require HTTPS except on exact loopback hostnames.
 
-| Variable                      | Default / allowed value                    | Purpose                                                                                                 |
-| ----------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `MCP_AUTH_MODE`               | Required, `disabled` only                  | Explicitly keeps all data tools unavailable. Other modes fail startup.                                  |
-| `MCP_PUBLIC_URL`              | Required, e.g. `http://127.0.0.1:4010/mcp` | External origin and exact MCP path, including any ingress prefix. Cannot be `/`, `/health` or `/ready`. |
-| `MCP_HOST`                    | `127.0.0.1`                                | Bind address. Supply `0.0.0.0` for a container.                                                         |
-| `MCP_PORT`                    | `4010`, range 1–65535                      | Bind port, independent of external ingress port.                                                        |
-| `MCP_ISSUER_URL`              | Optional                                   | Reserved environment-specific issuer URL, validated but unused. Does not enable identity.               |
-| `MCP_GATEWAY_URL`             | Optional                                   | Reserved environment-specific gateway URL, validated but unused. Does not enable data access.           |
-| `MCP_ADMISSION_ENABLED`       | `true`, or `false`                         | Disabled admission returns 503 even if a proxy ignores readiness.                                       |
-| `MCP_REQUEST_DEADLINE_MS`     | `20000`, maximum 20000                     | Bounds body receipt, protocol execution and buffered response.                                          |
-| `MCP_DRAIN_DEADLINE_MS`       | `10000`, maximum 30000                     | Maximum transport drain before closing active connections.                                              |
-| `MCP_MAX_REQUEST_BYTES`       | `262144`, maximum 1048576                  | Trusted buffered request limit, including chunked bodies.                                               |
-| `MCP_MAX_RESPONSE_BYTES`      | `1048576`, maximum 4194304                 | Buffered response limit before any payload is released.                                                 |
-| `MCP_MAX_CONCURRENT_REQUESTS` | `64`, maximum 256                          | Per-replica protocol admission bound. No entitlement/quota authority.                                   |
+| Variable                      | Default / allowed value                       | Purpose                                                                                                     |
+| ----------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `MCP_AUTH_MODE`               | Required, `disabled` or `granted-reads`       | The latter requires the issuer, gateway and separate exchange credential.                                   |
+| `MCP_PUBLIC_URL`              | Required, e.g. `http://127.0.0.1:4010/mcp`    | External origin and exact MCP path, including any ingress prefix. Cannot be `/`, `/health` or `/ready`.     |
+| `MCP_HOST`                    | `127.0.0.1`                                   | Bind address. Supply `0.0.0.0` for a container.                                                             |
+| `MCP_PORT`                    | `4010`, range 1–65535                         | Bind port, independent of external ingress port.                                                            |
+| `MCP_ISSUER_URL`              | Required for granted reads                    | Separate issuer origin. Unused in disabled mode.                                                            |
+| `MCP_GATEWAY_URL`             | Required for granted reads                    | Gateway origin. Granted reads use its closed `/mcp/reads` route.                                            |
+| `MCP_EXCHANGE_CLIENT_SECRET`  | Required for granted reads, at least 32 bytes | Authenticates restricted exchange and output settlement. Distinct from introspection and owner credentials. |
+| `MCP_ADMISSION_ENABLED`       | `true`, or `false`                            | Disabled admission returns 503 even if a proxy ignores readiness.                                           |
+| `MCP_REQUEST_DEADLINE_MS`     | `20000`, maximum 20000                        | Bounds body receipt, protocol execution and buffered response.                                              |
+| `MCP_DRAIN_DEADLINE_MS`       | `10000`, maximum 30000                        | Maximum transport drain before closing active connections.                                                  |
+| `MCP_MAX_REQUEST_BYTES`       | `262144`, maximum 1048576                     | Trusted buffered request limit, including chunked bodies.                                                   |
+| `MCP_MAX_RESPONSE_BYTES`      | `1048576`, maximum 4194304                    | Buffered response limit before any payload is released.                                                     |
+| `MCP_MAX_CONCURRENT_REQUESTS` | `64`, maximum 256                             | Per-replica protocol admission bound. No entitlement/quota authority.                                       |
 
-`GET /health` reports process liveness. `GET /ready` reports readiness for the implemented protocol-only service; both report `dataTools: false`. A stopped/draining admission gate makes readiness 503. Missing, invalid or unreachable issuer/gateway integration never enables tools. These future URLs are not dependency probes, and readiness does not assert that authentication works. The separate sign-in slice owns dependency checks and authoritative eligibility. No cached allow is implemented here.
+`GET /health` reports process liveness. `GET /ready` reports transport admission; `dataTools` identifies the configured mode. A stopped/draining admission gate makes readiness 503. Readiness does not assert authorization-service availability. Every data operation checks its required authorities and fails closed on an unavailable dependency; there is no cached allow.
 
 The MCP route validates the actual Host header against the public hostname and permits a browser Origin only when it exactly equals the public origin. The ingress must preserve that Host; do not trust forwarded identity or forwarded-host headers. Health probes accept internal probe hostnames and return no private data.
 

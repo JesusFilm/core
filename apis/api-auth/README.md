@@ -1,6 +1,6 @@
 # Agent sign-in and consent
 
-Implements first approval in [#10549](https://github.com/JesusFilm/core/issues/10549), under [#10157](https://github.com/JesusFilm/core/issues/10157). `api-auth` owns OAuth state and application grants in the separate auth logical database. It does not replace api-users. MCP still has an empty tool catalog. Granted reads/exchange, renewal, withdrawal and account-change coordination remain with their implementing slices.
+Implements first approval in [#10549](https://github.com/JesusFilm/core/issues/10549), under [#10157](https://github.com/JesusFilm/core/issues/10157). `api-auth` owns OAuth state and application grants in the separate auth logical database. It does not replace api-users. [Granted reads and restricted exchange](../api-mcp/GRANTED_READS.md) are implemented by #10573. Renewal, withdrawal and account-change coordination remain with their implementing slices.
 
 The pinned implementation is [oidc-provider 9.15.0](https://github.com/panva/node-oidc-provider/tree/v9.15.0). Development interactions and in-memory persistence are disabled. Supports pre-registered public web clients, public DCR and allowlisted CIMD draft-03. Requires PKCE S256 and exact redirects, binds the MCP resource audience, authenticates introspection and rotates refresh tokens. External clients receive opaque five-minute MCP tokens, never Firebase credentials.
 
@@ -33,7 +33,7 @@ Run `pnpm exec nx prisma-generate prisma-auth`, then `pnpm dev:mcp`. `Procfile.m
 | `AUTH_CLIENTS`                                                      | JSON public registrations containing `client_id`, `client_name`, exact `redirect_uris`. Defaults to `[]`. |
 | `AUTH_CIMD_ORIGINS`                                                 | Explicit trusted HTTPS metadata origins. Empty denies CIMD fetching. Excludes issuer/resource origins.    |
 | `AUTH_HOST` / `AUTH_PORT`                                           | Bind address/port, default `127.0.0.1:4011`. Containers use `0.0.0.0`.                                    |
-| `MCP_AUTH_MODE` / `MCP_PUBLIC_URL`                                  | Keep the baseline at `disabled` and the configured resource URL until #10573 integrates identity.         |
+| `MCP_AUTH_MODE` / `MCP_PUBLIC_URL`                                  | Keep the baseline at `disabled`, or configure the granted-read participants documented above.             |
 
 Stage/production require HTTPS. Their trusted ingress must preserve Host and overwrite forwarded transport headers. Browser identity never trusts forwarded user headers. Metadata fetches reject IP literals before connection and use a TLS agent whose DNS lookup rejects special-use addresses and connects using the validated results. Fetches have a 2.5-second timeout, no redirects and 16 KiB metadata / 8 KiB JWKS/sector limits. Public clients cannot register remote JWKS/sector/request URIs. DCR allows at most five HTTPS redirects and a 16 KiB body. Only local permits loopback HTTP callbacks.
 
