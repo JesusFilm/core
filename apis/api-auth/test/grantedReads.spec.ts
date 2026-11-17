@@ -1,3 +1,4 @@
+import { fork } from 'node:child_process'
 import { generateKeyPairSync, randomBytes, randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { type Server, createServer, request as httpRequest } from 'node:http'
@@ -69,7 +70,8 @@ describe('granted journey read authorization', () => {
       let afterAcceptance: ((stage: string) => Promise<void>) | undefined
       let settlementOutage = false
       let ownerHandler: ReturnType<typeof createJourneyReadHandler>
-      let beforeOutput: (() => Promise<void>) | undefined
+      let beforeOutput: ((executorId: string) => Promise<void>) | undefined
+      let afterOutput: (() => void) | undefined
       let accessToken: string
       const cookies = new Map<string, string>()
 
@@ -526,6 +528,7 @@ describe('granted journey read authorization', () => {
             void owner(req, res)
           })
         )
+        const outputRequests = new WeakSet<Request>()
         gateway = createGatewayRuntime({
           graphqlEndpoint: '/',
           supergraph: readFileSync(
@@ -540,8 +543,21 @@ describe('granted journey read authorization', () => {
                   new URL(request.url).pathname === '/mcp/reads' &&
                   ((await request.clone().json()) as { stage?: string })
                     .stage === 'output'
-                )
-                  await beforeOutput?.()
+                ) {
+                  outputRequests.add(request)
+                  const credential = request.headers
+                    .get('authorization')!
+                    .slice(4)
+                  const { executorId } = JSON.parse(
+                    Buffer.from(credential.split('.')[0], 'base64url').toString(
+                      'utf8'
+                    )
+                  ) as { executorId: string }
+                  await beforeOutput?.(executorId)
+                }
+              },
+              onResponse({ request }) {
+                if (outputRequests.has(request)) afterOutput?.()
               }
             },
             useMcpReads({
@@ -577,6 +593,7 @@ describe('granted journey read authorization', () => {
       beforeEach(async () => {
         beforeIdentity = undefined
         beforeOutput = undefined
+        afterOutput = undefined
         beforeAcceptance = undefined
         afterAcceptance = undefined
         settlementOutage = false
@@ -1254,7 +1271,12 @@ describe('granted journey read authorization', () => {
         const preparing = new Promise<void>((resolve) => {
           outputReady = resolve
         })
-        beforeOutput = async () => {
+        let outputExecutorId = ''
+        const outputDone = new Promise<void>((resolve) => {
+          afterOutput = resolve
+        })
+        beforeOutput = async (executorId) => {
+          outputExecutorId = executorId
           outputReady()
           await new Promise<void>((resolve) => {
             releaseOutput = resolve
@@ -1293,19 +1315,14 @@ describe('granted journey read authorization', () => {
         const connection = await auth.agentConnection.findFirstOrThrow({
           orderBy: { approvedAt: 'desc' }
         })
-        let settled = false
-        const deadline = Date.now() + 3000
-        while (!settled && Date.now() < deadline) {
-          settled =
-            (await auth.readExecutor.count({
-              where: { executor: 'mcp', fencedAt: { not: null } }
-            })) > 0 &&
-            (await auth.readPermit.count({
-              where: { connectionId: connection.id, status: 'accepted' }
-            })) === 0
-          if (!settled) await new Promise((resolve) => setTimeout(resolve, 10))
-        }
-        expect(settled).toBe(true)
+        await outputDone
+        await vi.waitFor(async () =>
+          expect(
+            await auth.readExecutor.findUnique({
+              where: { id: outputExecutorId }
+            })
+          ).toMatchObject({ executor: 'mcp', fencedAt: expect.any(Date) })
+        )
         expect(
           await auth.readPermit.count({
             where: { connectionId: connection.id, status: 'accepted' }
@@ -1363,6 +1380,7 @@ describe('granted journey read authorization', () => {
           }
         }
       }
+
       it.each(['access', 'disconnect'])(
         'blocks a real read paused before acceptance after %s',
         async (kind) => {
@@ -1393,6 +1411,7 @@ describe('granted journey read authorization', () => {
           expect((await readA()).body).not.toContain('read-a-text-sentinel')
         }
       )
+
       it('keeps accepted real reads pending through a lost settlement response and recovers from the owning receipt', async () => {
         const context = await manageConnection()
         const pause = barrier()
@@ -1438,6 +1457,7 @@ describe('granted journey read authorization', () => {
           })
         ).toMatchObject({ completedAt: null })
       })
+
       it('denies buffered private output after a completed management withdrawal', async () => {
         const context = await manageConnection()
         beforeOutput = async () => {
@@ -1448,6 +1468,7 @@ describe('granted journey read authorization', () => {
         expect(result.body).not.toContain('read-a-text-sentinel')
         expect(result.status).toBe(500)
       })
+
       it('counts accepted private output until its real MCP sender closes, independently from the reader', async () => {
         const context = await manageConnection()
         const pause = barrier()
@@ -1478,6 +1499,162 @@ describe('granted journey read authorization', () => {
             })
           ).toMatchObject({ status: 'complete' })
         )
+      })
+
+      it('keeps identity/expiry through resource changes and reconnects with exactly the new grant', async () => {
+        const context = await manageConnection()
+        const originalToken = accessToken
+        const apply = async (
+          current: Awaited<ReturnType<typeof manageConnection>>,
+          ids: string[]
+        ) => {
+          const review = await current.post('access-review', {
+            journeyIds: ids,
+            mode: 'view'
+          })
+          expect(review.status).toBe(200)
+          const { reviewToken } = (await review.json()) as {
+            reviewToken: string
+          }
+          const changed = await current.post('access-approve', { reviewToken })
+          expect(await changed.json()).toMatchObject({ status: 'complete' })
+          const next = await auth.agentConnection.findUniqueOrThrow({
+            where: { id: current.connection.id }
+          })
+          expect(next.expiresAt).toEqual(context.connection.expiresAt)
+          expect(next.userId).toBe(context.connection.userId)
+          return next
+        }
+        const expanded = await apply(context, ['read-a', 'read-b'])
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        accessToken = await consent('alice', ['read-a', 'read-b'], 'view', {
+          id: expanded.id,
+          version: expanded.version
+        })
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect(
+          (await call('journey_read', { journeyId: 'read-b', view: 'steps' }))
+            .body
+        ).toContain('read-b-text-sentinel')
+        const reduced = await apply(await manageConnection(), ['read-b'])
+        accessToken = await consent('alice', ['read-b'], 'view', {
+          id: reduced.id,
+          version: reduced.version
+        })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect(
+          (await call('journey_read', { journeyId: 'read-b', view: 'steps' }))
+            .body
+        ).toContain('read-b-text-sentinel')
+        expect(
+          (
+            await call(
+              'journey_read',
+              { journeyId: 'read-a', view: 'steps' },
+              originalToken
+            )
+          ).body
+        ).not.toContain('read-a-text-sentinel')
+      })
+
+      it('does not treat killing an MCP replica as proof its accepted Journeys read stopped', async () => {
+        const context = await manageConnection()
+        const child = fork(
+          new URL(
+            '../../api-mcp/test/granted-read-process.ts',
+            import.meta.url
+          ),
+          [],
+          {
+            execArgv: ['--import', import.meta.resolve('tsx')],
+            stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+            env: {
+              ...process.env,
+              MCP_AUTH_MODE: 'granted-reads',
+              MCP_PUBLIC_URL: config.AUTH_AUDIENCE,
+              MCP_ISSUER_URL: config.AUTH_ISSUER,
+              MCP_GATEWAY_URL: gatewayUrl,
+              MCP_EXCHANGE_CLIENT_SECRET: exchangeSecret
+            }
+          }
+        )
+        const exited = new Promise<void>((resolve) =>
+          child.once('exit', () => resolve())
+        )
+        const port = await new Promise<number>((resolve, reject) => {
+          child.once('message', (message: { port: number }) =>
+            resolve(message.port)
+          )
+          child.once('exit', () =>
+            reject(new Error('MCP child exited before readiness'))
+          )
+        })
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const previousUrl = mcpUrl
+        try {
+          mcpUrl = `http://127.0.0.1:${port}/mcp`
+          const reading = readA().catch(() => undefined)
+          await pause.ready
+          const response = await context.post('disconnect')
+          const change = (await response.json()) as {
+            changeId: string
+            status: string
+          }
+          expect(change.status).toBe('pending')
+          child.kill('SIGKILL')
+          await exited
+          await reading
+          expect(
+            await auth.connectionChange.findUnique({
+              where: { id: change.changeId }
+            })
+          ).toMatchObject({ status: 'pending' })
+          expect(
+            await auth.readPermit.count({
+              where: {
+                connectionId: context.connection.id,
+                stage: 'read',
+                status: 'accepted'
+              }
+            })
+          ).toBe(1)
+          pause.resume()
+          await vi.waitFor(
+            async () =>
+              expect(
+                await auth.connectionChange.findUnique({
+                  where: { id: change.changeId }
+                })
+              ).toMatchObject({ status: 'complete' }),
+            { timeout: 5000 }
+          )
+        } finally {
+          mcpUrl = previousUrl
+          pause.resume()
+          child.kill('SIGKILL')
+          await exited
+        }
+      })
+
+      it('creates no durable executor state for junk-token metadata requests', async () => {
+        const before = await auth.readExecutor.count()
+        const response = await fetch(mcpUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer junk',
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'mcp-protocol-version': '2026-07-28',
+            'mcp-method': 'tools/list'
+          },
+          body: JSON.stringify(message('2026-07-28', 'tools/list'))
+        })
+        expect(response.status).toBe(200)
+        await response.text()
+        expect(await auth.readExecutor.count()).toBe(before)
       })
 
       it('rejects stale gate generations and final acceptance after a lock wait reaches expiry', async () => {

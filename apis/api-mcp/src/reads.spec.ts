@@ -57,4 +57,55 @@ describe('versioned owning-service results', () => {
       expect(fetchMock).toHaveBeenCalledTimes(2)
     }
   )
+
+  it('does not report executor fences for metadata-only or failed-authentication sessions', async () => {
+    const reads = session()
+    await reads.authorizeOutput(Buffer.from('{}'))
+    await reads.settleOutput()
+    expect(fetchMock).not.toHaveBeenCalled()
+    fetchMock
+      .mockReset()
+      .mockResolvedValueOnce(Response.json({}, { status: 403 }))
+    const denied = session()
+    await expect(denied.read(request)).rejects.toThrow()
+    await denied.settleOutput()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('prevents a buffered response from beginning output authorization after closure', async () => {
+    const data = { contractVersion: resultContractVersion, journeys: [] }
+    fetchMock.mockResolvedValueOnce(Response.json({ data }))
+    const reads = session()
+    await reads.read(request)
+    await reads.settleOutput()
+    await reads.authorizeOutput(Buffer.from('{}'))
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('reports the exact sender fence when closure races a lost output acceptance response', async () => {
+    const data = { contractVersion: resultContractVersion, journeys: [] }
+    fetchMock.mockResolvedValueOnce(Response.json({ data }))
+    const reads = session()
+    await reads.read(request)
+    let rejectOutput!: (error: Error) => void
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise<Response>((_resolve, reject) => {
+          rejectOutput = reject
+        })
+    )
+    const releasing = reads.authorizeOutput(Buffer.from('{}'))
+    const failed = expect(releasing).rejects.toThrow('lost response')
+    fetchMock.mockResolvedValueOnce(Response.json({ fenced: true }))
+    await reads.settleOutput()
+    expect(fetchMock.mock.calls[3][0]).toBe(
+      'http://127.0.0.1:4011/internal/reads/fence'
+    )
+    expect(JSON.parse(fetchMock.mock.calls[3][1]?.body as string)).toEqual({
+      executorId: '0b276608-2afd-4d72-8567-09c90e7433dc',
+      executor: 'mcp'
+    })
+    rejectOutput(new Error('lost response'))
+    await failed
+  })
 })

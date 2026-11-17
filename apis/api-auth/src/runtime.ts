@@ -32,7 +32,6 @@ import {
   requestGateSnapshots,
   transactionScope
 } from './store'
-
 import { reconcileConnectionChanges } from './withdrawal'
 
 class HttpFailure extends Error {
@@ -668,6 +667,10 @@ export async function createRuntime(
   const maintenance = setInterval(() => {
     void cleanup(db)
       .then(() => reconcileConnectionChanges(db))
+      .then((failed) => {
+        if (failed)
+          logger.error({ event: 'withdrawal_reconciliation_pending', failed })
+      })
       .catch(() => logger.error({ event: 'cleanup_unavailable' }))
   }, 60000)
   maintenance.unref()

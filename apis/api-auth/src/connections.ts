@@ -19,7 +19,6 @@ import {
   lockGates,
   transactionScope
 } from './store'
-
 import { beginConnectionChange, reconcileConnectionChanges } from './withdrawal'
 
 export class ConnectionFailure extends Error {
@@ -131,6 +130,7 @@ export function createConnectionManagement(
           pending.add(connection.id)
         }
       }
+      let titlesUnavailable = false
       const rights = await currentRights({
         token,
         evidence,
@@ -139,6 +139,12 @@ export function createConnectionManagement(
           .flatMap((connection) => connection.journeyIds),
         gates,
         allowPending: true
+      }).catch(async () => {
+        // The owner may still relinquish consent during an owning-API outage.
+        // No journey data is released, and current identity is mandatory.
+        await identity.check(evidence)
+        titlesUnavailable = true
+        return { journeys: [], pending: new Set<string>() }
       })
       const { journeys } = rights
       for (const connection of connections)
@@ -208,6 +214,7 @@ export function createConnectionManagement(
         return {
           body: {
             connections: result,
+            titlesUnavailable,
             csrf: session.csrf,
             nextCursor: connections.length > 100 ? connections[99].id : null
           },

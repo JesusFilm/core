@@ -385,6 +385,7 @@ describe('connection management boundaries', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
   })
+
   it('reviews the selected journeys and View only before a bound access approval, then shows Pending', async () => {
     const requests: Array<{ url: string; body: Record<string, unknown> }> = []
     let changed = false
@@ -526,5 +527,33 @@ describe('connection management boundaries', () => {
         name: 'Change access for connection connection-a'
       })
     ).toBeDisabled()
+  })
+  it('keeps owner disconnect available when journey titles cannot be loaded', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        Response.json({
+          csrf: 'csrf',
+          titlesUnavailable: true,
+          connections: [
+            { ...connection, journeys: [{ id: 'a', title: null }] }
+          ],
+          nextCursor: null
+        })
+      )
+    )
+    render(<ConnectedAgents issuer="https://auth.example" />)
+    expect(
+      await screen.findByText(
+        'Journey titles are unavailable. You can still disconnect a connection.'
+      )
+    ).toBeVisible()
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Disconnect connection connection-a' })
+    )
+    expect(
+      screen.getByRole('button', { name: 'Confirm disconnect' })
+    ).toBeEnabled()
+    expect(screen.queryByText('Selected A')).not.toBeInTheDocument()
   })
 })

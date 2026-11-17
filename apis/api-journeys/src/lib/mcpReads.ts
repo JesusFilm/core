@@ -24,9 +24,9 @@ import {
   verifyReadCredential
 } from '@core/yoga/mcp/readContract'
 
-import { reconcileJourneyReads } from './mcpReadSettlement'
-
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
+
+import { reconcileJourneyReads } from './mcpReadSettlement'
 
 export interface JourneyReadsConfig extends ReadTrust {
   internalSecret: string
@@ -354,8 +354,19 @@ export function createJourneyReadHandler(
       )
     }
   }
+  let reconciling = false
   return Object.assign(handler, {
-    reconcile: () => reconcileJourneyReads(db, config)
+    async reconcile() {
+      if (reconciling) return
+      reconciling = true
+      try {
+        const failed = await reconcileJourneyReads(db, config)
+        if (failed)
+          logger?.info({ event: 'mcp_read_reconciliation_pending', failed })
+      } finally {
+        reconciling = false
+      }
+    }
   })
 }
 

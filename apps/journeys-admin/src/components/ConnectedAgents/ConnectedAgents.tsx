@@ -14,7 +14,7 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../../libs/auth'
 import { getFirebaseAuth } from '../../libs/auth/firebase'
 
-import { ConnectionAccess } from './ConnectionAccess/ConnectionAccess'
+import { ConnectionAccess } from './ConnectionAccess'
 
 interface Connection {
   id: string
@@ -28,6 +28,7 @@ interface Connection {
   journeys: Array<{ id: string; title: string | null }>
 }
 interface ConnectionPage {
+  titlesUnavailable?: boolean
   csrf: string
   connections: Connection[]
   nextCursor: string | null
@@ -209,6 +210,13 @@ export function ConnectedAgents({ issuer }: { issuer: string }): ReactElement {
       </Button>
       {page && owner === userId && (
         <>
+          {page.titlesUnavailable && (
+            <Alert severity="warning">
+              {t(
+                'Journey titles are unavailable. You can still disconnect a connection.'
+              )}
+            </Alert>
+          )}
           {page.connections.length === 0 && (
             <Typography>{t('You have no connected agents.')}</Typography>
           )}

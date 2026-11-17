@@ -6,7 +6,6 @@ import { type Adapter, type AdapterPayload, errors } from 'oidc-provider'
 import { type Prisma, type PrismaClient } from '@core/prisma/auth/client'
 
 import { type AuthConfig, environmentBinding } from './config'
-
 import { beginConnectionChange, reconcileConnectionChanges } from './withdrawal'
 
 export type Database = PrismaClient

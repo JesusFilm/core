@@ -54,65 +54,78 @@ export async function beginConnectionChange(
 }
 
 /** A missing response or an old accepted permit never satisfies this drain. */
-export async function reconcileConnectionChanges(db: Database): Promise<void> {
-  const changes = await db.connectionChange.findMany({
-    where: { status: 'pending' },
-    orderBy: { requestedAt: 'asc' },
-    take: 100
-  })
-  for (const change of changes) {
-    await db.$transaction(async (tx) => {
-      const gateId = `connection:${change.connectionId}`
-      await tx.$queryRaw`SELECT id FROM "AuthorizationGate" WHERE id = ${gateId} FOR UPDATE`
-      await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${change.connectionId} FOR UPDATE`
-      const current = await tx.connectionChange.findUniqueOrThrow({
-        where: { id: change.id }
-      })
-      if (current.status !== 'pending') return
-      const gate = await tx.authorizationGate.findUniqueOrThrow({
-        where: { id: gateId }
-      })
-      const connection = await tx.agentConnection.findUniqueOrThrow({
-        where: { id: change.connectionId }
-      })
-      if (
-        gate.open ||
-        gate.generation !== current.gateGeneration ||
-        connection.version !== current.version
-      )
-        throw new Error('Withdrawal state changed')
-      if (
-        await tx.readPermit.count({
-          where: { connectionId: current.connectionId, status: 'accepted' }
-        })
-      )
-        return
-      const now = await databaseTime(tx)
-      if (current.kind === 'access') {
-        if (connection.revokedAt) throw new Error('Connection retired')
-        await tx.agentConnection.update({
-          where: { id: current.connectionId },
-          data: { mode: current.mode, journeyIds: current.journeyIds }
-        })
-        await tx.authorizationGate.update({
-          where: { id: gateId },
-          data: { open: true, generation: { increment: 1 } }
-        })
-      } else {
-        await tx.connectionHistoryPurge.upsert({
-          where: { connectionId: current.connectionId },
-          create: {
-            connectionId: current.connectionId,
-            changeId: current.id,
-            requestedAt: now
-          },
-          update: {}
-        })
-      }
-      await tx.connectionChange.update({
-        where: { id: current.id },
-        data: { status: 'complete', completedAt: now }
-      })
+export async function reconcileConnectionChanges(
+  db: Database
+): Promise<number> {
+  let after: string | undefined
+  let failed = 0
+  while (true) {
+    const changes = await db.connectionChange.findMany({
+      where: { status: 'pending', ...(after ? { id: { gt: after } } : {}) },
+      orderBy: { id: 'asc' },
+      take: 100
     })
+    if (!changes.length) return failed
+    after = changes[changes.length - 1].id
+    for (const change of changes) {
+      try {
+        await db.$transaction(async (tx) => {
+          const gateId = `connection:${change.connectionId}`
+          await tx.$queryRaw`SELECT id FROM "AuthorizationGate" WHERE id = ${gateId} FOR UPDATE`
+          await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${change.connectionId} FOR UPDATE`
+          const current = await tx.connectionChange.findUniqueOrThrow({
+            where: { id: change.id }
+          })
+          if (current.status !== 'pending') return
+          const gate = await tx.authorizationGate.findUniqueOrThrow({
+            where: { id: gateId }
+          })
+          const connection = await tx.agentConnection.findUniqueOrThrow({
+            where: { id: change.connectionId }
+          })
+          if (
+            gate.open ||
+            gate.generation !== current.gateGeneration ||
+            connection.version !== current.version
+          )
+            throw new Error('Withdrawal state changed')
+          if (
+            await tx.readPermit.count({
+              where: { connectionId: current.connectionId, status: 'accepted' }
+            })
+          )
+            return
+          const now = await databaseTime(tx)
+          if (current.kind === 'access') {
+            if (connection.revokedAt) throw new Error('Connection retired')
+            await tx.agentConnection.update({
+              where: { id: current.connectionId },
+              data: { mode: current.mode, journeyIds: current.journeyIds }
+            })
+            await tx.authorizationGate.update({
+              where: { id: gateId },
+              data: { open: true, generation: { increment: 1 } }
+            })
+          } else {
+            await tx.connectionHistoryPurge.upsert({
+              where: { connectionId: current.connectionId },
+              create: {
+                connectionId: current.connectionId,
+                changeId: current.id,
+                requestedAt: now
+              },
+              update: {}
+            })
+          }
+          await tx.connectionChange.update({
+            where: { id: current.id },
+            data: { status: 'complete', completedAt: now }
+          })
+        })
+      } catch {
+        // Preserve the closed gate and this change for retry; keep draining others.
+        failed++
+      }
+    }
   }
 }

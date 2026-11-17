@@ -154,9 +154,16 @@ export function createRuntime(
       respond(res, 401, 'AUTHORIZATION_REQUIRED')
       return
     }
+    const requestExecutorId = randomUUID()
     const reads = config.exchangeSecret
-      ? createReadSession(config, token!, randomUUID())
+      ? createReadSession(config, token!, requestExecutorId)
       : undefined
+    if (reads)
+      logger.info({
+        event: 'mcp_output_executor_started',
+        executorId: requestExecutorId,
+        processId: executorId
+      })
     active.add(abort)
     const handler = createMcpHandler(
       options.factory ?? (() => createProtocolServer(reads)),
