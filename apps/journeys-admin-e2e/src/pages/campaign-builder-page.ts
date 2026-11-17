@@ -60,10 +60,10 @@ export class CampaignBuilderPage {
   }
 
   /**
-   * A new campaign goes to the active team, which is the account's last
-   * active team: shared by every spec signed in as it, and moved by the ones
-   * that copy a journey or create a team. Selecting it here also keeps this
-   * tab on it after later navigations.
+   * A new campaign goes to the active team: the team the account last
+   * switched to, saved on the server by anyone using it, by hand on stage
+   * included. Selecting it here also keeps this tab on it after later
+   * navigations.
    */
   private async selectTeam(teamName: string): Promise<void> {
     const teamSelect = this.page.getByTestId('TeamSelect').getByRole('combobox')
@@ -71,15 +71,21 @@ export class CampaignBuilderPage {
     await expect(teamSelect).not.toHaveAttribute('aria-disabled', 'true', {
       timeout: 90000
     })
-    if ((await teamSelect.textContent()) === teamName) return
-
     await teamSelect.click()
-    // Teams are sorted by title, so the first match is the exact title
-    await this.page
-      .getByRole('option')
-      .filter({ hasText: teamName })
-      .first()
-      .click()
+    const options = this.page.getByRole('option')
+    await expect(options.first()).toBeVisible()
+    // An option's first line is its team title; the members' avatars follow it
+    const titles = (await options.allInnerTexts()).map((text) =>
+      text.split('\n')[0].trim()
+    )
+    const matches = titles.flatMap((title, index) =>
+      title === teamName ? [index] : []
+    )
+    expect(
+      matches,
+      `PLAYWRIGHT_EMAIL must belong to exactly one team titled "${teamName}"`
+    ).toHaveLength(1)
+    await options.nth(matches[0]).click()
     await expect(teamSelect).toHaveText(teamName)
   }
 

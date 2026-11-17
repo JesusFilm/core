@@ -19,10 +19,10 @@ test.use({ viewport: CAMPAIGN_EDITOR_VIEWPORT })
  * Setup:
  * - Needs `campaignBuilder` on for the Playwright User (evaluated per user);
  *   it is on for everyone on stage, where the Daily E2E runs.
- * - The Playwright User must be a manager of PLAYWRIGHT_TEAM_NAME, which
- *   `goToCampaigns` selects: the `campaignBuilder` fixture deletes the
- *   campaign at the end of the run, and Delete campaign is offered to
- *   managers only.
+ * - The Playwright User must be a manager of its one team titled
+ *   PLAYWRIGHT_TEAM_NAME, which `goToCampaigns` selects: the
+ *   `campaignBuilder` fixture deletes the campaign at the end of the run,
+ *   and Delete campaign is offered to managers only.
  * - The journey linked is the one whose slug ends CAMPAIGN_E2E_JOURNEY_URL.
  *   Only the path counts: the API ignores the host and looks the slug up in
  *   its own database, where it must be published. Linking needs the
