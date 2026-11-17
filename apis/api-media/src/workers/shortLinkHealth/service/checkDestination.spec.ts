@@ -75,6 +75,80 @@ describe('checkDestination', () => {
     })
   })
 
+  describe('Watch admission-only health contract', () => {
+    const contractHeaders = { 'x-watch-destination-health': 'v1' }
+
+    it.each([
+      'https://www.jesusfilm.org/watch/jesus.html/english.html',
+      'https://www.jesusfilm.org/watch/jesus.html/birth-of-jesus/french.html',
+      'https://www.jesusfilm.org/watch',
+      'https://www.jesusfilm.org/watch/languages'
+    ])('does not request HTML for an admitted destination: %s', async (url) => {
+      fetchMock.mockResolvedValueOnce(response(200, contractHeaders))
+      expect(await checkDestination(url)).toBe('ok')
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      const calledUrl = new URL(fetchMock.mock.calls[0][0])
+      expect(calledUrl.origin).toBe(new URL(url).origin)
+      expect(calledUrl.pathname).toBe('/watch/api/watch-destination-health')
+      expect(calledUrl.searchParams.get('path')).toBe(new URL(url).pathname)
+      expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'GET' })
+    })
+
+    it.each([
+      [404, 'notFound'],
+      [503, 'serverError'],
+      [400, 'serverError'],
+      [403, 'serverError']
+    ])(
+      'preserves contract failure status %s without downloading HTML',
+      async (status, health) => {
+        fetchMock.mockResolvedValueOnce(response(status, contractHeaders))
+        expect(
+          await checkDestination('https://www.jesusfilm.org/watch/missing.html')
+        ).toBe(health)
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+      }
+    )
+
+    it.each([200, 404, 403, 503])(
+      'falls back to the destination when endpoint status %s lacks the contract',
+      async (status) => {
+        fetchMock
+          .mockResolvedValueOnce(response(status))
+          .mockResolvedValueOnce(response(200))
+        const url = 'https://www.jesusfilm.org/watch/jesus.html'
+        expect(await checkDestination(url)).toBe('ok')
+        expect(fetchMock.mock.calls[1]).toEqual([
+          url,
+          expect.objectContaining({ method: 'HEAD' })
+        ])
+      }
+    )
+
+    it.each([
+      'http://www.jesusfilm.org/watch/jesus.html',
+      'https://www.jesusfilm.org:8443/watch/jesus.html',
+      'https://www.jesusfilm.org.attacker.example/watch/jesus.html',
+      'https://attacker.example/watch/jesus.html',
+      'https://www.jesusfilm.org/watch/jesus.html?preview=1',
+      'https://www.jesusfilm.org/watch/jesus.html?utm_source=shortlink',
+      'https://www.jesusfilm.org/watch/api/download',
+      'https://www.jesusfilm.org/watch/preview/experience/token',
+      'https://www.jesusfilm.org/about'
+    ])(
+      'retains the normal HTTP check outside the narrow contract: %s',
+      async (url) => {
+        fetchMock.mockResolvedValueOnce(response(200))
+        expect(await checkDestination(url)).toBe('ok')
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(fetchMock.mock.calls[0]).toEqual([
+          url,
+          expect.objectContaining({ method: 'HEAD' })
+        ])
+      }
+    )
+  })
+
   it('follows redirects manually', async () => {
     fetchMock
       .mockResolvedValueOnce(response(301, { location: '/moved' }))

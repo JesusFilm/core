@@ -8,6 +8,27 @@ export const MAX_REDIRECTS = 10
 const REDIRECT_STATUSES = [301, 302, 303, 307, 308]
 const METHOD_NOT_ALLOWED_STATUSES = [405, 501]
 
+/** Only public, query-free Watch pages implement the admission-only contract. */
+function watchDestinationHealthUrl(value: string): string | null {
+  const url = new URL(value)
+  if (
+    url.protocol !== 'https:' ||
+    url.hostname !== 'www.jesusfilm.org' ||
+    url.port !== '' ||
+    url.username !== '' ||
+    url.password !== '' ||
+    url.search !== '' ||
+    !/^\/watch(?:\/?$|\/[^/]+\.html(?:\/|$)|\/languages\/?$)/.test(url.pathname)
+  )
+    return null
+
+  const path = url.pathname
+  url.pathname = '/watch/api/watch-destination-health'
+  url.hash = ''
+  url.searchParams.set('path', path)
+  return url.toString()
+}
+
 interface ErrorWithCause {
   name?: string
   code?: string
@@ -123,6 +144,21 @@ async function requestFollowingRedirects(
  */
 export async function checkDestination(url: string): Promise<ShortLinkHealth> {
   try {
+    const watchHealthUrl = watchDestinationHealthUrl(url)
+    if (watchHealthUrl != null) {
+      const healthResponse = await requestFollowingRedirects(
+        watchHealthUrl,
+        'GET'
+      )
+      await healthResponse.body?.cancel()
+      if (healthResponse.headers.get('x-watch-destination-health') === 'v1') {
+        if (healthResponse.status === 200) return 'ok'
+        if (healthResponse.status === 404) return 'notFound'
+        return 'serverError'
+      }
+      // Mixed releases/WAFs must not turn an unimplemented endpoint into a
+      // missing destination. Preserve the original check without the contract.
+    }
     const headResponse = await requestFollowingRedirects(url, 'HEAD')
     await headResponse.body?.cancel()
     if (
