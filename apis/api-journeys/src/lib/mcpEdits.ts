@@ -532,7 +532,10 @@ export function createJourneyEditHandler(
           const historyId =
             restoredEntry?.id ?? (changes.length ? randomUUID() : null)
           const effectIds = plans.length ? [randomUUID()] : []
-          const changedFields = new Map<string, Set<OperationReceipt['changedFields'][number]['fields'][number]>>()
+          const changedFields = new Map<
+            string,
+            Set<OperationReceipt['changedFields'][number]['fields'][number]>
+          >()
           for (const plan of plans) {
             const fields = changedFields.get(plan.blockId) ?? new Set()
             plan.fields.forEach((field) => fields.add(field))
@@ -559,7 +562,10 @@ export function createJourneyEditHandler(
                       : ('redo' as const)
                 }
               : {}),
-            changedFields: [...changedFields].map(([blockId, fields]) => ({ blockId, fields: [...fields] })),
+            changedFields: [...changedFields].map(([blockId, fields]) => ({
+              blockId,
+              fields: [...fields]
+            })),
             idMap,
             effectIds,
             warnings: restoredEntry

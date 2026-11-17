@@ -40,25 +40,55 @@ export async function assertOwnedButtonIcon(
   icon: ContentBlock,
   projected: ReadonlyMap<string, ContentBlock>
 ) {
-  if (owner.typename !== 'ButtonBlock' || owner.deletedAt || icon.typename !== 'IconBlock' ||
-      icon.parentBlockId !== owner.id || owner.startIconId === owner.endIconId)
+  if (
+    owner.typename !== 'ButtonBlock' ||
+    owner.deletedAt ||
+    icon.typename !== 'IconBlock' ||
+    icon.parentBlockId !== owner.id ||
+    owner.startIconId === owner.endIconId
+  )
     throw new Error('HISTORY_CONFLICT')
-  const references = new Map((await tx.block.findMany({ where: { deletedAt: null, OR: [
-    { startIconId: icon.id }, { endIconId: icon.id }, { submitIconId: icon.id }
-  ] } })).map((block) => [block.id, block as ContentBlock]))
+  const references = new Map(
+    (
+      await tx.block.findMany({
+        where: {
+          deletedAt: null,
+          OR: [
+            { startIconId: icon.id },
+            { endIconId: icon.id },
+            { submitIconId: icon.id }
+          ]
+        }
+      })
+    ).map((block) => [block.id, block as ContentBlock])
+  )
   for (const [id, block] of projected) references.set(id, block)
-  if ([...references.values()].some((block) => block.id !== owner.id && !block.deletedAt &&
-      [block.startIconId, block.endIconId, block.submitIconId].includes(icon.id)))
+  if (
+    [...references.values()].some(
+      (block) =>
+        block.id !== owner.id &&
+        !block.deletedAt &&
+        [block.startIconId, block.endIconId, block.submitIconId].includes(
+          icon.id
+        )
+    )
+  )
     throw new Error('HISTORY_CONFLICT')
 }
 
 export async function contentSiblings(
-  tx: Prisma.TransactionClient, journeyId: string, cardId: string,
+  tx: Prisma.TransactionClient,
+  journeyId: string,
+  cardId: string,
   projected: ReadonlyMap<string, ContentBlock>
 ) {
-  const siblings = new Map((await tx.block.findMany({
-    where: { journeyId, parentBlockId: cardId, deletedAt: null }
-  })).map((block) => [block.id, block as ContentBlock]))
+  const siblings = new Map(
+    (
+      await tx.block.findMany({
+        where: { journeyId, parentBlockId: cardId, deletedAt: null }
+      })
+    ).map((block) => [block.id, block as ContentBlock])
+  )
   for (const [id, block] of projected)
     if (block.parentBlockId === cardId) siblings.set(id, block)
   return [...siblings.values()].filter((block) => !block.deletedAt)
@@ -387,7 +417,8 @@ export async function planContent(
       fields: applied.fields
     })
   }
-  if (new Set(plans.map(({ blockId }) => blockId)).size > 200) throw new Error('LIMIT_EXCEEDED')
+  if (new Set(plans.map(({ blockId }) => blockId)).size > 200)
+    throw new Error('LIMIT_EXCEEDED')
   return { plans, idMap }
 }
 

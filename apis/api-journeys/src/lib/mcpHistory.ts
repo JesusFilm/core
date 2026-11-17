@@ -209,9 +209,23 @@ export async function planHistory(
           )
             throw new Error('HISTORY_CONFLICT')
         }
-        if (direction === 'redo' && block.typename === 'ButtonBlock' && block.submitEnabled === true) {
-          const siblings = await contentSiblings(tx, journeyId, inverse.parent.cardId, projected)
-          if (!deriveSubmitRole('create', siblings.filter((sibling) => sibling.id !== block.id)))
+        if (
+          direction === 'redo' &&
+          block.typename === 'ButtonBlock' &&
+          block.submitEnabled === true
+        ) {
+          const siblings = await contentSiblings(
+            tx,
+            journeyId,
+            inverse.parent.cardId,
+            projected
+          )
+          if (
+            !deriveSubmitRole(
+              'create',
+              siblings.filter((sibling) => sibling.id !== block.id)
+            )
+          )
             throw new Error('HISTORY_CONFLICT')
         }
         const deletedAt = direction === 'undo' ? new Date() : null
