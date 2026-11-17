@@ -6,7 +6,6 @@ import { z } from 'zod'
 
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
-import { structureCommandNames } from '@core/yoga/mcp/structureContract'
 import {
   type ReadCredential,
   type ReadRequest,
@@ -27,6 +26,7 @@ import {
   serviceUrl,
   verifyReadCredential
 } from '@core/yoga/mcp/readContract'
+import { structureCommandNames } from '@core/yoga/mcp/structureContract'
 
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
 

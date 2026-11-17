@@ -28,7 +28,7 @@ function settings(row: BlockState): Record<string, Scalar> {
   if (row.settings === null) return {}
   if (typeof row.settings !== 'object' || Array.isArray(row.settings))
     conflict()
-  return row.settings as Record<string, Scalar>
+  return row.settings
 }
 function equalField(
   current: BlockState,
@@ -132,7 +132,7 @@ export async function planStructureHistory(
       conflict()
     // Undoing a creation must not hide newer human-authored fields or children.
     const checkedFields = change.created ? blockFields : change.fields
-    if (checkedFields.some((field) => !equalField(row!, expected, field)))
+    if (checkedFields.some((field) => !equalField(row, expected, field)))
       conflict()
     if (change.created || removedIds.has(change.id)) {
       const ownedIds = change.created ? createdIds : removedIds
@@ -152,7 +152,7 @@ export async function planStructureHistory(
           }
       }
     }
-    for (const field of change.fields) setField(row!, next, field)
+    for (const field of change.fields) setField(row, next, field)
   }
   for (const change of inverse.actions) {
     const current = state.actions.get(change.id) ?? null,
@@ -203,7 +203,7 @@ export async function planStructureHistory(
     if (cards.length !== 1) conflict()
     if (change.fields.includes('nextBlockId') && row.nextBlockId !== null) {
       const target = state.blocks.get(String(row.nextBlockId))
-      if (!live(target) || target!.typename !== 'StepBlock') conflict()
+      if (!live(target) || target.typename !== 'StepBlock') conflict()
     }
     if (change.fields.includes('slug') && typeof row.slug === 'string') {
       const collision = await tx.block.findFirst({
@@ -216,7 +216,7 @@ export async function planStructureHistory(
     const action = state.actions.get(change.id)
     if (!action || action.blockId === null) continue
     const target = state.blocks.get(String(action.blockId))
-    if (!live(target) || target!.typename !== 'StepBlock') conflict()
+    if (!live(target) || target.typename !== 'StepBlock') conflict()
     const owner = state.blocks.get(change.id)
     if (!live(owner)) conflict()
   }
@@ -224,7 +224,7 @@ export async function planStructureHistory(
     const menu = state.blocks.get(String(state.journey.menuStepBlockId))
     if (
       inverse.journey.some((change) => change.field === 'menuStepBlockId') &&
-      (!live(menu) || menu!.typename !== 'StepBlock')
+      (!live(menu) || menu.typename !== 'StepBlock')
     )
       conflict()
   }
