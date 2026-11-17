@@ -143,7 +143,7 @@ export async function planHistory(
           (typeof next.settings !== 'object' || Array.isArray(next.settings))
         )
           throw new Error('HISTORY_CONFLICT')
-        const settings = { ...(next.settings ?? {}) } as Prisma.JsonObject
+        const settings = { ...(next.settings ?? {}) }
         const present = Object.prototype.hasOwnProperty.call(settings, 'color')
         const expectedPresent = direction === 'undo' || field.beforePresent
         if (
@@ -154,7 +154,7 @@ export async function planHistory(
         if (direction === 'undo' && !field.beforePresent) delete settings.color
         else settings.color = value
         next.settings = settings
-        patch.settings = settings as Prisma.InputJsonObject
+        patch.settings = settings
       } else {
         if (
           !field.beforePresent ||

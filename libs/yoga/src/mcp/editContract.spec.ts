@@ -44,6 +44,7 @@ describe('closed executable typography registry', () => {
     ])
       expect(historyActionInput.safeParse(value).success).toBe(false)
   })
+
   it('accepts each mounted presentation control and plain empty text', () => {
     expect(editInput.parse(input)).toEqual(input)
     for (const variant of [

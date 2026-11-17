@@ -161,17 +161,38 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     },
     {
       name: 'journey_history',
-      description: 'List up to five saved batches for this same logical connection and ordinary draft, shared across undo and redo. Each committed batch is one step. Read again for the current revision; choose the returned next entry ID. Current Admin rights and active resource access are required. View only retains entries but disables undo/redo. Renewal can preserve eligible history for 30 days after consent expiry; disconnect discards it.',
-      inputSchema: { ...z.toJSONSchema(historyInput, { io: 'input' }), type: 'object' as const },
-      outputSchema: { ...z.toJSONSchema(z.union([historyResult, operationResult]), { io: 'output' }), type: 'object' as const },
+      description:
+        'List up to five saved batches for this same logical connection and ordinary draft, shared across undo and redo. Each committed batch is one step. Read again for the current revision; choose the returned next entry ID. Current Admin rights and active resource access are required. View only retains entries but disables undo/redo. Renewal can preserve eligible history for 30 days after consent expiry; disconnect discards it.',
+      inputSchema: {
+        ...z.toJSONSchema(historyInput, { io: 'input' }),
+        type: 'object' as const
+      },
+      outputSchema: {
+        ...z.toJSONSchema(z.union([historyResult, operationResult]), {
+          io: 'output'
+        }),
+        type: 'object' as const
+      },
       annotations: { readOnlyHint: true, destructiveHint: false }
     },
     ...(['undo', 'redo'] as const).map((direction) => ({
       name: 'journey_' + direction,
-      description: direction + ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. New committed edits clear redo; rejection and exact replay do not. Typography restoration has no external provider effects. Host changes are excluded.',
-      inputSchema: { ...z.toJSONSchema(historyActionInput, { io: 'input' }), type: 'object' as const },
-      outputSchema: { ...z.toJSONSchema(operationResult, { io: 'output' }), type: 'object' as const },
-      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true }
+      description:
+        direction +
+        ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. New committed edits clear redo; rejection and exact replay do not. Typography restoration has no external provider effects. Host changes are excluded.',
+      inputSchema: {
+        ...z.toJSONSchema(historyActionInput, { io: 'input' }),
+        type: 'object' as const
+      },
+      outputSchema: {
+        ...z.toJSONSchema(operationResult, { io: 'output' }),
+        type: 'object' as const
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true
+      }
     })),
     {
       name: 'journey_operation_get',
@@ -221,9 +242,9 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
           ? 'Returned the currently authorized journeys.'
           : tool.name === 'journey_history'
             ? 'Returned retained batches and current undo/redo availability for this connection.'
-          : tool.name === 'journey_read'
-            ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
-            : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
+            : tool.name === 'journey_read'
+              ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
+              : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
         tool.inputSchema
       )
       return server.server.projectCallToolResult(response, undefined)
