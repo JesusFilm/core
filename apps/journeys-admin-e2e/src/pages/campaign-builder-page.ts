@@ -66,9 +66,7 @@ export class CampaignBuilderPage {
    * tab on it after later navigations.
    */
   private async selectTeam(teamName: string): Promise<void> {
-    const teamSelect = this.page
-      .getByTestId('TeamSelect')
-      .getByRole('combobox')
+    const teamSelect = this.page.getByTestId('TeamSelect').getByRole('combobox')
     // 90s: the teams query behind TeamProvider is slow on a cold run
     await expect(teamSelect).not.toHaveAttribute('aria-disabled', 'true', {
       timeout: 90000
