@@ -2,10 +2,9 @@ import { render, screen } from '@testing-library/react'
 import type { GetServerSidePropsContext } from 'next'
 import type { ReactNode } from 'react'
 
+import ConnectedAgentsPage, { getServerSideProps } from '../../pages/agents'
 import { getAuthTokens, redirectToLogin, toUser } from '../../src/libs/auth'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-
-import ConnectedAgentsPage, { getServerSideProps } from '.'
 
 vi.mock('../../src/libs/auth', () => ({
   getAuthTokens: vi.fn(),
