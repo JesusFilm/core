@@ -2654,7 +2654,12 @@ describe('saved edit integration', () => {
         async (offset) => {
           const now = new Date()
           const time = vi
-            .spyOn(await import('../src/store'), 'databaseTime')
+            .spyOn(
+              await vi.importActual<typeof import('../src/store')>(
+                '../src/store'
+              ),
+              'databaseTime'
+            )
             .mockResolvedValue(now)
           try {
             const input = await editInput()
