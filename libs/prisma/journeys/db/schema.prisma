@@ -1286,3 +1286,19 @@ model CampaignString {
 
   @@unique([campaignId, key])
 }
+
+// The same row lock guards a permission mutation and its terminal recovery fence.
+model McpPermissionExecution {
+  intent      Json
+  actorId     String
+  actorCreatedAt String
+  id          String   @id
+  gateIds     String[]
+  intentHash  String
+  status      String   @default("prepared")
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+  reportedAt  DateTime?
+
+  @@index([reportedAt, id])
+}

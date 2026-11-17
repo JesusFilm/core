@@ -4,6 +4,10 @@ import { Logger } from 'pino'
 import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
 import { prisma as prismaUsers } from '@core/prisma/users/client'
 
+import {
+  createJourneyPermissionCoordinator,
+  journeyPermissionsEnvironment
+} from '../../../lib/mcpPermissions'
 import { findJourneyShortLinkIds } from '../../shortlinkDelete/findJourneyShortLinkIds'
 import { enqueueShortLinkDeletes } from '../../shortlinkDelete/queue'
 
@@ -13,6 +17,11 @@ const CLEANUP_DAYS = 5
 
 export async function service(job: Job, logger?: Logger): Promise<void> {
   logger?.info('Starting anonymous journey cleanup')
+  const permissionConfig = journeyPermissionsEnvironment(process.env)
+  const permissions = permissionConfig
+    ? createJourneyPermissionCoordinator(permissionConfig, prisma, logger)
+    : undefined
+  if (permissions) permissions.pending(await permissions.reconcile())
 
   const cutoffDate = new Date(Date.now() - CLEANUP_DAYS * 24 * 60 * 60 * 1000)
   let deletedJourneyCount = 0
@@ -55,15 +64,29 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
       )
 
       const journeyIds = journeys.map((j) => j.id)
-      const mediaRefs = await collectMediaFromJourneys(journeyIds)
+      const mediaRefs = permissions
+        ? {
+            muxVideoIds: new Set<string>(),
+            cloudflareImageIds: new Set<string>()
+          }
+        : await collectMediaFromJourneys(journeyIds)
 
       const deletedJourneyIds: string[] = []
       for (const journey of journeys) {
         try {
-          // Its QR rows cascade with it; their short links go once it is gone.
-          const shortLinkIds = await findJourneyShortLinkIds([journey.id])
-          await prisma.journey.delete({ where: { id: journey.id } })
-          await enqueueShortLinkDeletes(shortLinkIds)
+          if (permissions)
+            await permissions.runAnonymousCleanup({
+              kind: 'journey',
+              id: journey.id,
+              userId: user.userId,
+              cutoffDate: cutoffDate.toISOString()
+            })
+          else {
+            // Preserve the original cleanup path when coordination is unconfigured.
+            const shortLinkIds = await findJourneyShortLinkIds([journey.id])
+            await prisma.journey.delete({ where: { id: journey.id } })
+            await enqueueShortLinkDeletes(shortLinkIds)
+          }
           deletedJourneyCount++
           deletedJourneyIds.push(journey.id)
           logger?.info(
@@ -113,9 +136,18 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
           })
           const teamIds = userTeams.map((ut) => ut.teamId)
 
-          const { count: deletedUserTeams } = await prisma.userTeam.deleteMany({
-            where: { userId: user.userId }
-          })
+          const removeMemberships = () =>
+            prisma.userTeam.deleteMany({
+              where: { userId: user.userId }
+            })
+          const { count: deletedUserTeams } = permissions
+            ? await permissions.runAnonymousCleanup({
+                kind: 'memberships',
+                id: user.userId,
+                userId: user.userId,
+                cutoffDate: cutoffDate.toISOString()
+              })
+            : await removeMemberships()
           if (deletedUserTeams > 0) {
             logger?.info(
               { userId: user.userId, deletedUserTeams },
@@ -128,7 +160,14 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
               where: { teamId }
             })
             if (remainingMembers === 0) {
-              await prisma.team.delete({ where: { id: teamId } })
+              if (permissions)
+                await permissions.runAnonymousCleanup({
+                  kind: 'team',
+                  id: teamId,
+                  userId: user.userId,
+                  cutoffDate: cutoffDate.toISOString()
+                })
+              else await prisma.team.delete({ where: { id: teamId } })
               logger?.info({ teamId }, 'Deleted empty team')
             }
           }

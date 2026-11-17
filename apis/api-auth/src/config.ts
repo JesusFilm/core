@@ -43,6 +43,8 @@ const configuration = z.object({
   AUTH_EXCHANGE_CLIENT_SECRET: z.string().min(32).optional(),
   AUTH_READ_OWNER_SECRET: z.string().min(32).optional(),
   AUTH_READ_GATEWAY_AUDIENCE: z.string().url().optional(),
+  AUTH_PERMISSION_JOURNEYS_SECRET: z.string().min(32).optional(),
+  AUTH_PERMISSION_USERS_SECRET: z.string().min(32).optional(),
   PG_DATABASE_URL_AUTH: z.string().url(),
   AUTH_HOST: z.string().default('127.0.0.1'),
   AUTH_PORT: z.coerce.number().int().min(1).max(65535).default(4011),
@@ -78,13 +80,22 @@ export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
     throw new Error('Incomplete granted-read configuration')
   if (config.AUTH_READ_GATEWAY_AUDIENCE === config.AUTH_AUDIENCE)
     throw new Error('Separate gateway audience required')
+  const permissionSecrets = [
+    config.AUTH_PERMISSION_JOURNEYS_SECRET,
+    config.AUTH_PERMISSION_USERS_SECRET
+  ]
   if (
-    config.AUTH_EXCHANGE_CLIENT_SECRET &&
-    (config.AUTH_EXCHANGE_CLIENT_SECRET ===
-      config.AUTH_INTROSPECTION_CLIENT_SECRET ||
-      config.AUTH_READ_OWNER_SECRET === config.AUTH_EXCHANGE_CLIENT_SECRET ||
-      config.AUTH_READ_OWNER_SECRET === config.AUTH_INTROSPECTION_CLIENT_SECRET)
+    (config.AUTH_EXCHANGE_CLIENT_SECRET || permissionSecrets.some(Boolean)) &&
+    !permissionSecrets.every(Boolean)
   )
+    throw new Error('Permission participants required')
+  const serviceSecrets = [
+    config.AUTH_INTROSPECTION_CLIENT_SECRET,
+    config.AUTH_EXCHANGE_CLIENT_SECRET,
+    config.AUTH_READ_OWNER_SECRET,
+    ...permissionSecrets
+  ].filter((secret): secret is string => Boolean(secret))
+  if (new Set(serviceSecrets).size !== serviceSecrets.length)
     throw new Error('Separate service credentials required')
   if (env.PG_DATABASE_URL_AUTH_MIGRATION)
     throw new Error('Migration authority in runtime')

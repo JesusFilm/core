@@ -79,7 +79,8 @@ export async function deleteFirebaseOnlyAccount(
   const fbLogs = await deleteFirebaseUser(
     input.targetFirebaseUid,
     null,
-    input.targetEmail
+    input.targetEmail,
+    input.callerIsSuperAdmin
   )
   logs.push(...fbLogs)
 

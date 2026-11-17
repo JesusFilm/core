@@ -15,6 +15,9 @@ import { getInteropContext } from '@core/yoga/interop'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
+import { mcpAccountRetirementEnvironment } from './schema/userDelete/service/retireMcpAccount'
+
+mcpAccountRetirementEnvironment(process.env)
 
 export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,

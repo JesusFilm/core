@@ -170,3 +170,24 @@ model ReadExecutor {
   executor  String
   fencedAt  DateTime?
 }
+
+// The owner reports completion only after its durable mutation receipt or fence.
+model PermissionChange {
+  id          String   @id
+  owner       String
+  intentHash  String
+  gateIds     String[]
+  gates       Json
+  status      String   @default("pending")
+  outcome     String?
+  requestedAt DateTime
+  completedAt DateTime?
+
+  @@index([status])
+}
+
+// A recreated Firebase UID cannot inherit the retired account's authority.
+model RetiredAccount {
+  userId    String   @id
+  retiredAt DateTime
+}

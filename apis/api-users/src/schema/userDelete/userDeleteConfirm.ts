@@ -146,6 +146,7 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           userDbId: user.id,
           firebaseUserId: user.userId,
           firebaseUidOverride,
+          allowReconciledUid: caller.superAdmin,
           userEmail: user.email,
           callerUserId: caller.id,
           callerEmail: caller.email,

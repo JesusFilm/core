@@ -110,6 +110,39 @@ describe('deleteFirebaseOnlyAccount', () => {
   })
 
   describe('Firebase deletion', () => {
+    it('prevents a self-deletion from deleting an email-reassigned foreign account', async () => {
+      prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
+        id: 'audit-foreign-fallback'
+      } as Awaited<ReturnType<typeof prismaMock.userDeleteAuditLog.create>>)
+      mockDeleteUser.mockRejectedValueOnce({ code: 'auth/user-not-found' })
+      mockGetUserByEmail.mockResolvedValueOnce({ uid: 'foreign-email-owner' })
+
+      const result = await deleteFirebaseOnlyAccount(baseInput)
+
+      expect(result.success).toBe(false)
+      expect(mockDeleteUser).toHaveBeenCalledExactlyOnceWith(
+        baseInput.targetFirebaseUid
+      )
+    })
+
+    it('preserves the explicitly authorized superAdmin email reconciliation path', async () => {
+      prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
+        id: 'audit-admin-fallback'
+      } as Awaited<ReturnType<typeof prismaMock.userDeleteAuditLog.create>>)
+      mockDeleteUser
+        .mockRejectedValueOnce({ code: 'auth/user-not-found' })
+        .mockResolvedValueOnce(undefined)
+      mockGetUserByEmail.mockResolvedValueOnce({ uid: 'reconciled-uid' })
+
+      const result = await deleteFirebaseOnlyAccount({
+        ...baseInput,
+        callerIsSuperAdmin: true
+      })
+
+      expect(result.success).toBe(true)
+      expect(mockDeleteUser).toHaveBeenCalledWith('reconciled-uid')
+    })
+
     it('should successfully delete Firebase account and update audit log', async () => {
       prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
         id: 'audit-1'

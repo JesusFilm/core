@@ -19,6 +19,12 @@ import { getInteropContext } from '@core/yoga/interop'
 
 import { env } from './env'
 import {
+  coordinateJourneyPermissionMutations,
+  createJourneyPermissionCoordinator,
+  journeyPermissionsEnvironment,
+  useJourneyMcpPermissions
+} from './lib/mcpPermissions'
+import {
   createJourneyReadHandler,
   journeyReadsEnvironment,
   useJourneyMcpReads
@@ -30,6 +36,12 @@ import { Context } from './schema/authScopes'
 export const cache = createInMemoryCache()
 
 const readConfig = journeyReadsEnvironment(process.env, env.JOURNEYS_ADMIN_URL)
+const permissionConfig = journeyPermissionsEnvironment(process.env)
+const permissionCoordinator = permissionConfig
+  ? createJourneyPermissionCoordinator(permissionConfig, prisma, logger)
+  : undefined
+if (permissionCoordinator)
+  coordinateJourneyPermissionMutations(schema, permissionCoordinator)
 
 export const yoga = createYoga<
   Record<string, unknown>,
@@ -73,6 +85,7 @@ export const yoga = createYoga<
     }
   },
   plugins: [
+    useJourneyMcpPermissions(permissionCoordinator),
     useJourneyMcpReads(
       readConfig
         ? createJourneyReadHandler(readConfig, prisma, logger)

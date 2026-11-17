@@ -3,5 +3,6 @@
 GRANT SELECT, INSERT, UPDATE, DELETE ON
   "AuthEnvironment", "OAuthArtifact", "AgentConnection", "ConsentReview",
   "AuthorizationGate", "SecurityAudit", "ReadPermit", "AgentRenewalReview",
-  "AgentAccessReview", "ConnectionChange", "ConnectionHistoryPurge", "ReadExecutor"
+  "AgentAccessReview", "ConnectionChange", "ConnectionHistoryPurge", "ReadExecutor",
+  "PermissionChange", "RetiredAccount"
 TO :"runtime_role";

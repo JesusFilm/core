@@ -1,5 +1,7 @@
 import { Queue } from 'bullmq'
 
+import { deferJourneyTransactionEffect } from '@core/prisma/journeys/client'
+
 import { deleteShortLink } from '../../schema/qrCode/qrCode.service'
 import { connection } from '../lib/connection'
 import { ONE_DAY } from '../lib/jobAge'
@@ -21,6 +23,10 @@ export const queue = new Queue<ShortLinkDeleteJob>(queueName, { connection })
 export async function enqueueShortLinkDeletes(
   shortLinkIds: string[]
 ): Promise<void> {
+  if (
+    deferJourneyTransactionEffect(() => enqueueShortLinkDeletes(shortLinkIds))
+  )
+    return
   await Promise.all(
     shortLinkIds.map(async (shortLinkId) => {
       try {

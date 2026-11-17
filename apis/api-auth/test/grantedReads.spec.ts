@@ -9,12 +9,14 @@ import {
   usePropagateHeaders
 } from '@graphql-hive/gateway'
 import { initContextCache } from '@pothos/core'
-import type { GraphQLSchema } from 'graphql'
+import { type GraphQLSchema, parse, subscribe } from 'graphql'
 import { createYoga } from 'graphql-yoga'
 import pino from 'pino'
 
 import { createAuthDatabase } from '@core/prisma/auth/client'
 import { PrismaClient } from '@core/prisma/journeys/client'
+import { PrismaClient as UsersClient } from '@core/prisma/users/client'
+import { auth as firebaseAuth } from '@core/yoga/firebaseClient'
 import {
   fingerprint,
   internalSignature,
@@ -26,6 +28,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { commonConfig } from '../../api-gateway/src/common.config'
 import { useMcpReads } from '../../api-gateway/src/mcpReads'
 import '../../api-journeys/test/bullmqMock'
+import type { createJourneyPermissionCoordinator } from '../../api-journeys/src/lib/mcpPermissions'
 import {
   createJourneyReadHandler,
   useJourneyMcpReads
@@ -40,6 +43,7 @@ import { databaseTime, digest } from '../src/store'
 
 const authUrl = process.env.READS_TEST_AUTH_DATABASE_URL
 const journeysUrl = process.env.READS_TEST_JOURNEYS_DATABASE_URL
+const usersUrl = process.env.READS_TEST_USERS_DATABASE_URL
 
 describe('granted journey read authorization', () => {
   describe.skipIf(!authUrl || !journeysUrl)(
@@ -49,6 +53,11 @@ describe('granted journey read authorization', () => {
       const journeys = new PrismaClient({
         adapter: new PrismaPg({ connectionString: journeysUrl })
       })
+      const users = usersUrl
+        ? new UsersClient({
+            adapter: new PrismaPg({ connectionString: usersUrl })
+          })
+        : undefined
       const keys = generateKeyPairSync('rsa', { modulusLength: 2048 })
       const privateKey = keys.privateKey.export({ format: 'jwk' })
       const publicKey = keys.publicKey.export({ format: 'jwk' })
@@ -69,7 +78,13 @@ describe('granted journey read authorization', () => {
       let beforeAcceptance: ((stage: string) => Promise<void>) | undefined
       let afterAcceptance: ((stage: string) => Promise<void>) | undefined
       let settlementOutage = false
+      let permissionOutage = false
+      let permissionReportOutage = false
+      let beforePermissionBegin: (() => Promise<void>) | undefined
       let ownerHandler: ReturnType<typeof createJourneyReadHandler>
+      let permissionCoordinator: ReturnType<
+        typeof createJourneyPermissionCoordinator
+      >
       let beforeOutput: ((executorId: string) => Promise<void>) | undefined
       let afterOutput: (() => void) | undefined
       let accessToken: string
@@ -231,15 +246,17 @@ describe('granted journey read authorization', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_105(73|74|75)(_|$)/.test(
+          !/^\/auth_issue_105(50|73|74|75)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_105(73|74|75)(_|$)/.test(
+          !/^\/journeys_issue_105(50|73|74|75)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
           throw new Error('Use isolated issue databases')
         for (const table of [
+          auth.permissionChange,
+          auth.retiredAccount,
           auth.readPermit,
           auth.agentAccessReview,
           auth.connectionChange,
@@ -388,6 +405,10 @@ describe('granted journey read authorization', () => {
             'controlled-introspection-10573-at-least-32',
           AUTH_EXCHANGE_CLIENT_SECRET: exchangeSecret,
           AUTH_READ_OWNER_SECRET: ownerSecret,
+          AUTH_PERMISSION_JOURNEYS_SECRET:
+            'controlled-journeys-permission-10550-at-least-32',
+          AUTH_PERMISSION_USERS_SECRET:
+            'controlled-users-permission-10550-at-least-32',
           AUTH_READ_GATEWAY_AUDIENCE: 'http://127.0.0.1:4000/mcp/reads',
           PG_DATABASE_URL_AUTH: authUrl,
           AUTH_CLIENTS: JSON.stringify([
@@ -448,11 +469,35 @@ describe('granted journey read authorization', () => {
           publicKey
         }
         process.env.SKIP_ENV_VALIDATION = '1'
+        if (users) {
+          if (!/^\/users_issue_10550(_|$)/.test(new URL(usersUrl!).pathname))
+            throw new Error('Use isolated users issue database')
+          vi.doMock('@core/prisma/users/client', async (importOriginal) => ({
+            ...(await importOriginal<
+              typeof import('@core/prisma/users/client')
+            >()),
+            prisma: users
+          }))
+          for (const userId of ['alice', 'bob'])
+            await users.user.upsert({
+              where: { userId },
+              create: {
+                userId,
+                firstName: userId,
+                email: userId + '@synthetic.example'
+              },
+              update: {}
+            })
+        }
         vi.doMock('@core/prisma/journeys/client', async (importOriginal) => ({
           ...(await importOriginal<
             typeof import('@core/prisma/journeys/client')
           >()),
-          prisma: journeys
+          prisma: (
+            await importOriginal<
+              typeof import('@core/prisma/journeys/client')
+            >()
+          ).transactionScopedJourneyClient(journeys)
         }))
         // Load the deployed schema at runtime; its unrelated frontend type graph
         // has a separate JSX-enabled owning-project type-check target.
@@ -480,6 +525,17 @@ describe('granted journey read authorization', () => {
                     })
                   ).stage
                 : ''
+              if (
+                req.url?.startsWith('/internal/permissions/') &&
+                (permissionOutage ||
+                  (permissionReportOutage && req.url.endsWith('/complete')))
+              ) {
+                res.writeHead(503)
+                res.end('{}')
+                return
+              }
+              if (req.url === '/internal/permissions/begin')
+                await beforePermissionBegin?.()
               if (req.url?.endsWith('/accept')) await beforeAcceptance?.(stage)
               if (req.url?.endsWith('/fence') && settlementOutage) {
                 res.writeHead(503)
@@ -489,7 +545,7 @@ describe('granted journey read authorization', () => {
               const response = await fetch(config.AUTH_ISSUER + req.url, {
                 method: 'POST',
                 headers: {
-                  Authorization: `Bearer ${ownerSecret}`,
+                  Authorization: req.headers.authorization ?? '',
                   'Content-Type': 'application/json'
                 },
                 body: raw
@@ -517,9 +573,63 @@ describe('granted journey read authorization', () => {
           },
           journeys
         )
+        const permissionModule = new URL(
+          '../../api-journeys/src/lib/mcpPermissions.ts',
+          import.meta.url
+        ).href
+        const {
+          createJourneyPermissionCoordinator,
+          coordinateJourneyPermissionMutations
+        } = (await import(
+          /* webpackChunkName: "permission-owner-participant" */ permissionModule
+        )) as typeof import('../../api-journeys/src/lib/mcpPermissions')
+        permissionCoordinator = createJourneyPermissionCoordinator(
+          {
+            authorityUrl,
+            authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
+          },
+          journeys,
+          undefined,
+          async (userId) => {
+            if (invalidUsers.has(userId))
+              throw new Error('Controlled ineligible actor')
+            return {
+              createdAt: '2026-01-01T00:00:00.000Z',
+              user: {
+                id: userId,
+                email: userId + '@synthetic.example',
+                firstName: userId,
+                emailVerified: true,
+                imageUrl: null
+              }
+            }
+          }
+        )
+        coordinateJourneyPermissionMutations(
+          owningSchema,
+          permissionCoordinator
+        )
         const owner = createYoga({
           schema: owningSchema,
-          context: () => ({ ...initContextCache(), type: 'public' as const }),
+          maskedErrors: true,
+          context: ({ request }) => {
+            const human = request.headers.get('x-controlled-human')
+            return human && ['alice', 'bob'].includes(human)
+              ? {
+                  ...initContextCache(),
+                  type: 'authenticated' as const,
+                  user: {
+                    id: human,
+                    email: human + '@synthetic.example',
+                    firstName: human,
+                    lastName: '',
+                    emailVerified: true,
+                    imageUrl: null
+                  },
+                  currentRoles: []
+                }
+              : { ...initContextCache(), type: 'public' as const }
+          },
           logging: false,
           plugins: [useJourneyMcpReads(ownerHandler)]
         })
@@ -597,7 +707,13 @@ describe('granted journey read authorization', () => {
         beforeAcceptance = undefined
         afterAcceptance = undefined
         settlementOutage = false
+        permissionOutage = false
+        permissionReportOutage = false
+        beforePermissionBegin = undefined
         invalidUsers.clear()
+        await auth.permissionChange.deleteMany()
+        await auth.retiredAccount.deleteMany()
+        await journeys.mcpPermissionExecution.deleteMany()
         await auth.authorizationGate.updateMany({
           data: { open: true, generation: { increment: 1 } }
         })
@@ -621,6 +737,7 @@ describe('granted journey read authorization', () => {
         await issuer?.close()
         await auth.$disconnect()
         await journeys.$disconnect()
+        await users?.$disconnect()
       })
 
       it('renews an expired connection and resumes granted MCP reads under the same identity with fresh credentials', async () => {
@@ -1928,6 +2045,625 @@ describe('granted journey read authorization', () => {
           ).status
         ).toBe(403)
       })
+
+      async function humanMutation(
+        query: string,
+        variables: Record<string, unknown> = {},
+        user = 'bob'
+      ) {
+        const response = await fetch(`${ownerUrl}/graphql`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-controlled-human': user
+          },
+          body: JSON.stringify({ query, variables })
+        })
+        return (await response.json()) as {
+          data?: Record<string, unknown>
+          errors?: Array<{
+            message: string
+            extensions?: { code?: string; changeId?: string }
+          }>
+        }
+      }
+      async function permissionActors() {
+        await journeys.userTeam.upsert({
+          where: { teamId_userId: { teamId: 'read-team', userId: 'bob' } },
+          create: { teamId: 'read-team', userId: 'bob', role: 'manager' },
+          update: { role: 'manager' }
+        })
+        return journeys.userTeam.findUniqueOrThrow({
+          where: { teamId_userId: { teamId: 'read-team', userId: 'alice' } }
+        })
+      }
+      const deleteMembership = (id: string) =>
+        humanMutation(
+          'mutation RemoveMembership($id: ID!) { userTeamDelete(id: $id) { id } }',
+          { id }
+        )
+      async function inviteAlice() {
+        await journeys.userTeamInvite.upsert({
+          where: {
+            teamId_email: {
+              teamId: 'read-team',
+              email: 'alice@synthetic.example'
+            }
+          },
+          create: {
+            teamId: 'read-team',
+            email: 'alice@synthetic.example',
+            senderId: 'bob'
+          },
+          update: { acceptedAt: null, removedAt: null }
+        })
+        return humanMutation(
+          'mutation RestoreMembership { userTeamInviteAcceptAll { id } }',
+          {},
+          'alice'
+        )
+      }
+
+      it('applies actual team roles/removal and collaboration removal/restoration without widening the grant', async () => {
+        const membership = await permissionActors()
+        const connection = await auth.agentConnection.findFirstOrThrow({
+          orderBy: { approvedAt: 'desc' }
+        })
+        const direct = await journeys.userJourney.create({
+          data: { journeyId: 'read-a', userId: 'alice', role: 'editor' }
+        })
+        const role = await humanMutation(
+          'mutation ChangeRole($id: ID!) { userTeamUpdate(id: $id, input: {role: member}) { role } }',
+          { id: membership.id }
+        )
+        expect(role.errors).toBeUndefined()
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect((await deleteMembership(membership.id)).errors).toBeUndefined()
+        // The independent direct collaboration survives team membership removal.
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        const removed = await humanMutation(
+          'mutation RemoveCollaborator($id: ID!) { userJourneyRemove(id: $id) { id } }',
+          { id: direct.id }
+        )
+        expect(removed.errors).toBeUndefined()
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect((await inviteAlice()).errors).toBeUndefined()
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect(
+          (await call('journey_read', { journeyId: 'read-b', view: 'steps' }))
+            .body
+        ).not.toContain('read-b-text-sentinel')
+        const unchanged = await auth.agentConnection.findUniqueOrThrow({
+          where: { id: connection.id }
+        })
+        expect([
+          unchanged.version,
+          unchanged.expiresAt,
+          unchanged.journeyIds,
+          unchanged.mode
+        ]).toEqual([
+          connection.version,
+          connection.expiresAt,
+          connection.journeyIds,
+          connection.mode
+        ])
+        await auth.agentConnection.update({
+          where: { id: connection.id },
+          data: { expiresAt: new Date(0) }
+        })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+      })
+
+      it('rejects a paused old ACL snapshot across completed real removal and restoration', async () => {
+        const membership = await permissionActors()
+        const pause = barrier()
+        beforeAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const reading = readA()
+        await pause.ready
+        try {
+          expect((await deleteMembership(membership.id)).errors).toBeUndefined()
+          expect((await inviteAlice()).errors).toBeUndefined()
+        } finally {
+          pause.resume()
+        }
+        expect((await reading).body).not.toContain('read-a-text-sentinel')
+        beforeAcceptance = undefined
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+      })
+
+      it('keeps an actual membership removal pending until accepted work settles and replays its durable intent', async () => {
+        const membership = await permissionActors()
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const reading = readA()
+        await pause.ready
+        let changeId: string | undefined
+        try {
+          const pending = await deleteMembership(membership.id)
+          expect(
+            pending.errors?.[0].extensions?.code,
+            JSON.stringify(pending)
+          ).toBe('PERMISSION_CHANGE_PENDING')
+          changeId = pending.errors?.[0].extensions?.changeId
+          expect(changeId).toBeTruthy()
+          const repeated = await deleteMembership(membership.id)
+          expect(repeated.errors?.[0].extensions).toMatchObject({
+            code: 'PERMISSION_CHANGE_PENDING',
+            changeId
+          })
+          expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+          expect(await auth.permissionChange.count()).toBe(1)
+          expect(
+            await journeys.userTeam.findUnique({ where: { id: membership.id } })
+          ).not.toBeNull()
+          expect(
+            await auth.permissionChange.findUnique({ where: { id: changeId! } })
+          ).toMatchObject({ status: 'pending' })
+          expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        } finally {
+          pause.resume()
+        }
+        await reading
+        afterAcceptance = undefined
+        const reconciled = await permissionCoordinator.reconcile()
+        expect(
+          reconciled,
+          JSON.stringify({
+            local: await journeys.mcpPermissionExecution.findUnique({
+              where: { id: changeId! }
+            }),
+            remote: await auth.permissionChange.findUnique({
+              where: { id: changeId! }
+            }),
+            accepted: await auth.readPermit.findMany({
+              where: { status: 'accepted' },
+              select: { id: true, executor: true }
+            })
+          })
+        ).toBe(0)
+        expect(
+          await journeys.userTeam.findUnique({ where: { id: membership.id } })
+        ).toBeNull()
+        expect(
+          await auth.permissionChange.findUnique({ where: { id: changeId! } })
+        ).toMatchObject({ status: 'complete', outcome: 'committed' })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect((await inviteAlice()).errors).toBeUndefined()
+      })
+
+      it('coordinates ownership promotion and lifecycle state through real GraphQL entrypoints', async () => {
+        await permissionActors()
+        const owner = await journeys.userJourney.upsert({
+          where: { journeyId_userId: { journeyId: 'read-a', userId: 'alice' } },
+          create: { journeyId: 'read-a', userId: 'alice', role: 'owner' },
+          update: { role: 'owner' }
+        })
+        const target = await journeys.userJourney.upsert({
+          where: { journeyId_userId: { journeyId: 'read-a', userId: 'bob' } },
+          create: { journeyId: 'read-a', userId: 'bob', role: 'editor' },
+          update: { role: 'editor' }
+        })
+        expect(
+          (
+            await humanMutation(
+              'mutation Promote($id: ID!) { userJourneyPromote(id: $id) { id role } }',
+              { id: target.id }
+            )
+          ).errors
+        ).toBeUndefined()
+        expect(
+          await journeys.userJourney.findUnique({ where: { id: owner.id } })
+        ).toMatchObject({ role: 'editor' })
+        expect(
+          await journeys.userJourney.findUnique({ where: { id: target.id } })
+        ).toMatchObject({ role: 'owner' })
+        expect(
+          (
+            await humanMutation(
+              'mutation Archive($ids: [ID!]!) { journeysArchive(ids: $ids) { id } }',
+              { ids: ['read-a'] }
+            )
+          ).errors
+        ).toBeUndefined()
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect(
+          (
+            await humanMutation(
+              'mutation Restore($ids: [ID!]!) { journeysRestore(ids: $ids) { id } }',
+              { ids: ['read-a'] }
+            )
+          ).errors
+        ).toBeUndefined()
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        await journeys.userJourney.deleteMany({
+          where: { journeyId: 'read-a' }
+        })
+      })
+
+      it('retires account authority through the real users retirement participant, including accepted work and other users', async () => {
+        const bobToken = await consent('bob', ['read-foreign'])
+        // Restore the current Alice credential, whose logical connection is independent.
+        const alice = await auth.agentConnection.findFirstOrThrow({
+          where: { userId: 'alice' },
+          orderBy: { approvedAt: 'desc' }
+        })
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const reading = readA()
+        await pause.ready
+        vi.stubEnv('MCP_READS_ENABLED', 'true')
+        vi.stubEnv('MCP_ACCOUNT_AUTHORITY_URL', config.AUTH_ISSUER)
+        vi.stubEnv(
+          'MCP_ACCOUNT_AUTHORITY_SECRET',
+          config.AUTH_PERMISSION_USERS_SECRET
+        )
+        const participantModule = new URL(
+          '../../api-users/src/schema/userDelete/service/retireMcpAccount.ts',
+          import.meta.url
+        ).href
+        const { retireMcpAccount } = (await import(
+          /* webpackChunkName: "account-retirement-participant" */ participantModule
+        )) as { retireMcpAccount(userId: string): Promise<void> }
+        try {
+          await expect(retireMcpAccount('alice')).rejects.toThrow(
+            'MCP authority retirement pending'
+          )
+          expect(
+            await auth.agentConnection.findUnique({ where: { id: alice.id } })
+          ).toMatchObject({ revokedAt: expect.any(Date) })
+          expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        } finally {
+          pause.resume()
+        }
+        await reading
+        afterAcceptance = undefined
+        await retireMcpAccount('alice')
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect(
+          (
+            await call(
+              'journey_read',
+              { journeyId: 'read-foreign', view: 'steps' },
+              bobToken
+            )
+          ).body
+        ).toContain('read-foreign-text-sentinel')
+        expect(
+          await auth.connectionHistoryPurge.findUnique({
+            where: { connectionId: alice.id }
+          })
+        ).not.toBeNull()
+        expect(
+          await auth.authorizationGate.findUnique({
+            where: { id: 'account:alice' }
+          })
+        ).toMatchObject({ open: false })
+        vi.unstubAllEnvs()
+      })
+
+      it('fails closed on permission authority outage and recovers a committed ownership receipt without repeating it', async () => {
+        const membership = await permissionActors()
+        permissionOutage = true
+        const unavailable = await deleteMembership(membership.id)
+        expect(unavailable.errors).toHaveLength(1)
+        expect(
+          await journeys.userTeam.findUnique({ where: { id: membership.id } })
+        ).not.toBeNull()
+        permissionOutage = false
+        expect(await permissionCoordinator.reconcile()).toBe(0)
+        expect(
+          await journeys.userTeam.findUnique({ where: { id: membership.id } })
+        ).toBeNull()
+        expect((await inviteAlice()).errors).toBeUndefined()
+        const owner = await journeys.userJourney.create({
+          data: { journeyId: 'read-a', userId: 'alice', role: 'owner' }
+        })
+        const target = await journeys.userJourney.create({
+          data: { journeyId: 'read-a', userId: 'bob', role: 'editor' }
+        })
+        permissionReportOutage = true
+        const lost = await humanMutation(
+          'mutation Promote($id: ID!) { userJourneyPromote(id: $id) { id } }',
+          { id: target.id }
+        )
+        expect(lost.errors).toHaveLength(1)
+        expect(
+          await journeys.userJourney.findUnique({ where: { id: owner.id } })
+        ).toMatchObject({ role: 'editor' })
+        const receipt = await journeys.mcpPermissionExecution.findFirstOrThrow({
+          where: { status: 'committed', reportedAt: null }
+        })
+        expect(
+          await auth.permissionChange.findUnique({ where: { id: receipt.id } })
+        ).toMatchObject({ status: 'ready' })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        permissionReportOutage = false
+        expect(await permissionCoordinator.reconcile()).toBe(0)
+        expect(
+          await auth.permissionChange.findUnique({ where: { id: receipt.id } })
+        ).toMatchObject({ status: 'complete' })
+        expect(
+          await journeys.userJourney.findUnique({ where: { id: target.id } })
+        ).toMatchObject({ role: 'owner' })
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        await journeys.userJourney.deleteMany({
+          where: { journeyId: 'read-a' }
+        })
+      })
+
+      it('coordinates both teams during the existing ownership transfer entrypoint', async () => {
+        await permissionActors()
+        await journeys.userJourney.create({
+          data: { journeyId: 'read-a', userId: 'alice', role: 'owner' }
+        })
+        await journeys.team.upsert({
+          where: { id: 'read-transfer-team' },
+          create: {
+            id: 'read-transfer-team',
+            title: 'Transfer destination',
+            userTeams: { create: { userId: 'alice', role: 'manager' } }
+          },
+          update: {}
+        })
+        const move = (teamId: string) =>
+          humanMutation(
+            'mutation Move($team: ID!) { journeyTransferFromAnonymous(journeyId: "read-a", teamId: $team) { id team { id } } }',
+            { team: teamId },
+            'alice'
+          )
+        expect((await move('read-transfer-team')).errors).toBeUndefined()
+        expect(
+          await journeys.journey.findUnique({ where: { id: 'read-a' } })
+        ).toMatchObject({ teamId: 'read-transfer-team' })
+        const execution =
+          await journeys.mcpPermissionExecution.findFirstOrThrow({
+            where: { actorId: 'alice' },
+            orderBy: { createdAt: 'desc' }
+          })
+        expect(execution.gateIds).toEqual(
+          expect.arrayContaining([
+            'journey:read-a',
+            'team:read-team',
+            'team:read-transfer-team'
+          ])
+        )
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect((await move('read-team')).errors).toBeUndefined()
+        await journeys.userJourney.deleteMany({
+          where: { journeyId: 'read-a' }
+        })
+      })
+
+      it.skipIf(!users)(
+        'rejects a foreign ownership transfer before closing any gates',
+        async () => {
+          await permissionActors()
+          await journeys.userJourney.create({
+            data: { journeyId: 'read-a', userId: 'alice', role: 'owner' }
+          })
+          const result = await humanMutation(
+            'mutation ForeignTransfer { journeyTransferFromAnonymous(journeyId: "read-a", teamId: "foreign-team") { id } }'
+          )
+          expect(result.errors).toHaveLength(1)
+          expect(await journeys.mcpPermissionExecution.count()).toBe(0)
+          expect(await auth.permissionChange.count()).toBe(0)
+          expect(
+            await auth.authorizationGate.count({ where: { open: false } })
+          ).toBe(0)
+          expect((await readA()).body).toContain('read-a-text-sentinel')
+          await journeys.userJourney.deleteMany({
+            where: { journeyId: 'read-a' }
+          })
+        }
+      )
+
+      it('fences an invitation arriving after an empty rights-change discovery', async () => {
+        const membership = await permissionActors()
+        await journeys.userTeamInvite.updateMany({
+          where: { email: 'alice@synthetic.example' },
+          data: { acceptedAt: new Date() }
+        })
+        beforePermissionBegin = async () => {
+          beforePermissionBegin = undefined
+          await journeys.userTeamInvite.upsert({
+            where: {
+              teamId_email: {
+                teamId: 'read-team',
+                email: 'alice@synthetic.example'
+              }
+            },
+            create: {
+              teamId: 'read-team',
+              email: 'alice@synthetic.example',
+              senderId: 'bob'
+            },
+            update: { acceptedAt: null, removedAt: null }
+          })
+        }
+        const result = await humanMutation(
+          'mutation AcceptInvites { userTeamInviteAcceptAll { id } }',
+          {},
+          'alice'
+        )
+        expect(result.errors).toHaveLength(1)
+        expect(
+          await journeys.userTeam.findUnique({ where: { id: membership.id } })
+        ).toMatchObject({ role: 'manager' })
+        expect(
+          await journeys.userTeamInvite.findUnique({
+            where: {
+              teamId_email: {
+                teamId: 'read-team',
+                email: 'alice@synthetic.example'
+              }
+            }
+          })
+        ).toMatchObject({ acceptedAt: null })
+        expect(await auth.permissionChange.findFirst()).toMatchObject({
+          status: 'failed'
+        })
+      })
+
+      it.skipIf(!users)(
+        'preserves real shared deletion outcomes and retires identity through the existing users subscription',
+        async () => {
+          await permissionActors()
+          const bobToken = await consent('bob', ['read-foreign'])
+          await journeys.team.upsert({
+            where: { id: 'read-delete-exclusive-team' },
+            create: {
+              id: 'read-delete-exclusive-team',
+              title: 'Exclusive',
+              userTeams: { create: { userId: 'alice', role: 'manager' } }
+            },
+            update: {}
+          })
+          await journeys.journey.create({
+            data: {
+              id: 'read-delete-exclusive',
+              slug: 'read-delete-exclusive',
+              title: 'Exclusive',
+              languageId: '529',
+              teamId: 'read-delete-exclusive-team',
+              status: 'draft',
+              userJourneys: { create: { userId: 'alice', role: 'owner' } }
+            }
+          })
+          await journeys.userJourney.createMany({
+            data: [
+              { journeyId: 'read-a', userId: 'alice', role: 'owner' },
+              { journeyId: 'read-a', userId: 'bob', role: 'editor' }
+            ]
+          })
+          const deleted = await humanMutation(
+            'mutation DeleteJourneys { userDeleteJourneysConfirm(userId: "alice") { success deletedJourneyIds deletedTeamIds deletedUserJourneyIds deletedUserTeamIds } }',
+            {},
+            'alice'
+          )
+          expect(deleted.errors).toBeUndefined()
+          const outcomes = deleted.data?.userDeleteJourneysConfirm as {
+            success: boolean
+            deletedJourneyIds: string[]
+            deletedTeamIds: string[]
+            deletedUserJourneyIds: string[]
+            deletedUserTeamIds: string[]
+          }
+          expect(outcomes.success).toBe(true)
+          expect(outcomes.deletedJourneyIds).toContain('read-delete-exclusive')
+          expect(outcomes.deletedTeamIds).toContain(
+            'read-delete-exclusive-team'
+          )
+          expect(
+            await journeys.journey.findUnique({ where: { id: 'read-a' } })
+          ).not.toBeNull()
+          expect(
+            await journeys.userJourney.findUnique({
+              where: {
+                journeyId_userId: { journeyId: 'read-a', userId: 'bob' }
+              }
+            })
+          ).toMatchObject({ role: 'owner' })
+          expect((await readA()).body).not.toContain('read-a-text-sentinel')
+          const uidRecord = await users!.user.findUniqueOrThrow({
+            where: { userId: 'alice' }
+          })
+          vi.stubEnv('MCP_READS_ENABLED', 'true')
+          vi.stubEnv('MCP_ACCOUNT_AUTHORITY_URL', config.AUTH_ISSUER)
+          vi.stubEnv(
+            'MCP_ACCOUNT_AUTHORITY_SECRET',
+            config.AUTH_PERMISSION_USERS_SECRET
+          )
+          const getUser = vi
+            .spyOn(firebaseAuth, 'getUser')
+            .mockImplementation(async (uid) => ({
+              uid,
+              email: uid + '@synthetic.example',
+              emailVerified: true,
+              disabled: false,
+              providerData: [],
+              metadata: {
+                creationTime: '2026-01-01T00:00:00.000Z',
+                lastSignInTime: '2026-01-01T00:00:00.000Z',
+                toJSON: () => ({})
+              },
+              toJSON: () => ({})
+            }))
+          const deleteUser = vi
+            .spyOn(firebaseAuth, 'deleteUser')
+            .mockResolvedValue(undefined)
+          try {
+            const usersSchemaModule = new URL(
+              '../../api-users/src/schema/schema.ts',
+              import.meta.url
+            ).href
+            const { schema: usersSchema } = (await import(
+              /* webpackChunkName: "users-deletion-participant" */ usersSchemaModule
+            )) as { schema: GraphQLSchema }
+            const progress = await subscribe({
+              schema: usersSchema,
+              document: parse(
+                'subscription DeleteAccount($id: String!, $journeys: [String!]!, $teams: [String!]!, $collaborations: [String!]!, $memberships: [String!]!) { userDeleteConfirm(idType: databaseId, id: $id, deletedJourneyIds: $journeys, deletedTeamIds: $teams, deletedUserJourneyIds: $collaborations, deletedUserTeamIds: $memberships) { done success } }'
+              ),
+              variableValues: {
+                id: uidRecord.id,
+                journeys: outcomes.deletedJourneyIds,
+                teams: outcomes.deletedTeamIds,
+                collaborations: outcomes.deletedUserJourneyIds,
+                memberships: outcomes.deletedUserTeamIds
+              },
+              contextValue: {
+                ...initContextCache(),
+                type: 'authenticated',
+                currentUser: { id: 'alice', email: 'alice@synthetic.example' }
+              }
+            })
+            if (!(Symbol.asyncIterator in progress))
+              throw new Error(JSON.stringify(progress))
+            const results = []
+            for await (const result of progress) results.push(result)
+            expect(results.at(-1)).toMatchObject({
+              data: { userDeleteConfirm: { done: true, success: true } }
+            })
+            expect(deleteUser).toHaveBeenCalledWith('alice')
+            expect(
+              await users!.user.findUnique({ where: { userId: 'alice' } })
+            ).toBeNull()
+            expect(
+              await users!.user.findUnique({ where: { userId: 'bob' } })
+            ).not.toBeNull()
+            expect(
+              await auth.retiredAccount.findUnique({
+                where: { userId: 'alice' }
+              })
+            ).not.toBeNull()
+            expect(
+              (
+                await call(
+                  'journey_read',
+                  { journeyId: 'read-foreign', view: 'steps' },
+                  bobToken
+                )
+              ).body
+            ).toContain('read-foreign-text-sentinel')
+            // Account retirement never calls a media deletion participant.
+            expect(
+              await journeys.journey.findUnique({
+                where: { id: 'read-foreign' }
+              })
+            ).not.toBeNull()
+          } finally {
+            getUser.mockRestore()
+            deleteUser.mockRestore()
+            vi.unstubAllEnvs()
+          }
+        }
+      )
     }
   )
 })
