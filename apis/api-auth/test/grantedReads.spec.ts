@@ -69,6 +69,7 @@ describe('granted journey read authorization', () => {
       let beforeAcceptance: ((stage: string) => Promise<void>) | undefined
       let afterAcceptance: ((stage: string) => Promise<void>) | undefined
       let settlementOutage = false
+      const failedFenceReports = new Set<string>()
       let ownerHandler: ReturnType<typeof createJourneyReadHandler>
       let beforeOutput: ((executorId: string) => Promise<void>) | undefined
       let afterOutput: (() => void) | undefined
@@ -472,7 +473,10 @@ describe('granted journey read authorization', () => {
               for await (const chunk of req)
                 chunks.push(Buffer.from(chunk as Uint8Array))
               const raw = Buffer.concat(chunks).toString('utf8')
-              const body = JSON.parse(raw) as { permitId?: string }
+              const body = JSON.parse(raw) as {
+                permitId?: string
+                executorId?: string
+              }
               const stage = body.permitId
                 ? (
                     await auth.readPermit.findUniqueOrThrow({
@@ -481,7 +485,11 @@ describe('granted journey read authorization', () => {
                   ).stage
                 : ''
               if (req.url?.endsWith('/accept')) await beforeAcceptance?.(stage)
-              if (req.url?.endsWith('/fence') && settlementOutage) {
+              if (
+                req.url?.endsWith('/fence') &&
+                (settlementOutage ||
+                  failedFenceReports.has(body.executorId ?? ''))
+              ) {
                 res.writeHead(503)
                 res.end('{}')
                 return
@@ -597,6 +605,7 @@ describe('granted journey read authorization', () => {
         beforeAcceptance = undefined
         afterAcceptance = undefined
         settlementOutage = false
+        failedFenceReports.clear()
         invalidUsers.clear()
         await auth.authorizationGate.updateMany({
           data: { open: true, generation: { increment: 1 } }
@@ -1456,6 +1465,68 @@ describe('granted journey read authorization', () => {
             where: { connectionId: context.connection.id }
           })
         ).toMatchObject({ completedAt: null })
+      })
+
+      it('reconciles every receipt page despite a failed fence report and retries the retained receipt', async () => {
+        // Real receipts, execution locks and authenticated authority reports.
+        // The first failed row must not starve the rest of its page or page two.
+        const receipts = Array.from({ length: 105 }, (_, index) => ({
+          id: `pagination-${String(index).padStart(3, '0')}-${randomUUID()}`,
+          executorId: randomUUID()
+        }))
+        await journeys.mcpReadExecution.createMany({ data: receipts })
+        failedFenceReports.add(receipts[0].executorId)
+        try {
+          await ownerHandler.reconcile()
+          const stored = await journeys.mcpReadExecution.findMany({
+            where: { id: { in: receipts.map(({ id }) => id) } },
+            orderBy: { id: 'asc' }
+          })
+          expect(stored).toHaveLength(105)
+          expect(stored[0]).toMatchObject({
+            status: 'fenced',
+            completedAt: expect.any(Date),
+            reportedAt: null
+          })
+          expect(stored.slice(1)).toEqual(
+            receipts.slice(1).map((receipt) =>
+              expect.objectContaining({
+                ...receipt,
+                status: 'fenced',
+                completedAt: expect.any(Date),
+                reportedAt: expect.any(Date)
+              })
+            )
+          )
+          expect(
+            await auth.readExecutor.count({
+              where: {
+                id: {
+                  in: receipts.slice(1).map(({ executorId }) => executorId)
+                },
+                executor: 'journeys',
+                fencedAt: { not: null }
+              }
+            })
+          ).toBe(104)
+          failedFenceReports.clear()
+          await ownerHandler.reconcile()
+          expect(
+            await journeys.mcpReadExecution.findUniqueOrThrow({
+              where: { id: receipts[0].id }
+            })
+          ).toMatchObject({ reportedAt: expect.any(Date) })
+          expect(
+            await auth.readExecutor.findUniqueOrThrow({
+              where: { id: receipts[0].executorId }
+            })
+          ).toMatchObject({ executor: 'journeys', fencedAt: expect.any(Date) })
+        } finally {
+          failedFenceReports.clear()
+          await journeys.mcpReadExecution.deleteMany({
+            where: { id: { in: receipts.map(({ id }) => id) } }
+          })
+        }
       })
 
       it('denies buffered private output after a completed management withdrawal', async () => {
