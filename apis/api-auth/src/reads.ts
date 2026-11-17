@@ -6,6 +6,7 @@ import { z } from 'zod'
 import {
   assertRequestInputSize,
   fingerprint,
+  isContentWrite,
   readRequest,
   sameSecret,
   signEnvelope,
@@ -208,7 +209,7 @@ export function createReadAuthority(
         .strict()
         .parse(body)
       assertRequestInputSize(input.request)
-      const edit = input.request.tool === 'journey_edit'
+      const edit = isContentWrite(input.request.tool)
       const scope = edit ? 'journeys:edit' : 'journeys:read'
       const token = await provider.AccessToken.find(input.token)
       if (

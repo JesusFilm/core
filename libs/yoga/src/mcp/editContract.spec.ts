@@ -2,6 +2,8 @@ import {
   canonicalFingerprint,
   commandRegistry,
   editInput,
+  historyActionInput,
+  historyInput,
   operationInput,
   operationReceipt,
   typographyCommand
@@ -22,6 +24,26 @@ const state = {
 }
 
 describe('closed executable typography registry', () => {
+  it('requires closed revision-bound history actions and rejects client inverses', () => {
+    const action = {
+      journeyId: input.journeyId,
+      entryId: input.idempotencyKey,
+      expectedRevision: '12',
+      idempotencyKey: input.idempotencyKey
+    }
+    expect(historyActionInput.parse(action)).toEqual(action)
+    expect(historyInput.parse({ journeyId: input.journeyId })).toEqual({
+      journeyId: input.journeyId
+    })
+    for (const value of [
+      { ...action, inverse: {} },
+      { ...action, hostId: 'excluded' },
+      { ...action, expectedRevision: '-1' },
+      { ...action, entryId: 'unknown' },
+      { ...action, idempotencyKey: 'short' }
+    ])
+      expect(historyActionInput.safeParse(value).success).toBe(false)
+  })
   it('accepts each mounted presentation control and plain empty text', () => {
     expect(editInput.parse(input)).toEqual(input)
     for (const variant of [

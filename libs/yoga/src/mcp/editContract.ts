@@ -38,6 +38,38 @@ export const editInput = z
     commands: z.array(typographyCommand).min(1).max(50)
   })
   .strict()
+export const historyInput = z.object({ journeyId: id }).strict()
+export const historyActionInput = z
+  .object({
+    journeyId: id,
+    expectedRevision: revisionInput,
+    entryId: z.string().uuid(),
+    idempotencyKey: idempotencyKeyInput
+  })
+  .strict()
+export const historyResult = z
+  .object({
+    contractVersion: z.literal('1'),
+    kind: z.literal('journey_history'),
+    journeyId: id,
+    revision: revisionInput,
+    undoEntryId: z.string().uuid().nullable(),
+    redoEntryId: z.string().uuid().nullable(),
+    entries: z
+      .array(
+        z
+          .object({
+            entryId: z.string().uuid(),
+            operationId: z.string().uuid(),
+            label: z.literal('Typography edit'),
+            state: z.enum(['undo', 'redo']),
+            createdAt: z.string().datetime()
+          })
+          .strict()
+      )
+      .max(5)
+  })
+  .strict()
 export const operationInput = z
   .object({
     journeyId: id,
@@ -60,6 +92,7 @@ export const operationReceipt = z
     status: z.literal('committed'),
     completedAt: z.string().datetime(),
     historyId: z.string().uuid().nullable(),
+    historyAction: z.enum(['undo', 'redo']).optional(),
     changedFields: z
       .array(
         z
@@ -82,7 +115,9 @@ export const privateOperationErrorCodes = [
   'RESULT_EXPIRED',
   'RESULT_UNAVAILABLE',
   'REVISION_CONFLICT',
-  'NOT_EDITABLE'
+  'NOT_EDITABLE',
+  'HISTORY_CONFLICT',
+  'HISTORY_UNAVAILABLE'
 ] as const
 export const operationFailure = z
   .object({
@@ -100,6 +135,7 @@ export type OperationReceipt = z.infer<typeof operationReceipt>
 export type EditInput = z.infer<typeof editInput>
 export type OperationInput = z.infer<typeof operationInput>
 export type TypographyCommand = z.infer<typeof typographyCommand>
+export type HistoryResult = z.infer<typeof historyResult>
 
 /** Arrays preserve command order. Object key order never changes request identity. */
 export function canonicalFingerprint(value: unknown): string {
@@ -129,6 +165,7 @@ type TypographyField = 'content' | 'variant' | 'align' | 'settings.color'
 export interface TypographyInverse {
   type: 'typography_restore'
   blockId: string
+  parent?: { cardId: string; stepId: string }
   fields: Array<{
     field: TypographyField
     before: unknown

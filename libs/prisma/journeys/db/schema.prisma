@@ -553,12 +553,28 @@ model McpEditHistory {
   namespaceId String
   journeyId   String
   changes     Json
+  undone      Boolean          @default(false)
   createdAt   DateTime
   expiresAt   DateTime
   historyGeneration Int        @default(0)
   operation   McpEditOperation @relation(fields: [operationId], references: [id], onDelete: Cascade)
 
   @@index([namespaceId, journeyId, createdAt])
+}
+
+// Minimal owning-operation audit survives inverse eviction and redo-tail removal.
+// No content, inverse payloads, credentials or provider inputs belong here.
+model McpEditAudit {
+  id          String   @id @default(uuid())
+  namespaceId String
+  journeyId   String
+  operationId String
+  action      String
+  occurredAt  DateTime
+  expiresAt   DateTime
+
+  @@index([namespaceId, journeyId, occurredAt])
+  @@index([expiresAt])
 }
 
 // Typography has a local content-change intent, never a media provider request.

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { operationResult } from '@core/yoga/mcp/editContract'
+import { historyResult, operationResult } from '@core/yoga/mcp/editContract'
 import {
   type ReadRequest,
   type ReadResult,
@@ -52,9 +52,13 @@ export function createReadSession(
       assertStructuredResultSize(response.data)
       if (
         request.tool === 'journey_edit' ||
-        request.tool === 'journey_operation_get'
+        request.tool === 'journey_operation_get' ||
+        request.tool === 'journey_undo' ||
+        request.tool === 'journey_redo'
       )
         operationResult.parse(response.data)
+      else if (request.tool === 'journey_history')
+        historyResult.or(operationResult).parse(response.data)
       else if (response.data.kind === 'read_failure')
         readFailure.parse(response.data)
       releases.push({

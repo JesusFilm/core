@@ -8,7 +8,8 @@ import pino from 'pino'
 import { z } from 'zod'
 
 import { createAuthDatabase } from '@core/prisma/auth/client'
-import { PrismaClient } from '@core/prisma/journeys/client'
+import { Prisma, PrismaClient } from '@core/prisma/journeys/client'
+import { historyResult } from '@core/yoga/mcp/editContract'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Exercise the independently deployed HTTP participants together. */
@@ -419,10 +420,14 @@ describe('saved edit integration', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_10553(_|$)/.test(new URL(authUrl!).pathname) ||
-          !/^\/journeys_issue_10553(_|$)/.test(new URL(journeysUrl!).pathname)
+          !/^\/auth_issue_(10553|10562)(_|$)/.test(
+            new URL(authUrl!).pathname
+          ) ||
+          !/^\/journeys_issue_(10553|10562)(_|$)/.test(
+            new URL(journeysUrl!).pathname
+          )
         )
-          throw new Error('Use isolated issue 10553 databases')
+          throw new Error('Use isolated saved-edit issue databases')
         for (const table of [
           auth.permissionChange,
           auth.retiredAccount,
@@ -440,6 +445,7 @@ describe('saved edit integration', () => {
           auth.authEnvironment
         ])
           await (table.deleteMany as () => Promise<unknown>)()
+        await journeys.mcpEditAudit.deleteMany()
         await journeys.mcpEditExecution.deleteMany()
         await journeys.mcpEditEffect.deleteMany()
         await journeys.mcpEditHistory.deleteMany()
@@ -616,13 +622,18 @@ describe('saved edit integration', () => {
               })
               const handler =
                 body.request.tool === 'journey_edit' ||
-                body.request.tool === 'journey_operation_get'
+                body.request.tool === 'journey_operation_get' ||
+                body.request.tool === 'journey_history' ||
+                body.request.tool === 'journey_undo' ||
+                body.request.tool === 'journey_redo'
                   ? ownerHandler
                   : readHandler
               const response = await handler(incoming)
               if (
                 discardSavedResponse &&
-                body.request.tool === 'journey_edit' &&
+                ['journey_edit', 'journey_undo', 'journey_redo'].includes(
+                  body.request.tool
+                ) &&
                 body.stage === 'read' &&
                 response.ok
               ) {
@@ -2229,6 +2240,865 @@ describe('saved edit integration', () => {
           history: 0,
           effects: 0
         })
+      })
+
+      async function history(accessToken = token, url = mcpUrl) {
+        const response = await call(
+          'journey_history',
+          { journeyId },
+          accessToken,
+          url
+        )
+        expect(response.json.result?.isError, response.text).not.toBe(true)
+        return historyResult.parse(response.json.result?.structuredContent)
+      }
+      async function historyInput(entryId: string) {
+        return {
+          journeyId,
+          entryId,
+          expectedRevision: await revision(),
+          idempotencyKey: randomUUID()
+        }
+      }
+      async function historyAction(
+        direction: 'undo' | 'redo',
+        entryId: string
+      ) {
+        return receipt(
+          await call(`journey_${direction}`, await historyInput(entryId))
+        )
+      }
+      async function textBlock() {
+        return journeys.block.findUniqueOrThrow({
+          where: { id: `${journeyId}-text` }
+        })
+      }
+
+      it('undoes a multi-command batch across new chats and service replicas, then redoes the same IDs', async () => {
+        const input = await editInput()
+        input.commands = [
+          {
+            type: 'typography_set',
+            blockId: `${journeyId}-text`,
+            content: 'Intermediate'
+          },
+          {
+            type: 'typography_set',
+            blockId: `${journeyId}-text`,
+            content: 'Final'
+          }
+        ]
+        const saved = receipt(await edit(input))
+        const second = await replica()
+        restartOwner()
+        const stack = await history(token, second)
+        expect(stack.entries).toEqual([
+          expect.objectContaining({ entryId: saved.historyId, state: 'undo' })
+        ])
+        const before = await revision()
+        const undone = receipt(
+          await call(
+            'journey_undo',
+            await historyInput(stack.undoEntryId!),
+            token,
+            second
+          )
+        )
+        expect(BigInt(undone.committedRevision)).toBe(BigInt(before) + 1n)
+        expect(await textBlock()).toMatchObject({
+          id: `${journeyId}-text`,
+          content: 'Original heading'
+        })
+        expect((await history()).redoEntryId).toBe(saved.historyId)
+        restartOwner()
+        const redone = await historyAction('redo', saved.historyId!)
+        expect(redone.historyId).toBe(saved.historyId)
+        expect(redone.warnings.join(' ')).toContain(
+          'no upload, generation or provider effects'
+        )
+        expect(await textBlock()).toMatchObject({ content: 'Final' })
+        expect(await counts()).toEqual({
+          operations: 3,
+          history: 1,
+          effects: 3
+        })
+      })
+
+      it('keeps two separately saved batches as two steps and preserves unrelated human fields, layout, Host and routes', async () => {
+        const first = receipt(await edit(await editInput('First')))
+        const second = receipt(await edit(await editInput('Second')))
+        const host = await journeys.host.create({
+          data: { teamId: 'edit-team-alice', title: 'Human Host' }
+        })
+        await journeys.journey.update({
+          where: { id: journeyId },
+          data: { hostId: host.id }
+        })
+        await journeys.block.update({
+          where: { id: `${journeyId}-step` },
+          data: { x: 345, y: 678, nextBlockId: `${journeyId}-step` }
+        })
+        await journeys.block.update({
+          where: { id: `${journeyId}-text` },
+          data: { align: 'right', settings: { color: '#654321', human: true } }
+        })
+        await historyAction('undo', second.historyId!)
+        expect(await textBlock()).toMatchObject({
+          content: 'First',
+          align: 'right',
+          settings: { color: '#654321', human: true }
+        })
+        await historyAction('undo', first.historyId!)
+        expect(await textBlock()).toMatchObject({
+          content: 'Original heading',
+          align: 'right'
+        })
+        expect(
+          await journeys.journey.findUniqueOrThrow({ where: { id: journeyId } })
+        ).toMatchObject({ hostId: host.id })
+        expect(
+          await journeys.block.findUniqueOrThrow({
+            where: { id: `${journeyId}-step` }
+          })
+        ).toMatchObject({ x: 345, y: 678, nextBlockId: `${journeyId}-step` })
+        expect((await history()).entries.map((entry) => entry.state)).toEqual([
+          'redo',
+          'redo'
+        ])
+        await historyAction('redo', first.historyId!)
+        await historyAction('redo', second.historyId!)
+        expect(await textBlock()).toMatchObject({
+          content: 'Second',
+          align: 'right'
+        })
+      })
+
+      it.each(['affected-field', 'parent', 'deleted-parent', 'redo-field'])(
+        'rejects a %s conflict atomically after a fresh revision read',
+        async (kind) => {
+          const saved = receipt(await edit(await editInput()))
+          if (kind === 'redo-field')
+            await historyAction('undo', saved.historyId!)
+          if (kind === 'affected-field' || kind === 'redo-field')
+            await journeys.block.update({
+              where: { id: `${journeyId}-text` },
+              data: { content: 'Human conflict' }
+            })
+          else if (kind === 'deleted-parent')
+            await journeys.block.update({
+              where: { id: `${journeyId}-card` },
+              data: { deletedAt: new Date() }
+            })
+          else {
+            await journeys.block.create({
+              data: {
+                id: `${journeyId}-second-step`,
+                journeyId,
+                typename: 'StepBlock',
+                parentOrder: 1
+              }
+            })
+            await journeys.block.update({
+              where: { id: `${journeyId}-card` },
+              data: { parentBlockId: `${journeyId}-second-step` }
+            })
+          }
+          const before = await counts()
+          const current = await revision()
+          const stack = await history()
+          const response = await call(
+            kind === 'redo-field' ? 'journey_redo' : 'journey_undo',
+            await historyInput(saved.historyId!)
+          )
+          expect(response.text).toContain('HISTORY_CONFLICT')
+          expect(await revision()).toBe(current)
+          expect(await counts()).toEqual(before)
+          expect(await history()).toEqual(stack)
+        }
+      )
+
+      it.each([null, {}, { color: null }, { color: { legacy: true } }])(
+        'restores sparse color presence from %j while preserving later unrelated settings',
+        async (settings) => {
+          await journeys.block.update({
+            where: { id: `${journeyId}-text` },
+            data: { settings: settings === null ? Prisma.JsonNull : settings }
+          })
+          const input = {
+            ...(await editInput()),
+            commands: [
+              {
+                type: 'typography_set',
+                blockId: `${journeyId}-text`,
+                color: '#abcdef'
+              }
+            ]
+          }
+          const saved = receipt(await call('journey_edit', input))
+          await journeys.block.update({
+            where: { id: `${journeyId}-text` },
+            data: { settings: { color: '#abcdef', human: 'later' } }
+          })
+          await historyAction('undo', saved.historyId!)
+          expect((await textBlock()).settings).toEqual({
+            ...(settings ?? {}),
+            human: 'later'
+          })
+          await historyAction('redo', saved.historyId!)
+          expect((await textBlock()).settings).toEqual({
+            color: '#abcdef',
+            human: 'later'
+          })
+        }
+      )
+
+      it('clears only the redo tail on a new commit, preserving historical receipts and failed/replayed requests', async () => {
+        const aInput = await editInput('A')
+        const a = receipt(await edit(aInput))
+        const b = receipt(await edit(await editInput('B')))
+        await historyAction('undo', b.historyId!)
+        const stack = await history()
+        expect(
+          (await edit({ ...(await editInput('C')), expectedRevision: '0' }))
+            .text
+        ).toContain('REVISION_CONFLICT')
+        expect(receipt(await edit(aInput))).toEqual(a)
+        expect(await history()).toEqual(stack)
+        const c = receipt(await edit(await editInput('C')))
+        expect((await history()).entries.map((entry) => entry.entryId)).toEqual(
+          [a.historyId, c.historyId]
+        )
+        expect(
+          (await call('journey_redo', await historyInput(b.historyId!))).text
+        ).toContain('HISTORY_UNAVAILABLE')
+        expect(
+          receipt(
+            await call('journey_operation_get', {
+              journeyId,
+              operationId: b.operationId
+            })
+          )
+        ).toEqual(b)
+        expect(
+          await journeys.mcpEditAudit.findFirst({
+            where: { operationId: b.operationId }
+          })
+        ).toMatchObject({ action: 'journey_edit' })
+      })
+
+      it.each(['undo', 'redo'] as const)(
+        'recovers one %s after response loss, concurrent retries, restart and renewal',
+        async (direction) => {
+          const saved = receipt(await edit(await editInput()))
+          if (direction === 'redo')
+            await historyAction('undo', saved.historyId!)
+          const input = await historyInput(saved.historyId!)
+          const before = await revision()
+          discardSavedResponse = true
+          expect(
+            (await call(`journey_${direction}`, input)).json.result?.isError
+          ).toBe(true)
+          const once = await counts()
+          const second = await replica()
+          restartOwner()
+          const results = await Promise.all([
+            call(`journey_${direction}`, input),
+            call(`journey_${direction}`, input, token, second)
+          ])
+          const original = receipt(results[0])
+          expect(receipt(results[1])).toEqual(original)
+          expect(BigInt(await revision())).toBe(BigInt(before) + 1n)
+          expect(await counts()).toEqual(once)
+          await renew()
+          expect(receipt(await call(`journey_${direction}`, input))).toEqual(
+            original
+          )
+          expect(
+            (
+              await call(`journey_${direction}`, {
+                ...input,
+                expectedRevision: await revision()
+              })
+            ).text
+          ).toContain('IDEMPOTENCY_KEY_REUSED')
+          expect(
+            (
+              await call(
+                direction === 'undo' ? 'journey_redo' : 'journey_undo',
+                input
+              )
+            ).text
+          ).toContain('IDEMPOTENCY_KEY_REUSED')
+          expect(
+            (
+              await call('journey_edit', {
+                ...(await editInput()),
+                idempotencyKey: input.idempotencyKey
+              })
+            ).text
+          ).toContain('IDEMPOTENCY_KEY_REUSED')
+          for (const extra of [
+            { hostId: 'injected' },
+            { inverse: { content: 'injected' } },
+            { commands: [] }
+          ])
+            expect(
+              (await call(`journey_${direction}`, { ...input, ...extra })).text
+            ).toContain('VALIDATION_FAILED')
+          expect(await counts()).toEqual(once)
+        }
+      )
+
+      it.each([
+        'after_content',
+        'after_revision',
+        'after_history',
+        'after_receipt',
+        'after_outbox',
+        'before_commit'
+      ] as const)(
+        'rolls back undo content, cursor and replay records at %s',
+        async (point) => {
+          const saved = receipt(await edit(await editInput()))
+          const stack = await history()
+          const input = await historyInput(saved.historyId!)
+          const before = await counts()
+          checkpoint = async (at) => {
+            if (at === point) throw new Error('Controlled history rollback')
+          }
+          expect((await call('journey_undo', input)).json.result?.isError).toBe(
+            true
+          )
+          checkpoint = undefined
+          expect(await counts()).toEqual(before)
+          expect(await history()).toEqual(stack)
+          receipt(await call('journey_undo', input))
+          expect(await textBlock()).toMatchObject({
+            content: 'Original heading'
+          })
+        }
+      )
+
+      it('enforces five entries across both directions with independent connection and journey capacity', async () => {
+        const inputs = []
+        const saved = []
+        for (let index = 1; index <= 6; index++) {
+          const input = await editInput(`Batch ${index}`)
+          inputs.push(input)
+          saved.push(receipt(await edit(input)))
+        }
+        expect((await history()).entries.map((entry) => entry.entryId)).toEqual(
+          saved.slice(1).map((entry) => entry.historyId)
+        )
+        await historyAction('undo', saved[5].historyId!)
+        await historyAction('undo', saved[4].historyId!)
+        expect((await history()).entries).toHaveLength(5)
+        const connectionToken = token
+        const fresh = await consent('alice', [journeyId])
+        expect((await history(fresh)).entries).toEqual([])
+        receipt(await edit(await editInput('Other connection'), fresh))
+        expect((await history(connectionToken)).entries).toHaveLength(5)
+        token = connectionToken
+        // Restore the affected value through the human path before continuing the original stack.
+        await journeys.block.update({
+          where: { id: `${journeyId}-text` },
+          data: { content: 'Batch 4' }
+        })
+        const c = receipt(await edit(await editInput('C')))
+        expect((await history()).entries.map((entry) => entry.entryId)).toEqual(
+          [...saved.slice(1, 4).map((entry) => entry.historyId), c.historyId]
+        )
+        const before = await counts()
+        restartOwner()
+        expect(receipt(await edit(inputs[0]))).toEqual(saved[0])
+        expect(await counts()).toEqual(before)
+        expect(
+          (await call('journey_undo', await historyInput(saved[0].historyId!)))
+            .text
+        ).toContain('HISTORY_UNAVAILABLE')
+      })
+
+      it('keeps eligible inverses usable past result and audit expiry without reviving accepted keys', async () => {
+        const input = await editInput()
+        const saved = receipt(await edit(input))
+        clock = new Date(new Date(saved.completedAt).getTime() + 31 * day)
+        await ownerHandler.cleanup()
+        expect((await edit(input)).text).toContain('RESULT_EXPIRED')
+        expect((await history()).undoEntryId).toBe(saved.historyId)
+        const undone = await historyAction('undo', saved.historyId!)
+        await auth.securityAudit.updateMany({
+          where: { journeyIds: { has: journeyId } },
+          data: { expiresAt: new Date(0) }
+        })
+        await cleanup(auth)
+        await journeys.mcpEditAudit.updateMany({
+          where: { journeyId },
+          data: { expiresAt: new Date(0) }
+        })
+        await ownerHandler.cleanup()
+        expect(
+          await journeys.mcpEditAudit.count({ where: { journeyId } })
+        ).toBe(0)
+        expect((await history()).redoEntryId).toBe(saved.historyId)
+        await historyAction('redo', saved.historyId!)
+        expect((await edit(input)).text).toContain('RESULT_EXPIRED')
+        expect(
+          await journeys.mcpEditOperation.findUnique({
+            where: { id: undone.operationId }
+          })
+        ).not.toBeNull()
+      })
+
+      it.each([-1, 0, 1])(
+        'uses the exact 30-day cutoff at offset %i for renewal and cleanup',
+        async (offset) => {
+          const now = new Date()
+          const time = vi
+            .spyOn(await import('../src/store'), 'databaseTime')
+            .mockResolvedValue(now)
+          try {
+            const input = await editInput()
+            const saved = receipt(await edit(input))
+            const context = await management()
+            const expiry = new Date(now.getTime() - 30 * day - offset)
+            await auth.agentConnection.update({
+              where: { id: context.connection.id },
+              data: { expiresAt: expiry }
+            })
+            expect(
+              (await call('journey_history', { journeyId })).text
+            ).not.toContain(saved.historyId!)
+            expect(
+              (await call('journey_undo', await historyInput(saved.historyId!)))
+                .text
+            ).not.toContain('historical_receipt')
+            await ownerHandler.cleanup()
+            await ownerHandler.cleanup()
+            await renew()
+            expect((await history()).entries).toHaveLength(offset < 0 ? 1 : 0)
+            if (offset < 0) {
+              const undoInput = await historyInput(saved.historyId!)
+              const undone = receipt(await call('journey_undo', undoInput))
+              await renew()
+              expect(receipt(await call('journey_undo', undoInput))).toEqual(
+                undone
+              )
+            } else {
+              expect(
+                (
+                  await call(
+                    'journey_undo',
+                    await historyInput(saved.historyId!)
+                  )
+                ).text
+              ).toContain('HISTORY_UNAVAILABLE')
+            }
+            expect(await textBlock()).toMatchObject({
+              content: offset < 0 ? 'Original heading' : 'Saved heading'
+            })
+            expect(
+              await journeys.mcpEditOperation.findUnique({
+                where: { id: saved.operationId }
+              })
+            ).not.toBeNull()
+          } finally {
+            time.mockRestore()
+          }
+        }
+      )
+
+      it('denies another connection and missing role, retains history through role restoration and view/remove/re-add', async () => {
+        const saved = receipt(await edit(await editInput()))
+        const original = token
+        const other = await consent('alice', [journeyId])
+        expect((await history(other)).entries).toEqual([])
+        expect(
+          (
+            await call(
+              'journey_undo',
+              await historyInput(saved.historyId!),
+              other
+            )
+          ).text
+        ).toContain('HISTORY_UNAVAILABLE')
+        token = original
+        const membership = await journeys.userTeam.findFirstOrThrow({
+          where: { userId: 'alice', teamId: 'edit-team-alice' }
+        })
+        await journeys.userTeam.delete({ where: { id: membership.id } })
+        expect(
+          (await call('journey_history', { journeyId })).text
+        ).not.toContain(saved.historyId!)
+        expect(
+          (await call('journey_undo', await historyInput(saved.historyId!)))
+            .text
+        ).not.toContain('historical_receipt')
+        await journeys.userTeam.create({ data: membership })
+        expect((await history()).undoEntryId).toBe(saved.historyId)
+        // The fixture's management helper selects the latest connection.
+        await auth.agentConnection.update({
+          where: {
+            id: (
+              await journeys.mcpEditOperation.findUniqueOrThrow({
+                where: { id: saved.operationId }
+              })
+            ).namespaceId
+          },
+          data: { approvedAt: new Date() }
+        })
+        const originalExpiry = (await management()).connection.expiresAt
+        async function setAccess(journeyIds: string[], mode: string) {
+          const context = await management()
+          const review = await context.post('access-review', {
+            journeyIds,
+            mode
+          })
+          expect(review.status, await review.clone().text()).toBe(200)
+          const reviewed = z
+            .object({ reviewToken: z.string() })
+            .parse(await review.json())
+          expect(
+            (
+              await context.post('access-approve', {
+                reviewToken: reviewed.reviewToken
+              })
+            ).status
+          ).toBe(200)
+          return auth.agentConnection.findUniqueOrThrow({
+            where: { id: context.connection.id }
+          })
+        }
+        let current = await setAccess([journeyId], 'view')
+        token = await consent('alice', [journeyId], 'view', current)
+        expect((await history()).entries).toHaveLength(1)
+        expect((await history()).undoEntryId).toBeNull()
+        expect(
+          (await call('journey_undo', await historyInput(saved.historyId!)))
+            .json.result?.isError
+        ).toBe(true)
+        const decoyId = journeyId + '-decoy'
+        await journeys.journey.create({
+          data: {
+            id: decoyId,
+            slug: decoyId,
+            title: 'Other selected draft',
+            languageId: '529',
+            teamId: 'edit-team-alice',
+            status: 'draft'
+          }
+        })
+        eligible.set('alice', [journeyId, decoyId])
+        current = await setAccess([decoyId], 'view')
+        token = await consent('alice', [decoyId], 'view', current)
+        expect(
+          (await call('journey_history', { journeyId })).text
+        ).not.toContain(saved.historyId!)
+        current = await setAccess([journeyId], 'edit')
+        token = await consent('alice', [journeyId], 'edit', current)
+        expect(current.expiresAt).toEqual(originalExpiry)
+        expect((await history()).undoEntryId).toBe(saved.historyId)
+        await historyAction('undo', saved.historyId!)
+      })
+
+      it.each(['undo', 'redo'] as const)(
+        'denies %s after publication wins the owning lock',
+        async (direction) => {
+          const saved = receipt(await edit(await editInput()))
+          if (direction === 'redo')
+            await historyAction('undo', saved.historyId!)
+          const input = await historyInput(saved.historyId!)
+          const pause = barrier()
+          checkpoint = async (point) => {
+            if (point === 'execution_prepared') await pause.pause()
+          }
+          const action = call(`journey_${direction}`, input)
+          await pause.ready
+          await journeys.journey.update({
+            where: { id: journeyId },
+            data: {
+              status: 'published',
+              publishedAt: new Date(),
+              firstPublishedAt: new Date()
+            }
+          })
+          const before = await counts()
+          pause.resume()
+          expect((await action).text).toContain('NOT_EDITABLE')
+          checkpoint = undefined
+          expect(await counts()).toEqual(before)
+          expect(
+            (await call('journey_history', { journeyId })).text
+          ).not.toContain(saved.historyId!)
+        }
+      )
+
+      it.each(['before_accept', 'after_accept'] as const)(
+        'disconnects with both stack directions at %s and purges after positive settlement',
+        async (point) => {
+          const a = receipt(await edit(await editInput('A')))
+          const b = receipt(await edit(await editInput('B')))
+          await historyAction('undo', b.historyId!)
+          expect((await history()).entries.map((entry) => entry.state)).toEqual(
+            ['undo', 'redo']
+          )
+          const context = await management()
+          const input = await historyInput(a.historyId!)
+          const pause = barrier()
+          checkpoint = async (at) => {
+            if (at === point) await pause.pause()
+          }
+          const action = call('journey_undo', input)
+          await pause.ready
+          const disconnect = await context.post('disconnect')
+          expect(disconnect.status, await disconnect.clone().text()).toBe(200)
+          if (point === 'after_accept') {
+            expect(
+              await auth.connectionChange.findFirst({
+                where: { connectionId: context.connection.id },
+                orderBy: { requestedAt: 'desc' }
+              })
+            ).toMatchObject({ status: 'pending' })
+          }
+          expect(
+            (await call('journey_history', { journeyId })).text
+          ).not.toContain(a.historyId!)
+          pause.resume()
+          expect((await action).text).not.toContain('historical_receipt')
+          checkpoint = undefined
+          await ownerHandler.reconcile()
+          await eventually(async () =>
+            Boolean(
+              await auth.connectionHistoryPurge.findUnique({
+                where: { connectionId: context.connection.id }
+              })
+            )
+          )
+          lifecycleOutage = true
+          expect(await ownerHandler.cleanup()).toBeGreaterThan(0)
+          lifecycleOutage = false
+          expect(await ownerHandler.cleanup()).toBe(0)
+          expect(await ownerHandler.cleanup()).toBe(0)
+          expect(
+            await journeys.mcpEditHistory.count({
+              where: { namespaceId: context.connection.id }
+            })
+          ).toBe(0)
+          expect(
+            await journeys.mcpEditOperation.findUnique({
+              where: { id: a.operationId }
+            })
+          ).not.toBeNull()
+          expect(
+            await journeys.mcpEditAudit.findFirst({
+              where: { operationId: b.operationId }
+            })
+          ).not.toBeNull()
+          expect(await textBlock()).toMatchObject({
+            content: point === 'after_accept' ? 'Original heading' : 'A'
+          })
+          const next = await consent('alice', [journeyId])
+          expect((await history(next)).entries).toEqual([])
+          expect(
+            (await call('journey_undo', await historyInput(a.historyId!), next))
+              .text
+          ).toContain('HISTORY_UNAVAILABLE')
+        }
+      )
+
+      it.each(['before', 'after'] as const)(
+        'checks fixed expiry %s undo acceptance and requires fresh output authority',
+        async (side) => {
+          const saved = receipt(await edit(await editInput()))
+          const context = await management()
+          const input = await historyInput(saved.historyId!)
+          const pause = barrier()
+          checkpoint = async (point) => {
+            if (
+              point === (side === 'before' ? 'before_accept' : 'after_accept')
+            )
+              await pause.pause()
+          }
+          const action = call('journey_undo', input)
+          await pause.ready
+          await auth.agentConnection.update({
+            where: { id: context.connection.id },
+            data: { expiresAt: new Date(Date.now() - 1) }
+          })
+          pause.resume()
+          expect((await action).text).not.toContain('historical_receipt')
+          checkpoint = undefined
+          expect(await textBlock()).toMatchObject({
+            content: side === 'after' ? 'Original heading' : 'Saved heading'
+          })
+          expect(
+            (await call('journey_history', { journeyId })).text
+          ).not.toContain(saved.historyId!)
+          await renew()
+          if (side === 'after') {
+            const before = await counts()
+            receipt(await call('journey_undo', input))
+            expect(await counts()).toEqual(before)
+          } else receipt(await call('journey_undo', input))
+          expect((await history()).redoEntryId).toBe(saved.historyId)
+        }
+      )
+
+      it('denies buffered history and conflict output after withdrawal', async () => {
+        const saved = receipt(await edit(await editInput()))
+        const context = await management()
+        const pause = barrier()
+        beforeOutput = async () => {
+          beforeOutput = undefined
+          await pause.pause()
+        }
+        const listing = call('journey_history', { journeyId })
+        await pause.ready
+        expect((await context.post('disconnect')).status).toBe(200)
+        pause.resume()
+        expect((await listing).text).not.toContain(saved.historyId!)
+      })
+
+      it('rejects a corrupt or unsupported stored inverse without restoring arbitrary fields', async () => {
+        const saved = receipt(await edit(await editInput()))
+        const before = await revision()
+        await journeys.mcpEditHistory.update({
+          where: { id: saved.historyId! },
+          data: {
+            changes: [
+              {
+                type: 'typography_restore',
+                blockId: `${journeyId}-text`,
+                parent: {
+                  cardId: `${journeyId}-card`,
+                  stepId: `${journeyId}-step`
+                },
+                fields: [
+                  {
+                    field: 'hostId',
+                    before: 'private',
+                    after: 'private',
+                    beforePresent: true
+                  }
+                ]
+              }
+            ]
+          }
+        })
+        expect(
+          (await call('journey_undo', await historyInput(saved.historyId!)))
+            .text
+        ).toContain('HISTORY_UNAVAILABLE')
+        expect(await revision()).toBe(before)
+        expect(await textBlock()).toMatchObject({ content: 'Saved heading' })
+      })
+
+      it('retires both history directions with retryable account cleanup and preserves saved content', async () => {
+        const a = receipt(await edit(await editInput('A')))
+        const b = receipt(await edit(await editInput('B')))
+        await historyAction('undo', b.historyId!)
+        const namespace = (
+          await journeys.mcpEditOperation.findUniqueOrThrow({
+            where: { id: a.operationId }
+          })
+        ).namespaceId
+        const retired = await request('/internal/permissions/retire-account', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${usersSecret}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: 'alice' })
+        })
+        expect(retired.status).toBe(200)
+        expect(
+          (await call('journey_history', { journeyId })).text
+        ).not.toContain(a.historyId!)
+        lifecycleOutage = true
+        expect(await ownerHandler.cleanup()).toBeGreaterThan(0)
+        lifecycleOutage = false
+        expect(await ownerHandler.cleanup()).toBe(0)
+        restartOwner()
+        expect(await ownerHandler.cleanup()).toBe(0)
+        expect(
+          await journeys.mcpEditHistory.count({
+            where: { namespaceId: namespace }
+          })
+        ).toBe(0)
+        expect(
+          await journeys.mcpEditNamespace.findUniqueOrThrow({
+            where: { id: namespace }
+          })
+        ).toMatchObject({
+          retiredAt: expect.any(Date),
+          actorId: null,
+          clientId: null
+        })
+        expect(
+          await journeys.mcpEditAudit.findFirst({
+            where: { operationId: b.operationId }
+          })
+        ).not.toBeNull()
+        expect(await textBlock()).toMatchObject({ content: 'A' })
+      })
+
+      it('gives each journey in one connection its own five-entry capacity', async () => {
+        const other = journeyId + '-other'
+        await journeys.journey.create({
+          data: {
+            id: other,
+            slug: other,
+            title: 'Other draft',
+            languageId: '529',
+            teamId: 'edit-team-alice',
+            status: 'draft',
+            blocks: {
+              create: [
+                { id: other + '-step', typename: 'StepBlock', parentOrder: 0 },
+                {
+                  id: other + '-card',
+                  typename: 'CardBlock',
+                  parentBlockId: other + '-step',
+                  parentOrder: 0
+                },
+                {
+                  id: other + '-text',
+                  typename: 'TypographyBlock',
+                  parentBlockId: other + '-card',
+                  parentOrder: 0,
+                  content: 'Other original'
+                }
+              ]
+            }
+          }
+        })
+        eligible.set('alice', [journeyId, other])
+        token = await consent('alice', [journeyId, other])
+        for (let index = 0; index < 6; index++)
+          receipt(await edit(await editInput('Batch ' + index)))
+        const otherRevision = (
+          await journeys.journeyRevision.findUniqueOrThrow({
+            where: { journeyId: other }
+          })
+        ).revision.toString()
+        const saved = receipt(
+          await call('journey_edit', {
+            journeyId: other,
+            expectedRevision: otherRevision,
+            idempotencyKey: randomUUID(),
+            commands: [
+              {
+                type: 'typography_set',
+                blockId: other + '-text',
+                content: 'Other saved'
+              }
+            ]
+          })
+        )
+        expect((await history()).entries).toHaveLength(5)
+        const listing = await call('journey_history', { journeyId: other })
+        expect(
+          historyResult.parse(listing.json.result?.structuredContent).entries
+        ).toEqual([expect.objectContaining({ entryId: saved.historyId })])
       })
     }
   )

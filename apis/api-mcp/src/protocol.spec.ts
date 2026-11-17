@@ -73,6 +73,29 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
         })
       }),
       expect.objectContaining({
+        name: 'journey_history',
+        annotations: expect.objectContaining({ readOnlyHint: true }),
+        inputSchema: expect.objectContaining({ additionalProperties: false })
+      }),
+      ...['journey_undo', 'journey_redo'].map((name) =>
+        expect.objectContaining({
+          name,
+          annotations: expect.objectContaining({
+            readOnlyHint: false,
+            idempotentHint: true
+          }),
+          inputSchema: expect.objectContaining({
+            additionalProperties: false,
+            required: [
+              'journeyId',
+              'expectedRevision',
+              'entryId',
+              'idempotencyKey'
+            ]
+          })
+        })
+      ),
+      expect.objectContaining({
         name: 'journey_operation_get',
         annotations: expect.objectContaining({ readOnlyHint: true }),
         inputSchema: expect.objectContaining({ additionalProperties: false })

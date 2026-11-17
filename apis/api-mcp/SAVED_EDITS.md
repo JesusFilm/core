@@ -104,3 +104,71 @@ container hosting, AWS deployment or Claude/ChatGPT compatibility. Those checks
 remain on the assembled feature's acceptance checklist. This slice exposes no
 Step deletion, route edit or media-provider command; their capability owners must
 supply their own command and provider evidence when extending this registry.
+
+## Persistent undo and redo
+
+Issue #10562 adds `journey_history`, `journey_undo` and `journey_redo` for the
+registered Typography family. History belongs to the verified logical connection
+and journey, independently of chats, MCP replicas, owner restarts and renewed
+grant versions. The list exposes at most five safe labels and stable entry/operation
+IDs, the current revision and the next entry in each direction. It never exposes
+inverse payloads. View only can list eligible entries but cannot move the cursor.
+Published journeys cannot use history tools.
+
+Undo/redo inputs contain only journeyId, expectedRevision, entryId and an
+idempotencyKey. Reuse the exact payload after an uncertain response, including the
+original revision. Accepted keys share the edit namespace and bind the tool name
+for history actions, so undo cannot become redo under the same key. Fresh authority
+is required even for replay and for buffered private results. Rejected actions
+consume no key or capacity. Result expiry never authorizes another transition.
+
+One saved batch is one entry. Undo reverses its command order; redo applies the
+forward order, with projected state for repeated targets. The owning transaction
+checks every recorded affected field and the same live Card/Step IDs before any
+write. A refreshed inverse preserves unrelated text, settings, layout, Host and
+route work. A changed affected field or required parent returns HISTORY_CONFLICT.
+Missing, expired, evicted or unsupported inverse descriptors return
+HISTORY_UNAVAILABLE. No old operation is rerun to reconstruct history.
+
+The cursor, content, shared revision, receipt, local effect and minimal owning audit
+commit together. New successful saves delete the redo tail and evict the oldest
+payload beyond five entries. Replay and rejected/rolled-back saves leave it alone.
+No-op saves accept their key and clear redo, but add no inverse or provider effect.
+McpEditAudit retains operation IDs and typed action names for 90 days, independently
+of 30-day detailed results and the history stack. Inverse eviction never deletes
+accepted-key markers. Audit expiry never moves the cursor.
+
+Existing connection history generations implement the exact post-consent 30-day
+renewal cutoff. Eligible early or late renewal keeps the generation; renewal at or
+after the cutoff advances it. Listing/restoration filter by that generation,
+without using the inverse row's original deadline as a new timer. Resource removal,
+View only and role loss preserve inaccessible entries; restoring access requires
+current rights and an explicitly covering active grant. Whole disconnect closes
+access, drains accepted participants, then requests and acknowledges payload purge.
+The namespace lock and permanent retirement prevent a final accepted inverse from
+reappearing. Account retirement cleans private history/results through the existing
+lifecycle; these participants never delete content or image/video assets.
+
+Apply both additive #10562 migrations before deploying the new owner binary.
+Deploy compatible command-contract participants together and leave
+MCP_EDITS_ENABLED=false until migrations and authority/gateway/owner/MCP are ready.
+Descriptors from an older binary without recorded parent IDs are explicitly
+unavailable rather than guessing structural history. Rollback must stop new
+admission, drain/fence accepted actions and retain schema/replay markers. Never
+resume an older writer against a stack that contains undone entries.
+
+Run this issue's isolated local route with:
+
+```sh
+MCP_EDITS_TEST_ISSUE=10562 node tools/scripts/test-mcp-edits.mjs
+```
+
+This uses auth_issue_10562 and journeys_issue_10562 on loopback PostgreSQL with
+controlled Firebase identity/eligibility adapters, actual OAuth/MCP HTTP/Hive/owning
+transactions and generated migrations. It does not qualify Admin browser behavior,
+real Firebase/providers, containers, AWS or real Claude/ChatGPT clients. Step deletion,
+route repair and media attachment are future command families; their handlers must
+extend the closed descriptor planner and executable registry with their own stable
+IDs, dependency/conflict checks, effect summaries and full-path tests. Typography
+undo restores content fields and truthfully reports that it has no external media
+provider effect to reverse.
