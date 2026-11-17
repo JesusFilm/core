@@ -32,7 +32,32 @@ const config = {
   readyCommand:
     'pnpm lint:changed --fix && pnpm exec nx affected -t type-check test --base=origin/main',
   defaultProvider: 'claude',
-  providerEnv: { claude: 'ANTHROPIC_AUTH_TOKEN' }
+  providerEnv: { claude: 'ANTHROPIC_AUTH_TOKEN' },
+
+  pipelines: {
+    // Phoebe's dependency bot (engine v0.17.0+, docs/configuration.md, "The
+    // dependency kinds"), on a pipeline of its own beside the default `work`
+    // one. `dependency-updates` files a daily issue per bundle of outdated
+    // packages, `dependency-security` files severe advisories, and
+    // `dependencies` works those issues into PRs. Their tickets wear
+    // `phoebe:dependencies`, never `ready-for-agent`, so `work` never takes
+    // one. Security scans every 6h instead of hourly: each scan includes an
+    // agent run, and the workspace runs it for every tenant.
+    //
+    // This repo also runs Renovate (renovate.json), so both can propose
+    // the same bump until one of them stops filing routine updates.
+    dependencies: {
+      pollIntervalMs: 600_000,
+      kinds: {
+        'dependency-updates': { path: 'phoebe-agent/kinds/dependency-updates' },
+        'dependency-security': {
+          path: 'phoebe-agent/kinds/dependency-security',
+          every: '6h'
+        },
+        dependencies: { path: 'phoebe-agent/kinds/dependencies-work' }
+      }
+    }
+  }
 }
 
 export default config
