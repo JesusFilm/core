@@ -32,6 +32,14 @@ their declared order. At most 200 distinct changed/new blocks are accepted per b
 including required children and sibling order changes. Oversize expansion rejects
 before acceptance. The shared decoded-input and command limits still apply.
 
+Each explicit persisted field can be requested only once in a batch, including a
+no-op value and references through a local key or owned Icon slot. Disjoint fields
+on one block remain valid. Creation claims its explicitly supplied fields; omitted
+server defaults and derived sibling placement do not count as duplicate requests.
+New duplicate saves reject before acceptance without content, revision, history,
+receipt, audit or effect changes. Retained legacy sequential inverse descriptors
+remain safely reversible; they cannot enable a new duplicate request.
+
 Buttons always create both owned Icons and their references in the same
 transaction. The first Button on a Card with TextResponse or Multiselect and no
 submit control derives the submit role; subsequent Buttons are ordinary.

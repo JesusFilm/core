@@ -138,6 +138,39 @@ export async function planContent(
 ) {
   const plans: ContentPlan[] = []
   const projected = new Map<string, ContentBlock>()
+  const requestedWrites = new Map<string, Set<PresentationField>>()
+  // Track requested fields before no-op filtering. Internal defaults and sibling
+  // shifts are derived writes; separate explicit commands cannot overwrite one
+  // another through a no-op, local key or owned Icon slot.
+  const claimFields = (blockId: string, typename: string, value: object) => {
+    const paths: Record<string, PresentationField | PresentationField[]> = {
+      content: 'content',
+      variant: 'variant',
+      align: 'align',
+      color: typename === 'TypographyBlock' ? 'settings.color' : 'color',
+      label: 'label',
+      size: 'size',
+      alignment: 'settings.alignment',
+      name: 'name',
+      spacing: 'spacing',
+      fullscreen: 'fullscreen',
+      backgroundColor: 'backgroundColor',
+      backdropBlur: 'backdropBlur',
+      themeMode: ['themeMode', 'themeName'],
+      enabled: 'showAssistant',
+      collapse: 'expandChatByDefault'
+    }
+    const claimed = requestedWrites.get(blockId) ?? new Set<PresentationField>()
+    for (const [field, supplied] of Object.entries(value)) {
+      const mapped = paths[field]
+      if (supplied === undefined || mapped === undefined) continue
+      for (const path of Array.isArray(mapped) ? mapped : [mapped]) {
+        if (claimed.has(path)) throw new Error('VALIDATION_FAILED')
+        claimed.add(path)
+      }
+    }
+    requestedWrites.set(blockId, claimed)
+  }
   const idMap: Record<string, string> = Object.create(null)
   const placementTails = new Map<string, string>()
   const resolve = (id: string) =>
@@ -243,6 +276,7 @@ export async function planContent(
               : 'TypographyBlock'
       }
       const value = command.block
+      claimFields(id, data.typename, value)
       const icons: Prisma.BlockUncheckedCreateInput[] = []
       if (value.kind === 'typography') {
         data.content = value.content
@@ -264,6 +298,7 @@ export async function planContent(
         for (const slot of ['start', 'end'] as const) {
           const iconId = randomUUID()
           const icon = value[`${slot}Icon`]
+          if (icon) claimFields(iconId, 'IconBlock', icon)
           data[`${slot}IconId`] = iconId
           idMap[`${command.key}.${slot}Icon`] = iconId
           icons.push({
@@ -311,6 +346,8 @@ export async function planContent(
       }
       continue
     }
+    if (command.type !== 'button_icon_set')
+      claimFields(block.id, block.typename, command)
     if (command.type === 'typography_set') {
       const applied = commandRegistry.typography_set.apply(
         {
@@ -345,6 +382,7 @@ export async function planContent(
       if (icon) await assertOwnedButtonIcon(tx, block, icon, projected)
       if (!icon) {
         const createdId = randomUUID()
+        claimFields(createdId, 'IconBlock', command)
         const data: Prisma.BlockUncheckedCreateInput = {
           id: createdId,
           typename: 'IconBlock',
@@ -393,6 +431,7 @@ export async function planContent(
           }
         )
       } else {
+        claimFields(icon.id, 'IconBlock', command)
         const applied = presentationPatch(icon, command)
         addPatch(icon, applied.patch, {
           type: 'presentation_restore',

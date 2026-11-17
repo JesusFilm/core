@@ -9,7 +9,10 @@ import { z } from 'zod'
 
 import { createAuthDatabase } from '@core/prisma/auth/client'
 import { Prisma, PrismaClient } from '@core/prisma/journeys/client'
-import { historyResult } from '@core/yoga/mcp/editContract'
+import {
+  canonicalFingerprint,
+  historyResult
+} from '@core/yoga/mcp/editContract'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Exercise the independently deployed HTTP participants together. */
@@ -286,7 +289,7 @@ describe('saved edit integration', () => {
         }
       }
       async function edit(
-        input: Awaited<ReturnType<typeof editInput>>,
+        input: Record<string, unknown>,
         accessToken = token,
         url = mcpUrl
       ) {
@@ -2152,7 +2155,7 @@ describe('saved edit integration', () => {
         }
       )
 
-      it('applies ordered commands to the same Typography block as one batch with the actual inverse sequence', async () => {
+      it('applies disjoint commands to one Typography block as a batch with sparse inverses', async () => {
         const before = await revision()
         const input = {
           ...(await editInput()),
@@ -2160,12 +2163,12 @@ describe('saved edit integration', () => {
             {
               type: 'typography_set',
               blockId: `${journeyId}-text`,
-              content: 'Intermediate heading'
+              content: 'Final heading'
             },
             {
               type: 'typography_set',
               blockId: `${journeyId}-text`,
-              content: 'Final heading'
+              align: 'center'
             }
           ]
         }
@@ -2193,18 +2196,14 @@ describe('saved edit integration', () => {
             })
           )
           .parse(history.changes)
-        expect(
-          sequence.map((inverse) =>
-            inverse.fields.find((field) => field.field === 'content')
-          )
-        ).toEqual([
+        expect(sequence.flatMap((inverse) => inverse.fields)).toEqual([
           expect.objectContaining({
             before: 'Original heading',
-            after: 'Intermediate heading'
+            after: 'Final heading'
           }),
           expect.objectContaining({
-            before: 'Intermediate heading',
-            after: 'Final heading'
+            before: 'left',
+            after: 'center'
           })
         ])
         expect(receipt(await edit(input))).toEqual(saved)
@@ -3297,6 +3296,229 @@ describe('saved edit integration', () => {
         })
       })
 
+      it.each([
+        'typography',
+        'button',
+        'button-change',
+        'icon',
+        'spacer',
+        'card',
+        'chat',
+        'local-label',
+        'local-icon'
+      ])(
+        'rejects duplicate requested %s fields atomically, including no-ops and local references',
+        async (kind) => {
+          await seedPresentation()
+          const buttonId = `${journeyId}-button`
+          const command =
+            kind === 'typography'
+              ? {
+                  type: 'typography_set',
+                  blockId: `${journeyId}-text`,
+                  content: 'Original heading'
+                }
+              : kind.startsWith('button')
+                ? {
+                    type: 'button_set',
+                    blockId: buttonId,
+                    label: kind === 'button' ? 'Original button' : 'First'
+                  }
+                : kind === 'icon'
+                  ? {
+                      type: 'button_icon_set',
+                      blockId: buttonId,
+                      slot: 'start',
+                      name: 'Home4'
+                    }
+                  : kind === 'spacer'
+                    ? {
+                        type: 'spacer_set',
+                        blockId: `${journeyId}-spacer`,
+                        spacing: 100
+                      }
+                    : kind === 'card'
+                      ? {
+                          type: 'card_set',
+                          blockId: `${journeyId}-card`,
+                          themeMode: 'light'
+                        }
+                      : {
+                          type: 'card_chat_set',
+                          blockId: `${journeyId}-card`,
+                          enabled: true,
+                          collapse: false
+                        }
+          const commands =
+            kind === 'local-label' || kind === 'local-icon'
+              ? [
+                  {
+                    type: 'block_add',
+                    key: 'created',
+                    cardId: `${journeyId}-card`,
+                    placement: { position: 'end' },
+                    block: {
+                      kind: 'button',
+                      label: 'First',
+                      startIcon: { name: 'Home4' }
+                    }
+                  },
+                  kind === 'local-label'
+                    ? {
+                        type: 'button_set',
+                        blockId: '$created',
+                        label: 'Second'
+                      }
+                    : {
+                        type: 'button_icon_set',
+                        blockId: '$created',
+                        slot: 'start',
+                        name: 'ArrowForwardRounded'
+                      }
+                ]
+              : [
+                  command,
+                  kind === 'button-change'
+                    ? { ...command, label: 'Second' }
+                    : command
+                ]
+          const before = await journeys.block.findMany({
+            where: { journeyId },
+            orderBy: { id: 'asc' }
+          })
+          const current = await revision()
+          const response = await call('journey_edit', {
+            journeyId,
+            expectedRevision: current,
+            idempotencyKey: randomUUID(),
+            commands
+          })
+          expect(response.json.result?.isError).toBe(true)
+          expect(
+            await journeys.block.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            })
+          ).toEqual(before)
+          expect(await revision()).toBe(current)
+          expect(await counts()).toEqual({
+            operations: 0,
+            history: 0,
+            effects: 0
+          })
+          expect(
+            await journeys.mcpEditAudit.count({ where: { journeyId } })
+          ).toBe(0)
+        }
+      )
+
+      it('accepts disjoint fields on one Button and its distinct owned Icon slots in one saved batch', async () => {
+        await seedPresentation()
+        const buttonId = `${journeyId}-button`
+        const saved = receipt(
+          await call('journey_edit', {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              { type: 'button_set', blockId: buttonId, label: 'Continue' },
+              { type: 'button_set', blockId: buttonId, alignment: 'left' },
+              {
+                type: 'button_icon_set',
+                blockId: buttonId,
+                slot: 'start',
+                name: 'CheckCircleRounded'
+              },
+              {
+                type: 'button_icon_set',
+                blockId: buttonId,
+                slot: 'start',
+                color: 'error'
+              },
+              {
+                type: 'button_icon_set',
+                blockId: buttonId,
+                slot: 'end',
+                name: 'Home4'
+              }
+            ]
+          })
+        )
+        await historyAction('undo', saved.historyId!)
+        await historyAction('redo', saved.historyId!)
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+        ).toMatchObject({ label: 'Continue', settings: { alignment: 'left' } })
+      })
+
+      it('retains safe undo/redo for legacy sequential descriptors while new duplicate saves are rejected', async () => {
+        const input = await editInput('Final')
+        const saved = receipt(await edit(input))
+        const legacyInput = {
+          ...input,
+          commands: [
+            {
+              type: 'typography_set',
+              blockId: `${journeyId}-text`,
+              content: 'Intermediate'
+            },
+            {
+              type: 'typography_set',
+              blockId: `${journeyId}-text`,
+              content: 'Final'
+            }
+          ]
+        }
+        await journeys.mcpEditOperation.update({
+          where: { id: saved.operationId },
+          data: { payloadHash: canonicalFingerprint(legacyInput) }
+        })
+        await journeys.mcpEditHistory.update({
+          where: { id: saved.historyId! },
+          data: {
+            changes: [
+              {
+                type: 'typography_restore',
+                blockId: `${journeyId}-text`,
+                parent: {
+                  cardId: `${journeyId}-card`,
+                  stepId: `${journeyId}-step`
+                },
+                fields: [
+                  {
+                    field: 'content',
+                    before: 'Original heading',
+                    after: 'Intermediate',
+                    beforePresent: true
+                  }
+                ]
+              },
+              {
+                type: 'typography_restore',
+                blockId: `${journeyId}-text`,
+                parent: {
+                  cardId: `${journeyId}-card`,
+                  stepId: `${journeyId}-step`
+                },
+                fields: [
+                  {
+                    field: 'content',
+                    before: 'Intermediate',
+                    after: 'Final',
+                    beforePresent: true
+                  }
+                ]
+              }
+            ]
+          }
+        })
+        await historyAction('undo', saved.historyId!)
+        expect(await textBlock()).toMatchObject({ content: 'Original heading' })
+        await historyAction('redo', saved.historyId!)
+        expect(await textBlock()).toMatchObject({ content: 'Final' })
+        expect(receipt(await call('journey_edit', legacyInput))).toEqual(saved)
+      })
+
       async function history(accessToken = token, url = mcpUrl) {
         const response = await call(
           'journey_history',
@@ -3330,19 +3552,21 @@ describe('saved edit integration', () => {
       }
 
       it('undoes a multi-command batch across new chats and service replicas, then redoes the same IDs', async () => {
-        const input = await editInput()
-        input.commands = [
-          {
-            type: 'typography_set',
-            blockId: `${journeyId}-text`,
-            content: 'Intermediate'
-          },
-          {
-            type: 'typography_set',
-            blockId: `${journeyId}-text`,
-            content: 'Final'
-          }
-        ]
+        const input = {
+          ...(await editInput()),
+          commands: [
+            {
+              type: 'typography_set',
+              blockId: `${journeyId}-text`,
+              content: 'Final'
+            },
+            {
+              type: 'typography_set',
+              blockId: `${journeyId}-text`,
+              align: 'center'
+            }
+          ]
+        }
         const saved = receipt(await edit(input))
         const second = await replica()
         restartOwner()
