@@ -1835,5 +1835,13 @@
   "Reconnecting keeps the renewed expiry and selected access. It does not renew consent again.": "Reconnecting keeps the renewed expiry and selected access. It does not renew consent again.",
   "Create a separate connection": "Create a separate connection",
   "Reconnect connection {{id}}": "Reconnect connection {{id}}",
-  "Reconnecting keeps the existing expiry and selected access. It does not renew consent.": "Reconnecting keeps the existing expiry and selected access. It does not renew consent."
+  "Reconnecting keeps the existing expiry and selected access. It does not renew consent.": "Reconnecting keeps the existing expiry and selected access. It does not renew consent.",
+  "You don't have access to this campaign": "You don't have access to this campaign",
+  "Ask a manager of its team to add you.": "Ask a manager of its team to add you.",
+  "{{label}} ({{shortcut}})": "{{label}} ({{shortcut}})",
+  "{{label}}: {{percent}}%": "{{label}}: {{percent}}%",
+  "Leave the editor?": "Leave the editor?",
+  "Stay": "Stay",
+  "Leave": "Leave",
+  "The translation into {{language}} stops.": "The translation into {{language}} stops."
 }

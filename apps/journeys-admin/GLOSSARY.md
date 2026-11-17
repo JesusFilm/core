@@ -47,7 +47,7 @@ The Editor's top action bar: preview, share, access, analytics, undo/redo, templ
 _Avoid_: app bar, header
 
 **Command**:
-One undoable editing act. Every edit in the Editor is dispatched as a Command onto an undo/redo history; undo/redo operate on Commands, not raw mutations.
+One undoable editing act. Every edit in the Editor is dispatched as a Command onto an undo/redo history; undo/redo operate on Commands, not raw mutations. In the Campaign Editor a Command's undo and redo return to the page, selection and Preview Language it was made in, run in order behind any step still in flight, and report a refusal inline the first time and in the error snackbar on replay.
 _Avoid_: mutation (the transport, not the concept), action (an Action is a block behaviour upstream)
 
 **Social Preview**:
@@ -65,7 +65,7 @@ _Avoid_: source, channel
 ### The Campaign Editor
 
 **Campaign Editor**:
-The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. A window narrower than 1348 px (the Left Rail, the open panel, the Inspector, the canvas padding and the Desktop frame at half scale) gets a "larger screen" message instead. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
+The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. A window narrower than 1316 px (the Left Rail, the open panel, the Inspector, the canvas padding and the Desktop frame at half scale) gets a "larger screen" message instead. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
 _Avoid_: campaign builder (the feature name, not the surface), site editor
 
 **Campaign Canvas**:
@@ -125,9 +125,23 @@ _Avoid_: bar
 
 **First-run Hint**:
 The one dismissible hint shown in the Canvas banner the first time a Campaign opens, recorded per Campaign. It is not a tour or a wizard.
-_Avoid_: tour, onboarding (that is the dashboard flow), tooltip
+_Avoid_: tour, onboarding (that is the Homepage flow), tooltip
+
+### App Shell
+
+**App Shell**:
+The frame most admin pages sit inside: the **Global Nav**, a top bar on mobile, the page's main area and an optional secondary column. The Editor and the Campaign Editor are full-screen and sit outside it; signed-out visitors to the Template Gallery get it without the Global Nav.
+_Avoid_: PageWrapper (the code name), layout, chrome, frame
+
+**Global Nav**:
+The App Shell's navigation, the same on every page that shows it: links to the **Homepage** (Projects) and the Template Gallery (Templates), and the signed-in creator's avatar menu. A fixed left column on desktop; on mobile it slides in from the top bar.
+_Avoid_: navigation drawer, drawer (that is the Editor's), sidebar, nav rail (the Campaign Editor has the Left Rail)
 
 ### Journey management
+
+**Homepage**:
+Where a signed-in creator lands: the selected Team's work in content tabs, **Team Projects** (its journeys), **Team Templates** and, when enabled, **Team Campaigns**. With **Shared With Me** chosen in place of a Team, it shows only the journeys others have shared with the creator, and no tabs.
+_Avoid_: dashboard (that is the analytics surfaces), projects page, landing page
 
 **Status Tabs**:
 The three lifecycle views of the journey list: **Active** (working journeys, drafts and published alike — publish state is a property, not a tab), **Archived**, and **Trash**.
@@ -228,7 +242,7 @@ _Avoid_: plugin, connector, app
 ### Onboarding & account
 
 **Onboarding**:
-The first-run experience: the starter-template panel on an empty dashboard, the create-your-first-team flow, and the terms-and-conditions gate. Distinct from Quick-Start Customization (template-scoped) and Quick Settings (journey-scoped).
+The first-run experience: the starter-template panel on an empty Homepage, the create-your-first-team flow, and the terms-and-conditions gate. Distinct from Quick-Start Customization (template-scoped) and Quick Settings (journey-scoped).
 _Avoid_: welcome flow, setup
 
 **Email Preferences**:
