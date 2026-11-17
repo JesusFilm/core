@@ -4,7 +4,6 @@ import { ReactElement } from 'react'
 
 import {
   BODY_FONT_OPTIONS,
-  FontFamily,
   HEADER_FONT_OPTIONS,
   LABELS_FONT_OPTIONS
 } from '@core/shared/ui/fontFamilies'
@@ -13,13 +12,6 @@ import Type2Icon from '@core/shared/ui/icons/Type2'
 import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import { FontSelect } from './FontSelect'
-
-export {
-  BODY_FONT_OPTIONS,
-  FontFamily,
-  HEADER_FONT_OPTIONS,
-  LABELS_FONT_OPTIONS
-}
 
 interface ThemeSettingsProps {
   onHeaderFontChange: (font: string) => void

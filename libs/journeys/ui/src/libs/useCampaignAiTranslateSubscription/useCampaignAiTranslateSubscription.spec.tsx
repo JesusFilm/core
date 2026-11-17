@@ -1,6 +1,7 @@
-import { InMemoryCache, gql } from '@apollo/client'
+import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { renderHook, waitFor } from '@testing-library/react'
+import { EMPTY } from 'rxjs'
 
 import { CampaignAiTranslateMode } from '../../../__generated__/globalTypes'
 
@@ -60,6 +61,36 @@ function wrapper(
 }
 
 describe('useCampaignAiTranslateSubscription', () => {
+  it('disables retries on the production subscription while preserving caller context', () => {
+    const captureContext = vi.fn()
+    const link = new ApolloLink((operation) => {
+      captureContext(operation.getContext())
+      return EMPTY
+    })
+    renderHook(
+      () =>
+        useCampaignAiTranslateSubscription({
+          variables,
+          context: {
+            retryAttempts: 3,
+            headers: { authorization: 'test-token' }
+          }
+        }),
+      {
+        wrapper: ({ children }) => (
+          <MockedProvider link={link}>{children}</MockedProvider>
+        )
+      }
+    )
+
+    expect(captureContext).toHaveBeenCalledWith(
+      expect.objectContaining({
+        retryAttempts: 0,
+        headers: { authorization: 'test-token' }
+      })
+    )
+  })
+
   it('returns progress as the run reports it', async () => {
     const { result } = renderHook(
       () => useCampaignAiTranslateSubscription({ variables }),
