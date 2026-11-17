@@ -128,6 +128,14 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
       arguments: {
         journeyId: 'private-id',
         view: 'outline',
+        revision: 'private-revision'
+      }
+    },
+    {
+      name: 'journey_read',
+      arguments: {
+        journeyId: 'private-id',
+        view: 'outline',
         revision: '18446744073709551616'
       }
     },

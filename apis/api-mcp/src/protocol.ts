@@ -7,6 +7,7 @@ import {
 import { z } from 'zod'
 
 import {
+  type ReadRequest,
   type ReadResult,
   journeyInput,
   listInput,
@@ -18,6 +19,14 @@ import {
 import type { ReadSession } from './reads'
 
 export const protocolVersions = ['2026-07-28', '2025-11-25']
+
+function parseReadRequest(value: unknown): ReadRequest {
+  try {
+    return readRequest.parse(value)
+  } catch {
+    throw new Error('VALIDATION_FAILED')
+  }
+}
 
 export function createProtocolServer(reads?: ReadSession): McpServer {
   const server = new McpServer(
@@ -105,15 +114,14 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     const tool = tools.find((tool) => tool.name === request.params.name)
     if (!tool)
       throw new ProtocolError(ProtocolErrorCode.InvalidParams, 'Unknown tool')
-    const parsed = readRequest.safeParse({
-      tool: tool.name,
-      input: request.params.arguments ?? {}
-    })
     const response = await result(
-      async () => {
-        if (!parsed.success) throw new Error('VALIDATION_FAILED')
-        return await reads.read(parsed.data)
-      },
+      () =>
+        reads.read(
+          parseReadRequest({
+            tool: tool.name,
+            input: request.params.arguments ?? {}
+          })
+        ),
       tool.name === 'journeys_list'
         ? 'Returned the currently authorized journeys.'
         : 'Read the authorized journey page. Preserve omitted content and follow nextCursor.',
