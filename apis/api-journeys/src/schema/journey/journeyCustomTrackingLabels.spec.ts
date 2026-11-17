@@ -179,8 +179,8 @@ describe('template custom tracking display labels', () => {
           document: publicRead,
           variables: { id: 'parent' }
         })) as LabelResult
-        expect(publicResult.data?.journey.custom1Label).toBeNull()
-        expect(publicResult.errors).toHaveLength(3)
+        expect(publicResult.data).toBeNull()
+        expect(publicResult.errors?.[0].extensions.code).toBe('NOT_FOUND')
       }
     }
   )
@@ -340,8 +340,8 @@ describe('template custom tracking display labels', () => {
       document: publicRead,
       variables: { id: 'parent' }
     })) as LabelResult
-    expect(bypass.data?.journey.custom1Label).toBeNull()
-    expect(bypass.errors).toHaveLength(3)
+    expect(bypass.data).toBeNull()
+    expect(bypass.errors?.[0].extensions.code).toBe('NOT_FOUND')
     const childRead = (await client({
       document: read,
       variables: { id: 'child' }
@@ -350,21 +350,31 @@ describe('template custom tracking display labels', () => {
     expect(childRead.data?.adminJourney.custom1Label).toBeNull()
   })
 
-  it('rejects unauthenticated writes and protects fields on public reads', async () => {
-    vi.mocked(getUserFromPayload).mockReturnValue(null)
-    const result = (await publicClient({
-      document: update,
-      variables: { id: 'parent', input: { custom1Label: 'Denied' } }
-    })) as LabelResult
-    expect(result.errors).toBeDefined()
-    expect(prismaMock.journey.update).not.toHaveBeenCalled()
-    const readResult = (await publicClient({
-      document: publicRead,
-      variables: { id: 'parent' }
-    })) as LabelResult
-    expect(readResult.data?.journey.custom1Label).toBeNull()
-    expect(readResult.errors).toHaveLength(3)
-  })
+  it.each(['draft', 'published'] as const)(
+    'rejects unauthenticated writes and protects labels on %s reads',
+    async (status) => {
+      const parent = journeys.get('parent')!
+      journeys.set('parent', { ...parent, status })
+      vi.mocked(getUserFromPayload).mockReturnValue(null)
+      const result = (await publicClient({
+        document: update,
+        variables: { id: 'parent', input: { custom1Label: 'Denied' } }
+      })) as LabelResult
+      expect(result.errors).toBeDefined()
+      expect(prismaMock.journey.update).not.toHaveBeenCalled()
+      const readResult = (await publicClient({
+        document: publicRead,
+        variables: { id: 'parent' }
+      })) as LabelResult
+      if (status === 'draft') {
+        expect(readResult.data).toBeNull()
+        expect(readResult.errors?.[0].extensions.code).toBe('NOT_FOUND')
+        return
+      }
+      expect(readResult.data?.journey.custom1Label).toBeNull()
+      expect(readResult.errors).toHaveLength(3)
+    }
+  )
 
   it('promotes a child with fromTemplateId using its own defaults, then stores independent definitions', async () => {
     const result = (await client({
