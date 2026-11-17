@@ -12,6 +12,7 @@ import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__ge
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { useCampaignRegionDeleteMutation } from '../../../libs/useCampaignRegionDeleteMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { campaignFlushContext } from '../utils/useCampaignCommand'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
 interface OrphanPageBarProps {
@@ -23,7 +24,8 @@ interface OrphanPageBarProps {
  * The Orphan Page's bar: "List on switcher" (a Command, no confirmation)
  * and Delete region, which is offered here only. Delete confirms, naming
  * what goes with the region, and is not a Command: there is no restore for
- * a region. After the delete the canvas returns to the landing page.
+ * a region. Its Region Lines' text edits still waiting on their debounce
+ * are sent first. After the delete the canvas returns to the landing page.
  */
 export function OrphanPageBar({ region }: OrphanPageBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -37,7 +39,10 @@ export function OrphanPageBar({ region }: OrphanPageBarProps): ReactElement {
 
   async function handleDelete(): Promise<void> {
     try {
-      await regionDelete({ variables: { id: region.id } })
+      await regionDelete({
+        variables: { id: region.id },
+        context: campaignFlushContext(campaign.blocks, region)
+      })
       setDeleteOpen(false)
       dispatch({
         type: 'SetPageKindAction',
@@ -52,13 +57,29 @@ export function OrphanPageBar({ region }: OrphanPageBarProps): ReactElement {
     }
   }
 
+  function handleList(): void {
+    setListed(region, true)
+  }
+
+  function handleDeleteOpen(): void {
+    setDeleteOpen(true)
+  }
+
+  function handleDeleteClose(): void {
+    setDeleteOpen(false)
+  }
+
+  function handleDeleteSubmit(): void {
+    void handleDelete()
+  }
+
   return (
     <>
       <Button
         variant="outlined"
         color="secondary"
         startIcon={<EyeOpenIcon />}
-        onClick={() => setListed(region, true)}
+        onClick={handleList}
         data-testid="OrphanPageList"
       >
         {t('List on switcher')}
@@ -67,22 +88,20 @@ export function OrphanPageBar({ region }: OrphanPageBarProps): ReactElement {
         variant="outlined"
         color="error"
         startIcon={<Trash2Icon />}
-        onClick={() => setDeleteOpen(true)}
+        onClick={handleDeleteOpen}
         data-testid="OrphanPageDelete"
       >
         {t('Delete region')}
       </Button>
       <Dialog
         open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
+        onClose={handleDeleteClose}
         dialogTitle={{
           title: t('Delete {{name}}?', { name: region.name }),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: () => {
-            void handleDelete()
-          },
+          onSubmit: handleDeleteSubmit,
           submitLabel: t('Delete'),
           closeLabel: t('Cancel')
         }}

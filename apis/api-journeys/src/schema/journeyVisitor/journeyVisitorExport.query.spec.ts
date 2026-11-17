@@ -5,6 +5,7 @@ import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { INTERACTION_EVENT_FILTER } from '../event/capture/captureTypes'
 
 type SelectedJourneyBlock = Prisma.BlockGetPayload<{
   select: {
@@ -129,7 +130,7 @@ describe('journeyVisitorExport', () => {
     )
   })
 
-  it('should filter by typename when provided', async () => {
+  it('keeps captures excluded when custom typenames are provided', async () => {
     jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
@@ -162,7 +163,11 @@ describe('journeyVisitorExport', () => {
       variables: {
         journeyId: 'journey1',
         filter: {
-          typenames: ['ButtonClickEvent', 'TextResponseSubmissionEvent'],
+          typenames: [
+            'ButtonClickEvent',
+            'TextResponseSubmissionEvent',
+            'Custom1CaptureEvent'
+          ],
           includeUnconnectedCards: true
         }
       }
@@ -176,8 +181,15 @@ describe('journeyVisitorExport', () => {
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
       where: {
         journeyId: 'journey1',
+        AND: [INTERACTION_EVENT_FILTER],
         blockId: { not: null },
-        typename: { in: ['ButtonClickEvent', 'TextResponseSubmissionEvent'] }
+        typename: {
+          in: [
+            'ButtonClickEvent',
+            'TextResponseSubmissionEvent',
+            'Custom1CaptureEvent'
+          ]
+        }
       },
       select: {
         blockId: true,
@@ -247,6 +259,7 @@ describe('journeyVisitorExport', () => {
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
       where: {
         journeyId: 'journey1',
+        AND: [INTERACTION_EVENT_FILTER],
         blockId: { not: null },
         typename: {
           in: [
@@ -295,6 +308,7 @@ describe('journeyVisitorExport', () => {
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
       where: {
         journeyId: 'journey1',
+        AND: [INTERACTION_EVENT_FILTER],
         blockId: { not: null },
         typename: {
           in: [

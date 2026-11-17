@@ -24,6 +24,7 @@ import { MutationQueueLink } from './MutationQueueLink'
 
 const ssrMode = typeof window === 'undefined'
 let apolloClient: ApolloClient
+let browserDebounceLink: DebounceLink | undefined
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
@@ -74,16 +75,12 @@ export function resolveGatewayUrl(
   return 'http://localhost:4000'
 }
 
-// Subscriptions graphql-sse must not re-send after a dropped connection: the
-// server treats each request as a new run, so a retried campaign translation
-// would restart (or be refused while the first run still holds its lock).
-// The drop surfaces as the subscription's error instead.
-const NO_RETRY_OPERATIONS = new Set(['CampaignAiTranslateSubscription'])
-
 // Custom Apollo Link for Server-Sent Events using graphql-sse.
 // A new graphql-sse Client is created per request so each subscription
 // captures its own auth headers in a closure, avoiding race conditions
-// between concurrent subscriptions sharing mutable state.
+// between concurrent subscriptions sharing mutable state. A subscription
+// that must not re-send after a dropped connection sets `retryAttempts` in
+// its operation context, as DebounceLink reads its options from the context.
 export class SSELink extends ApolloLink {
   private url: string
 
@@ -96,12 +93,10 @@ export class SSELink extends ApolloLink {
     operation: ApolloLink.Operation,
     _forward: ApolloLink.ForwardFunction
   ): Observable<ApolloLink.Result> {
-    const headers = operation.getContext().headers ?? {}
+    const { headers = {}, retryAttempts } = operation.getContext()
     const client = createClient({
       url: this.url,
-      ...(NO_RETRY_OPERATIONS.has(operation.operationName ?? '')
-        ? { retryAttempts: 0 }
-        : {}),
+      ...(retryAttempts != null ? { retryAttempts } : {}),
       headers: () => ({
         ...headers,
         'Content-Type': 'application/json',
@@ -190,6 +185,7 @@ export function createApolloClient(token?: string): ApolloClient {
 
   const mutationQueueLink = new MutationQueueLink()
   const debounceLink = new DebounceLink(DEFAULT_DEBOUNCE_TIMEOUT)
+  if (!ssrMode) browserDebounceLink = debounceLink
 
   // Split link: use SSE for subscriptions, HTTP for queries/mutations
   const splitLink = ApolloLink.split(
@@ -221,6 +217,14 @@ export function createApolloClient(token?: string): ApolloClient {
       enabled: true
     }
   })
+}
+
+/**
+ * Whether the browser client holds a queued or unacknowledged debounced write
+ * that a reload could drop.
+ */
+export function hasPendingDebouncedWrites(): boolean {
+  return browserDebounceLink?.hasPending() ?? false
 }
 
 interface InitializeApolloOptions {

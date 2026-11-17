@@ -12,11 +12,9 @@
 2. Install Playwright browsers if missing: `pnpm exec playwright install --with-deps` (local-only; do not commit artifacts).
 3. Optional data prep: `pnpm dlx nx run resources:generate-test-data`.
 
-### CRITICAL PATH CONSTRAINT
+### Working directory
 
-All file operations for this workspace MUST be within /core/ directory. Never create files or folders direclty in /workspaces/.
-
-Always verify current working directory is /core before file operations. Current app is part of monorepo and path to the current app is /code/apps/resources/.
+Keep every file operation inside the repository checkout; this app lives at `apps/resources/`. Do not create files in the checkout's parent directory.
 
 ## Dev server safety & logging
 
@@ -28,99 +26,11 @@ Always verify current working directory is /core before file operations. Current
 4. If no dev server with loging is running, launch your session with logging so issues are traceable: `pnpm dlx nx run resources:serve 2>&1 | tee dev-server.log &`.
 5. Keep the dev server you created running.
 
-### Development Server Compilation Procedures
+### Waiting for the dev server
 
-**⚠️ CRITICAL: Always wait for compilation to complete before continuing**
+After starting the dev server (as a background process), wait for `✓ Ready in Xs` on <http://localhost:4310> before testing against it. If it prints a compilation error (`⨯ ./src/...`), fix that before anything else. Then request the page you are working on (`curl -s http://localhost:4310/<page-path>`) to trigger its compilation, and check `dev-server.log` for new errors.
 
-When starting the development server, follow this **mandatory waiting procedure**:
-
-#### 1. Start Server and Wait
-
-#### 2. Watch for Compilation Status
-
-**DO NOT PROCEED** until you see one of these outcomes:
-
-✅ **SUCCESS INDICATORS**:
-
-````bash
-✓ Starting...
-✓ Ready in Xs        # Server compiled successfully
-Local: http://localhost:4310
-
-❌ **ERROR INDICATORS** (Must fix before continuing):
-```bash
-⨯ ./src/components/ComponentName.tsx
-Error: [Compilation error details]
-````
-
-#### 3. Verify Server Status
-
-**Only after seeing "Ready in Xs":**
-
-- ✅ **Continue** with development tasks
-- ✅ **Navigate** to browser for testing
-- ✅ **Run** additional commands
-
-**If errors appear:**
-
-- ❌ **STOP** all other activities
-- ❌ **Fix** compilation errors first
-- ❌ **Wait** for successful recompilation before proceeding
-
-#### 4. After starting dev server, ALWAYS navigate to the page being worked on. Use: `curl -s http://localhost:XXXX/[page-path]` to trigger page compilation.
-
-- Check dev server output (dev-server.log) for compilation errors after navigation
-- Wait for compilation to complete before proceeding
-- **Background Process**: Use `is_background: true` for long-running dev server
-
-### Detect runtime issues via status code and known error patterns:
-
-```bash
-url="http://localhost:XXXX/[page-path]"
-max_retries=3
-delay=2
-
-echo "🔍 Checking for runtime errors at $url..."
-
-for i in $(seq 1 $max_retries); do
-  echo "⏳ Attempt $i/$max_retries..."
-
-  # Check HTTP status
-  code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
-  if [ "$code" != "200" ]; then
-    echo "❌ Server error: HTTP $code"
-    exit 1
-  fi
-
-  # Get page content
-  content=$(curl -s "$url")
-
-  # Check for actual runtime errors (not framework templates)
-  if echo "$content" | grep -qiE "Too many re-renders|Maximum update depth exceeded|Error:.*at.*in.*|Uncaught.*Error|React.*Error|TypeError|ReferenceError|RangeError"; then
-    echo "❌ Runtime error detected on attempt $i"
-    echo "Found actual React/JavaScript runtime error"
-    exit 1
-  fi
-
-  # Check for error boundary activation (actual errors, not templates)
-  if echo "$content" | grep -qiE "Something went wrong.*Error details|An error occurred.*Try refreshing|Error boundary caught"; then
-    echo "❌ Error boundary activated on attempt $i"
-    echo "Found actual error boundary display"
-    # exit 1
-  fi
-
-  # Check for Next.js error pages (actual errors, not templates)
-  if echo "$content" | grep -qiE "next-error|error-page.*404|This page could not be found.*404"; then
-    echo "❌ Next.js error page detected on attempt $i"
-    echo "Found actual error page display"
-    # exit 1
-  fi
-
-  sleep $delay
-done
-
-echo "✅ Page renders cleanly after $max_retries attempts"
-```
+A page that compiles can still fail at runtime: confirm it returns HTTP 200 and that neither the response nor `dev-server.log` shows a React/JavaScript runtime error (`TypeError`, `Maximum update depth exceeded`, an error-boundary message, the Next.js error page).
 
 ## Core Nx targets (run with `pnpm dlx nx run <target>`)
 
@@ -132,11 +42,11 @@ echo "✅ Page renders cleanly after $max_retries attempts"
 
 ## Quality gates & automated checks
 
-Run these before opening a PR. If a command fails due to pre-existing issues, ensure your changes introduce no new violations and note the exception in the PRD log.
+Run these before opening a PR. If a command fails due to pre-existing issues, ensure your changes introduce no new violations and note the exception in the PR description.
 
 - Format check: `pnpm run prettier` (use `pnpm run prettier:fix` to apply fixes).
 - Resources lint: `pnpm dlx nx run resources:lint`.
-- Resources type-check: `pnpm dlx nx run resources:type-check` (targets `tsc -b apps/resources/tsconfig.json`).
+- Resources type-check: `pnpm dlx nx run resources:type-check` (runs `tsc7` against `apps/resources/tsconfig.ts7.json`).
 - Resources unit tests: `pnpm dlx nx run resources:test`.
 - Resources-e2e lint: `pnpm dlx nx run resources-e2e:lint`.
 - Resources-e2e type-check: `pnpm dlx nx run resources-e2e:type-check`.
@@ -165,7 +75,7 @@ describe('MyComponent', () => {
   })
 
   it('should handle click events', async () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(<MyComponent onClick={handleClick} />)
 
     await user.click(screen.getByRole('button'))
@@ -182,8 +92,8 @@ describe('MyComponent', () => {
 - Always propose and implement unit or integration tests that cover edge cases and likely failure paths touched by your changes. Base new specs on the function signatures and surrounding logic you modify.
 - Co-locate React Testing Library specs under `*.spec.ts(x)` and mock network traffic with MSW handlers in `apps/resources/test`.
 - Extend Playwright scenarios when UI behavior shifts, and capture console logs/screenshots for regressions.
-- Document the executed test suite, notable scenarios, and any skipped checks in `/prds/resources/`.
-- Reuse the shared Jest setup in `apps/resources/setupTests.tsx`; it already boots MSW, the Next router mock, and a longer async timeout.
+- Note the executed test suite, notable scenarios, and any skipped checks in the PR description.
+- Reuse the shared Vitest setup in `apps/resources/setupTests.tsx`; it already boots MSW, the Next router mock, and a longer async timeout.
 - Wrap component specs with `MockedProvider`, `VideoProvider`, and `WatchProvider` when the unit touches those contexts—`NewVideoContentPage.spec.tsx` shows the expected harness.
 - Enclose SWR-based hooks in `TestSWRConfig` (`apps/resources/test/TestSWRConfig.tsx`) to isolate cache state between assertions.
 
@@ -191,7 +101,7 @@ describe('MyComponent', () => {
 
 1. Follow the discovery workflow above, then launch `resources:serve` with logging.
 2. Navigate to <http://localhost:4310/resources>, exercise the affected flows end-to-end, and confirm copy, layout, animations, and localization behave as expected.
-3. Watch the browser console and network panel for errors; capture findings (and relevant log excerpts) in the PRD entry.
+3. Watch the browser console and network panel for errors; capture findings (and relevant log excerpts) in the PR description.
 4. When reproducing bugs, use either Playwright headed mode or targeted scripts (e.g., `pnpm dlx nx run resources-e2e:debug`) to validate fixes against the live dev server.
 
 ## State & provider stack
@@ -214,14 +124,13 @@ describe('MyComponent', () => {
 - Keep handlers prefixed with `handle*`, type everything explicitly, and lean on generated GraphQL helpers (`ResultOf`, `VariablesOf`).
 - Meet high visual polish: consistent typography, deliberate spacing, and tasteful animations inspired by Apple TV+, Airbnb, YouTube, Vimeo, and Netflix.
 - Use descriptive variable and function/const names. Also, event functions should be named with a "handle" prefix, like "handleClick" for onClick and "handleKeyDown" for onKeyDown.
-- Implement accessibility features on elements. For example, a tag should have a tabindex="0", aria-label, on:click, and on:keydown, and similar attributes.Build accessible experiences (aria attributes, keyboard support, focus states) as part of every component.
+- Build accessible experiences (aria attributes, keyboard support, focus states) as part of every component. MUI and native interactive components already handle focus and key activation; add `tabIndex`, `role`, `aria-label` and `onKeyDown` yourself only on a non-interactive element made clickable.
 - Verify that every clickable elements has cursor:pointer defined.
 - When calling `t(...)`, inline the human-readable copy with interpolation placeholders (e.g., `t('Switch to {{localeName}}', { localeName: localeDetails.nativeName })`) instead of referencing stored translation keys like `t('localeSuggestion.action', ...)`.
 - Use direct English strings in `t()` function calls instead of translation keys. Use `t('Welcome back')` instead of `t('welcomeBack')` or nested structures like `t('user.profile.name')`.
 - All components and functions must be fully typed with TypeScript.
 - Export all components through index.ts files
 - Use alphabetical order for imports and exports
-- Follow a server-first architecture: use `'use client'` components only when necessary.
 
 ### Rendering Strategy (Next.js Pages Router)
 
@@ -293,7 +202,7 @@ describe('MyComponent', () => {
 ## Architecture & refactoring agreements
 
 - Favor small, focused modules; extract shared logic into hooks or utilities when duplication appears.
-- After implementing a feature or fixing a bug, outline a concrete plan to split any touched services into smaller units, execute achievable refactors within the same effort, and document future steps in the PRD log.
+- After implementing a feature or fixing a bug, outline a concrete plan to split any touched services into smaller units, execute achievable refactors within the same effort, and note future steps in the PR description.
 
 ## Dependencies & tooling policy
 
@@ -301,75 +210,6 @@ describe('MyComponent', () => {
 - Reuse the workspace Playwright installation; never install Playwright globally or commit browser binaries.
 - When lint/type-check errors stem from unrelated legacy code, ensure no new issues originate from your changes and call out the existing failures in documentation.
 
-## Planning & Knowledge sharing
+## Planning
 
-### Implementation Strategies & Engagement Logging
-
-For all new features that doens't already have execution plan, we create detailed **implementation strategy** in the `/core/prds/resources/` subfolder. These provide:
-
-- **Step-by-step execution plan** for specific PRD tasks (use markdown - [ ] for every task)
-- **Technical analysis and component mapping**
-- **Success criteria and validation steps**
-- **Living documentation** that updates during implementation
-
-- For **every engagement**, create or update related spec file.
-- The log must capture:
-  - **Goals**
-  - **Obstacles**
-  - **Resolutions**
-  - **Test coverage**
-  - **User flows (in human-readable format)** for new features or fixes
-  - Example: _Click on search → focus search field → open search modal_
-  - **Follow-up ideas**
-- Name the log file after the **branch name**, replacing slashes (`/`) with dashes (`-`).
-  - Example:  
-    Branch → `feature/abc-123-new-feature-name`  
-    Log → `/prds/resources/feature-abc-123-new-feature-name.md`
-
-### Updating `AGENTS`
-
-- Whenever you uncover **faster workflows** or **new standards** that benefit future agents:
-  - Update the `AGENTS` file.
-  - Keep entries **short and to the point**.
-
-- After completing any task that required **more than three iterations** to resolve, document the key learnings.
-- Only include insights that would be **useful to future coding agents** or developers to significantly improve their workflow speed.
-- Do **not** document obvious or trivial observations.
-- Target content for a **Senior Developer** audience: focus on non-obvious pitfalls, advanced techniques, and architectural decisions.
-
-#### Guidelines
-
-- Be concise but precise—write in a way that another experienced engineer could apply immediately.
-- Include context if the learning depends on specific tools, frameworks, or configurations.
-- If applicable, add code snippets or command references to illustrate the solution.
-
-#### Example Entry
-
-- **Issue:** `pnpm nx run resources:serve` produced no output due to Nx daemon caching.
-- **Learning:** Disable Nx daemon when debugging silent task failures:
-  ```bash
-  NX_DAEMON=false pnpm nx run resources:serve
-  ```
-
-### Agent Development Best Practices
-
-**Before Starting**:
-
-- [ ] Read the relevant PRD in /core/prds/resources/ completely
-  - [ ] If no PRD exists do initial research and planning from Technical Lead and SR. Developer outlining implementation strategy.
-- [ ] Understand current project constraints
-- [ ] Run existing tests to verify working state
-- [ ] Check development server starts successfully
-
-**During Development**:
-
-- [ ] Follow established coding patterns in the project
-- [ ] Maintain test coverage for new components
-- [ ] Update documentation as you progress
-
-**Before Ending Session**:
-
-- [ ] Update PRD tasks
-- [ ] Document any new issues discovered
-- [ ] Ensure all tests pass
-- [ ] Update "Next Steps" for future sessions
+If a plan for the work exists in `prds/resources/`, read it before starting and keep its task list current as you go.
