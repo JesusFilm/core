@@ -1,6 +1,6 @@
 # Journeys MCP local runtime
 
-This workspace implements the portable runtime and granted journey reads, under [#10157](https://github.com/JesusFilm/core/issues/10157). `disabled` mode has an empty tool catalog. `granted-reads` mode registers only `journeys_list` and `journey_read`, with the separate issuer, restricted exchange, gateway and owning Journeys API. See [granted-read setup and verification](GRANTED_READS.md). Public URLs and guest access supply no authority. Editing, source discovery, media, history and preview tools remain unavailable.
+This workspace implements the portable runtime and granted journey reads, under [#10157](https://github.com/JesusFilm/core/issues/10157). `disabled` mode has an empty tool catalog. `granted-reads` mode registers `journeys_list`, `journey_read`, `journey_edit` and `journey_operation_get`, using the separate issuer, restricted exchange, gateway and owning Journeys API. See [granted-read setup](GRANTED_READS.md) and [saved Typography edits](SAVED_EDITS.md). The owning edit switch defaults off. Public URLs and guest access supply no authority. Source discovery, media, undo/redo and preview tools remain unavailable.
 
 ## Start locally
 
@@ -55,7 +55,7 @@ All configuration is supplied at runtime. URL settings reject credentials, query
 | `MCP_ADMISSION_ENABLED`       | `true`, or `false`                            | Disabled admission returns 503 even if a proxy ignores readiness.                                           |
 | `MCP_REQUEST_DEADLINE_MS`     | `20000`, maximum 20000                        | Bounds body receipt, protocol execution and buffered response.                                              |
 | `MCP_DRAIN_DEADLINE_MS`       | `10000`, maximum 30000                        | Maximum transport drain before closing active connections.                                                  |
-| `MCP_MAX_REQUEST_BYTES`       | `262144`, maximum 1048576                     | Trusted buffered request limit, including chunked bodies.                                                   |
+| `MCP_MAX_REQUEST_BYTES`       | `278528`, maximum 1048576                     | Trusted buffered request limit, including chunked bodies.                                                   |
 | `MCP_MAX_RESPONSE_BYTES`      | `1048576`, maximum 4194304                    | Buffered response limit before any payload is released.                                                     |
 | `MCP_MAX_CONCURRENT_REQUESTS` | `64`, maximum 256                             | Per-replica protocol admission bound. No entitlement/quota authority.                                       |
 
@@ -75,7 +75,7 @@ pnpm exec vitest run --config apis/api-mcp/vitest.config.mts
 
 Tests invoke real listening HTTP endpoints. `test/replicas.spec.ts` starts two separate processes behind a round-robin test proxy, sends both supported protocol profiles across them, abruptly replaces one and checks the survivor. It also checks graceful settlement and bounded forced transport shutdown. `test/fixture.ts` registers synthetic echo/delay/size tools through a test factory; the release entrypoint never imports it. There is no environment switch that enables fixtures. Fixed synthetic data is protocol evidence only, not authentication, current-rights, grant, database-participant or real-client evidence.
 
-Tests cover missing/invalid configuration, empty release tools, unsupported POST capabilities, Host/Origin rejection, unavailable admission, request isolation, input/output bounds, deadlines, health/readiness, redacted logs and replacement. A transport timeout or terminated replica proves nothing about an owning backend executor. Future data capabilities must implement durable permits, current generations, receipts, expiry checks after locks, private-output release checks and positive fencing before they are enabled. This slice has no accepted domain work to drain and no assets to remove. A1/A9/A17/A19 remain broader release cases; this ticket supplies only their runtime prerequisite evidence.
+Tests cover missing/invalid configuration, empty release tools, unsupported POST capabilities, Host/Origin rejection, unavailable admission, request isolation, input/output bounds, deadlines, health/readiness, redacted logs and replacement. A transport timeout or terminated replica proves nothing about an owning backend executor. The implemented Typography participant uses durable permits, current generations, transactional receipts, expiry checks after locks and positive executor fencing. It also protects failed results at final output. Later data capabilities must supply their own real participants before enablement. See [saved edits](SAVED_EDITS.md) for accepted-write draining and retention. No media assets are removed. A1/A9/A17/A19 remain broader release cases; this ticket supplies only their runtime prerequisite evidence.
 
 ## Local evidence, 13 November 2026
 

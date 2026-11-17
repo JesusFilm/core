@@ -504,12 +504,97 @@ model UserRole {
 model McpReadExecution {
   id          String   @id
   executorId  String
+  requestId   String?  @unique
+  failureCode String?
+  responseExpiresAt DateTime?
   status      String   @default("prepared")
   createdAt   DateTime @default(now())
   completedAt DateTime?
   reportedAt  DateTime?
 
   @@index([reportedAt, createdAt])
+}
+
+// A retired namespace is permanent even after its private operation data is gone.
+model McpEditNamespace {
+  id         String             @id
+  actorId    String?
+  clientId   String?
+  retiredAt  DateTime?
+  createdAt  DateTime           @default(now())
+  operations McpEditOperation[]
+}
+
+// Minimal accepted-key markers outlive results and inverse payloads.
+model McpEditOperation {
+  id               String           @id @default(uuid())
+  namespaceId      String
+  idempotencyKey   String
+  payloadHash      String
+  journeyId        String
+  grantVersion     Int
+  revision         String
+  completedAt      DateTime
+  resultExpiresAt  DateTime
+  result           Json?
+  namespace        McpEditNamespace @relation(fields: [namespaceId], references: [id], onDelete: Restrict)
+  history          McpEditHistory?
+  effects          McpEditEffect[]
+
+  @@unique([namespaceId, idempotencyKey])
+  @@index([namespaceId, journeyId, completedAt])
+  @@index(resultExpiresAt)
+}
+
+model McpEditHistory {
+  id          String           @id @default(uuid())
+  ordinal     BigInt           @default(autoincrement())
+  operationId String           @unique
+  namespaceId String
+  journeyId   String
+  changes     Json
+  createdAt   DateTime
+  expiresAt   DateTime
+  historyGeneration Int        @default(0)
+  operation   McpEditOperation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+
+  @@index([namespaceId, journeyId, createdAt])
+}
+
+// Typography has a local content-change intent, never a media provider request.
+// Later effect kinds must add their own dispatch/reconciliation participant.
+model McpEditEffect {
+  id          String           @id @default(uuid())
+  operationId String
+  namespaceId String
+  journeyId   String
+  kind        String
+  status      String           @default("pending")
+  createdAt   DateTime
+  completedAt DateTime?
+  operation   McpEditOperation @relation(fields: [operationId], references: [id], onDelete: Restrict)
+
+  @@unique([operationId, kind])
+  @@index([status, createdAt])
+}
+
+// Both execution and recovery lock this row before committing or fencing it.
+model McpEditExecution {
+  id           String    @id
+  executorId   String
+  connectionId String
+  requestId    String?   @unique
+  requestHash  String?
+  status       String    @default("prepared")
+  failureCode  String?
+  responseExpiresAt DateTime?
+  operationId  String?
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+  reportedAt   DateTime?
+
+  @@index([reportedAt, createdAt])
+  @@index(connectionId)
 }
 
 model JourneyProfile {

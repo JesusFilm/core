@@ -347,6 +347,8 @@ export type AuditAction =
   | 'token'
   | 'introspection'
   | 'registration'
+  | 'edit_exchange'
+  | 'edit_accept'
   | 'read_exchange'
   | 'read_accept'
   | 'output_accept'

@@ -1,0 +1,48 @@
+name: MCP saved edit integration
+
+on:
+  pull_request:
+    paths:
+      - 'apis/api-auth/**'
+      - 'apis/api-mcp/**'
+      - 'apis/api-gateway/**'
+      - 'apis/api-journeys/**'
+      - 'libs/yoga/src/mcp/**'
+      - 'libs/prisma/auth/**'
+      - 'libs/prisma/journeys/**'
+      - 'tools/scripts/test-mcp-edits.mjs'
+      - '.github/workflows/mcp-edits.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  saved-edits:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: edit-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Exercise OAuth, MCP, gateway and atomic owning execution
+        run: node tools/scripts/test-mcp-edits.mjs
+        env:
+          MCP_EDITS_TEST_POSTGRES_URL: postgresql://postgres:edit-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres

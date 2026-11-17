@@ -11,11 +11,21 @@ import {
 
 import { z } from 'zod'
 
+import { editInput, operationInput } from './editContract'
+
 export const resultContractVersion = '1' as const
 export const readResult = z
   .object({ contractVersion: z.literal(resultContractVersion) })
   .catchall(z.unknown())
 export type ReadResult = z.infer<typeof readResult>
+export const readFailure = z
+  .object({
+    contractVersion: z.literal(resultContractVersion),
+    kind: z.literal('read_failure'),
+    code: z.enum(['REVISION_CONFLICT', 'LIMIT_EXCEEDED'])
+  })
+  .strict()
+export type ReadFailure = z.infer<typeof readFailure>
 
 const id = z.string().min(1).max(200)
 export const listInput = z
@@ -41,9 +51,35 @@ export const journeyInput = z
   .strict()
 export const readRequest = z.discriminatedUnion('tool', [
   z.object({ tool: z.literal('journeys_list'), input: listInput }).strict(),
-  z.object({ tool: z.literal('journey_read'), input: journeyInput }).strict()
+  z.object({ tool: z.literal('journey_read'), input: journeyInput }).strict(),
+  z.object({ tool: z.literal('journey_edit'), input: editInput }).strict(),
+  z
+    .object({ tool: z.literal('journey_operation_get'), input: operationInput })
+    .strict()
 ])
 export type ReadRequest = z.infer<typeof readRequest>
+export const maxStructuredResultBytes = 524288
+export const maxTransportResponseBytes = maxStructuredResultBytes + 16384
+export function assertStructuredResultSize(result: unknown): void {
+  if (
+    Buffer.byteLength(JSON.stringify(result), 'utf8') > maxStructuredResultBytes
+  )
+    throw new Error('LIMIT_EXCEEDED')
+}
+export const maxToolInputBytes = 262144
+// Allow only bounded protocol/credential metadata around the decoded tool input.
+export const maxTransportBytes = maxToolInputBytes + 16384
+export class InputLimitExceeded extends Error {
+  constructor() {
+    super('LIMIT_EXCEEDED')
+  }
+}
+export function assertRequestInputSize(request: ReadRequest): void {
+  if (
+    Buffer.byteLength(JSON.stringify(request.input), 'utf8') > maxToolInputBytes
+  )
+    throw new InputLimitExceeded()
+}
 export const readTransportRequest = z.discriminatedUnion('stage', [
   z.object({ request: readRequest, stage: z.literal('read') }).strict(),
   z
@@ -60,7 +96,11 @@ export const safeReadErrors = [
   'REVISION_CONFLICT',
   'LIMIT_EXCEEDED',
   'VALIDATION_FAILED',
-  'DEPENDENCY_UNAVAILABLE'
+  'DEPENDENCY_UNAVAILABLE',
+  'IDEMPOTENCY_KEY_REUSED',
+  'RESULT_EXPIRED',
+  'RESULT_UNAVAILABLE',
+  'NOT_EDITABLE'
 ] as const
 export function safeReadError(
   error: unknown,
@@ -134,6 +174,7 @@ export function verifyEnvelope(
 export const credentialClaims = z.object({
   executorId: z.string().uuid(),
   subject: id,
+  clientId: z.string().min(1).max(2048),
   connectionId: id,
   grantVersion: z.number().int().positive(),
   journeyIds: z.array(id).min(1).max(50),
@@ -141,7 +182,9 @@ export const credentialClaims = z.object({
   requestId: z.string().uuid(),
   requestHash: z.string().length(64),
   expiresAt: z.number(),
-  scope: z.literal('journeys:read')
+  consentExpiresAt: z.number().finite(),
+  consentHistoryGeneration: z.number().int().nonnegative(),
+  scope: z.enum(['journeys:read', 'journeys:edit'])
 })
 export type ReadCredential = z.infer<typeof credentialClaims>
 export interface ReadTrust {
@@ -218,7 +261,7 @@ export function internalSignature(
 
 export async function boundedJson(
   response: Response,
-  limit = 524288
+  limit = maxTransportResponseBytes
 ): Promise<unknown> {
   if (!response.body) throw new Error('Dependency unavailable')
   const reader = response.body.getReader()

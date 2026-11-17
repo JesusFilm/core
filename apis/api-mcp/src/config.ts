@@ -1,3 +1,5 @@
+import { maxTransportBytes } from '@core/yoga/mcp/readContract'
+
 export interface McpConfig {
   host: string
   port: number
@@ -85,7 +87,12 @@ export function readConfig(env: NodeJS.ProcessEnv): McpConfig {
       : undefined,
     requestDeadlineMs: integer(env, 'MCP_REQUEST_DEADLINE_MS', 20000, 20000),
     drainDeadlineMs: integer(env, 'MCP_DRAIN_DEADLINE_MS', 10000, 30000),
-    maxRequestBytes: integer(env, 'MCP_MAX_REQUEST_BYTES', 262144, 1048576),
+    maxRequestBytes: integer(
+      env,
+      'MCP_MAX_REQUEST_BYTES',
+      maxTransportBytes,
+      1048576
+    ),
     maxResponseBytes: integer(env, 'MCP_MAX_RESPONSE_BYTES', 1048576, 4194304),
     maxConcurrentRequests: integer(env, 'MCP_MAX_CONCURRENT_REQUESTS', 64, 256),
     admissionEnabled: env.MCP_ADMISSION_ENABLED !== 'false',

@@ -4,6 +4,8 @@ import { type IncomingMessage, createServer } from 'node:http'
 import pino, { type Logger } from 'pino'
 import { z } from 'zod'
 
+import { maxTransportBytes } from '@core/yoga/mcp/readContract'
+
 import type { AuthConfig } from './config'
 import { ConnectionFailure, createConnectionManagement } from './connections'
 import {
@@ -44,6 +46,8 @@ class HttpFailure extends Error {
 function securityAction(path: string): AuditAction | undefined {
   if (path === '/internal/permissions/retire-account') return 'account_retire'
   if (path.startsWith('/internal/permissions/')) return 'permission_change'
+  if (path === '/internal/reads/exchange') return 'read_exchange'
+  if (path.startsWith('/internal/reads/')) return 'read_accept'
   if (path === '/connections') return 'connection_view'
   if (path.endsWith('/disconnect')) return 'disconnect'
   if (/\/connections\/[^/]+\/access-/.test(path)) return 'access_change'
@@ -211,7 +215,7 @@ export async function createRuntime(
         ctx.body = await readAuthority(
           ctx.path,
           ctx.get('Authorization'),
-          await jsonBody(ctx.req)
+          await jsonBody(ctx.req, maxTransportBytes)
         )
       } catch {
         await audit(

@@ -11,10 +11,13 @@ import {
   type ReadRequest,
   type ReadResult,
   type ReadTrust,
+  assertRequestInputSize,
   boundedJson,
   fingerprint,
   internalSignature,
+  maxTransportBytes,
   postJson,
+  readFailure,
   readTransportRequest,
   readTrustSchema,
   resultContractVersion,
@@ -26,13 +29,16 @@ import {
 
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
 
+import { createJourneyEditHandler, type JourneyEditHooks } from './mcpEdits'
 import { reconcileJourneyReads } from './mcpReadSettlement'
+import { boundedReadPage } from './mcpReadPage'
 
 export interface JourneyReadsConfig extends ReadTrust {
   internalSecret: string
   authorityUrl: string
   authoritySecret: string
   adminOrigin: string
+  editsEnabled?: boolean
 }
 
 export function journeyReadsEnvironment(
@@ -42,12 +48,18 @@ export function journeyReadsEnvironment(
   if (!env.MCP_READS_ENABLED || env.MCP_READS_ENABLED === 'false') return
   if (env.MCP_READS_ENABLED !== 'true')
     throw new Error('Invalid read configuration')
+  if (
+    env.MCP_EDITS_ENABLED !== undefined &&
+    !['true', 'false'].includes(env.MCP_EDITS_ENABLED)
+  )
+    throw new Error('Invalid edit configuration')
   return readTrustSchema
     .extend({
       internalSecret: z.string().min(32),
       authorityUrl: serviceUrl,
       authoritySecret: z.string().min(32),
-      adminOrigin: serviceUrl
+      adminOrigin: serviceUrl,
+      editsEnabled: z.boolean()
     })
     .parse({
       issuer: env.MCP_READ_ISSUER,
@@ -57,7 +69,8 @@ export function journeyReadsEnvironment(
       internalSecret: env.JOURNEYS_MCP_INTERNAL_SECRET,
       authorityUrl: env.MCP_READ_AUTHORITY_URL,
       authoritySecret: env.JOURNEYS_MCP_AUTHORITY_SECRET,
-      adminOrigin
+      adminOrigin,
+      editsEnabled: env.MCP_EDITS_ENABLED === 'true'
     })
 }
 
@@ -197,8 +210,10 @@ function offsetFrom(
 export function createJourneyReadHandler(
   config: JourneyReadsConfig,
   db: PrismaClient,
-  logger?: Pick<Logger, 'info'>
+  logger?: Pick<Logger, 'info'>,
+  editHooks?: JourneyEditHooks
 ) {
+  const edits = createJourneyEditHandler(config, db, editHooks)
   const authority = (action: string, body: unknown) =>
     postJson(
       new URL(`/internal/reads/${action}`, config.authorityUrl).href,
@@ -221,8 +236,24 @@ export function createJourneyReadHandler(
       const credential = request.headers.get('x-mcp-context') ?? ''
       const claims = verifyReadCredential(credential, config)
       verifiedCredential = credential
-      const raw = await boundedJson(new Response(request.body), 16384)
+      const raw = await boundedJson(
+        new Response(request.body),
+        maxTransportBytes
+      )
       const body = readTransportRequest.parse(raw)
+      assertRequestInputSize(body.request)
+      if (
+        body.request.tool === 'journey_edit' ||
+        body.request.tool === 'journey_operation_get'
+      )
+        return edits(
+          new Request(request.url, {
+            method: request.method,
+            headers: request.headers,
+            body: JSON.stringify(body)
+          })
+        )
+      const dataRequest = body.request
       if (
         !sameSecret(
           request.headers.get('x-mcp-signature') ?? '',
@@ -260,7 +291,14 @@ export function createJourneyReadHandler(
       )
       pendingPermit = permitId
       if (body.stage === 'read') {
-        await db.mcpReadExecution.create({ data: { id: permitId, executorId } })
+        await db.mcpReadExecution.create({
+          data: {
+            id: permitId,
+            executorId,
+            requestId: claims.requestId,
+            responseExpiresAt: new Date(claims.expiresAt)
+          }
+        })
         readPermit = permitId
       }
       const result = await db.$transaction(
@@ -313,14 +351,46 @@ export function createJourneyReadHandler(
           })
           if (body.request.tool === 'journey_read' && allowed.length !== 1)
             throw new Error('Access denied')
-          const data = await snapshot(tx, body.request, claims, allowed, config)
+          const witness =
+            body.stage === 'output'
+              ? await tx.mcpReadExecution.findUnique({
+                  where: { requestId: claims.requestId }
+                })
+              : undefined
+          let data: ReadResult
+          if (witness?.status === 'settled' && witness.failureCode) {
+            data = readFailure.parse({
+              contractVersion: resultContractVersion,
+              kind: 'read_failure',
+              code: witness.failureCode
+            })
+          } else {
+            try {
+              data = await snapshot(tx, dataRequest, claims, allowed, config)
+            } catch (error) {
+              const failure = z
+                .enum(['REVISION_CONFLICT', 'LIMIT_EXCEEDED'])
+                .safeParse(error instanceof Error ? error.message : undefined)
+              if (!failure.success) throw error
+              data = {
+                contractVersion: resultContractVersion,
+                kind: 'read_failure',
+                code: failure.data
+              }
+            }
+          }
           if (body.stage === 'output' && fingerprint(data) !== body.dataHash)
             throw new Error('Access denied')
           await authority('accept', { credential, permitId })
           if (readPermit)
             await tx.mcpReadExecution.update({
               where: { id: readPermit },
-              data: { status: 'settled', completedAt: new Date() }
+              data: {
+                status: 'settled',
+                completedAt: new Date(),
+                failureCode:
+                  data.kind === 'read_failure' ? String(data.code) : null
+              }
             })
           return data
         },
@@ -361,6 +431,8 @@ export function createJourneyReadHandler(
       reconciling = true
       try {
         const failed = await reconcileJourneyReads(db, config)
+        await edits.reconcile()
+        await edits.cleanup()
         if (failed)
           logger?.info({ event: 'mcp_read_reconciliation_pending', failed })
       } finally {
@@ -373,13 +445,22 @@ export function createJourneyReadHandler(
 type ReadJourney = Prisma.JourneyGetPayload<{ include: { revision: true } }>
 async function snapshot(
   tx: Prisma.TransactionClient,
-  request: ReadRequest,
+  request: Extract<ReadRequest, { tool: 'journey_read' | 'journeys_list' }>,
   claims: ReadCredential,
   journeys: ReadJourney[],
   config: JourneyReadsConfig
-): Promise<unknown> {
+): Promise<ReadResult> {
   const link = (id: string) =>
     new URL(`/journeys/${encodeURIComponent(id)}`, config.adminOrigin).href
+  const allowedOperations = (journey: ReadJourney) => [
+    'journey_read',
+    'journey_operation_get',
+    ...(config.editsEnabled &&
+    claims.mode === 'edit' &&
+    journey.status === 'draft'
+      ? ['journey_edit']
+      : [])
+  ]
   if (request.tool === 'journeys_list') {
     const { input } = request
     const filtered = journeys.filter(
@@ -406,7 +487,7 @@ async function snapshot(
         id: journey.id,
         title: journey.title,
         status: journey.status,
-        allowedOperations: ['journey_read'],
+        allowedOperations: allowedOperations(journey),
         adminLink: link(journey.id)
       })),
       nextCursor:
@@ -436,14 +517,20 @@ async function snapshot(
     config.internalSecret
   )
   const warnings = [
-    'Read-only. Preserve omitted content. Host changes and publication are unavailable.',
+    'Preserve omitted content. Host changes and publication are unavailable.',
     'Form destinations, source metadata and unmodeled block settings are preserved but omitted. The outline is not a lossless replacement document.'
   ]
   const base = {
     journeyId: journey.id,
     revision,
     status: journey.status,
-    allowedOperations: ['journey_read'],
+    allowedOperations: allowedOperations(journey),
+    commands:
+      config.editsEnabled &&
+      claims.mode === 'edit' &&
+      journey.status === 'draft'
+        ? ['typography_set']
+        : [],
     adminLink: link(journey.id),
     warnings
   }
@@ -571,16 +658,13 @@ async function snapshot(
             : {})
         }
   })
-  return boundedResult({
-    ...base,
-    view: request.input.view,
+  return boundedReadPage(
+    { ...base, view: request.input.view },
     blocks,
-    complete: page.length <= 100,
-    nextCursor:
-      page.length > 100
-        ? cursor({ binding, offset: offset + 100 }, config.internalSecret)
-        : null
-  })
+    page.length > 100,
+    (count) =>
+      cursor({ binding, offset: offset + count }, config.internalSecret)
+  )
 }
 function finiteSettings(
   block: Prisma.BlockGetPayload<{ select: typeof blockSelect }>

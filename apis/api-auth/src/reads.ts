@@ -4,6 +4,7 @@ import type OidcProvider from 'oidc-provider'
 import { z } from 'zod'
 
 import {
+  assertRequestInputSize,
   fingerprint,
   readRequest,
   sameSecret,
@@ -42,7 +43,9 @@ const prepareInput = z
   .strict()
 
 /** No remote call occurs inside the coordinator transaction. Lock order is
- * sorted gate IDs, then connection, then permit. Accepted rows never expire.
+ * sorted gate IDs, then connection, sorted sender/participant IDs, then
+ * permit. Accepted rows never expire. Cancelling a sender prevents new owner
+ * acceptance; an accepted owner action still requires owning settlement.
  */
 export function createReadAuthority(
   config: AuthConfig,
@@ -73,6 +76,8 @@ export function createReadAuthority(
     })
     if (
       connection.userId !== claims.subject ||
+      connection.clientId !== claims.clientId ||
+      (claims.scope === 'journeys:edit' && connection.mode !== 'edit') ||
       connection.version !== claims.grantVersion ||
       connection.environment !== config.AUTH_ENVIRONMENT ||
       connection.revokedAt ||
@@ -102,6 +107,96 @@ export function createReadAuthority(
       authorization,
       `Bearer ${config.AUTH_READ_OWNER_SECRET}`
     )
+    if (path === '/internal/reads/purge-complete') {
+      if (!isOwner) throw new Error('Access denied')
+      const input = z
+        .object({
+          connectionId: z.string().min(1).max(200),
+          requestedAt: z.string().datetime()
+        })
+        .strict()
+        .parse(body)
+      return db.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${input.connectionId} FOR SHARE`
+        const connection = await tx.agentConnection.findUniqueOrThrow({
+          where: { id: input.connectionId }
+        })
+        if (!connection.revokedAt) throw new Error('Access denied')
+        const completed = await tx.connectionHistoryPurge.updateMany({
+          where: {
+            connectionId: connection.id,
+            requestedAt: new Date(input.requestedAt),
+            completedAt: null
+          },
+          data: { completedAt: await databaseTime(tx) }
+        })
+        if (completed.count === 0) {
+          const prior = await tx.connectionHistoryPurge.findUniqueOrThrow({
+            where: { connectionId: connection.id }
+          })
+          if (
+            prior.requestedAt.toISOString() !== input.requestedAt ||
+            !prior.completedAt
+          )
+            throw new Error('Access denied')
+        }
+        return { completed: true }
+      })
+    }
+    if (path === '/internal/reads/connections') {
+      if (!isOwner) throw new Error('Access denied')
+      const input = z
+        .object({ connectionIds: z.array(z.string().min(1).max(200)).max(100) })
+        .strict()
+        .parse(body)
+      // Renewal and retirement lock these rows too. Read expiry and history
+      // generation together after the wait, so cleanup cannot use a pre-renewal
+      // deadline with a post-renewal observation time.
+      return db.$transaction(async (tx) => {
+        for (const id of [...new Set(input.connectionIds)].sort())
+          await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${id} FOR SHARE`
+        const connections = await tx.agentConnection.findMany({
+          where: {
+            id: { in: input.connectionIds },
+            environment: config.AUTH_ENVIRONMENT
+          },
+          select: {
+            id: true,
+            userId: true,
+            clientId: true,
+            expiresAt: true,
+            historyGeneration: true,
+            revokedAt: true
+          }
+        })
+        const [retired, purges] = await Promise.all([
+          tx.retiredAccount.findMany({
+            where: { userId: { in: connections.map(({ userId }) => userId) } },
+            select: { userId: true }
+          }),
+          tx.connectionHistoryPurge.findMany({
+            where: { connectionId: { in: input.connectionIds } },
+            select: { connectionId: true, requestedAt: true }
+          })
+        ])
+        const observedAt = await databaseTime(tx)
+        return {
+          observedAt: observedAt.toISOString(),
+          connections: connections.map((connection) => ({
+            ...connection,
+            expiresAt: connection.expiresAt.toISOString(),
+            revokedAt: connection.revokedAt?.toISOString() ?? null,
+            accountRetired: retired.some(
+              ({ userId }) => userId === connection.userId
+            ),
+            historyPurgeRequestedAt:
+              purges
+                .find(({ connectionId }) => connectionId === connection.id)
+                ?.requestedAt.toISOString() ?? null
+          }))
+        }
+      })
+    }
     if (path === '/internal/reads/exchange') {
       if (!isMcp) throw new Error('Access denied')
       const input = z
@@ -112,13 +207,16 @@ export function createReadAuthority(
         })
         .strict()
         .parse(body)
+      assertRequestInputSize(input.request)
+      const edit = input.request.tool === 'journey_edit'
+      const scope = edit ? 'journeys:edit' : 'journeys:read'
       const token = await provider.AccessToken.find(input.token)
       if (
         !token ||
         !token.grantId ||
         !token.exp ||
         token.aud !== config.AUTH_AUDIENCE ||
-        !token.scope?.split(' ').includes('journeys:read')
+        !token.scope?.split(' ').includes(scope)
       )
         throw new Error('Access denied')
       const tokenExpiry = token.exp * 1000
@@ -130,6 +228,11 @@ export function createReadAuthority(
         connection.clientId !== token.clientId
       )
         throw new Error('Access denied')
+      await db.readExecutor.upsert({
+        where: { id: input.executorId },
+        create: { id: input.executorId, executor: 'mcp' },
+        update: {}
+      })
       const gates = await captureGates(db, [
         `account:${connection.userId}`,
         `connection:${connection.id}`
@@ -145,17 +248,24 @@ export function createReadAuthority(
         const current = await tx.agentConnection.findUniqueOrThrow({
           where: { id: connection.id }
         })
+        await tx.$queryRaw`SELECT id FROM "ReadExecutor" WHERE id = ${input.executorId} FOR UPDATE`
+        const sender = await tx.readExecutor.findUniqueOrThrow({
+          where: { id: input.executorId }
+        })
+        if (sender.executor !== 'mcp' || sender.fencedAt)
+          throw new Error('Sender fenced')
         const now = await databaseTime(tx)
         if (
           current.version !== connection.version ||
           current.revokedAt ||
           current.expiresAt <= now ||
           current.environment !== config.AUTH_ENVIRONMENT ||
-          !['view', 'edit'].includes(current.mode)
+          !['view', 'edit'].includes(current.mode) ||
+          (edit && current.mode !== 'edit')
         )
           throw new Error('Access denied')
         if (
-          input.request.tool === 'journey_read' &&
+          input.request.tool !== 'journeys_list' &&
           !current.journeyIds.includes(input.request.input.journeyId)
         )
           throw new Error('Access denied')
@@ -166,20 +276,23 @@ export function createReadAuthority(
           audience: trust.audience,
           environment: trust.environment,
           subject: current.userId,
+          clientId: current.clientId,
           connectionId: current.id,
           grantVersion: current.version,
           journeyIds: current.journeyIds,
           mode: current.mode,
-          scope: 'journeys:read',
+          scope,
           requestId: randomUUID(),
           requestHash: fingerprint(input.request),
+          consentExpiresAt: current.expiresAt.getTime(),
+          consentHistoryGeneration: current.historyGeneration,
           expiresAt: Math.min(
             now.getTime() + 60000,
             current.expiresAt.getTime(),
             tokenExpiry
           )
         }
-        await audit(tx, 'read_exchange', 'allowed', {
+        await audit(tx, edit ? 'edit_exchange' : 'read_exchange', 'allowed', {
           userId: current.userId,
           clientId: current.clientId
         })
@@ -267,14 +380,27 @@ export function createReadAuthority(
           current.version !== connection.version ||
           current.revokedAt ||
           current.expiresAt <= now ||
-          claims.expiresAt <= now.getTime()
+          claims.expiresAt <= now.getTime() ||
+          current.mode !== claims.mode ||
+          (claims.scope === 'journeys:edit' && current.mode !== 'edit')
         )
           throw new Error('Access denied')
-        await tx.$queryRaw`SELECT id FROM "ReadExecutor" WHERE id = ${input.executorId} FOR UPDATE`
+        for (const id of [
+          ...new Set([claims.executorId, input.executorId])
+        ].sort())
+          await tx.$queryRaw`SELECT id FROM "ReadExecutor" WHERE id = ${id} FOR UPDATE`
         const sender = await tx.readExecutor.findUniqueOrThrow({
+          where: { id: claims.executorId }
+        })
+        const participant = await tx.readExecutor.findUniqueOrThrow({
           where: { id: input.executorId }
         })
-        if (sender.fencedAt || sender.executor !== executor)
+        if (
+          sender.fencedAt ||
+          sender.executor !== 'mcp' ||
+          participant.fencedAt ||
+          participant.executor !== executor
+        )
           throw new Error('Access denied')
         return await tx.readPermit.create({
           data: {
@@ -322,11 +448,23 @@ export function createReadAuthority(
       await db.$transaction(async (tx) => {
         await lockGates(tx, gates)
         await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`
-        await tx.$queryRaw`SELECT id FROM "ReadExecutor" WHERE id = ${permit.executorId} FOR UPDATE`
+        for (const id of [
+          ...new Set([claims.executorId, permit.executorId])
+        ].sort())
+          await tx.$queryRaw`SELECT id FROM "ReadExecutor" WHERE id = ${id} FOR UPDATE`
+        const sender = await tx.readExecutor.findUniqueOrThrow({
+          where: { id: claims.executorId }
+        })
         const executor = await tx.readExecutor.findUniqueOrThrow({
           where: { id: permit.executorId }
         })
-        if (executor.fencedAt) throw new Error('Executor fenced')
+        if (
+          sender.fencedAt ||
+          sender.executor !== 'mcp' ||
+          executor.fencedAt ||
+          executor.executor !== permit.executor
+        )
+          throw new Error('Executor fenced')
         await tx.$queryRaw`SELECT id FROM "ReadPermit" WHERE id = ${permit.id} FOR UPDATE`
         const current = await tx.agentConnection.findUniqueOrThrow({
           where: { id: connection.id }
@@ -338,6 +476,7 @@ export function createReadAuthority(
           current.expiresAt <= now ||
           claims.expiresAt <= now.getTime() ||
           current.mode !== claims.mode ||
+          (claims.scope === 'journeys:edit' && current.mode !== 'edit') ||
           permit.journeyIds.some((id) => !current.journeyIds.includes(id))
         )
           throw new Error('Access denied')
@@ -348,7 +487,11 @@ export function createReadAuthority(
         if (accepted.count !== 1) throw new Error('Already accepted')
         await audit(
           tx,
-          permit.stage === 'read' ? 'read_accept' : 'output_accept',
+          permit.stage === 'output'
+            ? 'output_accept'
+            : claims.scope === 'journeys:edit'
+              ? 'edit_accept'
+              : 'read_accept',
           'allowed',
           {
             userId: current.userId,
@@ -400,7 +543,11 @@ export function createReadAuthority(
         throw new Error('Access denied')
       await audit(
         db,
-        permit?.stage === 'output' ? 'output_accept' : 'read_accept',
+        permit?.stage === 'output'
+          ? 'output_accept'
+          : verified?.claims.scope === 'journeys:edit'
+            ? 'edit_accept'
+            : 'read_accept',
         'denied',
         verified
           ? {

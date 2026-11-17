@@ -39,6 +39,7 @@ model AgentConnection {
   journeyIds          String[]
   version             Int      @default(1)
   expiresAt           DateTime
+  historyGeneration   Int      @default(0)
   approvedAt          DateTime
   revokedAt           DateTime?
   firebaseAuthTime     Int

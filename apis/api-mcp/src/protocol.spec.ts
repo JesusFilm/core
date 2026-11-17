@@ -1,3 +1,4 @@
+import { privateOperationErrorCodes } from '@core/yoga/mcp/editContract'
 import {
   resultContractVersion,
   safeReadErrors
@@ -54,6 +55,27 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
           additionalProperties: false,
           required: ['journeyId', 'view']
         })
+      }),
+      expect.objectContaining({
+        name: 'journey_edit',
+        annotations: expect.objectContaining({
+          readOnlyHint: false,
+          idempotentHint: true
+        }),
+        inputSchema: expect.objectContaining({
+          additionalProperties: false,
+          required: [
+            'journeyId',
+            'expectedRevision',
+            'idempotencyKey',
+            'commands'
+          ]
+        })
+      }),
+      expect.objectContaining({
+        name: 'journey_operation_get',
+        annotations: expect.objectContaining({ readOnlyHint: true }),
+        inputSchema: expect.objectContaining({ additionalProperties: false })
       })
     ])
     expect(JSON.stringify(response.result.tools[0])).not.toContain('"required"')
@@ -93,7 +115,12 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
       expect(response.result.isError).toBe(true)
       expect(response.result.structuredContent).toMatchObject({
         contractVersion: resultContractVersion,
-        code
+        code:
+          privateOperationErrorCodes.some(
+            (privateCode) => privateCode === code
+          ) || code === 'LIMIT_EXCEEDED'
+            ? 'ACCESS_DENIED_OR_NOT_FOUND'
+            : code
       })
     }
   })
@@ -181,6 +208,157 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
       tool: 'journeys_list',
       input: { limit: 20 }
     })
+  })
+
+  it('executes a registered saved edit and exposes its historical receipt unchanged', async () => {
+    const input = {
+      journeyId: 'a',
+      expectedRevision: '7',
+      idempotencyKey: '53e8ac4b-facd-4597-a300-a100b787ba09',
+      commands: [
+        {
+          type: 'typography_set',
+          blockId: 'heading',
+          content: 'Updated heading'
+        }
+      ]
+    }
+    const receipt = {
+      contractVersion: '1',
+      kind: 'historical_receipt',
+      adminLink: 'https://admin.example/journeys/journey',
+      status: 'committed',
+      operationId: input.idempotencyKey,
+      journeyId: 'a',
+      committedRevision: '8',
+      completedAt: '2026-11-17T00:00:00.000Z',
+      historyId: null,
+      changedFields: [{ blockId: 'heading', fields: ['content'] }],
+      idMap: {},
+      effectIds: [],
+      warnings: []
+    }
+    read.mockResolvedValue(receipt)
+    const saved = await payload(
+      await post(runtimeUrl(runtime), version, 'tools/call', {
+        name: 'journey_edit',
+        arguments: input
+      })
+    )
+    expect(saved.result.structuredContent).toEqual(receipt)
+    expect(read).toHaveBeenCalledExactlyOnceWith({
+      tool: 'journey_edit',
+      input
+    })
+    const lookedUp = await payload(
+      await post(runtimeUrl(runtime), version, 'tools/call', {
+        name: 'journey_operation_get',
+        arguments: { journeyId: 'a', operationId: input.idempotencyKey }
+      })
+    )
+    expect(lookedUp.result.structuredContent).toEqual(receipt)
+  })
+
+  it.each([
+    {
+      name: 'journey_edit',
+      arguments: {
+        journeyId: 'a',
+        expectedRevision: '7',
+        idempotencyKey: '53e8ac4b-facd-4597-a300-a100b787ba09',
+        commands: [
+          {
+            type: 'typography_set',
+            blockId: 'heading',
+            content: 'private-text-sentinel',
+            hostId: 'private-host-sentinel'
+          }
+        ]
+      }
+    },
+    {
+      name: 'journey_edit',
+      arguments: {
+        journeyId: 'a',
+        expectedRevision: '7',
+        idempotencyKey: '53e8ac4b-facd-4597-a300-a100b787ba09',
+        commands: [
+          { type: 'journey_replace', document: 'private-content-sentinel' }
+        ]
+      }
+    },
+    { name: 'journey_operation_get', arguments: { journeyId: 'a' } }
+  ])(
+    'rejects excluded edit fields without echoing arguments',
+    async (params) => {
+      const response = await payload(
+        await post(runtimeUrl(runtime), version, 'tools/call', params)
+      )
+      expect(response.result.structuredContent).toMatchObject({
+        code: 'VALIDATION_FAILED'
+      })
+      expect(JSON.stringify(response.result)).not.toContain('private-')
+      expect(read).not.toHaveBeenCalled()
+    }
+  )
+
+  it.each(privateOperationErrorCodes)(
+    'projects protected historical failure %s',
+    async (code) => {
+      const failure = { contractVersion: '1', kind: 'operation_failure', code }
+      read.mockResolvedValue(failure)
+      const response = await payload(
+        await post(runtimeUrl(runtime), version, 'tools/call', {
+          name: 'journey_operation_get',
+          arguments: {
+            journeyId: 'a',
+            idempotencyKey: '53e8ac4b-facd-4597-a300-a100b787ba09'
+          }
+        })
+      )
+      expect(response.result.isError).toBe(true)
+      expect(response.result.structuredContent).toEqual(failure)
+    }
+  )
+
+  it.each(['REVISION_CONFLICT', 'LIMIT_EXCEEDED'])(
+    'projects authorized read failure %s',
+    async (code) => {
+      const failure = { contractVersion: '1', kind: 'read_failure', code }
+      read.mockResolvedValue(failure)
+      const response = await payload(
+        await post(runtimeUrl(runtime), version, 'tools/call', {
+          name: 'journey_read',
+          arguments: { journeyId: 'a', view: 'steps' }
+        })
+      )
+      expect(response.result.isError).toBe(true)
+      expect(response.result.structuredContent).toEqual(failure)
+    }
+  )
+
+  it('enforces decoded tool input bytes independently of envelope overhead', async () => {
+    const response = await payload(
+      await post(runtimeUrl(runtime), version, 'tools/call', {
+        name: 'journey_edit',
+        arguments: {
+          journeyId: 'a',
+          expectedRevision: '7',
+          idempotencyKey: '53e8ac4b-facd-4597-a300-a100b787ba09',
+          commands: [
+            {
+              type: 'typography_set',
+              blockId: 'heading',
+              content: 'é'.repeat(131072)
+            }
+          ]
+        }
+      })
+    )
+    expect(response.result.structuredContent).toMatchObject({
+      code: 'LIMIT_EXCEEDED'
+    })
+    expect(read).not.toHaveBeenCalled()
   })
 
   it.each([
