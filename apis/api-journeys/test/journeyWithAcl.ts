@@ -15,6 +15,7 @@ export function journeyWithAcl(overrides: Partial<Journey> = {}): Journey {
     createdAt: new Date(),
     updatedAt: new Date(),
     publishedAt: new Date(),
+    firstPublishedAt: null,
     archivedAt: null,
     trashedAt: null,
     deletedAt: null,
