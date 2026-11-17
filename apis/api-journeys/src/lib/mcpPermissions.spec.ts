@@ -75,6 +75,7 @@ function fixture() {
   const db = raw
   const rows = new Map<string, Execution>()
   vi.mocked(usersDb.user.findUnique).mockResolvedValue({
+    id: 'manager-record',
     email: null
   } as Awaited<ReturnType<typeof usersDb.user.findUnique>>)
   vi.mocked(usersDb.user.findFirst).mockResolvedValue({
@@ -96,10 +97,15 @@ function fixture() {
   raw.qrCode.findMany.mockResolvedValue([])
   raw.mcpPermissionExecution.findFirst.mockImplementation(({ where } = {}) =>
     prismaResult(
-      [...rows.values()].find(
-        (row) =>
-          row.intentHash === where?.intentHash &&
-          ['prepared', 'failed'].includes(row.status)
+      [...rows.values()].find((row) =>
+        typeof where?.intentHash === 'string'
+          ? row.intentHash === where.intentHash &&
+            ['prepared', 'failed'].includes(row.status)
+          : row.actorId === where?.actorId &&
+            row.actorCreatedAt === where?.actorCreatedAt &&
+            (where?.status === 'committed'
+              ? row.status === 'committed'
+              : ['prepared', 'failed'].includes(row.status))
       ) ?? null
     )
   )
@@ -487,6 +493,7 @@ describe('cooperative permission mutations', () => {
         kind: 'journey',
         id: 'old-journey',
         userId: 'manager',
+        userRecordId: 'manager-record',
         cutoffDate: '2026-11-01T00:00:00Z'
       })
     ).rejects.toMatchObject({
@@ -546,6 +553,7 @@ describe('cooperative permission mutations', () => {
         kind: 'journey',
         id: 'old-journey',
         userId: 'manager',
+        userRecordId: 'manager-record',
         cutoffDate: '2026-11-01T00:00:00Z'
       })
     ).rejects.toThrow('pending accepted work')
@@ -670,6 +678,7 @@ describe('cooperative permission mutations', () => {
   it('fences an empty invitation discovery before a later lookup can alter a membership', async () => {
     const f = fixture()
     f.raw.userTeamInvite.findMany
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([])
       .mockResolvedValue([{ teamId: 'new-team' }] as unknown as Awaited<
         ReturnType<PrismaClient['userTeamInvite']['findMany']>
@@ -804,6 +813,7 @@ describe('cooperative permission mutations', () => {
         kind: 'journey',
         id: 'old-journey',
         userId: 'manager',
+        userRecordId: 'manager-record',
         cutoffDate: '2026-11-01T00:00:00Z'
       })
     ).rejects.toThrow('Shortlink service unavailable')
@@ -887,5 +897,261 @@ describe('cooperative permission mutations', () => {
     expect(f.rows.size).toBe(0)
     expect(f.requests).toEqual([])
     expect(f.writes).not.toHaveBeenCalled()
+  })
+
+  it('rejects a stale retry before closing gates when the first delete commits during its advisory-lock wait', async () => {
+    const f = fixture()
+    let announceSecondLock!: () => void
+    const secondLock = new Promise<void>((resolve) => {
+      announceSecondLock = resolve
+    })
+    let locks = 0
+    f.raw.$executeRaw.mockImplementation((async () => {
+      if (locks++ === 0) return 0
+      announceSecondLock()
+      await first
+      return 0
+    }) as unknown as typeof f.raw.$executeRaw)
+    const first = f.coordinator.run(
+      'userTeamDelete',
+      { id: 'membership' },
+      context,
+      async () => {
+        await secondLock
+        f.raw.userTeam.findUnique.mockResolvedValue(null)
+        return f.writes()
+      }
+    )
+    const second = f.coordinator.run(
+      'userTeamDelete',
+      { id: 'membership' },
+      context,
+      f.writes
+    )
+    await Promise.all([first, expect(second).rejects.toThrow('not authorized')])
+    expect(f.rows.size).toBe(1)
+    expect(f.raw.mcpPermissionExecution.create).toHaveBeenCalledOnce()
+    expect(f.requests.map(({ action }) => action)).toEqual([
+      'begin',
+      'complete'
+    ])
+    expect([...f.rows.values()][0]).toMatchObject({ status: 'committed' })
+    expect(f.writes).toHaveBeenCalledOnce()
+  })
+
+  it('permits worker continuation only for its committed journey cleanup and current Firebase identity', async () => {
+    const f = fixture()
+    f.readActor.mockResolvedValue({
+      ...actor,
+      user: { ...actor.user, email: null }
+    })
+    expect(
+      await f.coordinator.hasCleanupContinuation('manager', 'manager-record')
+    ).toBe(false)
+    f.raw.journey.findMany.mockResolvedValue([
+      { id: 'old-journey', teamId: 'old-team' }
+    ] as unknown as Awaited<ReturnType<PrismaClient['journey']['findMany']>>)
+    await f.coordinator.runAnonymousCleanup({
+      kind: 'journey',
+      id: 'old-journey',
+      userId: 'manager',
+      userRecordId: 'manager-record',
+      cutoffDate: '2026-11-01T00:00:00Z'
+    })
+    expect(
+      await f.coordinator.hasCleanupContinuation('manager', 'manager-record')
+    ).toBe(true)
+    f.readActor.mockResolvedValue({
+      ...actor,
+      createdAt: 'recreated',
+      user: { ...actor.user, email: null }
+    })
+    expect(
+      await f.coordinator.hasCleanupContinuation('manager', 'manager-record')
+    ).toBe(false)
+    f.readActor.mockResolvedValue(actor)
+    expect(
+      await f.coordinator.hasCleanupContinuation('manager', 'manager-record')
+    ).toBe(false)
+    f.readActor.mockResolvedValue({
+      ...actor,
+      user: { ...actor.user, email: null }
+    })
+    const row = [...f.rows.values()][0]
+    row.intent = { field: 'userTeamUpdate', args: { id: 'membership' } }
+    expect(
+      await f.coordinator.hasCleanupContinuation('manager', 'manager-record')
+    ).toBe(false)
+  })
+
+  it('reuses the original pending worker payload when a later scheduled run has a newer cutoff', async () => {
+    const f = fixture()
+    f.readActor.mockResolvedValue({
+      ...actor,
+      user: { ...actor.user, email: null }
+    })
+    f.raw.journey.findMany.mockResolvedValue([
+      { id: 'old-journey', teamId: 'old-team' }
+    ] as unknown as Awaited<ReturnType<PrismaClient['journey']['findMany']>>)
+    f.setPending()
+    const args = {
+      kind: 'journey' as const,
+      id: 'old-journey',
+      userId: 'manager',
+      userRecordId: 'manager-record',
+      cutoffDate: '2026-11-01T00:00:00Z'
+    }
+    await expect(f.coordinator.runAnonymousCleanup(args)).rejects.toThrow(
+      'pending accepted work'
+    )
+    const original = [...f.rows.values()][0]
+    await expect(
+      f.coordinator.runAnonymousCleanup({
+        ...args,
+        cutoffDate: '2026-11-02T00:00:00Z'
+      })
+    ).rejects.toMatchObject({
+      extensions: { code: 'PERMISSION_CHANGE_PENDING', changeId: original.id }
+    })
+    expect(f.rows.size).toBe(1)
+    expect(original.intent).toMatchObject({
+      args: { cutoffDate: args.cutoffDate }
+    })
+    f.setReady()
+    expect(await f.coordinator.reconcile()).toBe(0)
+    expect(f.raw.journey.delete).toHaveBeenCalledWith({
+      where: {
+        id: 'old-journey',
+        createdAt: { lt: new Date(args.cutoffDate) },
+        userJourneys: { some: { userId: 'manager', role: 'owner' } }
+      }
+    })
+  })
+
+  it('recovers membership and empty-team cleanup atomically after a Pending boundary', async () => {
+    const f = fixture()
+    f.readActor.mockResolvedValue({
+      ...actor,
+      user: { ...actor.user, email: null }
+    })
+    f.raw.userTeam.findMany.mockResolvedValue([
+      { teamId: 'old-team' }
+    ] as unknown as Awaited<ReturnType<PrismaClient['userTeam']['findMany']>>)
+    f.raw.journey.count.mockResolvedValue(0)
+    f.raw.userTeam.deleteMany.mockResolvedValue({ count: 1 })
+    f.raw.team.deleteMany.mockResolvedValue({ count: 1 })
+    f.setPending()
+    await expect(
+      f.coordinator.runAnonymousCleanup({
+        kind: 'memberships',
+        id: 'manager',
+        userId: 'manager',
+        userRecordId: 'manager-record',
+        cutoffDate: '2026-11-01T00:00:00Z'
+      })
+    ).rejects.toThrow('pending accepted work')
+    expect(f.raw.userTeam.deleteMany).not.toHaveBeenCalled()
+    expect(f.raw.team.deleteMany).not.toHaveBeenCalled()
+    f.setReady()
+    expect(await f.coordinator.reconcile()).toBe(0)
+    expect(f.raw.userTeam.deleteMany).toHaveBeenCalledWith({
+      where: { userId: 'manager' }
+    })
+    expect(f.raw.team.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['old-team'] }, userTeams: { none: {} } }
+    })
+    expect(f.raw.team.deleteMany.mock.invocationCallOrder[0]).toBeLessThan(
+      f.raw.mcpPermissionExecution.update.mock.invocationCallOrder[0]
+    )
+    expect([...f.rows.values()][0].status).toBe('committed')
+  })
+
+  it('rejects a stale scheduled cleanup whose journey is already absent before closing gates', async () => {
+    const f = fixture()
+    f.readActor.mockResolvedValue({
+      ...actor,
+      user: { ...actor.user, email: null }
+    })
+    await expect(
+      f.coordinator.runAnonymousCleanup({
+        kind: 'journey',
+        id: 'gone-journey',
+        userId: 'manager',
+        userRecordId: 'manager-record',
+        cutoffDate: '2026-11-01T00:00:00Z'
+      })
+    ).rejects.toThrow('no longer exists')
+    expect(f.rows.size).toBe(0)
+    expect(f.requests).toEqual([])
+    expect(f.raw.journey.delete).not.toHaveBeenCalled()
+  })
+
+  it('does not reuse a completed cleanup against a recreated SQL projection of the same Firebase identity', async () => {
+    const f = fixture()
+    f.readActor.mockResolvedValue({
+      ...actor,
+      user: { ...actor.user, email: null }
+    })
+    f.raw.journey.findMany.mockResolvedValue([
+      { id: 'old-journey', teamId: 'old-team' }
+    ] as unknown as Awaited<ReturnType<PrismaClient['journey']['findMany']>>)
+    const args = {
+      kind: 'journey' as const,
+      id: 'old-journey',
+      userId: 'manager',
+      userRecordId: 'manager-record',
+      cutoffDate: '2026-11-01T00:00:00Z'
+    }
+    await f.coordinator.runAnonymousCleanup(args)
+    expect(
+      await f.coordinator.hasCleanupContinuation('manager', 'manager-record')
+    ).toBe(true)
+    vi.mocked(usersDb.user.findUnique).mockResolvedValue({
+      id: 'recreated-projection',
+      email: null
+    } as Awaited<ReturnType<typeof usersDb.user.findUnique>>)
+    expect(
+      await f.coordinator.hasCleanupContinuation(
+        'manager',
+        'recreated-projection'
+      )
+    ).toBe(false)
+    expect(
+      await f.coordinator.hasCleanupContinuation('manager', 'manager-record')
+    ).toBe(false)
+    await expect(f.coordinator.runAnonymousCleanup(args)).rejects.toThrow(
+      'projection changed'
+    )
+    expect(f.rows.size).toBe(1)
+    expect(f.raw.journey.delete).toHaveBeenCalledOnce()
+  })
+
+  it('fences a pending cleanup when its SQL projection changes before owner execution', async () => {
+    const f = fixture()
+    f.readActor.mockResolvedValue({
+      ...actor,
+      user: { ...actor.user, email: null }
+    })
+    f.raw.journey.findMany.mockResolvedValue([
+      { id: 'old-journey', teamId: 'old-team' }
+    ] as unknown as Awaited<ReturnType<PrismaClient['journey']['findMany']>>)
+    f.setPending()
+    await expect(
+      f.coordinator.runAnonymousCleanup({
+        kind: 'journey',
+        id: 'old-journey',
+        userId: 'manager',
+        userRecordId: 'manager-record',
+        cutoffDate: '2026-11-01T00:00:00Z'
+      })
+    ).rejects.toThrow('pending accepted work')
+    vi.mocked(usersDb.user.findUnique).mockResolvedValue({
+      id: 'recreated-projection',
+      email: null
+    } as Awaited<ReturnType<typeof usersDb.user.findUnique>>)
+    f.setReady()
+    expect(await f.coordinator.reconcile()).toBe(1)
+    expect([...f.rows.values()][0].status).toBe('failed')
+    expect(f.raw.journey.delete).not.toHaveBeenCalled()
   })
 })

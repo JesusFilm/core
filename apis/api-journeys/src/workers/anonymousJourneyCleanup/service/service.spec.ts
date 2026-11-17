@@ -1,11 +1,16 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 import { type MockedFunction, vi } from 'vitest'
+import { mockDeep } from 'vitest-mock-extended'
 
 import { UserJourneyRole } from '@core/prisma/journeys/client'
 
 import { mockQueueAdd } from '../../../../test/bullmqMock'
 import { prismaMock } from '../../../../test/prismaMock'
+import {
+  createJourneyPermissionCoordinator,
+  journeyPermissionsEnvironment
+} from '../../../lib/mcpPermissions'
 
 import { collectMediaFromJourneys, deleteUnusedMedia } from './mediaCleanup'
 import { service } from './service'
@@ -20,6 +25,13 @@ vi.mock('@core/prisma/users/client', () => ({
 }))
 
 vi.mock('./mediaCleanup')
+vi.mock('../../../lib/mcpPermissions', async () => ({
+  ...(await vi.importActual<typeof import('../../../lib/mcpPermissions')>(
+    '../../../lib/mcpPermissions'
+  )),
+  createJourneyPermissionCoordinator: vi.fn(),
+  journeyPermissionsEnvironment: vi.fn()
+}))
 
 const mockCollectMediaFromJourneys = collectMediaFromJourneys as MockedFunction<
   typeof collectMediaFromJourneys
@@ -38,6 +50,7 @@ describe('anonymousJourneyCleanup service', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(journeyPermissionsEnvironment).mockReturnValue(undefined)
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2025-01-10T00:00:00Z'))
     mockLogger = {
@@ -59,6 +72,7 @@ describe('anonymousJourneyCleanup service', () => {
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.useRealTimers()
   })
 
@@ -471,5 +485,70 @@ describe('anonymousJourneyCleanup service', () => {
     await service(mockJob, mockLogger)
 
     expect(callOrder).toEqual(['journey.delete', 'deleteUnusedMedia'])
+  })
+
+  it('continues existing memberships, empty teams and projection cleanup after the last journey was recovered', async () => {
+    const permissions =
+      mockDeep<ReturnType<typeof createJourneyPermissionCoordinator>>()
+    permissions.reconcile.mockResolvedValue(0)
+    permissions.hasCleanupContinuation.mockResolvedValue(true)
+    permissions.runAnonymousCleanup.mockResolvedValue({ count: 1 })
+    vi.mocked(journeyPermissionsEnvironment).mockReturnValue({
+      authorityUrl: 'http://localhost:4011',
+      authoritySecret: 'p'.repeat(32)
+    })
+    vi.mocked(createJourneyPermissionCoordinator).mockReturnValue(permissions)
+    mockPrismaUsers.user.findMany.mockResolvedValue([
+      { id: 'user-db-1', userId: 'user-1' }
+    ])
+    prismaMock.journey.findMany.mockResolvedValue([])
+    prismaMock.journey.count.mockResolvedValue(0)
+    prismaMock.userTeam.findMany.mockResolvedValue([
+      { teamId: 'team-1' }
+    ] as unknown as Awaited<ReturnType<typeof prismaMock.userTeam.findMany>>)
+    prismaMock.userTeam.count.mockResolvedValue(0)
+    await service(mockJob, mockLogger)
+    expect(permissions.hasCleanupContinuation).toHaveBeenCalledWith(
+      'user-1',
+      'user-db-1'
+    )
+    expect(permissions.runAnonymousCleanup).toHaveBeenCalledWith({
+      kind: 'memberships',
+      id: 'user-1',
+      userId: 'user-1',
+      userRecordId: 'user-db-1',
+      cutoffDate: '2025-01-05T00:00:00.000Z'
+    })
+    expect(permissions.runAnonymousCleanup).toHaveBeenCalledOnce()
+    expect(mockPrismaUsers.user.delete).toHaveBeenCalledWith({
+      where: { id: 'user-db-1', AND: [{ email: null }] }
+    })
+    expect(prismaMock.journey.delete).not.toHaveBeenCalled()
+    expect(mockCollectMediaFromJourneys).not.toHaveBeenCalled()
+    expect(mockDeleteUnusedMedia).not.toHaveBeenCalled()
+  })
+
+  it('keeps unrelated new anonymous accounts with no journey and no cleanup continuation', async () => {
+    const permissions =
+      mockDeep<ReturnType<typeof createJourneyPermissionCoordinator>>()
+    permissions.reconcile.mockResolvedValue(0)
+    permissions.hasCleanupContinuation.mockResolvedValue(false)
+    vi.mocked(journeyPermissionsEnvironment).mockReturnValue({
+      authorityUrl: 'http://localhost:4011',
+      authoritySecret: 'p'.repeat(32)
+    })
+    vi.mocked(createJourneyPermissionCoordinator).mockReturnValue(permissions)
+    mockPrismaUsers.user.findMany.mockResolvedValue([
+      { id: 'new-db-user', userId: 'new-anonymous' }
+    ])
+    prismaMock.journey.findMany.mockResolvedValue([])
+    await service(mockJob, mockLogger)
+    expect(permissions.hasCleanupContinuation).toHaveBeenCalledWith(
+      'new-anonymous',
+      'new-db-user'
+    )
+    expect(permissions.runAnonymousCleanup).not.toHaveBeenCalled()
+    expect(prismaMock.journey.count).not.toHaveBeenCalled()
+    expect(mockPrismaUsers.user.delete).not.toHaveBeenCalled()
   })
 })

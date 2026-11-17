@@ -363,15 +363,31 @@ export function createJourneyPermissionCoordinator(
     const args = cleanupIntentSchema.parse(intent.args)
     if (context.user.email)
       throw new Error('Cleanup target is no longer anonymous')
+    const projection = await usersDb.user.findUnique({
+      where: { userId: args.userId },
+      select: { id: true, email: true }
+    })
+    if (
+      !projection ||
+      projection.id !== args.userRecordId ||
+      projection.email != null
+    )
+      throw new Error('Cleanup user projection changed')
+    const journeys =
+      args.kind === 'journey'
+        ? await database.journey.findMany({
+            where: { id: args.id },
+            select: { teamId: true }
+          })
+        : []
+    if (args.kind === 'journey' && journeys.length !== 1)
+      throw new GraphQLError('cleanup journey no longer exists', {
+        extensions: { code: 'NOT_FOUND' }
+      })
     const journeyIds = args.kind === 'journey' ? [args.id] : []
     const teamIds =
       args.kind === 'journey'
-        ? (
-            await database.journey.findMany({
-              where: { id: args.id },
-              select: { teamId: true }
-            })
-          ).map(({ teamId }) => teamId)
+        ? journeys.map(({ teamId }) => teamId)
         : args.kind === 'team'
           ? [args.id]
           : (
@@ -599,15 +615,60 @@ export function createJourneyPermissionCoordinator(
       actorId: actor.user.id,
       actorCreatedAt: actor.createdAt
     })
+    const cleanup =
+      intent.field === 'anonymousJourneyCleanup'
+        ? cleanupIntentSchema.parse(intent.args)
+        : undefined
+    const activeWhere: Prisma.McpPermissionExecutionWhereInput = cleanup
+      ? {
+          actorId: actor.user.id,
+          actorCreatedAt: actor.createdAt,
+          status: { in: ['prepared', 'failed'] },
+          AND: [
+            { intent: { path: ['field'], equals: 'anonymousJourneyCleanup' } },
+            { intent: { path: ['args', 'kind'], equals: cleanup.kind } },
+            { intent: { path: ['args', 'id'], equals: cleanup.id } },
+            {
+              intent: {
+                path: ['args', 'userRecordId'],
+                equals: cleanup.userRecordId
+              }
+            }
+          ]
+        }
+      : { intentHash, status: { in: ['prepared', 'failed'] } }
+    const dedupeKey = cleanup
+      ? fingerprint({
+          actorId: actor.user.id,
+          actorCreatedAt: actor.createdAt,
+          field: intent.field,
+          kind: cleanup.kind,
+          id: cleanup.id,
+          userRecordId: cleanup.userRecordId
+        })
+      : intentHash
     const execution = await db.$transaction(async (tx) => {
-      // Serialize exact active-intent creation across replicas without holding
-      // any owner lock or transaction while calling the remote coordinator.
-      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${intentHash}, 0))`
+      // A scheduled worker's moving cutoff does not create another pending
+      // executor for the same target. Reuse its original approved payload.
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${dedupeKey}, 0))`
       const existing = await tx.mcpPermissionExecution.findFirst({
-        where: { intentHash, status: { in: ['prepared', 'failed'] } },
+        where: activeWhere,
         orderBy: { createdAt: 'asc' }
       })
       if (existing) return existing
+      // Another exact intent may have completed while this request waited for
+      // the advisory lock. Recheck its current rights/resources before creating
+      // a new executor or closing any gates.
+      const role = await tx.userRole.findUnique({
+        where: { userId: actor.user.id }
+      })
+      const current = await discover(tx, intent, {
+        ...context,
+        user: Object.assign({}, actor.user, { roles: role?.roles ?? [] }),
+        currentRoles: role?.roles ?? []
+      })
+      if (fingerprint(current) !== fingerprint(resources))
+        throw new Error('Permission resources changed before admission')
       return tx.mcpPermissionExecution.create({
         data: {
           id: randomUUID(),
@@ -653,6 +714,44 @@ export function createJourneyPermissionCoordinator(
       return submit<Prisma.BatchPayload>(
         { field: 'anonymousJourneyCleanup', args },
         context
+      )
+    },
+    async hasCleanupContinuation(
+      userId: string,
+      userRecordId: string
+    ): Promise<boolean> {
+      const actor = await readActor(userId)
+      if (actor.user.id !== userId || actor.user.email != null) return false
+      const projection = await usersDb.user.findUnique({
+        where: { userId },
+        select: { id: true, email: true }
+      })
+      if (
+        !projection ||
+        projection.id !== userRecordId ||
+        projection.email != null
+      )
+        return false
+      const previous = await db.mcpPermissionExecution.findFirst({
+        where: {
+          actorId: userId,
+          actorCreatedAt: actor.createdAt,
+          status: 'committed',
+          AND: [
+            { intent: { path: ['field'], equals: 'anonymousJourneyCleanup' } },
+            { intent: { path: ['args', 'kind'], equals: 'journey' } },
+            { intent: { path: ['args', 'userRecordId'], equals: userRecordId } }
+          ]
+        }
+      })
+      if (!previous) return false
+      const intent = intentSchema.safeParse(previous.intent)
+      return (
+        intent.success &&
+        intent.data.field === 'anonymousJourneyCleanup' &&
+        cleanupIntentSchema.parse(intent.data.args).kind === 'journey' &&
+        cleanupIntentSchema.parse(intent.data.args).userRecordId ===
+          userRecordId
       )
     },
     async retryFailed(id: string, expectedIntentHash: string): Promise<void> {
@@ -722,6 +821,7 @@ const cleanupIntentSchema = z.object({
   kind: z.enum(['journey', 'memberships', 'team']),
   id: z.string(),
   userId: z.string(),
+  userRecordId: z.string(),
   cutoffDate: z.string().datetime()
 })
 async function captureCleanupEffects(
@@ -762,9 +862,13 @@ async function executeAnonymousCleanup(
   const args = cleanupIntentSchema.parse(input)
   const currentUser = await usersDb.user.findUnique({
     where: { userId: args.userId },
-    select: { email: true }
+    select: { id: true, email: true }
   })
-  if (!currentUser || currentUser.email != null)
+  if (
+    !currentUser ||
+    currentUser.id !== args.userRecordId ||
+    currentUser.email != null
+  )
     throw new Error('Cleanup target is no longer anonymous')
   if (args.kind === 'journey') {
     await db.journey.delete({
@@ -776,8 +880,32 @@ async function executeAnonymousCleanup(
     })
     return { count: 1 }
   }
-  if (args.kind === 'memberships')
-    return db.userTeam.deleteMany({ where: { userId: args.userId } })
+  if (args.kind === 'memberships') {
+    if (
+      await db.journey.count({
+        where: {
+          userJourneys: { some: { userId: args.userId, role: 'owner' } }
+        }
+      })
+    )
+      throw new Error('Cleanup target owns surviving journeys')
+    const memberships = await db.userTeam.findMany({
+      where: { userId: args.userId },
+      select: { teamId: true }
+    })
+    const result = await db.userTeam.deleteMany({
+      where: { userId: args.userId }
+    })
+    // Preserve the teams through a Pending/recovery boundary: their IDs vanish
+    // with the memberships, so remove empty ones under these same team gates.
+    await db.team.deleteMany({
+      where: {
+        id: { in: memberships.map(({ teamId }) => teamId) },
+        userTeams: { none: {} }
+      }
+    })
+    return result
+  }
   return db.team.deleteMany({ where: { id: args.id, userTeams: { none: {} } } })
 }
 

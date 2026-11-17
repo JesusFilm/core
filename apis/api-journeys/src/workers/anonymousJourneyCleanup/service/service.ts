@@ -56,7 +56,12 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
         select: { id: true, title: true }
       })
 
-      if (journeys.length === 0) continue
+      if (
+        journeys.length === 0 &&
+        (!permissions ||
+          !(await permissions.hasCleanupContinuation(user.userId, user.id)))
+      )
+        continue
 
       logger?.info(
         { userId: user.userId },
@@ -79,6 +84,7 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
               kind: 'journey',
               id: journey.id,
               userId: user.userId,
+              userRecordId: user.id,
               cutoffDate: cutoffDate.toISOString()
             })
           else {
@@ -145,6 +151,7 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
                 kind: 'memberships',
                 id: user.userId,
                 userId: user.userId,
+                userRecordId: user.id,
                 cutoffDate: cutoffDate.toISOString()
               })
             : await removeMemberships()
@@ -155,7 +162,7 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
             )
           }
 
-          for (const teamId of teamIds) {
+          for (const teamId of permissions ? [] : teamIds) {
             const remainingMembers = await prisma.userTeam.count({
               where: { teamId }
             })
@@ -165,13 +172,18 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
                   kind: 'team',
                   id: teamId,
                   userId: user.userId,
+                  userRecordId: user.id,
                   cutoffDate: cutoffDate.toISOString()
                 })
               else await prisma.team.delete({ where: { id: teamId } })
               logger?.info({ teamId }, 'Deleted empty team')
             }
           }
-          await prismaUsers.user.delete({ where: { id: user.id } })
+          await prismaUsers.user.delete({
+            where: permissions
+              ? { id: user.id, AND: [{ email: null }] }
+              : { id: user.id }
+          })
           deletedUserCount++
           logger?.info(
             { userId: user.userId },

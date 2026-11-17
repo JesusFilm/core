@@ -12,7 +12,7 @@ Set `MCP_READS_ENABLED=true`, `MCP_ACCOUNT_AUTHORITY_URL` to the issuer origin, 
 
 ## Cooperative changes
 
-The explicit `coordinatedPermissionMutations` inventory in [mcpPermissions.ts](../api-journeys/src/lib/mcpPermissions.ts) covers team role/removal, team invitation acceptance, collaborator approval/promotion/removal, journey invitation acceptance, anonymous ownership/team transfer, journey lifecycle/template changes, profile eligibility and the existing Journeys account-deletion mutation. The anonymous-cleanup worker also participates before deleting journeys, memberships or empty teams. Its committed receipt preserves the existing shortlink/media follow-up IDs for recovery; this adds no cleanup to the account-deletion path. Invite requests and opened timestamps confer no access and do not require withdrawal. Ordinary human content edits retain their existing Admin roles and require no MCP grant.
+The explicit `coordinatedPermissionMutations` inventory in [mcpPermissions.ts](../api-journeys/src/lib/mcpPermissions.ts) covers team role/removal, team invitation acceptance, collaborator approval/promotion/removal, journey invitation acceptance, anonymous ownership/team transfer, journey lifecycle/template changes, profile eligibility and the existing Journeys account-deletion mutation. The anonymous-cleanup worker also participates before deleting journeys, memberships or empty teams. Its committed receipt preserves the existing shortlink/media follow-up IDs for recovery; this adds no cleanup to the account-deletion path. A continuation also binds the original SQL user-projection ID and Firebase creation identity, so a recreated projection cannot inherit an old cleanup cycle. Invite requests and opened timestamps confer no access and do not require withdrawal. Ordinary human content edits retain their existing Admin roles and require no MCP grant.
 
 The wrapper checks the current actor and existing ACL before submitting a change. It stores a UUID, exact intent hash, minimal typed mutation arguments, actor identity/creation/revocation evidence, and affected stable gate IDs in the owning database. Credentials, content snapshots and raw errors are excluded. It then calls the service-authenticated auth coordinator:
 
@@ -50,7 +50,7 @@ Unexpected Firebase Console, privileged direct-SQL or other non-cooperating chan
 
 ## Local verification
 
-Use normal local PostgreSQL at `localhost:5432` with separate `auth_issue_10550`, `auth_issue_10550_reads`, `journeys_issue_10550` and `users_issue_10550` databases. Never reset or migrate the shared journeys database. Run `prisma migrate dev` for new schema changes with the explicit per-issue URL, and `prisma migrate deploy` for the other fixture databases. Auth test URLs must use a restricted DML runtime role; its migration URL is separate. No credentials or fixture data belong in the repository.
+Use normal local PostgreSQL at `localhost:5432` with separate `auth_issue_10550`, `auth_issue_10550_reads`, `auth_issue_10550_permissions`, `journeys_issue_10550` and `users_issue_10550` databases. Never reset or migrate the shared journeys database. Run `prisma migrate dev` for new schema changes with the explicit per-issue URL, and `prisma migrate deploy` for the other fixture databases. Auth test URLs must use restricted DML runtime roles; the migration URL is separate. Keep the coordinator database separate from the issuer HTTP fixtures, which reset their tables at startup. No credentials or fixture data belong in the repository.
 
 Export these local URLs and run:
 
@@ -58,7 +58,7 @@ Export these local URLs and run:
 # Restricted auth role for the first database; migration role used by fault tests.
 export AUTH_TEST_DATABASE_URL="$ISSUE_AUTH_RUNTIME_URL"
 export AUTH_TEST_MIGRATION_DATABASE_URL="$ISSUE_AUTH_MIGRATION_URL"
-export PERMISSIONS_TEST_DATABASE_URL="$ISSUE_AUTH_RUNTIME_URL"
+export PERMISSIONS_TEST_DATABASE_URL="$ISSUE_PERMISSION_AUTH_RUNTIME_URL"
 export READS_TEST_AUTH_DATABASE_URL="$ISSUE_READ_AUTH_RUNTIME_URL"
 export READS_TEST_JOURNEYS_DATABASE_URL="$ISSUE_JOURNEYS_URL"
 export READS_TEST_USERS_DATABASE_URL="$ISSUE_USERS_URL"
