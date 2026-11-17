@@ -26,6 +26,10 @@ const Template: StoryObj<typeof VisitorInteraction> = {
 }
 
 const event: Event = {
+  captureIdentity: null,
+  captureTag: null,
+  captureTrigger: null,
+  templateFamilyId: null,
   id: 'event 1',
   typename: 'event',
   journeyId: 'bd62980f-3302-481d-8d66-a6ad2bdc936a',
