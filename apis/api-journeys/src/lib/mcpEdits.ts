@@ -18,6 +18,7 @@ import {
 } from '@core/yoga/mcp/editContract'
 import {
   assertRequestInputSize,
+  assertStructuredResultSize,
   boundedJson,
   fingerprint,
   internalSignature,
@@ -48,6 +49,9 @@ import {
   typographyParents
 } from './mcpHistory'
 import type { JourneyReadsConfig } from './mcpReads'
+import { executeStructure, planStructure } from './mcpStructure'
+import { planStructureHistory } from './mcpStructureHistory'
+import type { StructureInverse, StructurePlan } from './mcpStructureState'
 
 export type EditCheckpoint =
   | 'execution_prepared'
@@ -414,7 +418,8 @@ export function createJourneyEditHandler(
             if (!failure.success) throw error
             return reject(failure.data)
           }
-          const changes: TypographyInverse[] = []
+          const changes: Array<TypographyInverse | StructureInverse> = []
+          let structuralPlan: StructurePlan | undefined
           const plans: Array<{
             blockId: string
             patch: Prisma.BlockUpdateInput
@@ -425,6 +430,20 @@ export function createJourneyEditHandler(
             string,
             Prisma.BlockGetPayload<Record<string, never>>
           >()
+          if (operation.tool === 'journey_edit') {
+            const suppliedFields = new Set<string>()
+            for (const command of operation.input.commands) {
+              if (command.type !== 'typography_set') continue
+              for (const field of ['content', 'variant', 'align', 'color']) {
+                if (!Object.prototype.hasOwnProperty.call(command, field))
+                  continue
+                const key = `${command.blockId}:${field}`
+                if (suppliedFields.has(key))
+                  throw new Error('VALIDATION_FAILED')
+                suppliedFields.add(key)
+              }
+            }
+          }
           let restoredEntry:
             | Awaited<ReturnType<typeof historyEntries>>[number]
             | undefined
@@ -452,14 +471,32 @@ export function createJourneyEditHandler(
             if (restoredEntry.id !== operation.input.entryId)
               return reject('HISTORY_CONFLICT')
             try {
-              plans.push(
-                ...(await planHistory(
+              if (
+                Array.isArray(restoredEntry.changes) &&
+                restoredEntry.changes.some(
+                  (change) =>
+                    change &&
+                    typeof change === 'object' &&
+                    'type' in change &&
+                    change.type === 'structure_restore'
+                )
+              ) {
+                structuralPlan = await planStructureHistory(
                   tx,
-                  journey.id,
+                  journey,
                   restoredEntry.changes,
                   direction
-                ))
-              )
+                )
+              } else {
+                plans.push(
+                  ...(await planHistory(
+                    tx,
+                    journey.id,
+                    restoredEntry.changes,
+                    direction
+                  ))
+                )
+              }
             } catch (error) {
               if (
                 error instanceof Error &&
@@ -470,9 +507,28 @@ export function createJourneyEditHandler(
               throw error
             }
           }
+          if (
+            operation.tool === 'journey_edit' &&
+            operation.input.commands.some(
+              (command) => command.type !== 'typography_set'
+            )
+          ) {
+            try {
+              structuralPlan = await planStructure(
+                tx,
+                journey,
+                operation.input.commands
+              )
+            } catch (error) {
+              if (error instanceof Error && error.message === 'LIMIT_EXCEEDED')
+                return reject('LIMIT_EXCEEDED')
+              throw error
+            }
+          }
           for (const command of operation.tool === 'journey_edit'
             ? operation.input.commands
             : []) {
+            if (structuralPlan || command.type !== 'typography_set') continue
             const block =
               projected.get(command.blockId) ??
               (await tx.block.findUnique({
@@ -513,8 +569,31 @@ export function createJourneyEditHandler(
                 : block.settings
             })
           }
+          if (structuralPlan) {
+            // Incoming links are reported without being written. Reserve room
+            // for the fixed receipt envelope before accepting an expanded save.
+            try {
+              assertStructuredResultSize({
+                changedFields: structuralPlan.changedFields,
+                idMap: structuralPlan.idMap,
+                duplicateIdMap: structuralPlan.duplicateIdMap,
+                duplicateMaps: structuralPlan.duplicateMaps,
+                affectedLinks: structuralPlan.affectedLinks,
+                warnings: structuralPlan.warnings,
+                receiptEnvelope: ' '.repeat(4096)
+              })
+            } catch (error) {
+              if (error instanceof Error && error.message === 'LIMIT_EXCEEDED')
+                return reject('LIMIT_EXCEEDED')
+              throw error
+            }
+          }
           context.operationId = randomUUID()
           await accept()
+          if (structuralPlan) {
+            await executeStructure(tx, structuralPlan)
+            changes.push(...structuralPlan.changes)
+          }
           for (const plan of plans) {
             await tx.block.update({
               where: { id: plan.blockId },
@@ -528,7 +607,8 @@ export function createJourneyEditHandler(
           const completedAt = await editDatabaseTime(tx, hooks.now)
           const historyId =
             restoredEntry?.id ?? (changes.length ? randomUUID() : null)
-          const effectIds = plans.length ? [randomUUID()] : []
+          const effectIds =
+            plans.length || structuralPlan?.objectCount ? [randomUUID()] : []
           const receipt: OperationReceipt = {
             contractVersion: '1',
             status: 'committed',
@@ -550,19 +630,28 @@ export function createJourneyEditHandler(
                       : ('redo' as const)
                 }
               : {}),
-            changedFields: plans.map(({ blockId, fields }) => ({
-              blockId,
-              fields
-            })),
-            idMap: {},
+            changedFields:
+              structuralPlan?.changedFields ??
+              plans.map(({ blockId, fields }) => ({ blockId, fields })),
+            idMap: structuralPlan?.idMap ?? {},
+            ...(structuralPlan
+              ? {
+                  duplicateIdMap: structuralPlan.duplicateIdMap,
+                  duplicateMaps: structuralPlan.duplicateMaps,
+                  affectedLinks: structuralPlan.affectedLinks
+                }
+              : {}),
             effectIds,
-            warnings: restoredEntry
-              ? [
-                  'Restored recorded content fields. This Typography batch has no upload, generation or provider effects.'
-                ]
-              : []
+            warnings: structuralPlan
+              ? structuralPlan.warnings
+              : restoredEntry
+                ? [
+                    'Restored recorded content fields. This Typography batch has no upload, generation or provider effects.'
+                  ]
+                : []
           }
-          await tx.mcpEditOperation.create({
+          assertStructuredResultSize(receipt)
+          const savedOperation = await tx.mcpEditOperation.create({
             data: {
               id: receipt.operationId,
               namespaceId: namespace.id,
@@ -646,7 +735,10 @@ export function createJourneyEditHandler(
           await hooks.checkpoint?.('after_outbox', context)
           await settle('committed')
           await hooks.checkpoint?.('before_commit', context)
-          return operationReceipt.parse(receipt)
+          // PostgreSQL JSONB normalizes object-key order. Release the persisted
+          // representation so initial delivery, lookup and replay hash the same
+          // ID maps when reauthorizing private output.
+          return operationReceipt.parse(savedOperation.result)
         },
         { isolationLevel: 'ReadCommitted', timeout: 20000 }
       )

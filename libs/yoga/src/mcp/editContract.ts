@@ -2,6 +2,13 @@ import { createHash } from 'node:crypto'
 
 import { z } from 'zod'
 
+import {
+  affectedLink,
+  changedField,
+  localKey,
+  structureCommand
+} from './structureContract'
+
 const id = z.string().min(1).max(200)
 export const revisionInput = z
   .string()
@@ -35,7 +42,10 @@ export const editInput = z
     journeyId: id,
     expectedRevision: revisionInput,
     idempotencyKey: idempotencyKeyInput,
-    commands: z.array(typographyCommand).min(1).max(50)
+    commands: z
+      .array(z.union([typographyCommand, structureCommand]))
+      .min(1)
+      .max(50)
   })
   .strict()
 export const historyInput = z.object({ journeyId: id }).strict()
@@ -61,7 +71,7 @@ export const historyResult = z
           .object({
             entryId: z.string().uuid(),
             operationId: z.string().uuid(),
-            label: z.literal('Typography edit'),
+            label: z.enum(['Typography edit', 'Structure edit']),
             state: z.enum(['undo', 'redo']),
             createdAt: z.string().datetime()
           })
@@ -98,19 +108,26 @@ export const operationReceipt = z
         z
           .object({
             blockId: id,
-            fields: z
-              .array(z.enum(['content', 'variant', 'align', 'settings.color']))
-              .max(4)
+            fields: z.array(changedField).max(32)
           })
           .strict()
       )
-      .max(50),
-    idMap: z.record(z.string().max(32), id),
+      .max(200),
+    idMap: z.record(localKey, id),
+    duplicateIdMap: z.record(id, id).optional(),
+    duplicateMaps: z
+      .record(
+        localKey,
+        z.array(z.object({ sourceId: id, blockId: id }).strict()).max(200)
+      )
+      .optional(),
+    affectedLinks: z.array(affectedLink).optional(),
     effectIds: z.array(z.string().uuid()).max(200),
     warnings: z.array(z.string().max(4096)).max(100)
   })
   .strict()
 export const privateOperationErrorCodes = [
+  'LIMIT_EXCEEDED',
   'IDEMPOTENCY_KEY_REUSED',
   'RESULT_EXPIRED',
   'RESULT_UNAVAILABLE',

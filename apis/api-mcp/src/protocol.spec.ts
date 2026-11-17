@@ -282,7 +282,108 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
     expect(lookedUp.result.structuredContent).toEqual(receipt)
   })
 
+  it('dispatches a complete structural batch with forward local routes and preserved deletion links', async () => {
+    const input = {
+      journeyId: 'a',
+      expectedRevision: '7',
+      idempotencyKey: '53e8ac4b-facd-4597-a300-a100b787ba09',
+      commands: [
+        {
+          type: 'action_set',
+          block: { id: 'answer' },
+          action: { kind: 'step', destination: { local: 'new_step' } }
+        },
+        {
+          type: 'step_add',
+          key: 'new_step',
+          cardKey: 'new_card',
+          placement: { position: 'end' },
+          content: [
+            { key: 'button', content: { kind: 'button', label: 'Continue' } }
+          ]
+        },
+        { type: 'step_remove', step: { id: 'deleted-step' } }
+      ]
+    }
+    const receipt = {
+      contractVersion: '1',
+      kind: 'historical_receipt',
+      adminLink: 'https://admin.example/journeys/a',
+      status: 'committed',
+      operationId: input.idempotencyKey,
+      journeyId: 'a',
+      committedRevision: '8',
+      completedAt: '2026-11-17T00:00:00.000Z',
+      historyId: null,
+      changedFields: [{ blockId: 'deleted-step', fields: ['deletedAt'] }],
+      idMap: {
+        new_step: 'allocated-step',
+        new_card: 'allocated-card',
+        button: 'allocated-button'
+      },
+      duplicateIdMap: {},
+      affectedLinks: [
+        {
+          sourceBlockId: 'untouched-answer',
+          kind: 'action',
+          destinationStepId: 'deleted-step'
+        }
+      ],
+      effectIds: [],
+      warnings: ['Incoming routes were preserved.']
+    }
+    read.mockResolvedValue(receipt)
+    const saved = await payload(
+      await post(runtimeUrl(runtime), version, 'tools/call', {
+        name: 'journey_edit',
+        arguments: input
+      })
+    )
+    expect(saved.result.structuredContent).toEqual(receipt)
+    expect(read).toHaveBeenCalledExactlyOnceWith({
+      tool: 'journey_edit',
+      input
+    })
+  })
+
   it.each([
+    {
+      name: 'journey_edit',
+      arguments: {
+        journeyId: 'a',
+        expectedRevision: '7',
+        idempotencyKey: '53e8ac4b-facd-4597-a300-a100b787ba09',
+        commands: [
+          {
+            type: 'step_add',
+            key: 'new_step',
+            cardKey: 'new_card',
+            placement: { position: 'end' },
+            content: [
+              {
+                key: 'button',
+                content: { kind: 'button', hostId: 'private-host-sentinel' }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      name: 'journey_edit',
+      arguments: {
+        journeyId: 'a',
+        expectedRevision: '7',
+        idempotencyKey: '53e8ac4b-facd-4597-a300-a100b787ba09',
+        commands: [
+          {
+            type: 'action_set',
+            block: { id: 'button' },
+            action: { kind: 'link', url: 'javascript:private-sentinel' }
+          }
+        ]
+      }
+    },
     {
       name: 'journey_edit',
       arguments: {

@@ -285,7 +285,7 @@ describe('saved edit integration', () => {
         }
       }
       async function edit(
-        input: Awaited<ReturnType<typeof editInput>>,
+        input: Record<string, unknown>,
         accessToken = token,
         url = mcpUrl
       ) {
@@ -420,10 +420,10 @@ describe('saved edit integration', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_(10553|10562)(_|$)/.test(
+          !/^\/auth_issue_(10553|10557|10562)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_(10553|10562)(_|$)/.test(
+          !/^\/journeys_issue_(10553|10557|10562)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
@@ -2148,7 +2148,32 @@ describe('saved edit integration', () => {
         }
       )
 
-      it('applies ordered commands to the same Typography block as one batch with the actual inverse sequence', async () => {
+      it('rejects overlapping field writes including equal no-ops without accepting the key', async () => {
+        const before = await revision()
+        for (const content of ['Conflicting heading', 'Original heading']) {
+          const input = {
+            ...(await editInput()),
+            commands: [
+              { type: 'typography_set', blockId: `${journeyId}-text`, content },
+              { type: 'typography_set', blockId: `${journeyId}-text`, content }
+            ]
+          }
+          expect((await edit(input)).text).toContain('VALIDATION_FAILED')
+        }
+        expect(await revision()).toBe(before)
+        expect(
+          await journeys.block.findUniqueOrThrow({
+            where: { id: `${journeyId}-text` }
+          })
+        ).toMatchObject({ content: 'Original heading' })
+        expect(await counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+      })
+
+      it('applies disjoint fields on the same Typography block as one batch with exact inverses', async () => {
         const before = await revision()
         const input = {
           ...(await editInput()),
@@ -2156,52 +2181,36 @@ describe('saved edit integration', () => {
             {
               type: 'typography_set',
               blockId: `${journeyId}-text`,
-              content: 'Intermediate heading'
+              content: 'Final heading'
             },
             {
               type: 'typography_set',
               blockId: `${journeyId}-text`,
-              content: 'Final heading'
+              align: 'right'
             }
           ]
         }
         const saved = receipt(await edit(input))
         expect(BigInt(saved.committedRevision)).toBe(BigInt(before) + 1n)
         expect(
-          await journeys.block.findUnique({
+          await journeys.block.findUniqueOrThrow({
             where: { id: `${journeyId}-text` }
           })
-        ).toMatchObject({ content: 'Final heading' })
+        ).toMatchObject({ content: 'Final heading', align: 'right' })
         const history = await journeys.mcpEditHistory.findUniqueOrThrow({
           where: { operationId: saved.operationId }
         })
-        const sequence = z
-          .array(
-            z.object({
-              blockId: z.string(),
-              fields: z.array(
-                z.object({
-                  field: z.string(),
-                  before: z.unknown(),
-                  after: z.unknown()
-                })
-              )
-            })
-          )
-          .parse(history.changes)
-        expect(
-          sequence.map((inverse) =>
-            inverse.fields.find((field) => field.field === 'content')
-          )
-        ).toEqual([
-          expect.objectContaining({
-            before: 'Original heading',
-            after: 'Intermediate heading'
-          }),
-          expect.objectContaining({
-            before: 'Intermediate heading',
-            after: 'Final heading'
-          })
+        expect(history.changes).toMatchObject([
+          {
+            fields: [
+              {
+                field: 'content',
+                before: 'Original heading',
+                after: 'Final heading'
+              }
+            ]
+          },
+          { fields: [{ field: 'align', after: 'right' }] }
         ])
         expect(receipt(await edit(input))).toEqual(saved)
         expect(await counts()).toEqual({
@@ -2275,19 +2284,21 @@ describe('saved edit integration', () => {
       }
 
       it('undoes a multi-command batch across new chats and service replicas, then redoes the same IDs', async () => {
-        const input = await editInput()
-        input.commands = [
-          {
-            type: 'typography_set',
-            blockId: `${journeyId}-text`,
-            content: 'Intermediate'
-          },
-          {
-            type: 'typography_set',
-            blockId: `${journeyId}-text`,
-            content: 'Final'
-          }
-        ]
+        const input = {
+          ...(await editInput()),
+          commands: [
+            {
+              type: 'typography_set',
+              blockId: `${journeyId}-text`,
+              content: 'Final'
+            },
+            {
+              type: 'typography_set',
+              blockId: `${journeyId}-text`,
+              align: 'right'
+            }
+          ]
+        }
         const saved = receipt(await edit(input))
         const second = await replica()
         restartOwner()

@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
+import { structureCommandNames } from '@core/yoga/mcp/structureContract'
 import {
   type ReadCredential,
   type ReadRequest,
@@ -533,7 +534,7 @@ async function snapshot(
       config.editsEnabled &&
       claims.mode === 'edit' &&
       journey.status === 'draft'
-        ? ['typography_set']
+        ? ['typography_set', ...structureCommandNames]
         : [],
     adminLink: link(journey.id),
     warnings
@@ -639,9 +640,33 @@ async function snapshot(
     skip: offset,
     take: 101
   })
+  // An explicitly removed Step can still be the destination of an unchanged
+  // incoming route. Return that owned ID so a later deliberate repair can read
+  // the broken relationship; foreign destination IDs remain hidden.
+  const destinationIds = page.flatMap((block) =>
+    [block.nextBlockId, block.action?.blockId].filter((id): id is string =>
+      Boolean(id)
+    )
+  )
+  const removedDestinations = await tx.block.findMany({
+    where: {
+      id: { in: destinationIds },
+      journeyId: journey.id,
+      typename: 'StepBlock',
+      deletedAt: { not: null }
+    },
+    select: { id: true }
+  })
+  const removedStepIds = new Set(removedDestinations.map(({ id }) => id))
+  const routeIds = new Set([...owned, ...removedStepIds])
   const blocks = page.slice(0, 100).map((block) => {
     for (const field of blockReferences)
-      block[field] = safeReference(block[field])
+      block[field] =
+        field === 'nextBlockId' &&
+        block[field] &&
+        removedStepIds.has(block[field])
+          ? block[field]
+          : safeReference(block[field])
     return request.input.view === 'outline'
       ? {
           id: block.id,
@@ -649,14 +674,20 @@ async function snapshot(
           parentOrder: block.parentOrder,
           slug: block.slug,
           nextBlockId: block.nextBlockId,
+          ...(block.nextBlockId && removedStepIds.has(block.nextBlockId)
+            ? { unresolvedDefaultRoute: true }
+            : {}),
           x: block.x,
           y: block.y,
           locked: block.locked
         }
       : {
           ...block,
+          ...(block.nextBlockId && removedStepIds.has(block.nextBlockId)
+            ? { unresolvedDefaultRoute: true }
+            : {}),
           settings: finiteSettings(block),
-          action: typedAction(block.action, owned),
+          action: typedAction(block.action, routeIds, removedStepIds),
           ...(block.typename === 'CardBlock'
             ? { aiChat: toAiChatSettings(block) }
             : {})
@@ -699,7 +730,8 @@ function finiteSettings(
 }
 function typedAction(
   action: Prisma.BlockGetPayload<{ select: typeof blockSelect }>['action'],
-  owned: Set<string>
+  owned: Set<string>,
+  removedStepIds: Set<string> = new Set()
 ): unknown {
   if (!action) return null
   const base = {
@@ -710,7 +742,8 @@ function typedAction(
     return {
       ...base,
       type: 'NavigateToBlockAction',
-      blockId: owned.has(action.blockId) ? action.blockId : null
+      blockId: owned.has(action.blockId) ? action.blockId : null,
+      ...(removedStepIds.has(action.blockId) ? { unresolved: true } : {})
     }
   if (action.email !== null)
     return { ...base, type: 'EmailAction', email: action.email }

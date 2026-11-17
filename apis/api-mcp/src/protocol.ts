@@ -27,6 +27,7 @@ import {
   resultContractVersion,
   safeReadError
 } from '@core/yoga/mcp/readContract'
+import { structureCommandNames } from '@core/yoga/mcp/structureContract'
 
 import type { ReadSession } from './reads'
 
@@ -83,9 +84,10 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
       // Resource state, key existence and retention outcomes require an
       // authorized data result. Exceptions cannot bypass final release.
       const code =
-        privateOperationErrorCodes.some(
-          (privateCode) => privateCode === unsafeCode
-        ) ||
+        (unsafeCode !== 'LIMIT_EXCEEDED' &&
+          privateOperationErrorCodes.some(
+            (privateCode) => privateCode === unsafeCode
+          )) ||
         (unsafeCode === 'LIMIT_EXCEEDED' &&
           !(error instanceof InputLimitExceeded))
           ? 'ACCESS_DENIED_OR_NOT_FOUND'
@@ -134,7 +136,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_read',
       description:
-        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read dependencies before proposing changes; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported Typography fields after a fresh read. Use journey_history for the retained connection batches. Media operations are unavailable.',
+        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read affected content, routes and dependencies before editing; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported structure, routing and Typography commands, and journey_history for retained batches. Media acquisition and source attachment are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(journeyInput, { io: 'input' }),
         type: 'object' as const
@@ -144,7 +146,9 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_edit',
       description:
-        'Save one bounded atomic batch of typography_set commands in an existing ordinary draft. Read affected content first. Supply the current expectedRevision and reuse the same idempotencyKey and payload after uncertain responses. Only content, variant, alignment and hex color are supported. Omitted fields are preserved. A receipt describes its historical committed revision, never current journey state. Host, publication, raw GraphQL and whole-journey replacement are unavailable.',
+        'Save one bounded atomic batch in an existing ordinary draft. Commands: typography_set, ' +
+        structureCommandNames.join(', ') +
+        '. Read affected content and routes first. Supply current expectedRevision and reuse the exact idempotencyKey and payload after uncertain responses. Existing references are {id}; new objects have unique lowercase local keys and references {local}, including forward references. step_add creates a complete Step/Card and ordered typed content. Button creation includes icons; Image/Video creation is an empty placeholder. Forms creation and media source attachment are unavailable. Placement is before/after an owned sibling anchor or end. Reorder supplies the complete sibling set; Step order determines the start. A Card slug is the Step website slug. Actions configure navigation only, never execute it. Step duplication clears default continuation, remaps owned references and preserves authorized action destinations. Standalone Video duplication is unavailable. Deleting a requested Step preserves and reports incoming routes. Change a route only when the user requested or accepted that specific repair; a proposal makes no write. Explicit delete and repair commands can share this atomic batch. Omitted content and unrelated Host state are preserved. The receipt describes a historical committed revision. Host, publication, raw GraphQL and whole-journey replacement are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
         type: 'object' as const
@@ -179,7 +183,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
       name: 'journey_' + direction,
       description:
         direction +
-        ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. New committed edits clear redo; rejection and exact replay do not. Typography restoration has no external provider effects. Host changes are excluded.',
+        ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. Delete-only undo restores the same Step and descendant IDs without changing incoming routes. A combined delete and repair restores only its recorded changes and refuses conflicting human route edits. New committed edits clear redo; rejection and exact replay do not. These content batches have no external provider effects. Host changes are excluded.',
       inputSchema: {
         ...z.toJSONSchema(historyActionInput, { io: 'input' }),
         type: 'object' as const
