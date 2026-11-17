@@ -470,7 +470,9 @@ describe('granted journey read authorization', () => {
         }
         process.env.SKIP_ENV_VALIDATION = '1'
         if (users) {
-          if (!/^\/users_issue_105(50|53)(_|$)/.test(new URL(usersUrl!).pathname))
+          if (
+            !/^\/users_issue_105(50|53)(_|$)/.test(new URL(usersUrl!).pathname)
+          )
             throw new Error('Use isolated users issue database')
           vi.doMock('@core/prisma/users/client', async (importOriginal) => ({
             ...(await importOriginal<
