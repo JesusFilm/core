@@ -1255,8 +1255,8 @@ export class JourneyPage {
     const updatedLinkPage = await this.context.newPage()
     await updatedLinkPage.goto(linkToCheck)
     await updatedLinkPage.waitForLoadState()
-    const tabName: string = await updatedLinkPage.title()
-    expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
+    // The tab title starts with the card heading, which the test sets to the journey's unique name
+    await expect(updatedLinkPage).toHaveTitle(new RegExp(journeyName))
     const loadedLink: string = updatedLinkPage.url()
     expect(loadedLink).toStrictEqual(linkToCheck)
   }
