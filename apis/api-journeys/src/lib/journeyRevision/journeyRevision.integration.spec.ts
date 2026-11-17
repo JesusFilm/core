@@ -521,15 +521,34 @@ describe('shared journey revision integration', () => {
       expect(await revision()).toBe(before)
     })
 
-    it.each(['', '-1', '01', '1.0', ' 1', '1e2', '12345678901234567890'])(
-      'rejects malformed revision %j before writing',
+    it.each([
+      '',
+      '-1',
+      '01',
+      '1.0',
+      ' 1',
+      '1e2',
+      '18446744073709551616',
+      '123456789012345678901'
+    ])('rejects malformed revision %j before writing', async (expected) => {
+      const before = await revision()
+      await expect(
+        prisma.$transaction((tx) =>
+          lockDraftJourneyRevision(tx, journeyId, expected)
+        )
+      ).rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } })
+      expect(await revision()).toBe(before)
+    })
+
+    it.each(['12345678901234567890', '18446744073709551615'])(
+      'recognizes valid uint64 revision %s and rejects its stale value without writing',
       async (expected) => {
         const before = await revision()
         await expect(
           prisma.$transaction((tx) =>
             lockDraftJourneyRevision(tx, journeyId, expected)
           )
-        ).rejects.toMatchObject({ extensions: { code: 'BAD_USER_INPUT' } })
+        ).rejects.toMatchObject({ extensions: { code: 'REVISION_CONFLICT' } })
         expect(await revision()).toBe(before)
       }
     )
