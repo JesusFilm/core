@@ -89,7 +89,10 @@ describe('UserMenu', () => {
     ).toBeInTheDocument()
   })
 
-  it('should redirect user to email preferences page', async () => {
+  it.each([
+    ['Email Preferences', '/email-preferences/amin@email.com'],
+    ['Connected agents', '/agents']
+  ])('navigates from %s to its personal page', async (label, destination) => {
     const push = vi.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
 
@@ -126,10 +129,10 @@ describe('UserMenu', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByText('Email Preferences'))
-    await waitFor(() =>
-      expect(push).toHaveBeenCalledWith('/email-preferences/amin@email.com')
-    )
+    fireEvent.click(getByText(label))
+    await waitFor(() => expect(push).toHaveBeenCalledWith(destination))
+    if (label === 'Connected agents')
+      expect(handleProfileClose).toHaveBeenCalled()
   })
 
   it('should call logout on logout click', async () => {

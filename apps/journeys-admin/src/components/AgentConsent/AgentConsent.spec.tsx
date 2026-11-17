@@ -208,5 +208,23 @@ describe('AgentConsent', () => {
       journeyIds: ['draft-a'],
       mode: 'view'
     })
+    fireEvent.click(screen.getByRole('button', { name: 'Change selection' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Create a separate connection' })
+    )
+    expect(screen.getByRole('checkbox', { name: 'Draft A' })).toBeEnabled()
+    expect(screen.getByRole('checkbox', { name: 'Draft A' })).not.toBeChecked()
+    expect(screen.getByRole('combobox')).not.toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+    expect(
+      screen.getByRole('button', { name: 'Review connection' })
+    ).toBeDisabled()
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Draft A' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Review connection' }))
+    await screen.findByRole('button', { name: 'Approve connection' })
+    expect(requests[2]).not.toHaveProperty('connectionId')
+    expect(requests[2]).not.toHaveProperty('expectedVersion')
   })
 })
