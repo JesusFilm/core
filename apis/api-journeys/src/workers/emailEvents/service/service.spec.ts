@@ -152,6 +152,9 @@ const journey: JourneyWithTeamAndUserJourney = {
   menuStepBlockId: null,
   socialNodeX: null,
   socialNodeY: null,
+  custom1Label: null,
+  custom2Label: null,
+  custom3Label: null,
   fromTemplateId: null,
   journeyCustomizationDescription: null,
   showAssistant: null,
@@ -160,6 +163,10 @@ const journey: JourneyWithTeamAndUserJourney = {
 }
 
 const event: Event = {
+  captureIdentity: null,
+  captureTag: null,
+  captureTrigger: null,
+  templateFamilyId: null,
   id: 'event 1',
   typename: 'event',
   journeyId: 'journeyId',

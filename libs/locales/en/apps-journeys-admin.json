@@ -1845,5 +1845,13 @@
   "Review access change": "Review access change",
   "Confirm disconnect": "Confirm disconnect",
   "Approve access change": "Approve access change",
-  "Journey titles are unavailable. You can still disconnect a connection.": "Journey titles are unavailable. You can still disconnect a connection."
+  "Journey titles are unavailable. You can still disconnect a connection.": "Journey titles are unavailable. You can still disconnect a connection.",
+  "You don't have access to this campaign": "You don't have access to this campaign",
+  "Ask a manager of its team to add you.": "Ask a manager of its team to add you.",
+  "{{label}} ({{shortcut}})": "{{label}} ({{shortcut}})",
+  "{{label}}: {{percent}}%": "{{label}}: {{percent}}%",
+  "Leave the editor?": "Leave the editor?",
+  "Stay": "Stay",
+  "Leave": "Leave",
+  "The translation into {{language}} stops.": "The translation into {{language}} stops."
 }

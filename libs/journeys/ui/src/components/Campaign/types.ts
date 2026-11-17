@@ -101,11 +101,3 @@ export function watchHref(video: {
   const slug = video.variant?.slug ?? video.slug
   return hasText(slug) ? watchUrl(slug) : null
 }
-
-export { EXTRA_TYPENAMES as CAMPAIGN_EXTRA_TYPENAMES } from './libs/campaignBlockGrammar'
-export const CAMPAIGN_NON_SECTION_TYPENAMES = [
-  ...EXTRA_TYPENAMES,
-  'CampaignColumnBlock',
-  'CampaignJourneyBlock',
-  'CampaignVideoBlock'
-] as const

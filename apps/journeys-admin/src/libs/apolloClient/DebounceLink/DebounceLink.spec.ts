@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client'
 import { parse } from 'graphql'
-import { Observable } from 'rxjs'
+import { Observable, Observer } from 'rxjs'
 
 import { DebounceLink } from './DebounceLink'
 
@@ -81,7 +81,7 @@ describe('DebounceLink', () => {
     await expect(second).resolves.toEqual({ data: { save: { value: 'b' } } })
   })
 
-  it('reports a pending request until it is forwarded', async () => {
+  it('clears pending requests when forwarding completes synchronously', async () => {
     const downstream = createRecordingLink()
     const debounceLink = new DebounceLink(500)
     const link = ApolloLink.from([debounceLink, downstream.link])
@@ -94,6 +94,70 @@ describe('DebounceLink', () => {
     expect(downstream.forwarded()).toEqual(['a'])
     expect(debounceLink.hasPending()).toBe(false)
     await saved
+  })
+
+  it.each(['complete', 'error', 'unsubscribe'] as const)(
+    'keeps a forwarded write pending until %s',
+    async (settlement) => {
+      let sink: Observer<ApolloLink.Result> | undefined
+      const teardown = vi.fn()
+      const downstream = new ApolloLink(
+        () =>
+          new Observable<ApolloLink.Result>((observer) => {
+            sink = observer
+            return teardown
+          })
+      )
+      const debounceLink = new DebounceLink(500)
+      const link = ApolloLink.from([debounceLink, downstream])
+      const onError = vi.fn()
+      const subscription = ApolloLink.execute(
+        link,
+        {
+          query: MUTATION,
+          variables: { value: 'a' },
+          context: { debounceKey: 'field' }
+        },
+        { client }
+      ).subscribe({ error: onError })
+
+      expect(debounceLink.hasPending()).toBe(true)
+      await vi.advanceTimersByTimeAsync(500)
+      expect(sink).toBeDefined()
+      expect(debounceLink.hasPending()).toBe(true)
+
+      sink?.next({ data: { save: { value: 'a' } } })
+      expect(debounceLink.hasPending()).toBe(true)
+
+      if (settlement === 'unsubscribe') subscription.unsubscribe()
+      else if (settlement === 'error') sink?.error(new Error('Write failed'))
+      else sink?.complete()
+
+      expect(debounceLink.hasPending()).toBe(false)
+      expect(teardown).toHaveBeenCalledTimes(1)
+      expect(onError).toHaveBeenCalledTimes(settlement === 'error' ? 1 : 0)
+    }
+  )
+
+  it('clears pending requests when forwarding errors synchronously', async () => {
+    const debounceLink = new DebounceLink(500)
+    const link = ApolloLink.from([
+      debounceLink,
+      new ApolloLink(
+        () =>
+          new Observable((observer) =>
+            observer.error(new Error('Write failed'))
+          )
+      )
+    ])
+    const saved = execute(link, 'a', { debounceKey: 'field' }).catch(
+      (error: unknown) => error
+    )
+
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(await saved).toEqual(new Error('Write failed'))
+    expect(debounceLink.hasPending()).toBe(false)
   })
 
   it('debounces each key independently', async () => {

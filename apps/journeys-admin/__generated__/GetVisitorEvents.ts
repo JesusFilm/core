@@ -10,7 +10,7 @@ import { ButtonAction, VideoBlockSource, MessagePlatform } from "./globalTypes";
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_JourneyEvent {
-  __typename: "JourneyEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "TextResponseSubmissionEvent";
+  __typename: "JourneyEvent" | "ChristDecisionCaptureEvent" | "GospelStartCaptureEvent" | "GospelCompleteCaptureEvent" | "PrayerRequestCaptureEvent" | "RsvpCaptureEvent" | "SpecialVideoStartCaptureEvent" | "SpecialVideoCompleteCaptureEvent" | "Custom1CaptureEvent" | "Custom2CaptureEvent" | "Custom3CaptureEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "TextResponseSubmissionEvent";
   id: string;
   journeyId: string;
   label: string | null;
