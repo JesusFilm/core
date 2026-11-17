@@ -31,6 +31,8 @@ Connection withdrawal and coordinated account/ACL changes remain owned by #10575
 
 Every successful read page and expected tool-error result includes `contractVersion: "1"` in `structuredContent`, independently of the MCP transport version. The owning service includes this field before applying the 512 KiB structured-result bound and computing the data hash checked at output acceptance. MCP rejects missing or unsupported result versions from the owner.
 
+Invalid tool arguments return the same versioned `VALIDATION_FAILED` envelope with the tool's fixed JSON Schema in `fieldRules`. Rejected values and unknown field names are never echoed, and no read is admitted. Malformed MCP messages and unknown tools or methods remain protocol errors on both supported profiles.
+
 Read pages contain at most 100 content objects, explicit Step selection caps at 20, list limits default to 20 and cap at 50, query text caps at 200 characters, and structured results cap at 512 KiB. Signed cursors bind user, connection/version, filters, resource and shared revision. Changed revisions return `REVISION_CONFLICT`. Foreign block references are cleared; unrelated memberships, analytics tokens, source credentials and form destinations are omitted. Settings include the current Host's display fields without exposing a Host mutation. Omitted/unmodeled fields have preservation warnings. Ready image/video URLs keep their existing public delivery behavior. No asset creation or cleanup occurs.
 
 ## Local verification
