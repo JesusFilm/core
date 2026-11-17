@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { Action, Block, Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
+import { deriveSubmitRole } from '@core/yoga/mcp/presentationContract'
 
 import {
   Action as AuthAction,
@@ -254,7 +255,7 @@ async function getDuplicateBlockAndChildren(
       (block as Record<string, unknown>)[key] === true &&
       !isStepBlock
     ) {
-      updatedBlockProps[key] = false
+      updatedBlockProps[key] = deriveSubmitRole('duplicate-content', [], true)
     }
   })
 

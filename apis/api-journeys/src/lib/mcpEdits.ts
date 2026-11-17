@@ -8,14 +8,13 @@ import {
   type HistoryResult,
   type OperationReceipt,
   type OperationResult,
-  type TypographyInverse,
   canonicalFingerprint,
-  commandRegistry,
   operationFailure,
   operationReceipt,
   operationResult,
   privateOperationErrorCodes
 } from '@core/yoga/mcp/editContract'
+import { createdInverse } from '@core/yoga/mcp/presentationContract'
 import {
   assertRequestInputSize,
   boundedJson,
@@ -37,22 +36,25 @@ import {
   readJourneyRevision
 } from './journeyRevision/journeyRevision'
 import {
+  type ContentInverse,
+  type ContentPlan,
+  createdState,
+  planContent
+} from './mcpContent'
+import { prepareCardChatGate } from './mcpContentFeatures'
+import {
   cleanupJourneyEdits,
   editDatabaseTime,
   reconcileJourneyEdits
 } from './mcpEditsStore'
-import {
-  describeHistory,
-  historyEntries,
-  planHistory,
-  typographyParents
-} from './mcpHistory'
+import { describeHistory, historyEntries, planHistory } from './mcpHistory'
 import type { JourneyReadsConfig } from './mcpReads'
 
 export type EditCheckpoint =
   | 'execution_prepared'
   | 'before_accept'
   | 'after_accept'
+  | 'after_child'
   | 'after_content'
   | 'after_revision'
   | 'after_history'
@@ -69,6 +71,7 @@ export interface EditContext {
 export interface JourneyEditHooks {
   checkpoint?: (point: EditCheckpoint, context: EditContext) => Promise<void>
   now?: () => Date
+  canEditChat?: (userId: string) => Promise<boolean>
 }
 
 function json(value: unknown): Prisma.InputJsonValue {
@@ -199,6 +202,18 @@ export function createJourneyEditHandler(
         update: {}
       })
       await hooks.checkpoint?.('execution_prepared', context)
+      const requiresChat =
+        operation.tool === 'journey_edit'
+          ? operation.input.commands.some(
+              (command) => command.type === 'card_chat_set'
+            )
+          : operation.tool === 'journey_undo' ||
+            operation.tool === 'journey_redo'
+      const canEditChat = hooks.canEditChat
+        ? () => hooks.canEditChat!(claims.subject)
+        : requiresChat && body.stage === 'read'
+          ? await prepareCardChatGate(claims.subject)
+          : async () => false
       const result: OperationResult | HistoryResult = await db.$transaction(
         async (tx) => {
           if (executionId) {
@@ -272,8 +287,11 @@ export function createJourneyEditHandler(
                         : { idempotencyKey: operation.input.idempotencyKey })
                   }
                 })
+          let needsChatGate = false
           const accept = async () => {
             await hooks.checkpoint?.('before_accept', context)
+            if (needsChatGate && !(await canEditChat()))
+              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
             await authority('accept', { credential, permitId })
             await hooks.checkpoint?.('after_accept', context)
           }
@@ -414,17 +432,9 @@ export function createJourneyEditHandler(
             if (!failure.success) throw error
             return reject(failure.data)
           }
-          const changes: TypographyInverse[] = []
-          const plans: Array<{
-            blockId: string
-            patch: Prisma.BlockUpdateInput
-            inverse?: TypographyInverse
-            fields: TypographyInverse['fields'][number]['field'][]
-          }> = []
-          const projected = new Map<
-            string,
-            Prisma.BlockGetPayload<Record<string, never>>
-          >()
+          const changes: ContentInverse[] = []
+          const plans: ContentPlan[] = []
+          let idMap: Record<string, string> = {}
           let restoredEntry:
             | Awaited<ReturnType<typeof historyEntries>>[number]
             | undefined
@@ -457,7 +467,8 @@ export function createJourneyEditHandler(
                   tx,
                   journey.id,
                   restoredEntry.changes,
-                  direction
+                  direction,
+                  canEditChat
                 ))
               )
             } catch (error) {
@@ -470,57 +481,49 @@ export function createJourneyEditHandler(
               throw error
             }
           }
-          for (const command of operation.tool === 'journey_edit'
-            ? operation.input.commands
-            : []) {
-            const block =
-              projected.get(command.blockId) ??
-              (await tx.block.findUnique({
-                where: {
-                  id: command.blockId,
-                  journeyId: journey.id,
-                  deletedAt: null
-                }
-              }))
-            if (
-              !block ||
-              block.typename !== 'TypographyBlock' ||
-              !block.parentBlockId
+          if (operation.tool === 'journey_edit') {
+            const planned = await planContent(
+              tx,
+              journey.id,
+              operation.input.commands,
+              canEditChat
             )
-              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-            const parent = await typographyParents(tx, journey.id, block)
-            const applied = commandRegistry[command.type].apply(block, command)
-            if (!applied.changedFields.length) continue
-            const patch: Prisma.BlockUpdateInput = {
-              content: applied.patch.content,
-              variant: applied.patch.variant,
-              align: applied.patch.align,
-              ...(applied.patch.settings
-                ? { settings: json(applied.patch.settings) }
-                : {})
-            }
-            plans.push({
-              blockId: block.id,
-              patch,
-              inverse: { ...applied.inverse, parent },
-              fields: applied.changedFields
-            })
-            projected.set(block.id, {
-              ...block,
-              ...applied.patch,
-              settings: applied.patch.settings
-                ? (json(applied.patch.settings) as Prisma.JsonValue)
-                : block.settings
-            })
+            plans.push(...planned.plans)
+            idMap = planned.idMap
           }
+          needsChatGate =
+            plans.some((plan) => plan.gate === 'aiChatEditor') ||
+            (operation.tool === 'journey_edit' && requiresChat)
           context.operationId = randomUUID()
           await accept()
           for (const plan of plans) {
-            await tx.block.update({
-              where: { id: plan.blockId },
-              data: plan.patch
-            })
+            if (plan.create) {
+              await tx.block.create({ data: plan.create })
+              if (plan.create.typename === 'IconBlock')
+                await hooks.checkpoint?.('after_child', context)
+            } else if (plan.patch) {
+              await tx.block.update({
+                where: { id: plan.blockId },
+                data: plan.patch
+              })
+            }
             if (plan.inverse) changes.push(plan.inverse)
+            if (plan.captureCreated) {
+              const blocks = []
+              for (const id of plan.captureCreated.ids) {
+                const block = await tx.block.findUniqueOrThrow({
+                  where: { id, journeyId: journey.id }
+                })
+                blocks.push({ id, state: createdState(block) })
+              }
+              changes.push(
+                createdInverse.parse({
+                  type: 'content_created',
+                  parent: plan.captureCreated.parent,
+                  blocks
+                })
+              )
+            }
           }
           await hooks.checkpoint?.('after_content', context)
           const revision = await readJourneyRevision(tx, journey.id)
@@ -529,6 +532,12 @@ export function createJourneyEditHandler(
           const historyId =
             restoredEntry?.id ?? (changes.length ? randomUUID() : null)
           const effectIds = plans.length ? [randomUUID()] : []
+          const changedFields = new Map<string, Set<OperationReceipt['changedFields'][number]['fields'][number]>>()
+          for (const plan of plans) {
+            const fields = changedFields.get(plan.blockId) ?? new Set()
+            plan.fields.forEach((field) => fields.add(field))
+            changedFields.set(plan.blockId, fields)
+          }
           const receipt: OperationReceipt = {
             contractVersion: '1',
             status: 'committed',
@@ -550,19 +559,16 @@ export function createJourneyEditHandler(
                       : ('redo' as const)
                 }
               : {}),
-            changedFields: plans.map(({ blockId, fields }) => ({
-              blockId,
-              fields
-            })),
-            idMap: {},
+            changedFields: [...changedFields].map(([blockId, fields]) => ({ blockId, fields: [...fields] })),
+            idMap,
             effectIds,
             warnings: restoredEntry
               ? [
-                  'Restored recorded content fields. This Typography batch has no upload, generation or provider effects.'
+                  'Restored recorded content and presentation. This batch has no upload, generation or provider effects.'
                 ]
               : []
           }
-          await tx.mcpEditOperation.create({
+          const storedOperation = await tx.mcpEditOperation.create({
             data: {
               id: receipt.operationId,
               namespaceId: namespace.id,
@@ -646,7 +652,7 @@ export function createJourneyEditHandler(
           await hooks.checkpoint?.('after_outbox', context)
           await settle('committed')
           await hooks.checkpoint?.('before_commit', context)
-          return operationReceipt.parse(receipt)
+          return operationReceipt.parse(storedOperation.result)
         },
         { isolationLevel: 'ReadCommitted', timeout: 20000 }
       )

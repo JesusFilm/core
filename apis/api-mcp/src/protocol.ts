@@ -97,7 +97,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
             type: 'text' as const,
             text:
               code === 'LIMIT_EXCEEDED'
-                ? 'LIMIT_EXCEEDED: saves allow 50 commands and 256 KiB of input; structured results allow 512 KiB and read pages contain at most 100 objects.'
+                ? 'LIMIT_EXCEEDED: saves allow 50 commands, 200 changed/new objects and 256 KiB of input; structured results allow 512 KiB and read pages contain at most 100 objects.'
                 : code
           }
         ],
@@ -110,6 +110,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
                 maxStructuredBytes: 524288,
                 maxInputBytes: 262144,
                 maxCommands: 50,
+                maxChangedObjects: 200,
                 maxObjectsPerPage: 100,
                 maxSelectedSteps: 20,
                 retry:
@@ -134,7 +135,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_read',
       description:
-        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read dependencies before proposing changes; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported Typography fields after a fresh read. Use journey_history for the retained connection batches. Media operations are unavailable.',
+        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read dependencies before proposing changes; preserve omitted content. Published journeys remain read-only. Use journey_edit for mounted content and presentation after a fresh read. Use journey_history for the retained connection batches. Media operations are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(journeyInput, { io: 'input' }),
         type: 'object' as const
@@ -144,7 +145,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_edit',
       description:
-        'Save one bounded atomic batch of typography_set commands in an existing ordinary draft. Read affected content first. Supply the current expectedRevision and reuse the same idempotencyKey and payload after uncertain responses. Only content, variant, alignment and hex color are supported. Omitted fields are preserved. A receipt describes its historical committed revision, never current journey state. Host, publication, raw GraphQL and whole-journey replacement are unavailable.',
+        'Save one atomic batch of at most 50 typed commands and 200 affected objects in an existing ordinary draft. typography_set edits plain multiline content, mounted whole-block variant, alignment and hex RGB color; variants use the existing journey fonts. button_set edits label, variant, size, enum color and alignment. button_icon_set edits an owned start/end icon name or null and mounted color; no icon IDs or size. spacer_set uses 20–400 in steps of 10. card_set edits layout, hex background including alpha, blur 0–25 and themeMode, with null resetting the theme. card_chat_set requires the current aiChatEditor gate and explicit enabled/collapse booleans. block_add creates Typography, Button or Spacer in an existing Card using a unique lowercase key and before/after/end placement; Buttons include both owned Icons and derive submit role. Reference a preceding created key as $key in blockId or placement. Journey font/theme creation and media slots have separate owners. Read affected content first. Supply current expectedRevision. Retry the exact idempotencyKey and payload after uncertain responses. Omitted and legacy fields survive. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL and whole-journey replacement are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
         type: 'object' as const
@@ -179,7 +180,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
       name: 'journey_' + direction,
       description:
         direction +
-        ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. New committed edits clear redo; rejection and exact replay do not. Typography restoration has no external provider effects. Host changes are excluded.',
+        ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. New committed edits clear redo; rejection and exact replay do not. These content and presentation restorations have no external provider effects. Host changes are excluded.',
       inputSchema: {
         ...z.toJSONSchema(historyActionInput, { io: 'input' }),
         type: 'object' as const

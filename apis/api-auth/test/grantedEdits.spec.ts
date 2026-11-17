@@ -111,6 +111,7 @@ describe('saved edit integration', () => {
       let mcpUrl: string
       let token: string
       let journeyId: string
+      let chatEnabled = true
       let checkpoint: Checkpoint
       let clock: Date | undefined
       let beforeAcceptance: ((stage: string) => Promise<void>) | undefined
@@ -292,6 +293,7 @@ describe('saved edit integration', () => {
         return call('journey_edit', input, accessToken, url)
       }
       function receipt(response: Awaited<ReturnType<typeof call>>): Receipt {
+        expect(response.json.error, response.text).toBeUndefined()
         expect(response.json.result?.isError, response.text).not.toBe(true)
         return receiptSchema.parse(response.json.result?.structuredContent)
       }
@@ -403,7 +405,8 @@ describe('saved edit integration', () => {
       function restartOwner() {
         ownerHandler = createJourneyEditHandler(ownerConfig, journeys, {
           checkpoint: async (point, context) => checkpoint?.(point, context),
-          now: () => clock ?? new Date()
+          now: () => clock ?? new Date(),
+          canEditChat: async () => chatEnabled
         })
       }
       async function counts() {
@@ -420,10 +423,10 @@ describe('saved edit integration', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_(10553|10562)(_|$)/.test(
+          !/^\/auth_issue_(10553|10562|10556)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_(10553|10562)(_|$)/.test(
+          !/^\/journeys_issue_(10553|10562|10556)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
@@ -684,6 +687,7 @@ describe('saved edit integration', () => {
 
       beforeEach(async () => {
         checkpoint = undefined
+        chatEnabled = true
         clock = undefined
         beforeAcceptance = undefined
         afterAcceptance = undefined
@@ -2235,6 +2239,1057 @@ describe('saved edit integration', () => {
             where: { id: `${journeyId}-text` }
           })
         ).toMatchObject({ content: 'Original heading' })
+        expect(await counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+      })
+
+      async function seedPresentation() {
+        const buttonId = `${journeyId}-button`
+        await journeys.block.createMany({
+          data: [
+            {
+              id: buttonId,
+              journeyId,
+              typename: 'ButtonBlock',
+              parentBlockId: `${journeyId}-card`,
+              parentOrder: 1,
+              label: 'Original button',
+              variant: 'contained',
+              size: 'medium',
+              color: 'primary',
+              submitEnabled: false,
+              startIconId: `${buttonId}-start`,
+              endIconId: `${buttonId}-end`,
+              settings: {
+                alignment: 'justify',
+                color: '#abcdef',
+                legacy: { preserve: true }
+              }
+            },
+            {
+              id: `${buttonId}-start`,
+              journeyId,
+              typename: 'IconBlock',
+              parentBlockId: buttonId,
+              name: 'Home4',
+              color: 'inherit',
+              size: 'small'
+            },
+            {
+              id: `${buttonId}-end`,
+              journeyId,
+              typename: 'IconBlock',
+              parentBlockId: buttonId,
+              name: 'ArrowForwardRounded',
+              color: null,
+              size: 'large'
+            },
+            {
+              id: `${journeyId}-spacer`,
+              journeyId,
+              typename: 'SpacerBlock',
+              parentBlockId: `${journeyId}-card`,
+              parentOrder: 2,
+              spacing: 100
+            }
+          ]
+        })
+      }
+      function presentationCase(name: string) {
+        const buttonId = `${journeyId}-button`
+        switch (name) {
+          case 'typography_set':
+            return {
+              command: {
+                type: name,
+                blockId: `${journeyId}-text`,
+                variant: 'body1',
+                align: 'right',
+                color: '#ffffff'
+              },
+              targetId: `${journeyId}-text`,
+              expected: {
+                variant: 'body1',
+                align: 'right',
+                settings: {
+                  color: '#ffffff',
+                  unmounted: 'preserve-settings-sentinel'
+                }
+              },
+              unrelated: { content: 'Human text' }
+            }
+          case 'button_set':
+            return {
+              command: {
+                type: name,
+                blockId: buttonId,
+                label: 'Continue',
+                variant: 'outlined',
+                color: 'secondary',
+                size: 'large',
+                alignment: 'center'
+              },
+              targetId: buttonId,
+              expected: {
+                label: 'Continue',
+                variant: 'outlined',
+                color: 'secondary',
+                size: 'large',
+                settings: {
+                  alignment: 'center',
+                  color: '#abcdef',
+                  legacy: { preserve: true }
+                }
+              },
+              unrelated: { eventLabel: 'prayerRequest' as const }
+            }
+          case 'button_icon_start':
+            return {
+              command: {
+                type: 'button_icon_set',
+                blockId: buttonId,
+                slot: 'start',
+                name: 'CheckCircleRounded',
+                color: 'secondary'
+              },
+              targetId: `${buttonId}-start`,
+              expected: {
+                name: 'CheckCircleRounded',
+                color: 'secondary',
+                size: 'small'
+              },
+              unrelated: { size: 'medium' }
+            }
+          case 'button_icon_end':
+            return {
+              command: {
+                type: 'button_icon_set',
+                blockId: buttonId,
+                slot: 'end',
+                name: null,
+                color: 'error'
+              },
+              targetId: `${buttonId}-end`,
+              expected: { name: null, color: 'error', size: 'large' },
+              unrelated: { size: 'medium' }
+            }
+          case 'spacer_set':
+            return {
+              command: {
+                type: name,
+                blockId: `${journeyId}-spacer`,
+                spacing: 230
+              },
+              targetId: `${journeyId}-spacer`,
+              expected: { spacing: 230 },
+              unrelated: { label: 'Human sentinel' }
+            }
+          case 'card_set':
+            return {
+              command: {
+                type: name,
+                blockId: `${journeyId}-card`,
+                fullscreen: true,
+                backgroundColor: '#12345680',
+                backdropBlur: 13,
+                themeMode: 'light'
+              },
+              targetId: `${journeyId}-card`,
+              expected: {
+                fullscreen: true,
+                backgroundColor: '#12345680',
+                backdropBlur: 13,
+                themeMode: 'light',
+                themeName: 'base'
+              },
+              unrelated: { label: 'Human sentinel' }
+            }
+          case 'card_chat_set':
+            return {
+              command: {
+                type: name,
+                blockId: `${journeyId}-card`,
+                enabled: true,
+                collapse: true
+              },
+              targetId: `${journeyId}-card`,
+              expected: { showAssistant: true, expandChatByDefault: false },
+              unrelated: { backgroundColor: '#abcdef' }
+            }
+          default:
+            throw new Error('Unknown presentation fixture')
+        }
+      }
+
+      it.each([
+        'typography_set',
+        'button_set',
+        'button_icon_start',
+        'button_icon_end',
+        'spacer_set',
+        'card_set',
+        'card_chat_set'
+      ])(
+        'saves, replays and safely undoes/redoes %s through the authenticated MCP path',
+        async (name) => {
+          await seedPresentation()
+          const fixture = presentationCase(name)
+          const original = await journeys.block.findUniqueOrThrow({
+            where: { id: fixture.targetId }
+          })
+          const input = {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [fixture.command]
+          }
+          discardSavedResponse = true
+          expect((await call('journey_edit', input)).json.result?.isError).toBe(
+            true
+          )
+          const saved = receipt(await call('journey_edit', input))
+          expect(receipt(await call('journey_edit', input))).toEqual(saved)
+          expect(await counts()).toEqual({
+            operations: 1,
+            history: 1,
+            effects: 1
+          })
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: fixture.targetId }
+            })
+          ).toMatchObject(fixture.expected)
+          const read = await call('journey_read', { journeyId, view: 'steps' })
+          expect(read.json.result?.isError, read.text).not.toBe(true)
+          expect(read.text).toContain(fixture.targetId)
+          const host = await journeys.host.create({
+            data: { teamId: 'edit-team-alice', title: 'Later human Host' }
+          })
+          await journeys.journey.update({
+            where: { id: journeyId },
+            data: { hostId: host.id }
+          })
+          await journeys.block.update({
+            where: { id: fixture.targetId },
+            data: fixture.unrelated
+          })
+          expect(
+            (
+              await call('journey_edit', {
+                ...input,
+                idempotencyKey: randomUUID()
+              })
+            ).text
+          ).toContain('REVISION_CONFLICT')
+          const deniedToken = await consent('alice', [journeyId], 'view')
+          expect(
+            (
+              await call(
+                'journey_edit',
+                {
+                  ...input,
+                  expectedRevision: await revision(),
+                  idempotencyKey: randomUUID()
+                },
+                deniedToken
+              )
+            ).json.result?.isError
+          ).toBe(true)
+          const undoInput = await historyInput(saved.historyId!)
+          const undone = receipt(await call('journey_undo', undoInput))
+          expect(receipt(await call('journey_undo', undoInput))).toEqual(undone)
+          const afterUndo = await journeys.block.findUniqueOrThrow({
+            where: { id: fixture.targetId }
+          })
+          expect(afterUndo).toMatchObject({
+            ...original,
+            ...fixture.unrelated,
+            updatedAt: expect.any(Date)
+          })
+          await historyAction('redo', saved.historyId!)
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: fixture.targetId }
+            })
+          ).toMatchObject({ ...fixture.expected, ...fixture.unrelated })
+          expect(
+            await journeys.journey.findUniqueOrThrow({
+              where: { id: journeyId }
+            })
+          ).toMatchObject({ hostId: host.id })
+          const fresh = receipt(
+            await call('journey_edit', {
+              ...input,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID()
+            })
+          )
+          expect(fresh.operationId).not.toBe(saved.operationId)
+          await journeys.journey.update({
+            where: { id: journeyId },
+            data: {
+              status: 'published',
+              publishedAt: new Date(),
+              firstPublishedAt: new Date()
+            }
+          })
+          expect(
+            (
+              await call('journey_edit', {
+                ...input,
+                expectedRevision: await revision(),
+                idempotencyKey: randomUUID()
+              })
+            ).text
+          ).toContain('NOT_EDITABLE')
+        }
+      )
+
+      it.each(['typography', 'button', 'spacer'])(
+        'creates complete %s content once, then undoes/redoes the same IDs',
+        async (kind) => {
+          const block =
+            kind === 'typography'
+              ? {
+                  kind,
+                  content: 'Plain\ntext',
+                  variant: 'caption',
+                  align: 'right',
+                  color: '#ffffff'
+                }
+              : kind === 'button'
+                ? {
+                    kind,
+                    label: 'Next',
+                    startIcon: { name: 'Home4', color: 'primary' },
+                    endIcon: { name: null }
+                  }
+                : { kind, spacing: 200 }
+          const input = {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              {
+                type: 'block_add',
+                key: 'created',
+                cardId: `${journeyId}-card`,
+                placement: { position: 'before', blockId: `${journeyId}-text` },
+                block
+              }
+            ]
+          }
+          discardSavedResponse = true
+          expect((await call('journey_edit', input)).json.result?.isError).toBe(
+            true
+          )
+          const saved = receipt(await call('journey_edit', input))
+          expect(receipt(await call('journey_edit', input))).toEqual(saved)
+          expect(Object.keys(saved.idMap)).toHaveLength(
+            kind === 'button' ? 3 : 1
+          )
+          const ids = Object.values(saved.idMap)
+          const created = await journeys.block.findMany({
+            where: { id: { in: ids }, deletedAt: null },
+            orderBy: { id: 'asc' }
+          })
+          expect(created).toHaveLength(ids.length)
+          expect(
+            created.find((item) => item.id === saved.idMap.created)
+          ).toMatchObject({
+            parentBlockId: `${journeyId}-card`,
+            parentOrder: 0
+          })
+          if (kind === 'button')
+            expect(
+              created.find((item) => item.id === saved.idMap.created)
+            ).toMatchObject({
+              startIconId: saved.idMap['created.startIcon'],
+              endIconId: saved.idMap['created.endIcon'],
+              submitEnabled: false,
+              settings: { alignment: 'justify' }
+            })
+          const read = await call('journey_read', { journeyId, view: 'steps' })
+          for (const id of ids) expect(read.text).toContain(id)
+          await historyAction('undo', saved.historyId!)
+          expect(
+            await journeys.block.count({
+              where: { id: { in: ids }, deletedAt: null }
+            })
+          ).toBe(0)
+          expect(await textBlock()).toMatchObject({ parentOrder: 0 })
+          await historyAction('redo', saved.historyId!)
+          expect(
+            await journeys.block.findMany({
+              where: { id: { in: ids }, deletedAt: null },
+              orderBy: { id: 'asc' }
+            })
+          ).toEqual(
+            created.map((item) =>
+              expect.objectContaining({ ...item, updatedAt: expect.any(Date) })
+            )
+          )
+        }
+      )
+
+      it('rolls back parent, children, revision, receipt, audit and history on a child failure', async () => {
+        const before = await revision()
+        checkpoint = async (point) => {
+          if (point === 'after_child')
+            throw new Error('Controlled child-write failure')
+        }
+        const input = {
+          journeyId,
+          expectedRevision: before,
+          idempotencyKey: randomUUID(),
+          commands: [
+            {
+              type: 'block_add',
+              key: 'cta',
+              cardId: `${journeyId}-card`,
+              placement: { position: 'end' },
+              block: { kind: 'button', label: 'Atomic' }
+            }
+          ]
+        }
+        expect((await call('journey_edit', input)).json.result?.isError).toBe(
+          true
+        )
+        expect(await counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+        expect(await journeys.block.count({ where: { journeyId } })).toBe(3)
+        expect(
+          await journeys.mcpEditAudit.count({ where: { journeyId } })
+        ).toBe(0)
+        expect(await revision()).toBe(before)
+        checkpoint = undefined
+        receipt(await call('journey_edit', input))
+      })
+
+      it.each(['TextResponseBlock', 'MultiselectBlock'])(
+        'derives one shared submit role from %s when adding several complete Buttons',
+        async (typename) => {
+          await journeys.block.create({
+            data: {
+              journeyId,
+              typename,
+              parentBlockId: `${journeyId}-card`,
+              parentOrder: 1
+            }
+          })
+          const saved = receipt(
+            await call('journey_edit', {
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: ['first', 'second'].map((key) => ({
+                type: 'block_add',
+                key,
+                cardId: `${journeyId}-card`,
+                placement: { position: 'end' },
+                block: { kind: 'button', label: key }
+              }))
+            })
+          )
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: saved.idMap.first }
+            })
+          ).toMatchObject({ submitEnabled: true })
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: saved.idMap.second }
+            })
+          ).toMatchObject({ submitEnabled: false })
+          await historyAction('undo', saved.historyId!)
+          await historyAction('redo', saved.historyId!)
+        }
+      )
+
+      it('rejects creation undo after a human edits a child or adds an action, preserving the whole composite', async () => {
+        const saved = receipt(
+          await call('journey_edit', {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              {
+                type: 'block_add',
+                key: 'cta',
+                cardId: `${journeyId}-card`,
+                placement: { position: 'end' },
+                block: { kind: 'button', label: 'Next' }
+              }
+            ]
+          })
+        )
+        await journeys.block.update({
+          where: { id: saved.idMap['cta.endIcon'] },
+          data: { name: 'Home4' }
+        })
+        expect(
+          (await call('journey_undo', await historyInput(saved.historyId!)))
+            .text
+        ).toContain('HISTORY_CONFLICT')
+        await journeys.block.update({
+          where: { id: saved.idMap['cta.endIcon'] },
+          data: { name: null }
+        })
+        await journeys.action.create({
+          data: { parentBlockId: saved.idMap.cta, url: 'https://example.test/' }
+        })
+        expect(
+          (await call('journey_undo', await historyInput(saved.historyId!)))
+            .text
+        ).toContain('HISTORY_CONFLICT')
+        expect(
+          await journeys.block.count({
+            where: { id: { in: Object.values(saved.idMap) }, deletedAt: null }
+          })
+        ).toBe(3)
+      })
+
+      it('repairs a missing owned icon with reversible creation and rejects foreign or shared slot IDs', async () => {
+        await seedPresentation()
+        const buttonId = `${journeyId}-button`
+        await journeys.block.update({
+          where: { id: buttonId },
+          data: { startIconId: null }
+        })
+        const saved = receipt(
+          await call('journey_edit', {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              {
+                type: 'button_icon_set',
+                blockId: buttonId,
+                slot: 'start',
+                name: 'Home4',
+                color: 'error'
+              }
+            ]
+          })
+        )
+        const button = await journeys.block.findUniqueOrThrow({
+          where: { id: buttonId }
+        })
+        expect(button.startIconId).not.toBeNull()
+        await historyAction('undo', saved.historyId!)
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+        ).toMatchObject({ startIconId: null })
+        await historyAction('redo', saved.historyId!)
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+        ).toMatchObject({ startIconId: button.startIconId })
+        for (const startIconId of [`${journeyId}-text`, button.endIconId]) {
+          await journeys.block.update({
+            where: { id: buttonId },
+            data: { startIconId }
+          })
+          const before = await revision()
+          expect(
+            (
+              await call('journey_edit', {
+                journeyId,
+                expectedRevision: before,
+                idempotencyKey: randomUUID(),
+                commands: [
+                  {
+                    type: 'button_icon_set',
+                    blockId: buttonId,
+                    slot: 'start',
+                    name: 'Home4'
+                  }
+                ]
+              })
+            ).json.result?.isError
+          ).toBe(true)
+          expect(await revision()).toBe(before)
+        }
+      })
+
+      it('enforces the current Card chat gate for edits and undo/redo and preserves nullable defaults', async () => {
+        const input = {
+          journeyId,
+          expectedRevision: await revision(),
+          idempotencyKey: randomUUID(),
+          commands: [
+            {
+              type: 'card_chat_set',
+              blockId: `${journeyId}-card`,
+              enabled: true,
+              collapse: false
+            }
+          ]
+        }
+        chatEnabled = false
+        expect((await call('journey_edit', input)).json.result?.isError).toBe(
+          true
+        )
+        expect(await counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+        chatEnabled = true
+        const saved = receipt(await call('journey_edit', input))
+        chatEnabled = false
+        expect(
+          (await call('journey_undo', await historyInput(saved.historyId!)))
+            .json.result?.isError
+        ).toBe(true)
+        chatEnabled = true
+        await historyAction('undo', saved.historyId!)
+        expect(
+          await journeys.block.findUniqueOrThrow({
+            where: { id: `${journeyId}-card` }
+          })
+        ).toMatchObject({ showAssistant: null, expandChatByDefault: null })
+        chatEnabled = false
+        expect(
+          (await call('journey_redo', await historyInput(saved.historyId!)))
+            .json.result?.isError
+        ).toBe(true)
+      })
+
+      it('keeps media attached and rejects expanded layout with a Video, including restoration', async () => {
+        const input = {
+          journeyId,
+          expectedRevision: await revision(),
+          idempotencyKey: randomUUID(),
+          commands: [
+            {
+              type: 'card_set',
+              blockId: `${journeyId}-card`,
+              fullscreen: true
+            }
+          ]
+        }
+        const saved = receipt(await call('journey_edit', input))
+        await historyAction('undo', saved.historyId!)
+        const video = await journeys.block.create({
+          data: {
+            journeyId,
+            typename: 'VideoBlock',
+            parentBlockId: `${journeyId}-card`
+          }
+        })
+        await journeys.block.update({
+          where: { id: `${journeyId}-card` },
+          data: { coverBlockId: video.id }
+        })
+        const before = await revision()
+        expect(
+          (
+            await call('journey_edit', {
+              ...input,
+              expectedRevision: before,
+              idempotencyKey: randomUUID()
+            })
+          ).json.result?.isError
+        ).toBe(true)
+        expect(
+          (await call('journey_redo', await historyInput(saved.historyId!)))
+            .json.result?.isError
+        ).toBe(true)
+        expect(
+          await journeys.block.findUniqueOrThrow({
+            where: { id: `${journeyId}-card` }
+          })
+        ).toMatchObject({ coverBlockId: video.id })
+        expect(await revision()).toBe(before)
+      })
+
+      it('keeps declared insertion order at one anchor and supports subsequent batch-local edits', async () => {
+        const saved = receipt(
+          await call('journey_edit', {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              ...['first', 'second'].map((key) => ({
+                type: 'block_add',
+                key,
+                cardId: `${journeyId}-card`,
+                placement: { position: 'after', blockId: `${journeyId}-text` },
+                block: { kind: 'button', label: key }
+              })),
+              { type: 'button_set', blockId: '$first', alignment: 'left' },
+              {
+                type: 'button_icon_set',
+                blockId: '$second',
+                slot: 'end',
+                name: 'Home4'
+              }
+            ]
+          })
+        )
+        const live = await journeys.block.findMany({
+          where: {
+            journeyId,
+            parentBlockId: `${journeyId}-card`,
+            deletedAt: null
+          },
+          orderBy: { parentOrder: 'asc' }
+        })
+        expect(live.map(({ id }) => id)).toEqual([
+          `${journeyId}-text`,
+          saved.idMap.first,
+          saved.idMap.second
+        ])
+        expect(live[1]).toMatchObject({ settings: { alignment: 'left' } })
+        await historyAction('undo', saved.historyId!)
+        await historyAction('redo', saved.historyId!)
+        expect(
+          await journeys.block.findUniqueOrThrow({
+            where: { id: saved.idMap['second.endIcon'] }
+          })
+        ).toMatchObject({ name: 'Home4' })
+      })
+
+      it('rejects expanded content writes before acceptance without a partial graph', async () => {
+        await journeys.block.createMany({
+          data: Array.from({ length: 200 }, (_, index) => ({
+            journeyId,
+            typename: 'SpacerBlock',
+            parentBlockId: `${journeyId}-card`,
+            parentOrder: index + 1,
+            spacing: 100
+          }))
+        })
+        const before = await revision()
+        const response = await call('journey_edit', {
+          journeyId,
+          expectedRevision: before,
+          idempotencyKey: randomUUID(),
+          commands: [
+            {
+              type: 'block_add',
+              key: 'too_large',
+              cardId: `${journeyId}-card`,
+              placement: { position: 'before', blockId: `${journeyId}-text` },
+              block: { kind: 'button', label: 'Bounded' }
+            }
+          ]
+        })
+        expect(response.json.result?.isError).toBe(true)
+        expect(await counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+        expect(await revision()).toBe(before)
+      })
+
+      it.each([
+        'button_set',
+        'button_icon_start',
+        'spacer_set',
+        'card_set',
+        'card_chat_set'
+      ])(
+        'rejects foreign ownership and affected-field conflicts for %s',
+        async (name) => {
+          await seedPresentation()
+          const fixture = presentationCase(name)
+          const input = {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [fixture.command]
+          }
+          expect(
+            (
+              await call('journey_edit', {
+                ...input,
+                commands: [{ ...fixture.command, blockId: 'foreign-block' }]
+              })
+            ).json.result?.isError
+          ).toBe(true)
+          const saved = receipt(await call('journey_edit', input))
+          const changes =
+            name === 'button_set'
+              ? { label: 'Human replacement' }
+              : name === 'button_icon_start'
+                ? { name: 'Home4' }
+                : name === 'spacer_set'
+                  ? { spacing: 300 }
+                  : name === 'card_set'
+                    ? { backgroundColor: '#654321' }
+                    : { showAssistant: false }
+          await journeys.block.update({
+            where: { id: fixture.targetId },
+            data: changes
+          })
+          expect(
+            (await call('journey_undo', await historyInput(saved.historyId!)))
+              .text
+          ).toContain('HISTORY_CONFLICT')
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: fixture.targetId }
+            })
+          ).toMatchObject(changes)
+          const before = await revision()
+          const context = await management()
+          expect((await context.post('disconnect')).status).toBe(200)
+          expect(
+            (
+              await call('journey_edit', {
+                ...input,
+                expectedRevision: before,
+                idempotencyKey: randomUUID()
+              })
+            ).json.result?.isError
+          ).toBe(true)
+          expect(await revision()).toBe(before)
+        }
+      )
+
+      it.each(['typography', 'button', 'spacer'])(
+        'rejects foreign parents, stale revisions, View only and publication for %s creation',
+        async (kind) => {
+          const input = {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              {
+                type: 'block_add',
+                key: 'content',
+                cardId: `${journeyId}-card`,
+                placement: { position: 'end' },
+                block:
+                  kind === 'typography'
+                    ? { kind, content: 'Text' }
+                    : kind === 'button'
+                      ? { kind, label: 'Continue' }
+                      : { kind, spacing: 200 }
+              }
+            ]
+          }
+          for (const cardId of ['foreign-card', `${journeyId}-step`])
+            expect(
+              (
+                await call('journey_edit', {
+                  ...input,
+                  commands: [{ ...input.commands[0], cardId }]
+                })
+              ).json.result?.isError
+            ).toBe(true)
+          const view = await consent('alice', [journeyId], 'view')
+          expect(
+            (await call('journey_edit', input, view)).json.result?.isError
+          ).toBe(true)
+          await journeys.block.update({
+            where: { id: `${journeyId}-text` },
+            data: { content: 'Later Admin edit' }
+          })
+          expect((await call('journey_edit', input)).text).toContain(
+            'REVISION_CONFLICT'
+          )
+          await journeys.journey.update({
+            where: { id: journeyId },
+            data: {
+              status: 'published',
+              publishedAt: new Date(),
+              firstPublishedAt: new Date()
+            }
+          })
+          const before = await revision()
+          expect(
+            (await call('journey_edit', { ...input, expectedRevision: before }))
+              .text
+          ).toContain('NOT_EDITABLE')
+          expect(await counts()).toEqual({
+            operations: 0,
+            history: 0,
+            effects: 0
+          })
+          expect(await revision()).toBe(before)
+        }
+      )
+
+      it.each(['undo', 'redo'] as const)(
+        'rejects %s after a human aliases an edited Icon into another slot',
+        async (direction) => {
+          await seedPresentation()
+          const buttonId = `${journeyId}-button`
+          const saved = receipt(
+            await call('journey_edit', {
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [
+                {
+                  type: 'button_icon_set',
+                  blockId: buttonId,
+                  slot: 'start',
+                  name: 'CheckCircleRounded'
+                }
+              ]
+            })
+          )
+          if (direction === 'redo')
+            await historyAction('undo', saved.historyId!)
+          await journeys.block.update({
+            where: { id: buttonId },
+            data: { endIconId: `${buttonId}-start` }
+          })
+          const before = await revision()
+          expect(
+            (
+              await call(
+                `journey_${direction}`,
+                await historyInput(saved.historyId!)
+              )
+            ).text
+          ).toContain('HISTORY_CONFLICT')
+          expect(await revision()).toBe(before)
+          await journeys.block.update({
+            where: { id: buttonId },
+            data: { endIconId: `${buttonId}-end` }
+          })
+          await journeys.block.create({
+            data: {
+              journeyId,
+              typename: 'ButtonBlock',
+              parentBlockId: `${journeyId}-card`,
+              parentOrder: 3,
+              startIconId: `${buttonId}-start`,
+              label: 'Later dependent button'
+            }
+          })
+          expect(
+            (
+              await call(
+                `journey_${direction}`,
+                await historyInput(saved.historyId!)
+              )
+            ).text
+          ).toContain('HISTORY_CONFLICT')
+        }
+      )
+
+      it.each(['another-submit', 'missing-response'])(
+        'rejects submit creation redo after %s changes its required form semantics',
+        async (change) => {
+          const response = await journeys.block.create({
+            data: {
+              journeyId,
+              typename: 'TextResponseBlock',
+              parentBlockId: `${journeyId}-card`,
+              parentOrder: 1
+            }
+          })
+          const saved = receipt(
+            await call('journey_edit', {
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [
+                {
+                  type: 'block_add',
+                  key: 'submit',
+                  cardId: `${journeyId}-card`,
+                  placement: { position: 'end' },
+                  block: { kind: 'button', label: 'Send' }
+                }
+              ]
+            })
+          )
+          await historyAction('undo', saved.historyId!)
+          if (change === 'another-submit')
+            await journeys.block.create({
+              data: {
+                journeyId,
+                typename: 'ButtonBlock',
+                parentBlockId: `${journeyId}-card`,
+                parentOrder: 9,
+                label: 'Human submit',
+                submitEnabled: true
+              }
+            })
+          else
+            await journeys.block.update({
+              where: { id: response.id },
+              data: { deletedAt: new Date() }
+            })
+          const before = await revision()
+          expect(
+            (await call('journey_redo', await historyInput(saved.historyId!)))
+              .text
+          ).toContain('HISTORY_CONFLICT')
+          expect(
+            await journeys.block.count({
+              where: { id: { in: Object.values(saved.idMap) }, deletedAt: null }
+            })
+          ).toBe(0)
+          expect(await revision()).toBe(before)
+        }
+      )
+
+      it('counts distinct affected objects when repeated insertions shift the same siblings', async () => {
+        await journeys.block.createMany({
+          data: Array.from({ length: 100 }, (_, index) => ({
+            journeyId,
+            typename: 'SpacerBlock',
+            parentBlockId: `${journeyId}-card`,
+            parentOrder: index + 1,
+            spacing: 100
+          }))
+        })
+        const saved = receipt(
+          await call('journey_edit', {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: ['first', 'second'].map((key) => ({
+              type: 'block_add',
+              key,
+              cardId: `${journeyId}-card`,
+              placement: { position: 'before', blockId: `${journeyId}-text` },
+              block: { kind: 'spacer', spacing: 200 }
+            }))
+          })
+        )
+        expect(saved.changedFields).toHaveLength(103)
+        await historyAction('undo', saved.historyId!)
+        await historyAction('redo', saved.historyId!)
+      })
+
+      it('rechecks the feature flag immediately before final chat acceptance', async () => {
+        checkpoint = async (point) => {
+          if (point === 'before_accept') chatEnabled = false
+        }
+        const before = await revision()
+        expect(
+          (
+            await call('journey_edit', {
+              journeyId,
+              expectedRevision: before,
+              idempotencyKey: randomUUID(),
+              commands: [
+                {
+                  type: 'card_chat_set',
+                  blockId: `${journeyId}-card`,
+                  enabled: true,
+                  collapse: false
+                }
+              ]
+            })
+          ).json.result?.isError
+        ).toBe(true)
+        expect(await revision()).toBe(before)
         expect(await counts()).toEqual({
           operations: 0,
           history: 0,

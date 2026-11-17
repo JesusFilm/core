@@ -2,6 +2,13 @@ import { createHash } from 'node:crypto'
 
 import { z } from 'zod'
 
+import {
+  plainText,
+  presentationCommand,
+  presentationFields,
+  presentationRegistry
+} from './presentationContract'
+
 const id = z.string().min(1).max(200)
 export const revisionInput = z
   .string()
@@ -12,7 +19,7 @@ export const typographyCommand = z
   .object({
     type: z.literal('typography_set'),
     blockId: id,
-    content: z.string().max(262144).optional(),
+    content: plainText.optional(),
     variant: z
       .enum(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body1', 'body2', 'caption'])
       .optional(),
@@ -35,7 +42,10 @@ export const editInput = z
     journeyId: id,
     expectedRevision: revisionInput,
     idempotencyKey: idempotencyKeyInput,
-    commands: z.array(typographyCommand).min(1).max(50)
+    commands: z
+      .array(z.union([typographyCommand, presentationCommand]))
+      .min(1)
+      .max(50)
   })
   .strict()
 export const historyInput = z.object({ journeyId: id }).strict()
@@ -61,7 +71,7 @@ export const historyResult = z
           .object({
             entryId: z.string().uuid(),
             operationId: z.string().uuid(),
-            label: z.literal('Typography edit'),
+            label: z.enum(['Typography edit', 'Content and presentation edit']),
             state: z.enum(['undo', 'redo']),
             createdAt: z.string().datetime()
           })
@@ -99,13 +109,13 @@ export const operationReceipt = z
           .object({
             blockId: id,
             fields: z
-              .array(z.enum(['content', 'variant', 'align', 'settings.color']))
-              .max(4)
+              .array(z.enum([...presentationFields, 'created', 'deleted']))
+              .max(20)
           })
           .strict()
       )
-      .max(50),
-    idMap: z.record(z.string().max(32), id),
+      .max(200),
+    idMap: z.record(z.string().max(64), id),
     effectIds: z.array(z.string().uuid()).max(200),
     warnings: z.array(z.string().max(4096)).max(100)
   })
@@ -241,6 +251,7 @@ function applyTypography(
  * Adding a command requires an executable row and its positive/negative fixtures.
  */
 export const commandRegistry = {
+  ...presentationRegistry,
   typography_set: {
     schema: typographyCommand,
     resultSchema: operationReceipt,
