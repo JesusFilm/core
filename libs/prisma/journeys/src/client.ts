@@ -1,7 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 
 import { PrismaClient } from './__generated__/client/client'
-
 import { journeyTransactionScope } from './transactionScope'
 
 const globalForPrisma = global as unknown as { prismaJourneys: PrismaClient }
