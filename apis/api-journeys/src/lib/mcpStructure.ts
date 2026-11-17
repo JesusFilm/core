@@ -24,6 +24,7 @@ import {
   live,
   loadStructure,
   parentOf,
+  requiredString,
   serialize,
   siblingsFrom
 } from './mcpStructureState'
@@ -154,7 +155,7 @@ export async function planStructure(
   }
   const eligibleContent = (row: BlockState, duplicate = false): void => {
     if (row.parentOrder === null) fail()
-    if (contentTypes.has(String(row.typename))) cardFor(row)
+    if (contentTypes.has(requiredString(row.typename))) cardFor(row)
     else if (row.typename === 'RadioOptionBlock') {
       const parent = get(parentOf(row) ?? missing(), 'RadioQuestionBlock')
       cardFor(parent)
@@ -385,7 +386,7 @@ export async function planStructure(
             : slot === 'coverBlockId'
               ? ['ImageBlock', 'VideoBlock']
               : ['ImageBlock']
-          if (!allowedType.includes(String(child.typename))) fail()
+          if (!allowedType.includes(requiredString(child.typename))) fail()
           row[slot] = mapping.get(ref)!
         }
         if (
@@ -426,7 +427,7 @@ export async function planStructure(
     remaining = next
   }
   const setAction = (row: BlockState, action: ActionValue): void => {
-    if (!actionTypes.has(String(row.typename))) fail()
+    if (!actionTypes.has(requiredString(row.typename))) fail()
     if (
       row.typename === 'ButtonBlock' ||
       row.typename === 'VideoBlock' ||
@@ -461,7 +462,7 @@ export async function planStructure(
       next.blockId = destination.id
       assignedRoutes.push({
         ownerId: id,
-        destinationId: String(next.blockId),
+        destinationId: requiredString(next.blockId),
         action: true
       })
     } else if (action.kind === 'link') next.url = normalizeActionUrl(action.url)
@@ -631,7 +632,7 @@ export async function planStructure(
       ? state.actions.get(route.ownerId)?.blockId
       : owner.nextBlockId
     if (destination !== null && destination !== undefined)
-      stepFor(get(String(destination), 'StepBlock'))
+      stepFor(get(requiredString(destination), 'StepBlock'))
   }
   const slugs = new Set<string>()
   for (const row of state.blocks.values()) {
@@ -650,7 +651,7 @@ export async function planStructure(
       await tx.block.findFirst({
         where: {
           journeyId: journey.id,
-          slug: String(row.slug),
+          slug: requiredString(row.slug),
           id: { not: idOf(row) }
         }
       })
@@ -690,7 +691,7 @@ export function arrangeStructure(
             'RadioOptionBlock',
             'VideoBlock',
             'SignUpBlock'
-          ].includes(String(row.typename))
+          ].includes(requiredString(row.typename))
       )
   }
   const visit = (id: string | null): string | undefined => {

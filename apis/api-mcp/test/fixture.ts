@@ -26,6 +26,9 @@ export function fixtureFactory(replica: string) {
       },
       async ({ value, delayMs, outputBytes }) => {
         await setTimeout(delayMs ?? 0, undefined, {
+          // Synthetic delay must not extend process life after the transport closes.
+          // Process qualification does not establish backend cancellation.
+          ref: false,
           signal: requestInfo?.signal
         })
         const output = {

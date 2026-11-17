@@ -266,7 +266,11 @@ export function live(row: BlockState | undefined): row is BlockState {
   return Boolean(row && row.deletedAt === null)
 }
 export function idOf(row: BlockState): string {
-  return String(row.id)
+  return requiredString(row.id)
+}
+export function requiredString(value: Scalar): string {
+  if (typeof value !== 'string') throw new Error('VALIDATION_FAILED')
+  return value
 }
 export function parentOf(row: BlockState): string | null {
   return typeof row.parentBlockId === 'string' ? row.parentBlockId : null
@@ -281,7 +285,7 @@ export function children(
 }
 export function compareOrder(a: BlockState, b: BlockState): number {
   const order = Number(a.parentOrder ?? -1) - Number(b.parentOrder ?? -1)
-  return order || String(a.id).localeCompare(String(b.id))
+  return order || requiredString(a.id).localeCompare(requiredString(b.id))
 }
 export function siblingsFrom(
   blocks: Map<string, BlockState>,
@@ -380,7 +384,7 @@ export function finishStructure(
     if (!created && !fields.length) continue
     inverse.blocks.push({
       id,
-      typename: String(row.typename),
+      typename: requiredString(row.typename),
       parentBlockId: parentOf(row),
       created,
       fields: [...fields],
@@ -509,7 +513,7 @@ export function finishStructure(
       if (!recordedOwners.has(currentId)) {
         inverse.owners.push({
           id: currentId,
-          typename: String(current.typename),
+          typename: requiredString(current.typename),
           parentBlockId: parentOf(current)
         })
         recordedOwners.add(currentId)
@@ -551,8 +555,8 @@ export async function executeStructure(
     await tx.block.create({
       data: {
         id: write.id,
-        journeyId: String(write.create.journeyId),
-        typename: String(write.create.typename),
+        journeyId: requiredString(write.create.journeyId),
+        typename: requiredString(write.create.typename),
         parentBlockId: null
       }
     })

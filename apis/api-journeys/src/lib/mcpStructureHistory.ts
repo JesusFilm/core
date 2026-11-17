@@ -16,6 +16,7 @@ import {
   live,
   loadStructure,
   parentOf,
+  requiredString,
   serialize,
   siblingsFrom,
   structureInverseSchema
@@ -202,7 +203,7 @@ export async function planStructureHistory(
     )
     if (cards.length !== 1) conflict()
     if (change.fields.includes('nextBlockId') && row.nextBlockId !== null) {
-      const target = state.blocks.get(String(row.nextBlockId))
+      const target = state.blocks.get(requiredString(row.nextBlockId))
       if (!live(target) || target.typename !== 'StepBlock') conflict()
     }
     if (change.fields.includes('slug') && typeof row.slug === 'string') {
@@ -215,13 +216,13 @@ export async function planStructureHistory(
   for (const change of inverse.actions) {
     const action = state.actions.get(change.id)
     if (!action || action.blockId === null) continue
-    const target = state.blocks.get(String(action.blockId))
+    const target = state.blocks.get(requiredString(action.blockId))
     if (!live(target) || target.typename !== 'StepBlock') conflict()
     const owner = state.blocks.get(change.id)
     if (!live(owner)) conflict()
   }
   if (state.journey.menuStepBlockId !== null) {
-    const menu = state.blocks.get(String(state.journey.menuStepBlockId))
+    const menu = state.blocks.get(requiredString(state.journey.menuStepBlockId))
     if (
       inverse.journey.some((change) => change.field === 'menuStepBlockId') &&
       (!live(menu) || menu.typename !== 'StepBlock')

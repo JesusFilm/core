@@ -11,6 +11,7 @@ on:
       - 'libs/prisma/auth/**'
       - 'libs/prisma/journeys/**'
       - 'tools/scripts/test-mcp-edits.mjs'
+      - 'tools/scripts/test-mcp-structure.mjs'
       - '.github/workflows/mcp-edits.yml'
 
 permissions:
@@ -46,3 +47,7 @@ jobs:
         run: node tools/scripts/test-mcp-edits.mjs
         env:
           MCP_EDITS_TEST_POSTGRES_URL: postgresql://postgres:edit-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Exercise structural edits, routes and complete inverses
+        run: node tools/scripts/test-mcp-structure.mjs
+        env:
+          MCP_STRUCTURE_TEST_POSTGRES_URL: postgresql://postgres:edit-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
