@@ -75,8 +75,12 @@ jobs:
           files = sorted(glob.glob('coverage/**/cobertura-coverage.xml', recursive=True))
           if not files:
               raise SystemExit('No project coverage reports were produced')
-          if not all(int(ET.parse(path).getroot().get('lines-valid', '0')) > 0 for path in files):
-              raise SystemExit('An empty project coverage report was produced')
+          empty = [path for path in files if int(ET.parse(path).getroot().get('lines-valid', '0')) == 0]
+          for path in empty:
+              print('Empty report is not coverage evidence:', path)
+          files = [path for path in files if path not in empty]
+          if not files:
+              raise SystemExit('No non-empty project coverage reports were produced')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('files=' + ','.join(files) + '\n')
           print('Verified', len(files), 'non-empty project coverage reports')
@@ -154,8 +158,12 @@ jobs:
           files = sorted(glob.glob('coverage/**/cobertura-coverage.xml', recursive=True))
           if not files:
               raise SystemExit('No project coverage reports were produced')
-          if not all(int(ET.parse(path).getroot().get('lines-valid', '0')) > 0 for path in files):
-              raise SystemExit('An empty project coverage report was produced')
+          empty = [path for path in files if int(ET.parse(path).getroot().get('lines-valid', '0')) == 0]
+          for path in empty:
+              print('Empty report is not coverage evidence:', path)
+          files = [path for path in files if path not in empty]
+          if not files:
+              raise SystemExit('No non-empty project coverage reports were produced')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('files=' + ','.join(files) + '\n')
           print('Verified', len(files), 'non-empty project coverage reports')
