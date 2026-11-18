@@ -114,7 +114,10 @@ try {
           '--root',
           resolve(root, dirname(config)),
           '--config',
-          resolve(root, config)
+          resolve(root, config),
+          ...(config === 'apis/api-auth/vitest.config.mts'
+            ? ['--maxWorkers=1']
+            : [])
         ],
         testEnvironment
       )
@@ -126,6 +129,7 @@ try {
         'run',
         '--config',
         'apis/api-auth/vitest.config.mts',
+        '--maxWorkers=1',
         '--coverage',
         '--reporter=default',
         '--reporter=json',
