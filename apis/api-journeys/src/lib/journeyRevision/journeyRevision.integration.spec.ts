@@ -529,7 +529,7 @@ describe('shared journey revision integration', () => {
       ' 1',
       '1e2',
       '18446744073709551616',
-      '123456789012345678901'
+      '100000000000000000000'
     ])('rejects malformed revision %j before writing', async (expected) => {
       const before = await revision()
       await expect(
@@ -541,7 +541,7 @@ describe('shared journey revision integration', () => {
     })
 
     it.each(['12345678901234567890', '18446744073709551615'])(
-      'recognizes valid uint64 revision %s and rejects its stale value without writing',
+      'rejects valid but stale unsigned 64-bit revision %j as a conflict',
       async (expected) => {
         const before = await revision()
         await expect(

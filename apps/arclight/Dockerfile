@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim
+FROM node:22.23.5-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee
 
 EXPOSE 3000
 
@@ -30,4 +30,7 @@ RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm@10.33.2 --ac
 RUN pnpm add -g next
 RUN pnpm install --prod --silent
 RUN pnpm add sharp pino dd-trace next-logger @prisma/client @prisma/adapter-pg dotenv prisma --silent
+# Fetch the native migration engine during the build, before offline startup.
+RUN pnpm exec prisma --version
+
 ENTRYPOINT ["./docker-entrypoint.sh"]

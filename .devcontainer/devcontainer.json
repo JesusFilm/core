@@ -1,6 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.194.0/containers/javascript-node-postgres
-// Update the VARIANT arg in docker-compose.yml to pick a Node.js version: 10, 12, 14
+// Keep the Node feature version aligned with .nvmrc.
 {
   "name": "Core",
   "dockerComposeFile": "docker-compose.yml",
@@ -70,7 +70,7 @@
     "ghcr.io/devcontainers/features/python:1": {},
     "ghcr.io/devcontainers/features/node:1": {
       "nodeGypDependencies": true,
-      "version": "lts"
+      "version": "22.23.5"
     }
   }
 }

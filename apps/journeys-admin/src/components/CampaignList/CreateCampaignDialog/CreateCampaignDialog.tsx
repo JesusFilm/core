@@ -8,6 +8,10 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
 
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import {
@@ -16,8 +20,6 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useCampaignCreateMutation } from '../../../libs/useCampaignCreateMutation'
-
-const TITLE_MAX_LENGTH = 100
 
 /** The dialog opens with English selected; closing without creating goes back to it. */
 const ENGLISH: LanguageOption = {
@@ -62,7 +64,7 @@ export function CreateCampaignDialog({
   const { enqueueSnackbar } = useSnackbar()
   const [language, setLanguage] = useState<LanguageOption | undefined>(ENGLISH)
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
-    languageId: '529'
+    languageId: ENGLISH.id
   })
   const [campaignCreate] = useCampaignCreateMutation()
 
@@ -70,9 +72,10 @@ export function CreateCampaignDialog({
     title: string()
       .trim()
       .required(t('Title is required'))
-      .max(
-        TITLE_MAX_LENGTH,
-        t('Max {{max}} characters', { max: TITLE_MAX_LENGTH })
+      .test(
+        'max',
+        t('Max {{max}} characters', { max: TRANSLATED_FIELDS.campaign.title }),
+        (title) => textLength(title ?? '') <= TRANSLATED_FIELDS.campaign.title
       ),
     defaultLanguageId: string().required(t('Language is required'))
   })

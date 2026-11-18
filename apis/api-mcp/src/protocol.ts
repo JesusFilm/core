@@ -22,6 +22,8 @@ import {
   assertRequestInputSize,
   journeyInput,
   listInput,
+  maxStructuredResultBytes,
+  maxToolInputBytes,
   readFailure,
   readRequest,
   resultContractVersion,
@@ -107,8 +109,8 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
           ...(code === 'VALIDATION_FAILED' ? { fieldRules } : {}),
           ...(code === 'LIMIT_EXCEEDED'
             ? {
-                maxStructuredBytes: 524288,
-                maxInputBytes: 262144,
+                maxStructuredBytes: maxStructuredResultBytes,
+                maxInputBytes: maxToolInputBytes,
                 maxCommands: 50,
                 maxChangedObjects: 200,
                 maxObjectsPerPage: 100,

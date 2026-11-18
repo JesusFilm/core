@@ -19,7 +19,7 @@
 - `pnpm dlx nx run video-importer:run` - Run the importer against `apps/video-importer/test-videos`.
 - `pnpm dlx nx run video-importer:test` - Run Node test runner specs through `tsx`.
 - `pnpm dlx nx run video-importer:lint` - Lint the importer.
-- `pnpm dlx nx run video-importer:type-check` - Type-check with `tsc -b`.
+- `pnpm dlx nx run video-importer:type-check` - Type-check with `tsc7` (`tsconfig.ts7.json`).
 - `pnpm dlx nx run video-importer:build` - Compile TypeScript.
 - `pnpm dlx nx run video-importer:compile` - Build the Node SEA executables.
 - `pnpm dlx nx run video-importer:package` - Build cross-platform release artifacts and copy the README.
