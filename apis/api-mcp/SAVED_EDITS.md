@@ -250,6 +250,12 @@ MCP_EDITS_TEST_ISSUE=10557 node tools/scripts/test-mcp-edits.mjs
 
 Both routes use issue-specific loopback PostgreSQL databases and restricted auth
 runtime grants. Firebase identity and eligibility are controlled test adapters.
+The structural suite also exercises normal Admin delete/restore mutations after
+MCP deletion. It collects owning-service and shared-module coverage and test counts
+in `coverage/integration/mcp-structure`, separately from the saved-edit and workspace
+reports. The runner rejects skipped tests and missing execution hits in structural
+planning, history and Admin deletion/restoration modules. CI uploads both integration
+reports to Codecov alongside the standard workspace reports for stacked PRs.
 Normal Admin browser flows, real Firebase, host/container qualification, AWS and
 Claude/ChatGPT checks remain deferred to the assembled feature. Promote code and
 migrations, never these synthetic identities, credentials or local data.

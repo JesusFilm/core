@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { spawnSync } from 'node:child_process'
 
@@ -87,12 +88,37 @@ run(
     'vitest',
     'run',
     '--config',
-    'apis/api-auth/vitest.config.mts',
-    'apis/api-auth/test/grantedStructure.spec.ts',
-    '--coverage=false'
+    'apis/api-auth/vitest.structure.config.mts'
   ],
   {
     STRUCTURE_TEST_AUTH_DATABASE_URL: runtime.href,
     STRUCTURE_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`)
   }
 )
+
+const reportDirectory = 'coverage/integration/mcp-structure'
+const tests = JSON.parse(
+  readFileSync(`${reportDirectory}/test-results.json`, 'utf8')
+)
+if (!tests.numTotalTests || tests.numPassedTests !== tests.numTotalTests)
+  throw new Error(
+    'Structural coverage requires every test to pass with no skips'
+  )
+const coverage = JSON.parse(
+  readFileSync(`${reportDirectory}/coverage-final.json`, 'utf8')
+)
+for (const module of [
+  'apis/api-journeys/src/lib/mcpStructure.ts',
+  'apis/api-journeys/src/lib/mcpStructureState.ts',
+  'apis/api-journeys/src/lib/mcpStructureHistory.ts',
+  'apis/api-journeys/src/schema/block/service.ts',
+  'apis/api-journeys/src/schema/block/blockDelete.mutation.ts',
+  'apis/api-journeys/src/schema/block/blockRestore.mutation.ts',
+  'libs/yoga/src/mcp/structureContract.ts'
+]) {
+  const entry = Object.entries(coverage).find(([path]) =>
+    path.endsWith('/' + module)
+  )?.[1]
+  if (!entry || !Object.values(entry.s).some((hits) => hits > 0))
+    throw new Error(`Missing executed owning/shared coverage for ${module}`)
+}
