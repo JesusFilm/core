@@ -23,7 +23,11 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "@nx/jest:jest": {
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js"
+      ],
       "cache": true,
       "options": {
         "passWithNoTests": true
@@ -45,18 +49,33 @@
     },
     "@nx/webpack:webpack": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "@nx/next:build": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "@nx/esbuild:esbuild": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "build-storybook": {
       "inputs": [
@@ -79,33 +98,68 @@
         "{workspaceRoot}/.github/workflows/autofix.ci.yml",
         "{workspaceRoot}/package.json",
         "{workspaceRoot}/pnpm-lock.yaml",
-        { "env": "APOLLO_GRAPHQL_VERSION" },
-        { "externalDependencies": ["gql.tada"] }
+        {
+          "env": "APOLLO_GRAPHQL_VERSION"
+        },
+        {
+          "externalDependencies": [
+            "gql.tada"
+          ]
+        }
       ]
+    },
+    "codecov": {
+      "cache": false,
+      "options": {
+        "args": ["-X", "search"]
+      }
     },
     "extract-translations": {
       "cache": false,
-      "inputs": ["default"]
+      "inputs": [
+        "default"
+      ]
     },
     "prisma-generate": {
       "cache": false,
-      "inputs": ["{projectRoot}/**/schema.prisma"]
+      "inputs": [
+        "{projectRoot}/**/schema.prisma"
+      ]
     },
     "subgraph-check": {
       "cache": false,
-      "inputs": ["default"]
+      "inputs": [
+        "default"
+      ]
     },
     "type-check": {
       "cache": true,
-      "inputs": ["default"]
+      "inputs": [
+        "default"
+      ]
     },
     "@nx/vitest:test": {
       "cache": true,
-      "inputs": ["default", "^production"]
+      "inputs": [
+        "default",
+        "^production"
+      ]
+    },
+    "codecov": {
+      "cache": false,
+      "options": {
+        "args": [
+          "-X",
+          "search"
+        ]
+      }
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "sharedGlobals": [],
     "production": [
       "default",
@@ -124,7 +178,9 @@
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",
-      "exclude": ["libs/yoga/src/mcp/package.json"],
+      "exclude": [
+        "libs/yoga/src/mcp/package.json"
+      ],
       "options": {
         "targetName": "eslint:lint"
       }
