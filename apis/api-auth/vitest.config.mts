@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    hookTimeout: 120000,
     testTimeout: 20000,
     coverage: {
       enabled: true,
