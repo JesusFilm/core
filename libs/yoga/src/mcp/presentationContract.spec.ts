@@ -3,6 +3,7 @@ import {
   blockAddCommand,
   deriveSubmitRole,
   presentationCommand,
+  presentationInverse,
   presentationPatch
 } from './presentationContract'
 
@@ -187,5 +188,113 @@ describe('mounted content commands', () => {
         ]
       }).success
     ).toBe(false)
+  })
+})
+
+describe('stored presentation inverses', () => {
+  const inverse = {
+    type: 'presentation_restore',
+    blockId: 'block',
+    parent: { cardId: 'card', stepId: 'step' }
+  }
+
+  it.each([
+    { typename: 'TypographyBlock', field: 'label' },
+    { typename: 'ButtonBlock', field: 'spacing' },
+    { typename: 'IconBlock', field: 'label' },
+    { typename: 'SpacerBlock', field: 'fullscreen' },
+    { typename: 'CardBlock', field: 'content' },
+    { typename: 'UnknownBlock', field: 'label' }
+  ])('rejects $field on $typename', ({ typename, field }) => {
+    expect(
+      presentationInverse.safeParse({
+        ...inverse,
+        typename,
+        owner: { blockId: 'button', slot: 'startIconId' },
+        fields: [{ field, before: null, after: null, beforePresent: true }]
+      }).success
+    ).toBe(false)
+  })
+
+  it.each(['name', 'color'])(
+    'requires Icon owner metadata to restore %s',
+    (field) => {
+      const stored = {
+        ...inverse,
+        typename: 'IconBlock',
+        fields: [{ field, before: null, after: null, beforePresent: true }]
+      }
+      expect(presentationInverse.safeParse(stored).success).toBe(false)
+      for (const slot of ['startIconId', 'endIconId'])
+        expect(
+          presentationInverse.safeParse({
+            ...stored,
+            owner: { blockId: 'button', slot }
+          }).success
+        ).toBe(true)
+    }
+  )
+
+  it.each(['showAssistant', 'expandChatByDefault'])(
+    'requires aiChatEditor gate metadata to restore %s',
+    (field) => {
+      const stored = {
+        ...inverse,
+        typename: 'CardBlock',
+        fields: [{ field, before: null, after: true, beforePresent: true }]
+      }
+      expect(presentationInverse.safeParse(stored).success).toBe(false)
+      expect(
+        presentationInverse.safeParse({ ...stored, gate: 'aiChatEditor' })
+          .success
+      ).toBe(true)
+    }
+  )
+
+  it.each(
+    [
+      { typename: 'TypographyBlock', field: 'content', value: 'Text' },
+      { typename: 'ButtonBlock', field: 'label', value: 'Continue' },
+      { typename: 'IconBlock', field: 'name', value: 'Home4' },
+      { typename: 'SpacerBlock', field: 'spacing', value: 100 },
+      { typename: 'CardBlock', field: 'backdropBlur', value: 10 },
+      { typename: 'CardBlock', field: 'fullscreen', value: true },
+      { typename: 'CardBlock', field: 'showAssistant', value: true },
+      { typename: 'CardBlock', field: 'expandChatByDefault', value: false },
+      { typename: 'ButtonBlock', field: 'parentOrder', value: 1 }
+    ].flatMap((fixture) =>
+      ['before', 'after'].map((side) => ({ ...fixture, side }))
+    )
+  )('validates the $side type for $field on $typename', (fixture) => {
+    const stored = {
+      ...inverse,
+      typename: fixture.typename,
+      owner: { blockId: 'button', slot: 'startIconId' },
+      gate: 'aiChatEditor',
+      fields: [
+        {
+          field: fixture.field,
+          before: fixture.value,
+          after: fixture.value,
+          beforePresent: true
+        }
+      ]
+    }
+    expect(presentationInverse.safeParse(stored).success).toBe(true)
+    for (const invalid of [[], {}, 'wrong', 42, true].filter(
+      (value) => typeof value !== typeof fixture.value || Array.isArray(value)
+    ))
+      expect(
+        presentationInverse.safeParse({
+          ...stored,
+          fields: [{ ...stored.fields[0], [fixture.side]: invalid }]
+        }).success
+      ).toBe(false)
+    expect(
+      presentationInverse.safeParse({
+        ...stored,
+        fields: [{ ...stored.fields[0], [fixture.side]: null }]
+      }).success
+    ).toBe(true)
   })
 })

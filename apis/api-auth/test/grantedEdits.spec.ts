@@ -13,6 +13,7 @@ import {
   canonicalFingerprint,
   historyResult
 } from '@core/yoga/mcp/editContract'
+import { presentationInverse } from '@core/yoga/mcp/presentationContract'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Exercise the independently deployed HTTP participants together. */
@@ -4380,6 +4381,89 @@ describe('saved edit integration', () => {
         expect(await revision()).toBe(before)
         expect(await textBlock()).toMatchObject({ content: 'Saved heading' })
       })
+
+      it.each([
+        { command: 'button_set', corruption: 'field type mismatch' },
+        { command: 'button_icon_start', corruption: 'missing Icon owner' },
+        { command: 'card_chat_set', corruption: 'missing chat gate' },
+        { command: 'spacer_set', corruption: 'invalid before value' },
+        { command: 'spacer_set', corruption: 'invalid after value' }
+      ])(
+        'rejects a stored presentation inverse with $corruption without advancing history or replay state',
+        async ({ command, corruption }) => {
+          await seedPresentation()
+          const fixture = presentationCase(command)
+          const saved = receipt(
+            await call('journey_edit', {
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [fixture.command]
+            })
+          )
+          const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+            where: { id: saved.historyId! }
+          })
+          const changes = z.array(presentationInverse).parse(entry.changes)
+          expect(changes).toHaveLength(1)
+          switch (corruption) {
+            case 'field type mismatch':
+              changes[0].typename = 'SpacerBlock'
+              break
+            case 'missing Icon owner':
+              delete changes[0].owner
+              break
+            case 'missing chat gate':
+              delete changes[0].gate
+              break
+            case 'invalid before value':
+              changes[0].fields[0].before = 'invalid spacing'
+              break
+            case 'invalid after value':
+              changes[0].fields[0].after = 'invalid spacing'
+              break
+          }
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes }
+          })
+          const snapshot = async () => ({
+            blocks: await journeys.block.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            revision: await revision(),
+            cursor: await history(),
+            entries: await journeys.mcpEditHistory.findMany({
+              where: { journeyId },
+              orderBy: { ordinal: 'asc' }
+            }),
+            operations: await journeys.mcpEditOperation.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            counts: await counts(),
+            audit: await journeys.mcpEditAudit.count({ where: { journeyId } })
+          })
+          const before = await snapshot()
+          const input = await historyInput(entry.id)
+          for (let attempt = 0; attempt < 2; attempt++) {
+            const response = await call('journey_undo', input)
+            expect(response.json.result?.isError).toBe(true)
+            expect(response.text).toContain('HISTORY_UNAVAILABLE')
+            expect(await snapshot()).toEqual(before)
+          }
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: entry.changes! }
+          })
+          const undone = receipt(await call('journey_undo', input))
+          expect((await history()).redoEntryId).toBe(entry.id)
+          const afterUndo = await snapshot()
+          expect(receipt(await call('journey_undo', input))).toEqual(undone)
+          expect(await snapshot()).toEqual(afterUndo)
+        }
+      )
 
       it('retires both history directions with retryable account cleanup and preserves saved content', async () => {
         const a = receipt(await edit(await editInput('A')))
