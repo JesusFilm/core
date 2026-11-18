@@ -230,3 +230,5 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           targets: codecov
+          # Auth runs unsharded above; only the first shard owns its report.
+          args: ${{ matrix.shard != '1/3' && '--exclude=api-auth' || '' }}

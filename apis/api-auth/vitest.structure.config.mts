@@ -6,7 +6,10 @@ export default defineConfig({
   ...editsConfig,
   test: {
     ...editsConfig.test,
-    include: ['apis/api-auth/test/grantedStructure.spec.ts'],
+    include: [
+      'apis/api-auth/test/grantedStructure.spec.ts',
+      'apis/api-auth/test/http.spec.ts'
+    ],
     coverage: {
       ...editsConfig.test?.coverage,
       include: [

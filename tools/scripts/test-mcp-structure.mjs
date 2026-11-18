@@ -28,7 +28,11 @@ function run(args, env = {}) {
 const admin = new Client({ connectionString: source.href })
 await admin.connect()
 try {
-  for (const database of [`auth_issue_${issue}`, `journeys_issue_${issue}`]) {
+  for (const database of [
+    `auth_issue_${issue}`,
+    `auth_issue_${issue}_issuer`,
+    `journeys_issue_${issue}`
+  ]) {
     const exists = await admin.query(
       'SELECT 1 FROM pg_database WHERE datname=$1',
       [database]
@@ -49,7 +53,11 @@ try {
   await admin.end()
 }
 run(['exec', 'nx', 'run-many', '-t', 'prisma-generate', '--all'])
-for (const domain of ['auth', 'journeys'])
+for (const [domain, database] of [
+  ['auth', `auth_issue_${issue}`],
+  ['auth', `auth_issue_${issue}_issuer`],
+  ['journeys', `journeys_issue_${issue}`]
+])
   run(
     [
       'exec',
@@ -62,26 +70,30 @@ for (const domain of ['auth', 'journeys'])
     {
       [domain === 'auth'
         ? 'PG_DATABASE_URL_AUTH_MIGRATION'
-        : 'PG_DATABASE_URL_JOURNEYS']: connection(`${domain}_issue_${issue}`)
+        : 'PG_DATABASE_URL_JOURNEYS']: connection(database)
     }
   )
-const auth = new Client({ connectionString: connection(`auth_issue_${issue}`) })
-await auth.connect()
-try {
-  await auth.query(
-    `GRANT CONNECT ON DATABASE auth_issue_${issue} TO mcp_issue_${issue}`
-  )
-  await auth.query('REVOKE CREATE ON SCHEMA public FROM PUBLIC')
-  await auth.query(`GRANT USAGE ON SCHEMA public TO mcp_issue_${issue}`)
-  await auth.query(
-    `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO mcp_issue_${issue}`
-  )
-} finally {
-  await auth.end()
+for (const database of [`auth_issue_${issue}`, `auth_issue_${issue}_issuer`]) {
+  const auth = new Client({ connectionString: connection(database) })
+  await auth.connect()
+  try {
+    await auth.query(
+      `GRANT CONNECT ON DATABASE "${database}" TO mcp_issue_${issue}`
+    )
+    await auth.query('REVOKE CREATE ON SCHEMA public FROM PUBLIC')
+    await auth.query(`GRANT USAGE ON SCHEMA public TO mcp_issue_${issue}`)
+    await auth.query(
+      `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO mcp_issue_${issue}`
+    )
+  } finally {
+    await auth.end()
+  }
 }
 const runtime = new URL(connection(`auth_issue_${issue}`))
 runtime.username = `mcp_issue_${issue}`
 runtime.password = `controlled-local-${issue}`
+const issuerRuntime = new URL(runtime)
+issuerRuntime.pathname = `/auth_issue_${issue}_issuer`
 run(
   [
     'exec',
@@ -92,7 +104,9 @@ run(
   ],
   {
     STRUCTURE_TEST_AUTH_DATABASE_URL: runtime.href,
-    STRUCTURE_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`)
+    STRUCTURE_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`),
+    AUTH_TEST_DATABASE_URL: issuerRuntime.href,
+    AUTH_TEST_MIGRATION_DATABASE_URL: connection(`auth_issue_${issue}_issuer`)
   }
 )
 
