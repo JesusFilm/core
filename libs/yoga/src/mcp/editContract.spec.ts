@@ -117,6 +117,25 @@ describe('closed executable typography registry', () => {
     expect(editInput.parse({ ...input, commands }).commands).toEqual(commands)
   })
 
+  it('allows color assignments to a Button and its distinct owned Icon slots', () => {
+    const commands = [
+      { type: 'button_set', blockId: 'button', color: 'secondary' },
+      {
+        type: 'button_icon_set',
+        blockId: 'button',
+        slot: 'start',
+        color: 'error'
+      },
+      {
+        type: 'button_icon_set',
+        blockId: 'button',
+        slot: 'end',
+        color: 'primary'
+      }
+    ]
+    expect(editInput.parse({ ...input, commands }).commands).toEqual(commands)
+  })
+
   it('records only changed fields and preserves unknown settings', () => {
     const applied = commandRegistry.typography_set.apply(state, command)
     expect(applied.patch).toEqual({

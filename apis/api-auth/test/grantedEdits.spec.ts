@@ -3495,6 +3495,7 @@ describe('saved edit integration', () => {
             commands: [
               { type: 'button_set', blockId: buttonId, label: 'Continue' },
               { type: 'button_set', blockId: buttonId, alignment: 'left' },
+              { type: 'button_set', blockId: buttonId, color: 'secondary' },
               {
                 type: 'button_icon_set',
                 blockId: buttonId,
@@ -3511,16 +3512,44 @@ describe('saved edit integration', () => {
                 type: 'button_icon_set',
                 blockId: buttonId,
                 slot: 'end',
-                name: 'Home4'
+                name: 'Home4',
+                color: 'primary'
               }
             ]
           })
         )
         await historyAction('undo', saved.historyId!)
+        expect(
+          await journeys.block.findMany({
+            where: {
+              id: { in: [buttonId, `${buttonId}-start`, `${buttonId}-end`] }
+            },
+            orderBy: { id: 'asc' },
+            select: { id: true, color: true }
+          })
+        ).toEqual([
+          { id: buttonId, color: 'primary' },
+          { id: `${buttonId}-end`, color: null },
+          { id: `${buttonId}-start`, color: 'inherit' }
+        ])
         await historyAction('redo', saved.historyId!)
         expect(
           await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
-        ).toMatchObject({ label: 'Continue', settings: { alignment: 'left' } })
+        ).toMatchObject({
+          label: 'Continue',
+          color: 'secondary',
+          settings: { alignment: 'left' }
+        })
+        expect(
+          await journeys.block.findMany({
+            where: { id: { in: [`${buttonId}-start`, `${buttonId}-end`] } },
+            orderBy: { id: 'asc' },
+            select: { id: true, color: true }
+          })
+        ).toEqual([
+          { id: `${buttonId}-end`, color: 'primary' },
+          { id: `${buttonId}-start`, color: 'error' }
+        ])
       })
 
       it('retains safe undo/redo for legacy sequential descriptors while new duplicate saves are rejected', async () => {
