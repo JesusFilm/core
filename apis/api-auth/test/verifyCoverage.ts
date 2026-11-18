@@ -45,33 +45,31 @@ const required: Record<string, string[]> = {
     'assertAccountCleanupResult(value)'
   ],
 
-  "apis/api-auth/src/connections.ts": [
-    "const expiresAt = calculateExpiry(approvedAt, review.duration)",
-    "await tx.agentConnection.update(",
+  'apis/api-auth/src/connections.ts': [
+    'const expiresAt = calculateExpiry(approvedAt, review.duration)',
+    'await tx.agentConnection.update(',
     "await audit(tx, 'renewal', 'allowed'"
   ],
-  "apis/api-journeys/src/lib/mcpReadSettlement.ts": [
-    "const pending = await db.mcpReadExecution.findMany",
-    "await tx.mcpReadExecution.updateMany",
-    "await postJson(",
-    "await db.mcpReadExecution.update(",
-    "failed++"
+  'apis/api-journeys/src/lib/mcpReadSettlement.ts': [
+    'const pending = await db.mcpReadExecution.findMany',
+    'await tx.mcpReadExecution.updateMany',
+    'await postJson(',
+    'await db.mcpReadExecution.update(',
+    'failed++'
   ],
-  "apis/api-journeys/src/lib/mcpReads.ts": [
-    "const data = await snapshot(",
+  'apis/api-journeys/src/lib/mcpReads.ts': [
+    'const data = await snapshot(',
     "await authority('accept',",
-    "await db.mcpReadExecution.create(",
-    "const execution = await tx.mcpReadExecution.findUniqueOrThrow",
-    "await tx.mcpReadExecution.update(",
-    "await reconcileJourneyReads(db, config, permitId)",
-    "await reconcileJourneyReads(db, config, readPermit).catch("
+    'await db.mcpReadExecution.create(',
+    'const execution = await tx.mcpReadExecution.findUniqueOrThrow',
+    'await tx.mcpReadExecution.update(',
+    'await reconcileJourneyReads(db, config, permitId)',
+    'await reconcileJourneyReads(db, config, readPermit).catch('
   ],
-  "apis/api-gateway/src/mcpReads.ts": [
-    "const response = await fetch(config.ownerUrl,"
+  'apis/api-gateway/src/mcpReads.ts': [
+    'const response = await fetch(config.ownerUrl,'
   ],
-  "apis/api-mcp/src/reads.ts": [
-    "releases.push("
-  ]
+  'apis/api-mcp/src/reads.ts': ['releases.push(']
 }
 for (const [file, anchors] of Object.entries(required)) {
   // The actual predecessor can predate renewal or withdrawal. Never exempt
@@ -87,7 +85,10 @@ for (const [file, anchors] of Object.entries(required)) {
   const absolute = resolve(root, file)
   const entry = coverage[absolute]
   assert(entry, `Missing owning-service coverage: ${file}`)
-  assert(Object.values(entry.s).some((hits) => hits > 0), `No execution hits in ${file}`)
+  assert(
+    Object.values(entry.s).some((hits) => hits > 0),
+    `No execution hits in ${file}`
+  )
   const lines = readFileSync(absolute, 'utf8').split('\n')
   for (const anchor of anchors) {
     const line = lines.findIndex((value) => value.includes(anchor)) + 1
