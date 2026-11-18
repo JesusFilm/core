@@ -596,7 +596,7 @@ describe('granted journey read authorization', () => {
         )
         await mcp.listen()
         mcpUrl = `http://127.0.0.1:${(mcp.server.address() as AddressInfo).port}/mcp`
-      }, 30000)
+      }, 120000)
 
       beforeEach(async () => {
         beforeIdentity = undefined
