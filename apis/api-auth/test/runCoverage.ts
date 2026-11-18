@@ -13,11 +13,13 @@ const root = resolve(import.meta.dirname, '../../..')
 const suffix = randomBytes(8).toString('hex')
 const runtimeRole = `mcp_reads_${suffix}`
 const password = randomBytes(24).toString('hex')
-const databases = [
-  `auth_issue_10575_${suffix}`,
-  `auth_issue_10575_reads_${suffix}`,
-  `journeys_issue_10575_${suffix}`
-]
+const databases = {
+  auth: `auth_issue_10575_${suffix}`,
+  reads: `auth_issue_10575_reads_${suffix}`,
+  permissions: `auth_issue_10550_permissions_${suffix}`,
+  journeys: `journeys_issue_10575_${suffix}`,
+  users: `users_issue_10550_${suffix}`
+}
 const created: string[] = []
 let roleCreated = false
 const admin = createAuthDatabase(adminUrl)
@@ -46,10 +48,21 @@ try {
     `CREATE ROLE "${runtimeRole}" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS PASSWORD '${password}'`
   )
   roleCreated = true
-  for (const [index, database] of databases.entries()) {
+  for (const [database, domain] of [
+    [databases.auth, 'auth'],
+    [databases.reads, 'auth'],
+    [databases.permissions, 'auth'],
+    [databases.journeys, 'journeys'],
+    [databases.users, 'users']
+  ] as const) {
     await admin.$executeRawUnsafe(`CREATE DATABASE "${database}"`)
     created.push(database)
-    const auth = index < 2
+    const auth = domain === 'auth'
+    const migrationVariable = {
+      auth: 'PG_DATABASE_URL_AUTH_MIGRATION',
+      journeys: 'PG_DATABASE_URL_JOURNEYS',
+      users: 'PG_DATABASE_URL_USERS'
+    }[domain]
     run(
       [
         'exec',
@@ -57,11 +70,9 @@ try {
         'migrate',
         'deploy',
         '--config',
-        `libs/prisma/${auth ? 'auth' : 'journeys'}/prisma.config.ts`
+        `libs/prisma/${domain}/prisma.config.ts`
       ],
-      auth
-        ? { PG_DATABASE_URL_AUTH_MIGRATION: url(database) }
-        : { PG_DATABASE_URL_JOURNEYS: url(database) }
+      { [migrationVariable]: url(database) }
     )
     if (!auth) continue
     const migration = createAuthDatabase(url(database))
@@ -101,10 +112,12 @@ try {
       `--outputFile=${resolve(root, 'coverage/apis/api-auth/tests.json')}`
     ],
     {
-      AUTH_TEST_DATABASE_URL: url(databases[0], true),
-      AUTH_TEST_MIGRATION_DATABASE_URL: url(databases[0]),
-      READS_TEST_AUTH_DATABASE_URL: url(databases[1], true),
-      READS_TEST_JOURNEYS_DATABASE_URL: url(databases[2])
+      AUTH_TEST_DATABASE_URL: url(databases.auth, true),
+      AUTH_TEST_MIGRATION_DATABASE_URL: url(databases.auth),
+      PERMISSIONS_TEST_DATABASE_URL: url(databases.permissions, true),
+      READS_TEST_AUTH_DATABASE_URL: url(databases.reads, true),
+      READS_TEST_JOURNEYS_DATABASE_URL: url(databases.journeys),
+      READS_TEST_USERS_DATABASE_URL: url(databases.users)
     }
   )
   run(['exec', 'tsx', 'apis/api-auth/test/verifyCoverage.ts'])
