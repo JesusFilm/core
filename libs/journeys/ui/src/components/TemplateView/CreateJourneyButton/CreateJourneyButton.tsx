@@ -7,7 +7,13 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { type ReactElement, useCallback, useEffect, useState } from 'react'
+import {
+  type KeyboardEvent,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
@@ -45,7 +51,8 @@ interface CreateJourneyButtonProps {
    */
   openTeamDialogOnSignIn?: boolean
   journeyData?: JourneyForTemplate
-  handleCloseMenu?: () => void
+  onOpenTeamDialog?: () => void
+  setHasOpenDialog?: (open: boolean) => void
   refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
 
@@ -63,12 +70,18 @@ const DynamicCopyToTeamDialog = dynamic(
     ).then((mod) => mod.CopyToTeamDialog)
 )
 
+function handleTeamDialogKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
+  // Tab inside the portaled dialog still bubbles to the menu in the React tree.
+  if (event.key === 'Tab') event.stopPropagation()
+}
+
 export function CreateJourneyButton({
   variant = 'button',
   signedIn = false,
   openTeamDialogOnSignIn = false,
   journeyData,
-  handleCloseMenu,
+  onOpenTeamDialog,
+  setHasOpenDialog,
   refetchTemplateStats
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
@@ -98,6 +111,13 @@ export function CreateJourneyButton({
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
+  useEffect(() => {
+    if (!openTeamDialog || setHasOpenDialog == null) return
+
+    setHasOpenDialog(true)
+    return () => setHasOpenDialog(false)
+  }, [openTeamDialog, setHasOpenDialog])
+
   // Set up the subscription for translation
   const { data: translationData } = useJourneyAiTranslateSubscription({
     variables: translationVariables,
@@ -110,7 +130,6 @@ export function CreateJourneyButton({
       setLoading(false)
       setTranslationVariables(undefined)
       setOpenTeamDialog(false)
-      handleCloseMenu?.()
 
       // Navigate to the translated journey
       if (pendingNavigationId) {
@@ -136,7 +155,6 @@ export function CreateJourneyButton({
       setTranslationVariables(undefined)
       setOpenTeamDialog(false)
       setPendingNavigationId(null)
-      handleCloseMenu?.()
     }
   })
 
@@ -181,7 +199,6 @@ export function CreateJourneyButton({
             preventDuplicate: true
           })
           setOpenTeamDialog(false)
-          handleCloseMenu?.()
 
           sendGTMEvent({
             event: 'template_use',
@@ -226,7 +243,6 @@ export function CreateJourneyButton({
           preventDuplicate: true
         })
         setOpenTeamDialog(false)
-        handleCloseMenu?.()
       }
     },
     [
@@ -235,7 +251,6 @@ export function CreateJourneyButton({
       router,
       t,
       enqueueSnackbar,
-      handleCloseMenu,
       refetchTemplateStats
     ]
   )
@@ -243,6 +258,7 @@ export function CreateJourneyButton({
   const handleCheckSignIn = (): void => {
     // For menu-item variant, assume user is signed in
     if (variant === 'menu-item' || signedIn) {
+      onOpenTeamDialog?.()
       setOpenTeamDialog(true)
     } else {
       setOpenAccountDialog(true)
@@ -344,6 +360,9 @@ export function CreateJourneyButton({
           open={openTeamDialog}
           loading={loading}
           onClose={handleCloseTeamDialog}
+          onKeyDown={
+            variant === 'menu-item' ? handleTeamDialogKeyDown : undefined
+          }
           submitAction={handleCreateJourney}
           translationProgress={
             translationData?.journeyAiTranslateCreateSubscription

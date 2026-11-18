@@ -287,7 +287,11 @@ export function DefaultMenu({
         <>
           <TemplateActionButton
             variant="menu-item"
-            handleCloseMenu={handleCloseMenu}
+            onOpenTeamDialog={() => {
+              handleKeepMounted?.()
+              handleCloseMenu()
+            }}
+            setHasOpenDialog={setHasOpenDialog}
             journey={journey}
             refetchTemplateStats={refetchTemplateStats}
           />

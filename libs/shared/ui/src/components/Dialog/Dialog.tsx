@@ -6,11 +6,12 @@ import DialogContent from '@mui/material/DialogContent'
 import MuiDialogTitle from '@mui/material/DialogTitle'
 import IconButton, { IconButtonProps } from '@mui/material/IconButton'
 import { SxProps, styled } from '@mui/material/styles'
-import { ReactElement, ReactNode } from 'react'
+import { KeyboardEventHandler, ReactElement, ReactNode } from 'react'
 
 interface DialogProps {
   open?: boolean
   onClose?: () => void
+  onKeyDown?: KeyboardEventHandler<HTMLDivElement>
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
   /** Prefer `dialogAction` when child elements are buttons */
@@ -78,6 +79,7 @@ const StyledDialog = styled(MuiDialog)({
 export function Dialog({
   open,
   onClose,
+  onKeyDown,
   dialogTitle,
   dialogAction,
   dialogActionChildren,
@@ -98,6 +100,7 @@ export function Dialog({
       maxWidth={maxWidth}
       fullWidth
       onClose={onClose}
+      onKeyDown={onKeyDown}
       container={container}
       data-testid={testId}
       sx={sx}

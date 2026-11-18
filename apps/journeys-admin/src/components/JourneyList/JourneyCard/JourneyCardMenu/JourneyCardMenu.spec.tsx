@@ -1,5 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -15,6 +22,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../../libs/useCurrentUserLazyQuery'
 import { ThemeProvider } from '../../../ThemeProvider'
+import { nonCustomizableLocalTemplateJourney } from '../../journeyListData'
 
 import { JOURNEY_ARCHIVE } from './DefaultMenu/ArchiveJourney/ArchiveJourney'
 
@@ -170,6 +178,51 @@ describe('JourneyCardMenu', () => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     )
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
+  })
+
+  it('keeps the template dialog open on Tab and releases the gallery lock on Escape', async () => {
+    const journey = nonCustomizableLocalTemplateJourney
+    const setHasOpenDialog = vi.fn()
+    render(
+      <MockedProvider mocks={[teamMock, currentUserMock, userRoleMock]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <ThemeProvider>
+              <JourneyCardMenu
+                id={journey.id}
+                slug={journey.slug}
+                status={JourneyStatus.published}
+                published
+                template
+                journey={journey}
+                setHasOpenDialog={setHasOpenDialog}
+              />
+            </ThemeProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const menuTrigger = screen.getByRole('button')
+    fireEvent.click(menuTrigger)
+    fireEvent.click(
+      await screen.findByRole('menuitem', { name: 'Use This Template' })
+    )
+
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Add Journey to Team'
+    })
+    const cancelButton = within(dialog).getByRole('button', { name: 'Cancel' })
+    act(() => cancelButton.focus())
+    expect(cancelButton).toHaveFocus()
+    expect(fireEvent.keyDown(cancelButton, { key: 'Tab' })).toBe(true)
+    expect(dialog).toBeVisible()
+    expect(menuTrigger).toHaveAttribute('aria-expanded', 'false')
+    expect(setHasOpenDialog).toHaveBeenLastCalledWith(true)
+
+    fireEvent.keyDown(cancelButton, { key: 'Escape' })
+    await waitFor(() => expect(dialog).not.toBeInTheDocument())
+    expect(setHasOpenDialog).toHaveBeenLastCalledWith(false)
   })
 
   it('should open trash menu on click', async () => {
