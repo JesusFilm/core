@@ -33,6 +33,12 @@
     "test": {
       "executor": "@nx/vitest:test",
       "options": { "configFile": "apis/api-auth/vitest.config.mts" }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-auth/cobertura-coverage.xml -F apps.api-auth"
+      }
     }
   }
 }

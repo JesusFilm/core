@@ -32,6 +32,12 @@
     "test": {
       "executor": "@nx/vitest:test",
       "options": { "configFile": "apis/api-mcp/vitest.config.mts" }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-mcp/cobertura-coverage.xml -F apps.api-mcp"
+      }
     }
   }
 }
