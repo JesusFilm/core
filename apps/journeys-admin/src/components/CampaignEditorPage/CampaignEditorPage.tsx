@@ -1,6 +1,8 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
 import { NextSeo } from 'next-seo'
@@ -8,7 +10,15 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { useCampaignQuery } from '../../libs/useCampaignQuery'
-import { CampaignEditor } from '../CampaignEditor'
+
+/** The editor and everything it loads stay out of the route's first load. */
+const CampaignEditor = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor" */ '../CampaignEditor/CampaignEditor'
+    ).then((mod) => mod.CampaignEditor),
+  { ssr: false }
+)
 
 interface CampaignEditorPageProps {
   campaignId?: string
@@ -18,7 +28,9 @@ interface CampaignEditorPageProps {
  * The campaign editor route's body. The editor renders from the campaign in
  * hand, the last one loaded when a background refetch fails, so a passing
  * failure keeps the editor (and its undo stack) mounted and only raises a
- * snackbar. The error screen shows when there is no campaign at all.
+ * snackbar. The error screen shows when there is no campaign at all: a
+ * campaign of a team the user is not in (`FORBIDDEN`) says so and offers only
+ * the way back; every other error reads "Campaign not found" with a retry.
  */
 export function CampaignEditorPage({
   campaignId
@@ -35,6 +47,9 @@ export function CampaignEditorPage({
       ? previousData?.campaign
       : undefined)
   const hasCampaign = campaign != null
+  const forbidden =
+    CombinedGraphQLErrors.is(error) &&
+    error.errors[0]?.extensions?.code === 'FORBIDDEN'
 
   // Once per failed refetch: each failure carries a new error object.
   useEffect(() => {
@@ -63,8 +78,16 @@ export function CampaignEditorPage({
             p: 6
           }}
         >
-          <Typography variant="h5">{t('Campaign not found')}</Typography>
-          <Typography color="text.secondary">{error.message}</Typography>
+          <Typography variant="h5">
+            {forbidden
+              ? t("You don't have access to this campaign")
+              : t('Campaign not found')}
+          </Typography>
+          <Typography color="text.secondary">
+            {forbidden
+              ? t('Ask a manager of its team to add you.')
+              : error.message}
+          </Typography>
           <Stack direction="row" spacing={2}>
             <Button
               component={NextLink}
@@ -73,14 +96,16 @@ export function CampaignEditorPage({
             >
               {t('Back to campaigns')}
             </Button>
-            <Button
-              variant="contained"
-              onClick={() => {
-                void refetch()
-              }}
-            >
-              {t('Try again')}
-            </Button>
+            {!forbidden && (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  void refetch()
+                }}
+              >
+                {t('Try again')}
+              </Button>
+            )}
           </Stack>
         </Stack>
       ) : (

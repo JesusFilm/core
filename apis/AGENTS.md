@@ -110,7 +110,9 @@ This uses Hive to compose all subgraph schemas into `apis/api-gateway/schema.gra
 nx run-many -t codegen
 ```
 
-This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `watch`, `resources`, `journeys-ui`, and `shared-gql`.
+This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `resources`, `journeys-ui`, and `shared-gql`.
+
+Outside this repo, `jesusfilm/forge` (where `watch` now lives) queries the production gateway at runtime, and nothing in this repo checks those queries. Before removing or renaming a gateway field, argument or type, search forge for it.
 
 #### Troubleshooting
 
@@ -168,7 +170,7 @@ See `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change
 
 ##### `codegen` fails at schema load: `Directive "deprecated" may not be used on INPUT_FIELD_DEFINITION`
 
-The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`, `watch`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
+The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
 
 See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field-2026-06-08.md`.
 

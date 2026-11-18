@@ -1,4 +1,5 @@
 import './event'
+import './capture'
 import './button'
 import './chat'
 import './journey'

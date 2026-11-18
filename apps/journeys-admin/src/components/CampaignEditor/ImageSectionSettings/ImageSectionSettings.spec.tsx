@@ -342,4 +342,75 @@ describe('ImageSectionSettings', () => {
     expect(field).not.toHaveAttribute('placeholder')
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
+
+  it.each([
+    { from: '496', to: '529', returnBeforeRefusal: false },
+    { from: '529', to: '496', returnBeforeRefusal: false },
+    { from: '496', to: '529', returnBeforeRefusal: true },
+    { from: '529', to: '496', returnBeforeRefusal: true }
+  ])(
+    'ignores a pending alt refusal after changing Preview Language from $from to $to, return=$returnBeforeRefusal',
+    async ({ from, to, returnBeforeRefusal }) => {
+      const refusal = 'The previous language alt save was refused'
+      const save = {
+        ...(from === '496'
+          ? translationMock('Readers')
+          : blockUpdateMock(image, { alt: 'Readers' })),
+        result: vi.fn(() => ({ errors: [new GraphQLError(refusal)] }))
+      }
+      renderEdit([save], from)
+
+      const alt = await screen.findByRole('textbox', { name: 'Alt text' })
+      await holdRequests(() => {
+        fireEvent.change(alt, { target: { value: 'Readers' } })
+        fireEvent.blur(alt)
+      })
+      expect(save.result).not.toHaveBeenCalled()
+
+      fireEvent.click(screen.getByRole('button', { name: `Preview ${to}` }))
+      if (returnBeforeRefusal)
+        fireEvent.click(screen.getByRole('button', { name: `Preview ${from}` }))
+      expect(screen.getByRole('textbox', { name: 'Alt text' })).toBe(alt)
+      expect(alt).toHaveAttribute('aria-invalid', 'false')
+
+      await landRequests()
+
+      expect(save.result).toHaveBeenCalledTimes(1)
+      expect(screen.queryByText(refusal)).not.toBeInTheDocument()
+      expect(alt).toHaveAttribute('aria-invalid', 'false')
+      const languageId = returnBeforeRefusal ? from : to
+      expect(alt).toHaveValue(
+        languageId === '529' ? image.alt : image.altTranslations[0].value
+      )
+    }
+  )
+
+  it.each([
+    { from: '496', to: '529' },
+    { from: '529', to: '496' }
+  ])(
+    'still reports a new alt refusal after changing Preview Language from $from to $to',
+    async ({ from, to }) => {
+      const refusal = 'The current language alt save was refused'
+      const save = {
+        ...(to === '496'
+          ? translationMock('Readers')
+          : blockUpdateMock(image, { alt: 'Readers' })),
+        result: vi.fn(() => ({ errors: [new GraphQLError(refusal)] }))
+      }
+      renderEdit([save], from)
+
+      const alt = await screen.findByRole('textbox', { name: 'Alt text' })
+      fireEvent.click(screen.getByRole('button', { name: `Preview ${to}` }))
+      fireEvent.change(alt, { target: { value: 'Readers' } })
+      fireEvent.blur(alt)
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(refusal)
+      expect(save.result).toHaveBeenCalledTimes(1)
+      expect(alt).toHaveAttribute('aria-invalid', 'true')
+      expect(alt).toHaveValue(
+        to === '529' ? image.alt : image.altTranslations[0].value
+      )
+    }
+  )
 })
