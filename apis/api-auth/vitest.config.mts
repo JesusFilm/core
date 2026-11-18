@@ -25,6 +25,14 @@ export default defineConfig({
     ],
     globals: true,
     environment: 'node',
-    testTimeout: 20000
+    testTimeout: 20000,
+    coverage: {
+      enabled: true,
+      provider: 'v8',
+      include: ['src/**/*.ts'],
+      exclude: ['**/*.spec.ts', '**/*.d.ts'],
+      reporter: ['text', 'cobertura', 'json'],
+      reportsDirectory: '../../coverage/apis/api-auth'
+    }
   }
 })
