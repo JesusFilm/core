@@ -92,24 +92,36 @@ describe('ConnectedAgents', () => {
 
   it('previews shortening before an explicit version-bound approval and shows the final expiry', async () => {
     const requests: Array<{ url: string; body: Record<string, unknown> }> = []
+    const estimatedExpiry = '2026-11-23T10:00:00.000Z'
+    const finalExpiry = '2026-11-23T10:00:30.000Z'
+    let approved = false
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: string, init: RequestInit) => {
         const body = JSON.parse(init.body as string) as Record<string, unknown>
         requests.push({ url, body })
+        if (url.endsWith('/approve')) approved = true
         return new Response(
           JSON.stringify(
             url.endsWith('/review')
               ? {
                   reviewToken: 'review-token',
                   duration: 'week',
-                  previewExpiresAt: '2026-11-23T10:00:00.000Z',
+                  previewExpiresAt: estimatedExpiry,
                   previousExpiresAt: connection.expiresAt,
                   version: 7
                 }
               : url.endsWith('/approve')
-                ? { expiresAt: '2026-11-23T10:00:05.000Z' }
-                : { csrf: 'csrf', connections: [connection], nextCursor: null }
+                ? { expiresAt: finalExpiry }
+                : {
+                    csrf: 'csrf',
+                    connections: [
+                      approved
+                        ? { ...connection, version: 8, expiresAt: finalExpiry }
+                        : connection
+                    ],
+                    nextCursor: null
+                  }
           )
         )
       })
@@ -122,7 +134,11 @@ describe('ConnectedAgents', () => {
     )
     expect(screen.getByRole('combobox')).toHaveTextContent('One week')
     fireEvent.click(screen.getByRole('button', { name: 'Review renewal' }))
-    expect(await screen.findByText(/2026-11-23T10:00:00.000Z/)).toBeVisible()
+    expect(
+      await screen.findByText(
+        `If approved now, access expires at ${estimatedExpiry}. The chosen duration starts when the server accepts your approval.`
+      )
+    ).toBeVisible()
     expect(
       screen.getByText(
         'This duration shortens the current connection lifetime.'
@@ -134,9 +150,14 @@ describe('ConnectedAgents', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Approve renewal' }))
     expect(
       await screen.findByText(
-        /Connection renewed until 2026-11-23T10:00:05.000Z/
+        /Connection renewed until 2026-11-23T10:00:30.000Z/
       )
     ).toBeVisible()
+    expect(await screen.findByText(`Expires at ${finalExpiry}`)).toBeVisible()
+    expect(screen.queryByText(/If approved now/)).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(`Expires at ${connection.expiresAt}`)
+    ).not.toBeInTheDocument()
     expect(
       requests.find((request) => request.url.endsWith('/approve'))?.body
     ).toEqual({

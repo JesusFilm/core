@@ -1,0 +1,74 @@
+name: MCP read and renewal coverage
+
+on:
+  pull_request:
+    # Include stacked PR bases as well as the integration and main branches.
+    paths:
+      - 'apis/api-auth/**'
+      - 'apis/api-mcp/**'
+      - 'apis/api-gateway/**'
+      - 'apis/api-journeys/**'
+      - 'libs/prisma/**'
+      - 'libs/yoga/**'
+      - 'libs/journeys/ui/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'tsconfig*.json'
+      - '.github/workflows/mcp-read-coverage.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mcp-read-coverage-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  mcp-read-coverage:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: mcp-read-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.23.5
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - name: Generate Prisma clients for the real application participants
+        run: pnpm exec nx run-many -t prisma-generate --all
+        env:
+          DISABLE_ERD: true
+      - name: Migrate isolated databases and collect full-path coverage without skips
+        run: pnpm exec nx run api-auth:test-coverage
+        env:
+          MCP_READS_TEST_POSTGRES_URL: postgresql://postgres:mcp-read-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Retain test and cross-service coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-read-coverage
+          path: coverage/apis/api-auth
+          if-no-files-found: error
+      - name: Merge full-path execution hits into Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/apis/api-auth/cobertura-coverage.xml
+          flags: apps.api-auth
+          disable_search: true
+          fail_ci_if_error: true
