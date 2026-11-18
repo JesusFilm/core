@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '../../..')
+const baseline = process.argv.includes('--baseline')
 const reportDirectory = resolve(root, 'coverage/apis/api-auth')
 const tests = JSON.parse(
   readFileSync(resolve(reportDirectory, 'tests.json'), 'utf8')
@@ -50,6 +51,8 @@ const required: Record<string, string[]> = {
   'apis/api-mcp/src/reads.ts': ['releases.push(']
 }
 for (const [file, anchors] of Object.entries(required)) {
+  // Renewal is added by this PR and cannot execute in its pre-renewal base.
+  if (baseline && file === 'apis/api-auth/src/connections.ts') continue
   assert(
     cobertura.includes(`filename="${file}"`),
     `Missing repository-relative Codecov path: ${file}`

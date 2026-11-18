@@ -11,6 +11,10 @@ export default defineConfig({
     environment: 'node',
     hookTimeout: 120000,
     testTimeout: 20000,
+    reporters: ['default', 'json'],
+    outputFile: fileURLToPath(
+      new URL('../../coverage/apis/api-auth/tests.json', import.meta.url)
+    ),
     coverage: {
       enabled: true,
       // The HTTP harness imports the real gateway, MCP and Journeys owners.
