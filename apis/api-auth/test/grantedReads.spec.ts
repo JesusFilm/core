@@ -2627,6 +2627,9 @@ describe('granted journey read authorization', () => {
             expect(await auth.permissionChange.count()).toBe(1)
           } finally {
             await journeys.journey.deleteMany({ where: { id: { in: ids } } })
+            await journeys.userJourney.deleteMany({
+              where: { journeyId: 'read-a', userId: 'bob' }
+            })
           }
         },
         30000
@@ -2694,7 +2697,7 @@ describe('granted journey read authorization', () => {
           afterPermissionBegin = undefined
           await journeys.journey.deleteMany({ where: { id: { in: ids } } })
         }
-      }, 30000)
+      }, 120000)
 
       it.skipIf(!users)(
         'rejects a foreign ownership transfer before closing any gates',

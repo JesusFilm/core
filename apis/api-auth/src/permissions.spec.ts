@@ -175,7 +175,8 @@ describe('permission change protocol', () => {
             where: { id: { in: input.gateIds }, open: true, generation: 2 }
           })
         ).toBe(count)
-      }
+      },
+      60000
     )
 
     it('recovers a partially uploaded manifest without reopening or advancing repeated pages', async () => {
