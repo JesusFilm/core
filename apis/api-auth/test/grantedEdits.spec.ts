@@ -2235,6 +2235,10 @@ describe('saved edit integration', () => {
           {
             type: 'typography_restore',
             blockId: `${journeyId}-text`,
+            parent: {
+              cardId: `${journeyId}-card`,
+              stepId: `${journeyId}-step`
+            },
             fields: [
               {
                 field: 'variant',
@@ -2247,6 +2251,10 @@ describe('saved edit integration', () => {
           {
             type: 'typography_restore',
             blockId: `${journeyId}-text`,
+            parent: {
+              cardId: `${journeyId}-card`,
+              stepId: `${journeyId}-step`
+            },
             fields: [
               {
                 field: 'align',
@@ -2335,20 +2343,22 @@ describe('saved edit integration', () => {
       }
 
       it('undoes a multi-command batch across new chats and service replicas, then redoes the same IDs', async () => {
-        const input = await editInput()
-        input.commands = [
-          {
-            type: 'typography_set',
-            blockId: `${journeyId}-text`,
-            content: 'Intermediate'
-          },
-          {
-            type: 'typography_set',
-            blockId: `${journeyId}-text`,
-            content: 'Final'
-          }
-        ]
-        const saved = receipt(await edit(input))
+        const input = {
+          ...(await editInput()),
+          commands: [
+            {
+              type: 'typography_set',
+              blockId: `${journeyId}-text`,
+              content: 'Final'
+            },
+            {
+              type: 'typography_set',
+              blockId: `${journeyId}-text`,
+              variant: 'h1'
+            }
+          ]
+        }
+        const saved = receipt(await call('journey_edit', input))
         const second = await replica()
         restartOwner()
         const stack = await history(token, second)
@@ -2367,7 +2377,8 @@ describe('saved edit integration', () => {
         expect(BigInt(undone.committedRevision)).toBe(BigInt(before) + 1n)
         expect(await textBlock()).toMatchObject({
           id: `${journeyId}-text`,
-          content: 'Original heading'
+          content: 'Original heading',
+          variant: 'h2'
         })
         expect((await history()).redoEntryId).toBe(saved.historyId)
         restartOwner()
@@ -2376,7 +2387,10 @@ describe('saved edit integration', () => {
         expect(redone.warnings.join(' ')).toContain(
           'no upload, generation or provider effects'
         )
-        expect(await textBlock()).toMatchObject({ content: 'Final' })
+        expect(await textBlock()).toMatchObject({
+          content: 'Final',
+          variant: 'h1'
+        })
         expect(await counts()).toEqual({
           operations: 3,
           history: 1,
