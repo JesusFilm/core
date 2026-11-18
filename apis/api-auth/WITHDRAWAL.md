@@ -43,6 +43,19 @@ pnpm exec vitest run --root apps/journeys-admin --config "$PWD/apps/journeys-adm
 
 The full-path suite runs actual MCP HTTP, issuer/OAuth exchange, Hive gateway, owning Journeys handler and both databases with synthetic data. Firebase authentication/eligibility are declared controlled adapters. Its authority proxy injects network barriers and report failures while forwarding the real service requests. Smaller issuer tests cover process replacement, versions, owner/session/CSRF binding, review replacement, cross-session approval, expiry after the access-review row lock wait, stale membership generations, more than 100 unresolved changes and per-row failure isolation. A separate real MCP child process is killed while its accepted Journeys read remains paused; the change stays Pending until the surviving owning executor positively settles. These are local checks, not live Firebase, AWS or real-client evidence.
 
+### Reproducible CI coverage
+
+The [MCP read coverage workflow](../../.github/workflows/mcp-read-coverage.yml) runs on relevant pull requests, including stacked bases. Its disposable PostgreSQL service supplies an administrator URL to a command that creates three randomly named issue databases and a restricted auth runtime role, replays the complete committed migration histories and applies the production auth grants. Reproduce it against a local test PostgreSQL server with database/role creation rights:
+
+```sh
+DISABLE_ERD=true pnpm exec nx run-many -t prisma-generate --all
+MCP_READS_TEST_POSTGRES_URL=postgresql://postgres:postgres@localhost:5432/postgres pnpm exec nx run api-auth:test-coverage
+```
+
+The command removes only the databases and role it created, including after test failure. It supplies every database variable required by the issuer and full-path suites, rejects skipped tests, and verifies execution hits in the owning receipt reconciler and read handler. The receipt test crosses 100 pending rows, fails one authenticated fence report, checks that later rows report successfully, and retries the retained row. No live Firebase/provider credentials are used.
+
+Auth's V8 configuration collects imported sources outside its workspace, so the real Journeys execution is present in `coverage/apis/api-auth/cobertura-coverage.xml` and `coverage-final.json`. The workflow retains those reports and the test JSON as an artifact, then uploads Cobertura to Codecov with the `apps.api-auth` flag. Codecov merges these owning-source hits with the ordinary project reports for the same commit. No coverage thresholds or source exclusions are relaxed. Child-process execution is not claimed as covered by the parent Vitest collector.
+
 ## Deferred feature checks
 
 Normal Admin browser/Firebase cases remain unexecuted: use two approved accounts to verify owner versus team-manager isolation, selection review, View only downgrade/upgrade, lost rights, stale tabs, CSRF/logout and Pending/Complete refresh through real connection/reconnection flows. Verify disable/delete/recreation/revocation through supported account paths when #10550 joins the coordinator. Host container qualification, assembled service configuration, AWS operation and Claude/ChatGPT staging transcripts remain with their designated owners. Browser QA was not requested in this coding run.
