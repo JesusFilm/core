@@ -199,6 +199,25 @@ describe('stored presentation inverses', () => {
   }
 
   it.each([
+    { after: 0, valid: true },
+    { after: 2147483647, valid: true },
+    { after: 2147483648, valid: false },
+    { after: Number.MAX_SAFE_INTEGER, valid: false },
+    { after: -1, valid: false },
+    { after: 1.5, valid: false }
+  ])('requires storable forward sibling order $after', ({ after, valid }) => {
+    expect(
+      presentationInverse.safeParse({
+        ...inverse,
+        typename: 'TypographyBlock',
+        fields: [
+          { field: 'parentOrder', before: 0, after, beforePresent: true }
+        ]
+      }).success
+    ).toBe(valid)
+  })
+
+  it.each([
     { typename: 'SpacerBlock', field: 'spacing', after: 200 },
     { typename: 'CardBlock', field: 'backdropBlur', after: 10 },
     { typename: 'ButtonBlock', field: 'parentOrder', after: 1 }

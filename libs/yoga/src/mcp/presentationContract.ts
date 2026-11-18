@@ -225,7 +225,7 @@ const savedForwardFields: Record<
     expandChatByDefault: cardChatCommand.shape.collapse
   }
 }
-const savedParentOrder = z.number().int().nonnegative()
+const savedParentOrder = z.number().int().nonnegative().max(2147483647)
 const savedPriorInteger = z
   .number()
   .int()
