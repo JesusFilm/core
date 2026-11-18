@@ -94,6 +94,10 @@ database. The checks use synthetic content and declared controlled Firebase
 identity/eligibility adapters, alongside the actual OAuth/HTTP/gateway/owning
 participants and real PostgreSQL transactions.
 
+Saved edit integration tests run through `vitest.edits.config.mts`, rather than
+the default auth config used by the read/issuer coverage route. The edit runner
+provides their separate databases and rejects skipped tests.
+
 The runner also executes the shared command/credential and read-page tests. It
 collects owning-service and shared-module coverage in
 `coverage/integration/mcp-edits`, separately from workspace and shard reports.

@@ -11,6 +11,7 @@ export default defineConfig({
   root: fileURLToPath(new URL('../..', import.meta.url)),
   test: {
     ...authConfig.test,
+    exclude: ['**/node_modules/**', '**/.git/**'],
     include: [
       'apis/api-auth/test/grantedEdits.spec.ts',
       'libs/yoga/src/mcp/*.spec.ts',
