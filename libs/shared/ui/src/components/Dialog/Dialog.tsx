@@ -100,7 +100,8 @@ export function Dialog({
       maxWidth={maxWidth}
       fullWidth
       onClose={onClose}
-      onKeyDown={onKeyDown}
+      // Keep MUI's modal-level Escape handler intact.
+      slotProps={{ paper: { onKeyDown } }}
       container={container}
       data-testid={testId}
       sx={sx}

@@ -7,6 +7,7 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -181,6 +182,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('keeps the template dialog open on Tab and releases the gallery lock on Escape', async () => {
+    const user = userEvent.setup()
     const journey = nonCustomizableLocalTemplateJourney
     const setHasOpenDialog = vi.fn()
     render(
@@ -213,14 +215,18 @@ describe('JourneyCardMenu', () => {
       name: 'Add Journey to Team'
     })
     const cancelButton = within(dialog).getByRole('button', { name: 'Cancel' })
+    const addButton = within(dialog).getByRole('button', { name: 'Add' })
     act(() => cancelButton.focus())
     expect(cancelButton).toHaveFocus()
-    expect(fireEvent.keyDown(cancelButton, { key: 'Tab' })).toBe(true)
+    await user.tab()
+    expect(addButton).toHaveFocus()
+    await user.tab({ shift: true })
+    expect(cancelButton).toHaveFocus()
     expect(dialog).toBeVisible()
     expect(menuTrigger).toHaveAttribute('aria-expanded', 'false')
     expect(setHasOpenDialog).toHaveBeenLastCalledWith(true)
 
-    fireEvent.keyDown(cancelButton, { key: 'Escape' })
+    await user.keyboard('{Escape}')
     await waitFor(() => expect(dialog).not.toBeInTheDocument())
     expect(setHasOpenDialog).toHaveBeenLastCalledWith(false)
   })
