@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 
 import { createAuthDatabase } from '@core/prisma/auth/client'
 
@@ -9,15 +9,17 @@ import { createAuthDatabase } from '@core/prisma/auth/client'
 // It never resets a supplied database or uses live identity/provider credentials.
 const adminUrl = process.env.MCP_READS_TEST_POSTGRES_URL
 if (!adminUrl) throw new Error('MCP_READS_TEST_POSTGRES_URL is required')
+const baseline = process.argv.includes('--baseline')
+const testIssue = baseline ? '10573' : '10575'
 const root = resolve(import.meta.dirname, '../../..')
 const suffix = randomBytes(8).toString('hex')
 const runtimeRole = `mcp_reads_${suffix}`
 const password = randomBytes(24).toString('hex')
 const databases = {
-  auth: `auth_issue_10575_${suffix}`,
-  reads: `auth_issue_10575_reads_${suffix}`,
+  auth: `auth_issue_${testIssue}_${suffix}`,
+  reads: `auth_issue_${testIssue}_reads_${suffix}`,
   permissions: `auth_issue_10550_permissions_${suffix}`,
-  journeys: `journeys_issue_10575_${suffix}`,
+  journeys: `journeys_issue_${testIssue}_${suffix}`,
   users: `users_issue_10550_${suffix}`
 }
 const created: string[] = []
@@ -99,28 +101,46 @@ try {
       await migration.$disconnect()
     }
   }
-  run(
-    [
-      'exec',
-      'vitest',
-      'run',
-      '--config',
-      'apis/api-auth/vitest.config.mts',
-      '--coverage',
-      '--reporter=default',
-      '--reporter=json',
-      `--outputFile=${resolve(root, 'coverage/apis/api-auth/tests.json')}`
-    ],
-    {
-      AUTH_TEST_DATABASE_URL: url(databases.auth, true),
-      AUTH_TEST_MIGRATION_DATABASE_URL: url(databases.auth),
-      PERMISSIONS_TEST_DATABASE_URL: url(databases.permissions, true),
-      READS_TEST_AUTH_DATABASE_URL: url(databases.reads, true),
-      READS_TEST_JOURNEYS_DATABASE_URL: url(databases.journeys),
-      READS_TEST_USERS_DATABASE_URL: url(databases.users)
-    }
-  )
-  run(['exec', 'tsx', 'apis/api-auth/test/verifyCoverage.ts'])
+  const testEnvironment = {
+    AUTH_TEST_DATABASE_URL: url(databases.auth, true),
+    AUTH_TEST_MIGRATION_DATABASE_URL: url(databases.auth),
+    PERMISSIONS_TEST_DATABASE_URL: url(databases.permissions, true),
+    READS_TEST_AUTH_DATABASE_URL: url(databases.reads, true),
+    READS_TEST_JOURNEYS_DATABASE_URL: url(databases.journeys),
+    READS_TEST_USERS_DATABASE_URL: url(databases.users)
+  }
+  {
+    const configs = spawnSync(
+      'git',
+      ['ls-files', '**/vitest.config.mts', '**/vitest.config.ts'],
+      { cwd: root, encoding: 'utf8' }
+    )
+    if (configs.error) throw configs.error
+    if (configs.status !== 0 || !configs.stdout.trim())
+      throw new Error('Could not enumerate coverage Vitest projects')
+    for (const config of configs.stdout.trim().split('\n'))
+      run(
+        [
+          'exec',
+          'vitest',
+          'run',
+          '--root',
+          resolve(root, dirname(config)),
+          '--config',
+          resolve(root, config),
+          config === 'apis/api-auth/vitest.config.mts'
+            ? '--maxWorkers=1'
+            : '--maxWorkers=4'
+        ],
+        testEnvironment
+      )
+  }
+  run([
+    'exec',
+    'tsx',
+    'apis/api-auth/test/verifyCoverage.ts',
+    ...(baseline ? ['--baseline'] : [])
+  ])
 } finally {
   // Disconnect fixture pools before removing exactly the resources we created.
   for (const database of created.reverse())
