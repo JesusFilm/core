@@ -117,7 +117,7 @@ jobs:
         run: pnpm exec nx run-many -t prisma-generate --all
         env:
           DISABLE_ERD: true
-      - name: Collect base project reports and real protocol coverage
+      - name: Collect all base project reports and real protocol coverage
         run: pnpm exec tsx apis/api-auth/test/runCoverage.ts --baseline
         env:
           MCP_READS_TEST_POSTGRES_URL: postgresql://postgres:mcp-read-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres

@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 
 import { createAuthDatabase } from '@core/prisma/auth/client'
 
@@ -89,36 +89,50 @@ try {
       await migration.$disconnect()
     }
   }
-  run(
-    baseline
-      ? [
-          'exec',
-          'nx',
-          'affected',
-          '--target=test',
-          '--base=origin/main',
-          '--head=HEAD',
-          '--parallel=1',
-          '--skip-nx-cache'
-        ]
-      : [
+  const testEnvironment = {
+    AUTH_TEST_DATABASE_URL: url(databases[0], true),
+    AUTH_TEST_MIGRATION_DATABASE_URL: url(databases[0]),
+    READS_TEST_AUTH_DATABASE_URL: url(databases[1], true),
+    READS_TEST_JOURNEYS_DATABASE_URL: url(databases[2])
+  }
+  if (baseline) {
+    const configs = spawnSync(
+      'git',
+      ['ls-files', '**/vitest.config.mts', '**/vitest.config.ts'],
+      { cwd: root, encoding: 'utf8' }
+    )
+    if (configs.error) throw configs.error
+    if (configs.status !== 0 || !configs.stdout.trim())
+      throw new Error('Could not enumerate baseline Vitest projects')
+    for (const config of configs.stdout.trim().split('\n'))
+      run(
+        [
           'exec',
           'vitest',
           'run',
+          '--root',
+          resolve(root, dirname(config)),
           '--config',
-          'apis/api-auth/vitest.config.mts',
-          '--coverage',
-          '--reporter=default',
-          '--reporter=json',
-          `--outputFile=${resolve(root, 'coverage/apis/api-auth/tests.json')}`
+          resolve(root, config)
         ],
-    {
-      AUTH_TEST_DATABASE_URL: url(databases[0], true),
-      AUTH_TEST_MIGRATION_DATABASE_URL: url(databases[0]),
-      READS_TEST_AUTH_DATABASE_URL: url(databases[1], true),
-      READS_TEST_JOURNEYS_DATABASE_URL: url(databases[2])
-    }
-  )
+        testEnvironment
+      )
+  } else {
+    run(
+      [
+        'exec',
+        'vitest',
+        'run',
+        '--config',
+        'apis/api-auth/vitest.config.mts',
+        '--coverage',
+        '--reporter=default',
+        '--reporter=json',
+        `--outputFile=${resolve(root, 'coverage/apis/api-auth/tests.json')}`
+      ],
+      testEnvironment
+    )
+  }
   run([
     'exec',
     'tsx',
