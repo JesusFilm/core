@@ -12,12 +12,13 @@ if (!adminUrl) throw new Error('MCP_READS_TEST_POSTGRES_URL is required')
 const baseline = process.argv.includes('--baseline')
 const root = resolve(import.meta.dirname, '../../..')
 const suffix = randomBytes(8).toString('hex')
+const testIssue = baseline ? '10573' : '10574'
 const runtimeRole = `mcp_reads_${suffix}`
 const password = randomBytes(24).toString('hex')
 const databases = [
-  `auth_issue_10574_${suffix}`,
-  `auth_issue_10574_reads_${suffix}`,
-  `journeys_issue_10574_${suffix}`
+  `auth_issue_${testIssue}_${suffix}`,
+  `auth_issue_${testIssue}_reads_${suffix}`,
+  `journeys_issue_${testIssue}_${suffix}`
 ]
 const created: string[] = []
 let roleCreated = false
