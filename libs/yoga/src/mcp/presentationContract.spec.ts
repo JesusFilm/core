@@ -200,6 +200,147 @@ describe('stored presentation inverses', () => {
 
   it.each([
     {
+      typename: 'TypographyBlock',
+      field: 'content',
+      valid: ['', 'Text'],
+      invalid: ['<b>markup</b>', 'x'.repeat(262145), null]
+    },
+    {
+      typename: 'TypographyBlock',
+      field: 'variant',
+      valid: ['h1', 'caption'],
+      invalid: ['outlined', 'legacy', null]
+    },
+    {
+      typename: 'TypographyBlock',
+      field: 'align',
+      valid: ['left', 'right'],
+      invalid: ['justify', 'wide', null]
+    },
+    {
+      typename: 'ButtonBlock',
+      field: 'label',
+      valid: ['', 'Continue'],
+      invalid: ['<b>markup</b>', 'x'.repeat(262145), null]
+    },
+    {
+      typename: 'ButtonBlock',
+      field: 'variant',
+      valid: ['text', 'contained', 'outlined'],
+      invalid: ['h1', 'legacy', null]
+    },
+    {
+      typename: 'ButtonBlock',
+      field: 'size',
+      valid: ['small', 'medium', 'large'],
+      invalid: ['huge', null]
+    },
+    {
+      typename: 'ButtonBlock',
+      field: 'color',
+      valid: ['primary', 'secondary', 'error'],
+      invalid: ['inherit', '#123456', null]
+    },
+    {
+      typename: 'ButtonBlock',
+      field: 'startIconId',
+      valid: ['icon'],
+      invalid: ['', 'x'.repeat(201), null]
+    },
+    {
+      typename: 'ButtonBlock',
+      field: 'endIconId',
+      valid: ['icon'],
+      invalid: ['', 'x'.repeat(201), null]
+    },
+    {
+      typename: 'IconBlock',
+      field: 'name',
+      valid: ['Home4', null],
+      invalid: ['UnknownIcon', '']
+    },
+    {
+      typename: 'IconBlock',
+      field: 'color',
+      valid: ['inherit', 'primary', 'secondary', 'error'],
+      invalid: ['disabled', '#123456', null]
+    },
+    {
+      typename: 'SpacerBlock',
+      field: 'spacing',
+      valid: [20, 200, 400],
+      invalid: [19, 25, 410, 20.5, null]
+    },
+    {
+      typename: 'CardBlock',
+      field: 'fullscreen',
+      valid: [true, false],
+      invalid: ['true', 1, null]
+    },
+    {
+      typename: 'CardBlock',
+      field: 'backgroundColor',
+      valid: ['#123456', '#aBcDeF80', null],
+      invalid: ['red', '#fff', '#123456789']
+    },
+    {
+      typename: 'CardBlock',
+      field: 'backdropBlur',
+      valid: [0, 25, null],
+      invalid: [-1, 26, 1.5]
+    },
+    {
+      typename: 'CardBlock',
+      field: 'themeMode',
+      valid: ['light', 'dark', null],
+      invalid: ['custom', 'LIGHT']
+    },
+    {
+      typename: 'CardBlock',
+      field: 'themeName',
+      valid: ['base', null],
+      invalid: ['custom', '']
+    },
+    {
+      typename: 'CardBlock',
+      field: 'showAssistant',
+      valid: [true, false],
+      invalid: ['true', 1, null]
+    },
+    {
+      typename: 'CardBlock',
+      field: 'expandChatByDefault',
+      valid: [true, false],
+      invalid: ['false', 0, null]
+    },
+    {
+      typename: 'ButtonBlock',
+      field: 'parentOrder',
+      valid: [0, 1],
+      invalid: [-1, 1.5, null]
+    }
+  ])(
+    'validates saved forward $field for $typename while preserving typed legacy before values',
+    ({ typename, field, valid, invalid }) => {
+      for (const after of [...valid, ...invalid]) {
+        // Persisted legacy values may be outside the current mounted constraints.
+        const before = field === 'name' || field === 'color' ? 'legacy' : after
+        expect(
+          presentationInverse.safeParse({
+            ...inverse,
+            typename,
+            owner: { blockId: 'button', slot: 'startIconId' },
+            gate: 'aiChatEditor',
+            fields: [{ field, before, after, beforePresent: true }]
+          }).success,
+          `${typename}.${field}: ${JSON.stringify(after).slice(0, 80)}`
+        ).toBe(valid.some((value) => value === after))
+      }
+    }
+  )
+
+  it.each([
+    {
       typename: 'ButtonBlock',
       field: 'settings.alignment',
       valid: ['left', 'center', 'right', 'justify'],
@@ -263,7 +404,14 @@ describe('stored presentation inverses', () => {
       const stored = {
         ...inverse,
         typename: 'IconBlock',
-        fields: [{ field, before: null, after: null, beforePresent: true }]
+        fields: [
+          {
+            field,
+            before: null,
+            after: field === 'name' ? null : 'inherit',
+            beforePresent: true
+          }
+        ]
       }
       expect(presentationInverse.safeParse(stored).success).toBe(false)
       for (const slot of ['startIconId', 'endIconId'])
@@ -336,6 +484,9 @@ describe('stored presentation inverses', () => {
         ...stored,
         fields: [{ ...stored.fields[0], [fixture.side]: null }]
       }).success
-    ).toBe(true)
+    ).toBe(
+      fixture.side === 'before' ||
+        ['name', 'backdropBlur'].includes(fixture.field)
+    )
   })
 })

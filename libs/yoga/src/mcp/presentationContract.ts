@@ -191,6 +191,41 @@ export const presentationFields = [
   'parentOrder'
 ] as const
 export type PresentationField = (typeof presentationFields)[number]
+const savedForwardFields: Record<
+  string,
+  Partial<Record<PresentationField, z.ZodType>>
+> = {
+  TypographyBlock: {
+    content: plainText,
+    variant: typographyVariant,
+    align,
+    'settings.color': rgb
+  },
+  ButtonBlock: {
+    label: buttonCommand.shape.label,
+    variant: buttonCommand.shape.variant,
+    size: buttonCommand.shape.size,
+    color: buttonCommand.shape.color,
+    'settings.alignment': buttonCommand.shape.alignment,
+    startIconId: id,
+    endIconId: id
+  },
+  IconBlock: {
+    name: buttonIconCommand.shape.name,
+    color: buttonIconCommand.shape.color
+  },
+  SpacerBlock: { spacing: spacerCommand.shape.spacing },
+  CardBlock: {
+    fullscreen: cardCommand.shape.fullscreen,
+    backgroundColor: cardCommand.shape.backgroundColor,
+    backdropBlur: cardCommand.shape.backdropBlur,
+    themeMode: cardCommand.shape.themeMode,
+    themeName: z.literal('base').nullable(),
+    showAssistant: cardChatCommand.shape.enabled,
+    expandChatByDefault: cardChatCommand.shape.collapse
+  }
+}
+const savedParentOrder = z.number().int().nonnegative()
 export const fieldChange = z
   .object({
     field: z.enum(presentationFields),
@@ -217,34 +252,11 @@ export const presentationInverse = z
   .refine(
     (inverse) =>
       inverse.fields.every(({ field, before, after }) => {
-        const allowed: Record<string, readonly string[]> = {
-          TypographyBlock: ['content', 'variant', 'align', 'settings.color'],
-          ButtonBlock: [
-            'label',
-            'variant',
-            'size',
-            'color',
-            'settings.alignment',
-            'startIconId',
-            'endIconId'
-          ],
-          IconBlock: ['name', 'color'],
-          SpacerBlock: ['spacing'],
-          CardBlock: [
-            'fullscreen',
-            'backgroundColor',
-            'backdropBlur',
-            'themeMode',
-            'themeName',
-            'showAssistant',
-            'expandChatByDefault'
-          ]
-        }
-        if (
-          field !== 'parentOrder' &&
-          !allowed[inverse.typename]?.includes(field)
-        )
-          return false
+        const forward =
+          field === 'parentOrder'
+            ? savedParentOrder
+            : savedForwardFields[inverse.typename]?.[field]
+        if (!forward?.safeParse(after).success) return false
         if (
           inverse.typename === 'IconBlock' &&
           field !== 'parentOrder' &&
@@ -257,9 +269,7 @@ export const presentationInverse = z
         )
           return false
         // Undo may restore legacy JSON; redo must use a valid forward value.
-        if (field === 'settings.alignment')
-          return alignment.safeParse(after).success
-        if (field === 'settings.color') return rgb.safeParse(after).success
+        if (field.startsWith('settings.')) return true
         const expectedType = [
           'parentOrder',
           'spacing',
@@ -271,9 +281,7 @@ export const presentationInverse = z
               )
             ? 'boolean'
             : 'string'
-        return [before, after].every(
-          (value) => value === null || typeof value === expectedType
-        )
+        return before === null || typeof before === expectedType
       }),
     'Inverse fields must belong to their recorded block type and feature gate'
   )
