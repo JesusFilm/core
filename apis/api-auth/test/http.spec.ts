@@ -466,6 +466,12 @@ describe('durable issuer integration', () => {
               ) AS waiting`
             expect(state.waiting).toBe(true)
           })
+          const blockedAt = await databaseTime(db)
+          await vi.waitFor(async () => {
+            expect((await databaseTime(db)).getTime()).toBeGreaterThan(
+              blockedAt.getTime() + 25
+            )
+          })
           releasedAt = await databaseTime(db)
         } finally {
           unlock()
