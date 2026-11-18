@@ -851,6 +851,58 @@ describe('structural integration', () => {
         await assertRejected([route('no', 'b')])
       })
 
+      it('preserves visible Step order through Admin delete and Undo after an MCP deletion', async () => {
+        await f.journeys.block.create({
+          data: {
+            id: f.id('d'),
+            journeyId: f.journeyId,
+            typename: 'StepBlock',
+            parentOrder: 3
+          }
+        })
+        await f.journeys.block.update({
+          where: { id: f.id('b') },
+          data: { nextBlockId: f.id('a') }
+        })
+        const incomingDefault = await block('b')
+        const incomingActions = await f.journeys.action.findMany({
+          where: { parentBlock: { journeyId: f.journeyId } },
+          orderBy: { parentBlockId: 'asc' }
+        })
+
+        await f.save([{ type: 'step_remove', step: ref(f.id('a')) }])
+        expect(await block('b')).toEqual(incomingDefault)
+        expect(
+          await f.journeys.action.findMany({
+            where: { parentBlock: { journeyId: f.journeyId } },
+            orderBy: { parentBlockId: 'asc' }
+          })
+        ).toEqual(incomingActions)
+        expect(
+          (await steps()).map(({ id, parentOrder }) => [id, parentOrder])
+        ).toEqual([
+          [f.id('b'), 1],
+          [f.id('c'), 2],
+          [f.id('d'), 3]
+        ])
+
+        await f.adminBlockMutation('Delete', f.id('c'))
+        expect((await steps()).map(({ id }) => id)).toEqual([
+          f.id('b'),
+          f.id('d')
+        ])
+        await f.adminBlockMutation('Restore', f.id('c'))
+        expect((await steps()).map(({ id }) => id)).toEqual([
+          f.id('b'),
+          f.id('c'),
+          f.id('d')
+        ])
+        expect(await block('cc')).toMatchObject({
+          parentBlockId: f.id('c'),
+          deletedAt: null
+        })
+      })
+
       it('applies only requested repairs after deletion and keeps the untouched answer unchanged', async () => {
         await f.save([{ type: 'step_remove', step: ref(f.id('b')) }])
         const untouched = await action('no')

@@ -4,6 +4,8 @@ import { type Server, createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
 
 import { createGatewayRuntime } from '@graphql-hive/gateway'
+import { initContextCache } from '@pothos/core'
+import { type GraphQLSchema, graphql } from 'graphql'
 import pino from 'pino'
 import { z } from 'zod'
 
@@ -14,6 +16,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Exercise independent deployed HTTP participants together. */
 import { useMcpReads } from '../../api-gateway/src/mcpReads'
+import '../../api-journeys/test/bullmqMock'
 import { createJourneyEditHandler } from '../../api-journeys/src/lib/mcpEdits'
 import { createJourneyReadHandler } from '../../api-journeys/src/lib/mcpReads'
 import { readConfig as readMcpConfig } from '../../api-mcp/src/config'
@@ -61,6 +64,26 @@ export function structureFixture() {
   let journeyId: string
   let checkpoint: Checkpoint
   let discardResponse = false
+  let adminSchema: GraphQLSchema
+
+  async function adminBlockMutation(
+    operation: 'Delete' | 'Restore',
+    id: string
+  ) {
+    const result = await graphql({
+      schema: adminSchema,
+      source: `mutation($id: ID!) { block${operation}(id: $id) { id parentOrder } }`,
+      variableValues: { id },
+      contextValue: {
+        ...initContextCache(),
+        type: 'authenticated',
+        user: { id: 'alice', email: 'alice@synthetic.example' },
+        currentRoles: []
+      }
+    })
+    expect(result.errors).toBeUndefined()
+    return result.data
+  }
 
   const id = (suffix: string) => `${journeyId}-${suffix}`
   async function listen(server: Server) {
@@ -445,6 +468,23 @@ export function structureFixture() {
     )
     await mcp.listen()
     mcpUrl = `http://127.0.0.1:${(mcp.server.address() as AddressInfo).port}/mcp`
+
+    process.env.SKIP_ENV_VALIDATION = '1'
+    vi.doMock('@core/prisma/journeys/client', async (importOriginal) => ({
+      ...(await importOriginal<
+        typeof import('@core/prisma/journeys/client')
+      >()),
+      prisma: journeys
+    }))
+    const schemaModule = new URL(
+      '../../api-journeys/src/schema/schema.ts',
+      import.meta.url
+    ).href
+    ;({ schema: adminSchema } = (await import(
+      /* webpackChunkName: "structure-admin-schema" */ schemaModule
+    )) as {
+      schema: GraphQLSchema
+    })
   }, 30000)
 
   beforeEach(async () => {
@@ -703,6 +743,7 @@ export function structureFixture() {
     counts,
     snapshot,
     consent,
+    adminBlockMutation,
     get journeyId() {
       return journeyId
     },
