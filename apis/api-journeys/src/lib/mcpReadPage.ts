@@ -1,5 +1,6 @@
 import {
   type ReadResult,
+  maxStructuredResultBytes,
   resultContractVersion
 } from '@core/yoga/mcp/readContract'
 
@@ -22,7 +23,8 @@ export function boundedReadPage(
       complete,
       nextCursor: complete ? null : nextCursor(count)
     }
-    if (Buffer.byteLength(JSON.stringify(result)) <= 524288) return result
+    if (Buffer.byteLength(JSON.stringify(result)) <= maxStructuredResultBytes)
+      return result
     if (count <= 1) throw new Error('LIMIT_EXCEEDED')
     count--
   }

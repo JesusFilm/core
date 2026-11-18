@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { spawnSync } from 'node:child_process'
 
@@ -89,9 +90,7 @@ run(
     'vitest',
     'run',
     '--config',
-    'apis/api-auth/vitest.config.mts',
-    'apis/api-auth/test/grantedEdits.spec.ts',
-    '--coverage=false'
+    'apis/api-auth/vitest.edits.config.mts'
   ],
   {
     EDITS_TEST_ISSUE: issue,
@@ -99,3 +98,28 @@ run(
     EDITS_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`)
   }
 )
+
+const reportDirectory = 'coverage/integration/mcp-edits'
+const tests = JSON.parse(
+  readFileSync(`${reportDirectory}/test-results.json`, 'utf8')
+)
+if (!tests.numTotalTests || tests.numPassedTests !== tests.numTotalTests)
+  throw new Error(
+    'Saved edit coverage requires every test to pass with no skips'
+  )
+const coverage = JSON.parse(
+  readFileSync(`${reportDirectory}/coverage-final.json`, 'utf8')
+)
+for (const module of [
+  'apis/api-journeys/src/lib/mcpEdits.ts',
+  'apis/api-journeys/src/lib/mcpEditsStore.ts',
+  'apis/api-journeys/src/lib/mcpReads.ts',
+  'libs/yoga/src/mcp/editContract.ts',
+  'libs/yoga/src/mcp/readContract.ts'
+]) {
+  const entry = Object.entries(coverage).find(([path]) =>
+    path.endsWith('/' + module)
+  )?.[1]
+  if (!entry || !Object.values(entry.s).some((hits) => hits > 0))
+    throw new Error(`Missing executed owning/shared coverage for ${module}`)
+}

@@ -87,6 +87,36 @@ describe('closed executable typography registry', () => {
     expect(typographyCommand.safeParse(value).success).toBe(false)
   })
 
+  it.each(['content', 'variant', 'align', 'color'] as const)(
+    'rejects repeated %s assignments regardless of their values',
+    (field) => {
+      for (const value of [command[field], 'different']) {
+        expect(
+          editInput.safeParse({
+            ...input,
+            commands: [
+              command,
+              {
+                type: 'typography_set',
+                blockId: command.blockId,
+                [field]: value
+              }
+            ]
+          }).success
+        ).toBe(false)
+      }
+    }
+  )
+
+  it('allows disjoint fields on one block and the same field on different blocks', () => {
+    const commands = [
+      { type: 'typography_set', blockId: 'first', content: 'Heading' },
+      { type: 'typography_set', blockId: 'first', color: '#123456' },
+      { type: 'typography_set', blockId: 'second', content: 'Heading' }
+    ]
+    expect(editInput.parse({ ...input, commands }).commands).toEqual(commands)
+  })
+
   it('records only changed fields and preserves unknown settings', () => {
     const applied = commandRegistry.typography_set.apply(state, command)
     expect(applied.patch).toEqual({
