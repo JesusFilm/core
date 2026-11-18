@@ -51,6 +51,7 @@ export const editInput = z
   .superRefine((input, context) => {
     const writes = new Map<string, Set<string>>()
     input.commands.forEach((command, index) => {
+      if (command.type !== 'typography_set') return
       const fields = writes.get(command.blockId) ?? new Set<string>()
       for (const field of ['content', 'variant', 'align', 'color'] as const) {
         if (command[field] === undefined) continue

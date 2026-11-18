@@ -213,6 +213,34 @@ describe('closed structure and navigation contract', () => {
     expect(editInput.parse({ ...input, commands }).commands).toEqual(commands)
   })
 
+  it('allows content creation alongside Typography edits while rejecting repeated field writes', () => {
+    const commands = [
+      ...['first', 'second'].map((key) => ({
+        type: 'block_add',
+        key,
+        card: { id: 'card' },
+        placement: { position: 'end' },
+        content: { kind: 'typography', content: 'New heading' }
+      })),
+      { type: 'typography_set', blockId: 'heading', content: 'Saved heading' },
+      { type: 'typography_set', blockId: 'heading', align: 'center' }
+    ]
+    expect(editInput.parse({ ...input, commands }).commands).toEqual(commands)
+    expect(
+      editInput.safeParse({
+        ...input,
+        commands: [
+          ...commands,
+          {
+            type: 'typography_set',
+            blockId: 'heading',
+            content: 'Saved heading'
+          }
+        ]
+      }).success
+    ).toBe(false)
+  })
+
   it('returns complete duplication mappings and affected routes in a protected historical receipt', () => {
     const receipt = {
       contractVersion: '1',
