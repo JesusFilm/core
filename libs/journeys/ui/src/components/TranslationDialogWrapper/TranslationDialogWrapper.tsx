@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode } from 'react'
+import { KeyboardEventHandler, ReactElement, ReactNode } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -13,6 +13,7 @@ import { TranslationProgressBar } from '../TranslationProgressBar'
 interface TranslationDialogWrapperProps {
   open: boolean
   onClose: () => void
+  onKeyDown?: KeyboardEventHandler<HTMLDivElement>
   onTranslate: () => Promise<void>
   title: string
   loadingText?: string
@@ -59,6 +60,7 @@ interface TranslationDialogWrapperProps {
 export function TranslationDialogWrapper({
   open,
   onClose,
+  onKeyDown,
   onTranslate,
   title,
   loadingText,
@@ -79,6 +81,7 @@ export function TranslationDialogWrapper({
     <Dialog
       open={open}
       onClose={onClose}
+      onKeyDown={onKeyDown}
       divider={divider}
       dialogTitle={
         !loading

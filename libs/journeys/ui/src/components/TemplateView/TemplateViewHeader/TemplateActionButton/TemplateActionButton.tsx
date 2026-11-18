@@ -12,7 +12,8 @@ interface TemplateActionButtonProps {
   variant?: 'menu-item' | 'button'
   signedIn?: boolean
   openTeamDialogOnSignIn?: boolean
-  handleCloseMenu?: () => void
+  onOpenTeamDialog?: () => void
+  setHasOpenDialog?: (open: boolean) => void
   journey?: JourneyForTemplate
   refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
@@ -21,7 +22,8 @@ export function TemplateActionButton({
   variant = 'button',
   signedIn,
   openTeamDialogOnSignIn = false,
-  handleCloseMenu,
+  onOpenTeamDialog,
+  setHasOpenDialog,
   journey,
   refetchTemplateStats
 }: TemplateActionButtonProps): ReactElement {
@@ -53,7 +55,8 @@ export function TemplateActionButton({
       signedIn={signedIn}
       openTeamDialogOnSignIn={openTeamDialogOnSignIn}
       journeyData={journeyData}
-      handleCloseMenu={handleCloseMenu}
+      onOpenTeamDialog={onOpenTeamDialog}
+      setHasOpenDialog={setHasOpenDialog}
       refetchTemplateStats={refetchTemplateStats}
     />
   )
