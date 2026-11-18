@@ -71,8 +71,8 @@ const DynamicCopyToTeamDialog = dynamic(
 )
 
 function handleTeamDialogKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
-  // Tab inside the portaled dialog still bubbles to the menu in the React tree.
-  if (event.key === 'Tab') event.stopPropagation()
+  // Isolate the dialog from the retained menu while letting the modal handle Escape.
+  if (event.key !== 'Escape') event.stopPropagation()
 }
 
 export function CreateJourneyButton({

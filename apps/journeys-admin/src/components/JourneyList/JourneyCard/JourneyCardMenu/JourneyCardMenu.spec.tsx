@@ -181,7 +181,7 @@ describe('JourneyCardMenu', () => {
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
-  it('keeps the template dialog open on Tab and releases the gallery lock on Escape', async () => {
+  it('keeps keyboard input in the template dialog and releases the gallery lock on Escape', async () => {
     const user = userEvent.setup()
     const journey = nonCustomizableLocalTemplateJourney
     const setHasOpenDialog = vi.fn()
@@ -226,6 +226,13 @@ describe('JourneyCardMenu', () => {
     expect(menuTrigger).toHaveAttribute('aria-expanded', 'false')
     expect(setHasOpenDialog).toHaveBeenLastCalledWith(true)
 
+    await user.click(within(dialog).getByLabelText('Translation'))
+    const languageSearch =
+      within(dialog).getByPlaceholderText('Search Language')
+    await user.type(languageSearch, 'english')
+    expect(languageSearch).toHaveValue('english')
+
+    act(() => cancelButton.focus())
     await user.keyboard('{Escape}')
     await waitFor(() => expect(dialog).not.toBeInTheDocument())
     expect(setHasOpenDialog).toHaveBeenLastCalledWith(false)
