@@ -6,7 +6,9 @@ through MCP, api-auth, Hive gateway and api-journeys. It adds `journey_edit` and
 Typography block in an ordinary draft. Its optional fields are plain `content`,
 whole-block `variant`, `align` and hex RGB `color`. Empty text is valid. Unknown
 fields, arbitrary settings, Host fields, raw GraphQL and unregistered commands are
-rejected. Existing IDs, legacy fields and unrelated settings survive.
+rejected. A batch cannot supply the same field on the same block twice, even
+when one assignment is a no-op. Disjoint fields on one block are allowed.
+Existing IDs, legacy fields and unrelated settings survive.
 
 Apply the generated Journeys migration and the existing shared-revision migration
 before enabling `MCP_EDITS_ENABLED=true` in api-journeys. The setting defaults to
@@ -92,11 +94,21 @@ database. The checks use synthetic content and declared controlled Firebase
 identity/eligibility adapters, alongside the actual OAuth/HTTP/gateway/owning
 participants and real PostgreSQL transactions.
 
+Saved edit integration tests run through `vitest.edits.config.mts`, rather than
+the default auth config used by the read/issuer coverage route. The edit runner
+provides their separate databases and rejects skipped tests.
+
+The runner also executes the shared command/credential and read-page tests. It
+collects owning-service and shared-module coverage in
+`coverage/integration/mcp-edits`, separately from workspace and shard reports.
+It fails if any required test skips or an owning/shared module has no execution
+hits. CI preserves the test counts and reports as artifacts and uploads the
+repository-relative Cobertura report to Codecov for the checked-out PR head.
+
 ```sh
 EDITS_TEST_AUTH_DATABASE_URL="$ISSUE_AUTH_RUNTIME_URL" \
 EDITS_TEST_JOURNEYS_DATABASE_URL="$ISSUE_JOURNEYS_URL" \
-pnpm exec vitest run --config apis/api-auth/vitest.config.mts \
-  apis/api-auth/test/grantedEdits.spec.ts
+pnpm exec vitest run --config apis/api-auth/vitest.edits.config.mts
 ```
 
 These checks do not establish normal Admin browser behavior, live Firebase,
