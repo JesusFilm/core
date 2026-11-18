@@ -88,9 +88,15 @@ describe('closed executable typography registry', () => {
   })
 
   it.each(['content', 'variant', 'align', 'color'] as const)(
-    'rejects repeated %s assignments regardless of their values',
+    'parses legacy repeated %s assignments for owning-service replay checks',
     (field) => {
-      for (const value of [command[field], 'different']) {
+      const replacement = {
+        content: 'Another heading',
+        variant: 'h2',
+        align: 'left',
+        color: '#abcdef'
+      }
+      for (const value of [command[field], replacement[field]]) {
         expect(
           editInput.safeParse({
             ...input,
@@ -103,7 +109,7 @@ describe('closed executable typography registry', () => {
               }
             ]
           }).success
-        ).toBe(false)
+        ).toBe(true)
       }
     }
   )

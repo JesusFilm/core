@@ -37,6 +37,7 @@ export const typographyCommand = z
       ),
     'At least one supported field must be supplied'
   )
+// The owner checks field uniqueness after looking up exact legacy replays.
 export const editInput = z
   .object({
     journeyId: id,
@@ -48,24 +49,6 @@ export const editInput = z
       .max(50)
   })
   .strict()
-  .superRefine((input, context) => {
-    const writes = new Map<string, Set<string>>()
-    input.commands.forEach((command, index) => {
-      if (command.type !== 'typography_set') return
-      const fields = writes.get(command.blockId) ?? new Set<string>()
-      for (const field of ['content', 'variant', 'align', 'color'] as const) {
-        if (command[field] === undefined) continue
-        if (fields.has(field))
-          context.addIssue({
-            code: 'custom',
-            path: ['commands', index, field],
-            message: 'A batch cannot write the same block field twice'
-          })
-        fields.add(field)
-      }
-      writes.set(command.blockId, fields)
-    })
-  })
 export const historyInput = z.object({ journeyId: id }).strict()
 export const historyActionInput = z
   .object({
