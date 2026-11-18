@@ -8,11 +8,14 @@ import { CampaignPage } from '../../pages/campaign-page'
 test.use({ viewport: CAMPAIGN_EDITOR_VIEWPORT })
 
 /**
- * Campaign builder: create -> edit hero -> add region -> link journey ->
- * publish, then the public page at the address the editor shows: the landing
- * page renders the hero and region switcher, and the region page's Share Link
- * (the target of its Open link) equals the URL the QR canvas encodes and the
- * Share Link the editor linked.
+ * Campaign builder: create -> edit the hero title (with undo and redo) ->
+ * select the hero in the Navigator and change its background kind in the
+ * Inspector's Style tab -> add a Rich text section below it from the Add
+ * Panel -> add a region -> link a journey -> publish, then the public page at
+ * the address the editor shows: the landing page renders the hero with the
+ * background the editor set, the Rich text section below it and the region
+ * switcher, and the region page's Share Link (the target of its Open link)
+ * equals the URL the QR canvas encodes and the Share Link the editor linked.
  *
  * Runs in the Daily E2E (`journeys-admin-e2e:e2e-full`).
  *
@@ -39,8 +42,13 @@ const JOURNEY_URL =
 // followed by Date.now() (`PLAYWRIGHT_CAMPAIGN_TITLE_PREFIXES`)
 const CAMPAIGN_TITLE = `Playwright campaign ${Date.now()}`
 const HERO_TITLE = 'Playwright hero title'
+const HERO_BACKGROUND_KIND = 'Primary'
+// The Primary background kind paints the theme's primary colour; a new
+// campaign's theme is seeded from the Light preset (#C52D3A)
+const HERO_BACKGROUND_COLOR = 'rgb(197, 45, 58)'
+const RICH_TEXT_TITLE = 'Playwright rich text title'
 
-test('create a campaign, add a region, link a journey and publish', async ({
+test('create a campaign, edit the landing page, add a region, link a journey and publish', async ({
   campaignBuilder,
   context
 }) => {
@@ -62,6 +70,10 @@ test('create a campaign, add a region, link a journey and publish', async ({
   await campaignBuilder.redo()
   await expect(campaignBuilder.heroTitleInput).toHaveValue(HERO_TITLE)
 
+  await campaignBuilder.selectHeroInNavigator()
+  await campaignBuilder.setBackgroundKind(HERO_BACKGROUND_KIND)
+  await campaignBuilder.addRichTextSectionBelowSelection(RICH_TEXT_TITLE)
+
   await campaignBuilder.addRegionFromSwitcher()
   await campaignBuilder.openRegionPage()
   const shareLink =
@@ -78,7 +90,9 @@ test('create a campaign, add a region, link a journey and publish', async ({
 
   // A page of its own, so the editor stays open for the fixture's cleanup
   const campaign = new CampaignPage(await context.newPage())
-  await campaign.openLandingPage(publicAddress, HERO_TITLE)
+  await campaign.openLandingPageShowingSection(publicAddress, RICH_TEXT_TITLE)
+  await campaign.verifySectionBackground(HERO_TITLE, HERO_BACKGROUND_COLOR)
+  await campaign.verifySectionBelowHero(HERO_TITLE, RICH_TEXT_TITLE)
   await campaign.verifyRegionSwitcherCard()
 
   await campaign.openRegionPage(publicAddress)
