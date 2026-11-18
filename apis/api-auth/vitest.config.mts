@@ -17,11 +17,12 @@ export default defineConfig({
   },
   root: fileURLToPath(new URL('.', import.meta.url)),
   test: {
-    // Saved edits require their own prepared databases and dedicated config.
+    // Saved edits and structure use their own prepared databases and dedicated configs.
     exclude: [
       '**/node_modules/**',
       '**/.git/**',
-      '**/test/grantedEdits.spec.ts'
+      '**/test/grantedEdits.spec.ts',
+      '**/test/grantedStructure.spec.ts'
     ],
     globals: true,
     environment: 'node',
