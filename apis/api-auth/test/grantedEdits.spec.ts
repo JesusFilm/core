@@ -4348,6 +4348,138 @@ describe('saved edit integration', () => {
         expect((await listing).text).not.toContain(saved.historyId!)
       })
 
+      it.each(
+        (['content', 'variant', 'align'] as const).flatMap((field) =>
+          [42, true, {}, []].map((before) => ({ field, before }))
+        )
+      )(
+        'rejects retained Typography history with prior $field=$before before undo acceptance',
+        async ({ field, before }) => {
+          const saved = receipt(await edit(await editInput()))
+          const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+            where: { id: saved.historyId! }
+          })
+          const block = await textBlock()
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: {
+              changes: [
+                {
+                  type: 'typography_restore',
+                  blockId: block.id,
+                  parent: {
+                    cardId: `${journeyId}-card`,
+                    stepId: `${journeyId}-step`
+                  },
+                  fields: [
+                    { field, before, after: block[field], beforePresent: true }
+                  ]
+                }
+              ]
+            }
+          })
+          const snapshot = async () => ({
+            blocks: await journeys.block.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            revision: await revision(),
+            cursor: await history(),
+            entries: await journeys.mcpEditHistory.findMany({
+              where: { journeyId },
+              orderBy: { ordinal: 'asc' }
+            }),
+            operations: await journeys.mcpEditOperation.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            counts: await counts(),
+            audit: await journeys.mcpEditAudit.count({ where: { journeyId } })
+          })
+          const unchanged = await snapshot()
+          const input = await historyInput(entry.id)
+          const acceptance = vi.fn()
+          checkpoint = async (point, context) => {
+            if (point === 'before_accept' && context.operationId) acceptance()
+          }
+          for (let attempt = 0; attempt < 2; attempt++) {
+            const response = await call('journey_undo', input)
+            expect(response.json.result?.isError).toBe(true)
+            expect(response.text).toContain('HISTORY_UNAVAILABLE')
+            expect(acceptance).not.toHaveBeenCalled()
+            expect(await snapshot()).toEqual(unchanged)
+          }
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: entry.changes! }
+          })
+          const undone = receipt(await call('journey_undo', input))
+          expect(acceptance).toHaveBeenCalled()
+          expect((await textBlock()).content).toBe('Original heading')
+          expect((await history()).redoEntryId).toBe(entry.id)
+          const afterUndo = await snapshot()
+          expect(receipt(await call('journey_undo', input))).toEqual(undone)
+          expect(await snapshot()).toEqual(afterUndo)
+        }
+      )
+
+      it.each([
+        { content: null, variant: null, align: null, color: null },
+        {
+          content: 'Legacy heading',
+          variant: 'legacy-variant',
+          align: 'legacy-align',
+          color: { retained: ['legacy', 42] }
+        }
+      ])(
+        'restores retained Typography scalar values and legacy settings from $content',
+        async ({ content, variant, align, color }) => {
+          await journeys.block.update({
+            where: { id: `${journeyId}-text` },
+            data: { content, variant, align, settings: { color } }
+          })
+          const saved = receipt(
+            await edit({
+              ...(await editInput()),
+              commands: [
+                {
+                  type: 'typography_set',
+                  blockId: `${journeyId}-text`,
+                  content: 'Saved heading',
+                  variant: 'h1',
+                  align: 'center',
+                  color: '#abcdef'
+                }
+              ]
+            })
+          )
+          const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+            where: { id: saved.historyId! }
+          })
+          expect(entry.changes).toEqual([
+            expect.objectContaining({ type: 'typography_restore' })
+          ])
+          await journeys.block.update({
+            where: { id: `${journeyId}-text` },
+            data: { settings: { color: '#abcdef', human: 'later' } }
+          })
+          await historyAction('undo', entry.id)
+          expect(await textBlock()).toMatchObject({
+            content,
+            variant,
+            align,
+            settings: { color, human: 'later' }
+          })
+          await historyAction('redo', entry.id)
+          expect(await textBlock()).toMatchObject({
+            content: 'Saved heading',
+            variant: 'h1',
+            align: 'center',
+            settings: { color: '#abcdef', human: 'later' }
+          })
+        }
+      )
+
       it('rejects a corrupt or unsupported stored inverse without restoring arbitrary fields', async () => {
         const saved = receipt(await edit(await editInput()))
         const before = await revision()

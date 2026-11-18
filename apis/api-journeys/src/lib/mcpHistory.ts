@@ -39,6 +39,12 @@ const typographyInverse = z
             beforePresent: z.boolean()
           })
           .strict()
+          .refine(
+            ({ field, before }) =>
+              field === 'settings.color' ||
+              before === null ||
+              typeof before === 'string'
+          )
       )
       .min(1)
       .max(4)
