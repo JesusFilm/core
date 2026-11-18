@@ -73,6 +73,8 @@ jobs:
           disable_search: true
           fail_ci_if_error: true
   base-coverage:
+    # Main already uploads its own reports. Feature/stack bases need a baseline.
+    if: github.base_ref != 'main'
     runs-on: jfp-proxmox-core
     timeout-minutes: 60
     services:
