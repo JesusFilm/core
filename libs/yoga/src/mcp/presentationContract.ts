@@ -226,6 +226,12 @@ const savedForwardFields: Record<
   }
 }
 const savedParentOrder = z.number().int().nonnegative()
+const savedPriorInteger = z
+  .number()
+  .int()
+  .min(-2147483648)
+  .max(2147483647)
+  .nullable()
 export const fieldChange = z
   .object({
     field: z.enum(presentationFields),
@@ -270,17 +276,15 @@ export const presentationInverse = z
           return false
         // Undo may restore legacy JSON; redo must use a valid forward value.
         if (field.startsWith('settings.')) return true
+        if (['parentOrder', 'spacing', 'backdropBlur'].includes(field))
+          return savedPriorInteger.safeParse(before).success
         const expectedType = [
-          'parentOrder',
-          'spacing',
-          'backdropBlur'
+          'fullscreen',
+          'showAssistant',
+          'expandChatByDefault'
         ].includes(field)
-          ? 'number'
-          : ['fullscreen', 'showAssistant', 'expandChatByDefault'].includes(
-                field
-              )
-            ? 'boolean'
-            : 'string'
+          ? 'boolean'
+          : 'string'
         return before === null || typeof before === expectedType
       }),
     'Inverse fields must belong to their recorded block type and feature gate'

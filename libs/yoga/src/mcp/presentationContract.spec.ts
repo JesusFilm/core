@@ -199,6 +199,36 @@ describe('stored presentation inverses', () => {
   }
 
   it.each([
+    { typename: 'SpacerBlock', field: 'spacing', after: 200 },
+    { typename: 'CardBlock', field: 'backdropBlur', after: 10 },
+    { typename: 'ButtonBlock', field: 'parentOrder', after: 1 }
+  ])(
+    'requires storable prior integers for $field',
+    ({ typename, field, after }) => {
+      for (const before of [null, -2147483648, -1, 0, 25, 2147483647]) {
+        expect(
+          presentationInverse.safeParse({
+            ...inverse,
+            typename,
+            fields: [{ field, before, after, beforePresent: true }]
+          }).success,
+          `${field}: ${before}`
+        ).toBe(true)
+      }
+      for (const before of [-2147483649, 2147483648, 1.5, '25', true]) {
+        expect(
+          presentationInverse.safeParse({
+            ...inverse,
+            typename,
+            fields: [{ field, before, after, beforePresent: true }]
+          }).success,
+          `${field}: ${before}`
+        ).toBe(false)
+      }
+    }
+  )
+
+  it.each([
     {
       typename: 'TypographyBlock',
       field: 'content',

@@ -4387,18 +4387,28 @@ describe('saved edit integration', () => {
         { command: 'button_icon_start', corruption: 'missing Icon owner' },
         { command: 'card_chat_set', corruption: 'missing chat gate' },
         { command: 'spacer_set', corruption: 'invalid before value' },
-        { command: 'spacer_set', corruption: 'invalid after value' }
+        { command: 'spacer_set', corruption: 'invalid after value' },
+        ...(['spacing', 'parentOrder', 'backdropBlur'] as const).flatMap(
+          (field) =>
+            [-2147483649, 2147483648, 1.5].map((prior) => ({
+              command: field === 'backdropBlur' ? 'card_set' : 'spacer_set',
+              corruption: `invalid prior ${field} ${prior}`,
+              field,
+              prior
+            }))
+        )
       ])(
         'rejects a stored presentation inverse with $corruption without advancing history or replay state',
-        async ({ command, corruption }) => {
+        async (fixture) => {
+          const { command, corruption } = fixture
           await seedPresentation()
-          const fixture = presentationCase(command)
+          const presentation = presentationCase(command)
           const saved = receipt(
             await call('journey_edit', {
               journeyId,
               expectedRevision: await revision(),
               idempotencyKey: randomUUID(),
-              commands: [fixture.command]
+              commands: [presentation.command]
             })
           )
           const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
@@ -4422,6 +4432,19 @@ describe('saved edit integration', () => {
             case 'invalid after value':
               changes[0].fields[0].after = 'invalid spacing'
               break
+          }
+          if ('prior' in fixture) {
+            const block = await journeys.block.findUniqueOrThrow({
+              where: { id: presentation.targetId }
+            })
+            changes[0].fields = [
+              {
+                field: fixture.field,
+                before: fixture.prior,
+                after: block[fixture.field],
+                beforePresent: true
+              }
+            ]
           }
           await journeys.mcpEditHistory.update({
             where: { id: entry.id },
@@ -4468,7 +4491,9 @@ describe('saved edit integration', () => {
       it.each([
         { kind: 'alignment', legacy: { retained: ['legacy', 42] } },
         { kind: 'spacing', legacy: 100 },
-        { kind: 'spacing', legacy: 25 }
+        { kind: 'spacing', legacy: 25 },
+        { kind: 'spacing', legacy: -2147483648 },
+        { kind: 'spacing', legacy: 2147483647 }
       ])(
         'rejects malformed saved $kind on redo, preserves legacy $legacy undo and recovers after repair',
         async ({ kind, legacy }) => {
