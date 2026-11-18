@@ -405,6 +405,7 @@ describe('durable issuer integration', () => {
         return (await response.json()) as {
           reviewToken: string
           previewExpiresAt: string
+          previewedAt: string
         }
       }
       function approveRenewal(
@@ -424,6 +425,102 @@ describe('durable issuer integration', () => {
           replica
         )
       }
+
+      it('persists approval-time expiry after a review delay and the final review-row lock wait', async () => {
+        const context = await renewableConnection()
+        const preview = await previewRenewal(context)
+        expect(
+          Date.parse(preview.previewExpiresAt) - Date.parse(preview.previewedAt)
+        ).toBe(86400000)
+        expect(
+          await db.agentRenewalReview.findUniqueOrThrow({
+            where: { id: digest(preview.reviewToken) }
+          })
+        ).toMatchObject({
+          previewExpiresAt: new Date(preview.previewExpiresAt),
+          duration: 'day'
+        })
+        await vi.waitFor(async () => {
+          expect((await databaseTime(db)).getTime()).toBeGreaterThan(
+            Date.parse(preview.previewedAt) + 25
+          )
+        })
+
+        let unlock!: () => void
+        let locked!: () => void
+        const lockAcquired = new Promise<void>((resolve) => {
+          locked = resolve
+        })
+        const release = new Promise<void>((resolve) => {
+          unlock = resolve
+        })
+        const holding = db.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "AgentRenewalReview" WHERE id = ${digest(preview.reviewToken)} FOR UPDATE`
+          locked()
+          await release
+        })
+        await lockAcquired
+        const approval = approveRenewal(context, preview.reviewToken)
+        let releasedAt: Date
+        try {
+          await vi.waitFor(async () => {
+            const [state] = await db.$queryRaw<Array<{ waiting: boolean }>>`
+              SELECT EXISTS (
+                SELECT 1 FROM pg_stat_activity
+                WHERE datname = current_database() AND usename = current_user
+                  AND pid <> pg_backend_pid() AND wait_event_type = 'Lock'
+                  AND query LIKE '%AgentRenewalReview%'
+                  AND cardinality(pg_blocking_pids(pid)) > 0
+              ) AS waiting`
+            expect(state.waiting).toBe(true)
+          })
+          const blockedAt = await databaseTime(db)
+          await vi.waitFor(async () => {
+            expect((await databaseTime(db)).getTime()).toBeGreaterThan(
+              blockedAt.getTime() + 25
+            )
+          })
+          releasedAt = await databaseTime(db)
+        } finally {
+          unlock()
+          await holding
+        }
+        const response = await approval
+        expect(response.status, await response.clone().text()).toBe(200)
+        const receipt = (await response.json()) as {
+          id: string
+          approvedAt: string
+          expiresAt: string
+        }
+        expect(Date.parse(receipt.approvedAt)).toBeGreaterThanOrEqual(
+          releasedAt.getTime()
+        )
+        expect(
+          Date.parse(receipt.expiresAt) - Date.parse(receipt.approvedAt)
+        ).toBe(86400000)
+        expect(Date.parse(receipt.expiresAt)).toBeGreaterThan(
+          Date.parse(preview.previewExpiresAt) + 25
+        )
+        expect(
+          await db.agentConnection.findUniqueOrThrow({
+            where: { id: context.connection.id }
+          })
+        ).toMatchObject({
+          approvedAt: new Date(receipt.approvedAt),
+          expiresAt: new Date(receipt.expiresAt)
+        })
+        const refreshed = await post('/connections', {})
+        expect(refreshed.status).toBe(200)
+        expect(await refreshed.json()).toMatchObject({
+          connections: expect.arrayContaining([
+            expect.objectContaining({
+              id: context.connection.id,
+              expiresAt: receipt.expiresAt,
+              version: context.expectedVersion + 1
+            })
+          ])
+        })
+      })
 
       it('renews early at approval, can shorten expiry, retires credentials and serializes replica approvals', async () => {
         const context = await renewableConnection()
