@@ -256,7 +256,10 @@ export const presentationInverse = z
           inverse.gate !== 'aiChatEditor'
         )
           return false
-        if (field.startsWith('settings.')) return true
+        // Undo may restore legacy JSON; redo must use a valid forward value.
+        if (field === 'settings.alignment')
+          return alignment.safeParse(after).success
+        if (field === 'settings.color') return rgb.safeParse(after).success
         const expectedType = [
           'parentOrder',
           'spacing',

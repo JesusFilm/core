@@ -4465,6 +4465,90 @@ describe('saved edit integration', () => {
         }
       )
 
+      it('rejects malformed saved alignment on redo, preserves legacy undo and recovers after repair', async () => {
+        await seedPresentation()
+        const block = await journeys.block.findFirstOrThrow({
+          where: { journeyId, typename: 'ButtonBlock' }
+        })
+        const legacy = { retained: ['legacy', 42] }
+        const settings = { alignment: legacy, unrelated: 'preserve' }
+        await journeys.block.update({
+          where: { id: block.id },
+          data: { settings }
+        })
+        const saved = receipt(
+          await call('journey_edit', {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              { type: 'button_set', blockId: block.id, alignment: 'center' }
+            ]
+          })
+        )
+        const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+          where: { id: saved.historyId! }
+        })
+        await historyAction('undo', entry.id)
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: block.id } })
+        ).toMatchObject({ settings })
+        const changes = z.array(presentationInverse).parse(entry.changes)
+        expect(changes[0].fields).toEqual([
+          {
+            field: 'settings.alignment',
+            before: legacy,
+            after: 'center',
+            beforePresent: true
+          }
+        ])
+        changes[0].fields[0].after = { malformed: true }
+        await journeys.mcpEditHistory.update({
+          where: { id: entry.id },
+          data: { changes }
+        })
+        const snapshot = async () => ({
+          blocks: await journeys.block.findMany({
+            where: { journeyId },
+            orderBy: { id: 'asc' }
+          }),
+          revision: await revision(),
+          cursor: await history(),
+          entries: await journeys.mcpEditHistory.findMany({
+            where: { journeyId },
+            orderBy: { ordinal: 'asc' }
+          }),
+          operations: await journeys.mcpEditOperation.findMany({
+            where: { journeyId },
+            orderBy: { id: 'asc' }
+          }),
+          counts: await counts(),
+          audit: await journeys.mcpEditAudit.count({ where: { journeyId } })
+        })
+        const before = await snapshot()
+        const input = await historyInput(entry.id)
+        for (let attempt = 0; attempt < 2; attempt++) {
+          const response = await call('journey_redo', input)
+          expect(response.json.result?.isError).toBe(true)
+          expect(response.text).toContain('HISTORY_UNAVAILABLE')
+          expect(await snapshot()).toEqual(before)
+        }
+        await journeys.mcpEditHistory.update({
+          where: { id: entry.id },
+          data: { changes: entry.changes! }
+        })
+        const redone = receipt(await call('journey_redo', input))
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: block.id } })
+        ).toMatchObject({
+          settings: { alignment: 'center', unrelated: 'preserve' }
+        })
+        expect((await history()).undoEntryId).toBe(entry.id)
+        const afterRedo = await snapshot()
+        expect(receipt(await call('journey_redo', input))).toEqual(redone)
+        expect(await snapshot()).toEqual(afterRedo)
+      })
+
       it('retires both history directions with retryable account cleanup and preserves saved content', async () => {
         const a = receipt(await edit(await editInput('A')))
         const b = receipt(await edit(await editInput('B')))

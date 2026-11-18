@@ -199,6 +199,47 @@ describe('stored presentation inverses', () => {
   }
 
   it.each([
+    {
+      typename: 'ButtonBlock',
+      field: 'settings.alignment',
+      valid: ['left', 'center', 'right', 'justify'],
+      invalid: [null, true, 42, [], {}, 'wide', 'LEFT']
+    },
+    {
+      typename: 'TypographyBlock',
+      field: 'settings.color',
+      valid: ['#123456', '#aBcDeF'],
+      invalid: [null, true, 42, [], {}, 'red', '#fff', '#12345680']
+    }
+  ])(
+    'validates saved forward $field while retaining legacy before JSON',
+    (fixture) => {
+      for (const before of [
+        null,
+        true,
+        42,
+        ['legacy'],
+        { legacy: true },
+        'legacy'
+      ]) {
+        for (const after of [...fixture.valid, ...fixture.invalid]) {
+          const stored = {
+            ...inverse,
+            typename: fixture.typename,
+            fields: [
+              { field: fixture.field, before, after, beforePresent: true }
+            ]
+          }
+          expect(
+            presentationInverse.safeParse(stored).success,
+            JSON.stringify(stored.fields)
+          ).toBe(typeof after === 'string' && fixture.valid.includes(after))
+        }
+      }
+    }
+  )
+
+  it.each([
     { typename: 'TypographyBlock', field: 'label' },
     { typename: 'ButtonBlock', field: 'spacing' },
     { typename: 'IconBlock', field: 'label' },
