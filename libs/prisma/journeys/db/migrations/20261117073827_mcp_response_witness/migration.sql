@@ -14,4 +14,3 @@ CREATE UNIQUE INDEX "McpEditExecution_requestId_key" ON "McpEditExecution"("requ
 
 -- CreateIndex
 CREATE UNIQUE INDEX "McpReadExecution_requestId_key" ON "McpReadExecution"("requestId");
-
