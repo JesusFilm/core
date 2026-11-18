@@ -46,3 +46,18 @@ jobs:
         run: node tools/scripts/test-mcp-edits.mjs
         env:
           MCP_EDITS_TEST_POSTGRES_URL: postgresql://postgres:edit-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Preserve owning-service coverage and test counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-saved-edit-coverage
+          path: coverage/integration/mcp-edits
+          if-no-files-found: error
+      - name: Upload saved edit coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-edits/cobertura-coverage.xml
+          flags: integration.mcp-edits
+          disable_search: true
+          fail_ci_if_error: true
