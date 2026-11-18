@@ -34,6 +34,15 @@ const cobertura = readFileSync(
 // Fail CI if cross-service instrumentation disappears or these real drain paths
 // stop running. Source anchors avoid coupling this guard to shifting line numbers.
 const required: Record<string, string[]> = {
+  'apis/api-auth/src/permissions.ts': [
+    'const collecting = page && allIds.length < page.gateCount',
+    "if (manifest.status === 'collecting') return manifest"
+  ],
+  'apis/api-journeys/src/lib/mcpPermissions.ts': [
+    'const gateIdsHash = fingerprint(execution.gateIds)',
+    "state = await authority('status', { changeId: id })",
+    'assertAccountCleanupResult(value)'
+  ],
   'apis/api-journeys/src/lib/mcpReadSettlement.ts': [
     'const pending = await db.mcpReadExecution.findMany',
     'await tx.mcpReadExecution.updateMany',

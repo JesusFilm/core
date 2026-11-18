@@ -81,6 +81,7 @@ describe('granted journey read authorization', () => {
       let permissionOutage = false
       let permissionReportOutage = false
       let beforePermissionBegin: (() => Promise<void>) | undefined
+      let afterPermissionBegin: (() => Promise<void>) | undefined
       const failedFenceReports = new Set<string>()
       let ownerHandler: ReturnType<typeof createJourneyReadHandler>
       let permissionCoordinator: ReturnType<
@@ -559,6 +560,8 @@ describe('granted journey read authorization', () => {
                 body: raw
               })
               const result = await response.text()
+              if (req.url === '/internal/permissions/begin' && response.ok)
+                await afterPermissionBegin?.()
               if (req.url?.endsWith('/accept') && response.ok)
                 await afterAcceptance?.(stage)
               res.writeHead(response.status, {
@@ -718,6 +721,7 @@ describe('granted journey read authorization', () => {
         permissionOutage = false
         permissionReportOutage = false
         beforePermissionBegin = undefined
+        afterPermissionBegin = undefined
         failedFenceReports.clear()
         invalidUsers.clear()
         await auth.permissionChange.deleteMany()
@@ -730,6 +734,11 @@ describe('granted journey read authorization', () => {
           where: { teamId_userId: { teamId: 'read-team', userId: 'alice' } },
           create: { teamId: 'read-team', userId: 'alice', role: 'manager' },
           update: { role: 'manager' }
+        })
+        await journeys.journeyProfile.upsert({
+          where: { userId: 'alice' },
+          create: { userId: 'alice' },
+          update: {}
         })
         accessToken = await consent('alice', ['read-a'])
       })
@@ -2510,6 +2519,182 @@ describe('granted journey read authorization', () => {
           where: { journeyId: 'read-a' }
         })
       })
+
+      it.each([998, 999, 1000])(
+        'preserves a %i-journey account deletion across accepted-work draining',
+        async (count) => {
+          await permissionActors()
+          const existingCount = await journeys.journey.count({
+            where: { teamId: 'read-team' }
+          })
+          const ids = Array.from(
+            { length: count - existingCount },
+            (_, index) => `read-large-delete-${count}-${index}`
+          )
+          await journeys.journey.createMany({
+            data: ids.map((id) => ({
+              id,
+              slug: id,
+              title: 'Large deletion fixture',
+              languageId: '529',
+              teamId: 'read-team',
+              status: 'draft'
+            }))
+          })
+          await journeys.userJourney.createMany({
+            data: ids.map((journeyId) => ({
+              journeyId,
+              userId: 'alice',
+              role: 'owner'
+            }))
+          })
+          await journeys.userJourney.upsert({
+            where: { journeyId_userId: { journeyId: 'read-a', userId: 'bob' } },
+            create: { journeyId: 'read-a', userId: 'bob', role: 'owner' },
+            update: { role: 'owner' }
+          })
+          expect((await readA()).body).toContain('read-a-text-sentinel')
+          const pause = barrier()
+          afterAcceptance = async (stage) => {
+            if (stage === 'read') await pause.pause()
+          }
+          const reading = readA()
+          await pause.ready
+          const deletion = () =>
+            humanMutation(
+              'mutation LargeDeletion { userDeleteJourneysConfirm(userId: "alice") { success } }',
+              {},
+              'alice'
+            )
+          let changeId: string | undefined
+          try {
+            const pending = await deletion()
+            expect(
+              pending.errors?.[0].extensions?.code,
+              JSON.stringify(pending)
+            ).toBe('PERMISSION_CHANGE_PENDING')
+            changeId = pending.errors?.[0].extensions?.changeId
+            expect((await deletion()).errors?.[0].extensions?.changeId).toBe(
+              changeId
+            )
+            expect(
+              await journeys.journey.count({ where: { id: { in: ids } } })
+            ).toBe(ids.length)
+            const change = await auth.permissionChange.findUniqueOrThrow({
+              where: { id: changeId }
+            })
+            expect(change.gateIds).toHaveLength(count + 2)
+            expect(
+              await auth.authorizationGate.count({
+                where: { id: { in: change.gateIds }, open: false }
+              })
+            ).toBe(count + 2)
+            expect(
+              await journeys.mcpPermissionExecution.count({
+                where: { status: 'committed' }
+              })
+            ).toBe(0)
+            expect((await readA()).body).not.toContain('read-a-text-sentinel')
+          } finally {
+            pause.resume()
+          }
+          await reading
+          afterAcceptance = undefined
+          try {
+            expect(await permissionCoordinator.reconcile()).toBe(0)
+            expect(
+              await auth.permissionChange.findUnique({
+                where: { id: changeId }
+              })
+            ).toMatchObject({ status: 'complete', outcome: 'committed' })
+            expect(
+              await journeys.mcpPermissionExecution.findUnique({
+                where: { id: changeId }
+              })
+            ).toMatchObject({ status: 'committed' })
+            expect(
+              await journeys.journey.count({ where: { id: { in: ids } } })
+            ).toBe(0)
+            expect(
+              await journeys.journey.findUnique({ where: { id: 'read-a' } })
+            ).not.toBeNull()
+            expect(
+              await journeys.userTeam.findUnique({
+                where: { teamId_userId: { teamId: 'read-team', userId: 'bob' } }
+              })
+            ).not.toBeNull()
+            expect(await permissionCoordinator.reconcile()).toBe(0)
+            expect(await auth.permissionChange.count()).toBe(1)
+          } finally {
+            await journeys.journey.deleteMany({ where: { id: { in: ids } } })
+          }
+        },
+        30000
+      )
+
+      it('recovers a large lifecycle batch after losing a manifest-page response', async () => {
+        await permissionActors()
+        const ids = Array.from(
+          { length: 5000 },
+          (_, index) => `read-large-archive-${index}`
+        )
+        await journeys.journey.createMany({
+          data: ids.map((id) => ({
+            id,
+            slug: id,
+            title: 'Large lifecycle fixture',
+            languageId: '529',
+            teamId: 'read-team',
+            status: 'draft'
+          }))
+        })
+        let pages = 0
+        afterPermissionBegin = async () => {
+          if (++pages === 2) throw new Error('Controlled page outage')
+        }
+        try {
+          const failed = await humanMutation(
+            'mutation LargeArchive($ids: [ID!]!) { journeysArchive(ids: $ids) { id } }',
+            { ids }
+          )
+          expect(failed.errors).toHaveLength(1)
+          const change = await auth.permissionChange.findFirstOrThrow()
+          expect(change).toMatchObject({
+            status: 'collecting',
+            gateCount: 5002
+          })
+          expect(change.gateIds).toHaveLength(500)
+          expect(
+            await journeys.journey.count({
+              where: { id: { in: ids }, status: 'draft' }
+            })
+          ).toBe(5000)
+          afterPermissionBegin = undefined
+          expect(await permissionCoordinator.reconcile()).toBe(0)
+          expect(
+            await journeys.journey.count({
+              where: { id: { in: ids }, status: 'archived' }
+            })
+          ).toBe(5000)
+          expect(
+            await auth.permissionChange.findUnique({ where: { id: change.id } })
+          ).toMatchObject({ status: 'complete', outcome: 'committed' })
+          const complete = await auth.permissionChange.findUniqueOrThrow({
+            where: { id: change.id }
+          })
+          expect(complete.gateIds).toHaveLength(5002)
+          expect(
+            await auth.authorizationGate.count({
+              where: { id: { in: complete.gateIds }, open: true }
+            })
+          ).toBe(5002)
+          expect(await permissionCoordinator.reconcile()).toBe(0)
+          expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+        } finally {
+          afterPermissionBegin = undefined
+          await journeys.journey.deleteMany({ where: { id: { in: ids } } })
+        }
+      }, 30000)
 
       it.skipIf(!users)(
         'rejects a foreign ownership transfer before closing any gates',

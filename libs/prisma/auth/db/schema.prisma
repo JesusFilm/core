@@ -178,6 +178,8 @@ model PermissionChange {
   intentHash  String
   gateIds     String[]
   gates       Json
+  gateCount   Int?
+  gateIdsHash String?
   status      String   @default("pending")
   outcome     String?
   requestedAt DateTime

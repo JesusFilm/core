@@ -1,6 +1,7 @@
 import { generateKeyPairSync, randomUUID } from 'node:crypto'
 
 import { createAuthDatabase } from '@core/prisma/auth/client'
+import { fingerprint } from '@core/yoga/mcp/readContract'
 
 import { readConfig } from './config'
 import { createPermissionAuthority } from './permissions'
@@ -119,6 +120,175 @@ describe('permission change protocol', () => {
     })
 
     afterAll(() => db.$disconnect())
+
+    function pageInput(input: ReturnType<typeof change>, offset: number) {
+      const ids = [...input.gateIds].sort()
+      return {
+        ...input,
+        gateIds: ids.slice(offset, offset + 250),
+        page: { offset, gateCount: ids.length, gateIdsHash: fingerprint(ids) }
+      }
+    }
+
+    it.each([1000, 1001, 1002, 10001])(
+      'fences all %i gates before completing one owner mutation',
+      async (count) => {
+        const input = change([
+          `account:large-${randomUUID()}`,
+          `team:large-${randomUUID()}`,
+          ...Array.from({ length: count - 2 }, gate)
+        ])
+        const owner = await connection()
+        const accepted = await permit(owner.id, [
+          [...input.gateIds].sort().at(-1)!
+        ])
+        for (let offset = 0; offset < count; offset += 250)
+          expect(await invoke('begin', pageInput(input, offset))).toMatchObject(
+            { status: 'pending' }
+          )
+        expect(
+          await db.authorizationGate.count({
+            where: { id: { in: input.gateIds }, open: false }
+          })
+        ).toBe(count)
+        expect(
+          await invoke('complete', {
+            changeId: input.changeId,
+            outcome: 'committed'
+          })
+        ).toMatchObject({ status: 'pending' })
+        await db.readPermit.update({
+          where: { id: accepted.id },
+          data: { status: 'settled', settledAt: new Date() }
+        })
+        expect(
+          await invoke('status', { changeId: input.changeId })
+        ).toMatchObject({ status: 'ready' })
+        expect(
+          await invoke('complete', {
+            changeId: input.changeId,
+            outcome: 'committed'
+          })
+        ).toMatchObject({ status: 'complete' })
+        expect(
+          await db.authorizationGate.count({
+            where: { id: { in: input.gateIds }, open: true, generation: 2 }
+          })
+        ).toBe(count)
+      }
+    )
+
+    it('recovers a partially uploaded manifest without reopening or advancing repeated pages', async () => {
+      const input = change(Array.from({ length: 1001 }, gate))
+      const first = pageInput(input, 0)
+      await Promise.all([invoke('begin', first), invoke('begin', first)])
+      expect(
+        await invoke('status', { changeId: input.changeId })
+      ).toMatchObject({ status: 'pending' })
+      expect(
+        await invoke('complete', {
+          changeId: input.changeId,
+          outcome: 'committed'
+        })
+      ).toMatchObject({ status: 'pending' })
+      expect(
+        await db.authorizationGate.count({
+          where: { id: { in: first.gateIds }, open: false, generation: 1 }
+        })
+      ).toBe(250)
+      const restarted = createPermissionAuthority(config, db)
+      for (let offset = 0; offset < input.gateIds.length; offset += 250)
+        await restarted(
+          prefix + 'begin',
+          `Bearer ${journeysSecret}`,
+          pageInput(input, offset)
+        )
+      expect(
+        await invoke('status', { changeId: input.changeId })
+      ).toMatchObject({ status: 'ready' })
+      await invoke('complete', {
+        changeId: input.changeId,
+        outcome: 'committed'
+      })
+      for (let offset = 0; offset < input.gateIds.length; offset += 250)
+        expect(await invoke('begin', pageInput(input, offset))).toMatchObject({
+          status: 'complete'
+        })
+      expect(
+        await db.authorizationGate.count({
+          where: { id: { in: input.gateIds }, open: true, generation: 2 }
+        })
+      ).toBe(1001)
+    })
+
+    it('rejects changed, missing, oversized and noncanonical manifest pages', async () => {
+      const input = change(Array.from({ length: 501 }, gate))
+      const first = pageInput(input, 0)
+      await expect(invoke('begin', pageInput(input, 250))).rejects.toThrow(
+        'Missing permission page'
+      )
+      await expect(
+        invoke('begin', { ...first, gateIds: [...first.gateIds].reverse() })
+      ).rejects.toThrow('Invalid permission page')
+      await expect(
+        invoke('begin', {
+          ...first,
+          gateIds: [...input.gateIds].sort().slice(0, 251)
+        })
+      ).rejects.toThrow('Permission page is too large')
+      await invoke('begin', first)
+      await expect(
+        invoke('begin', { ...first, intentHash: 'b'.repeat(64) })
+      ).rejects.toThrow('Permission intent changed')
+      await expect(
+        invoke('begin', { ...first, gateIds: first.gateIds.slice(1) })
+      ).rejects.toThrow('Permission page changed')
+      await expect(
+        invoke('begin', {
+          ...first,
+          page: { ...first.page, gateIdsHash: 'b'.repeat(64) }
+        })
+      ).rejects.toThrow('Permission intent changed')
+      await expect(invoke('begin', input)).rejects.toThrow(
+        'Permission intent changed'
+      )
+      await expect(invoke('begin', pageInput(input, 500))).rejects.toThrow(
+        'Permission intent changed'
+      )
+      await expect(invoke('begin', first, usersSecret)).rejects.toThrow(
+        'Access denied'
+      )
+      expect(
+        await invoke('status', { changeId: input.changeId })
+      ).toMatchObject({ status: 'pending' })
+      await invoke('begin', pageInput(input, 250))
+      expect(await invoke('begin', pageInput(input, 500))).toMatchObject({
+        status: 'ready'
+      })
+    })
+
+    it('rolls back an invalid final manifest and retains previously closed gates', async () => {
+      const input = change(Array.from({ length: 251 }, gate))
+      const first = pageInput(input, 0)
+      first.page.gateIdsHash = 'b'.repeat(64)
+      await invoke('begin', first)
+      const last = pageInput(input, 250)
+      last.page.gateIdsHash = first.page.gateIdsHash
+      await expect(invoke('begin', last)).rejects.toThrow(
+        'Permission manifest changed'
+      )
+      expect(
+        await db.authorizationGate.count({
+          where: { id: { in: input.gateIds }, open: false }
+        })
+      ).toBe(250)
+      expect(
+        await invoke('complete', {
+          changeId: input.changeId,
+          outcome: 'committed'
+        })
+      ).toMatchObject({ status: 'pending' })
+    })
 
     it('rejects an ACL snapshot captured before a completed close and reopen', async () => {
       const input = change([gate()])
