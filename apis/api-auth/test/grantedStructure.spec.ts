@@ -960,6 +960,131 @@ describe('structural integration', () => {
         expect((await f.snapshot()).journey.hostId).toBe(host.id)
       })
 
+      it.each([
+        { min: 2, max: 2 },
+        { min: 2, max: null },
+        { min: null, max: 2 }
+      ])(
+        'normalizes existing option bounds %j on removal and restores them with the same IDs',
+        async (bounds) => {
+          await f.journeys.block.create({
+            data: {
+              id: f.id('multiselect'),
+              journeyId: f.journeyId,
+              typename: 'MultiselectBlock',
+              parentBlockId: f.id('ac'),
+              parentOrder: 2,
+              ...bounds
+            }
+          })
+          await f.journeys.block.createMany({
+            data: ['first', 'second'].map((label, parentOrder) => ({
+              id: f.id(label),
+              journeyId: f.journeyId,
+              typename: 'MultiselectOptionBlock',
+              parentBlockId: f.id('multiselect'),
+              parentOrder,
+              label
+            }))
+          })
+          const saved = await f.save([
+            { type: 'block_remove', block: ref(f.id('first')) }
+          ])
+          const normalized = {
+            min: bounds.min === null ? null : 1,
+            max: bounds.max === null ? null : 1
+          }
+          expect(await block('multiselect')).toMatchObject(normalized)
+          expect((await block('first')).deletedAt).toBeInstanceOf(Date)
+          expect(await block('second')).toMatchObject({ parentOrder: 0 })
+
+          f.receipt(await f.historyAction('undo', saved.historyId!))
+          expect(await block('multiselect')).toMatchObject(bounds)
+          expect(await block('first')).toMatchObject({
+            deletedAt: null,
+            parentBlockId: f.id('multiselect'),
+            parentOrder: 0
+          })
+          expect(await block('second')).toMatchObject({ parentOrder: 1 })
+          f.receipt(await f.historyAction('redo', saved.historyId!))
+          expect(await block('multiselect')).toMatchObject(normalized)
+          expect((await block('first')).deletedAt).toBeInstanceOf(Date)
+        }
+      )
+
+      it.each([undefined, '#123456'])(
+        'restores structural color history from %s while preserving later settings and rejecting a conflicting color',
+        async (color) => {
+          const originalSettings = {
+            unmounted: true,
+            ...(color === undefined ? {} : { color })
+          }
+          await f.journeys.block.update({
+            where: { id: f.id('heading') },
+            data: { settings: originalSettings }
+          })
+          const saved = await f.save([
+            {
+              type: 'step_add',
+              key: 'new_step',
+              cardKey: 'new_card',
+              placement: end
+            },
+            {
+              type: 'typography_set',
+              blockId: f.id('heading'),
+              color: '#abcdef'
+            }
+          ])
+          await f.journeys.block.update({
+            where: { id: f.id('heading') },
+            data: {
+              settings: {
+                ...originalSettings,
+                color: '#abcdef',
+                human: 'later'
+              }
+            }
+          })
+          f.receipt(await f.historyAction('undo', saved.historyId!))
+          expect((await block('heading')).settings).toEqual({
+            ...originalSettings,
+            human: 'later'
+          })
+          expect(
+            (
+              await f.journeys.block.findUniqueOrThrow({
+                where: { id: saved.idMap.new_step }
+              })
+            ).deletedAt
+          ).toBeInstanceOf(Date)
+          f.receipt(await f.historyAction('redo', saved.historyId!))
+          expect((await block('heading')).settings).toEqual({
+            unmounted: true,
+            color: '#abcdef',
+            human: 'later'
+          })
+          expect(
+            (
+              await f.journeys.block.findUniqueOrThrow({
+                where: { id: saved.idMap.new_step }
+              })
+            ).deletedAt
+          ).toBeNull()
+
+          await f.journeys.block.update({
+            where: { id: f.id('heading') },
+            data: {
+              settings: { unmounted: true, color: '#654321', human: 'later' }
+            }
+          })
+          const humanState = await f.snapshot()
+          const rejected = await f.historyAction('undo', saved.historyId!)
+          expect(rejected.text).toContain('HISTORY_CONFLICT')
+          expect(await f.snapshot()).toEqual(humanState)
+        }
+      )
+
       it('commits combined delete-and-specific-route repair as one batch and refuses conflicting undo', async () => {
         const untouched = await action('no')
         const saved = await f.save([
