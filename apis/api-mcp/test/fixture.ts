@@ -20,13 +20,15 @@ export function fixtureFactory(replica: string) {
           .object({
             value: z.string().max(128),
             delayMs: z.number().int().min(0).max(5000).optional(),
+            ignoreAbort: z.boolean().optional(),
             outputBytes: z.number().int().min(0).max(2097152).optional()
           })
           .strict()
       },
-      async ({ value, delayMs, outputBytes }) => {
+      async ({ value, delayMs, ignoreAbort, outputBytes }) => {
+        process.send?.({ event: 'fixture_started' })
         await setTimeout(delayMs ?? 0, undefined, {
-          signal: requestInfo?.signal
+          signal: ignoreAbort ? undefined : requestInfo?.signal
         })
         const output = {
           value,

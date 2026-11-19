@@ -1,5 +1,6 @@
 import { type ChildProcess, fork } from 'node:child_process'
 import { createServer, request } from 'node:http'
+import { once } from 'node:events'
 import { type AddressInfo } from 'node:net'
 import { join } from 'node:path'
 
@@ -58,7 +59,7 @@ async function replica(label: string, deadlineMs = 2000): Promise<Replica> {
       await new Promise<void>((resolve, reject) => {
         const timer = setTimeout(() => {
           child.kill('SIGKILL')
-          reject(new Error('Replica did not shut down within bound'))
+          reject(new Error(`Replica did not shut down within bound\n${logs}`))
         }, 4000)
         child.once('exit', () => {
           clearTimeout(timer)
@@ -163,6 +164,7 @@ describe('local process qualification', () => {
     async (version) => {
       const child = await replica('graceful')
       children.push(child)
+      const admitted = once(child.child, 'message')
       const pending = post(
         `http://127.0.0.1:${child.port}/mcp`,
         version,
@@ -172,7 +174,7 @@ describe('local process qualification', () => {
           arguments: { value: 'settle', delayMs: 250 }
         }
       )
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await admitted
       const stopped = child.stop()
       const response = await payload(await pending)
       expect(response.result.structuredContent.value).toBe('settle')
@@ -186,16 +188,17 @@ describe('local process qualification', () => {
     async (version) => {
       const child = await replica('bounded', 100)
       children.push(child)
+      const admitted = once(child.child, 'message')
       const pending = post(
         `http://127.0.0.1:${child.port}/mcp`,
         version,
         'tools/call',
         {
           name: 'fixture_echo',
-          arguments: { value: 'long', delayMs: 5000 }
+          arguments: { value: 'long', delayMs: 5000, ignoreAbort: true }
         }
       ).catch(() => undefined)
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await admitted
       const started = Date.now()
       await child.stop()
       expect(Date.now() - started).toBeLessThan(2500)
