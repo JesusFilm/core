@@ -28,7 +28,8 @@ jobs:
     needs: base-coverage
     if: ${{ !cancelled() && (needs.base-coverage.result == 'success' || needs.base-coverage.result == 'skipped') }}
     runs-on: jfp-proxmox-core
-    timeout-minutes: 60
+    # Full project coverage takes about an hour; allow uploads and cleanup to finish.
+    timeout-minutes: 90
     services:
       postgres:
         image: postgres:16
@@ -97,7 +98,8 @@ jobs:
     # Main already uploads its own reports. Feature/stack bases need a baseline.
     if: github.base_ref != 'main'
     runs-on: jfp-proxmox-core
-    timeout-minutes: 60
+    # The same full project suites run on the base before reports are uploaded.
+    timeout-minutes: 90
     services:
       postgres:
         image: postgres:16
