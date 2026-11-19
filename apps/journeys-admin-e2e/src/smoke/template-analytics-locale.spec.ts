@@ -6,27 +6,37 @@ import { JourneyPage } from '../pages/journey-page'
 const locales = [
   {
     locale: 'en-US',
-    order: ['Month', 'Day', 'Year'],
+    placeholder: 'MM/DD/YYYY',
     from: '05/04/2026',
     to: '05/06/2026'
   },
   {
     locale: 'en-NZ',
-    order: ['Day', 'Month', 'Year'],
+    placeholder: 'DD/MM/YYYY',
     from: '04/05/2026',
     to: '06/05/2026'
   },
   {
     locale: 'ja-JP',
-    order: ['Year', 'Month', 'Day'],
+    placeholder: 'YYYY/MM/DD',
     from: '2026/05/04',
     to: '2026/05/06'
   }
 ] as const
 
-interface BreakdownRequest {
+interface GraphQLRequest {
   operationName?: string
   variables?: { where?: { period?: string; date?: string } }
+}
+
+function getOperation(response: Response): GraphQLRequest | undefined {
+  const request = response.request()
+  if (
+    request.method() !== 'POST' ||
+    request.headers()['content-type']?.split(';')[0] !== 'application/json'
+  )
+    return
+  return request.postDataJSON() as GraphQLRequest | undefined
 }
 
 function isBreakdownResponse(
@@ -34,13 +44,22 @@ function isBreakdownResponse(
   period: string,
   date?: string
 ): boolean {
-  if (response.request().method() !== 'POST') return false
-  const body = response.request().postDataJSON() as BreakdownRequest | null
+  const body = getOperation(response)
   return (
     body?.operationName === 'GetTemplateFamilyStatsBreakdown' &&
     body.variables?.where?.period === period &&
     body.variables.where.date === date
   )
+}
+
+async function expectBreakdown(response: Response): Promise<void> {
+  expect(response.ok()).toBe(true)
+  const result = (await response.json()) as {
+    errors?: unknown[]
+    data?: { templateFamilyStatsBreakdown?: unknown[] }
+  }
+  expect(result.errors).toBeUndefined()
+  expect(result.data?.templateFamilyStatsBreakdown).toEqual(expect.any(Array))
 }
 
 async function enterDate(field: Locator, day: string): Promise<void> {
@@ -57,28 +76,51 @@ async function enterDate(field: Locator, day: string): Promise<void> {
 
 async function selectMayDay(
   page: Page,
-  field: Locator,
+  dialog: Locator,
+  label: 'From' | 'To',
   day: string
 ): Promise<void> {
+  const field = dialog.getByRole('group', { name: label, exact: true })
   await field.getByRole('button', { name: 'Choose date', exact: true }).click()
-  const monthsToMay = await page.evaluate(() => {
-    const today = new Date()
-    return (today.getFullYear() - 2026) * 12 + today.getMonth() - 4
+  const picker = page.getByRole('dialog', { name: label, exact: true })
+  const monthLabel = await picker.getByRole('grid').evaluate((grid) => {
+    const labelId = grid.getAttribute('aria-labelledby') ?? ''
+    return document.getElementById(labelId)?.textContent
   })
-  for (let month = 0; month < monthsToMay; month++) {
-    await page
-      .getByRole('button', { name: 'Previous month', exact: true })
+  const displayed = new Date(`1 ${monthLabel}`)
+  expect(Number.isFinite(displayed.getTime())).toBe(true)
+  const target = new Date(2026, 4, 1)
+  const direction = displayed < target ? 1 : -1
+  while (displayed.getTime() !== target.getTime()) {
+    await picker
+      .getByRole('button', {
+        name: direction === 1 ? 'Next month' : 'Previous month',
+        exact: true
+      })
       .click()
+    displayed.setMonth(displayed.getMonth() + direction)
+    const name = displayed.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric'
+    })
+    await expect(picker.getByRole('grid', { name, exact: true })).toBeVisible()
   }
-  const calendar = page.getByRole('grid', { name: 'May 2026', exact: true })
-  await expect(calendar).toBeVisible()
-  await calendar.getByRole('gridcell', { name: day, exact: true }).click()
+  const calendar = picker.getByRole('grid', { name: 'May 2026', exact: true })
+  const date = calendar.getByRole('gridcell', { name: day, exact: true })
+  await expect(date).toHaveCount(1)
+  await date.click()
 }
 
-for (const { locale, order, from, to } of locales) {
+for (const { locale, placeholder, from, to } of locales) {
   test.describe(`template analytics browser locale ${locale}`, () => {
-    // Keep the app's labels English while exercising the browser's real Intl locale.
-    test.use({ locale, extraHTTPHeaders: { 'Accept-Language': 'en' } })
+    test.use({ locale })
+    test.beforeEach(async ({ context, baseURL }) => {
+      if (baseURL == null) throw new Error('The app URL is required for login')
+      // Set the app's language before the authentication fixture opens the sign-in page.
+      await context.addCookies([
+        { name: 'NEXT_LOCALE', value: '00004---en', url: baseURL }
+      ])
+    })
 
     test('localizes both hints and values and sends identical typed/calendar ranges', async ({
       authedPage: page
@@ -103,19 +145,16 @@ for (const { locale, order, from, to } of locales) {
         await details.getByRole('button', { name: 'Save', exact: true }).click()
         await expect(details).toBeHidden()
         await journeyPage.clickThreeDotBtnOfCustomJourney()
-        const created = page.waitForResponse(
-          (response) =>
-            response.request().method() === 'POST' &&
-            (
-              response.request().postDataJSON() as {
-                operationName?: string
-              } | null
-            )?.operationName === 'CreateTemplate'
-        )
-        await page
-          .getByRole('menuitem', { name: 'Make Template', exact: true })
-          .click()
-        const result = (await (await created).json()) as {
+        const [created] = await Promise.all([
+          page.waitForResponse(
+            (response) =>
+              getOperation(response)?.operationName === 'CreateTemplate'
+          ),
+          page
+            .getByRole('menuitem', { name: 'Make Template', exact: true })
+            .click()
+        ])
+        const result = (await created.json()) as {
           data?: { journeyTemplate?: { id: string } }
           errors?: unknown[]
         }
@@ -145,11 +184,7 @@ for (const { locale, order, from, to } of locales) {
         ).toBe(locale)
         for (const label of ['From', 'To']) {
           const field = dialog.getByRole('group', { name: label, exact: true })
-          await expect(field.getByRole('spinbutton')).toHaveText(
-            order.map(
-              (section) => ({ Month: 'MM', Day: 'DD', Year: 'YYYY' })[section]
-            )
-          )
+          await expect(field).toContainText(placeholder)
         }
         const fromField = dialog.getByRole('group', {
           name: 'From',
@@ -159,34 +194,30 @@ for (const { locale, order, from, to } of locales) {
         const verifyRange = async (
           edit: () => Promise<void>
         ): Promise<void> => {
-          const response = page.waitForResponse((result) =>
-            isBreakdownResponse(result, 'custom', '2026-05-04,2026-05-06')
-          )
-          await edit()
-          const applied = await response
-          expect(applied.ok()).toBe(true)
-          expect(
-            ((await applied.json()) as { errors?: unknown[] }).errors
-          ).toBeUndefined()
-          await expect(fromField.getByRole('spinbutton')).toHaveText(
-            from.split('/')
-          )
-          await expect(toField.getByRole('spinbutton')).toHaveText(
-            to.split('/')
-          )
+          const [applied] = await Promise.all([
+            page.waitForResponse((result) =>
+              isBreakdownResponse(result, 'custom', '2026-05-04,2026-05-06')
+            ),
+            edit()
+          ])
+          await expectBreakdown(applied)
+          await expect(fromField).toContainText(from)
+          await expect(toField).toContainText(to)
         }
         await verifyRange(async () => {
           await enterDate(fromField, '04')
           await enterDate(toField, '06')
         })
-        const resetResponse = page.waitForResponse((response) =>
-          isBreakdownResponse(response, 'all')
-        )
-        await dialog.getByRole('button', { name: 'Reset date range' }).click()
-        expect((await resetResponse).ok()).toBe(true)
+        const [reset] = await Promise.all([
+          page.waitForResponse((response) =>
+            isBreakdownResponse(response, 'all')
+          ),
+          dialog.getByRole('button', { name: 'Reset date range' }).click()
+        ])
+        await expectBreakdown(reset)
         await verifyRange(async () => {
-          await selectMayDay(page, fromField, '4')
-          await selectMayDay(page, toField, '6')
+          await selectMayDay(page, dialog, 'From', '4')
+          await selectMayDay(page, dialog, 'To', '6')
         })
       } finally {
         if (templateId != null) {
