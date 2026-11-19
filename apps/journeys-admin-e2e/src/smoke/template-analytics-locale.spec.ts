@@ -114,6 +114,7 @@ async function selectMayDay(
 for (const { locale, placeholder, from, to } of locales) {
   test.describe(`template analytics browser locale ${locale}`, () => {
     test.use({ locale })
+
     test.beforeEach(async ({ context, baseURL }) => {
       if (baseURL == null) throw new Error('The app URL is required for login')
       // Set the app's language before the authentication fixture opens the sign-in page.
