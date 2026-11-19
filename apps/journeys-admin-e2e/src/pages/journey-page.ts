@@ -1266,6 +1266,16 @@ export class JourneyPage {
       .locator('div.MuiDialogContent-root input:not(#slug)')
       .inputValue()
   }
+
+  /** Opens the Share dialog of the journey open in the editor and returns its public address. */
+  async getPublicUrlFromShareDialog(): Promise<string> {
+    await this.clickShareButtonInJourneyPage()
+    const urlField = this.page.locator(
+      'div.MuiDialogContent-root input:not(#slug)'
+    )
+    await expect(urlField).toHaveValue(/^https?:\/\/[^/]+\/\S+/)
+    return await urlField.inputValue()
+  }
   async validateUrlInEmbedCodeFieldAndReturnEmbedCode() {
     const embedUrlFieldValue = await this.page
       .locator('div.MuiDialogContent-root textarea#embed-url')
