@@ -321,6 +321,32 @@ export async function planHistory(
       }
     }
     projected.set(block.id, next)
+    for (const slot of ['startIconId', 'endIconId'] as const) {
+      if (!Object.prototype.hasOwnProperty.call(patch, slot)) continue
+      const iconId = next[slot]
+      if (iconId === null) continue
+      const icon =
+        projected.get(iconId) ??
+        (await tx.block.findUnique({
+          where: { id: iconId, journeyId, deletedAt: null }
+        }))
+      if (
+        !icon ||
+        icon.deletedAt ||
+        icon.journeyId !== journeyId ||
+        [next.startIconId, next.endIconId, next.submitIconId].filter(
+          (id) => id === iconId
+        ).length !== 1
+      )
+        throw new Error('HISTORY_UNAVAILABLE')
+      try {
+        await assertOwnedButtonIcon(tx, next, icon, projected)
+      } catch (error) {
+        if (error instanceof Error && error.message === 'HISTORY_CONFLICT')
+          throw new Error('HISTORY_UNAVAILABLE')
+        throw error
+      }
+    }
     if (block.typename === 'CardBlock')
       await checkCardLayout(tx, journeyId, block.id, patch.fullscreen)
     plans.push({

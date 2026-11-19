@@ -3034,6 +3034,176 @@ describe('saved edit integration', () => {
         }
       })
 
+      it.each(
+        (['undo', 'redo'] as const).flatMap((direction) =>
+          (['start', 'end'] as const).flatMap((slot) =>
+            [
+              'missing',
+              'wrong-type',
+              'foreign-journey',
+              'wrong-parent',
+              'deleted',
+              'other-slot',
+              'submit-slot',
+              'other-owner'
+            ].map((corruption) => ({ direction, slot, corruption }))
+          )
+        )
+      )(
+        'rejects $corruption restored $slot Icon linkage before $direction acceptance and recovers after repair',
+        async ({ direction, slot, corruption }) => {
+          await seedPresentation()
+          const buttonId = `${journeyId}-button`
+          const field = slot === 'start' ? 'startIconId' : 'endIconId'
+          await journeys.block.update({
+            where: { id: buttonId },
+            data: { [field]: null }
+          })
+          const saved = receipt(
+            await call('journey_edit', {
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [
+                {
+                  type: 'button_icon_set',
+                  blockId: buttonId,
+                  slot,
+                  name: 'CheckCircleRounded'
+                }
+              ]
+            })
+          )
+          const button = await journeys.block.findUniqueOrThrow({
+            where: { id: buttonId }
+          })
+          const iconId = button[field]!
+          const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+            where: { id: saved.historyId! }
+          })
+          if (direction === 'redo') await historyAction('undo', entry.id)
+          let invalidId = `${buttonId}-invalid`
+          if (corruption === 'wrong-type') invalidId = `${journeyId}-text`
+          if (corruption === 'other-slot')
+            invalidId = button[slot === 'start' ? 'endIconId' : 'startIconId']!
+          if (
+            [
+              'foreign-journey',
+              'wrong-parent',
+              'deleted',
+              'submit-slot',
+              'other-owner'
+            ].includes(corruption)
+          ) {
+            const foreign =
+              corruption === 'foreign-journey'
+                ? await journeys.journey.create({
+                    data: {
+                      title: 'Foreign draft',
+                      slug: randomUUID(),
+                      languageId: '529',
+                      status: 'draft'
+                    }
+                  })
+                : null
+            await journeys.block.create({
+              data: {
+                id: invalidId,
+                journeyId: foreign?.id ?? journeyId,
+                typename: 'IconBlock',
+                parentBlockId:
+                  corruption === 'wrong-parent'
+                    ? `${journeyId}-card`
+                    : buttonId,
+                deletedAt: corruption === 'deleted' ? new Date() : null
+              }
+            })
+          }
+          if (corruption === 'submit-slot')
+            await journeys.block.update({
+              where: { id: buttonId },
+              data: { submitIconId: invalidId }
+            })
+          if (corruption === 'other-owner')
+            await journeys.block.create({
+              data: {
+                journeyId,
+                typename: 'ButtonBlock',
+                parentBlockId: `${journeyId}-card`,
+                startIconId: invalidId
+              }
+            })
+          const changes = z.array(z.json()).parse(entry.changes)
+          const index = changes.findIndex(
+            (change) => presentationInverse.safeParse(change).success
+          )
+          const inverse = presentationInverse.parse(changes[index])
+          expect(inverse.blockId).toBe(buttonId)
+          expect(inverse.fields).toEqual([
+            { field, before: null, after: iconId, beforePresent: true }
+          ])
+          inverse.fields[0][direction === 'undo' ? 'before' : 'after'] =
+            invalidId
+          changes[index] = inverse
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes }
+          })
+          const snapshot = async () => ({
+            blocks: await journeys.block.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            revision: await revision(),
+            cursor: await history(),
+            entries: await journeys.mcpEditHistory.findMany({
+              where: { journeyId },
+              orderBy: { ordinal: 'asc' }
+            }),
+            operations: await journeys.mcpEditOperation.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            counts: await counts(),
+            audit: await journeys.mcpEditAudit.count({ where: { journeyId } })
+          })
+          const before = await snapshot()
+          const input = await historyInput(entry.id)
+          const acceptance = vi.fn()
+          checkpoint = async (point, context) => {
+            if (point === 'before_accept' && context.operationId) acceptance()
+          }
+          for (let attempt = 0; attempt < 2; attempt++) {
+            const response = await call(`journey_${direction}`, input)
+            expect(response.json.result?.isError).toBe(true)
+            expect(response.text).toContain('HISTORY_UNAVAILABLE')
+            expect(acceptance).not.toHaveBeenCalled()
+            expect(await snapshot()).toEqual(before)
+          }
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: entry.changes! }
+          })
+          const restored = receipt(await call(`journey_${direction}`, input))
+          expect(acceptance).toHaveBeenCalled()
+          expect(
+            await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+          ).toMatchObject({
+            [field]: direction === 'redo' ? iconId : null
+          })
+          expect(
+            await journeys.block.findUniqueOrThrow({ where: { id: iconId } })
+          ).toMatchObject({
+            deletedAt: direction === 'redo' ? null : expect.any(Date)
+          })
+          const after = await snapshot()
+          expect(receipt(await call(`journey_${direction}`, input))).toEqual(
+            restored
+          )
+          expect(await snapshot()).toEqual(after)
+        }
+      )
+
       it('enforces the current Card chat gate for edits and undo/redo and preserves nullable defaults', async () => {
         const input = {
           journeyId,
