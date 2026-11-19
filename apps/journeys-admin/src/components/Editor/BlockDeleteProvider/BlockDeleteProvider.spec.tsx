@@ -246,7 +246,9 @@ describe('BlockDeleteProvider', () => {
       await clickTrash()
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       await waitFor(() => expect(deleteResult).toHaveBeenCalledTimes(1))
-      expect(cache.extract()[`${target.__typename}:${target.id}`]).toBeUndefined()
+      expect(
+        cache.extract()[`${target.__typename}:${target.id}`]
+      ).toBeUndefined()
       expect(cache.extract()['VideoBlock:video.id']?.endEventLabel).toBe(
         BlockEventLabel.specialVideoComplete
       )
