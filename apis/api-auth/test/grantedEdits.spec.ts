@@ -988,10 +988,141 @@ describe('saved edit integration', () => {
         ).toMatchObject({ content: 'Human draft change' })
       })
 
+      it.each(['before', 'after'])(
+        'allows an Admin save while coordinator acceptance is stalled %s its commit',
+        async (side) => {
+          const input = await editInput()
+          const pause = barrier()
+          const stall = async (stage: string) => {
+            if (stage === 'read') await pause.pause()
+          }
+          if (side === 'before') beforeAcceptance = stall
+          else afterAcceptance = stall
+          const saving = edit(input)
+          await pause.ready
+          try {
+            await journeys.$transaction(async (tx) => {
+              await tx.$executeRaw`SET LOCAL lock_timeout = '1s'`
+              await tx.block.update({
+                where: { id: `${journeyId}-text` },
+                data: { content: 'Concurrent Admin heading' }
+              })
+            })
+          } finally {
+            pause.resume()
+          }
+          expect((await saving).text).toContain('REVISION_CONFLICT')
+          expect(
+            await journeys.block.findUnique({
+              where: { id: `${journeyId}-text` }
+            })
+          ).toMatchObject({ content: 'Concurrent Admin heading' })
+          expect(await counts()).toEqual({
+            operations: 0,
+            history: 0,
+            effects: 0
+          })
+        }
+      )
+
+      it.each(['before', 'after'])(
+        'rejects an edit when publication completes during coordinator acceptance %s its commit',
+        async (side) => {
+          const input = await editInput()
+          const pause = barrier()
+          const stall = async (stage: string) => {
+            if (stage === 'read') await pause.pause()
+          }
+          if (side === 'before') beforeAcceptance = stall
+          else afterAcceptance = stall
+          const saving = edit(input)
+          await pause.ready
+          try {
+            await journeys.$transaction(async (tx) => {
+              await tx.$executeRaw`SET LOCAL lock_timeout = '1s'`
+              await tx.journey.update({
+                where: { id: journeyId },
+                data: {
+                  status: 'published',
+                  publishedAt: new Date(),
+                  firstPublishedAt: new Date()
+                }
+              })
+            })
+          } finally {
+            pause.resume()
+          }
+          expect((await saving).text).toContain('NOT_EDITABLE')
+          expect(
+            await journeys.block.findUnique({
+              where: { id: `${journeyId}-text` }
+            })
+          ).toMatchObject({ content: 'Original heading' })
+          expect(await counts()).toEqual({
+            operations: 0,
+            history: 0,
+            effects: 0
+          })
+        }
+      )
+
+      it('rechecks local ACLs after coordinator acceptance before committing', async () => {
+        const input = await editInput()
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const saving = edit(input)
+        await pause.ready
+        await journeys.userTeam.deleteMany({
+          where: { userId: 'alice', teamId: 'edit-team-alice' }
+        })
+        pause.resume()
+        expect((await saving).json.result?.isError).toBe(true)
+        expect(
+          await journeys.block.findUnique({
+            where: { id: `${journeyId}-text` }
+          })
+        ).toMatchObject({ content: 'Original heading' })
+        expect(await counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+      })
+
+      it('fences an accepted executor while its coordinator response is delayed', async () => {
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const saving = edit(await editInput())
+        await pause.ready
+        const execution = await journeys.mcpEditExecution.findFirstOrThrow({
+          where: { status: 'prepared' }
+        })
+        await ownerHandler.reconcile(execution.id)
+        expect(
+          await journeys.mcpEditExecution.findUnique({
+            where: { id: execution.id }
+          })
+        ).toMatchObject({ status: 'fenced', reportedAt: expect.any(Date) })
+        pause.resume()
+        expect((await saving).json.result?.isError).toBe(true)
+        expect(await counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+        expect(
+          await auth.readPermit.count({ where: { status: 'accepted' } })
+        ).toBe(0)
+      })
+
       it('serializes an accepted edit before a competing publication under the shared fence', async () => {
         const pause = barrier()
         checkpoint = async (point) => {
-          if (point === 'after_accept') await pause.pause()
+          if (point === 'after_content') await pause.pause()
         }
         const saving = edit(await editInput())
         await pause.ready

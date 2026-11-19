@@ -78,7 +78,8 @@ function editError(error: unknown): string {
 
 /** Execution/recovery lock order: execution, namespace, journey, owned blocks.
  * Coordinator preparation captures gates before authoritative ACL reads. Final
- * acceptance occurs under owning locks immediately before this bounded action.
+ * acceptance precedes the content transaction. Its local fences and current ACLs
+ * are checked again under owning locks before this bounded action commits.
  */
 export function createJourneyEditHandler(
   config: JourneyReadsConfig,
@@ -178,6 +179,40 @@ export function createJourneyEditHandler(
         update: {}
       })
       await hooks.checkpoint?.('execution_prepared', context)
+      const authorizedJourney = async (tx: Prisma.TransactionClient) => {
+        const profile = await tx.journeyProfile.findUnique({
+          where: { userId: claims.subject }
+        })
+        const journey = await tx.journey.findUnique({
+          where: {
+            id: resource.id,
+            deletedAt: null,
+            archivedAt: null,
+            trashedAt: null
+          },
+          include: {
+            userJourneys: true,
+            team: { include: { userTeams: true } }
+          }
+        })
+        if (
+          !profile?.acceptedTermsAt ||
+          !journey ||
+          journey.teamId !== resource.teamId ||
+          journey.template === true ||
+          journey.templateSite === true ||
+          !['draft', 'published'].includes(journey.status) ||
+          !journeyAcl(Action.Read, journey, {
+            id: claims.subject
+          } as Parameters<typeof journeyAcl>[2])
+        )
+          throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+        return journey
+      }
+      await authorizedJourney(db)
+      await hooks.checkpoint?.('before_accept', context)
+      await authority('accept', { credential, permitId })
+      await hooks.checkpoint?.('after_accept', context)
       const result = await db.$transaction(
         async (tx) => {
           if (executionId) {
@@ -211,33 +246,7 @@ export function createJourneyEditHandler(
           )
             throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
           await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${resource.id} FOR NO KEY UPDATE`
-          const profile = await tx.journeyProfile.findUnique({
-            where: { userId: claims.subject }
-          })
-          const journey = await tx.journey.findUnique({
-            where: {
-              id: resource.id,
-              deletedAt: null,
-              archivedAt: null,
-              trashedAt: null
-            },
-            include: {
-              userJourneys: true,
-              team: { include: { userTeams: true } }
-            }
-          })
-          if (
-            !profile?.acceptedTermsAt ||
-            !journey ||
-            journey.teamId !== resource.teamId ||
-            journey.template === true ||
-            journey.templateSite === true ||
-            !['draft', 'published'].includes(journey.status) ||
-            !journeyAcl(Action.Read, journey, {
-              id: claims.subject
-            } as Parameters<typeof journeyAcl>[2])
-          )
-            throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+          const journey = await authorizedJourney(tx)
           const prior = await tx.mcpEditOperation.findFirst({
             where: {
               namespaceId: namespace.id,
@@ -248,11 +257,6 @@ export function createJourneyEditHandler(
                   : { idempotencyKey: operation.input.idempotencyKey })
             }
           })
-          const accept = async () => {
-            await hooks.checkpoint?.('before_accept', context)
-            await authority('accept', { credential, permitId })
-            await hooks.checkpoint?.('after_accept', context)
-          }
           const settle = async (status: 'committed' | 'settled') => {
             if (!executionId) return
             await tx.mcpEditExecution.update({
@@ -269,7 +273,6 @@ export function createJourneyEditHandler(
             operation.tool === 'journey_operation_get' ||
             body.stage === 'output'
           ) {
-            await accept()
             const now = await editDatabaseTime(tx, hooks.now)
             let retained: OperationResult
             if (responseWitness) {
@@ -336,7 +339,6 @@ export function createJourneyEditHandler(
             // This is a private response to an authorized rejected request,
             // not an accepted edit/key. Its signed request witness lets the
             // final sender release exactly this outcome after fresh checks.
-            await accept()
             await tx.mcpEditExecution.update({
               where: { id: executionId },
               data: {
@@ -433,7 +435,6 @@ export function createJourneyEditHandler(
             })
           }
           context.operationId = randomUUID()
-          await accept()
           for (const plan of plans) {
             await tx.block.update({
               where: { id: plan.blockId },
