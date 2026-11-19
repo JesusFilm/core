@@ -17,8 +17,6 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'imagizer.imageshack.com' },
       { protocol: 'https', hostname: 'i.ytimg.com' },
-      // arclight image provider - cloudfront
-      { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
       // cloudflare
       { protocol: 'https', hostname: 'imagedelivery.net' },
       {

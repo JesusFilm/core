@@ -39,7 +39,7 @@ export const Default = {
     description:
       'After living a life full of fighter planes and porsches, Andreas realizes something is missing.',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
     duration: 186,
     source: VideoBlockSource.internal
   }

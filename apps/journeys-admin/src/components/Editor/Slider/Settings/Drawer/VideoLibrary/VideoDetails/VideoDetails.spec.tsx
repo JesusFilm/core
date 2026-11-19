@@ -30,7 +30,7 @@ describe('VideoDetails', () => {
     __typename: 'ImageBlock',
     parentBlockId: 'videoBlockId',
     parentOrder: 0,
-    src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+    src: 'https://imagedelivery.net/testAccount/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
     alt: 'Default Image Icon',
     width: 0,
     height: 0,

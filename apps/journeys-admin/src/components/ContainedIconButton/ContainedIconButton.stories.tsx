@@ -39,7 +39,7 @@ export const Complete = {
     label: 'Video Title',
     description: 'description',
     imageSrc:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Image Alt Test Text',
     loading: false,
     onClick: noop
