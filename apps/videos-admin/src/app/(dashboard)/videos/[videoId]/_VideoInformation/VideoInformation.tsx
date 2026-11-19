@@ -28,6 +28,7 @@ import { graphql } from '@core/shared/gql'
 import { CancelButton } from '../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../components/SaveButton'
 import { videoLabels, videoStatuses } from '../../../../../constants'
+import { getValidChildLabels } from '../../../../../libs/getValidChildLabels'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 import { VideoKeywords } from './VideoKeywords'
@@ -45,6 +46,10 @@ export const GET_VIDEO_INFORMATION = graphql(`
       publishedAt
       slug
       primaryLanguageId
+      parents {
+        id
+        label
+      }
       keywords(languageId: $languageId) {
         id
         value
@@ -330,6 +335,20 @@ export function VideoInformation({
     )
   }
 
+  // Only labels valid under every parent are offered. The saved label always
+  // stays in the list so the select can display it, but it is only sent back
+  // when the user picks a different one.
+  const savedLabel = data.adminVideo.label
+  const labelOptions = videoLabels.filter(
+    ({ value }) =>
+      value === savedLabel ||
+      data.adminVideo.parents.every(({ label }) =>
+        getValidChildLabels(label).validChildLabels.some(
+          (validLabel) => validLabel.value === value
+        )
+      )
+  )
+
   async function handleUpdateVideoInformation(
     values: FormikValues,
     { resetForm }: FormikProps<FormikValues>
@@ -393,7 +412,7 @@ export function VideoInformation({
           id: videoId,
           slug: values.url,
           published: values.published === 'published',
-          label: values.label,
+          ...(values.label !== savedLabel ? { label: values.label } : {}),
           keywordIds: values.keywords.map((k) => k.id)
         },
         titleInput: {
@@ -547,7 +566,7 @@ export function VideoInformation({
                   value={values.label}
                   onChange={handleChange}
                 >
-                  {videoLabels.map(({ label, value }) => (
+                  {labelOptions.map(({ label, value }) => (
                     <MenuItem key={value} value={value}>
                       {label}
                     </MenuItem>
