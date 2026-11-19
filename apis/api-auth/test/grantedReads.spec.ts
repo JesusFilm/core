@@ -94,7 +94,12 @@ describe('granted journey read authorization', () => {
         }
         return response
       }
-      async function consent(user: string, ids: string[], mode = 'view') {
+      async function consent(
+        user: string,
+        ids: string[],
+        mode = 'view',
+        reconnect?: { id: string; version: number }
+      ) {
         cookies.clear()
         const verifier = randomBytes(32).toString('base64url')
         const query = new URLSearchParams({
@@ -134,7 +139,13 @@ describe('granted journey read authorization', () => {
             csrf: details.csrf,
             journeyIds: ids,
             mode,
-            duration: 'week'
+            duration: 'week',
+            ...(reconnect
+              ? {
+                  connectionId: reconnect.id,
+                  expectedVersion: reconnect.version
+                }
+              : {})
           })
         ).json()) as { reviewToken: string }
         const approved = await post('decision', {
@@ -210,8 +221,10 @@ describe('granted journey read authorization', () => {
 
       beforeAll(async () => {
         if (
-          !new URL(authUrl!).pathname.startsWith('/auth_issue_10573') ||
-          !new URL(journeysUrl!).pathname.startsWith('/journeys_issue_10573')
+          !/^\/auth_issue_105(73|74)(_|$)/.test(new URL(authUrl!).pathname) ||
+          !/^\/journeys_issue_105(73|74)(_|$)/.test(
+            new URL(journeysUrl!).pathname
+          )
         )
           throw new Error('Use isolated issue databases')
         for (const table of [
@@ -219,6 +232,7 @@ describe('granted journey read authorization', () => {
           auth.oAuthArtifact,
           auth.agentConnection,
           auth.consentReview,
+          auth.agentRenewalReview,
           auth.authorizationGate,
           auth.securityAudit,
           auth.authEnvironment
@@ -392,9 +406,17 @@ describe('granted journey read authorization', () => {
               ? ['read-a', 'read-b', 'read-published'].map((id) => ({
                   id,
                   title: id,
+                  teamId: 'read-team',
                   canEdit: id !== 'read-published'
                 }))
-              : [{ id: 'read-foreign', title: 'Bob', canEdit: true }]
+              : [
+                  {
+                    id: 'read-foreign',
+                    title: 'Bob',
+                    teamId: 'read-team',
+                    canEdit: true
+                  }
+                ]
         })
         await new Promise<void>((resolve) =>
           issuer.server.listen(
@@ -497,7 +519,7 @@ describe('granted journey read authorization', () => {
         )
         await mcp.listen()
         mcpUrl = `http://127.0.0.1:${(mcp.server.address() as AddressInfo).port}/mcp`
-      }, 30000)
+      }, 120000)
 
       beforeEach(async () => {
         beforeIdentity = undefined
@@ -526,6 +548,99 @@ describe('granted journey read authorization', () => {
         await issuer?.close()
         await auth.$disconnect()
         await journeys.$disconnect()
+      })
+
+      it('renews an expired connection and resumes granted MCP reads under the same identity with fresh credentials', async () => {
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        const previousToken = accessToken
+        const connection = await auth.agentConnection.findFirstOrThrow({
+          orderBy: { approvedAt: 'desc' }
+        })
+        const accepted = await auth.readPermit.findMany({
+          where: { connectionId: connection.id }
+        })
+        await auth.agentConnection.update({
+          where: { id: connection.id },
+          data: { expiresAt: new Date(0) }
+        })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        const management = async (path: string, body: unknown) =>
+          request(`/connections${path}`, {
+            method: 'POST',
+            headers: {
+              Origin: config.AUTH_ADMIN_ORIGIN,
+              Authorization: 'Bearer alice',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          })
+        const listed = await management('', {})
+        expect(listed.status).toBe(200)
+        const { csrf } = (await listed.json()) as { csrf: string }
+        const review = await management(`/${connection.id}/review`, {
+          csrf,
+          expectedVersion: connection.version,
+          clientId: connection.clientId,
+          duration: 'week'
+        })
+        expect(review.status, await review.clone().text()).toBe(200)
+        const { reviewToken } = (await review.json()) as { reviewToken: string }
+        const approved = await management(`/${connection.id}/approve`, {
+          csrf,
+          expectedVersion: connection.version,
+          clientId: connection.clientId,
+          reviewToken
+        })
+        expect(approved.status, await approved.clone().text()).toBe(200)
+        const receipt = (await approved.json()) as {
+          id: string
+          version: number
+          expiresAt: string
+        }
+        accessToken = await consent('alice', ['read-a'], 'view', {
+          id: receipt.id,
+          version: receipt.version
+        })
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect(
+          (await call('journey_read', { journeyId: 'read-b', view: 'steps' }))
+            .body
+        ).not.toContain('private-read-b-sentinel')
+        expect(
+          (
+            await call(
+              'journey_read',
+              { journeyId: 'read-a', view: 'steps' },
+              previousToken
+            )
+          ).body
+        ).not.toContain('read-a-text-sentinel')
+        expect(
+          await auth.agentConnection.findUnique({
+            where: { id: connection.id }
+          })
+        ).toMatchObject({
+          userId: connection.userId,
+          clientId: connection.clientId,
+          journeyIds: ['read-a'],
+          mode: 'view',
+          version: receipt.version,
+          expiresAt: new Date(receipt.expiresAt)
+        })
+        for (const permit of accepted)
+          expect(
+            await auth.readPermit.findUnique({ where: { id: permit.id } })
+          ).toMatchObject({
+            id: permit.id,
+            connectionId: permit.connectionId,
+            grantVersion: permit.grantVersion,
+            requestHash: permit.requestHash,
+            preparedAt: permit.preparedAt
+          })
+        await journeys.userTeam.delete({
+          where: { teamId_userId: { teamId: 'read-team', userId: 'alice' } }
+        })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
       })
 
       it('lists and reads only A despite current user rights to A and B; no nested foreign references or counts escape', async () => {

@@ -11,6 +11,7 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignEditorProvider } from '../CampaignEditorProvider'
 import { campaign, publishedCampaign } from '../data'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 import { PublishButton } from '.'
 
@@ -26,9 +27,11 @@ function PublishButtonStory({
       <SnackbarProvider>
         <CommandProvider>
           <CampaignEditorProvider campaign={campaignProp}>
-            <Box sx={{ p: 2, height: 360, width: 360 }}>
-              <PublishButton />
-            </Box>
+            <CampaignCommandProvider>
+              <Box sx={{ p: 2, height: 360, width: 360 }}>
+                <PublishButton />
+              </Box>
+            </CampaignCommandProvider>
           </CampaignEditorProvider>
         </CommandProvider>
       </SnackbarProvider>

@@ -9,8 +9,6 @@ A discipline for hard bugs. Skip phases only when explicitly justified.
 
 When exploring the codebase, read `GLOSSARY.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
 
-For a **reported bug**, also read the area's `GLOSSARY-intake.md` (if present) — the diagnosis layer holding failure signatures, the question that localizes a report, and where to look first. Start from the `GLOSSARY-MAP-intake.md` index: match the report's wording to an area's `triggers`, then open only that area's `GLOSSARY-intake.md`. This feeds the diagnosis at the start of the loop rather than by luck, and the index-first fetch keeps context lean.
-
 ## Redact
 
 This skill has you show commands, outputs and captured artifacts. **Redact every secret first**: write `<REDACTED>` in its place. Build loops against env vars, so the credential stays in the environment rather than in what you show. Captured artifacts carry auth headers: quote only the lines that carry the signal.

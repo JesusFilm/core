@@ -1,5 +1,6 @@
 import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
 import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
@@ -10,11 +11,14 @@ import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSe
 import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign, withEmptyTranslations } from '../data'
+import { blockUpdateMock } from '../styleTesting'
 import {
   CommandProbe,
   PreviewLanguageSwitch,
   QueriedEditor,
-  UndoRedo
+  UndoRedo,
+  holdRequests,
+  landRequests
 } from '../testing'
 
 import { CarouselCardSettings } from './CarouselCardSettings'
@@ -96,6 +100,8 @@ function renderEdit(
 }
 
 describe('CarouselCardSettings', () => {
+  afterEach(() => vi.useRealTimers())
+
   it('writes the default title through campaignVideoBlockUpdate in the default language', async () => {
     const update = {
       request: {
@@ -227,5 +233,47 @@ describe('CarouselCardSettings', () => {
     await waitFor(() => expect(field).toHaveValue('Outreach around the world'))
     expect(field).not.toHaveAttribute('placeholder')
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  describe.each(['title', 'description'] as const)('%s', (field) => {
+    it.each([
+      { from: '496', to: '529' },
+      { from: '529', to: '496' }
+    ])(
+      'ignores a pending refusal after changing Preview Language from $from to $to',
+      async ({ from, to }) => {
+        const refusal = 'The previous language card save was refused'
+        const save = {
+          ...(from === '496'
+            ? translationMock(field, 'Readers')
+            : blockUpdateMock(card, { [field]: 'Readers' })),
+          result: vi.fn(() => ({ errors: [new GraphQLError(refusal)] }))
+        }
+        renderEdit([save], from)
+
+        const label = field === 'title' ? 'Title' : 'Description'
+        const input = await screen.findByRole('textbox', { name: label })
+        await holdRequests(() => {
+          fireEvent.change(input, { target: { value: 'Readers' } })
+          fireEvent.blur(input)
+        })
+        expect(save.result).not.toHaveBeenCalled()
+
+        fireEvent.click(screen.getByRole('button', { name: `Preview ${to}` }))
+        expect(screen.getByRole('textbox', { name: label })).toBe(input)
+        expect(input).toHaveAttribute('aria-invalid', 'false')
+
+        await landRequests()
+
+        expect(save.result).toHaveBeenCalledTimes(1)
+        expect(screen.queryByText(refusal)).not.toBeInTheDocument()
+        expect(input).toHaveAttribute('aria-invalid', 'false')
+        expect(input).toHaveValue(
+          to === '529'
+            ? card[field]
+            : (card[`${field}Translations`][0]?.value ?? '')
+        )
+      }
+    )
   })
 })

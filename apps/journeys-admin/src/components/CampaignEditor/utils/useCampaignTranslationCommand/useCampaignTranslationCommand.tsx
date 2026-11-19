@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/client/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import { CampaignBlockTranslationFields } from '../../../../../__generated__/CampaignBlockTranslationFields'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
@@ -28,6 +28,7 @@ export interface CampaignTranslationCommand {
   addTranslation: (options: AddTranslationOptions) => void
   /** The API's message, verbatim, when the last translation save failed. */
   error?: string
+  /** Clear the inline error and invalidate pending refusal callbacks. */
   clearError: () => void
 }
 
@@ -47,7 +48,11 @@ export function useCampaignTranslationCommand(): CampaignTranslationCommand {
   const { campaign } = useCampaignEditor()
   const writeTranslation = useCampaignTranslationWrite()
   const [error, setError] = useState<string>()
-  const clearError = useCallback(() => setError(undefined), [])
+  const errorGeneration = useRef(0)
+  const clearError = useCallback(() => {
+    errorGeneration.current++
+    setError(undefined)
+  }, [])
 
   function addTranslation({
     block,
@@ -57,6 +62,7 @@ export function useCampaignTranslationCommand(): CampaignTranslationCommand {
     previous
   }: AddTranslationOptions): void {
     setError(undefined)
+    const generation = errorGeneration.current
     let undoValue: string | undefined
 
     function currentBlock(): CampaignBlockTranslationFields | null {
@@ -93,7 +99,10 @@ export function useCampaignTranslationCommand(): CampaignTranslationCommand {
         return await write(value)
       },
       undo: async () => await write(undoValue ?? previous)
-    }).catch((mutationError: unknown) => setError(messageOf(mutationError)))
+    }).catch((mutationError: unknown) => {
+      if (generation !== errorGeneration.current) return
+      setError(messageOf(mutationError))
+    })
   }
 
   return { addTranslation, error, clearError }
