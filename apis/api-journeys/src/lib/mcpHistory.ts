@@ -343,7 +343,7 @@ export async function planHistory(
         await assertOwnedButtonIcon(tx, next, icon, projected)
       } catch (error) {
         if (error instanceof Error && error.message === 'HISTORY_CONFLICT')
-          throw new Error('HISTORY_UNAVAILABLE')
+          throw new Error('HISTORY_UNAVAILABLE', { cause: error })
         throw error
       }
     }
