@@ -58,7 +58,7 @@ const required: Record<string, string[]> = {
     'failed++'
   ],
   'apis/api-journeys/src/lib/mcpReads.ts': [
-    'const data = await snapshot(',
+    'data = await snapshot(',
     "await authority('accept',",
     'await db.mcpReadExecution.create(',
     'const execution = await tx.mcpReadExecution.findUniqueOrThrow',

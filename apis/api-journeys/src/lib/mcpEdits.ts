@@ -90,7 +90,8 @@ function editError(error: unknown): string {
 
 /** Execution/recovery lock order: execution, namespace, journey, owned blocks.
  * Coordinator preparation captures gates before authoritative ACL reads. Final
- * acceptance occurs under owning locks immediately before this bounded action.
+ * acceptance precedes the content transaction. Its local fences and current ACLs
+ * are checked again under owning locks before this bounded action commits.
  */
 export function createJourneyEditHandler(
   config: JourneyReadsConfig,
@@ -214,454 +215,476 @@ export function createJourneyEditHandler(
         : requiresChat && body.stage === 'read'
           ? await prepareCardChatGate(claims.subject)
           : async () => false
-      const result: OperationResult | HistoryResult = await db.$transaction(
-        async (tx) => {
-          if (executionId) {
-            await tx.$queryRaw`SELECT id FROM "McpEditExecution" WHERE id = ${executionId} FOR UPDATE`
-            const execution = await tx.mcpEditExecution.findUniqueOrThrow({
-              where: { id: executionId }
-            })
-            if (execution.status !== 'prepared')
-              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+      const authorizedJourney = async (tx: Prisma.TransactionClient) => {
+        const profile = await tx.journeyProfile.findUnique({
+          where: { userId: claims.subject }
+        })
+        const journey = await tx.journey.findUnique({
+          where: {
+            id: resource.id,
+            deletedAt: null,
+            archivedAt: null,
+            trashedAt: null
+          },
+          include: {
+            userJourneys: true,
+            team: { include: { userTeams: true } }
           }
-          await tx.$queryRaw`SELECT id FROM "McpEditNamespace" WHERE id = ${claims.connectionId} FOR UPDATE`
-          const namespace = await tx.mcpEditNamespace.findUniqueOrThrow({
-            where: { id: claims.connectionId }
-          })
-          const responseWitness =
-            body.stage === 'output'
-              ? await tx.mcpEditExecution.findFirst({
-                  where: {
-                    requestId: claims.requestId,
-                    requestHash: claims.requestHash,
-                    connectionId: claims.connectionId,
-                    status: 'settled',
-                    failureCode: { not: null }
-                  }
-                })
-              : null
-          if (
-            namespace.retiredAt ||
-            namespace.actorId !== claims.subject ||
-            namespace.clientId !== claims.clientId
-          )
-            throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-          await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${resource.id} FOR NO KEY UPDATE`
-          const profile = await tx.journeyProfile.findUnique({
-            where: { userId: claims.subject }
-          })
-          const journey = await tx.journey.findUnique({
-            where: {
-              id: resource.id,
-              deletedAt: null,
-              archivedAt: null,
-              trashedAt: null
-            },
-            include: {
-              userJourneys: true,
-              team: { include: { userTeams: true } }
-            }
-          })
-          if (
-            !profile?.acceptedTermsAt ||
-            !journey ||
-            journey.teamId !== resource.teamId ||
-            journey.template === true ||
-            journey.templateSite === true ||
-            !['draft', 'published'].includes(journey.status) ||
-            !journeyAcl(Action.Read, journey, {
-              id: claims.subject
-            } as Parameters<typeof journeyAcl>[2])
-          )
-            throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-          const prior =
-            operation.tool === 'journey_history'
-              ? null
-              : await tx.mcpEditOperation.findFirst({
-                  where: {
-                    namespaceId: namespace.id,
-                    ...(operation.tool !== 'journey_operation_get'
-                      ? { idempotencyKey: operation.input.idempotencyKey }
-                      : operation.input.operationId
-                        ? { id: operation.input.operationId }
-                        : { idempotencyKey: operation.input.idempotencyKey })
-                  }
-                })
-          let needsChatGate = false
-          const accept = async () => {
-            await hooks.checkpoint?.('before_accept', context)
-            if (needsChatGate && !(await canEditChat()))
-              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-            await authority('accept', { credential, permitId })
-            await hooks.checkpoint?.('after_accept', context)
-          }
-          const settle = async (status: 'committed' | 'settled') => {
-            if (!executionId) return
-            await tx.mcpEditExecution.update({
-              where: { id: executionId },
-              data: {
-                status,
-                operationId: context.operationId,
-                completedAt: await editDatabaseTime(tx, hooks.now)
-              }
-            })
-          }
-          const reject = async (
-            code: (typeof privateOperationErrorCodes)[number]
-          ) => {
-            if (!executionId) throw new Error(code)
-            await accept()
-            await tx.mcpEditExecution.update({
-              where: { id: executionId },
-              data: {
-                status: 'settled',
-                failureCode: code,
-                completedAt: await editDatabaseTime(tx, hooks.now)
-              }
-            })
-            return operationFailure.parse({
-              contractVersion: '1',
-              kind: 'operation_failure',
-              code
-            })
-          }
-          if (
-            (operation.tool === 'journey_undo' ||
-              operation.tool === 'journey_redo') &&
-            !responseWitness &&
-            journey.status !== 'draft'
-          )
-            return reject('NOT_EDITABLE')
-          if (operation.tool === 'journey_history' && !responseWitness) {
-            if (journey.status !== 'draft') return reject('NOT_EDITABLE')
-            const entries = await historyEntries(
-              tx,
-              namespace.id,
-              journey.id,
-              claims.consentHistoryGeneration
-            )
-            const description = describeHistory(
-              journey.id,
-              await readJourneyRevision(tx, journey.id),
-              entries,
-              Boolean(
-                config.editsEnabled &&
-                  claims.mode === 'edit' &&
-                  journeyAcl(Action.Update, journey, {
-                    id: claims.subject
-                  } as Parameters<typeof journeyAcl>[2])
-              )
-            )
-            await accept()
-            if (
-              body.stage === 'output' &&
-              fingerprint(description) !== body.dataHash
-            )
-              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-            await settle('settled')
-            return description
-          }
-          if (
-            prior ||
-            operation.tool === 'journey_operation_get' ||
-            body.stage === 'output'
-          ) {
-            await accept()
-            const now = await editDatabaseTime(tx, hooks.now)
-            let retained: OperationResult
-            if (responseWitness) {
-              retained = operationFailure.parse({
-                contractVersion: '1',
-                kind: 'operation_failure',
-                code: responseWitness.failureCode
+        })
+        if (
+          !profile?.acceptedTermsAt ||
+          !journey ||
+          journey.teamId !== resource.teamId ||
+          journey.template === true ||
+          journey.templateSite === true ||
+          !['draft', 'published'].includes(journey.status) ||
+          !journeyAcl(Action.Read, journey, {
+            id: claims.subject
+          } as Parameters<typeof journeyAcl>[2])
+        )
+          throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+        return journey
+      }
+      let needsChatGate = false
+      const execute = (
+        preflight: boolean
+      ): Promise<OperationResult | HistoryResult | null> =>
+        db.$transaction(
+          async (tx) => {
+            if (executionId) {
+              await tx.$queryRaw`SELECT id FROM "McpEditExecution" WHERE id = ${executionId} FOR UPDATE`
+              const execution = await tx.mcpEditExecution.findUniqueOrThrow({
+                where: { id: executionId }
               })
-            } else if (!prior || prior.journeyId !== journey.id) {
-              retained = {
-                contractVersion: '1',
-                kind: 'operation_failure',
-                code: 'RESULT_UNAVAILABLE'
-              }
-            } else if (
-              isContentWrite(operation.tool) &&
-              prior.payloadHash !== payloadHash
-            ) {
-              retained = {
-                contractVersion: '1',
-                kind: 'operation_failure',
-                code: 'IDEMPOTENCY_KEY_REUSED'
-              }
-            } else if (prior.resultExpiresAt <= now || prior.result === null) {
-              retained = {
-                contractVersion: '1',
-                kind: 'operation_failure',
-                code: 'RESULT_EXPIRED'
-              }
-            } else {
-              retained = operationReceipt.parse(prior.result)
+              if (execution.status !== 'prepared')
+                throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
             }
-            context.operationId = prior?.id
+            await tx.$queryRaw`SELECT id FROM "McpEditNamespace" WHERE id = ${claims.connectionId} FOR UPDATE`
+            const namespace = await tx.mcpEditNamespace.findUniqueOrThrow({
+              where: { id: claims.connectionId }
+            })
+            const responseWitness =
+              body.stage === 'output'
+                ? await tx.mcpEditExecution.findFirst({
+                    where: {
+                      requestId: claims.requestId,
+                      requestHash: claims.requestHash,
+                      connectionId: claims.connectionId,
+                      status: 'settled',
+                      failureCode: { not: null }
+                    }
+                  })
+                : null
             if (
-              body.stage === 'output' &&
-              fingerprint(retained) !== body.dataHash
+              namespace.retiredAt ||
+              namespace.actorId !== claims.subject ||
+              namespace.clientId !== claims.clientId
             )
               throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-            await settle('settled')
-            return operationResult.parse(retained)
-          }
-          if (!config.editsEnabled)
-            throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-          if (
-            !journeyAcl(Action.Update, journey, {
-              id: claims.subject
-            } as Parameters<typeof journeyAcl>[2])
-          )
-            throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-          if (operation.tool === 'journey_history')
-            throw new Error('VALIDATION_FAILED')
-          try {
-            await lockDraftJourneyRevision(
-              tx,
-              journey.id,
-              operation.input.expectedRevision
-            )
-          } catch (error) {
-            if (!(error instanceof GraphQLError)) throw error
-            const failure = z
-              .enum(['REVISION_CONFLICT', 'NOT_EDITABLE'])
-              .safeParse(error.extensions.code)
-            if (!failure.success) throw error
-            return reject(failure.data)
-          }
-          const changes: ContentInverse[] = []
-          const plans: ContentPlan[] = []
-          let idMap: Record<string, string> = {}
-          let restoredEntry:
-            | Awaited<ReturnType<typeof historyEntries>>[number]
-            | undefined
-          if (
-            operation.tool === 'journey_undo' ||
-            operation.tool === 'journey_redo'
-          ) {
-            const entries = await historyEntries(
-              tx,
-              namespace.id,
-              journey.id,
-              claims.consentHistoryGeneration
-            )
-            const direction =
-              operation.tool === 'journey_undo' ? 'undo' : 'redo'
-            restoredEntry =
-              direction === 'undo'
-                ? [...entries].reverse().find((entry) => !entry.undone)
-                : entries.find((entry) => entry.undone)
+            await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${resource.id} FOR NO KEY UPDATE`
+            const journey = await authorizedJourney(tx)
+            const prior =
+              operation.tool === 'journey_history'
+                ? null
+                : await tx.mcpEditOperation.findFirst({
+                    where: {
+                      namespaceId: namespace.id,
+                      ...(operation.tool !== 'journey_operation_get'
+                        ? { idempotencyKey: operation.input.idempotencyKey }
+                        : operation.input.operationId
+                          ? { id: operation.input.operationId }
+                          : { idempotencyKey: operation.input.idempotencyKey })
+                    }
+                  })
+            const settle = async (status: 'committed' | 'settled') => {
+              if (preflight || !executionId) return
+              await tx.mcpEditExecution.update({
+                where: { id: executionId },
+                data: {
+                  status,
+                  operationId: context.operationId,
+                  completedAt: await editDatabaseTime(tx, hooks.now)
+                }
+              })
+            }
+            const reject = async (
+              code: (typeof privateOperationErrorCodes)[number]
+            ) => {
+              if (!executionId) throw new Error(code)
+              if (preflight)
+                return operationFailure.parse({
+                  contractVersion: '1',
+                  kind: 'operation_failure',
+                  code
+                })
+              await tx.mcpEditExecution.update({
+                where: { id: executionId },
+                data: {
+                  status: 'settled',
+                  failureCode: code,
+                  completedAt: await editDatabaseTime(tx, hooks.now)
+                }
+              })
+              return operationFailure.parse({
+                contractVersion: '1',
+                kind: 'operation_failure',
+                code
+              })
+            }
             if (
-              !restoredEntry ||
-              !entries.some((entry) => entry.id === operation.input.entryId)
+              (operation.tool === 'journey_undo' ||
+                operation.tool === 'journey_redo') &&
+              !responseWitness &&
+              journey.status !== 'draft'
             )
-              return reject('HISTORY_UNAVAILABLE')
-            if (restoredEntry.id !== operation.input.entryId)
-              return reject('HISTORY_CONFLICT')
+              return reject('NOT_EDITABLE')
+            if (operation.tool === 'journey_history' && !responseWitness) {
+              if (journey.status !== 'draft') return reject('NOT_EDITABLE')
+              const entries = await historyEntries(
+                tx,
+                namespace.id,
+                journey.id,
+                claims.consentHistoryGeneration
+              )
+              const description = describeHistory(
+                journey.id,
+                await readJourneyRevision(tx, journey.id),
+                entries,
+                Boolean(
+                  config.editsEnabled &&
+                    claims.mode === 'edit' &&
+                    journeyAcl(Action.Update, journey, {
+                      id: claims.subject
+                    } as Parameters<typeof journeyAcl>[2])
+                )
+              )
+              if (
+                body.stage === 'output' &&
+                fingerprint(description) !== body.dataHash
+              )
+                throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+              await settle('settled')
+              return description
+            }
+            if (
+              prior ||
+              operation.tool === 'journey_operation_get' ||
+              body.stage === 'output'
+            ) {
+              const now = await editDatabaseTime(tx, hooks.now)
+              let retained: OperationResult
+              if (responseWitness) {
+                retained = operationFailure.parse({
+                  contractVersion: '1',
+                  kind: 'operation_failure',
+                  code: responseWitness.failureCode
+                })
+              } else if (!prior || prior.journeyId !== journey.id) {
+                retained = {
+                  contractVersion: '1',
+                  kind: 'operation_failure',
+                  code: 'RESULT_UNAVAILABLE'
+                }
+              } else if (
+                isContentWrite(operation.tool) &&
+                prior.payloadHash !== payloadHash
+              ) {
+                retained = {
+                  contractVersion: '1',
+                  kind: 'operation_failure',
+                  code: 'IDEMPOTENCY_KEY_REUSED'
+                }
+              } else if (
+                prior.resultExpiresAt <= now ||
+                prior.result === null
+              ) {
+                retained = {
+                  contractVersion: '1',
+                  kind: 'operation_failure',
+                  code: 'RESULT_EXPIRED'
+                }
+              } else {
+                retained = operationReceipt.parse(prior.result)
+              }
+              context.operationId = prior?.id
+              if (
+                body.stage === 'output' &&
+                fingerprint(retained) !== body.dataHash
+              )
+                throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+              await settle('settled')
+              return operationResult.parse(retained)
+            }
+            if (!config.editsEnabled)
+              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+            if (
+              !journeyAcl(Action.Update, journey, {
+                id: claims.subject
+              } as Parameters<typeof journeyAcl>[2])
+            )
+              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+            if (operation.tool === 'journey_history')
+              throw new Error('VALIDATION_FAILED')
             try {
-              plans.push(
-                ...(await planHistory(
-                  tx,
-                  journey.id,
-                  restoredEntry.changes,
-                  direction,
-                  canEditChat
-                ))
+              await lockDraftJourneyRevision(
+                tx,
+                journey.id,
+                operation.input.expectedRevision
               )
             } catch (error) {
+              if (!(error instanceof GraphQLError)) throw error
+              const failure = z
+                .enum(['REVISION_CONFLICT', 'NOT_EDITABLE'])
+                .safeParse(error.extensions.code)
+              if (!failure.success) throw error
+              return reject(failure.data)
+            }
+            const changes: ContentInverse[] = []
+            const plans: ContentPlan[] = []
+            let idMap: Record<string, string> = {}
+            let restoredEntry:
+              | Awaited<ReturnType<typeof historyEntries>>[number]
+              | undefined
+            if (
+              operation.tool === 'journey_undo' ||
+              operation.tool === 'journey_redo'
+            ) {
+              const entries = await historyEntries(
+                tx,
+                namespace.id,
+                journey.id,
+                claims.consentHistoryGeneration
+              )
+              const direction =
+                operation.tool === 'journey_undo' ? 'undo' : 'redo'
+              restoredEntry =
+                direction === 'undo'
+                  ? [...entries].reverse().find((entry) => !entry.undone)
+                  : entries.find((entry) => entry.undone)
               if (
-                error instanceof Error &&
-                (error.message === 'HISTORY_CONFLICT' ||
-                  error.message === 'HISTORY_UNAVAILABLE')
+                !restoredEntry ||
+                !entries.some((entry) => entry.id === operation.input.entryId)
               )
-                return reject(error.message)
-              throw error
-            }
-          }
-          if (operation.tool === 'journey_edit') {
-            const planned = await planContent(
-              tx,
-              journey.id,
-              operation.input.commands,
-              canEditChat
-            )
-            plans.push(...planned.plans)
-            idMap = planned.idMap
-          }
-          needsChatGate =
-            plans.some((plan) => plan.gate === 'aiChatEditor') ||
-            (operation.tool === 'journey_edit' && requiresChat)
-          context.operationId = randomUUID()
-          await accept()
-          for (const plan of plans) {
-            if (plan.create) {
-              await tx.block.create({ data: plan.create })
-              if (plan.create.typename === 'IconBlock')
-                await hooks.checkpoint?.('after_child', context)
-            } else if (plan.patch) {
-              await tx.block.update({
-                where: { id: plan.blockId },
-                data: plan.patch
-              })
-            }
-            if (plan.inverse) changes.push(plan.inverse)
-            if (plan.captureCreated) {
-              const blocks = []
-              for (const id of plan.captureCreated.ids) {
-                const block = await tx.block.findUniqueOrThrow({
-                  where: { id, journeyId: journey.id }
-                })
-                blocks.push({ id, state: createdState(block) })
+                return reject('HISTORY_UNAVAILABLE')
+              if (restoredEntry.id !== operation.input.entryId)
+                return reject('HISTORY_CONFLICT')
+              try {
+                plans.push(
+                  ...(await planHistory(
+                    tx,
+                    journey.id,
+                    restoredEntry.changes,
+                    direction,
+                    canEditChat
+                  ))
+                )
+              } catch (error) {
+                if (
+                  error instanceof Error &&
+                  (error.message === 'HISTORY_CONFLICT' ||
+                    error.message === 'HISTORY_UNAVAILABLE')
+                )
+                  return reject(error.message)
+                throw error
               }
-              changes.push(
-                createdInverse.parse({
-                  type: 'content_created',
-                  parent: plan.captureCreated.parent,
-                  blocks
-                })
-              )
             }
-          }
-          await hooks.checkpoint?.('after_content', context)
-          const revision = await readJourneyRevision(tx, journey.id)
-          await hooks.checkpoint?.('after_revision', context)
-          const completedAt = await editDatabaseTime(tx, hooks.now)
-          const historyId =
-            restoredEntry?.id ?? (changes.length ? randomUUID() : null)
-          const effectIds = plans.length ? [randomUUID()] : []
-          const changedFields = new Map<
-            string,
-            Set<OperationReceipt['changedFields'][number]['fields'][number]>
-          >()
-          for (const plan of plans) {
-            const fields = changedFields.get(plan.blockId) ?? new Set()
-            plan.fields.forEach((field) => fields.add(field))
-            changedFields.set(plan.blockId, fields)
-          }
-          const receipt: OperationReceipt = {
-            contractVersion: '1',
-            status: 'committed',
-            operationId: context.operationId,
-            journeyId: journey.id,
-            adminLink: new URL(
-              `/journeys/${encodeURIComponent(journey.id)}`,
-              config.adminOrigin
-            ).href,
-            committedRevision: revision,
-            kind: 'historical_receipt',
-            completedAt: completedAt.toISOString(),
-            historyId,
-            ...(restoredEntry
-              ? {
-                  historyAction:
-                    operation.tool === 'journey_undo'
-                      ? ('undo' as const)
-                      : ('redo' as const)
+            if (operation.tool === 'journey_edit') {
+              const planned = await planContent(
+                tx,
+                journey.id,
+                operation.input.commands,
+                canEditChat
+              )
+              plans.push(...planned.plans)
+              idMap = planned.idMap
+            }
+            needsChatGate =
+              plans.some((plan) => plan.gate === 'aiChatEditor') ||
+              (operation.tool === 'journey_edit' && requiresChat)
+            context.operationId ??= randomUUID()
+            if (preflight) return null
+            if (needsChatGate && !(await canEditChat()))
+              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+            for (const plan of plans) {
+              if (plan.create) {
+                await tx.block.create({ data: plan.create })
+                if (plan.create.typename === 'IconBlock')
+                  await hooks.checkpoint?.('after_child', context)
+              } else if (plan.patch) {
+                await tx.block.update({
+                  where: { id: plan.blockId },
+                  data: plan.patch
+                })
+              }
+              if (plan.inverse) changes.push(plan.inverse)
+              if (plan.captureCreated) {
+                const blocks = []
+                for (const id of plan.captureCreated.ids) {
+                  const block = await tx.block.findUniqueOrThrow({
+                    where: { id, journeyId: journey.id }
+                  })
+                  blocks.push({ id, state: createdState(block) })
                 }
-              : {}),
-            changedFields: [...changedFields].map(([blockId, fields]) => ({
-              blockId,
-              fields: [...fields]
-            })),
-            idMap,
-            effectIds,
-            warnings: restoredEntry
-              ? [
-                  'Restored recorded content and presentation. This batch has no upload, generation or provider effects.'
-                ]
-              : []
-          }
-          const storedOperation = await tx.mcpEditOperation.create({
-            data: {
-              id: receipt.operationId,
-              namespaceId: namespace.id,
-              idempotencyKey: operation.input.idempotencyKey,
-              payloadHash,
-              journeyId: journey.id,
-              grantVersion: claims.grantVersion,
-              revision,
-              completedAt,
-              resultExpiresAt: new Date(completedAt.getTime() + 30 * 86400000),
-              result: json(receipt)
-            }
-          })
-          await tx.mcpEditAudit.create({
-            data: {
-              namespaceId: namespace.id,
-              journeyId: journey.id,
-              operationId: receipt.operationId,
-              action: operation.tool,
-              occurredAt: completedAt,
-              expiresAt: new Date(completedAt.getTime() + 90 * 86400000)
-            }
-          })
-          await hooks.checkpoint?.('after_receipt', context)
-          if (restoredEntry) {
-            await tx.mcpEditHistory.update({
-              where: { id: restoredEntry.id },
-              data: { undone: operation.tool === 'journey_undo' }
-            })
-          } else {
-            await tx.mcpEditHistory.deleteMany({
-              where: {
-                namespaceId: namespace.id,
-                journeyId: journey.id,
-                OR: [
-                  { undone: true },
-                  { historyGeneration: { lt: claims.consentHistoryGeneration } }
-                ]
+                changes.push(
+                  createdInverse.parse({
+                    type: 'content_created',
+                    parent: plan.captureCreated.parent,
+                    blocks
+                  })
+                )
               }
-            })
-          }
-          if (historyId && !restoredEntry) {
-            await tx.mcpEditHistory.create({
+            }
+            await hooks.checkpoint?.('after_content', context)
+            const revision = await readJourneyRevision(tx, journey.id)
+            await hooks.checkpoint?.('after_revision', context)
+            const completedAt = await editDatabaseTime(tx, hooks.now)
+            const historyId =
+              restoredEntry?.id ?? (changes.length ? randomUUID() : null)
+            const effectIds = plans.length ? [randomUUID()] : []
+            const changedFields = new Map<
+              string,
+              Set<OperationReceipt['changedFields'][number]['fields'][number]>
+            >()
+            for (const plan of plans) {
+              const fields = changedFields.get(plan.blockId) ?? new Set()
+              plan.fields.forEach((field) => fields.add(field))
+              changedFields.set(plan.blockId, fields)
+            }
+            const receipt: OperationReceipt = {
+              contractVersion: '1',
+              status: 'committed',
+              operationId: context.operationId,
+              journeyId: journey.id,
+              adminLink: new URL(
+                `/journeys/${encodeURIComponent(journey.id)}`,
+                config.adminOrigin
+              ).href,
+              committedRevision: revision,
+              kind: 'historical_receipt',
+              completedAt: completedAt.toISOString(),
+              historyId,
+              ...(restoredEntry
+                ? {
+                    historyAction:
+                      operation.tool === 'journey_undo'
+                        ? ('undo' as const)
+                        : ('redo' as const)
+                  }
+                : {}),
+              changedFields: [...changedFields].map(([blockId, fields]) => ({
+                blockId,
+                fields: [...fields]
+              })),
+              idMap,
+              effectIds,
+              warnings: restoredEntry
+                ? [
+                    'Restored recorded content and presentation. This batch has no upload, generation or provider effects.'
+                  ]
+                : []
+            }
+            const storedOperation = await tx.mcpEditOperation.create({
               data: {
-                id: historyId,
-                operationId: receipt.operationId,
+                id: receipt.operationId,
                 namespaceId: namespace.id,
+                idempotencyKey: operation.input.idempotencyKey,
+                payloadHash,
                 journeyId: journey.id,
-                changes: json(changes),
-                createdAt: completedAt,
-                expiresAt: new Date(claims.consentExpiresAt + 30 * 86400000),
-                historyGeneration: claims.consentHistoryGeneration
+                grantVersion: claims.grantVersion,
+                revision,
+                completedAt,
+                resultExpiresAt: new Date(
+                  completedAt.getTime() + 30 * 86400000
+                ),
+                result: json(receipt)
               }
             })
-            const retained = await tx.mcpEditHistory.findMany({
-              where: { namespaceId: namespace.id, journeyId: journey.id },
-              orderBy: { ordinal: 'desc' },
-              skip: 5,
-              select: { id: true }
+            await tx.mcpEditAudit.create({
+              data: {
+                namespaceId: namespace.id,
+                journeyId: journey.id,
+                operationId: receipt.operationId,
+                action: operation.tool,
+                occurredAt: completedAt,
+                expiresAt: new Date(completedAt.getTime() + 90 * 86400000)
+              }
             })
-            if (retained.length)
-              await tx.mcpEditHistory.deleteMany({
-                where: { id: { in: retained.map(({ id }) => id) } }
+            await hooks.checkpoint?.('after_receipt', context)
+            if (restoredEntry) {
+              await tx.mcpEditHistory.update({
+                where: { id: restoredEntry.id },
+                data: { undone: operation.tool === 'journey_undo' }
               })
-          }
-          await hooks.checkpoint?.('after_history', context)
-          if (effectIds.length) {
-            await tx.mcpEditEffect.create({
-              data: {
-                id: effectIds[0],
-                operationId: receipt.operationId,
-                namespaceId: namespace.id,
-                journeyId: journey.id,
-                kind: 'journey_content_changed',
-                status: 'recorded',
-                createdAt: completedAt,
-                completedAt
-              }
-            })
-          }
-          await hooks.checkpoint?.('after_outbox', context)
-          await settle('committed')
-          await hooks.checkpoint?.('before_commit', context)
-          return operationReceipt.parse(storedOperation.result)
-        },
-        { isolationLevel: 'ReadCommitted', timeout: 20000 }
-      )
+            } else {
+              await tx.mcpEditHistory.deleteMany({
+                where: {
+                  namespaceId: namespace.id,
+                  journeyId: journey.id,
+                  OR: [
+                    { undone: true },
+                    {
+                      historyGeneration: { lt: claims.consentHistoryGeneration }
+                    }
+                  ]
+                }
+              })
+            }
+            if (historyId && !restoredEntry) {
+              await tx.mcpEditHistory.create({
+                data: {
+                  id: historyId,
+                  operationId: receipt.operationId,
+                  namespaceId: namespace.id,
+                  journeyId: journey.id,
+                  changes: json(changes),
+                  createdAt: completedAt,
+                  expiresAt: new Date(claims.consentExpiresAt + 30 * 86400000),
+                  historyGeneration: claims.consentHistoryGeneration
+                }
+              })
+              const retained = await tx.mcpEditHistory.findMany({
+                where: { namespaceId: namespace.id, journeyId: journey.id },
+                orderBy: { ordinal: 'desc' },
+                skip: 5,
+                select: { id: true }
+              })
+              if (retained.length)
+                await tx.mcpEditHistory.deleteMany({
+                  where: { id: { in: retained.map(({ id }) => id) } }
+                })
+            }
+            await hooks.checkpoint?.('after_history', context)
+            if (effectIds.length) {
+              await tx.mcpEditEffect.create({
+                data: {
+                  id: effectIds[0],
+                  operationId: receipt.operationId,
+                  namespaceId: namespace.id,
+                  journeyId: journey.id,
+                  kind: 'journey_content_changed',
+                  status: 'recorded',
+                  createdAt: completedAt,
+                  completedAt
+                }
+              })
+            }
+            await hooks.checkpoint?.('after_outbox', context)
+            await settle('committed')
+            await hooks.checkpoint?.('before_commit', context)
+            return operationReceipt.parse(storedOperation.result)
+          },
+          { isolationLevel: 'ReadCommitted', timeout: 20000 }
+        )
+      // Validate without holding owning locks across coordinator acceptance, then
+      // repeat the checks under locks so concurrent Admin changes still win.
+      await execute(true)
+      await hooks.checkpoint?.('before_accept', context)
+      if (needsChatGate && !(await canEditChat()))
+        throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+      await authority('accept', { credential, permitId })
+      await hooks.checkpoint?.('after_accept', context)
+      const result = await execute(false)
+      if (!result) throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
       await hooks.checkpoint?.('after_commit', context)
       if (result.kind === 'operation_failure')
         await authority('deny', { credential, permitId })
