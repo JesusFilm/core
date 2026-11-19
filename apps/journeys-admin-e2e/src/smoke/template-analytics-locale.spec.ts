@@ -132,6 +132,9 @@ for (const { locale, placeholder, from, to } of locales) {
 
       const journeyPage = new JourneyPage(page)
       const title = `First journey ${Date.now()} ${locale}`
+      const card = page
+        .locator('div[aria-label="journey-card"]')
+        .filter({ hasText: title })
       let templateId: string | undefined
       try {
         await journeyPage.clickCreateCustomJourney()
@@ -165,9 +168,6 @@ for (const { locale, placeholder, from, to } of locales) {
         await expect(
           page.getByRole('tab', { name: 'Team Templates', exact: true })
         ).toHaveAttribute('aria-selected', 'true')
-        const card = page
-          .locator('div[aria-label="journey-card"]')
-          .filter({ hasText: title })
         await card
           .getByRole('button', {
             name: 'journey breakdown analytics',
@@ -225,15 +225,32 @@ for (const { locale, placeholder, from, to } of locales) {
           // Make Template removes the duplicate's user ownership, so the normal
           // owner-based E2E sweep will only find the source journey. Trash this
           // run's template explicitly, leaving existing team templates alone.
-          await page.goto(`/journeys/${templateId}`)
-          await journeyPage.clickThreeDotBtnOfCustomJourney()
+          await page.goto('/?type=templates')
+          await expect(card).toHaveAttribute(
+            'data-testid',
+            `JourneyCard-${templateId}`
+          )
+          await card.getByRole('button', { expanded: false }).press('Enter')
           await page
             .getByRole('menuitem', { name: 'Trash', exact: true })
             .click()
           const trash = page.getByRole('dialog', { name: 'Trash Template?' })
-          await trash
-            .getByRole('button', { name: 'Delete', exact: true })
-            .click()
+          const [trashed] = await Promise.all([
+            page.waitForResponse(
+              (response) =>
+                getOperation(response)?.operationName === 'JourneyTrash'
+            ),
+            trash.getByRole('button', { name: 'Delete', exact: true }).click()
+          ])
+          expect(trashed.ok()).toBe(true)
+          const result = (await trashed.json()) as {
+            data?: { journeysTrash: Array<{ id: string; status: string }> }
+            errors?: unknown[]
+          }
+          expect(result.errors).toBeUndefined()
+          expect(result.data?.journeysTrash).toEqual([
+            expect.objectContaining({ id: templateId, status: 'trashed' })
+          ])
           await expect(trash).toBeHidden()
         }
       }
