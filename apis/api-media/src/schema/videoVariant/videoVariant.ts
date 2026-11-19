@@ -22,6 +22,10 @@ import {
   updateParentCollectionLanguages,
   updateVideoAvailableLanguages
 } from '../video/lib/updateAvailableLanguages'
+import {
+  assertSlugNotAliasOfOtherVideo,
+  lockVideoSlug
+} from '../video/lib/videoSlug'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
 import { syncParentLanguage } from '../videoVariantReconciliation/reconcileParentVariants'
@@ -56,6 +60,17 @@ function extractLanguageSlugFromVariantSlug(
   }
 
   return extractedSlug
+}
+
+// A VideoVariant slug is `<videoSlug>/<languageSlug>`. The video-slug prefix
+// is what the VideoSlug alias table reserves on rename, so create/update must
+// check this prefix - not the full variant slug - against that table.
+function extractVideoSlugPrefixFromVariantSlug(
+  variantSlug: string
+): string | null {
+  const lastSlashIndex = variantSlug.lastIndexOf('/')
+  if (lastSlashIndex <= 0) return null
+  return variantSlug.slice(0, lastSlashIndex)
 }
 
 // Helper function to create empty video variant for parent video
@@ -570,6 +585,15 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _parent, { input }) => {
       const publicationIntent = input.published ?? true
+      const videoSlugPrefix = extractVideoSlugPrefixFromVariantSlug(input.slug)
+
+      // Fast-fail pre-check outside any lock, so an obviously-taken slug
+      // doesn't pay for opening a transaction. The authoritative recheck
+      // happens under lock just before the write, below - otherwise a freed
+      // slug (e.g. a video's previous slug, now a VideoSlug alias) could be
+      // claimed here for a different video, silently hijacking that alias.
+      await assertSlugNotAliasOfOtherVideo(videoSlugPrefix, input.videoId)
+
       const hadAnyVariantsForLanguage =
         (await prisma.videoVariant.findFirst({
           where: { languageId: input.languageId },
@@ -578,14 +602,24 @@ builder.mutationFields((t) => ({
 
       let newVariant: PrismaVideoVariant
       try {
-        newVariant = await prisma.videoVariant.create({
-          ...query,
-          data: {
-            ...input,
-            muxVideoId: input.muxVideoId ?? undefined,
-            published: false,
-            version: input.version ?? undefined
+        newVariant = await prisma.$transaction(async (tx) => {
+          if (videoSlugPrefix != null) {
+            await lockVideoSlug(tx, videoSlugPrefix)
+            await assertSlugNotAliasOfOtherVideo(
+              videoSlugPrefix,
+              input.videoId,
+              tx
+            )
           }
+          return await tx.videoVariant.create({
+            ...query,
+            data: {
+              ...input,
+              muxVideoId: input.muxVideoId ?? undefined,
+              published: false,
+              version: input.version ?? undefined
+            }
+          })
         })
       } catch (error) {
         notifyMediaSlackOfOperationFailure({
@@ -723,28 +757,51 @@ builder.mutationFields((t) => ({
             ? false
             : undefined
 
+      const targetVideoId = input.videoId ?? currentVariant.videoId
+      const videoSlugPrefix =
+        input.slug != null
+          ? extractVideoSlugPrefixFromVariantSlug(input.slug)
+          : null
+
+      // Fast-fail pre-check outside any lock, so an obviously-taken slug
+      // doesn't pay for opening a transaction. The authoritative recheck
+      // happens under lock just before the write, below - otherwise a freed
+      // slug (e.g. a video's previous slug, now a VideoSlug alias) could be
+      // claimed here for a different video, silently hijacking that alias.
+      await assertSlugNotAliasOfOtherVideo(videoSlugPrefix, targetVideoId)
+
       let updated: PrismaVideoVariant
       try {
-        updated = await prisma.videoVariant.update({
-          ...query,
-          where: { id: input.id },
-          data: {
-            hls: input.hls ?? undefined,
-            dash: input.dash ?? undefined,
-            share: input.share ?? undefined,
-            duration: input.duration ?? undefined,
-            lengthInMilliseconds: input.lengthInMilliseconds ?? undefined,
-            languageId: input.languageId ?? undefined,
-            slug: input.slug ?? undefined,
-            videoId: input.videoId ?? undefined,
-            edition: input.edition ?? undefined,
-            downloadable: input.downloadable ?? undefined,
-            published: nextPublished,
-            muxVideoId: input.muxVideoId ?? undefined,
-            assetId: input.assetId ?? undefined,
-            version: input.version ?? undefined,
-            brightcoveId: input.brightcoveId ?? undefined
+        updated = await prisma.$transaction(async (tx) => {
+          if (videoSlugPrefix != null) {
+            await lockVideoSlug(tx, videoSlugPrefix)
+            await assertSlugNotAliasOfOtherVideo(
+              videoSlugPrefix,
+              targetVideoId,
+              tx
+            )
           }
+          return await tx.videoVariant.update({
+            ...query,
+            where: { id: input.id },
+            data: {
+              hls: input.hls ?? undefined,
+              dash: input.dash ?? undefined,
+              share: input.share ?? undefined,
+              duration: input.duration ?? undefined,
+              lengthInMilliseconds: input.lengthInMilliseconds ?? undefined,
+              languageId: input.languageId ?? undefined,
+              slug: input.slug ?? undefined,
+              videoId: input.videoId ?? undefined,
+              edition: input.edition ?? undefined,
+              downloadable: input.downloadable ?? undefined,
+              published: nextPublished,
+              muxVideoId: input.muxVideoId ?? undefined,
+              assetId: input.assetId ?? undefined,
+              version: input.version ?? undefined,
+              brightcoveId: input.brightcoveId ?? undefined
+            }
+          })
         })
       } catch (error) {
         notifyMediaSlackOfOperationFailure({

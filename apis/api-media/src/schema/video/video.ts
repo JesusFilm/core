@@ -41,6 +41,11 @@ import {
   updateVideoAvailableLanguages
 } from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
+import {
+  assertSlugNotAliasOfOtherVideo,
+  lockVideo,
+  lockVideoSlug
+} from './lib/videoSlug'
 
 // Helper function to check if video viewing is restricted for the current platform
 function isVideoViewRestricted(
@@ -60,6 +65,21 @@ function isValidClientName(clientName?: string): boolean {
     clientName !== '' &&
     Object.values(PrismaPlatform).includes(clientName as PrismaPlatform)
   )
+}
+
+// A slug-based lookup id is `<videoSlug>/<languageSlug>` (VideoVariant.slug's
+// format). Renaming a video resyncs every variant's slug to the new prefix,
+// so a stale id no longer matches any variant directly - resolve the video
+// slug portion through the VideoSlug alias table instead.
+async function resolveVideoIdBySlugAlias(id: string): Promise<string | null> {
+  const separatorIndex = id.lastIndexOf('/')
+  if (separatorIndex === -1) return null
+  const baseSlug = id.slice(0, separatorIndex)
+  const alias = await prisma.videoSlug.findUnique({
+    where: { value: baseSlug },
+    select: { videoId: true }
+  })
+  return alias?.videoId ?? null
 }
 
 interface Info {
@@ -250,6 +270,18 @@ export const Video = builder.prismaObject('Video', {
       resolve: ({ slug }) => slug ?? '',
       description: 'slug is a permanent link to the video.'
     }),
+    previousSlugs: t.field({
+      type: ['String'],
+      nullable: false,
+      description: 'Former slugs of this video. Redirect them to `slug`.',
+      select: () => ({
+        previousSlugs: {
+          select: { value: true },
+          orderBy: { createdAt: 'desc' }
+        }
+      }),
+      resolve: (video) => video.previousSlugs.map(({ value }) => value)
+    }),
     noIndex: t.exposeBoolean('noIndex'),
     childrenCount: t.relationCount('children', {
       nullable: false,
@@ -351,11 +383,11 @@ export const Video = builder.prismaObject('Video', {
           !isEmpty(variableValueId) &&
           !isEmpty(requestedLanguage)
         ) {
-          const slug = `${video.slug as string}/${requestedLanguage}`
-          return await prisma.videoVariant.findUnique({
+          return await prisma.videoVariant.findFirst({
             ...query,
             where: {
-              slug,
+              videoId: video.id,
+              slug: { endsWith: `/${requestedLanguage}` },
               published: input?.onlyPublished === false ? undefined : true
             }
           })
@@ -505,15 +537,33 @@ builder.queryFields((t) => ({
       })
     },
     resolve: async (query, _parent, { id, idType }) => {
-      return idType === IdTypeShape.slug
-        ? await prisma.video.findFirstOrThrow({
-            ...query,
-            where: { variants: { some: { slug: id } } }
-          })
-        : await prisma.video.findUniqueOrThrow({
-            ...query,
-            where: { id }
-          })
+      if (idType !== IdTypeShape.slug) {
+        return await prisma.video.findUniqueOrThrow({
+          ...query,
+          where: { id }
+        })
+      }
+      try {
+        return await prisma.video.findFirstOrThrow({
+          ...query,
+          where: { variants: { some: { slug: id } } }
+        })
+      } catch (err) {
+        if (
+          !(
+            err instanceof Prisma.PrismaClientKnownRequestError &&
+            err.code === 'P2025'
+          )
+        ) {
+          throw err
+        }
+        const aliasedVideoId = await resolveVideoIdBySlugAlias(id)
+        if (aliasedVideoId == null) throw err
+        return await prisma.video.findUniqueOrThrow({
+          ...query,
+          where: { id: aliasedVideoId }
+        })
+      }
     }
   }),
   adminVideos: t.withAuth({ isPublisher: true }).prismaField({
@@ -556,24 +606,39 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { id, idType }, context) => {
       try {
-        const video =
-          idType === IdTypeShape.slug
-            ? await prisma.video.findFirstOrThrow({
-                ...query,
-                where: {
-                  variants: { some: { slug: id } },
-                  published: true,
-                  availableLanguages: { isEmpty: false }
-                }
-              })
-            : await prisma.video.findUniqueOrThrow({
-                ...query,
-                where: {
-                  id,
-                  published: true,
-                  availableLanguages: { isEmpty: false }
-                }
-              })
+        const publishedFilter = {
+          published: true,
+          availableLanguages: { isEmpty: false }
+        }
+        let video
+        if (idType === IdTypeShape.slug) {
+          try {
+            video = await prisma.video.findFirstOrThrow({
+              ...query,
+              where: { variants: { some: { slug: id } }, ...publishedFilter }
+            })
+          } catch (err) {
+            if (
+              !(
+                err instanceof Prisma.PrismaClientKnownRequestError &&
+                err.code === 'P2025'
+              )
+            ) {
+              throw err
+            }
+            const aliasedVideoId = await resolveVideoIdBySlugAlias(id)
+            if (aliasedVideoId == null) throw err
+            video = await prisma.video.findUniqueOrThrow({
+              ...query,
+              where: { id: aliasedVideoId, ...publishedFilter }
+            })
+          }
+        } else {
+          video = await prisma.video.findUniqueOrThrow({
+            ...query,
+            where: { id, ...publishedFilter }
+          })
+        }
 
         // Check if video viewing is restricted for the current platform
         if (
@@ -662,6 +727,11 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      // Fast-fail pre-check outside any lock, so an obviously-taken slug
+      // doesn't pay for opening a transaction. The authoritative recheck
+      // happens under lock just before the write, below.
+      await assertSlugNotAliasOfOtherVideo(input.slug, input.id)
+
       // Handle child relation synchronization if childIds is provided
       let childRelationData = {}
       if (input.childIds && input.childIds.length > 0) {
@@ -692,9 +762,13 @@ builder.mutationFields((t) => ({
       }
 
       try {
-        const video = await prisma.video.create({
-          ...query,
-          data
+        const video = await prisma.$transaction(async (tx) => {
+          await lockVideoSlug(tx, input.slug)
+          await assertSlugNotAliasOfOtherVideo(input.slug, input.id, tx)
+          return await tx.video.create({
+            ...query,
+            data
+          })
         })
         await enqueueVideoAlgoliaSync(video.id, videoOnlyScope, logger)
 
@@ -737,7 +811,12 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      // Get current video data to check if published status is changing and to prevent slug change after publish
+      // Fast-fail pre-check outside any lock, so an obviously-taken slug
+      // doesn't pay for opening a transaction. The authoritative recheck
+      // happens under lock just before the write, below.
+      await assertSlugNotAliasOfOtherVideo(input.slug, input.id)
+
+      // Get current video data to check if published status is changing and to record the previous slug
       const currentVideo =
         input.published !== undefined ||
         input.slug !== undefined ||
@@ -750,21 +829,16 @@ builder.mutationFields((t) => ({
                 slug: true,
                 restrictTranslations: true,
                 variants: {
-                  where: { published: true },
-                  select: { languageId: true }
+                  select: {
+                    id: true,
+                    slug: true,
+                    languageId: true,
+                    published: true
+                  }
                 }
               }
             })
           : null
-
-      // Prevent changing slug after video has been published
-      if (
-        input.slug != null &&
-        input.slug !== currentVideo?.slug &&
-        currentVideo?.publishedAt != null
-      ) {
-        throw new Error('Cannot change slug after video has been published')
-      }
 
       if (
         input.restrictTranslations === false &&
@@ -828,8 +902,9 @@ builder.mutationFields((t) => ({
           : { id: input.id }
 
       let video
+      let renamedVariantIds: string[] = []
       try {
-        video = await prisma.video.update({
+        const videoUpdateArgs = {
           ...query,
           where: videoWhere,
           data: {
@@ -854,7 +929,76 @@ builder.mutationFields((t) => ({
             ...query.include,
             children: true
           }
-        })
+        } satisfies Prisma.VideoUpdateArgs
+
+        if (input.slug != null) {
+          // Narrowed to a plain `string` so it stays narrowed inside the
+          // transaction closure below - `input.slug` itself widens back to
+          // `string | null | undefined` across the closure boundary.
+          const newSlug = input.slug
+          video = await prisma.$transaction(async (tx) => {
+            // Serialize concurrent renames of this *same* video before
+            // reading anything - see lockVideo's doc comment for why the
+            // slug-value lock below can't do this on its own.
+            await lockVideo(tx, input.id)
+
+            // Re-read the slug (and variants) fresh, now that the lock
+            // above guarantees no concurrent rename of this video can
+            // still be in flight - rather than trusting the `currentVideo`
+            // snapshot taken before any lock was held. Whether a rename is
+            // even needed is also decided from this fresh read, not from
+            // `currentVideo?.slug`: that snapshot is taken before any lock
+            // is held, so a concurrent rename could land between the
+            // snapshot and this transaction and make the snapshot stale,
+            // which previously let this call fall through to the unlocked
+            // `prisma.video.update` branch below with its own `input.slug`
+            // still writing `Video.slug` directly - no lock, no alias
+            // bookkeeping, no recheck (see PR #9978 review thread).
+            const fresh = await tx.video.findUnique({
+              where: { id: input.id },
+              select: {
+                slug: true,
+                variants: { select: { id: true, slug: true } }
+              }
+            })
+            const lockKeys = Array.from(
+              new Set(compact([newSlug, fresh?.slug]))
+            ).sort()
+            for (const slug of lockKeys) {
+              await lockVideoSlug(tx, slug)
+            }
+            await assertSlugNotAliasOfOtherVideo(newSlug, input.id, tx)
+
+            const previousSlug = fresh?.slug
+            if (previousSlug != null && newSlug !== previousSlug) {
+              // VideoVariant.slug is `${video.slug}/${languageSlug}`, set once at
+              // variant-creation time and never recomputed from the parent. Renaming
+              // the video must resync every variant's slug prefix so the new slug is
+              // actually reachable through the variant-based idType:slug lookup.
+              const renamedVariants = (fresh?.variants ?? []).filter(
+                (variant) => variant.slug.startsWith(`${previousSlug}/`)
+              )
+              renamedVariantIds = renamedVariants.map((variant) => variant.id)
+              await tx.videoSlug.create({
+                data: { value: previousSlug, videoId: input.id }
+              })
+              await tx.videoSlug.deleteMany({
+                where: { value: newSlug, videoId: input.id }
+              })
+              for (const variant of renamedVariants) {
+                await tx.videoVariant.update({
+                  where: { id: variant.id },
+                  data: {
+                    slug: `${newSlug}${variant.slug.slice(previousSlug.length)}`
+                  }
+                })
+              }
+            }
+            return await tx.video.update(videoUpdateArgs)
+          })
+        } else {
+          video = await prisma.video.update(videoUpdateArgs)
+        }
       } catch (e) {
         if (
           input.restrictTranslations === false &&
@@ -865,6 +1009,30 @@ builder.mutationFields((t) => ({
           throw new Error(
             'Translation restriction cannot be disabled once enabled',
             { cause: e }
+          )
+        }
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002'
+        ) {
+          // This transaction only ever writes slug-related uniques:
+          // VideoSlug.value, VideoVariant.slug, and Video.slug - Postgres
+          // reports the bare column name, so VideoSlug's is 'value', not
+          // 'slug'. Missing target info is treated as slug-related too, to
+          // keep matching the pre-check's "Video slug already exists" rather
+          // than regressing to a raw 500 for an unmapped P2002.
+          const target = e.meta?.target as string[] | undefined
+          const isSlugConstraint =
+            target == null ||
+            target.some((field) => field === 'slug' || field === 'value')
+          if (isSlugConstraint) {
+            throw new NotUniqueError('Video slug already exists', [
+              { path: ['input', 'slug'], value: input.slug ?? '' }
+            ])
+          }
+          throw new NotUniqueError(
+            'Video with this information already exists',
+            [{ path: ['input'], value: 'duplicate' }]
           )
         }
         throw e
@@ -912,13 +1080,12 @@ builder.mutationFields((t) => ({
         input.published !== undefined &&
         currentVideo.published !== input.published
 
-      if (
-        publishedChanged &&
-        currentVideo &&
-        currentVideo.variants.length > 0
-      ) {
+      const publishedVariants =
+        currentVideo?.variants.filter((variant) => variant.published) ?? []
+
+      if (publishedChanged && publishedVariants.length > 0) {
         try {
-          for (const variant of currentVideo.variants) {
+          for (const variant of publishedVariants) {
             if (input.published) {
               // Video was unpublished and is now published - create parent variants for all published variants
               await handleParentVariantCreation(input.id, variant.languageId)
@@ -946,7 +1113,7 @@ builder.mutationFields((t) => ({
           syncVideoRecord: true,
           syncAllVariants: variantEmbeddedFieldsChanged,
           syncPublishedFlag: publishedChanged,
-          dirtyVariantIds: [],
+          dirtyVariantIds: renamedVariantIds,
           deletedVariantIds: []
         },
         logger
