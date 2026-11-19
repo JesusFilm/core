@@ -10,6 +10,10 @@ import {
   within
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { SnackbarProvider } from 'notistack'
+
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import {
   GetTemplateFamilyStatsBreakdown,
@@ -479,20 +483,32 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         JourneyStatus.archived
       ]
       const link = new MockLink([
+        createLabelsMock(),
         { ...createMock(status), maxUsageCount: 2 },
         createMock(status, '2026-05-04,2026-05-06')
       ])
       const request = vi.spyOn(link, 'request')
       render(
-        <MockedProvider link={link}>
-          <TemplateBreakdownAnalyticsDialog
-            journeyId={journeyId}
-            open
-            handleClose={mockHandleClose}
-          />
-        </MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider link={link}>
+            <ThemeProvider
+              themeName={ThemeName.journeysAdmin}
+              themeMode={ThemeMode.light}
+            >
+              <TemplateBreakdownAnalyticsDialog
+                journeyId={journeyId}
+                open
+                handleClose={mockHandleClose}
+              />
+            </ThemeProvider>
+          </MockedProvider>
+        </SnackbarProvider>
       )
-      return request
+      return () =>
+        request.mock.calls.filter(
+          ([operation]) =>
+            operation.operationName === 'GetTemplateFamilyStatsBreakdown'
+        )
     }
 
     it('shows matching hints, parses typed dates, and resets to all time', async () => {
@@ -531,19 +547,17 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
         }
       }
       await screen.findByTestId('template-breakdown-analytics-table')
-      expect(request).toHaveBeenCalledTimes(2)
+      expect(request()).toHaveLength(2)
       expect(screen.getByLabelText('From', { selector: 'input' })).toHaveValue(
         fromValue
       )
       expect(screen.getByLabelText('To', { selector: 'input' })).toHaveValue(
         toValue
       )
-      expect(request.mock.calls[1][0].variables.where.date).toBe(
-        '2026-05-04,2026-05-06'
-      )
+      expect(request()[1][0].variables.where.date).toBe('2026-05-04,2026-05-06')
       await user.click(screen.getByRole('button', { name: 'Reset date range' }))
       await screen.findByTestId('template-breakdown-analytics-table')
-      expect(request.mock.calls[2][0].variables.where).toEqual({
+      expect(request()[2][0].variables.where).toEqual({
         property: 'event:props:templateKey',
         period: 'all'
       })
@@ -564,10 +578,8 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       await user.click(screen.getByRole('gridcell', { name: '6' }))
       await user.click(screen.getByRole('button', { name: 'OK' }))
       await screen.findByTestId('template-breakdown-analytics-table')
-      expect(request).toHaveBeenCalledTimes(2)
-      expect(request.mock.calls[1][0].variables.where.date).toBe(
-        '2026-05-04,2026-05-06'
-      )
+      expect(request()).toHaveLength(2)
+      expect(request()[1][0].variables.where.date).toBe('2026-05-04,2026-05-06')
       expect(screen.getByLabelText('From', { selector: 'input' })).toHaveValue(
         fromValue
       )
