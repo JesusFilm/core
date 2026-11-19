@@ -25,12 +25,18 @@ validation, the actual patch, inverse fields and fixtures. Later capabilities mu
 extend that registry with their own owning checks, dependencies, effects and tests.
 They cannot bypass the atomic save by forwarding independent GraphQL mutations.
 
-Gate capture precedes authoritative rights reads. The owning participant locks
-its durable execution record, the connection's operation namespace and the journey
-before checking current ACLs, ordinary-draft state and the expected shared revision.
-The existing coordinator finally accepts the exact request after those waits,
-using its current grant, gate generations, Firebase eligibility and database clock.
-No coordinator transaction waits for an owning database or a provider.
+Gate capture precedes authoritative rights reads. The owning participant checks
+current ACLs, then obtains final acceptance from the coordinator before opening
+the content transaction. Acceptance checks the current grant, gate generations,
+Firebase eligibility and database clock. The content transaction locks its durable
+execution record, the connection's operation namespace and the journey, then
+rechecks the execution fence, namespace, current ACLs, ordinary-draft state and
+expected shared revision. A competing Admin save or publication during the HTTP
+round trip can complete; the later local checks reject a stale or published edit.
+Recovery can fence an accepted executor before it obtains its local lock. Supported
+permission changes close admissions and drain accepted work before their owning
+mutation. No content transaction waits for coordinator HTTP, and no coordinator
+transaction waits for an owning database or a provider.
 
 Content, shared revision, operation marker, historical receipt, inverse and durable
 effect record commit in one owning transaction. Provider calls do not belong in

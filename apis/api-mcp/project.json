@@ -14,24 +14,34 @@
     },
     "serve": {
       "executor": "nx:run-commands",
-      "options": { "command": "bash apis/api-mcp/start-local.sh serve" }
+      "options": {
+        "command": "bash apis/api-mcp/start-local.sh serve"
+      }
     },
     "start": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
-      "options": { "command": "bash apis/api-mcp/start-local.sh start" }
+      "options": {
+        "command": "bash apis/api-mcp/start-local.sh start"
+      }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "options": { "lintFilePatterns": ["apis/api-mcp/**/*.ts"] }
+      "options": {
+        "lintFilePatterns": ["apis/api-mcp/**/*.ts"]
+      }
     },
     "type-check": {
       "executor": "nx:run-commands",
-      "options": { "command": "pnpm tsc7 -p apis/api-mcp/tsconfig.ts7.json" }
+      "options": {
+        "command": "pnpm tsc7 -p apis/api-mcp/tsconfig.ts7.json"
+      }
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "options": { "configFile": "apis/api-mcp/vitest.config.mts" }
+      "options": {
+        "configFile": "apis/api-mcp/vitest.config.mts"
+      }
     },
     "codecov": {
       "executor": "nx:run-commands",
