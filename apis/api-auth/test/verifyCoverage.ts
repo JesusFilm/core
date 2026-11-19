@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '../../..')
@@ -40,10 +40,21 @@ const required: Record<string, string[]> = {
     'await tx.agentConnection.update(',
     "await audit(tx, 'renewal', 'allowed'"
   ],
+  'apis/api-journeys/src/lib/mcpReadSettlement.ts': [
+    'const pending = await db.mcpReadExecution.findMany',
+    'await tx.mcpReadExecution.updateMany',
+    'await postJson(',
+    'await db.mcpReadExecution.update(',
+    'failed++'
+  ],
   'apis/api-journeys/src/lib/mcpReads.ts': [
     'const data = await snapshot(',
     "await authority('accept',",
-    "await authority('settle',"
+    'await db.mcpReadExecution.create(',
+    'const execution = await tx.mcpReadExecution.findUniqueOrThrow',
+    'await tx.mcpReadExecution.update(',
+    'await reconcileJourneyReads(db, config, permitId)',
+    'await reconcileJourneyReads(db, config, readPermit).catch('
   ],
   'apis/api-gateway/src/mcpReads.ts': [
     'const response = await fetch(config.ownerUrl,'
@@ -51,8 +62,12 @@ const required: Record<string, string[]> = {
   'apis/api-mcp/src/reads.ts': ['releases.push(']
 }
 for (const [file, anchors] of Object.entries(required)) {
-  // Renewal is added by this PR and cannot execute in its pre-renewal base.
-  if (baseline && file === 'apis/api-auth/src/connections.ts') continue
+  // The actual predecessor can predate renewal or withdrawal. Never exempt
+  // an implemented predecessor participant from instrumentation checks.
+  if (baseline && !existsSync(resolve(root, file))) {
+    console.log(`Baseline predates ${file}`)
+    continue
+  }
   assert(
     cobertura.includes(`filename="${file}"`),
     `Missing repository-relative Codecov path: ${file}`
@@ -60,9 +75,17 @@ for (const [file, anchors] of Object.entries(required)) {
   const absolute = resolve(root, file)
   const entry = coverage[absolute]
   assert(entry, `Missing owning-service coverage: ${file}`)
+  assert(
+    Object.values(entry.s).some((hits) => hits > 0),
+    `No execution hits in ${file}`
+  )
   const lines = readFileSync(absolute, 'utf8').split('\n')
   for (const anchor of anchors) {
     const line = lines.findIndex((value) => value.includes(anchor)) + 1
+    if (baseline && line === 0) {
+      console.log(`Baseline predates source anchor in ${file}: ${anchor}`)
+      continue
+    }
     assert(line > 0, `Missing source anchor: ${anchor}`)
     assert(
       Object.entries(entry.statementMap).some(

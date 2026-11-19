@@ -20,7 +20,7 @@ Restart connection authorization from the agent. The normal consent page offers 
 
 Renewal updates only consent/credential state and adds minimal audit events. It does not reset read permits, usage counters, completed-result/audit timestamps or job state, and does not touch saved content or media. Persistent edit/history participants do not exist in this slice. Their owners must verify the retained-history cutoff, cleanup races and exact historical replay against this stable connection identity before enabling those capabilities.
 
-Access changes and explicit disconnect remain with #10575. There are no partially active controls for them on this page. Those operations must share `AgentConnection.version`, gate generations and the deterministic lock order, and close admission before draining accepted participants.
+Access changes and explicit disconnect are implemented by #10575. See [WITHDRAWAL.md](WITHDRAWAL.md) for owner approval, durable Pending/Complete changes, real read/output participants and recovery. They share `AgentConnection.version`, gate generations and the deterministic lock order, and close admission before draining accepted participants.
 
 ## Reproduce local verification
 

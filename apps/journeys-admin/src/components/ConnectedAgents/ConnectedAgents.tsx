@@ -14,17 +14,21 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../../libs/auth'
 import { getFirebaseAuth } from '../../libs/auth/firebase'
 
+import { ConnectionAccess } from './ConnectionAccess'
+
 interface Connection {
   id: string
   clientId: string
   mode: 'view' | 'edit'
   status: 'active' | 'expired' | 'pending' | 'disconnected'
   version: number
+  change?: { id: string; kind: string; status: 'pending' | 'complete' } | null
   credentialsPending?: boolean
   expiresAt: string
   journeys: Array<{ id: string; title: string | null }>
 }
 interface ConnectionPage {
+  titlesUnavailable?: boolean
   csrf: string
   connections: Connection[]
   nextCursor: string | null
@@ -44,6 +48,9 @@ export function ConnectedAgents({ issuer }: { issuer: string }): ReactElement {
   const [page, setPage] = useState<ConnectionPage>()
   const [owner, setOwner] = useState<string>()
   const [selected, setSelected] = useState<Connection>()
+  const [action, setAction] = useState<'renew' | 'access' | 'disconnect'>(
+    'renew'
+  )
   const [duration, setDuration] = useState('week')
   const [review, setReview] = useState<RenewalReview>()
   const [busy, setBusy] = useState(false)
@@ -203,6 +210,13 @@ export function ConnectedAgents({ issuer }: { issuer: string }): ReactElement {
       </Button>
       {page && owner === userId && (
         <>
+          {page.titlesUnavailable && (
+            <Alert severity="warning">
+              {t(
+                'Journey titles are unavailable. You can still disconnect a connection.'
+              )}
+            </Alert>
+          )}
           {page.connections.length === 0 && (
             <Typography>{t('You have no connected agents.')}</Typography>
           )}
@@ -224,6 +238,38 @@ export function ConnectedAgents({ issuer }: { issuer: string }): ReactElement {
                       : t('View and edit drafts')}
                   </Typography>
                   <Typography>{statuses[connection.status]}</Typography>
+                  {connection.change && (
+                    <Typography>
+                      {connection.change.status === 'pending'
+                        ? t(
+                            'Pending: new work is blocked while accepted operations settle. Refresh to check completion.'
+                          )
+                        : t('Change complete')}
+                    </Typography>
+                  )}
+                  {(['access', 'disconnect'] as const).map((nextAction) => (
+                    <Button
+                      key={nextAction}
+                      disabled={
+                        busy ||
+                        connection.status === 'pending' ||
+                        connection.status === 'disconnected'
+                      }
+                      onClick={() => {
+                        setSelected(connection)
+                        setAction(nextAction)
+                        setReview(undefined)
+                      }}
+                    >
+                      {nextAction === 'access'
+                        ? t('Change access for connection {{id}}', {
+                            id: connection.id
+                          })
+                        : t('Disconnect connection {{id}}', {
+                            id: connection.id
+                          })}
+                    </Button>
+                  ))}
                   {connection.credentialsPending && (
                     <Typography>
                       {t(
@@ -252,6 +298,7 @@ export function ConnectedAgents({ issuer }: { issuer: string }): ReactElement {
                     }
                     onClick={() => {
                       setSelected(connection)
+                      setAction('renew')
                       setReview(undefined)
                       setDuration('week')
                       setRenewedExpiry(undefined)
@@ -271,7 +318,18 @@ export function ConnectedAgents({ issuer }: { issuer: string }): ReactElement {
               {t('Load more connections')}
             </Button>
           )}
-          {selected && (
+          {selected && action !== 'renew' && (
+            <ConnectionAccess
+              key={selected.id + page.csrf + action}
+              connection={selected}
+              csrf={page.csrf}
+              disconnect={action === 'disconnect'}
+              send={send}
+              onClose={() => setSelected(undefined)}
+              onComplete={() => handleRefresh()}
+            />
+          )}
+          {selected && action === 'renew' && (
             <Stack spacing={2}>
               <Typography variant="h5">
                 {t('Renew connection {{id}}', { id: selected.id })}

@@ -6,6 +6,7 @@ import { type Adapter, type AdapterPayload, errors } from 'oidc-provider'
 import { type Prisma, type PrismaClient } from '@core/prisma/auth/client'
 
 import { type AuthConfig, environmentBinding } from './config'
+import { beginConnectionChange, reconcileConnectionChanges } from './withdrawal'
 
 export type Database = PrismaClient
 export type Transaction = Prisma.TransactionClient
@@ -55,7 +56,7 @@ export async function assertRuntimeRole(db: Database): Promise<void> {
     throw new Error('Restricted runtime database role required')
   const [permissions] = await db.$queryRaw<Array<{ allowed: boolean }>>`
     SELECT bool_and(has_table_privilege(current_user, quote_ident(name), privilege)) AS allowed
-    FROM unnest(ARRAY['AuthEnvironment', 'OAuthArtifact', 'AgentConnection', 'ConsentReview', 'AgentRenewalReview', 'AuthorizationGate', 'SecurityAudit', 'ReadPermit']) AS tables(name)
+    FROM unnest(ARRAY['AuthEnvironment', 'OAuthArtifact', 'AgentConnection', 'ConsentReview', 'AgentRenewalReview', 'AuthorizationGate', 'SecurityAudit', 'ReadPermit', 'AgentAccessReview', 'ConnectionChange', 'ConnectionHistoryPurge', 'ReadExecutor']) AS tables(name)
     CROSS JOIN unnest(ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE']) AS privileges(privilege)`
   if (!permissions?.allowed)
     throw new Error('Auth storage permissions unavailable')
@@ -279,13 +280,28 @@ export function adapterFactory(
         await db.oAuthArtifact.deleteMany({ where: { model, id } })
       },
       async revokeByGrantId(grantId) {
-        await db.$transaction(async (transaction) => {
-          await transaction.agentConnection.updateMany({
-            where: { grantId },
-            data: { revokedAt: await databaseTime(transaction) }
-          })
-          await transaction.oAuthArtifact.deleteMany({ where: { grantId } })
+        const connection = await root.agentConnection.findUnique({
+          where: { grantId }
         })
+        if (!connection || connection.revokedAt) {
+          await db.oAuthArtifact.deleteMany({ where: { grantId } })
+          return
+        }
+        const gates = await captureGates(root, [
+          `account:${connection.userId}`,
+          `connection:${connection.id}`
+        ])
+        await root.$transaction(async (tx) => {
+          await lockGates(tx, gates)
+          await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR UPDATE`
+          const current = await tx.agentConnection.findUniqueOrThrow({
+            where: { id: connection.id }
+          })
+          if (current.version !== connection.version || current.revokedAt)
+            throw new AuthorizationChanged('Connection changed')
+          await beginConnectionChange(tx, current, undefined)
+        })
+        await reconcileConnectionChanges(root)
       }
     }
   }
@@ -336,6 +352,8 @@ export type AuditAction =
   | 'output_accept'
   | 'connection_view'
   | 'renewal'
+  | 'access_change'
+  | 'disconnect'
 export async function audit(
   db: Database | Transaction,
   action: AuditAction,
@@ -378,6 +396,7 @@ export async function cleanup(db: Database): Promise<void> {
   })
   await db.securityAudit.deleteMany({ where: { expiresAt: { lte: now } } })
   await db.consentReview.deleteMany({ where: { validUntil: { lte: now } } })
+  await db.agentAccessReview.deleteMany({ where: { validUntil: { lte: now } } })
   await db.agentRenewalReview.deleteMany({
     where: { validUntil: { lte: now } }
   })

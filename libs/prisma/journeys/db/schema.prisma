@@ -508,6 +508,17 @@ model UserRole {
   @@index(userId)
 }
 
+model McpReadExecution {
+  id          String   @id
+  executorId  String
+  status      String   @default("prepared")
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+  reportedAt  DateTime?
+
+  @@index([reportedAt, createdAt])
+}
+
 model JourneyProfile {
   id                           String   @id @default(uuid())
   userId                       String   @unique

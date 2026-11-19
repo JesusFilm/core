@@ -96,49 +96,31 @@ try {
     READS_TEST_AUTH_DATABASE_URL: url(databases[1], true),
     READS_TEST_JOURNEYS_DATABASE_URL: url(databases[2])
   }
-  if (baseline) {
-    const configs = spawnSync(
-      'git',
-      ['ls-files', '**/vitest.config.mts', '**/vitest.config.ts'],
-      { cwd: root, encoding: 'utf8' }
-    )
-    if (configs.error) throw configs.error
-    if (configs.status !== 0 || !configs.stdout.trim())
-      throw new Error('Could not enumerate baseline Vitest projects')
-    for (const config of configs.stdout.trim().split('\n'))
-      run(
-        [
-          'exec',
-          'vitest',
-          'run',
-          '--testTimeout=20000',
-          '--root',
-          resolve(root, dirname(config)),
-          '--config',
-          resolve(root, config),
-          ...(config === 'apis/api-auth/vitest.config.mts'
-            ? ['--maxWorkers=1']
-            : [])
-        ],
-        testEnvironment
-      )
-  } else {
+  const configs = spawnSync(
+    'git',
+    ['ls-files', '**/vitest.config.mts', '**/vitest.config.ts'],
+    { cwd: root, encoding: 'utf8' }
+  )
+  if (configs.error) throw configs.error
+  if (configs.status !== 0 || !configs.stdout.trim())
+    throw new Error('Could not enumerate coverage Vitest projects')
+  for (const config of configs.stdout.trim().split('\n'))
     run(
       [
         'exec',
         'vitest',
         'run',
+        '--testTimeout=20000',
+        '--root',
+        resolve(root, dirname(config)),
         '--config',
-        'apis/api-auth/vitest.config.mts',
-        '--maxWorkers=1',
-        '--coverage',
-        '--reporter=default',
-        '--reporter=json',
-        `--outputFile=${resolve(root, 'coverage/apis/api-auth/tests.json')}`
+        resolve(root, config),
+        config === 'apis/api-auth/vitest.config.mts'
+          ? '--maxWorkers=1'
+          : '--maxWorkers=4'
       ],
       testEnvironment
     )
-  }
   run([
     'exec',
     'tsx',

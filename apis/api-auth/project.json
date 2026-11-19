@@ -52,6 +52,12 @@
       "options": {
         "command": "pnpm exec tsx apis/api-auth/test/runCoverage.ts"
       }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-auth/cobertura-coverage.xml -F apps.api-auth"
+      }
     }
   }
 }

@@ -10,7 +10,7 @@ import pino, { type Logger } from 'pino'
 
 import { type McpConfig } from './config'
 import { createProtocolServer } from './protocol'
-import { createReadSession } from './reads'
+import { type ReadSession, createReadSession } from './reads'
 
 function respond(res: ServerResponse, status: number, message: string): void {
   if (res.writableEnded || res.destroyed) return
@@ -50,6 +50,28 @@ export function createRuntime(
   const validateHost = hostHeaderValidation([config.publicUrl.hostname])
   let draining = false
   const active = new Set<AbortController>()
+  const outputSettlements = new Set<ReadSession>()
+  let reporting = false
+  async function retryOutputSettlements(): Promise<void> {
+    if (reporting) return
+    reporting = true
+    try {
+      for (const reads of outputSettlements) {
+        try {
+          await reads.settleOutput()
+          outputSettlements.delete(reads)
+        } catch {
+          logger.warn({ event: 'output_settlement_pending' })
+        }
+      }
+    } finally {
+      reporting = false
+    }
+  }
+  const settlementTimer = setInterval(() => {
+    void retryOutputSettlements()
+  }, 1000)
+  settlementTimer.unref()
   const handlers = new Set<ReturnType<typeof createMcpHandler>>()
 
   const server = createServer((req, res) => {
@@ -132,9 +154,16 @@ export function createRuntime(
       respond(res, 401, 'AUTHORIZATION_REQUIRED')
       return
     }
+    const requestExecutorId = randomUUID()
     const reads = config.exchangeSecret
-      ? createReadSession(config, token!, executorId)
+      ? createReadSession(config, token!, requestExecutorId)
       : undefined
+    if (reads)
+      logger.info({
+        event: 'mcp_output_executor_started',
+        executorId: requestExecutorId,
+        processId: executorId
+      })
     active.add(abort)
     const handler = createMcpHandler(
       options.factory ?? (() => createProtocolServer(reads)),
@@ -157,9 +186,10 @@ export function createRuntime(
       abort.abort()
       active.delete(abort)
       handlers.delete(handler)
-      void reads
-        ?.settleOutput()
-        .catch(() => logger.warn({ event: 'output_settlement_pending' }))
+      if (reads) {
+        outputSettlements.add(reads)
+        void retryOutputSettlements()
+      }
       void handler
         .close()
         .catch(() => logger.warn({ event: 'protocol_close_failed' }))
@@ -252,7 +282,12 @@ export function createRuntime(
         resolve()
       })
     })
-    logger.info({ event: 'drain_complete' })
+    await retryOutputSettlements()
+    clearInterval(settlementTimer)
+    logger.info({
+      event: 'drain_complete',
+      unresolvedOutput: outputSettlements.size
+    })
   }
 
   return { server, listen, beginDrain, shutdown }

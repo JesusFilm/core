@@ -32,6 +32,7 @@ import {
   requestGateSnapshots,
   transactionScope
 } from './store'
+import { reconcileConnectionChanges } from './withdrawal'
 
 class HttpFailure extends Error {
   constructor(readonly status: number) {
@@ -41,6 +42,8 @@ class HttpFailure extends Error {
 
 function securityAction(path: string): AuditAction | undefined {
   if (path === '/connections') return 'connection_view'
+  if (path.endsWith('/disconnect')) return 'disconnect'
+  if (/\/connections\/[^/]+\/access-/.test(path)) return 'access_change'
   if (path.startsWith('/connections/')) return 'renewal'
   if (path === '/token') return 'token'
   if (path === '/token/introspection') return 'introspection'
@@ -97,6 +100,7 @@ export async function createRuntime(
   await assertRuntimeRole(db)
   await assertEnvironment(db, config)
   await cleanup(db)
+  await reconcileConnectionChanges(db)
   const { provider, close: closeMetadata } = createProvider(
     config,
     db,
@@ -217,11 +221,9 @@ export async function createRuntime(
           })
         ctx.body = result.body
       } catch (error) {
-        await audit(
-          db,
-          ctx.path === '/connections' ? 'connection_view' : 'renewal',
-          'denied'
-        ).catch(() => undefined)
+        await audit(db, securityAction(ctx.path)!, 'denied').catch(
+          () => undefined
+        )
         ctx.status =
           error instanceof AuthorizationChanged
             ? 409
@@ -663,7 +665,13 @@ export async function createRuntime(
   server.headersTimeout = 10000
   server.maxConnections = 128
   const maintenance = setInterval(() => {
-    void cleanup(db).catch(() => logger.error({ event: 'cleanup_unavailable' }))
+    void cleanup(db)
+      .then(() => reconcileConnectionChanges(db))
+      .then((failed) => {
+        if (failed)
+          logger.error({ event: 'withdrawal_reconciliation_pending', failed })
+      })
+      .catch(() => logger.error({ event: 'cleanup_unavailable' }))
   }, 60000)
   maintenance.unref()
   return {

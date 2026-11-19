@@ -11,6 +11,7 @@ import { type AuthConfig, readConfig } from '../src/config'
 import type { Identity } from '../src/identity'
 import { createRuntime } from '../src/runtime'
 import { databaseTime, digest } from '../src/store'
+import { reconcileConnectionChanges } from '../src/withdrawal'
 
 const databaseUrl = process.env.AUTH_TEST_DATABASE_URL
 
@@ -264,6 +265,11 @@ describe('durable issuer integration', () => {
 
       beforeAll(async () => {
         for (const model of [
+          db.readPermit,
+          db.agentAccessReview,
+          db.connectionChange,
+          db.connectionHistoryPurge,
+          db.readExecutor,
           db.oAuthArtifact,
           db.agentConnection,
           db.consentReview,
@@ -666,6 +672,450 @@ describe('durable issuer integration', () => {
             })
           ).status
         ).toBe(200)
+      })
+
+      async function accessReview(
+        context: Awaited<ReturnType<typeof renewableConnection>>,
+        journeyIds = ['draft-a', 'draft-b'],
+        mode = 'edit'
+      ) {
+        const response = await post(
+          `/connections/${context.connection.id}/access-review`,
+          {
+            csrf: context.csrf,
+            clientId: context.clientId,
+            expectedVersion: context.expectedVersion,
+            journeyIds,
+            mode
+          }
+        )
+        expect(response.status, await response.clone().text()).toBe(200)
+        return (await response.json()) as {
+          reviewToken: string
+          expiresAt: string
+        }
+      }
+      const management = (
+        context: Awaited<ReturnType<typeof renewableConnection>>
+      ) => ({
+        csrf: context.csrf,
+        clientId: context.clientId,
+        expectedVersion: context.expectedVersion
+      })
+
+      it('explicitly changes resources/mode on the same identity without extending expiry and rejects stale/forged approval', async () => {
+        const context = await renewableConnection()
+        const unrelated = await db.agentConnection.findFirstOrThrow({
+          where: { id: { not: context.connection.id } }
+        })
+        const review = await accessReview(context)
+        expect(review.expiresAt).toBe(
+          context.connection.expiresAt.toISOString()
+        )
+        for (const patch of [
+          { journeyIds: ['bob-draft'] },
+          { mode: 'edit' },
+          { clientId: 'forged' },
+          { expectedVersion: 99 },
+          { csrf: 'x'.repeat(43) }
+        ]) {
+          expect(
+            (
+              await post(
+                `/connections/${context.connection.id}/access-approve`,
+                {
+                  ...management(context),
+                  reviewToken: review.reviewToken,
+                  ...patch
+                }
+              )
+            ).status
+          ).not.toBe(200)
+        }
+        expect(
+          (
+            await post(
+              `/connections/${context.connection.id}/access-approve`,
+              { ...management(context), reviewToken: review.reviewToken },
+              'bob'
+            )
+          ).status
+        ).toBe(403)
+        const approved = await post(
+          `/connections/${context.connection.id}/access-approve`,
+          { ...management(context), reviewToken: review.reviewToken }
+        )
+        expect(approved.status).toBe(200)
+        expect(await approved.json()).toMatchObject({
+          status: 'complete',
+          version: context.expectedVersion + 1
+        })
+        const updated = await db.agentConnection.findUniqueOrThrow({
+          where: { id: context.connection.id }
+        })
+        expect(updated).toMatchObject({
+          userId: context.connection.userId,
+          clientId: context.clientId,
+          mode: 'edit',
+          journeyIds: ['draft-a', 'draft-b'],
+          expiresAt: context.connection.expiresAt
+        })
+        expect(
+          await db.agentConnection.findUniqueOrThrow({
+            where: { id: unrelated.id }
+          })
+        ).toEqual(unrelated)
+        expect(
+          await db.connectionHistoryPurge.findUnique({
+            where: { connectionId: updated.id }
+          })
+        ).toBeNull()
+        expect(
+          (
+            await post(`/connections/${updated.id}/access-approve`, {
+              ...management(context),
+              reviewToken: review.reviewToken
+            })
+          ).status
+        ).toBe(409)
+      })
+
+      it('rechecks expansion rights and generations but permits relinquishing access after rights loss', async () => {
+        const context = await renewableConnection()
+        const review = await accessReview(context)
+        missingRights = true
+        try {
+          expect(
+            (
+              await post(
+                `/connections/${context.connection.id}/access-approve`,
+                { ...management(context), reviewToken: review.reviewToken }
+              )
+            ).status
+          ).toBe(403)
+          const reduction = await accessReview(context, ['draft-a'], 'view')
+          expect(
+            (
+              await post(
+                `/connections/${context.connection.id}/access-approve`,
+                { ...management(context), reviewToken: reduction.reviewToken }
+              )
+            ).status
+          ).toBe(200)
+        } finally {
+          missingRights = false
+        }
+        const next = await renewableConnection()
+        const stale = await accessReview(next)
+        let reads = 0
+        afterEligibility = async () => {
+          if (++reads !== 2) return
+          afterEligibility = undefined
+          await db.authorizationGate.update({
+            where: { id: 'user-team:alice:read-team' },
+            data: { generation: { increment: 1 } }
+          })
+        }
+        expect(
+          (
+            await post(`/connections/${next.connection.id}/access-approve`, {
+              ...management(next),
+              reviewToken: stale.reviewToken
+            })
+          ).status
+        ).toBe(409)
+      })
+
+      it('keeps withdrawal Pending across restart until accepted participants positively settle, then schedules disconnect purge', async () => {
+        const context = await renewableConnection()
+        const renewal = await previewRenewal(context)
+        const permit = await db.readPermit.create({
+          data: {
+            connectionId: context.connection.id,
+            grantVersion: context.expectedVersion,
+            requestId: 'controlled',
+            requestHash: 'a'.repeat(64),
+            stage: 'read',
+            executor: 'journeys',
+            executorId: 'accepted-remote',
+            journeyIds: ['draft-a'],
+            gates: [],
+            status: 'accepted',
+            preparedAt: new Date(0),
+            acceptedAt: new Date(0)
+          }
+        })
+        const disconnect = await post(
+          `/connections/${context.connection.id}/disconnect`,
+          management(context)
+        )
+        expect(disconnect.status).toBe(200)
+        const receipt = (await disconnect.json()) as {
+          changeId: string
+          status: string
+        }
+        expect(receipt.status).toBe('pending')
+        expect(
+          (await approveRenewal(context, renewal.reviewToken)).status
+        ).toBe(409)
+        expect(
+          await db.connectionHistoryPurge.findUnique({
+            where: { connectionId: context.connection.id }
+          })
+        ).toBeNull()
+        const replica = await processReplica()
+        instances.push(replica)
+        try {
+          const listed = await post(
+            '/connections',
+            {},
+            'alice',
+            instances.length - 1
+          )
+          expect(await listed.json()).toMatchObject({
+            connections: expect.arrayContaining([
+              expect.objectContaining({
+                id: context.connection.id,
+                status: 'pending',
+                change: expect.objectContaining({ id: receipt.changeId })
+              })
+            ])
+          })
+          expect(
+            (
+              await db.readPermit.findUniqueOrThrow({
+                where: { id: permit.id }
+              })
+            ).status
+          ).toBe('accepted')
+          // Simulate the real owning participant's positive durable completion receipt.
+          await db.readPermit.update({
+            where: { id: permit.id },
+            data: { status: 'settled', settledAt: new Date() }
+          })
+          const completed = await post(
+            '/connections',
+            {},
+            'alice',
+            instances.length - 1
+          )
+          expect(await completed.json()).toMatchObject({
+            connections: expect.arrayContaining([
+              expect.objectContaining({
+                id: context.connection.id,
+                status: 'disconnected',
+                change: expect.objectContaining({ status: 'complete' })
+              })
+            ])
+          })
+          expect(
+            await db.connectionHistoryPurge.findUnique({
+              where: { connectionId: context.connection.id }
+            })
+          ).toMatchObject({ changeId: receipt.changeId, completedAt: null })
+        } finally {
+          instances.pop()
+          await replica.close()
+        }
+      })
+
+      it('shows only owner grant metadata and allows disconnect during an owning-API outage', async () => {
+        const context = await renewableConnection()
+        cookies.clear()
+        afterEligibility = async () => {
+          throw new Error('Controlled owning outage')
+        }
+        try {
+          const response = await post('/connections', {})
+          expect(response.status).toBe(200)
+          const listed = (await response.json()) as {
+            csrf: string
+            titlesUnavailable: boolean
+            connections: Array<{ journeys: Array<{ title: string | null }> }>
+          }
+          expect(listed.titlesUnavailable).toBe(true)
+          expect(
+            listed.connections.every((c) =>
+              c.journeys.every((j) => j.title === null)
+            )
+          ).toBe(true)
+          const disconnected = await post(
+            `/connections/${context.connection.id}/disconnect`,
+            { ...management(context), csrf: listed.csrf }
+          )
+          expect(disconnected.status).toBe(200)
+          expect(await disconnected.json()).toMatchObject({
+            status: 'complete'
+          })
+          invalidUsers.add('alice')
+          expect((await post('/connections', {})).status).not.toBe(200)
+        } finally {
+          afterEligibility = undefined
+          invalidUsers.delete('alice')
+        }
+      })
+
+      it('rejects replaced access reviews and cross-session approvals', async () => {
+        const context = await renewableConnection()
+        const first = await accessReview(context)
+        const second = await accessReview(context, ['draft-b'], 'view')
+        const approve = (reviewToken: string, csrf = context.csrf) =>
+          post(`/connections/${context.connection.id}/access-approve`, {
+            ...management(context),
+            csrf,
+            reviewToken
+          })
+        expect((await approve(first.reviewToken)).status).toBe(409)
+        const fresh = await post('/connections', {})
+        const { csrf } = (await fresh.json()) as { csrf: string }
+        expect((await approve(second.reviewToken, csrf)).status).toBe(409)
+        expect(
+          await db.agentConnection.findUniqueOrThrow({
+            where: { id: context.connection.id }
+          })
+        ).toEqual(context.connection)
+      })
+
+      it('rejects access approval when its review expires across the final review-row lock wait', async () => {
+        const context = await renewableConnection()
+        const review = await accessReview(context)
+        const id = digest(review.reviewToken)
+        const expiresAt = new Date((await databaseTime(db)).getTime() + 1200)
+        await db.agentAccessReview.update({
+          where: { id },
+          data: { validUntil: expiresAt }
+        })
+        let unlock!: () => void
+        let locked!: () => void
+        const ready = new Promise<void>((resolve) => {
+          locked = resolve
+        })
+        const blocker = db.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "AgentAccessReview" WHERE id = ${id} FOR UPDATE`
+          locked()
+          await new Promise<void>((resolve) => {
+            unlock = resolve
+          })
+        })
+        await ready
+        const approval = post(
+          `/connections/${context.connection.id}/access-approve`,
+          { ...management(context), reviewToken: review.reviewToken }
+        )
+        let waited = false
+        try {
+          await vi.waitFor(async () => {
+            const [row] = await db.$queryRaw<
+              Array<{ waiting: boolean }>
+            >`SELECT EXISTS (SELECT 1 FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock' AND pid <> pg_backend_pid()) AS waiting`
+            expect(row.waiting).toBe(true)
+            waited = true
+          })
+          await new Promise((resolve) =>
+            setTimeout(
+              resolve,
+              Math.max(0, expiresAt.getTime() - Date.now()) + 30
+            )
+          )
+        } finally {
+          unlock()
+          await blocker
+        }
+        expect(waited).toBe(true)
+        expect((await approval).status).toBe(409)
+        expect(
+          await db.agentConnection.findUniqueOrThrow({
+            where: { id: context.connection.id }
+          })
+        ).toEqual(context.connection)
+      })
+
+      it('drains later connections beyond 100 unresolved withdrawals and isolates one failed change', async () => {
+        const prefix = 'drain-10575-'
+        const ids = Array.from(
+          { length: 101 },
+          (_, index) => prefix + String(index).padStart(3, '0')
+        )
+        const now = new Date()
+        try {
+          await db.$transaction(async (tx) => {
+            await tx.agentConnection.createMany({
+              data: ids.map((id) => ({
+                id,
+                grantId: id,
+                userId: 'drain-fixture',
+                clientId: 'drain-client',
+                environment: config.AUTH_ENVIRONMENT,
+                mode: 'view',
+                journeyIds: ['draft-a'],
+                version: 2,
+                expiresAt: new Date(now.getTime() + 86400000),
+                approvedAt: now,
+                firebaseAuthTime: 1794777000,
+                firebaseCreatedAt: '2026-01-01T00:00:00.000Z'
+              }))
+            })
+            await tx.authorizationGate.createMany({
+              data: ids.map((id) => ({
+                id: 'connection:' + id,
+                generation: 1,
+                open: false
+              }))
+            })
+            await tx.connectionChange.createMany({
+              data: ids.map((id, index) => ({
+                id,
+                connectionId: id,
+                expectedVersion: 1,
+                version: 2,
+                kind: 'access',
+                mode: 'view',
+                journeyIds: ['draft-a'],
+                gateGeneration: index === 0 ? 99 : 1,
+                requestedAt: now
+              }))
+            })
+            await tx.readPermit.createMany({
+              data: ids.slice(0, 100).map((id) => ({
+                connectionId: id,
+                grantVersion: 1,
+                requestId: id,
+                requestHash: 'a'.repeat(64),
+                stage: 'read',
+                executor: 'journeys',
+                executorId: id,
+                journeyIds: ['draft-a'],
+                gates: [],
+                status: 'accepted',
+                preparedAt: new Date(0),
+                acceptedAt: new Date(0)
+              }))
+            })
+          })
+          expect(await reconcileConnectionChanges(db)).toBe(1)
+          expect(
+            await db.connectionChange.findUnique({ where: { id: ids[100] } })
+          ).toMatchObject({ status: 'complete' })
+          expect(
+            await db.connectionChange.count({
+              where: { id: { in: ids }, status: 'pending' }
+            })
+          ).toBe(100)
+          expect(
+            await db.readPermit.count({
+              where: { connectionId: { in: ids }, status: 'accepted' }
+            })
+          ).toBe(100)
+        } finally {
+          await db.readPermit.deleteMany({
+            where: { connectionId: { in: ids } }
+          })
+          await db.connectionChange.deleteMany({ where: { id: { in: ids } } })
+          await db.agentConnection.deleteMany({ where: { id: { in: ids } } })
+          await db.authorizationGate.deleteMany({
+            where: { id: { in: ids.map((id) => 'connection:' + id) } }
+          })
+        }
       })
 
       it('renews expired consent but never terminal disconnect or pending withdrawal', async () => {

@@ -19,6 +19,7 @@ import {
   lockGates,
   transactionScope
 } from './store'
+import { beginConnectionChange, reconcileConnectionChanges } from './withdrawal'
 
 export class ConnectionFailure extends Error {
   constructor(readonly status: number) {
@@ -38,6 +39,12 @@ const managementInput = z.object({
   expectedVersion: z.number().int().positive(),
   clientId: z.string().min(1).max(2048)
 })
+const accessInput = managementInput
+  .extend({
+    mode: z.enum(['view', 'edit']),
+    journeyIds: z.array(z.string().min(1).max(128)).min(1).max(50)
+  })
+  .strict()
 const reviewInput = managementInput
   .extend({ duration: z.enum(durations) })
   .strict()
@@ -99,6 +106,7 @@ export function createConnectionManagement(
     if (!token) throw new ConnectionFailure(401)
     const evidence = await identity.authenticate(token)
     if (path === '/connections') {
+      await reconcileConnectionChanges(db)
       const input = z
         .object({ after: z.string().uuid().optional() })
         .strict()
@@ -122,6 +130,7 @@ export function createConnectionManagement(
           pending.add(connection.id)
         }
       }
+      let titlesUnavailable = false
       const rights = await currentRights({
         token,
         evidence,
@@ -130,6 +139,12 @@ export function createConnectionManagement(
           .flatMap((connection) => connection.journeyIds),
         gates,
         allowPending: true
+      }).catch(async () => {
+        // The owner may still relinquish consent during an owning-API outage.
+        // No journey data is released, and current identity is mandatory.
+        await identity.check(evidence)
+        titlesUnavailable = true
+        return { journeys: [], pending: new Set<string>() }
       })
       const { journeys } = rights
       for (const connection of connections)
@@ -160,13 +175,20 @@ export function createConnectionManagement(
           )
             throw new ConnectionFailure(409)
           if (current.firebaseCreatedAt !== evidence.createdAt) continue
-          const status = current.revokedAt
-            ? 'disconnected'
-            : pending.has(current.id)
+          const change = await tx.connectionChange.findFirst({
+            where: { connectionId: current.id },
+            orderBy: { requestedAt: 'desc' }
+          })
+          const status =
+            change?.status === 'pending'
               ? 'pending'
-              : current.expiresAt <= now
-                ? 'expired'
-                : 'active'
+              : current.revokedAt
+                ? 'disconnected'
+                : pending.has(current.id)
+                  ? 'pending'
+                  : current.expiresAt <= now
+                    ? 'expired'
+                    : 'active'
           result.push({
             id: current.id,
             clientId: current.clientId,
@@ -175,6 +197,9 @@ export function createConnectionManagement(
             credentialsPending: current.credentialsPending,
             expiresAt: current.expiresAt.toISOString(),
             status,
+            change: change
+              ? { id: change.id, kind: change.kind, status: change.status }
+              : null,
             journeys: current.journeyIds.map((id) => ({
               id,
               title: pending.has(current.id)
@@ -189,6 +214,7 @@ export function createConnectionManagement(
         return {
           body: {
             connections: result,
+            titlesUnavailable,
             csrf: session.csrf,
             nextCursor: connections.length > 100 ? connections[99].id : null
           },
@@ -197,12 +223,18 @@ export function createConnectionManagement(
       })
     }
     const route =
-      /^\/connections\/([A-Za-z0-9-]{1,128})\/(review|approve)$/.exec(path)
+      /^\/connections\/([A-Za-z0-9-]{1,128})\/(review|approve|access-options|access-review|access-approve|disconnect)$/.exec(
+        path
+      )
     if (!route) throw new ConnectionFailure(404)
     const input =
       route[2] === 'review'
         ? reviewInput.parse(body)
-        : approvalInput.parse(body)
+        : route[2] === 'access-review'
+          ? accessInput.parse(body)
+          : ['approve', 'access-approve'].includes(route[2])
+            ? approvalInput.parse(body)
+            : managementInput.strict().parse(body)
     const session = readSession(cookie, evidence, await databaseTime(db))
     if (session.csrf !== input.csrf) throw new ConnectionFailure(403)
     const connection = await db.agentConnection.findFirst({
@@ -217,6 +249,183 @@ export function createConnectionManagement(
       throw new ConnectionFailure(403)
     if (connection.version !== input.expectedVersion || connection.revokedAt)
       throw new ConnectionFailure(409)
+    if (route[2].startsWith('access-') || route[2] === 'disconnect') {
+      const selectionInput =
+        route[2] === 'access-review' ? accessInput.parse(body) : undefined
+      let selection = selectionInput
+        ? {
+            journeyIds: [...new Set(selectionInput.journeyIds)].sort(),
+            mode: selectionInput.mode
+          }
+        : undefined
+      let accessReview: Awaited<
+        ReturnType<typeof db.agentAccessReview.findUnique>
+      > = null
+      if (route[2] === 'access-approve') {
+        const approval = approvalInput.parse(body)
+        accessReview = await db.agentAccessReview.findUnique({
+          where: { id: digest(approval.reviewToken) }
+        })
+        if (
+          !accessReview ||
+          accessReview.connectionId !== connection.id ||
+          accessReview.connectionVersion !== connection.version ||
+          accessReview.userId !== evidence.userId ||
+          accessReview.clientId !== connection.clientId ||
+          accessReview.sessionHash !== digest(cookie!) ||
+          accessReview.consumedAt
+        )
+          throw new ConnectionFailure(409)
+        selection = {
+          mode: accessReview.mode as 'view' | 'edit',
+          journeyIds: accessReview.journeyIds
+        }
+      }
+      const options = route[2] === 'access-options'
+      // Discovery supplies IDs only; eligibility permissions are read again after gate capture.
+      const discovered = options
+        ? await eligibility(token, evidence.userId)
+        : []
+      const ids = [
+        ...new Set([
+          ...connection.journeyIds,
+          ...(selection?.journeyIds ?? []),
+          ...discovered.map((j) => j.id)
+        ])
+      ]
+      const expansion =
+        selection &&
+        (selection.journeyIds.some(
+          (id) => !connection.journeyIds.includes(id)
+        ) ||
+          (selection.mode === 'edit' && connection.mode === 'view'))
+      const gates = await captureGates(
+        db,
+        options || expansion
+          ? connectionGateIds({ ...connection, journeyIds: ids })
+          : [`account:${connection.userId}`, `connection:${connection.id}`]
+      )
+      let journeys: Awaited<ReturnType<ReadEligibility>> = []
+      if (options || expansion) {
+        journeys = (
+          await currentRights({ token, evidence, journeyIds: ids, gates })
+        ).journeys
+      } else {
+        // Relinquishing authority needs no owning-API availability or surviving ACL.
+        await identity.check(evidence)
+      }
+      if (
+        expansion &&
+        !selection!.journeyIds.every((id) =>
+          journeys.some(
+            (j) => j.id === id && (selection!.mode === 'view' || j.canEdit)
+          )
+        )
+      )
+        throw new ConnectionFailure(403)
+      const reviewToken = randomBytes(32).toString('base64url')
+      const result = await db.$transaction(async (tx) => {
+        await lockGates(tx, gates)
+        await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR UPDATE`
+        const current = await tx.agentConnection.findUniqueOrThrow({
+          where: { id: connection.id }
+        })
+        const now = await databaseTime(tx)
+        if (
+          current.version !== input.expectedVersion ||
+          current.revokedAt ||
+          session.expiresAt <= now.getTime()
+        )
+          throw new ConnectionFailure(409)
+        if (options) return { journeys, version: current.version }
+        if (route[2] === 'access-review' && selection) {
+          await tx.agentAccessReview.updateMany({
+            where: {
+              connectionId: current.id,
+              sessionHash: digest(cookie!),
+              consumedAt: null
+            },
+            data: { consumedAt: now }
+          })
+          await tx.agentAccessReview.create({
+            data: {
+              id: digest(reviewToken),
+              connectionId: current.id,
+              connectionVersion: current.version,
+              userId: evidence.userId,
+              clientId: current.clientId,
+              sessionHash: digest(cookie!),
+              ...selection,
+              validUntil: new Date(now.getTime() + 60000)
+            }
+          })
+          return {
+            reviewToken,
+            version: current.version,
+            ...selection,
+            expiresAt: current.expiresAt.toISOString(),
+            journeys: selection.journeyIds.map((id) => ({
+              id,
+              title: journeys.find((j) => j.id === id)?.title ?? null
+            }))
+          }
+        }
+        if (route[2] === 'access-approve') {
+          if (!accessReview || !selection) throw new ConnectionFailure(409)
+          await tx.$queryRaw`SELECT id FROM "AgentAccessReview" WHERE id = ${accessReview.id} FOR UPDATE`
+          const review = await tx.agentAccessReview.findUniqueOrThrow({
+            where: { id: accessReview.id }
+          })
+          const approvedAt = await databaseTime(tx)
+          if (
+            review.consumedAt ||
+            review.validUntil <= approvedAt ||
+            session.expiresAt <= approvedAt.getTime()
+          )
+            throw new ConnectionFailure(409)
+          await tx.agentAccessReview.update({
+            where: { id: review.id },
+            data: { consumedAt: approvedAt }
+          })
+        }
+        if (selection)
+          await transactionScope.run(tx, async () => {
+            const grantId = await createAgentGrant(
+              provider,
+              config.AUTH_AUDIENCE,
+              current.userId,
+              current.clientId,
+              selection.mode === 'edit' ? 'edit' : 'view'
+            )
+            await tx.oAuthArtifact.deleteMany({
+              where: {
+                OR: [
+                  { grantId: current.grantId },
+                  { model: 'Grant', id: current.grantId }
+                ]
+              }
+            })
+            await tx.agentConnection.update({
+              where: { id: current.id },
+              data: { grantId, credentialsPending: true }
+            })
+          })
+        const change = await beginConnectionChange(tx, current, selection)
+        return {
+          changeId: change.id,
+          status: change.status,
+          version: change.version
+        }
+      })
+      await reconcileConnectionChanges(db)
+      if ('changeId' in result) {
+        const change = await db.connectionChange.findUniqueOrThrow({
+          where: { id: result.changeId }
+        })
+        return { body: { ...result, status: change.status } }
+      }
+      return { body: result }
+    }
     const gates = await captureGates(db, connectionGateIds(connection))
     const { journeys } = await currentRights({
       token,
@@ -249,8 +458,9 @@ export function createConnectionManagement(
         session.expiresAt <= now.getTime()
       )
         throw new ConnectionFailure(409)
-      if ('duration' in input) {
-        const previewExpiresAt = calculateExpiry(now, input.duration)
+      if (route[2] === 'review') {
+        const renewal = reviewInput.parse(body)
+        const previewExpiresAt = calculateExpiry(now, renewal.duration)
         await tx.agentRenewalReview.updateMany({
           where: {
             connectionId: current.id,
@@ -267,7 +477,7 @@ export function createConnectionManagement(
             userId: evidence.userId,
             clientId: current.clientId,
             sessionHash: digest(cookie!),
-            duration: input.duration,
+            duration: renewal.duration,
             previewExpiresAt,
             validUntil: new Date(now.getTime() + 60000)
           }
@@ -275,7 +485,7 @@ export function createConnectionManagement(
         return {
           body: {
             reviewToken,
-            duration: input.duration,
+            duration: renewal.duration,
             previewExpiresAt: previewExpiresAt.toISOString(),
             previewedAt: now.toISOString(),
             previousExpiresAt: current.expiresAt.toISOString(),
@@ -283,7 +493,8 @@ export function createConnectionManagement(
           }
         }
       }
-      const reviewId = digest(input.reviewToken)
+      const approval = approvalInput.parse(body)
+      const reviewId = digest(approval.reviewToken)
       await tx.$queryRaw`SELECT id FROM "AgentRenewalReview" WHERE id = ${reviewId} FOR UPDATE`
       const review = await tx.agentRenewalReview.findUnique({
         where: { id: reviewId }

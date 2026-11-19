@@ -1,4 +1,5 @@
-import { generateKeyPairSync, randomBytes } from 'node:crypto'
+import { fork } from 'node:child_process'
+import { generateKeyPairSync, randomBytes, randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { type Server, createServer, request as httpRequest } from 'node:http'
 import type { AddressInfo } from 'node:net'
@@ -65,7 +66,13 @@ describe('granted journey read authorization', () => {
       let ownerUrl: string
       let mcpUrl: string
       let beforeIdentity: (() => Promise<void>) | undefined
-      let beforeOutput: (() => Promise<void>) | undefined
+      let beforeAcceptance: ((stage: string) => Promise<void>) | undefined
+      let afterAcceptance: ((stage: string) => Promise<void>) | undefined
+      let settlementOutage = false
+      const failedFenceReports = new Set<string>()
+      let ownerHandler: ReturnType<typeof createJourneyReadHandler>
+      let beforeOutput: ((executorId: string) => Promise<void>) | undefined
+      let afterOutput: (() => void) | undefined
       let accessToken: string
       const cookies = new Map<string, string>()
 
@@ -213,7 +220,11 @@ describe('granted journey read authorization', () => {
           },
           body: JSON.stringify(
             path === 'exchange' || path === 'prepare'
-              ? { executorId: testExecutorId, ...body }
+              ? {
+                  executorId:
+                    body.stage === 'read' ? randomUUID() : testExecutorId,
+                  ...body
+                }
               : body
           )
         })
@@ -221,14 +232,20 @@ describe('granted journey read authorization', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_105(73|74)(_|$)/.test(new URL(authUrl!).pathname) ||
-          !/^\/journeys_issue_105(73|74)(_|$)/.test(
+          !/^\/auth_issue_105(73|74|75)(_|$)/.test(
+            new URL(authUrl!).pathname
+          ) ||
+          !/^\/journeys_issue_105(73|74|75)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
           throw new Error('Use isolated issue databases')
         for (const table of [
           auth.readPermit,
+          auth.agentAccessReview,
+          auth.connectionChange,
+          auth.connectionHistoryPurge,
+          auth.readExecutor,
           auth.oAuthArtifact,
           auth.agentConnection,
           auth.consentReview,
@@ -449,30 +466,77 @@ describe('granted journey read authorization', () => {
         )) as {
           schema: GraphQLSchema
         }
+        const authorityUrl = await listen(
+          createServer((req, res) => {
+            void (async () => {
+              const chunks: Buffer[] = []
+              for await (const chunk of req)
+                chunks.push(Buffer.from(chunk as Uint8Array))
+              const raw = Buffer.concat(chunks).toString('utf8')
+              const body = JSON.parse(raw) as {
+                permitId?: string
+                executorId?: string
+              }
+              const stage = body.permitId
+                ? (
+                    await auth.readPermit.findUniqueOrThrow({
+                      where: { id: body.permitId }
+                    })
+                  ).stage
+                : ''
+              if (req.url?.endsWith('/accept')) await beforeAcceptance?.(stage)
+              if (
+                req.url?.endsWith('/fence') &&
+                (settlementOutage ||
+                  failedFenceReports.has(body.executorId ?? ''))
+              ) {
+                res.writeHead(503)
+                res.end('{}')
+                return
+              }
+              const response = await fetch(config.AUTH_ISSUER + req.url, {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${ownerSecret}`,
+                  'Content-Type': 'application/json'
+                },
+                body: raw
+              })
+              const result = await response.text()
+              if (req.url?.endsWith('/accept') && response.ok)
+                await afterAcceptance?.(stage)
+              res.writeHead(response.status, {
+                'Content-Type': 'application/json'
+              })
+              res.end(result)
+            })().catch(() => {
+              res.writeHead(503)
+              res.end('{}')
+            })
+          })
+        )
+        ownerHandler = createJourneyReadHandler(
+          {
+            ...trust,
+            internalSecret,
+            authorityUrl,
+            authoritySecret: ownerSecret,
+            adminOrigin: config.AUTH_ADMIN_ORIGIN + '/'
+          },
+          journeys
+        )
         const owner = createYoga({
           schema: owningSchema,
           context: () => ({ ...initContextCache(), type: 'public' as const }),
           logging: false,
-          plugins: [
-            useJourneyMcpReads(
-              createJourneyReadHandler(
-                {
-                  ...trust,
-                  internalSecret,
-                  authorityUrl: issuerOrigin + '/',
-                  authoritySecret: ownerSecret,
-                  adminOrigin: config.AUTH_ADMIN_ORIGIN + '/'
-                },
-                journeys
-              )
-            )
-          ]
+          plugins: [useJourneyMcpReads(ownerHandler)]
         })
         ownerUrl = await listen(
           createServer((req, res) => {
             void owner(req, res)
           })
         )
+        const outputRequests = new WeakSet<Request>()
         gateway = createGatewayRuntime({
           graphqlEndpoint: '/',
           supergraph: readFileSync(
@@ -487,8 +551,21 @@ describe('granted journey read authorization', () => {
                   new URL(request.url).pathname === '/mcp/reads' &&
                   ((await request.clone().json()) as { stage?: string })
                     .stage === 'output'
-                )
-                  await beforeOutput?.()
+                ) {
+                  outputRequests.add(request)
+                  const credential = request.headers
+                    .get('authorization')!
+                    .slice(4)
+                  const { executorId } = JSON.parse(
+                    Buffer.from(credential.split('.')[0], 'base64url').toString(
+                      'utf8'
+                    )
+                  ) as { executorId: string }
+                  await beforeOutput?.(executorId)
+                }
+              },
+              onResponse({ request }) {
+                if (outputRequests.has(request)) afterOutput?.()
               }
             },
             useMcpReads({
@@ -524,6 +601,11 @@ describe('granted journey read authorization', () => {
       beforeEach(async () => {
         beforeIdentity = undefined
         beforeOutput = undefined
+        afterOutput = undefined
+        beforeAcceptance = undefined
+        afterAcceptance = undefined
+        settlementOutage = false
+        failedFenceReports.clear()
         invalidUsers.clear()
         await auth.authorizationGate.updateMany({
           data: { open: true, generation: { increment: 1 } }
@@ -1198,7 +1280,12 @@ describe('granted journey read authorization', () => {
         const preparing = new Promise<void>((resolve) => {
           outputReady = resolve
         })
-        beforeOutput = async () => {
+        let outputExecutorId = ''
+        const outputDone = new Promise<void>((resolve) => {
+          afterOutput = resolve
+        })
+        beforeOutput = async (executorId) => {
+          outputExecutorId = executorId
           outputReady()
           await new Promise<void>((resolve) => {
             releaseOutput = resolve
@@ -1237,25 +1324,408 @@ describe('granted journey read authorization', () => {
         const connection = await auth.agentConnection.findFirstOrThrow({
           orderBy: { approvedAt: 'desc' }
         })
-        let settled = false
-        const deadline = Date.now() + 3000
-        while (!settled && Date.now() < deadline) {
-          settled =
-            (await auth.readPermit.count({
-              where: {
-                connectionId: connection.id,
-                stage: 'output',
-                status: 'settled'
-              }
-            })) === 1
-          if (!settled) await new Promise((resolve) => setTimeout(resolve, 10))
-        }
-        expect(settled).toBe(true)
+        await outputDone
+        await vi.waitFor(async () =>
+          expect(
+            await auth.readExecutor.findUnique({
+              where: { id: outputExecutorId }
+            })
+          ).toMatchObject({ executor: 'mcp', fencedAt: expect.any(Date) })
+        )
         expect(
           await auth.readPermit.count({
             where: { connectionId: connection.id, status: 'accepted' }
           })
         ).toBe(0)
+      })
+
+      async function manageConnection() {
+        const page = await request('/connections', {
+          method: 'POST',
+          headers: {
+            Origin: config.AUTH_ADMIN_ORIGIN,
+            Authorization: 'Bearer alice',
+            'Content-Type': 'application/json'
+          },
+          body: '{}'
+        })
+        expect(page.status, await page.clone().text()).toBe(200)
+        const { csrf } = (await page.json()) as { csrf: string }
+        const connection = await auth.agentConnection.findFirstOrThrow({
+          orderBy: { approvedAt: 'desc' }
+        })
+        const post = (action: string, extra: Record<string, unknown> = {}) =>
+          request(`/connections/${connection.id}/${action}`, {
+            method: 'POST',
+            headers: {
+              Origin: config.AUTH_ADMIN_ORIGIN,
+              Authorization: 'Bearer alice',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              csrf,
+              expectedVersion: connection.version,
+              clientId: connection.clientId,
+              ...extra
+            })
+          })
+        return { connection, post }
+      }
+      function barrier() {
+        let arrived!: () => void
+        let resume!: () => void
+        const ready = new Promise<void>((resolve) => {
+          arrived = resolve
+        })
+        const released = new Promise<void>((resolve) => {
+          resume = resolve
+        })
+        return {
+          ready,
+          resume,
+          pause: async () => {
+            arrived()
+            await released
+          }
+        }
+      }
+
+      it.each(['access', 'disconnect'])(
+        'blocks a real read paused before acceptance after %s',
+        async (kind) => {
+          const context = await manageConnection()
+          const pause = barrier()
+          beforeAcceptance = async (stage) => {
+            if (stage === 'read') await pause.pause()
+          }
+          const reading = readA()
+          await pause.ready
+          let change: Response
+          if (kind === 'access') {
+            const reviewed = await context.post('access-review', {
+              journeyIds: ['read-b'],
+              mode: 'view'
+            })
+            expect(reviewed.status).toBe(200)
+            const review = (await reviewed.json()) as { reviewToken: string }
+            change = await context.post('access-approve', {
+              reviewToken: review.reviewToken
+            })
+          } else change = await context.post('disconnect')
+          expect(change.status).toBe(200)
+          expect(await change.json()).toMatchObject({ status: 'complete' })
+          pause.resume()
+          expect((await reading).body).not.toContain('read-a-text-sentinel')
+          beforeAcceptance = undefined
+          expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        }
+      )
+
+      it('keeps accepted real reads pending through a lost settlement response and recovers from the owning receipt', async () => {
+        const context = await manageConnection()
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const reading = readA()
+        await pause.ready
+        const changed = await context.post('disconnect')
+        expect(changed.status).toBe(200)
+        const change = (await changed.json()) as { changeId: string }
+        expect(
+          await auth.connectionChange.findUnique({
+            where: { id: change.changeId }
+          })
+        ).toMatchObject({ status: 'pending' })
+        settlementOutage = true
+        pause.resume()
+        expect((await reading).body).not.toContain('read-a-text-sentinel')
+        expect(
+          await auth.connectionChange.findUnique({
+            where: { id: change.changeId }
+          })
+        ).toMatchObject({ status: 'pending' })
+        const permit = await auth.readPermit.findFirstOrThrow({
+          where: { connectionId: context.connection.id, status: 'accepted' }
+        })
+        expect(
+          await journeys.mcpReadExecution.findUnique({
+            where: { id: permit.id }
+          })
+        ).toMatchObject({ status: 'settled', reportedAt: null })
+        settlementOutage = false
+        await ownerHandler.reconcile()
+        expect(
+          await auth.connectionChange.findUnique({
+            where: { id: change.changeId }
+          })
+        ).toMatchObject({ status: 'complete' })
+        expect(
+          await auth.connectionHistoryPurge.findUnique({
+            where: { connectionId: context.connection.id }
+          })
+        ).toMatchObject({ completedAt: null })
+      })
+
+      it('reconciles every receipt page despite a failed fence report and retries the retained receipt', async () => {
+        // Real receipts, execution locks and authenticated authority reports.
+        // The first failed row must not starve the rest of its page or page two.
+        const receipts = Array.from({ length: 105 }, (_, index) => ({
+          id: `pagination-${String(index).padStart(3, '0')}-${randomUUID()}`,
+          executorId: randomUUID()
+        }))
+        await journeys.mcpReadExecution.createMany({ data: receipts })
+        failedFenceReports.add(receipts[0].executorId)
+        try {
+          await ownerHandler.reconcile()
+          const stored = await journeys.mcpReadExecution.findMany({
+            where: { id: { in: receipts.map(({ id }) => id) } },
+            orderBy: { id: 'asc' }
+          })
+          expect(stored).toHaveLength(105)
+          expect(stored[0]).toMatchObject({
+            status: 'fenced',
+            completedAt: expect.any(Date),
+            reportedAt: null
+          })
+          expect(stored.slice(1)).toEqual(
+            receipts.slice(1).map((receipt) =>
+              expect.objectContaining({
+                ...receipt,
+                status: 'fenced',
+                completedAt: expect.any(Date),
+                reportedAt: expect.any(Date)
+              })
+            )
+          )
+          expect(
+            await auth.readExecutor.count({
+              where: {
+                id: {
+                  in: receipts.slice(1).map(({ executorId }) => executorId)
+                },
+                executor: 'journeys',
+                fencedAt: { not: null }
+              }
+            })
+          ).toBe(104)
+          failedFenceReports.clear()
+          await ownerHandler.reconcile()
+          expect(
+            await journeys.mcpReadExecution.findUniqueOrThrow({
+              where: { id: receipts[0].id }
+            })
+          ).toMatchObject({ reportedAt: expect.any(Date) })
+          expect(
+            await auth.readExecutor.findUniqueOrThrow({
+              where: { id: receipts[0].executorId }
+            })
+          ).toMatchObject({ executor: 'journeys', fencedAt: expect.any(Date) })
+        } finally {
+          failedFenceReports.clear()
+          await journeys.mcpReadExecution.deleteMany({
+            where: { id: { in: receipts.map(({ id }) => id) } }
+          })
+        }
+      })
+
+      it('denies buffered private output after a completed management withdrawal', async () => {
+        const context = await manageConnection()
+        beforeOutput = async () => {
+          const response = await context.post('disconnect')
+          expect(await response.json()).toMatchObject({ status: 'complete' })
+        }
+        const result = await readA()
+        expect(result.body).not.toContain('read-a-text-sentinel')
+        expect(result.status).toBe(500)
+      })
+
+      it('counts accepted private output until its real MCP sender closes, independently from the reader', async () => {
+        const context = await manageConnection()
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'output') await pause.pause()
+        }
+        const reading = readA()
+        await pause.ready
+        const changed = await context.post('disconnect')
+        const change = (await changed.json()) as {
+          changeId: string
+          status: string
+        }
+        expect(change.status).toBe('pending')
+        await ownerHandler.reconcile()
+        expect(
+          await auth.connectionChange.findUnique({
+            where: { id: change.changeId }
+          })
+        ).toMatchObject({ status: 'pending' })
+        pause.resume()
+        // This bounded release was accepted before withdrawal. Its bytes are outside recall.
+        expect((await reading).body).toContain('read-a-text-sentinel')
+        await vi.waitFor(async () =>
+          expect(
+            await auth.connectionChange.findUnique({
+              where: { id: change.changeId }
+            })
+          ).toMatchObject({ status: 'complete' })
+        )
+      })
+
+      it('keeps identity/expiry through resource changes and reconnects with exactly the new grant', async () => {
+        const context = await manageConnection()
+        const originalToken = accessToken
+        const apply = async (
+          current: Awaited<ReturnType<typeof manageConnection>>,
+          ids: string[]
+        ) => {
+          const review = await current.post('access-review', {
+            journeyIds: ids,
+            mode: 'view'
+          })
+          expect(review.status).toBe(200)
+          const { reviewToken } = (await review.json()) as {
+            reviewToken: string
+          }
+          const changed = await current.post('access-approve', { reviewToken })
+          expect(await changed.json()).toMatchObject({ status: 'complete' })
+          const next = await auth.agentConnection.findUniqueOrThrow({
+            where: { id: current.connection.id }
+          })
+          expect(next.expiresAt).toEqual(context.connection.expiresAt)
+          expect(next.userId).toBe(context.connection.userId)
+          return next
+        }
+        const expanded = await apply(context, ['read-a', 'read-b'])
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        accessToken = await consent('alice', ['read-a', 'read-b'], 'view', {
+          id: expanded.id,
+          version: expanded.version
+        })
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect(
+          (await call('journey_read', { journeyId: 'read-b', view: 'steps' }))
+            .body
+        ).toContain('read-b-text-sentinel')
+        const reduced = await apply(await manageConnection(), ['read-b'])
+        accessToken = await consent('alice', ['read-b'], 'view', {
+          id: reduced.id,
+          version: reduced.version
+        })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect(
+          (await call('journey_read', { journeyId: 'read-b', view: 'steps' }))
+            .body
+        ).toContain('read-b-text-sentinel')
+        expect(
+          (
+            await call(
+              'journey_read',
+              { journeyId: 'read-a', view: 'steps' },
+              originalToken
+            )
+          ).body
+        ).not.toContain('read-a-text-sentinel')
+      })
+
+      it('does not treat killing an MCP replica as proof its accepted Journeys read stopped', async () => {
+        const context = await manageConnection()
+        const child = fork(
+          new URL(
+            '../../api-mcp/test/granted-read-process.ts',
+            import.meta.url
+          ),
+          [],
+          {
+            execArgv: ['--import', import.meta.resolve('tsx')],
+            stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+            env: {
+              ...process.env,
+              MCP_AUTH_MODE: 'granted-reads',
+              MCP_PUBLIC_URL: config.AUTH_AUDIENCE,
+              MCP_ISSUER_URL: config.AUTH_ISSUER,
+              MCP_GATEWAY_URL: gatewayUrl,
+              MCP_EXCHANGE_CLIENT_SECRET: exchangeSecret
+            }
+          }
+        )
+        const exited = new Promise<void>((resolve) =>
+          child.once('exit', () => resolve())
+        )
+        const port = await new Promise<number>((resolve, reject) => {
+          child.once('message', (message: { port: number }) =>
+            resolve(message.port)
+          )
+          child.once('exit', () =>
+            reject(new Error('MCP child exited before readiness'))
+          )
+        })
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const previousUrl = mcpUrl
+        try {
+          mcpUrl = `http://127.0.0.1:${port}/mcp`
+          const reading = readA().catch(() => undefined)
+          await pause.ready
+          const response = await context.post('disconnect')
+          const change = (await response.json()) as {
+            changeId: string
+            status: string
+          }
+          expect(change.status).toBe('pending')
+          child.kill('SIGKILL')
+          await exited
+          await reading
+          expect(
+            await auth.connectionChange.findUnique({
+              where: { id: change.changeId }
+            })
+          ).toMatchObject({ status: 'pending' })
+          expect(
+            await auth.readPermit.count({
+              where: {
+                connectionId: context.connection.id,
+                stage: 'read',
+                status: 'accepted'
+              }
+            })
+          ).toBe(1)
+          pause.resume()
+          await vi.waitFor(
+            async () =>
+              expect(
+                await auth.connectionChange.findUnique({
+                  where: { id: change.changeId }
+                })
+              ).toMatchObject({ status: 'complete' }),
+            { timeout: 5000 }
+          )
+        } finally {
+          mcpUrl = previousUrl
+          pause.resume()
+          child.kill('SIGKILL')
+          await exited
+        }
+      })
+
+      it('creates no durable executor state for junk-token metadata requests', async () => {
+        const before = await auth.readExecutor.count()
+        const response = await fetch(mcpUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer junk',
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'mcp-protocol-version': '2026-07-28',
+            'mcp-method': 'tools/list'
+          },
+          body: JSON.stringify(message('2026-07-28', 'tools/list'))
+        })
+        expect(response.status).toBe(200)
+        await response.text()
+        expect(await auth.readExecutor.count()).toBe(before)
       })
 
       it('rejects stale gate generations and final acceptance after a lock wait reaches expiry', async () => {

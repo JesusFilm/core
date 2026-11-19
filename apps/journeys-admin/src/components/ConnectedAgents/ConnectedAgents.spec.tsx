@@ -47,7 +47,7 @@ describe('ConnectedAgents', () => {
 
   afterEach(() => vi.unstubAllGlobals())
 
-  it('waits for the browser session and shows current grant metadata without management controls for withdrawal', async () => {
+  it('waits for the browser session and shows current grant metadata and disables changes while pending or disconnected', async () => {
     let ready!: () => void
     authStateReady.mockReturnValueOnce(
       new Promise<void>((resolve) => {
@@ -86,8 +86,8 @@ describe('ConnectedAgents', () => {
       screen.getByRole('button', { name: 'Renew connection pending' })
     ).toBeDisabled()
     expect(
-      screen.queryByRole('button', { name: 'Disconnect' })
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: 'Disconnect connection pending' })
+    ).toBeDisabled()
   })
 
   it('previews shortening before an explicit version-bound approval and shows the final expiry', async () => {
@@ -405,5 +405,177 @@ describe('connection management boundaries', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent('One month')
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
+  })
+
+  it('reviews the selected journeys and View only before a bound access approval, then shows Pending', async () => {
+    const requests: Array<{ url: string; body: Record<string, unknown> }> = []
+    let changed = false
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init: RequestInit) => {
+        const body = JSON.parse(init.body as string) as Record<string, unknown>
+        requests.push({ url, body })
+        if (url.endsWith('/access-options'))
+          return Response.json({
+            journeys: [
+              { id: 'a', title: 'Selected A' },
+              { id: 'c', title: 'New C' }
+            ]
+          })
+        if (url.endsWith('/access-review'))
+          return Response.json({
+            reviewToken: 'access-token',
+            version: 7,
+            mode: 'view',
+            expiresAt: connection.expiresAt,
+            journeys: [
+              { id: 'a', title: 'Selected A' },
+              { id: 'c', title: 'New C' }
+            ]
+          })
+        if (url.endsWith('/access-approve')) {
+          changed = true
+          return Response.json({ status: 'pending' })
+        }
+        return Response.json({
+          csrf: 'csrf',
+          connections: [
+            {
+              ...connection,
+              status: changed ? 'pending' : 'active',
+              change: changed
+                ? { id: 'change', kind: 'access', status: 'pending' }
+                : null
+            }
+          ],
+          nextCursor: null
+        })
+      })
+    )
+    render(<ConnectedAgents issuer="https://auth.example" />)
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'Change access for connection connection-a'
+      })
+    )
+    fireEvent.click(await screen.findByRole('checkbox', { name: 'New C' }))
+    fireEvent.click(
+      screen.getByRole('checkbox', {
+        name: 'Journey b is not currently accessible.'
+      })
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Review access change' })
+    )
+    expect(
+      await screen.findByRole('button', { name: 'Approve access change' })
+    ).toBeEnabled()
+    expect(
+      requests.find((r) => r.url.endsWith('/access-review'))?.body
+    ).toEqual({
+      csrf: 'csrf',
+      expectedVersion: 7,
+      clientId: 'client-a',
+      journeyIds: ['a', 'c'],
+      mode: 'view'
+    })
+    expect(requests.some((r) => r.url.endsWith('/access-approve'))).toBe(false)
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Approve access change' })
+    )
+    expect(
+      await screen.findByText(/Pending: new work is blocked/)
+    ).toBeVisible()
+    expect(
+      requests.find((r) => r.url.endsWith('/access-approve'))?.body
+    ).toEqual({
+      csrf: 'csrf',
+      expectedVersion: 7,
+      clientId: 'client-a',
+      reviewToken: 'access-token'
+    })
+    expect(
+      screen.getByRole('button', { name: 'Renew connection connection-a' })
+    ).toBeDisabled()
+    expect(screen.getByText('Expires at ' + connection.expiresAt)).toBeVisible()
+  })
+
+  it('requires explicit disconnect confirmation and displays its completed receipt', async () => {
+    let disconnected = false
+    const requests: Array<Record<string, unknown>> = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init: RequestInit) => {
+        if (url.endsWith('/disconnect')) {
+          disconnected = true
+          requests.push(
+            JSON.parse(init.body as string) as Record<string, unknown>
+          )
+          return Response.json({ status: 'complete' })
+        }
+        return Response.json({
+          csrf: 'csrf',
+          connections: [
+            {
+              ...connection,
+              status: disconnected ? 'disconnected' : 'active',
+              change: disconnected
+                ? { id: 'change', kind: 'disconnect', status: 'complete' }
+                : null
+            }
+          ],
+          nextCursor: null
+        })
+      })
+    )
+    render(<ConnectedAgents issuer="https://auth.example" />)
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'Disconnect connection connection-a'
+      })
+    )
+    expect(requests).toHaveLength(0)
+    expect(
+      screen.getByText(/Saved journeys and successful media are kept/)
+    ).toBeVisible()
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm disconnect' }))
+    expect(await screen.findByText('Change complete')).toBeVisible()
+    expect(requests).toEqual([
+      { csrf: 'csrf', expectedVersion: 7, clientId: 'client-a' }
+    ])
+    expect(
+      screen.getByRole('button', {
+        name: 'Change access for connection connection-a'
+      })
+    ).toBeDisabled()
+  })
+
+  it('keeps owner disconnect available when journey titles cannot be loaded', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        Response.json({
+          csrf: 'csrf',
+          titlesUnavailable: true,
+          connections: [
+            { ...connection, journeys: [{ id: 'a', title: null }] }
+          ],
+          nextCursor: null
+        })
+      )
+    )
+    render(<ConnectedAgents issuer="https://auth.example" />)
+    expect(
+      await screen.findByText(
+        'Journey titles are unavailable. You can still disconnect a connection.'
+      )
+    ).toBeVisible()
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Disconnect connection connection-a' })
+    )
+    expect(
+      screen.getByRole('button', { name: 'Confirm disconnect' })
+    ).toBeEnabled()
+    expect(screen.queryByText('Selected A')).not.toBeInTheDocument()
   })
 })

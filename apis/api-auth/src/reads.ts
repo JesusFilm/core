@@ -20,6 +20,7 @@ import {
   databaseTime,
   lockGates
 } from './store'
+import { reconcileConnectionChanges } from './withdrawal'
 
 const prepareInput = z
   .object({
@@ -185,6 +186,47 @@ export function createReadAuthority(
         return { credential: signEnvelope(claims, key) }
       })
     }
+    if (path === '/internal/reads/fence') {
+      const input = z
+        .object({
+          executorId: z.string().uuid(),
+          executor: z.enum(['journeys', 'mcp'])
+        })
+        .strict()
+        .parse(body)
+      if (!(input.executor === 'journeys' ? isOwner : isMcp))
+        throw new Error('Access denied')
+      // Only the participant which has positively stopped its guarded executor
+      // may report this. A fence can precede a delayed prepare or accept.
+      await db.readExecutor.upsert({
+        where: { id: input.executorId },
+        create: { id: input.executorId, executor: input.executor },
+        update: {}
+      })
+      await db.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "ReadExecutor" WHERE id = ${input.executorId} FOR UPDATE`
+        const executor = await tx.readExecutor.findUniqueOrThrow({
+          where: { id: input.executorId }
+        })
+        if (executor.executor !== input.executor)
+          throw new Error('Access denied')
+        const now = await databaseTime(tx)
+        await tx.readExecutor.update({
+          where: { id: executor.id },
+          data: { fencedAt: executor.fencedAt ?? now }
+        })
+        await tx.readPermit.updateMany({
+          where: { executorId: executor.id, status: 'accepted' },
+          data: { status: 'settled', settledAt: now }
+        })
+      })
+      await db.readPermit.updateMany({
+        where: { executorId: input.executorId, status: 'prepared' },
+        data: { status: 'cancelled', settledAt: await databaseTime(db) }
+      })
+      await reconcileConnectionChanges(db)
+      return { fenced: true }
+    }
     if (path === '/internal/reads/prepare') {
       if (!isOwner) throw new Error('Access denied')
       const input = prepareInput.parse(body)
@@ -208,20 +250,47 @@ export function createReadAuthority(
           `user-team:${connection.userId}:${teamId}`
         ])
       ])
-      const permit = await db.readPermit.create({
-        data: {
-          connectionId: connection.id,
-          grantVersion: connection.version,
-          requestId: claims.requestId,
-          requestHash: claims.requestHash,
-          stage: input.stage,
-          executor: input.stage === 'read' ? 'journeys' : 'mcp',
-          executorId: input.executorId,
-          journeyIds: input.resources.map((resource) => resource.journeyId),
-          gates,
-          preparedAt: await databaseTime(db),
-          outputHash: input.outputHash
-        }
+      const executor = input.stage === 'read' ? 'journeys' : 'mcp'
+      await db.readExecutor.upsert({
+        where: { id: input.executorId },
+        create: { id: input.executorId, executor },
+        update: {}
+      })
+      const permit = await db.$transaction(async (tx) => {
+        await lockGates(tx, gates)
+        await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`
+        const current = await tx.agentConnection.findUniqueOrThrow({
+          where: { id: connection.id }
+        })
+        const now = await databaseTime(tx)
+        if (
+          current.version !== connection.version ||
+          current.revokedAt ||
+          current.expiresAt <= now ||
+          claims.expiresAt <= now.getTime()
+        )
+          throw new Error('Access denied')
+        await tx.$queryRaw`SELECT id FROM "ReadExecutor" WHERE id = ${input.executorId} FOR UPDATE`
+        const sender = await tx.readExecutor.findUniqueOrThrow({
+          where: { id: input.executorId }
+        })
+        if (sender.fencedAt || sender.executor !== executor)
+          throw new Error('Access denied')
+        return await tx.readPermit.create({
+          data: {
+            connectionId: connection.id,
+            grantVersion: connection.version,
+            requestId: claims.requestId,
+            requestHash: claims.requestHash,
+            stage: input.stage,
+            executor: input.stage === 'read' ? 'journeys' : 'mcp',
+            executorId: input.executorId,
+            journeyIds: input.resources.map((resource) => resource.journeyId),
+            gates,
+            preparedAt: await databaseTime(tx),
+            outputHash: input.outputHash
+          }
+        })
       })
       return { permitId: permit.id }
     }
@@ -253,6 +322,11 @@ export function createReadAuthority(
       await db.$transaction(async (tx) => {
         await lockGates(tx, gates)
         await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`
+        await tx.$queryRaw`SELECT id FROM "ReadExecutor" WHERE id = ${permit.executorId} FOR UPDATE`
+        const executor = await tx.readExecutor.findUniqueOrThrow({
+          where: { id: permit.executorId }
+        })
+        if (executor.fencedAt) throw new Error('Executor fenced')
         await tx.$queryRaw`SELECT id FROM "ReadPermit" WHERE id = ${permit.id} FOR UPDATE`
         const current = await tx.agentConnection.findUniqueOrThrow({
           where: { id: connection.id }
@@ -299,6 +373,7 @@ export function createReadAuthority(
         where: { id: permit.id, status: 'accepted' },
         data: { status: 'settled', settledAt: await databaseTime(db) }
       })
+      await reconcileConnectionChanges(db)
       return { settled: true }
     }
     if (path === '/internal/reads/deny') {

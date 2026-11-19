@@ -1,4 +1,4 @@
-name: MCP read and renewal coverage
+name: MCP read, renewal and withdrawal coverage
 
 on:
   pull_request:
@@ -28,7 +28,7 @@ jobs:
     needs: base-coverage
     if: ${{ !cancelled() && (needs.base-coverage.result == 'success' || needs.base-coverage.result == 'skipped') }}
     runs-on: jfp-proxmox-core
-    timeout-minutes: 30
+    timeout-minutes: 60
     services:
       postgres:
         image: postgres:16
@@ -66,12 +66,31 @@ jobs:
           name: mcp-read-coverage
           path: coverage/apis/api-auth
           if-no-files-found: error
+      - name: List the explicit project coverage reports
+        id: coverage-reports
+        run: |
+          python3 - <<'PY_REPORTS'
+          import glob, os
+          import xml.etree.ElementTree as ET
+          files = sorted(glob.glob('coverage/**/cobertura-coverage.xml', recursive=True))
+          if not files:
+              raise SystemExit('No project coverage reports were produced')
+          empty = [path for path in files if int(ET.parse(path).getroot().get('lines-valid', '0')) == 0]
+          for path in empty:
+              print('Empty report is not coverage evidence:', path)
+          files = [path for path in files if path not in empty]
+          if not files:
+              raise SystemExit('No non-empty project coverage reports were produced')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('files=' + ','.join(files) + '\n')
+          print('Verified', len(files), 'non-empty project coverage reports')
+          PY_REPORTS
       - name: Merge full-path execution hits into Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/apis/api-auth/cobertura-coverage.xml
-          flags: apps.api-auth
+          files: ${{ steps.coverage-reports.outputs.files }}
+          flags: mcp-complete-projects
           disable_search: true
           fail_ci_if_error: true
   base-coverage:
@@ -130,11 +149,32 @@ jobs:
           name: mcp-base-coverage
           path: coverage
           if-no-files-found: error
+      - name: List the explicit project coverage reports
+        id: coverage-reports
+        run: |
+          python3 - <<'PY_REPORTS'
+          import glob, os
+          import xml.etree.ElementTree as ET
+          files = sorted(glob.glob('coverage/**/cobertura-coverage.xml', recursive=True))
+          if not files:
+              raise SystemExit('No project coverage reports were produced')
+          empty = [path for path in files if int(ET.parse(path).getroot().get('lines-valid', '0')) == 0]
+          for path in empty:
+              print('Empty report is not coverage evidence:', path)
+          files = [path for path in files if path not in empty]
+          if not files:
+              raise SystemExit('No non-empty project coverage reports were produced')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('files=' + ','.join(files) + '\n')
+          print('Verified', len(files), 'non-empty project coverage reports')
+          PY_REPORTS
       - name: Upload reports against the actual base commit
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: coverage
+          files: ${{ steps.coverage-reports.outputs.files }}
+          disable_search: true
+          flags: mcp-complete-projects
           override_commit: ${{ github.event.pull_request.base.sha }}
           override_branch: ${{ github.base_ref }}
           fail_ci_if_error: true
