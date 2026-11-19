@@ -25,6 +25,7 @@ import {
 import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
+import { Card } from './Card'
 import {
   action,
   block,
@@ -47,8 +48,6 @@ import {
   textResponseBlock,
   videoBlock
 } from './Card.mock'
-
-import { Card } from '.'
 
 vi.mock('../../libs/blurImage', () => ({
   __esModule: true,
@@ -84,6 +83,10 @@ vi.mock('next-plausible', () => ({
 const mockUsePlausible = usePlausible as MockedFunction<typeof usePlausible>
 
 describe('CardBlock', () => {
+  beforeAll(async () => {
+    await vi.dynamicImportSettled()
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
     treeBlocksVar([])
