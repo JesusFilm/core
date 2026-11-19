@@ -14,7 +14,7 @@ import {
   enqueueVideoAlgoliaSync,
   videoOnlyScope
 } from '../../workers/videoAlgoliaSync'
-import { builder } from '../builder'
+import { Context, builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { IdType, IdTypeShape } from '../enums/idType'
@@ -59,6 +59,18 @@ function isValidClientName(clientName?: string): boolean {
     clientName != null &&
     clientName !== '' &&
     Object.values(PrismaPlatform).includes(clientName as PrismaPlatform)
+  )
+}
+
+// `clientName` is read straight off a client-supplied header (see yoga.ts), so it
+// can be spoofed by any caller of the public video/videos query. Require the
+// caller to also be an authenticated publisher before trusting it for the
+// videos-admin unpublished/incomplete override below.
+function isVideosAdminContext(context: Context): boolean {
+  return (
+    context.clientName === 'videos-admin' &&
+    context.type === 'authenticated' &&
+    context.currentRoles.includes('publisher')
   )
 }
 
@@ -426,7 +438,7 @@ builder.prismaObjectField(Video, 'children', (t) =>
         availableLanguages: { isEmpty: false }
       }
       // Display unpublished and incomplete children in videos-admin
-      if (context.clientName != null && context.clientName === 'videos-admin') {
+      if (isVideosAdminContext(context)) {
         whereCondition.published = undefined
         whereCondition.availableLanguages = undefined
       }
@@ -462,6 +474,11 @@ builder.prismaObjectField(Video, 'parents', (t) =>
         // Only show published parents with available languages
         published: true,
         availableLanguages: { isEmpty: false }
+      }
+      // Display unpublished and incomplete parents in videos-admin
+      if (isVideosAdminContext(context)) {
+        whereCondition.published = undefined
+        whereCondition.availableLanguages = undefined
       }
       if (isValidClientName(context.clientName)) {
         whereCondition.NOT = {
