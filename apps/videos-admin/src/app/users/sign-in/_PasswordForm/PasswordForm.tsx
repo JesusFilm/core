@@ -5,7 +5,6 @@ import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
-import { FirebaseError } from 'firebase/app'
 import { FormEvent, ReactElement, ReactNode, useState } from 'react'
 
 export interface PasswordFormValue {
@@ -18,7 +17,7 @@ interface PasswordFormProps {
   loading: boolean
   onSubmit: (value: PasswordFormValue) => void
   disabled?: boolean
-  error?: FirebaseError
+  error?: Error
 }
 export function PasswordForm({
   children,
