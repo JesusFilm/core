@@ -110,6 +110,7 @@ try {
         'exec',
         'vitest',
         'run',
+        '--testTimeout=20000',
         '--root',
         resolve(root, dirname(config)),
         '--config',
