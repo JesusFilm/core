@@ -79,9 +79,19 @@
         "{workspaceRoot}/.github/workflows/autofix.ci.yml",
         "{workspaceRoot}/package.json",
         "{workspaceRoot}/pnpm-lock.yaml",
-        { "env": "APOLLO_GRAPHQL_VERSION" },
-        { "externalDependencies": ["gql.tada"] }
+        {
+          "env": "APOLLO_GRAPHQL_VERSION"
+        },
+        {
+          "externalDependencies": ["gql.tada"]
+        }
       ]
+    },
+    "codecov": {
+      "cache": false,
+      "options": {
+        "args": ["-X", "search"]
+      }
     },
     "extract-translations": {
       "cache": false,
@@ -102,6 +112,12 @@
     "@nx/vitest:test": {
       "cache": true,
       "inputs": ["default", "^production"]
+    },
+    "codecov": {
+      "cache": false,
+      "options": {
+        "args": ["-X", "search"]
+      }
     }
   },
   "namedInputs": {

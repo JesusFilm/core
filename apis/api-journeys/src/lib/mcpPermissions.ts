@@ -102,6 +102,16 @@ function deny(): never {
   })
 }
 
+function assertAccountCleanupResult(value: unknown): void {
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'success' in value &&
+    value.success !== true
+  )
+    throw new Error('Account cleanup did not commit')
+}
+
 const stringId = (value: unknown): string =>
   z.string().min(1).max(200).parse(value)
 
@@ -480,11 +490,25 @@ export function createJourneyPermissionCoordinator(
     const execution = await db.mcpPermissionExecution.findUniqueOrThrow({
       where: { id }
     })
-    const state = await authority('begin', {
+    const input = {
       changeId: id,
       gateIds: execution.gateIds,
       intentHash: execution.intentHash
-    })
+    }
+    let state: z.infer<typeof coordinatorResult>
+    if (execution.gateIds.length <= 1000) {
+      state = await authority('begin', input)
+    } else {
+      const gateIdsHash = fingerprint(execution.gateIds)
+      for (let offset = 0; offset < execution.gateIds.length; offset += 250) {
+        await authority('begin', {
+          ...input,
+          gateIds: execution.gateIds.slice(offset, offset + 250),
+          page: { offset, gateCount: execution.gateIds.length, gateIdsHash }
+        })
+      }
+      state = await authority('status', { changeId: id })
+    }
     if (state.status === 'pending')
       throw new GraphQLError('permission change is pending accepted work', {
         extensions: { code: 'PERMISSION_CHANGE_PENDING', changeId: id }
@@ -546,15 +570,8 @@ export function createJourneyPermissionCoordinator(
               )
             )
           )
-          if (
-            intent.field === 'userDeleteJourneysConfirm' &&
-            operation &&
-            typeof value === 'object' &&
-            value !== null &&
-            'success' in value &&
-            value.success !== true
-          )
-            throw new Error('Account cleanup did not commit')
+          if (intent.field === 'userDeleteJourneysConfirm' && operation)
+            assertAccountCleanupResult(value)
           await tx.mcpPermissionExecution.update({
             where: { id },
             data: {
@@ -930,14 +947,8 @@ export function coordinateJourneyPermissionMutations(
       if (context.type !== 'authenticated') deny()
       if (replayScope.getStore()) {
         const value: unknown = await resolve(parent, args, context, info)
-        if (
-          field === 'userDeleteJourneysConfirm' &&
-          typeof value === 'object' &&
-          value !== null &&
-          'success' in value &&
-          value.success !== true
-        )
-          throw new Error('Account cleanup did not commit')
+        if (field === 'userDeleteJourneysConfirm')
+          assertAccountCleanupResult(value)
         return value
       }
       return coordinator.run(
