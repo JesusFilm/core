@@ -33,6 +33,32 @@ describe('Dialog', () => {
     expect(dialogProps.onClose).toHaveBeenCalled()
   })
 
+  it.each([false, true])(
+    'closes on Escape (custom key handler: %s)',
+    (hasKeyHandler) => {
+      const onClose = vi.fn()
+      const onKeyDown = vi.fn()
+      const { getByRole } = render(
+        <Dialog
+          {...dialogProps}
+          onClose={onClose}
+          onKeyDown={hasKeyHandler ? onKeyDown : undefined}
+        />
+      )
+
+      fireEvent.keyDown(getByRole('dialog', { name: 'Title' }), {
+        key: 'Escape'
+      })
+
+      if (hasKeyHandler) {
+        expect(onKeyDown).toHaveBeenCalledWith(
+          expect.objectContaining({ key: 'Escape' })
+        )
+      }
+      expect(onClose).toHaveBeenCalledTimes(1)
+    }
+  )
+
   describe('dialogAction', () => {
     const input: ComponentProps<typeof Dialog> = {
       ...dialogProps,

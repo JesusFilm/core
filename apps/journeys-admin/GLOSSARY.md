@@ -125,9 +125,23 @@ _Avoid_: bar
 
 **First-run Hint**:
 The one dismissible hint shown in the Canvas banner the first time a Campaign opens, recorded per Campaign. It is not a tour or a wizard.
-_Avoid_: tour, onboarding (that is the dashboard flow), tooltip
+_Avoid_: tour, onboarding (that is the Homepage flow), tooltip
+
+### App Shell
+
+**App Shell**:
+The frame most admin pages sit inside: the **Global Nav**, a top bar on mobile, the page's main area and an optional secondary column. The Editor and the Campaign Editor are full-screen and sit outside it; signed-out visitors to the Template Gallery get it without the Global Nav.
+_Avoid_: PageWrapper (the code name), layout, chrome, frame
+
+**Global Nav**:
+The App Shell's navigation, the same on every page that shows it: links to the **Homepage** (Projects) and the Template Gallery (Templates), and the signed-in creator's avatar menu. A fixed left column on desktop; on mobile it slides in from the top bar.
+_Avoid_: navigation drawer, drawer (that is the Editor's), sidebar, nav rail (the Campaign Editor has the Left Rail)
 
 ### Journey management
+
+**Homepage**:
+Where a signed-in creator lands: the selected Team's work in content tabs, **Team Projects** (its journeys), **Team Templates** and, when enabled, **Team Campaigns**. With **Shared With Me** chosen in place of a Team, it shows only the journeys others have shared with the creator, and no tabs.
+_Avoid_: dashboard (that is the analytics surfaces), projects page, landing page
 
 **Status Tabs**:
 The three lifecycle views of the journey list: **Active** (working journeys, drafts and published alike — publish state is a property, not a tab), **Archived**, and **Trash**.
@@ -228,7 +242,7 @@ _Avoid_: plugin, connector, app
 ### Onboarding & account
 
 **Onboarding**:
-The first-run experience: the starter-template panel on an empty dashboard, the create-your-first-team flow, and the terms-and-conditions gate. Distinct from Quick-Start Customization (template-scoped) and Quick Settings (journey-scoped).
+The first-run experience: the starter-template panel on an empty Homepage, the create-your-first-team flow, and the terms-and-conditions gate. Distinct from Quick-Start Customization (template-scoped) and Quick Settings (journey-scoped).
 _Avoid_: welcome flow, setup
 
 **Email Preferences**:

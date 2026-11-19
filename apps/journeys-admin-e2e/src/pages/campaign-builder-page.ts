@@ -1,6 +1,8 @@
 import { expect } from '@playwright/test'
 import type { FrameLocator, Locator, Page } from 'playwright-core'
 
+import { getTeamName } from '../framework/helpers'
+
 // Kept in sync with `LANDING_SECTION_SEED` (api-journeys `campaign/seed/sections.ts`)
 export const DEFAULT_HERO_TITLE = 'Share the story'
 export const NEW_REGION_NAME = 'New region'
@@ -10,6 +12,8 @@ export const CAMPAIGN_LANGUAGE = 'English'
 export const CAMPAIGN_EDITOR_VIEWPORT = { width: 1920, height: 1080 }
 // Kept in sync with `REGION_SECTION_SEED` (api-journeys `campaign/seed/sections.ts`)
 const REGION_SHARE_TITLE = 'Share this journey'
+// Kept in sync with the body placeholder of `SectionText` (journeys-admin `CampaignEditor`)
+const RICH_TEXT_PLACEHOLDER = 'Your text'
 
 export class CampaignBuilderPage {
   readonly page: Page
@@ -52,6 +56,37 @@ export class CampaignBuilderPage {
       this.page.getByRole('tab', { name: /Campaigns$/ }),
       'Campaigns tab not shown: the `campaignBuilder` flag is off for PLAYWRIGHT_EMAIL'
     ).toHaveAttribute('aria-selected', 'true')
+    await this.selectTeam(await getTeamName())
+  }
+
+  /**
+   * A new campaign goes to the active team: the team the account last
+   * switched to, saved on the server by anyone using it, by hand on stage
+   * included. Selecting it here also keeps this tab on it after later
+   * navigations.
+   */
+  private async selectTeam(teamName: string): Promise<void> {
+    const teamSelect = this.page.getByTestId('TeamSelect').getByRole('combobox')
+    // 90s: the teams query behind TeamProvider is slow on a cold run
+    await expect(teamSelect).not.toHaveAttribute('aria-disabled', 'true', {
+      timeout: 90000
+    })
+    await teamSelect.click()
+    const options = this.page.getByRole('option')
+    await expect(options.first()).toBeVisible()
+    // An option's first line is its team title; the members' avatars follow it
+    const titles = (await options.allInnerTexts()).map((text) =>
+      text.split('\n')[0].trim()
+    )
+    const matches = titles.flatMap((title, index) =>
+      title === teamName ? [index] : []
+    )
+    expect(
+      matches,
+      `PLAYWRIGHT_EMAIL must belong to exactly one team titled "${teamName}"`
+    ).toHaveLength(1)
+    await options.nth(matches[0]).click()
+    await expect(teamSelect).toHaveText(teamName)
   }
 
   async createCampaign(
@@ -104,7 +139,7 @@ export class CampaignBuilderPage {
     await this.openSettingsTab()
     await expect(
       this.page.getByRole('button', { name: 'Delete campaign' }),
-      'PLAYWRIGHT_EMAIL is not a manager of its active team; the campaign is left for the e2eCleanup sweep'
+      'PLAYWRIGHT_EMAIL is not a manager of PLAYWRIGHT_TEAM_NAME; the campaign is left for the e2eCleanup sweep'
     ).toBeVisible()
   }
 
@@ -178,7 +213,8 @@ export class CampaignBuilderPage {
   /**
    * Adds a Rich text section below the selected section from the Add Panel;
    * the new section is selected, so its Title is typed straight into the
-   * canvas.
+   * canvas. The box is found within that section: until the new section
+   * renders, the hero's Title box is the only one on the canvas.
    */
   async addRichTextSectionBelowSelection(title: string): Promise<void> {
     await this.openRailPanel('Add')
@@ -187,7 +223,11 @@ export class CampaignBuilderPage {
       .getByRole('button', { name: 'Rich text', exact: true })
       .click()
 
-    const titleInput = this.canvas.getByRole('textbox', { name: 'Title' })
+    // Only a new Rich text section shows the "Your text" placeholder
+    const richTextSection = this.canvas
+      .locator('section')
+      .filter({ hasText: RICH_TEXT_PLACEHOLDER })
+    const titleInput = richTextSection.getByRole('textbox', { name: 'Title' })
     // The title shows optimistically and its write is debounced, and no UI
     // signal reports that it was saved, so wait for the request itself:
     // publishing or deleting before it lands would race the save.
@@ -195,7 +235,7 @@ export class CampaignBuilderPage {
       (response) =>
         response.request().method() === 'POST' &&
         (response.request().postData() ?? '').includes(
-          'CampaignRichTextBlockUpdateText'
+          'CampaignRichTextBlockUpdate'
         ) &&
         response.ok()
     )
@@ -206,8 +246,25 @@ export class CampaignBuilderPage {
   }
 
   async addRegionFromSwitcher(): Promise<void> {
+    // The region shows at once with a placeholder Share Language row; the
+    // saved row replaces it once the create's reply is read, closing any
+    // journey picker opened on the placeholder, so wait for the whole reply
+    const regionSaved = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' &&
+        (response.request().postData() ?? '').includes(
+          'CampaignRegionCreate'
+        ) &&
+        response.ok()
+    )
     await this.canvas.getByRole('button', { name: 'Add', exact: true }).click()
-    await expect(this.canvas.getByText(NEW_REGION_NAME)).toBeVisible()
+    await (await regionSaved).finished()
+    // By its card: the region's analytics chip shows the same name
+    await expect(
+      this.canvas
+        .getByTestId('RegionCardName')
+        .filter({ hasText: NEW_REGION_NAME })
+    ).toBeVisible()
   }
 
   async openRegionPage(): Promise<void> {
