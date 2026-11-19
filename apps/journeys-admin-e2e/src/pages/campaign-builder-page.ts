@@ -247,8 +247,8 @@ export class CampaignBuilderPage {
 
   async addRegionFromSwitcher(): Promise<void> {
     // The region shows at once with a placeholder Share Language row; the
-    // saved row replaces it when the create returns, closing any journey
-    // picker opened on the placeholder, so wait for the save itself
+    // saved row replaces it once the create's reply is read, closing any
+    // journey picker opened on the placeholder, so wait for the whole reply
     const regionSaved = this.page.waitForResponse(
       (response) =>
         response.request().method() === 'POST' &&
@@ -258,7 +258,7 @@ export class CampaignBuilderPage {
         response.ok()
     )
     await this.canvas.getByRole('button', { name: 'Add', exact: true }).click()
-    await regionSaved
+    await (await regionSaved).finished()
     // By its card: the region's analytics chip shows the same name
     await expect(
       this.canvas
