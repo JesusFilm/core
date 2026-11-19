@@ -491,7 +491,7 @@ describe('structural integration', () => {
         }
       )
 
-      it('checks current website mode after acquiring the owning journey lock', async () => {
+      it('rejects an intervening website mode change and rejects slug writes after refreshing', async () => {
         await f.journeys.journey.update({
           where: { id: f.journeyId },
           data: { website: true }
@@ -512,12 +512,17 @@ describe('structural integration', () => {
         )
         f.checkpoint = undefined
         expect(rejected.json.result?.isError, rejected.text).toBe(true)
-        expect(rejected.text).toContain('VALIDATION_FAILED')
+        expect(rejected.text).toContain('REVISION_CONFLICT')
         const after = await f.snapshot()
         expect(after.blocks).toEqual(before.blocks)
         expect(after.actions).toEqual(before.actions)
         expect(after.counts).toEqual(before.counts)
         expect(after.journey.website).toBe(false)
+        const refreshed = await assertRejected([
+          defaults('c'),
+          { type: 'card_slug_set', step: ref(f.id('b')), slug: 'learn-more' }
+        ])
+        expect(refreshed.text).toContain('VALIDATION_FAILED')
       })
 
       it.each(['learn-more', null])(
