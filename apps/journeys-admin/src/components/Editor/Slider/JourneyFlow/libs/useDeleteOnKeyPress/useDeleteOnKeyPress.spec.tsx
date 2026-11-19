@@ -1,6 +1,6 @@
 import type { useMutation } from '@apollo/client/react'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, screen, waitFor } from '@testing-library/react'
 import { Edge, OnSelectionChangeParams, useKeyPress } from '@xyflow/react'
 import { type MockedFunction } from 'vitest'
 
@@ -17,6 +17,8 @@ import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
 import { StepFields as StepBlock } from '../../../../../../../__generated__/StepFields'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import { BlockDeleteProvider } from '../../../../BlockDeleteProvider'
+import { trackedStep } from '../../../../BlockDeleteProvider/data'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
@@ -62,7 +64,9 @@ describe('useDeleteOnKeyPress', () => {
     mockUseKeyPress.mockReturnValueOnce(false)
 
     const initialState = {
-      selectedBlock: null,
+      selectedBlock: trackedStep,
+      selectedStep: trackedStep,
+      steps: [trackedStep],
       activeSlide: ActiveSlide.JourneyFlow
     } as unknown as EditorState
     const edge = {
@@ -77,7 +81,9 @@ describe('useDeleteOnKeyPress', () => {
       wrapper: ({ children }) => (
         <EditorProvider initialState={initialState}>
           <MockedProvider>
-            <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+            <MuxVideoUploadProvider>
+              <BlockDeleteProvider>{children}</BlockDeleteProvider>
+            </MuxVideoUploadProvider>
           </MockedProvider>
         </EditorProvider>
       )
@@ -86,14 +92,17 @@ describe('useDeleteOnKeyPress', () => {
     mockUseKeyPress.mockReturnValueOnce(true)
     await act(async () => result.current.onSelectionChange(selectionParams))
 
-    await waitFor(async () => expect(deleteEdge).toHaveBeenCalled())
+    await waitFor(async () => expect(deleteEdge).toHaveBeenCalledTimes(1))
+    expect(deleteBlock).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('should delete a node', async () => {
     mockUseKeyPress.mockReturnValueOnce(false)
     const stepBlock = {
       __typename: 'StepBlock',
-      id: 'step.id'
+      id: 'step.id',
+      children: []
     } as unknown as TreeBlock<StepBlock>
     const initialState = {
       selectedBlock: stepBlock,
@@ -107,7 +116,9 @@ describe('useDeleteOnKeyPress', () => {
         <JourneyProvider value={{ journey: defaultJourney }}>
           <EditorProvider initialState={initialState}>
             <MockedProvider>
-              <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+              <MuxVideoUploadProvider>
+                <BlockDeleteProvider>{children}</BlockDeleteProvider>
+              </MuxVideoUploadProvider>
             </MockedProvider>
           </EditorProvider>
         </JourneyProvider>
@@ -120,7 +131,8 @@ describe('useDeleteOnKeyPress', () => {
     mockUseKeyPress.mockReturnValue(false)
     const stepBlock = {
       __typename: 'StepBlock',
-      id: 'step.id'
+      id: 'step.id',
+      children: []
     } as unknown as TreeBlock<StepBlock>
     const initialState = {
       selectedBlock: stepBlock,
@@ -138,7 +150,9 @@ describe('useDeleteOnKeyPress', () => {
         <JourneyProvider value={{ journey: defaultJourney }}>
           <EditorProvider initialState={initialState}>
             <MockedProvider>
-              <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+              <MuxVideoUploadProvider>
+                <BlockDeleteProvider>{children}</BlockDeleteProvider>
+              </MuxVideoUploadProvider>
             </MockedProvider>
           </EditorProvider>
         </JourneyProvider>

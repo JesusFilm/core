@@ -1801,5 +1801,7 @@
   "Leave the editor?": "Leave the editor?",
   "Stay": "Stay",
   "Leave": "Leave",
-  "The translation into {{language}} stops.": "The translation into {{language}} stops."
+  "The translation into {{language}} stops.": "The translation into {{language}} stops.",
+  "Delete content with tracking?": "Delete content with tracking?",
+  "This content has tracking configured. Deleting it will stop those events from being recorded here.": "This content has tracking configured. Deleting it will stop those events from being recorded here."
 }
