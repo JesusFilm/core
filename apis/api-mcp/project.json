@@ -7,9 +7,7 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": [
-        "{workspaceRoot}/dist/apis/api-mcp"
-      ],
+      "outputs": ["{workspaceRoot}/dist/apis/api-mcp"],
       "options": {
         "command": "pnpm exec esbuild apis/api-mcp/src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/apis/api-mcp/main.cjs"
       }
@@ -22,9 +20,7 @@
     },
     "start": {
       "executor": "nx:run-commands",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
         "command": "bash apis/api-mcp/start-local.sh start"
       }
@@ -32,9 +28,7 @@
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": [
-          "apis/api-mcp/**/*.ts"
-        ]
+        "lintFilePatterns": ["apis/api-mcp/**/*.ts"]
       }
     },
     "type-check": {
