@@ -69,6 +69,7 @@ export async function planStructureHistory(
   tx: Prisma.TransactionClient,
   journey: {
     id: string
+    website: boolean | null
     menuStepBlockId: string | null
     socialNodeX: number | null
     socialNodeY: number | null
@@ -121,6 +122,7 @@ export async function planStructureHistory(
       .map((change) => change.id)
   )
   for (const change of inverse.blocks) {
+    if (change.fields.includes('slug') && journey.website !== true) conflict()
     const row = state.blocks.get(change.id),
       expected = change[expectedSide],
       next = change[nextSide]

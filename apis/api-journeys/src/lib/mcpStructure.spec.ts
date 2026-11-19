@@ -14,6 +14,7 @@ import {
 
 const journey = {
   id: 'journey',
+  website: false,
   menuStepBlockId: null,
   socialNodeX: null,
   socialNodeY: null

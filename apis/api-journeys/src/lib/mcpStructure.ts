@@ -34,6 +34,7 @@ export type { StructureInverse, StructurePlan } from './mcpStructureState'
 
 type Journey = {
   id: string
+  website: boolean | null
   menuStepBlockId: string | null
   socialNodeX: number | null
   socialNodeY: number | null
@@ -600,6 +601,7 @@ export async function planStructure(
       state.journey.socialNodeX = -240
       state.journey.socialNodeY = -46
     } else if (command.type === 'card_slug_set') {
+      if (journey.website !== true) fail()
       const row = resolve(command.step, 'StepBlock')
       stepFor(row)
       claim(idOf(row), 'slug')

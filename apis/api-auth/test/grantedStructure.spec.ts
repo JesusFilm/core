@@ -461,6 +461,10 @@ describe('structural integration', () => {
       })
 
       it('sets and clears the website Card slug on its Step and rejects duplicate slugs atomically', async () => {
+        await f.journeys.journey.update({
+          where: { id: f.journeyId },
+          data: { website: true }
+        })
         await f.save([
           { type: 'card_slug_set', step: ref(f.id('b')), slug: 'learn-more' }
         ])
@@ -474,6 +478,88 @@ describe('structural integration', () => {
         ])
         expect(await block('b')).toMatchObject({ slug: null })
       })
+
+      it.each(['learn-more', '', null])(
+        'rejects a mixed batch with slug %j when website mode is off',
+        async (slug) => {
+          expect((await f.snapshot()).journey.website).toBe(false)
+          const rejected = await assertRejected([
+            defaults('c'),
+            { type: 'card_slug_set', step: ref(f.id('b')), slug }
+          ])
+          expect(rejected.text).toContain('VALIDATION_FAILED')
+        }
+      )
+
+      it('checks current website mode after acquiring the owning journey lock', async () => {
+        await f.journeys.journey.update({
+          where: { id: f.journeyId },
+          data: { website: true }
+        })
+        const before = await f.snapshot()
+        f.checkpoint = async (current) => {
+          if (current !== 'before_accept') return
+          await f.journeys.journey.update({
+            where: { id: f.journeyId },
+            data: { website: false }
+          })
+        }
+        const rejected = await f.edit(
+          await f.input([
+            defaults('c'),
+            { type: 'card_slug_set', step: ref(f.id('b')), slug: 'learn-more' }
+          ])
+        )
+        f.checkpoint = undefined
+        expect(rejected.json.result?.isError, rejected.text).toBe(true)
+        expect(rejected.text).toContain('VALIDATION_FAILED')
+        const after = await f.snapshot()
+        expect(after.blocks).toEqual(before.blocks)
+        expect(after.actions).toEqual(before.actions)
+        expect(after.counts).toEqual(before.counts)
+        expect(after.journey.website).toBe(false)
+      })
+
+      it.each(['learn-more', null])(
+        'requires website mode for undo and redo of a mixed slug edit to %j',
+        async (slug) => {
+          await f.journeys.journey.update({
+            where: { id: f.journeyId },
+            data: { website: true }
+          })
+          await f.journeys.block.update({
+            where: { id: f.id('b') },
+            data: { slug: 'original-slug' }
+          })
+          const originalDefault = (await block('a')).nextBlockId
+          const saved = await f.save([
+            defaults('c'),
+            { type: 'card_slug_set', step: ref(f.id('b')), slug }
+          ])
+          for (const direction of ['undo', 'redo'] as const) {
+            await f.journeys.journey.update({
+              where: { id: f.journeyId },
+              data: { website: false }
+            })
+            const before = await f.snapshot()
+            const rejected = await f.historyAction(direction, saved.historyId!)
+            expect(rejected.json.result?.isError, rejected.text).toBe(true)
+            expect(rejected.text).toContain('HISTORY_CONFLICT')
+            expect(await f.snapshot()).toEqual(before)
+            await f.journeys.journey.update({
+              where: { id: f.journeyId },
+              data: { website: true }
+            })
+            f.receipt(await f.historyAction(direction, saved.historyId!))
+            expect(await block('b')).toMatchObject({
+              slug: direction === 'undo' ? 'original-slug' : slug
+            })
+            expect((await block('a')).nextBlockId).toBe(
+              direction === 'undo' ? originalDefault : f.id('c')
+            )
+          }
+        }
+      )
 
       it('duplicates a complete Step with owned ID remapping, order, Video and authorized external action references', async () => {
         const source = await f.snapshot()
