@@ -3102,6 +3102,7 @@ describe('saved edit integration', () => {
                       title: 'Foreign draft',
                       slug: randomUUID(),
                       languageId: '529',
+                      teamId: 'edit-team-bob',
                       status: 'draft'
                     }
                   })
