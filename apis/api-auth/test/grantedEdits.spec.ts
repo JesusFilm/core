@@ -1074,21 +1074,35 @@ describe('saved edit integration', () => {
         }
         const saving = edit(input)
         await pause.ready
-        await journeys.userTeam.deleteMany({
-          where: { userId: 'alice', teamId: 'edit-team-alice' }
+        const membership = await journeys.userTeam.findUniqueOrThrow({
+          where: {
+            teamId_userId: { teamId: 'edit-team-alice', userId: 'alice' }
+          }
         })
-        pause.resume()
-        expect((await saving).json.result?.isError).toBe(true)
-        expect(
-          await journeys.block.findUnique({
-            where: { id: `${journeyId}-text` }
+        await journeys.userTeam.delete({ where: { id: membership.id } })
+        try {
+          pause.resume()
+          expect((await saving).json.result?.isError).toBe(true)
+          expect(
+            await journeys.block.findUnique({
+              where: { id: `${journeyId}-text` }
+            })
+          ).toMatchObject({ content: 'Original heading' })
+          expect(await counts()).toEqual({
+            operations: 0,
+            history: 0,
+            effects: 0
           })
-        ).toMatchObject({ content: 'Original heading' })
-        expect(await counts()).toEqual({
-          operations: 0,
-          history: 0,
-          effects: 0
-        })
+        } finally {
+          pause.resume()
+          await journeys.userTeam.create({
+            data: {
+              teamId: membership.teamId,
+              userId: membership.userId,
+              role: membership.role
+            }
+          })
+        }
       })
 
       it('fences an accepted executor while its coordinator response is delayed', async () => {
