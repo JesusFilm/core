@@ -29,7 +29,8 @@ import {
   trackedOption,
   trackedStep,
   trackedVideo,
-  untrackedButton
+  untrackedButton,
+  untrackedVideo
 } from './data'
 
 function KeyboardDelete(): ReactElement {
@@ -238,12 +239,19 @@ describe('BlockDeleteProvider', () => {
     expect(deleteResult).toHaveBeenCalledTimes(1)
   })
 
-  it('deletes an untracked target immediately despite tracked siblings', async () => {
-    const { deleteResult } = renderDelete({ target: untrackedButton })
-    await clickTrash()
-    await waitFor(() => expect(deleteResult).toHaveBeenCalledTimes(1))
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-  })
+  it.each([untrackedButton, untrackedVideo])(
+    'deletes an untracked $__typename immediately despite tracked siblings',
+    async (target) => {
+      const { cache, deleteResult } = renderDelete({ target })
+      await clickTrash()
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      await waitFor(() => expect(deleteResult).toHaveBeenCalledTimes(1))
+      expect(cache.extract()[`${target.__typename}:${target.id}`]).toBeUndefined()
+      expect(cache.extract()['VideoBlock:video.id']?.endEventLabel).toBe(
+        BlockEventLabel.specialVideoComplete
+      )
+    }
+  )
 
   it.each(['Delete', 'Backspace'])(
     'confirms selected-card deletion for %s',

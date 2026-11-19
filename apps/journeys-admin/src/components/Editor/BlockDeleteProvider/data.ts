@@ -79,6 +79,13 @@ export const untrackedButton: typeof trackedButton = {
   eventLabel: null
 }
 
+export const untrackedVideo: typeof trackedVideo = {
+  ...trackedVideo,
+  id: 'untrackedVideo.id',
+  parentOrder: 3,
+  endEventLabel: null
+}
+
 export const trackedCard: TreeBlock<BlockFields_CardBlock> = {
   __typename: 'CardBlock',
   id: 'card.id',
@@ -93,7 +100,7 @@ export const trackedCard: TreeBlock<BlockFields_CardBlock> = {
   eventLabel: null,
   showAssistant: null,
   expandChatByDefault: null,
-  children: [trackedButton, trackedVideo, untrackedButton]
+  children: [trackedButton, trackedVideo, untrackedButton, untrackedVideo]
 }
 
 export const trackedStep: TreeBlock<BlockFields_StepBlock> = {
