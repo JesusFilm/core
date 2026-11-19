@@ -7,6 +7,7 @@ import { type MockedFunction } from 'vitest'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 
+import { PNG_FILE_BYTES } from '../../../../../../libs/prepareImageUpload/prepareImageUpload.mock'
 import { cloudflareUploadMutationMock } from '../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation.mock'
 import { journeyImageBlockAssociationUpdateMock } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation/useJourneyImageBlockAssociationUpdateMutation.mock'
 import { journeyImageBlockCreateMock } from '../../../../../../libs/useJourneyImageBlockCreateMutation/useJourneyImageBlockCreateMutation.mock'
@@ -39,6 +40,8 @@ describe('SocialScreenSocialImage', () => {
   afterEach(() => {
     process.env = originalEnv
     vi.clearAllMocks()
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
   })
 
   const mockJourney = {
@@ -168,7 +171,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -258,7 +263,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -322,7 +329,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -348,7 +357,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 
@@ -359,6 +370,7 @@ describe('SocialScreenSocialImage', () => {
         )
       ).toBeInTheDocument()
     })
+    expect(screen.queryByText('Social image updated')).not.toBeInTheDocument()
   })
 
   it('should not upload when no file is selected', async () => {
@@ -384,6 +396,97 @@ describe('SocialScreenSocialImage', () => {
     await waitFor(() => {
       expect(cloudflareUploadMutationMock.result).not.toHaveBeenCalled()
     })
+  })
+
+  it('should reject a text file named like an image without uploading it', async () => {
+    render(
+      <MockedProvider mocks={[cloudflareUploadMutationMock]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: mockJourney,
+              renderMode: 'admin'
+            }}
+          >
+            <SocialScreenSocialImage />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
+    const file = new File(['just some notes'], 'notes.png', {
+      type: 'image/png'
+    })
+
+    fireEvent.change(fileInput, { target: { files: [file] } })
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
+        )
+      ).toBeInTheDocument()
+    })
+    expect(cloudflareUploadMutationMock.result).not.toHaveBeenCalled()
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(screen.queryByText('Social image updated')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('SocialScreenSocialImageSkeleton')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show a processing error when a valid SVG cannot be rasterized', async () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:svg')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+    vi.stubGlobal(
+      'Image',
+      class {
+        onload: (() => void) | null = null
+        set src(_value: string) {
+          setTimeout(() => this.onload?.())
+        }
+      }
+    )
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+
+    render(
+      <MockedProvider mocks={[cloudflareUploadMutationMock]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: mockJourney,
+              renderMode: 'admin'
+            }}
+          >
+            <SocialScreenSocialImage />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
+    const file = new File(
+      ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>'],
+      'logo.svg',
+      { type: 'image/svg+xml' }
+    )
+
+    fireEvent.change(fileInput, { target: { files: [file] } })
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'Failed to update social image, please try again later'
+        )
+      ).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByText(
+        'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
+      )
+    ).not.toBeInTheDocument()
+    expect(cloudflareUploadMutationMock.result).not.toHaveBeenCalled()
   })
 
   it('should show loading state during upload', async () => {
@@ -419,7 +522,9 @@ describe('SocialScreenSocialImage', () => {
     )
 
     const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
-    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+    const file = new File([PNG_FILE_BYTES], 'testFile.png', {
+      type: 'image/png'
+    })
 
     fireEvent.change(fileInput, { target: { files: [file] } })
 

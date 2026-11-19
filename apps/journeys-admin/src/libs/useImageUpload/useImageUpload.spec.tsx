@@ -10,6 +10,7 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 
 import { CreateCloudflareTeamUploadByFile } from '../../../__generated__/CreateCloudflareTeamUploadByFile'
 import { CreateCloudflareUploadByFile } from '../../../__generated__/CreateCloudflareUploadByFile'
+import { ImageUploadFileError, prepareImageUpload } from '../prepareImageUpload'
 import {
   CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_FILE,
   useCloudflareTeamUploadByFileMutation
@@ -24,6 +25,11 @@ vi.mock('react-dropzone', async () => ({
   useDropzone: vi.fn()
 }))
 
+vi.mock('../prepareImageUpload', async () => ({
+  ...(await vi.importActual('../prepareImageUpload')),
+  prepareImageUpload: vi.fn()
+}))
+
 vi.mock('../useCloudflareUploadByFileMutation', async () => ({
   ...(await vi.importActual('../useCloudflareUploadByFileMutation')),
   useCloudflareUploadByFileMutation: vi.fn()
@@ -35,6 +41,9 @@ vi.mock('../useCloudflareTeamUploadByFileMutation', async () => ({
 }))
 
 const mockUseDropzone = useDropzone as MockedFunction<typeof useDropzone>
+const mockPrepareImageUpload = prepareImageUpload as MockedFunction<
+  typeof prepareImageUpload
+>
 const mockUseCloudflareUploadByFileMutation =
   useCloudflareUploadByFileMutation as MockedFunction<
     typeof useCloudflareUploadByFileMutation
@@ -58,6 +67,7 @@ describe('useImageUpload', () => {
       NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
     }
     vi.clearAllMocks()
+    mockPrepareImageUpload.mockImplementation(async (file) => file)
     global.fetch = vi.fn()
     mockUseDropzone.mockReturnValue({
       getRootProps: vi.fn(),
@@ -218,6 +228,68 @@ describe('useImageUpload', () => {
       ErrorCode.FileInvalidType,
       'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
     )
+  })
+
+  it('should reject a file whose contents are not an accepted image', async () => {
+    const createCloudflareUploadByFile = vi.fn()
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
+    mockPrepareImageUpload.mockRejectedValueOnce(
+      new ImageUploadFileError(ErrorCode.FileInvalidType)
+    )
+
+    const { result } = renderHook(() =>
+      useImageUpload({ onUploadComplete, onUploadError })
+    )
+
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    const file = new File(['not an image'], 'notes.png', { type: 'image/png' })
+
+    await act(async () => {
+      await onDrop?.([file], [], {} as any)
+    })
+
+    expect(createCloudflareUploadByFile).not.toHaveBeenCalled()
+    expect(onUploadComplete).not.toHaveBeenCalled()
+    expect(onUploadError).toHaveBeenCalledWith(
+      ErrorCode.FileInvalidType,
+      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
+    )
+    expect(result.current.errorCode).toBe(ErrorCode.FileInvalidType)
+    expect(result.current.loading).toBe(false)
+  })
+
+  it('should upload the prepared file in place of the dropped one', async () => {
+    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
+      data: {
+        createCloudflareUploadByFile: {
+          uploadUrl: 'https://upload.url'
+        }
+      }
+    })
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
+    const png = new File(['png'], 'logo.png', { type: 'image/png' })
+    mockPrepareImageUpload.mockResolvedValueOnce(png)
+    getMockFetch().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, result: { id: 'image-id' } })
+    })
+
+    renderHook(() => useImageUpload({ onUploadComplete }))
+
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    const svg = new File(['<svg/>'], 'logo.svg', { type: 'image/svg+xml' })
+
+    await act(async () => {
+      await onDrop?.([svg], [], {} as any)
+    })
+
+    expect(mockPrepareImageUpload).toHaveBeenCalledWith(svg)
+    const body = getMockFetch().mock.calls[0][1]?.body as FormData
+    expect(body.get('file')).toBe(png)
   })
 
   it('should handle Cloudflare error response', async () => {
