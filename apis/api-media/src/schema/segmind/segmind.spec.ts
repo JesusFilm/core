@@ -4,19 +4,14 @@ import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import {
-  createImageFromResponse,
-  createImageFromText
-} from '../cloudflare/image/service'
+import { createImageFromText } from '../cloudflare/image/service'
 
 import { SegmindModelEnum } from './enums/segmindModel'
 
 const mockCreateImageFromText = createImageFromText as Mock
-const mockCreateImageFromResponse = createImageFromResponse as Mock
 
 vi.mock('../cloudflare/image/service', () => ({
   __esModule: true,
-  createImageFromResponse: vi.fn(),
   createImageFromText: vi.fn()
 }))
 
@@ -47,9 +42,7 @@ describe('segmind', () => {
     `)
 
     it('should return cloudflare image', async () => {
-      const response = new Response()
-      mockCreateImageFromText.mockResolvedValue(response)
-      mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+      mockCreateImageFromText.mockResolvedValue({ id: 'id' })
       prismaMock.cloudflareImage.create.mockResolvedValue({
         id: 'id',
         uploaded: true,
@@ -80,6 +73,7 @@ describe('segmind', () => {
           }
         }
       })
+      expect(mockCreateImageFromText).toHaveBeenCalledWith('test prompt')
       expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith({
         data: {
           id: 'id',
