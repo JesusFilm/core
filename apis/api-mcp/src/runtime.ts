@@ -118,7 +118,7 @@ export function createRuntime(
         JSON.stringify({
           resource: config.publicUrl.href,
           authorization_servers: [config.issuerUrl!.origin],
-          scopes_supported: ['journeys:read']
+          scopes_supported: ['journeys:read', 'journeys:edit']
         })
       )
       return

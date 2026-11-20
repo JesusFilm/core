@@ -267,10 +267,10 @@ describe('granted journey read authorization', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_105(50|63|73|74|75)(_|$)/.test(
+          !/^\/auth_issue_105(50|53|63|73|74|75)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_105(50|63|73|74|75)(_|$)/.test(
+          !/^\/journeys_issue_105(50|53|63|73|74|75)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
@@ -491,7 +491,9 @@ describe('granted journey read authorization', () => {
         }
         process.env.SKIP_ENV_VALIDATION = '1'
         if (users) {
-          if (!/^\/users_issue_10550(_|$)/.test(new URL(usersUrl!).pathname))
+          if (
+            !/^\/users_issue_105(50|53)(_|$)/.test(new URL(usersUrl!).pathname)
+          )
             throw new Error('Use isolated users issue database')
           vi.doMock('@core/prisma/users/client', async (importOriginal) => ({
             ...(await importOriginal<
@@ -1051,15 +1053,24 @@ describe('granted journey read authorization', () => {
           Buffer.byteLength(JSON.stringify(data)) -
           Buffer.byteLength(JSON.stringify(originalDescription)) +
           2
-        const ownerRead = () => {
+        const ownerRead = async () => {
+          const fresh = await internal(
+            'exchange',
+            { token: accessToken, request },
+            exchangeSecret
+          )
+          expect(fresh.status).toBe(200)
+          const { credential: freshCredential } = (await fresh.json()) as {
+            credential: string
+          }
           const body = JSON.stringify({ request, stage: 'read' })
           return fetch(`${ownerUrl}/mcp/reads`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'x-mcp-context': credential,
+              'x-mcp-context': freshCredential,
               'x-mcp-signature': internalSignature(
-                credential,
+                freshCredential,
                 body,
                 internalSecret
               )
@@ -1073,8 +1084,14 @@ describe('granted journey read authorization', () => {
             data: { description: 'x'.repeat(524289 - fixedBytes) }
           })
           const overLimit = await ownerRead()
-          expect(overLimit.status).toBe(403)
-          expect(await overLimit.json()).toEqual({ error: 'LIMIT_EXCEEDED' })
+          expect(overLimit.status).toBe(200)
+          expect(await overLimit.json()).toEqual({
+            data: {
+              contractVersion: '1',
+              kind: 'read_failure',
+              code: 'LIMIT_EXCEEDED'
+            }
+          })
         } finally {
           await journeys.journey.update({
             where: { id: 'read-a' },
@@ -1134,7 +1151,7 @@ describe('granted journey read authorization', () => {
         expect(denied.body).not.toContain('private-read-b-sentinel')
       })
 
-      it('returns published ordinary journeys under a read grant and registers the read and private preview tools', async () => {
+      it('returns published ordinary journeys under a read grant and lists the five registered tools', async () => {
         accessToken = await consent('alice', ['read-published'])
         const read = await call('journey_read', {
           journeyId: 'read-published',
@@ -1159,11 +1176,22 @@ describe('granted journey read authorization', () => {
         expect(listed.result.tools.map((tool) => tool.name)).toEqual([
           'journeys_list',
           'journey_read',
+          'journey_edit',
+          'journey_operation_get',
           'journey_preview'
         ])
-        expect(
-          (await call('journey_edit', { journeyId: 'read-published' })).body
-        ).not.toContain('structuredContent')
+        const malformed = await call('journey_edit', {
+          journeyId: 'read-published'
+        })
+        expect(JSON.parse(malformed.body)).toMatchObject({
+          result: {
+            isError: true,
+            structuredContent: {
+              contractVersion: '1',
+              code: 'VALIDATION_FAILED'
+            }
+          }
+        })
       })
 
       it('previews the exact saved revision with a bounded private Admin handoff and rejects stale or foreign routes', async () => {
@@ -1637,35 +1665,63 @@ describe('granted journey read authorization', () => {
           'controlled-provider-unavailable-sentinel'
         )
         beforeIdentity = undefined
-        await journeys.block.update({
-          where: { id: 'read-a-text' },
-          data: { content: '\n'.repeat(240000) }
-        })
-        const bounded = await readA()
-        expect(bounded.status).toBe(200)
-        const complete = JSON.parse(bounded.body) as {
-          result: {
-            structuredContent: {
-              blocks: Array<{ id: string; content?: string }>
+        try {
+          await journeys.block.update({
+            where: { id: 'read-a-text' },
+            data: { content: '\n'.repeat(240000) }
+          })
+          const bounded = await readA()
+          expect(bounded.status).toBe(200)
+          const complete = JSON.parse(bounded.body) as {
+            result: {
+              structuredContent: {
+                blocks: Array<{ id: string; content?: string }>
+              }
             }
           }
+          expect(
+            complete.result.structuredContent.blocks.find(
+              (block) => block.id === 'read-a-text'
+            )?.content
+          ).toHaveLength(240000)
+          await journeys.block.update({
+            where: { id: 'read-a-text' },
+            data: { content: 'x'.repeat(524289) }
+          })
+          const first = await readA()
+          const page = JSON.parse(first.body) as {
+            result: {
+              structuredContent: {
+                revision: string
+                complete: boolean
+                nextCursor: string
+                blocks: Array<{ id: string }>
+              }
+            }
+          }
+          expect(page.result.structuredContent.complete).toBe(false)
+          expect(
+            page.result.structuredContent.blocks.some(
+              (block) => block.id === 'read-a-text'
+            )
+          ).toBe(false)
+          expect(page.result.structuredContent.nextCursor).toEqual(
+            expect.any(String)
+          )
+          const oversized = await call('journey_read', {
+            journeyId: 'read-a',
+            view: 'steps',
+            revision: page.result.structuredContent.revision,
+            cursor: page.result.structuredContent.nextCursor
+          })
+          expect(oversized.body).toContain('LIMIT_EXCEEDED')
+          expect(oversized.body.length).toBeLessThan(1000)
+        } finally {
+          await journeys.block.update({
+            where: { id: 'read-a-text' },
+            data: { content: 'read-a-text-sentinel' }
+          })
         }
-        expect(
-          complete.result.structuredContent.blocks.find(
-            (block) => block.id === 'read-a-text'
-          )?.content
-        ).toHaveLength(240000)
-        await journeys.block.update({
-          where: { id: 'read-a-text' },
-          data: { content: 'x'.repeat(524289) }
-        })
-        const oversized = await readA()
-        expect(oversized.body).toContain('LIMIT_EXCEEDED')
-        expect(oversized.body.length).toBeLessThan(1000)
-        await journeys.block.update({
-          where: { id: 'read-a-text' },
-          data: { content: 'read-a-text-sentinel' }
-        })
       })
 
       it('retains an accepted bounded action across expiry until its executor positively settles it', async () => {
@@ -3374,7 +3430,7 @@ describe('granted journey read authorization', () => {
         }
         await reading
         afterAcceptance = undefined
-        await retireMcpAccount('alice')
+        await vi.waitFor(() => retireMcpAccount('alice'), { timeout: 5000 })
         expect((await readA()).body).not.toContain('read-a-text-sentinel')
         expect(
           (

@@ -3,9 +3,12 @@ import { z } from 'zod'
 
 import {
   type ReadTrust,
+  assertRequestInputSize,
+  assertStructuredResultSize,
   boundedJson,
   fingerprint,
   internalSignature,
+  maxTransportBytes,
   readTransportRequest,
   readTrustSchema,
   safeReadError,
@@ -52,10 +55,15 @@ export function useMcpReads(config?: GatewayReadsConfig): GatewayPlugin {
         if (!token) throw new Error('Access denied')
         const claims = verifyReadCredential(token, config)
         const body = readTransportRequest.parse(
-          await boundedJson(new Response(request.body), 16384)
+          await boundedJson(new Response(request.body), maxTransportBytes)
         )
-        if (fingerprint(body.request) !== claims.requestHash)
+        if (
+          fingerprint(body.request) !== claims.requestHash ||
+          (body.request.tool === 'journey_edit' &&
+            (claims.scope !== 'journeys:edit' || claims.mode !== 'edit'))
+        )
           throw new Error('Access denied')
+        assertRequestInputSize(body.request)
         const serialized = JSON.stringify(body)
         const response = await fetch(config.ownerUrl, {
           method: 'POST',
@@ -73,6 +81,8 @@ export function useMcpReads(config?: GatewayReadsConfig): GatewayPlugin {
           signal: AbortSignal.timeout(15000)
         })
         const output = await boundedJson(response)
+        if (output && typeof output === 'object' && 'data' in output)
+          assertStructuredResultSize(output.data)
         payload.endResponse(
           Response.json(output, {
             headers: { 'Cache-Control': 'private, no-store' }

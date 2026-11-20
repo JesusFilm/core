@@ -1,6 +1,6 @@
 # Granted journey reads
 
-Implements #10573 under PRD #10157. `journeys_list`, `journey_read` and `journey_preview` are registered. Reads support ordinary draft and published journeys under both current Admin rights and the connection's selected resources. No source, editing, media or history tool is registered.
+Implements #10573 under PRD #10157. This document covers `journeys_list`, `journey_read` and `journey_preview`. Reads support ordinary draft and published journeys under both current Admin rights and the connection's selected resources. The shared relay also supports the [saved Typography edit and operation lookup](SAVED_EDITS.md) from #10553. Source discovery, media and undo/redo tools remain unavailable.
 
 ## Service configuration
 

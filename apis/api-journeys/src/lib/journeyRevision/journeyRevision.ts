@@ -31,7 +31,10 @@ export async function lockDraftJourneyRevision(
   journeyId: string,
   expectedRevision: string
 ): Promise<void> {
-  if (!/^(0|[1-9]\d{0,18})$/.test(expectedRevision)) {
+  if (
+    !/^(0|[1-9]\d{0,19})$/.test(expectedRevision) ||
+    BigInt(expectedRevision) > 18446744073709551615n
+  ) {
     throw new GraphQLError('invalid journey revision', {
       extensions: { code: 'BAD_USER_INPUT' }
     })

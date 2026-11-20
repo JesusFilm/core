@@ -1,10 +1,13 @@
 import { z } from 'zod'
 
+import { operationResult } from '@core/yoga/mcp/editContract'
 import {
   type ReadRequest,
   type ReadResult,
+  assertStructuredResultSize,
   fingerprint,
   postJson,
+  readFailure,
   readResult
 } from '@core/yoga/mcp/readContract'
 
@@ -21,10 +24,11 @@ export function createReadSession(
     dataHash: string
   }> = []
   let outputClosed = false
-  let outputStarted = false
+  let dataStarted = false
   return {
     async read(request: ReadRequest): Promise<ReadResult> {
       if (outputClosed) throw new Error('Sender closed')
+      dataStarted = true
       const { credential } = z
         .object({ credential: z.string() })
         .parse(
@@ -44,6 +48,15 @@ export function createReadSession(
             `MCP ${credential}`
           )
         )
+      if (outputClosed) throw new Error('Sender closed')
+      assertStructuredResultSize(response.data)
+      if (
+        request.tool === 'journey_edit' ||
+        request.tool === 'journey_operation_get'
+      )
+        operationResult.parse(response.data)
+      else if (response.data.kind === 'read_failure')
+        readFailure.parse(response.data)
       releases.push({
         credential,
         request,
@@ -52,9 +65,9 @@ export function createReadSession(
       return response.data
     },
     async authorizeOutput(body: Buffer): Promise<void> {
+      if (outputClosed) throw new Error('Sender closed')
       for (const release of releases) {
-        if (outputClosed) return
-        outputStarted = true
+        if (outputClosed) throw new Error('Sender closed')
         z.object({ permitId: z.string().uuid() }).parse(
           await postJson(
             new URL('/mcp/reads', config.gatewayUrl).href,
@@ -71,8 +84,9 @@ export function createReadSession(
     },
     async settleOutput(): Promise<void> {
       outputClosed = true
-      if (!outputStarted) return
-      // Positive evidence for this guarded sender, including lost accept responses.
+      if (!dataStarted) return
+      // Close admission for delayed unaccepted work too. This sender fence
+      // settles only its own output permits, never an accepted owning save.
       await postJson(
         `${config.issuerUrl!.origin}/internal/reads/fence`,
         { executorId, executor: 'mcp' },

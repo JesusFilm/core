@@ -537,7 +537,14 @@ export function createConnectionManagement(
             approvedAt,
             version: { increment: 1 },
             credentialsPending: true,
-            firebaseAuthTime: evidence.authTime
+            firebaseAuthTime: evidence.authTime,
+            // A renewal after the retention window starts a new inverse-history
+            // generation even when the owning cleanup worker was offline.
+            historyGeneration:
+              approvedAt.getTime() >=
+              current.expiresAt.getTime() + 30 * 86400000
+                ? { increment: 1 }
+                : undefined
           }
         })
       })

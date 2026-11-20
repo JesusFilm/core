@@ -14,6 +14,13 @@ export async function reconcileJourneyReads(
   config: SettlementConfig,
   permitId?: string
 ): Promise<number> {
+  await db.mcpReadExecution.deleteMany({
+    where: {
+      failureCode: { not: null },
+      reportedAt: { not: null },
+      responseExpiresAt: { lte: new Date() }
+    }
+  })
   let after: string | undefined
   let failed = 0
   while (true) {

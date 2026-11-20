@@ -17,6 +17,12 @@ export default defineConfig({
   },
   root: fileURLToPath(new URL('.', import.meta.url)),
   test: {
+    // Saved edits require their own prepared databases and dedicated config.
+    exclude: [
+      '**/node_modules/**',
+      '**/.git/**',
+      '**/test/grantedEdits.spec.ts'
+    ],
     globals: true,
     environment: 'node',
     hookTimeout: 120000,
