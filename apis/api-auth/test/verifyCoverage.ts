@@ -51,7 +51,7 @@ const required: Record<string, string[]> = {
   ],
 
   'apis/api-users/src/schema/userDelete/service/resumeUserDeletion.ts': [
-    'const selfDeletion =',
+    'progress.deletedUserFirebaseUid === callerFirebaseUid &&',
     'const logs = await deleteFirebaseUser(',
     'await prisma.userDeleteAuditLog.update('
   ],
