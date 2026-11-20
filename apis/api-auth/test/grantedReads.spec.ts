@@ -73,6 +73,7 @@ describe('granted journey read authorization', () => {
       let config: AuthConfig
       let gatewayUrl: string
       let ownerUrl: string
+      let authorityUrl: string
       let mcpUrl: string
       let beforeIdentity: (() => Promise<void>) | undefined
       let beforeAcceptance: ((stage: string) => Promise<void>) | undefined
@@ -512,7 +513,7 @@ describe('granted journey read authorization', () => {
         )) as {
           schema: GraphQLSchema
         }
-        const authorityUrl = await listen(
+        authorityUrl = await listen(
           createServer((req, res) => {
             void (async () => {
               const chunks: Buffer[] = []
@@ -2266,6 +2267,215 @@ describe('granted journey read authorization', () => {
               )
             }
           }
+        }
+      )
+
+      describe.each(['approval', 'template'] as const)(
+        '%s durable jobs',
+        (kind) => {
+          it.each([
+            'commit',
+            'rollback',
+            'delivery-retry',
+            'report-retry'
+          ] as const)(
+            'dispatches only after commit and recovers the exact intent: %s',
+            async (mode) => {
+              await permissionActors()
+              const journeyId = `read-effect-${kind}-${mode}`
+              const journey = await journeys.journey.create({
+                data: {
+                  id: journeyId,
+                  slug: journeyId,
+                  title: 'Original notification title',
+                  status: 'draft',
+                  languageId: '529',
+                  teamId: 'read-team',
+                  userJourneys: {
+                    create: { userId: 'alice', role: 'inviteRequested' }
+                  }
+                },
+                include: { userJourneys: true }
+              })
+              const collaboratorId = journey.userJourneys[0].id
+              const jobName =
+                kind === 'approval'
+                  ? 'journey-request-approved'
+                  : 'create-template-site'
+              const readState = async () =>
+                kind === 'approval'
+                  ? (
+                      await journeys.userJourney.findUniqueOrThrow({
+                        where: { id: collaboratorId }
+                      })
+                    ).role
+                  : (
+                      await journeys.journey.findUniqueOrThrow({
+                        where: { id: journeyId }
+                      })
+                    ).template
+              const committedState = kind === 'approval' ? 'editor' : true
+              if (mode === 'rollback') {
+                await journeys.$executeRawUnsafe(
+                  `CREATE FUNCTION review_10600_fail_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.status = 'committed' THEN RAISE EXCEPTION 'Controlled receipt failure'; END IF; RETURN NEW; END $$`
+                )
+                await journeys.$executeRawUnsafe(
+                  `CREATE TRIGGER review_10600_fail_receipt BEFORE UPDATE ON "McpPermissionExecution" FOR EACH ROW EXECUTE FUNCTION review_10600_fail_receipt()`
+                )
+              }
+              permissionReportOutage = mode === 'report-retry'
+              mockQueueAdd.mockImplementation(async (name) => {
+                if (name !== jobName) return
+                expect(await readState()).toBe(committedState)
+                expect(
+                  await journeys.mcpPermissionExecution.count({
+                    where: { status: 'committed' }
+                  })
+                ).toBe(1)
+                if (mode === 'delivery-retry')
+                  throw new Error('Controlled job queue outage')
+              })
+              try {
+                const result =
+                  kind === 'approval'
+                    ? await humanMutation(
+                        'mutation Approve($id: ID!) { userJourneyApprove(id: $id) { id role } }',
+                        { id: collaboratorId }
+                      )
+                    : await humanMutation(
+                        'mutation Template($id: ID!) { journeyTemplate(id: $id, input: {template: true}) { id template } }',
+                        { id: journeyId }
+                      )
+                const attempts = () =>
+                  mockQueueAdd.mock.calls.filter(([name]) => name === jobName)
+                if (mode === 'rollback') {
+                  expect(result.errors).toHaveLength(1)
+                  expect(await readState()).toBe(
+                    kind === 'approval' ? 'inviteRequested' : false
+                  )
+                  expect(attempts()).toHaveLength(0)
+                  expect(
+                    await journeys.mcpPermissionExecution.count({
+                      where: { status: 'committed' }
+                    })
+                  ).toBe(0)
+                  expect(await permissionCoordinator.reconcile()).toBe(1)
+                  expect(
+                    await journeys.mcpPermissionExecution.findFirstOrThrow()
+                  ).toMatchObject({
+                    status: 'failed',
+                    reportedAt: null
+                  })
+                  expect(attempts()).toHaveLength(0)
+                  return
+                }
+                expect(await readState()).toBe(committedState)
+                const receipt =
+                  await journeys.mcpPermissionExecution.findFirstOrThrow({
+                    where: { status: 'committed' }
+                  })
+                const payload =
+                  kind === 'approval'
+                    ? {
+                        userId: 'alice',
+                        url: expect.stringContaining(journeyId),
+                        journey: expect.objectContaining({
+                          id: journeyId,
+                          title: journey.title,
+                          primaryImageBlock: null
+                        }),
+                        sender: expect.objectContaining({
+                          firstName: 'bob',
+                          email: 'bob@synthetic.example'
+                        })
+                      }
+                    : {
+                        __typename: 'plausibleCreateTemplateSite',
+                        templateId: journeyId
+                      }
+                expect(receipt.intent).toMatchObject({
+                  effects: [
+                    kind === 'approval'
+                      ? { type: 'journeyApproved', notification: payload }
+                      : { type: 'templateSite', templateId: journeyId }
+                  ]
+                })
+                const options = {
+                  jobId: `permission-${receipt.id}-0`,
+                  removeOnComplete: {
+                    age: kind === 'approval' ? 24 * 3600 : 5 * 24 * 3600
+                  },
+                  removeOnFail:
+                    kind === 'approval'
+                      ? { age: 24 * 3600 }
+                      : { age: 5 * 24 * 3600, count: 50 }
+                }
+                if (mode === 'commit') {
+                  expect(result.errors).toBeUndefined()
+                  expect(receipt.reportedAt).not.toBeNull()
+                  expect(attempts()).toHaveLength(1)
+                } else {
+                  expect(result.errors).toHaveLength(1)
+                  expect(receipt.reportedAt).toBeNull()
+                  if (mode === 'report-retry')
+                    expect(attempts()).toHaveLength(0)
+                  else {
+                    expect(attempts().length).toBeGreaterThan(0)
+                    for (const attempt of attempts())
+                      expect(attempt).toEqual([jobName, payload, options])
+                  }
+                  await journeys.journey.update({
+                    where: { id: journeyId },
+                    data: { title: 'Changed after commit' }
+                  })
+                  const beforeRecovery =
+                    await journeys.userJourney.findUniqueOrThrow({
+                      where: { id: collaboratorId }
+                    })
+                  const { createJourneyPermissionCoordinator: restart } =
+                    await import('../../api-journeys/src/lib/mcpPermissions')
+                  const restarted = restart(
+                    {
+                      authorityUrl,
+                      authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
+                    },
+                    journeys
+                  )
+                  permissionReportOutage = false
+                  mockQueueAdd.mockResolvedValue(undefined)
+                  expect(await restarted.reconcile()).toBe(0)
+                  expect(
+                    await journeys.userJourney.findUniqueOrThrow({
+                      where: { id: collaboratorId }
+                    })
+                  ).toEqual(beforeRecovery)
+                  expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+                  expect(
+                    (
+                      await journeys.mcpPermissionExecution.findUniqueOrThrow({
+                        where: { id: receipt.id }
+                      })
+                    ).reportedAt
+                  ).not.toBeNull()
+                  const delivered = attempts().length
+                  expect(await restarted.reconcile()).toBe(0)
+                  expect(attempts()).toHaveLength(delivered)
+                }
+                expect(attempts().at(-1)).toEqual([jobName, payload, options])
+              } finally {
+                permissionReportOutage = false
+                if (mode === 'rollback') {
+                  await journeys.$executeRawUnsafe(
+                    'DROP TRIGGER review_10600_fail_receipt ON "McpPermissionExecution"'
+                  )
+                  await journeys.$executeRawUnsafe(
+                    'DROP FUNCTION review_10600_fail_receipt()'
+                  )
+                }
+                await journeys.journey.delete({ where: { id: journeyId } })
+              }
+            }
+          )
         }
       )
 

@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
-import { queue as plausibleQueue } from '../../workers/plausible/queue'
+import { enqueueTemplateSite } from '../../workers/plausible/templateSite'
 import { builder } from '../builder'
 
 import { JourneyTemplateInput } from './inputs'
@@ -50,18 +50,7 @@ builder.mutationField('journeyTemplate', (t) =>
           )
 
         if (args.input.template === true) {
-          const FIVE_DAYS = 5 * 24 * 60 * 60
-          void plausibleQueue.add(
-            'create-template-site',
-            {
-              __typename: 'plausibleCreateTemplateSite',
-              templateId: journeyId
-            },
-            {
-              removeOnComplete: true,
-              removeOnFail: { age: FIVE_DAYS, count: 50 }
-            }
-          )
+          void enqueueTemplateSite(journeyId)
         }
 
         const updatedJourney = await prisma.journey.update({

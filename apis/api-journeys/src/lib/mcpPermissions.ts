@@ -29,7 +29,9 @@ import {
   Action as UserTeamAction,
   userTeamAcl
 } from '../schema/userTeam/userTeam.acl'
+import { enqueueJourneyApprovedEmail } from '../workers/email/journeyApproved'
 import { enqueueTeamRemovedEmail } from '../workers/email/teamRemoved'
+import { enqueueTemplateSite } from '../workers/plausible/templateSite'
 import { enqueueShortLinkDeletes } from '../workers/shortlinkDelete/queue'
 
 import {
@@ -470,13 +472,17 @@ export function createJourneyPermissionCoordinator(
         )
       }
       for (const [index, effect] of (intent.effects ?? []).entries()) {
+        const deliveryId = `permission-${execution.id}-${index}`
         if (effect.type === 'shortLinkDelete')
           await enqueueShortLinkDeletes(effect.shortLinkIds, true)
-        else
+        else if (effect.type === 'teamRemoved')
           await enqueueTeamRemovedEmail(
             { teamName: effect.teamName, userId: effect.userId },
-            `permission-${execution.id}-${index}`
+            deliveryId
           )
+        else if (effect.type === 'journeyApproved')
+          await enqueueJourneyApprovedEmail(effect.notification, deliveryId)
+        else await enqueueTemplateSite(effect.templateId, deliveryId)
       }
       await db.mcpPermissionExecution.update({
         where: { id: execution.id },
