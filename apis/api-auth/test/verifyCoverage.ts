@@ -94,18 +94,27 @@ for (const [file, anchors] of Object.entries(required)) {
     console.log(`Baseline predates ${file}`)
     continue
   }
+  const absolute = resolve(root, file)
+  const lines = readFileSync(absolute, 'utf8').split('\n')
+  // An existing file can predate its MCP participant. Any implemented anchor
+  // still requires both the owning-service report and execution hits below.
+  if (
+    baseline &&
+    !anchors.some((anchor) => lines.some((line) => line.includes(anchor)))
+  ) {
+    console.log(`Baseline predates required source anchors in ${file}`)
+    continue
+  }
   assert(
     cobertura.includes(`filename="${file}"`),
     `Missing repository-relative Codecov path: ${file}`
   )
-  const absolute = resolve(root, file)
   const entry = coverage[absolute]
   assert(entry, `Missing owning-service coverage: ${file}`)
   assert(
     Object.values(entry.s).some((hits) => hits > 0),
     `No execution hits in ${file}`
   )
-  const lines = readFileSync(absolute, 'utf8').split('\n')
   for (const anchor of anchors) {
     const line = lines.findIndex((value) => value.includes(anchor)) + 1
     if (baseline && line === 0) {
