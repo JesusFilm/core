@@ -33,6 +33,7 @@ model UserDeleteAuditLog {
   deletedUserId           String
   deletedUserFirebaseUid  String?
   retiredFirebaseUids     String[] @default([])
+  firebaseCleanupUids     String[] @default([])
   callerUserId            String
   callerEmail             String?
   deletedJourneyIds       String[]

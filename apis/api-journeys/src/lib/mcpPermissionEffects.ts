@@ -33,6 +33,27 @@ export const permissionEffectSchema = z.discriminatedUnion('type', [
     })
   }),
   z.object({
+    type: z.literal('teamInviteAccepted'),
+    notification: z.object({
+      team: z.looseObject({
+        id: z.string(),
+        title: z.string(),
+        userTeams: z.array(
+          z.looseObject({
+            userId: z.string(),
+            role: z.enum(['manager', 'member'])
+          })
+        )
+      }),
+      sender: z.looseObject({
+        firstName: z.string(),
+        lastName: z.string().optional(),
+        email: z.string().nullable().optional(),
+        imageUrl: z.string().nullable().optional()
+      })
+    })
+  }),
+  z.object({
     type: z.literal('templateSite'),
     templateId: z.string()
   })
@@ -41,6 +62,11 @@ export const permissionEffectSchema = z.discriminatedUnion('type', [
 export type JourneyApprovalNotification = Extract<
   z.infer<typeof permissionEffectSchema>,
   { type: 'journeyApproved' }
+>['notification']
+
+export type TeamInviteAcceptedNotification = Extract<
+  z.infer<typeof permissionEffectSchema>,
+  { type: 'teamInviteAccepted' }
 >['notification']
 
 export const permissionEffectsScope = new AsyncLocalStorage<

@@ -887,8 +887,10 @@ describe('cooperative permission mutations', () => {
         src: 'https://imagedelivery.net/hash/image/public'
       }
     ] as unknown as Awaited<ReturnType<PrismaClient['block']['findMany']>>)
-    vi.mocked(enqueueShortLinkDeletes).mockRejectedValue(
-      new Error('Shortlink service unavailable')
+    vi.mocked(enqueueShortLinkDeletes).mockImplementation(
+      async (_ids, retryOnFailure) => {
+        if (retryOnFailure) throw new Error('Shortlink service unavailable')
+      }
     )
     await expect(
       f.coordinator.runAnonymousCleanup({
@@ -921,7 +923,10 @@ describe('cooperative permission mutations', () => {
     )
     expect(await restarted.reconcile()).toBe(0)
     expect(f.raw.journey.delete).toHaveBeenCalledOnce()
-    expect(enqueueShortLinkDeletes).toHaveBeenLastCalledWith(['short-link'])
+    expect(enqueueShortLinkDeletes).toHaveBeenLastCalledWith(
+      ['short-link'],
+      true
+    )
     expect(deleteUnusedMedia).toHaveBeenCalledWith(
       {
         muxVideoIds: new Set(['video']),

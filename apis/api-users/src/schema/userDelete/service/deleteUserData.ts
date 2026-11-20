@@ -32,12 +32,18 @@ const pendingRetirementMessage =
 const forbiddenReconciliationMessage =
   'Forbidden: reconciled UID requires superAdmin authorization'
 
+interface FirebaseCleanupProgress {
+  auditLogId: string
+  firebaseUids: readonly string[]
+}
+
 export async function deleteFirebaseUser(
   firebaseUserId: string,
   firebaseUidOverride: string | null,
   email: string | null,
   allowReconciledUid = false,
-  confirmedRetirements: ReadonlySet<string> = new Set()
+  confirmedRetirements: ReadonlySet<string> = new Set(),
+  progress?: FirebaseCleanupProgress
 ): Promise<LogEntry[]> {
   const logs: LogEntry[] = []
   if (
@@ -48,7 +54,14 @@ export async function deleteFirebaseUser(
     logs.push(createLog(forbiddenReconciliationMessage, 'error'))
     return logs
   }
-  const uidsToTry = new Set<string>()
+  const uidsToTry = new Set<string>(progress?.firebaseUids)
+  if (
+    !allowReconciledUid &&
+    [...uidsToTry].some((uid) => uid !== firebaseUserId)
+  ) {
+    logs.push(createLog(forbiddenReconciliationMessage, 'error'))
+    return logs
+  }
 
   // Primary UID from the DB
   uidsToTry.add(firebaseUserId)
@@ -60,10 +73,21 @@ export async function deleteFirebaseUser(
 
   let anyDeleted = false
 
+  async function retireAndDelete(uid: string): Promise<void> {
+    if (!confirmedRetirements.has(uid)) {
+      await retireMcpAccount(uid)
+      if (progress && mcpAccountRetirementEnvironment(process.env))
+        await prisma.userDeleteAuditLog.update({
+          where: { id: progress.auditLogId },
+          data: { retiredFirebaseUids: { push: uid } }
+        })
+    }
+    await auth.deleteUser(uid)
+  }
+
   for (const uid of uidsToTry) {
     try {
-      if (!confirmedRetirements.has(uid)) await retireMcpAccount(uid)
-      await auth.deleteUser(uid)
+      await retireAndDelete(uid)
       logs.push(createLog(`🔥 Firebase auth record deleted (UID: ${uid})`))
       anyDeleted = true
     } catch (error) {
@@ -96,9 +120,14 @@ export async function deleteFirebaseUser(
         )
         return logs
       }
-      if (!confirmedRetirements.has(fbUser.uid))
-        await retireMcpAccount(fbUser.uid)
-      await auth.deleteUser(fbUser.uid)
+      // Record authorization separately from confirmation. A Pending or lost
+      // retirement response must leave this exact target available to retry.
+      if (progress && !uidsToTry.has(fbUser.uid))
+        await prisma.userDeleteAuditLog.update({
+          where: { id: progress.auditLogId },
+          data: { firebaseCleanupUids: { push: fbUser.uid } }
+        })
+      await retireAndDelete(fbUser.uid)
       logs.push(
         createLog(
           `🔥 Firebase auth record deleted via email fallback (UID: ${fbUser.uid})`
@@ -173,12 +202,15 @@ export async function deleteUserData(
 
   // Retirement evidence and SQL deletion commit together for Firebase retries.
   const confirmedRetirements = new Set<string>()
-  try {
-    for (const uid of new Set(
+  const firebaseUids = [
+    ...new Set(
       [input.firebaseUserId, input.firebaseUidOverride].filter(
         (value): value is string => value !== null
       )
-    )) {
+    )
+  ]
+  try {
+    for (const uid of firebaseUids) {
       await retireMcpAccount(uid)
       if (mcpAccountRetirementEnvironment(process.env))
         confirmedRetirements.add(uid)
@@ -186,7 +218,10 @@ export async function deleteUserData(
     await prisma.$transaction(async (tx) => {
       await tx.userDeleteAuditLog.update({
         where: { id: auditLog.id },
-        data: { retiredFirebaseUids: [...confirmedRetirements] }
+        data: {
+          retiredFirebaseUids: [...confirmedRetirements],
+          firebaseCleanupUids: firebaseUids
+        }
       })
       await tx.user.delete({ where: { id: input.userDbId } })
     })
@@ -218,7 +253,8 @@ export async function deleteUserData(
     input.firebaseUidOverride,
     input.userEmail,
     input.allowReconciledUid,
-    confirmedRetirements
+    confirmedRetirements,
+    { auditLogId: auditLog.id, firebaseUids }
   )
   logs.push(...fbLogs)
 

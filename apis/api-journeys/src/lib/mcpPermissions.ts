@@ -31,6 +31,7 @@ import {
 } from '../schema/userTeam/userTeam.acl'
 import { enqueueJourneyApprovedEmail } from '../workers/email/journeyApproved'
 import { enqueueTeamRemovedEmail } from '../workers/email/teamRemoved'
+import { enqueueTeamInviteAcceptedEmail } from '../workers/email/teamInviteAccepted'
 import { enqueueTemplateSite } from '../workers/plausible/templateSite'
 import { enqueueShortLinkDeletes } from '../workers/shortlinkDelete/queue'
 
@@ -459,7 +460,7 @@ export function createJourneyPermissionCoordinator(
       const intent = intentSchema.parse(execution.intent)
       if (intent.field === 'anonymousJourneyCleanup' && intent.cleanupEffects) {
         const args = cleanupIntentSchema.parse(intent.args)
-        await enqueueShortLinkDeletes(intent.cleanupEffects.shortLinkIds)
+        await enqueueShortLinkDeletes(intent.cleanupEffects.shortLinkIds, true)
         await deleteUnusedMedia(
           {
             muxVideoIds: new Set(intent.cleanupEffects.muxVideoIds),
@@ -482,6 +483,8 @@ export function createJourneyPermissionCoordinator(
           )
         else if (effect.type === 'journeyApproved')
           await enqueueJourneyApprovedEmail(effect.notification, deliveryId)
+        else if (effect.type === 'teamInviteAccepted')
+          await enqueueTeamInviteAcceptedEmail(effect.notification, deliveryId)
         else await enqueueTemplateSite(effect.templateId, deliveryId)
       }
       await db.mcpPermissionExecution.update({

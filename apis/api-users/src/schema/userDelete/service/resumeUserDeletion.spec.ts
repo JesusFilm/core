@@ -15,6 +15,7 @@ const progress = {
   callerUserId: 'user-record',
   callerEmail: 'self@example.com',
   retiredFirebaseUids: ['self'],
+  firebaseCleanupUids: ['self'],
   deletedJourneyIds: [],
   deletedTeamIds: [],
   deletedUserJourneyIds: [],
@@ -74,6 +75,39 @@ describe('resuming committed Users deletion', () => {
       await resumeUserDeletion('databaseId', 'user-record', 'self')
     ).toBeNull()
     expect(firebase.deleteUser).not.toHaveBeenCalled()
+  })
+
+  it('retries every recorded fallback target and keeps retirement confirmation separate', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      superAdmin: true
+    } as NonNullable<Awaited<ReturnType<typeof prismaMock.user.findUnique>>>)
+    prismaMock.userDeleteAuditLog.findFirst.mockResolvedValue({
+      ...progress,
+      firebaseCleanupUids: ['self', 'fallback-one', 'fallback-two']
+    })
+    firebase.deleteUser.mockImplementation(async (uid: string) => {
+      if (uid === 'self') throw { code: 'auth/user-not-found' }
+    })
+    const retire = vi
+      .fn()
+      .mockImplementation(async () => Response.json({ status: 'complete' }))
+    vi.stubGlobal('fetch', retire)
+    expect(
+      await resumeUserDeletion('databaseId', 'user-record', 'admin')
+    ).toMatchObject({ success: true })
+    expect(firebase.deleteUser.mock.calls.map(([uid]) => uid)).toEqual([
+      'self',
+      'fallback-one',
+      'fallback-two'
+    ])
+    expect(
+      retire.mock.calls.map(([, options]) => JSON.parse(String(options.body)))
+    ).toEqual([{ userId: 'fallback-one' }, { userId: 'fallback-two' }])
+    expect(firebase.getUserByEmail).not.toHaveBeenCalled()
+    expect(prismaMock.userDeleteAuditLog.update).toHaveBeenCalledWith({
+      where: { id: 'audit' },
+      data: { retiredFirebaseUids: { push: 'fallback-one' } }
+    })
   })
 
   it('retries the confirmed identity while Auth is unavailable and marks its original audit complete', async () => {

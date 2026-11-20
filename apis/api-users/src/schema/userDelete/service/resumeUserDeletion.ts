@@ -4,7 +4,7 @@ import { auth } from '@core/yoga/firebaseClient'
 import { deleteFirebaseUser } from './deleteUserData'
 import { type LogEntry, createLog } from './types'
 
-/** Resume only server-recorded retirement after the owning SQL delete committed. */
+/** Resume server-recorded cleanup after the owning SQL delete committed. */
 export async function resumeUserDeletion(
   idType: 'databaseId' | 'email' | 'jwt',
   id: string,
@@ -35,12 +35,20 @@ export async function resumeUserDeletion(
   if (!caller?.superAdmin && !selfDeletion) return null
   if (!progress.retiredFirebaseUids.includes(progress.deletedUserFirebaseUid))
     return null
+  const firebaseUids = [
+    ...new Set([
+      ...progress.retiredFirebaseUids,
+      ...progress.firebaseCleanupUids
+    ])
+  ]
+  if (
+    !caller?.superAdmin &&
+    firebaseUids.some((uid) => uid !== callerFirebaseUid)
+  )
+    return null
   const remainingUser = await prisma.user.findFirst({
     where: {
-      OR: [
-        { id: progress.deletedUserId },
-        { userId: { in: progress.retiredFirebaseUids } }
-      ]
+      OR: [{ id: progress.deletedUserId }, { userId: { in: firebaseUids } }]
     }
   })
   if (remainingUser) return null
@@ -52,7 +60,8 @@ export async function resumeUserDeletion(
     retiredUids.find((uid) => uid !== progress.deletedUserFirebaseUid) ?? null,
     selfDeletion ? progress.callerEmail : null,
     caller?.superAdmin ?? false,
-    new Set(retiredUids)
+    new Set(retiredUids),
+    { auditLogId: progress.id, firebaseUids }
   )
   const success = !logs.some(({ level }) => level === 'error')
   await prisma.userDeleteAuditLog.update({

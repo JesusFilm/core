@@ -2272,6 +2272,149 @@ describe('granted journey read authorization', () => {
         }
       )
 
+      it.each([
+        'commit',
+        'rollback',
+        'delivery-retry',
+        'report-retry'
+      ] as const)(
+        'captures invitation acceptance notification with the owner receipt: %s',
+        async (mode) => {
+          const membership = await permissionActors()
+          await journeys.userTeam.delete({ where: { id: membership.id } })
+          if (mode === 'rollback') {
+            await journeys.$executeRawUnsafe(
+              `CREATE FUNCTION review_10600_fail_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.status = 'committed' THEN RAISE EXCEPTION 'Controlled receipt failure'; END IF; RETURN NEW; END $$`
+            )
+            await journeys.$executeRawUnsafe(
+              `CREATE TRIGGER review_10600_fail_receipt BEFORE UPDATE ON "McpPermissionExecution" FOR EACH ROW EXECUTE FUNCTION review_10600_fail_receipt()`
+            )
+          }
+          permissionReportOutage = mode === 'report-retry'
+          mockQueueAdd.mockImplementation(async (name) => {
+            if (name !== 'team-invite-accepted') return
+            expect(
+              await journeys.userTeam.findUnique({
+                where: {
+                  teamId_userId: { teamId: 'read-team', userId: 'alice' }
+                }
+              })
+            ).not.toBeNull()
+            expect(
+              await journeys.mcpPermissionExecution.findFirst({
+                where: { status: 'committed' }
+              })
+            ).not.toBeNull()
+            if (mode === 'delivery-retry')
+              throw new Error('Controlled email outage')
+          })
+          try {
+            const result = await inviteAlice()
+            if (mode === 'rollback') {
+              expect(result.errors).toHaveLength(1)
+              expect(
+                await journeys.userTeam.findUnique({
+                  where: {
+                    teamId_userId: { teamId: 'read-team', userId: 'alice' }
+                  }
+                })
+              ).toBeNull()
+              expect(
+                await journeys.userTeamInvite.findUnique({
+                  where: {
+                    teamId_email: {
+                      teamId: 'read-team',
+                      email: 'alice@synthetic.example'
+                    }
+                  }
+                })
+              ).toMatchObject({ acceptedAt: null })
+              expect(
+                mockQueueAdd.mock.calls.filter(
+                  ([name]) => name === 'team-invite-accepted'
+                )
+              ).toHaveLength(0)
+              return
+            }
+            const receipt =
+              await journeys.mcpPermissionExecution.findFirstOrThrow({
+                where: { status: 'committed' }
+              })
+            expect(receipt.intent).toMatchObject({
+              effects: [
+                {
+                  type: 'teamInviteAccepted',
+                  notification: {
+                    team: {
+                      id: 'read-team',
+                      userTeams: expect.arrayContaining([
+                        expect.objectContaining({
+                          userId: 'alice',
+                          role: 'member'
+                        })
+                      ])
+                    },
+                    sender: {
+                      firstName: 'alice',
+                      email: 'alice@synthetic.example'
+                    }
+                  }
+                }
+              ]
+            })
+            if (mode === 'commit') {
+              expect(result.errors).toBeUndefined()
+              expect(receipt.reportedAt).not.toBeNull()
+            } else {
+              expect(result.errors).toHaveLength(1)
+              expect(receipt.reportedAt).toBeNull()
+              if (mode === 'report-retry')
+                expect(
+                  mockQueueAdd.mock.calls.filter(
+                    ([name]) => name === 'team-invite-accepted'
+                  )
+                ).toHaveLength(0)
+              const effects = (
+                receipt.intent as { effects: Array<{ notification: unknown }> }
+              ).effects
+              mockQueueAdd.mockResolvedValue(undefined)
+              permissionReportOutage = false
+              const restarted = restartPermissionCoordinator(
+                {
+                  authorityUrl,
+                  authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
+                },
+                journeys
+              )
+              expect(await restarted.reconcile(receipt.id)).toBe(0)
+              expect(mockQueueAdd).toHaveBeenLastCalledWith(
+                'team-invite-accepted',
+                effects[0].notification,
+                {
+                  jobId: `permission-${receipt.id}-0`,
+                  removeOnComplete: { age: 24 * 3600 },
+                  removeOnFail: { age: 24 * 3600 }
+                }
+              )
+              expect(
+                await journeys.mcpPermissionExecution.findUnique({
+                  where: { id: receipt.id }
+                })
+              ).toMatchObject({ reportedAt: expect.any(Date) })
+            }
+          } finally {
+            if (mode === 'rollback') {
+              await journeys.$executeRawUnsafe(
+                'DROP TRIGGER review_10600_fail_receipt ON "McpPermissionExecution"'
+              )
+              await journeys.$executeRawUnsafe(
+                'DROP FUNCTION review_10600_fail_receipt()'
+              )
+            }
+          }
+        }
+      )
+
       describe.each(['approval', 'template'] as const)(
         '%s durable jobs',
         (kind) => {
@@ -3121,6 +3264,189 @@ describe('granted journey read authorization', () => {
           status: 'failed'
         })
       })
+
+      it.skipIf(!users).each(['pending', 'lost', 'delete-failure'] as const)(
+        'resumes a recorded email fallback through the Admin database-ID entrypoint after %s',
+        async (mode) => {
+          const target = await users!.user.upsert({
+            where: { userId: 'alice' },
+            create: {
+              userId: 'alice',
+              firstName: 'alice',
+              email: 'alice@synthetic.example'
+            },
+            update: { superAdmin: false }
+          })
+          await users!.user.update({
+            where: { userId: 'bob' },
+            data: { superAdmin: true }
+          })
+          vi.stubEnv('MCP_READS_ENABLED', 'true')
+          vi.stubEnv('MCP_ACCOUNT_AUTHORITY_URL', config.AUTH_ISSUER)
+          vi.stubEnv(
+            'MCP_ACCOUNT_AUTHORITY_SECRET',
+            config.AUTH_PERMISSION_USERS_SECRET
+          )
+          const getUser = vi.spyOn(firebaseAuth, 'getUser').mockResolvedValue({
+            uid: 'alice',
+            email: 'alice@synthetic.example',
+            emailVerified: true,
+            disabled: false,
+            providerData: [],
+            metadata: {
+              creationTime: '2026-01-01T00:00:00.000Z',
+              lastSignInTime: '2026-01-01T00:00:00.000Z',
+              toJSON: () => ({})
+            },
+            toJSON: () => ({})
+          })
+          const emailLookup = vi
+            .spyOn(firebaseAuth, 'getUserByEmail')
+            .mockResolvedValue({
+              uid: 'fallback-alice',
+              email: 'alice@synthetic.example',
+              emailVerified: true,
+              disabled: false,
+              providerData: [],
+              metadata: {
+                creationTime: '2026-01-02T00:00:00.000Z',
+                lastSignInTime: '2026-01-02T00:00:00.000Z',
+                toJSON: () => ({})
+              },
+              toJSON: () => ({})
+            })
+          let interrupted = false
+          const deleteUser = vi
+            .spyOn(firebaseAuth, 'deleteUser')
+            .mockImplementation(async (uid) => {
+              if (uid === 'alice') throw { code: 'auth/user-not-found' }
+              expect(uid).toBe('fallback-alice')
+              const audit = await users!.userDeleteAuditLog.findFirstOrThrow({
+                where: { deletedUserId: target.id }
+              })
+              expect(audit.retiredFirebaseUids).toContain(uid)
+              if (mode === 'delete-failure' && !interrupted) {
+                interrupted = true
+                throw new Error('Controlled Firebase delete failure')
+              }
+            })
+          const originalFetch = globalThis.fetch
+          const retireFetch = vi
+            .spyOn(globalThis, 'fetch')
+            .mockImplementation(async (input, init) => {
+              const requestUrl =
+                input instanceof Request
+                  ? input.url
+                  : input instanceof URL
+                    ? input.href
+                    : input
+              const fallback =
+                requestUrl.endsWith('/internal/permissions/retire-account') &&
+                typeof init?.body === 'string' &&
+                JSON.parse(init.body).userId === 'fallback-alice'
+              if (fallback) {
+                const audit = await users!.userDeleteAuditLog.findFirstOrThrow({
+                  where: { deletedUserId: target.id }
+                })
+                expect(audit).toMatchObject({
+                  firebaseCleanupUids: expect.arrayContaining([
+                    'alice',
+                    'fallback-alice'
+                  ]),
+                  retiredFirebaseUids: ['alice'],
+                  success: false
+                })
+              }
+              const response = await originalFetch(input, init)
+              if (fallback && mode !== 'delete-failure' && !interrupted) {
+                interrupted = true
+                expect(response.ok).toBe(true)
+                if (mode === 'lost')
+                  throw new Error(
+                    'Controlled lost fallback retirement response'
+                  )
+                return Response.json({ status: 'pending' })
+              }
+              return response
+            })
+          try {
+            const usersSchemaModule = new URL(
+              '../../api-users/src/schema/schema.ts',
+              import.meta.url
+            ).href
+            const { schema: usersSchema } = (await import(
+              /* webpackChunkName: "users-deletion-fallback-participant" */ usersSchemaModule
+            )) as { schema: GraphQLSchema }
+            const attempt = async () => {
+              const progress = await subscribe({
+                schema: usersSchema,
+                document: parse(
+                  'subscription DeleteFallback($id: String!) { userDeleteConfirm(idType: databaseId, id: $id, deletedJourneyIds: [], deletedTeamIds: [], deletedUserJourneyIds: [], deletedUserTeamIds: []) { done success } }'
+                ),
+                variableValues: { id: target.id },
+                contextValue: {
+                  ...initContextCache(),
+                  type: 'authenticated',
+                  currentUser: { id: 'bob', email: 'bob@synthetic.example' }
+                }
+              })
+              if (!(Symbol.asyncIterator in progress))
+                throw new Error(JSON.stringify(progress))
+              const results = []
+              for await (const result of progress) results.push(result)
+              return results.at(-1)
+            }
+            expect(await attempt()).toMatchObject({
+              data: { userDeleteConfirm: { done: true, success: false } }
+            })
+            expect(
+              await users!.user.findUnique({ where: { id: target.id } })
+            ).toBeNull()
+            const audit = await users!.userDeleteAuditLog.findFirstOrThrow({
+              where: { deletedUserId: target.id }
+            })
+            expect(audit).toMatchObject({
+              success: false,
+              firebaseCleanupUids: ['alice', 'fallback-alice'],
+              retiredFirebaseUids:
+                mode === 'delete-failure'
+                  ? ['alice', 'fallback-alice']
+                  : ['alice']
+            })
+            emailLookup.mockRejectedValue(
+              new Error('Retry must use the recorded UID')
+            )
+            expect(await attempt()).toMatchObject({
+              data: { userDeleteConfirm: { done: true, success: true } }
+            })
+            expect(emailLookup).toHaveBeenCalledTimes(1)
+            expect(deleteUser).toHaveBeenCalledWith('fallback-alice')
+            expect(
+              await users!.userDeleteAuditLog.findUnique({
+                where: { id: audit.id }
+              })
+            ).toMatchObject({
+              success: true,
+              retiredFirebaseUids: ['alice', 'fallback-alice']
+            })
+            expect(
+              await auth.retiredAccount.findUnique({
+                where: { userId: 'fallback-alice' }
+              })
+            ).not.toBeNull()
+          } finally {
+            retireFetch.mockRestore()
+            getUser.mockRestore()
+            emailLookup.mockRestore()
+            deleteUser.mockRestore()
+            vi.unstubAllEnvs()
+            await users!.user.update({
+              where: { userId: 'bob' },
+              data: { superAdmin: false }
+            })
+          }
+        }
+      )
 
       it
         .skipIf(!users)

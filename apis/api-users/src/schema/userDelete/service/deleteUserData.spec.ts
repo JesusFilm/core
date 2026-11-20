@@ -386,6 +386,20 @@ describe('MCP retirement through existing account deletion', () => {
       allowReconciledUid: true
     })
     expect(result.success).toBe(false)
+    expect(prismaMock.userDeleteAuditLog.update).toHaveBeenCalledWith({
+      where: { id: 'audit-mcp' },
+      data: { firebaseCleanupUids: { push: 'new-fallback' } }
+    })
+    const recorded = prismaMock.userDeleteAuditLog.update.mock.calls.findIndex(
+      ([args]) => JSON.stringify(args.data).includes('new-fallback')
+    )
+    expect(
+      prismaMock.userDeleteAuditLog.update.mock.invocationCallOrder[recorded]
+    ).toBeLessThan(retire.mock.invocationCallOrder[1])
+    expect(prismaMock.userDeleteAuditLog.update).not.toHaveBeenCalledWith({
+      where: { id: 'audit-mcp' },
+      data: { retiredFirebaseUids: { push: 'new-fallback' } }
+    })
     expect(mockDeleteUser).toHaveBeenCalledExactlyOnceWith('fb-uid-1')
     expect(
       retire.mock.calls.map((call) => JSON.parse(String(call[1].body)))
