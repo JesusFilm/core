@@ -1,3 +1,5 @@
+import type { AxiosRequestConfig } from 'axios'
+
 /**
  * An axios response for Plausible's `/api/v1/stats/breakdown?property=visit:country`
  * with `metrics=visitors`: one row per `[countryCode, visitors]` pair.
@@ -21,10 +23,17 @@ export function plausibleCountryRowsBySite(
   rowsByJourneyId: Record<string, Array<[string, number]>>
 ): (
   url: string,
-  config?: { params?: { site_id?: string } }
+  config?: AxiosRequestConfig<unknown, unknown>
 ) => Promise<ReturnType<typeof plausibleCountryRows>> {
   return async (_url, config) => {
-    const siteId = config?.params?.site_id ?? ''
+    const params = config?.params
+    const siteId =
+      typeof params === 'object' &&
+      params !== null &&
+      'site_id' in params &&
+      typeof params.site_id === 'string'
+        ? params.site_id
+        : ''
     const journeyId = siteId.replace('api-journeys-journey-', '')
     return plausibleCountryRows(rowsByJourneyId[journeyId] ?? [])
   }
