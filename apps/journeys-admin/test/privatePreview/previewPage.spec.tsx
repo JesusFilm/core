@@ -1,17 +1,17 @@
 import type { GetServerSidePropsContext } from 'next'
 
-import { createApolloClient } from '../../../src/libs/apolloClient'
-import { getAuthTokens, toUser } from '../../../src/libs/auth/getAuthTokens'
+import { createApolloClient } from '../../src/libs/apolloClient'
+import { getAuthTokens, toUser } from '../../src/libs/auth/getAuthTokens'
 
-import { getServerSideProps } from './preview'
+import { getServerSideProps } from '../../pages/journeys/[journeyId]/preview'
 
-vi.mock('../../../src/components/PrivateJourneyPreview', () => ({
+vi.mock('../../src/components/PrivateJourneyPreview', () => ({
   PrivateJourneyPreview: () => null
 }))
-vi.mock('../../../src/libs/apolloClient', () => ({
+vi.mock('../../src/libs/apolloClient', () => ({
   createApolloClient: vi.fn()
 }))
-vi.mock('../../../src/libs/auth/getAuthTokens', () => ({
+vi.mock('../../src/libs/auth/getAuthTokens', () => ({
   getAuthTokens: vi.fn(),
   toUser: vi.fn(),
   redirectToLogin: () => ({

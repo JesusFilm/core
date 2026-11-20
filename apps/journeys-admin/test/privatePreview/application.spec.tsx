@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import { render, screen } from '@testing-library/react'
 import type { ComponentProps, ReactNode } from 'react'
 
-import App from './_app'
+import App from '../../pages/_app'
 
 const { navigation, team } = vi.hoisted(() => ({
   navigation: { asPath: '/' },
@@ -14,9 +14,9 @@ const client = new ApolloClient({
   link: ApolloLink.empty()
 })
 vi.mock('next/router', () => ({ useRouter: () => navigation }))
-vi.mock('../src/libs/apolloClient', () => ({ useApollo: () => client }))
-vi.mock('../src/libs/auth/firebase', () => ({ getFirebaseAuth: vi.fn() }))
-vi.mock('../src/libs/auth', () => ({
+vi.mock('../../src/libs/apolloClient', () => ({ useApollo: () => client }))
+vi.mock('../../src/libs/auth/firebase', () => ({ getFirebaseAuth: vi.fn() }))
+vi.mock('../../src/libs/auth', () => ({
   AuthProvider: ({ children }: { children: ReactNode }) => <>{children}</>
 }))
 vi.mock('@core/journeys/ui/TeamProvider', () => ({

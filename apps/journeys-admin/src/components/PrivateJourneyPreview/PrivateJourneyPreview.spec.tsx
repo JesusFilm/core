@@ -6,7 +6,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
-import { blockHistoryVar } from '@core/journeys/ui/block'
+import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
+import {
+  showHeaderFooterVar,
+  showNavigationVar
+} from '@core/journeys/ui/block/block'
 import type { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { journey as fixture } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
@@ -121,9 +125,32 @@ const blocks = [
 const journey = { ...fixture, blocks }
 
 describe('private saved playback', () => {
+  beforeAll(async () => {
+    // Resolve real playback chunks before timing user interactions and fades.
+    await Promise.all([
+      import(/* webpackChunkName: "Button" */ '@core/journeys/ui/Button'),
+      import(/* webpackChunkName: "Card" */ '@core/journeys/ui/Card'),
+      import(
+        /* webpackChunkName: "RadioQuestion" */ '@core/journeys/ui/RadioQuestion'
+      ),
+      import(
+        /* webpackChunkName: "RadioOption" */ '@core/journeys/ui/RadioOption'
+      ),
+      import(/* webpackChunkName: "Step" */ '@core/journeys/ui/Step'),
+      import(
+        /* webpackChunkName: "TextResponse" */ '@core/journeys/ui/TextResponse'
+      ),
+      import(
+        /* webpackChunkName: "Typography" */ '@core/journeys/ui/Typography'
+      )
+    ])
+  })
   beforeEach(() => {
     vi.clearAllMocks()
     blockHistoryVar([])
+    treeBlocksVar([])
+    showHeaderFooterVar(true)
+    showNavigationVar(true)
     router.query = {}
   })
 
@@ -166,15 +193,29 @@ describe('private saved playback', () => {
         screen.getByRole('textbox', { name: 'Contact email' })
       ).toHaveValue('synthetic@example.com')
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Answer branch' }))
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Answer branch' })
+    )
     await waitFor(() =>
       expect(
         screen.getByRole('heading', { name: 'answer-step saved content' })
       ).toBeVisible()
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Previous' }))
+    // Exercise the normal idle fade, then reveal controls as a pointer user does.
+    await waitFor(
+      () =>
+        expect(
+          screen.queryByRole('button', { name: 'Previous' })
+        ).not.toBeInTheDocument(),
+      { timeout: 6000 }
+    )
+    fireEvent.mouseOver(
+      screen.getByTestId('ConductorNavigationContainerPrevious')
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Previous' }))
     await screen.findByRole('button', { name: 'Answer branch' })
-    fireEvent.click(screen.getByRole('button', { name: /^Next$/ }))
+    fireEvent.mouseOver(screen.getByTestId('ConductorNavigationContainerNext'))
+    fireEvent.click(await screen.findByRole('button', { name: /^Next$/ }))
     await waitFor(() =>
       expect(
         screen.getByRole('heading', { name: 'default saved content' })
@@ -190,7 +231,7 @@ describe('private saved playback', () => {
       `/journeys/${fixture.id}`
     )
     open.mockRestore()
-  })
+  }, 15000)
 
   it('routes website cards inside private Admin playback', async () => {
     preview(true)
