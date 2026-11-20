@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/journeys/client'
 
-import { queue as emailQueue } from '../../workers/email/queue'
+import { enqueueTeamRemovedEmail } from '../../workers/email/teamRemoved'
 import { builder } from '../builder'
 import { logger } from '../logger'
 
@@ -39,21 +39,12 @@ builder.mutationField('userTeamDelete', (t) =>
           where: { id: String(args.id) }
         })
 
-        void emailQueue
-          .add(
-            'team-removed',
-            {
-              teamName: userTeam.team.title,
-              userId: userTeam.userId
-            },
-            {
-              removeOnComplete: true,
-              removeOnFail: { age: 24 * 3600 }
-            }
-          )
-          .catch((err) =>
-            logger.error(err, 'failed to enqueue team-removed email')
-          )
+        void enqueueTeamRemovedEmail({
+          teamName: userTeam.team.title,
+          userId: userTeam.userId
+        }).catch((err) =>
+          logger.error(err, 'failed to enqueue team-removed email')
+        )
 
         return deleted
       }
