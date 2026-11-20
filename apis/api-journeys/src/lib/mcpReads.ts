@@ -445,7 +445,10 @@ export function createJourneyReadHandler(
 type ReadJourney = Prisma.JourneyGetPayload<{ include: { revision: true } }>
 async function snapshot(
   tx: Prisma.TransactionClient,
-  request: Extract<ReadRequest, { tool: 'journey_read' | 'journeys_list' | 'journey_preview' }>,
+  request: Extract<
+    ReadRequest,
+    { tool: 'journey_read' | 'journeys_list' | 'journey_preview' }
+  >,
   claims: ReadCredential,
   journeys: ReadJourney[],
   config: JourneyReadsConfig
