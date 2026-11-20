@@ -69,11 +69,12 @@ export function useStepNavigationEvents({
     StepPreviousEventCreateVariables
   >(STEP_PREVIOUS_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { journey } = useJourney()
+  const { journey, renderMode } = useJourney()
   const { getNextBlock, treeBlocks, blockHistory } = useBlocks()
 
   const handleNextNavigationEventCreate = useCallback(
     (activeBlock: TreeBlock<StepFields>): void => {
+      if (renderMode === 'preview') return
       const id = uuidv4()
       const stepName = getStepHeading(
         activeBlock.id,
@@ -134,11 +135,20 @@ export function useStepNavigationEvents({
         targetStepName
       })
     },
-    [getNextBlock, journey, plausible, stepNextEventCreate, t, treeBlocks]
+    [
+      getNextBlock,
+      journey,
+      plausible,
+      stepNextEventCreate,
+      t,
+      treeBlocks,
+      renderMode
+    ]
   )
 
   const handlePreviousNavigationEventCreate = useCallback(
     (activeBlock: TreeBlock<StepFields>): void => {
+      if (renderMode === 'preview') return
       const id = uuidv4()
       const stepName = getStepHeading(
         activeBlock.id,
@@ -201,7 +211,15 @@ export function useStepNavigationEvents({
         targetStepName
       })
     },
-    [blockHistory, journey, plausible, stepPreviousEventCreate, t, treeBlocks]
+    [
+      blockHistory,
+      journey,
+      plausible,
+      stepPreviousEventCreate,
+      t,
+      treeBlocks,
+      renderMode
+    ]
   )
 
   return {

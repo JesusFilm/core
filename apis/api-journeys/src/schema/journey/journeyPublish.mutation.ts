@@ -8,45 +8,43 @@ import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
 
 builder.mutationField('journeyPublish', (t) =>
-  t
-    .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
-    .prismaField({
-      type: JourneyRef,
-      nullable: true,
-      args: {
-        id: t.arg({ type: 'ID', required: true })
-      },
-      resolve: async (query, _parent, args, context) => {
-        const journeyId = String(args.id)
+  t.withAuth({ isAuthenticated: true }).prismaField({
+    type: JourneyRef,
+    nullable: true,
+    args: {
+      id: t.arg({ type: 'ID', required: true })
+    },
+    resolve: async (query, _parent, args, context) => {
+      const journeyId = String(args.id)
 
-        const journey = await prisma.journey.findUnique({
-          where: { id: journeyId },
-          include: {
-            userJourneys: true,
-            team: { include: { userTeams: true } }
-          }
+      const journey = await prisma.journey.findUnique({
+        where: { id: journeyId },
+        include: {
+          userJourneys: true,
+          team: { include: { userTeams: true } }
+        }
+      })
+      if (journey == null)
+        throw new GraphQLError('journey not found', {
+          extensions: { code: 'NOT_FOUND' }
         })
-        if (journey == null)
-          throw new GraphQLError('journey not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        if (!journeyAcl(Action.Manage, journey, context.user))
-          throw new GraphQLError('user is not allowed to publish journey', {
-            extensions: { code: 'FORBIDDEN' }
-          })
+      if (!journeyAcl(Action.Manage, journey, context.user))
+        throw new GraphQLError('user is not allowed to publish journey', {
+          extensions: { code: 'FORBIDDEN' }
+        })
 
-        return await prisma.journey.update({
-          ...query,
-          where: { id: journeyId, status: journey.status },
-          data: {
-            status: JourneyStatus.published,
-            publishedAt: new Date(),
-            firstPublishedAt: journey.firstPublishedAt ?? new Date(),
-            archivedAt: null,
-            trashedAt: null,
-            deletedAt: null
-          }
-        })
-      }
-    })
+      return await prisma.journey.update({
+        ...query,
+        where: { id: journeyId, status: journey.status },
+        data: {
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
+          firstPublishedAt: journey.firstPublishedAt ?? new Date(),
+          archivedAt: null,
+          trashedAt: null,
+          deletedAt: null
+        }
+      })
+    }
+  })
 )

@@ -21,6 +21,7 @@ import {
   listInput,
   maxStructuredResultBytes,
   maxToolInputBytes,
+  previewInput,
   readFailure,
   readRequest,
   resultContractVersion,
@@ -171,6 +172,16 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         type: 'object' as const
       },
       annotations: { readOnlyHint: true, destructiveHint: false }
+    },
+    {
+      name: 'journey_preview',
+      description:
+        'Get a private playback handoff for the saved revision and a bounded route checklist. Opening the link requires current human Admin access. External actions, visitor events and submissions are disabled. A human with Manage rights publishes in the normal Admin editor.',
+      inputSchema: {
+        ...z.toJSONSchema(previewInput, { io: 'input' }),
+        type: 'object' as const
+      },
+      annotations: { readOnlyHint: true, destructiveHint: false }
     }
   ].map((tool) => {
     const definition = specTypeSchemas.Tool['~standard'].validate(tool)
@@ -206,7 +217,9 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
           ? 'Returned the currently authorized journeys.'
           : tool.name === 'journey_read'
             ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
-            : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
+            : tool.name === 'journey_preview'
+              ? 'Returned the authorized private playback handoff. Open it with your Admin identity. Publish from the normal Admin editor.'
+              : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
         tool.inputSchema
       )
       return server.server.projectCallToolResult(response, undefined)

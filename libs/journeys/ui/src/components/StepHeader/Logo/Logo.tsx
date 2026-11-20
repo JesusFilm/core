@@ -6,6 +6,7 @@ import { ReactElement, ReactNode } from 'react'
 import DiamondIcon from '@core/shared/ui/icons/Diamond'
 import { NextImage } from '@core/shared/ui/NextImage'
 
+import { blockHistoryVar, treeBlocksVar } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 
 export function Logo(): ReactElement {
@@ -13,6 +14,11 @@ export function Logo(): ReactElement {
   const router = useRouter()
 
   function handleHomeClick(): void {
+    if (renderMode === 'preview') {
+      const first = treeBlocksVar()[0]
+      if (first) blockHistoryVar([first])
+      return
+    }
     const homeSlug = router.query.journeySlug as string
     if (homeSlug != null) {
       void router.push(`/${homeSlug}`)

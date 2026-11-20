@@ -6330,6 +6330,8 @@ type Query {
   first.
   """
   journeysByVideo(videoId: ID!, languageId: ID): [Journey!]!
+  journeyPreview(id: ID!, expectedRevision: String): Journey!
+  journeyPublishPermission(id: ID!): Boolean!
   journeyTemplateLanguageIds: [String!]!
   journeyCollection(id: ID!): JourneyCollection!
   journeyCollections(teamId: ID!): [JourneyCollection]!

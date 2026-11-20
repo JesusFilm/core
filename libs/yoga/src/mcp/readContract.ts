@@ -49,13 +49,21 @@ export const journeyInput = z
     cursor: z.string().max(4096).optional()
   })
   .strict()
+export const previewInput = z
+  .object({
+    journeyId: id,
+    expectedRevision: journeyInput.shape.revision.unwrap(),
+    startStepId: id.optional()
+  })
+  .strict()
 export const readRequest = z.discriminatedUnion('tool', [
   z.object({ tool: z.literal('journeys_list'), input: listInput }).strict(),
   z.object({ tool: z.literal('journey_read'), input: journeyInput }).strict(),
   z.object({ tool: z.literal('journey_edit'), input: editInput }).strict(),
   z
     .object({ tool: z.literal('journey_operation_get'), input: operationInput })
-    .strict()
+    .strict(),
+  z.object({ tool: z.literal('journey_preview'), input: previewInput }).strict()
 ])
 export type ReadRequest = z.infer<typeof readRequest>
 export const maxStructuredResultBytes = 524288
