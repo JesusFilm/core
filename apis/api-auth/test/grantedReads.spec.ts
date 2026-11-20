@@ -85,6 +85,7 @@ describe('granted journey read authorization', () => {
       let beforePermissionBegin: (() => Promise<void>) | undefined
       let afterPermissionBegin: (() => Promise<void>) | undefined
       const failedFenceReports = new Set<string>()
+      const anonymousProfileActors = new Set<string>()
       let ownerHandler: ReturnType<typeof createJourneyReadHandler>
       let permissionCoordinator: ReturnType<
         typeof createJourneyPermissionCoordinator
@@ -612,7 +613,9 @@ describe('granted journey read authorization', () => {
               createdAt: '2026-01-01T00:00:00.000Z',
               user: {
                 id: userId,
-                email: userId + '@synthetic.example',
+                email: anonymousProfileActors.has(userId)
+                  ? null
+                  : userId + '@synthetic.example',
                 firstName: userId,
                 emailVerified: true,
                 imageUrl: null
@@ -727,6 +730,7 @@ describe('granted journey read authorization', () => {
         beforePermissionBegin = undefined
         afterPermissionBegin = undefined
         failedFenceReports.clear()
+        anonymousProfileActors.clear()
         invalidUsers.clear()
         await auth.permissionChange.deleteMany()
         await auth.retiredAccount.deleteMany()
@@ -2193,10 +2197,12 @@ describe('granted journey read authorization', () => {
         'rollback',
         'delivery-retry',
         'report-retry',
-        'existing-profile'
+        'existing-profile',
+        'anonymous-profile'
       ] as const)(
         'persists profile subscription with the owner receipt: %s',
         async (mode) => {
+          if (mode === 'anonymous-profile') anonymousProfileActors.add('alice')
           vi.stubEnv('MAILCHIMP_AUDIENCE_ID', 'controlled-profile-audience')
           const subscription = vi
             .spyOn(mailchimp.lists, 'setListMember')
@@ -2257,7 +2263,7 @@ describe('granted journey read authorization', () => {
             }
             expect(receipt.intent).toMatchObject({
               effects:
-                mode === 'existing-profile'
+                mode === 'existing-profile' || mode === 'anonymous-profile'
                   ? []
                   : [{ type: 'mailchimpSubscription', user }]
             })
@@ -2302,7 +2308,7 @@ describe('granted journey read authorization', () => {
             } else {
               expect(result.errors).toBeUndefined()
               expect(receipt.reportedAt).not.toBeNull()
-              if (mode === 'existing-profile')
+              if (mode === 'existing-profile' || mode === 'anonymous-profile')
                 expect(subscription).not.toHaveBeenCalled()
               else expect(subscription).toHaveBeenCalledOnce()
             }

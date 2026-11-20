@@ -33,6 +33,8 @@ builder.mutationField('journeyProfileCreate', (t) =>
           }
         })
 
+        if (context.user.email == null) return created
+
         const user = {
           email: context.user.email,
           firstName: context.user.firstName,
