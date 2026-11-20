@@ -1,9 +1,8 @@
 import type { GetServerSidePropsContext } from 'next'
 
+import { getServerSideProps } from '../../pages/journeys/[journeyId]/preview'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { getAuthTokens, toUser } from '../../src/libs/auth/getAuthTokens'
-
-import { getServerSideProps } from '../../pages/journeys/[journeyId]/preview'
 
 vi.mock('../../src/components/PrivateJourneyPreview', () => ({
   PrivateJourneyPreview: () => null

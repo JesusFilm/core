@@ -145,6 +145,7 @@ describe('private saved playback', () => {
       )
     ])
   })
+
   beforeEach(() => {
     vi.clearAllMocks()
     blockHistoryVar([])

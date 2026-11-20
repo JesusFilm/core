@@ -1,10 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getApiRequestTokens } from 'next-firebase-auth-edge'
 
+import handler from '../../pages/api/preview'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { toUser } from '../../src/libs/auth/getAuthTokens'
-
-import handler from '../../pages/api/preview'
 
 vi.mock('next-firebase-auth-edge', () => ({ getApiRequestTokens: vi.fn() }))
 vi.mock('../../src/libs/apolloClient', () => ({ createApolloClient: vi.fn() }))
