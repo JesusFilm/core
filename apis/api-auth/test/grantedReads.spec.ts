@@ -8,15 +8,15 @@ import {
   createGatewayRuntime,
   usePropagateHeaders
 } from '@graphql-hive/gateway'
-import mailchimp from '@mailchimp/mailchimp_marketing'
-import { initContextCache } from '@pothos/core'
 import {
   createInMemoryCache,
   useResponseCache
 } from '@graphql-yoga/plugin-response-cache'
+import mailchimp from '@mailchimp/mailchimp_marketing'
+import { initContextCache } from '@pothos/core'
 import {
-  type GraphQLSchema,
   type GraphQLObjectType,
+  type GraphQLSchema,
   parse,
   subscribe
 } from 'graphql'
@@ -37,17 +37,17 @@ import { PrismaPg } from '@prisma/adapter-pg'
 /* eslint-disable @nx/enforce-module-boundaries -- This integration harness runs the actual independently deployed API participants. */
 import { commonConfig } from '../../api-gateway/src/common.config'
 import { useMcpReads } from '../../api-gateway/src/mcpReads'
+import { lockDraftJourneyRevision } from '../../api-journeys/src/lib/journeyRevision/journeyRevision'
 import type { createJourneyPermissionCoordinator } from '../../api-journeys/src/lib/mcpPermissions'
 import {
   createJourneyReadHandler,
   useJourneyMcpReads
 } from '../../api-journeys/src/lib/mcpReads'
-import { mockQueueAdd } from '../../api-journeys/test/bullmqMock'
 import {
   privatePreviewCachePolicy,
   usePrivatePreview
 } from '../../api-journeys/src/lib/privatePreview'
-import { lockDraftJourneyRevision } from '../../api-journeys/src/lib/journeyRevision/journeyRevision'
+import { mockQueueAdd } from '../../api-journeys/test/bullmqMock'
 import { readConfig as readMcpConfig } from '../../api-mcp/src/config'
 import { createRuntime as createMcpRuntime } from '../../api-mcp/src/runtime'
 import { message } from '../../api-mcp/test/helpers'
@@ -1245,6 +1245,82 @@ describe('granted journey read authorization', () => {
           where: { teamId: 'read-team', userId: 'alice' }
         })
         expect((await humanMutation(query, {}, 'alice')).data).toBeNull()
+      })
+
+      it('returns owned answer and default routes from the saved revision', async () => {
+        const prefix = 'preview-routes-' + randomUUID()
+        const original = await journeys.block.findUniqueOrThrow({
+          where: { id: 'read-b-step' }
+        })
+        const defaultStep = `${prefix}-default`
+        const answerStep = `${prefix}-answer`
+        const buttonId = `${prefix}-button`
+        try {
+          await journeys.block.createMany({
+            data: [defaultStep, answerStep].map((id, index) => ({
+              id,
+              journeyId: 'read-b',
+              typename: 'StepBlock',
+              parentOrder: index + 1
+            }))
+          })
+          await journeys.block.update({
+            where: { id: original.id },
+            data: { nextBlockId: defaultStep }
+          })
+          await journeys.block.create({
+            data: {
+              id: buttonId,
+              journeyId: 'read-b',
+              typename: 'ButtonBlock',
+              parentBlockId: original.id,
+              label: 'Synthetic answer',
+              action: { create: { blockId: answerStep } }
+            }
+          })
+          accessToken = await consent('alice', ['read-b'])
+          const revision = (
+            await journeys.journeyRevision.findUniqueOrThrow({
+              where: { journeyId: 'read-b' }
+            })
+          ).revision.toString()
+          const result = await call('journey_preview', {
+            journeyId: 'read-b',
+            expectedRevision: revision
+          })
+          expect(result.status).toBe(200)
+          const data = JSON.parse(result.body) as {
+            result: {
+              structuredContent: {
+                routeChecklist: {
+                  complete: boolean
+                  steps: Array<{ id: string; nextBlockId: string | null }>
+                  answers: Array<{ blockId: string; nextStepId: string }>
+                }
+              }
+            }
+          }
+          expect(data.result.structuredContent.routeChecklist).toMatchObject({
+            complete: true,
+            answers: [{ blockId: buttonId, nextStepId: answerStep }]
+          })
+          expect(
+            data.result.structuredContent.routeChecklist.steps
+          ).toContainEqual(
+            expect.objectContaining({
+              id: original.id,
+              nextBlockId: defaultStep
+            })
+          )
+        } finally {
+          await journeys.block.update({
+            where: { id: original.id },
+            data: { nextBlockId: original.nextBlockId }
+          })
+          await journeys.block.deleteMany({
+            where: { journeyId: 'read-b', id: { startsWith: prefix } }
+          })
+        }
       })
 
       it('bounds a large preview checklist while preserving handoff to an owned start Step beyond its first page', async () => {
