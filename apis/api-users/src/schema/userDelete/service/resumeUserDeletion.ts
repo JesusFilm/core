@@ -2,7 +2,7 @@ import { prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
 import { deleteFirebaseUser } from './deleteUserData'
-import { createLog, type LogEntry } from './types'
+import { type LogEntry, createLog } from './types'
 
 /** Resume only server-recorded retirement after the owning SQL delete committed. */
 export async function resumeUserDeletion(

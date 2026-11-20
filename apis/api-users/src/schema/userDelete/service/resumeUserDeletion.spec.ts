@@ -8,18 +8,30 @@ const firebase = vi.hoisted(() => ({
 }))
 vi.mock('@core/yoga/firebaseClient', () => ({ auth: firebase }))
 
+const progress = {
+  id: 'audit',
+  deletedUserId: 'user-record',
+  deletedUserFirebaseUid: 'self',
+  callerUserId: 'user-record',
+  callerEmail: 'self@example.com',
+  retiredFirebaseUids: ['self'],
+  deletedJourneyIds: [],
+  deletedTeamIds: [],
+  deletedUserJourneyIds: [],
+  deletedUserTeamIds: [],
+  success: false,
+  errorMessage: null,
+  completedAt: null,
+  createdAt: new Date()
+} satisfies NonNullable<
+  Awaited<ReturnType<typeof prismaMock.userDeleteAuditLog.findFirst>>
+>
+
 describe('resuming committed Users deletion', () => {
   beforeEach(() => {
     prismaMock.user.findUnique.mockResolvedValue(null)
     prismaMock.user.findFirst.mockResolvedValue(null)
-    prismaMock.userDeleteAuditLog.findFirst.mockResolvedValue({
-      id: 'audit',
-      deletedUserId: 'user-record',
-      deletedUserFirebaseUid: 'self',
-      callerUserId: 'user-record',
-      callerEmail: 'self@example.com',
-      retiredFirebaseUids: ['self']
-    } as Awaited<ReturnType<typeof prismaMock.userDeleteAuditLog.findFirst>>)
+    prismaMock.userDeleteAuditLog.findFirst.mockResolvedValue(progress)
     firebase.deleteUser.mockReset().mockResolvedValue(undefined)
     firebase.getUserByEmail.mockReset()
     vi.stubEnv('MCP_READS_ENABLED', 'true')
@@ -30,6 +42,7 @@ describe('resuming committed Users deletion', () => {
       vi.fn().mockRejectedValue(new Error('Auth unavailable'))
     )
   })
+
   afterEach(() => {
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
@@ -54,13 +67,9 @@ describe('resuming committed Users deletion', () => {
 
   it('cannot use an incomplete retirement record as authority', async () => {
     prismaMock.userDeleteAuditLog.findFirst.mockResolvedValue({
-      id: 'audit',
-      deletedUserId: 'user-record',
-      deletedUserFirebaseUid: 'self',
-      callerUserId: 'user-record',
-      retiredFirebaseUids: [],
-      callerEmail: 'self@example.com'
-    } as Awaited<ReturnType<typeof prismaMock.userDeleteAuditLog.findFirst>>)
+      ...progress,
+      retiredFirebaseUids: []
+    })
     expect(
       await resumeUserDeletion('databaseId', 'user-record', 'self')
     ).toBeNull()

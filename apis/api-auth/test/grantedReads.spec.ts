@@ -27,12 +27,12 @@ import { PrismaPg } from '@prisma/adapter-pg'
 /* eslint-disable @nx/enforce-module-boundaries -- This integration harness runs the actual independently deployed API participants. */
 import { commonConfig } from '../../api-gateway/src/common.config'
 import { useMcpReads } from '../../api-gateway/src/mcpReads'
-import { mockQueueAdd } from '../../api-journeys/test/bullmqMock'
 import type { createJourneyPermissionCoordinator } from '../../api-journeys/src/lib/mcpPermissions'
 import {
   createJourneyReadHandler,
   useJourneyMcpReads
 } from '../../api-journeys/src/lib/mcpReads'
+import { mockQueueAdd } from '../../api-journeys/test/bullmqMock'
 import { readConfig as readMcpConfig } from '../../api-mcp/src/config'
 import { createRuntime as createMcpRuntime } from '../../api-mcp/src/runtime'
 import { message } from '../../api-mcp/test/helpers'
