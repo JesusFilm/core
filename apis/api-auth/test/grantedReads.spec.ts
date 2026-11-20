@@ -1151,7 +1151,7 @@ describe('granted journey read authorization', () => {
         expect(denied.body).not.toContain('private-read-b-sentinel')
       })
 
-      it('returns published ordinary journeys under a read grant and lists the five registered tools', async () => {
+      it('returns published ordinary journeys under a read grant and registers only the implemented tools', async () => {
         accessToken = await consent('alice', ['read-published'])
         const read = await call('journey_read', {
           journeyId: 'read-published',
@@ -1177,6 +1177,9 @@ describe('granted journey read authorization', () => {
           'journeys_list',
           'journey_read',
           'journey_edit',
+          'journey_history',
+          'journey_undo',
+          'journey_redo',
           'journey_operation_get',
           'journey_preview'
         ])

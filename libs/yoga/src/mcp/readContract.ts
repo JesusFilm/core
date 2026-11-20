@@ -11,7 +11,12 @@ import {
 
 import { z } from 'zod'
 
-import { editInput, operationInput } from './editContract'
+import {
+  editInput,
+  historyActionInput,
+  historyInput,
+  operationInput
+} from './editContract'
 
 export const resultContractVersion = '1' as const
 export const readResult = z
@@ -61,11 +66,27 @@ export const readRequest = z.discriminatedUnion('tool', [
   z.object({ tool: z.literal('journey_read'), input: journeyInput }).strict(),
   z.object({ tool: z.literal('journey_edit'), input: editInput }).strict(),
   z
+    .object({ tool: z.literal('journey_history'), input: historyInput })
+    .strict(),
+  z
+    .object({ tool: z.literal('journey_undo'), input: historyActionInput })
+    .strict(),
+  z
+    .object({ tool: z.literal('journey_redo'), input: historyActionInput })
+    .strict(),
+  z
     .object({ tool: z.literal('journey_operation_get'), input: operationInput })
     .strict(),
   z.object({ tool: z.literal('journey_preview'), input: previewInput }).strict()
 ])
 export type ReadRequest = z.infer<typeof readRequest>
+export function isContentWrite(tool: ReadRequest['tool']): boolean {
+  return (
+    tool === 'journey_edit' ||
+    tool === 'journey_undo' ||
+    tool === 'journey_redo'
+  )
+}
 export const maxStructuredResultBytes = 524288
 export const maxTransportResponseBytes = maxStructuredResultBytes + 16384
 export function assertStructuredResultSize(result: unknown): void {
@@ -108,7 +129,9 @@ export const safeReadErrors = [
   'IDEMPOTENCY_KEY_REUSED',
   'RESULT_EXPIRED',
   'RESULT_UNAVAILABLE',
-  'NOT_EDITABLE'
+  'NOT_EDITABLE',
+  'HISTORY_CONFLICT',
+  'HISTORY_UNAVAILABLE'
 ] as const
 export function safeReadError(
   error: unknown,

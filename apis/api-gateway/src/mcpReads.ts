@@ -8,6 +8,7 @@ import {
   boundedJson,
   fingerprint,
   internalSignature,
+  isContentWrite,
   maxTransportBytes,
   readTransportRequest,
   readTrustSchema,
@@ -59,7 +60,7 @@ export function useMcpReads(config?: GatewayReadsConfig): GatewayPlugin {
         )
         if (
           fingerprint(body.request) !== claims.requestHash ||
-          (body.request.tool === 'journey_edit' &&
+          (isContentWrite(body.request.tool) &&
             (claims.scope !== 'journeys:edit' || claims.mode !== 'edit'))
         )
           throw new Error('Access denied')

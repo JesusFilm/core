@@ -244,7 +244,10 @@ export function createJourneyReadHandler(
       assertRequestInputSize(body.request)
       if (
         body.request.tool === 'journey_edit' ||
-        body.request.tool === 'journey_operation_get'
+        body.request.tool === 'journey_operation_get' ||
+        body.request.tool === 'journey_history' ||
+        body.request.tool === 'journey_undo' ||
+        body.request.tool === 'journey_redo'
       )
         return edits(
           new Request(request.url, {
@@ -459,10 +462,11 @@ async function snapshot(
     'journey_read',
     'journey_preview',
     'journey_operation_get',
+    ...(journey.status === 'draft' ? ['journey_history'] : []),
     ...(config.editsEnabled &&
     claims.mode === 'edit' &&
     journey.status === 'draft'
-      ? ['journey_edit']
+      ? ['journey_edit', 'journey_undo', 'journey_redo']
       : [])
   ]
   if (request.tool === 'journeys_list') {

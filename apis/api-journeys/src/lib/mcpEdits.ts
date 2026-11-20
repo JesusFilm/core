@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 import { Prisma, type PrismaClient } from '@core/prisma/journeys/client'
 import {
+  type HistoryResult,
   type OperationReceipt,
   type OperationResult,
   type TypographyInverse,
@@ -12,13 +13,15 @@ import {
   commandRegistry,
   operationFailure,
   operationReceipt,
-  operationResult
+  operationResult,
+  privateOperationErrorCodes
 } from '@core/yoga/mcp/editContract'
 import {
   assertRequestInputSize,
   boundedJson,
   fingerprint,
   internalSignature,
+  isContentWrite,
   maxTransportBytes,
   postJson,
   readTransportRequest,
@@ -38,6 +41,12 @@ import {
   editDatabaseTime,
   reconcileJourneyEdits
 } from './mcpEditsStore'
+import {
+  describeHistory,
+  historyEntries,
+  planHistory,
+  typographyParents
+} from './mcpHistory'
 import type { JourneyReadsConfig } from './mcpReads'
 
 export type EditCheckpoint =
@@ -113,9 +122,13 @@ export function createJourneyEditHandler(
       const body = readTransportRequest.parse(raw)
       assertRequestInputSize(body.request)
       if (
-        !['journey_edit', 'journey_operation_get'].includes(
-          body.request.tool
-        ) ||
+        ![
+          'journey_edit',
+          'journey_operation_get',
+          'journey_history',
+          'journey_undo',
+          'journey_redo'
+        ].includes(body.request.tool) ||
         !sameSecret(
           request.headers.get('x-mcp-signature') ?? '',
           internalSignature(
@@ -128,14 +141,22 @@ export function createJourneyEditHandler(
       )
         throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
       const operation = body.request
+      const payloadHash = canonicalFingerprint(
+        operation.tool === 'journey_edit'
+          ? operation.input
+          : { tool: operation.tool, input: operation.input }
+      )
       if (
         operation.tool !== 'journey_edit' &&
-        operation.tool !== 'journey_operation_get'
+        operation.tool !== 'journey_operation_get' &&
+        operation.tool !== 'journey_history' &&
+        operation.tool !== 'journey_undo' &&
+        operation.tool !== 'journey_redo'
       )
         throw new Error('VALIDATION_FAILED')
       if (
         !claims.journeyIds.includes(operation.input.journeyId) ||
-        (operation.tool === 'journey_edit' &&
+        (isContentWrite(operation.tool) &&
           (claims.mode !== 'edit' || claims.scope !== 'journeys:edit'))
       )
         throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
@@ -213,7 +234,7 @@ export function createJourneyEditHandler(
       await hooks.checkpoint?.('before_accept', context)
       await authority('accept', { credential, permitId })
       await hooks.checkpoint?.('after_accept', context)
-      const result = await db.$transaction(
+      const result: OperationResult | HistoryResult = await db.$transaction(
         async (tx) => {
           if (executionId) {
             await tx.$queryRaw`SELECT id FROM "McpEditExecution" WHERE id = ${executionId} FOR UPDATE`
@@ -247,16 +268,19 @@ export function createJourneyEditHandler(
             throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
           await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${resource.id} FOR NO KEY UPDATE`
           const journey = await authorizedJourney(tx)
-          const prior = await tx.mcpEditOperation.findFirst({
-            where: {
-              namespaceId: namespace.id,
-              ...(operation.tool === 'journey_edit'
-                ? { idempotencyKey: operation.input.idempotencyKey }
-                : operation.input.operationId
-                  ? { id: operation.input.operationId }
-                  : { idempotencyKey: operation.input.idempotencyKey })
-            }
-          })
+          const prior =
+            operation.tool === 'journey_history'
+              ? null
+              : await tx.mcpEditOperation.findFirst({
+                  where: {
+                    namespaceId: namespace.id,
+                    ...(operation.tool !== 'journey_operation_get'
+                      ? { idempotencyKey: operation.input.idempotencyKey }
+                      : operation.input.operationId
+                        ? { id: operation.input.operationId }
+                        : { idempotencyKey: operation.input.idempotencyKey })
+                  }
+                })
           const settle = async (status: 'committed' | 'settled') => {
             if (!executionId) return
             await tx.mcpEditExecution.update({
@@ -267,6 +291,59 @@ export function createJourneyEditHandler(
                 completedAt: await editDatabaseTime(tx, hooks.now)
               }
             })
+          }
+          const reject = async (
+            code: (typeof privateOperationErrorCodes)[number]
+          ) => {
+            if (!executionId) throw new Error(code)
+            await tx.mcpEditExecution.update({
+              where: { id: executionId },
+              data: {
+                status: 'settled',
+                failureCode: code,
+                completedAt: await editDatabaseTime(tx, hooks.now)
+              }
+            })
+            return operationFailure.parse({
+              contractVersion: '1',
+              kind: 'operation_failure',
+              code
+            })
+          }
+          if (
+            (operation.tool === 'journey_undo' ||
+              operation.tool === 'journey_redo') &&
+            !responseWitness &&
+            journey.status !== 'draft'
+          )
+            return reject('NOT_EDITABLE')
+          if (operation.tool === 'journey_history' && !responseWitness) {
+            if (journey.status !== 'draft') return reject('NOT_EDITABLE')
+            const entries = await historyEntries(
+              tx,
+              namespace.id,
+              journey.id,
+              claims.consentHistoryGeneration
+            )
+            const description = describeHistory(
+              journey.id,
+              await readJourneyRevision(tx, journey.id),
+              entries,
+              Boolean(
+                config.editsEnabled &&
+                  claims.mode === 'edit' &&
+                  journeyAcl(Action.Update, journey, {
+                    id: claims.subject
+                  } as Parameters<typeof journeyAcl>[2])
+              )
+            )
+            if (
+              body.stage === 'output' &&
+              fingerprint(description) !== body.dataHash
+            )
+              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+            await settle('settled')
+            return description
           }
           if (
             prior ||
@@ -288,8 +365,8 @@ export function createJourneyEditHandler(
                 code: 'RESULT_UNAVAILABLE'
               }
             } else if (
-              operation.tool === 'journey_edit' &&
-              prior.payloadHash !== canonicalFingerprint(operation.input)
+              isContentWrite(operation.tool) &&
+              prior.payloadHash !== payloadHash
             ) {
               retained = {
                 contractVersion: '1',
@@ -322,6 +399,8 @@ export function createJourneyEditHandler(
             } as Parameters<typeof journeyAcl>[2])
           )
             throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+          if (operation.tool === 'journey_history')
+            throw new Error('VALIDATION_FAILED')
           try {
             await lockDraftJourneyRevision(
               tx,
@@ -329,42 +408,72 @@ export function createJourneyEditHandler(
               operation.input.expectedRevision
             )
           } catch (error) {
-            const failure =
-              error instanceof GraphQLError
-                ? z
-                    .enum(['REVISION_CONFLICT', 'NOT_EDITABLE'])
-                    .safeParse(error.extensions.code)
-                : undefined
-            if (!failure?.success || !executionId) throw error
-            // This is a private response to an authorized rejected request,
-            // not an accepted edit/key. Its signed request witness lets the
-            // final sender release exactly this outcome after fresh checks.
-            await tx.mcpEditExecution.update({
-              where: { id: executionId },
-              data: {
-                status: 'settled',
-                failureCode: failure.data,
-                completedAt: await editDatabaseTime(tx, hooks.now)
-              }
-            })
-            return operationFailure.parse({
-              contractVersion: '1',
-              kind: 'operation_failure',
-              code: failure.data
-            })
+            if (!(error instanceof GraphQLError)) throw error
+            const failure = z
+              .enum(['REVISION_CONFLICT', 'NOT_EDITABLE'])
+              .safeParse(error.extensions.code)
+            if (!failure.success) throw error
+            return reject(failure.data)
           }
           const changes: TypographyInverse[] = []
           const plans: Array<{
             blockId: string
             patch: Prisma.BlockUpdateInput
-            inverse: TypographyInverse
+            inverse?: TypographyInverse
             fields: TypographyInverse['fields'][number]['field'][]
           }> = []
           const projected = new Map<
             string,
             Prisma.BlockGetPayload<Record<string, never>>
           >()
-          for (const command of operation.input.commands) {
+          let restoredEntry:
+            | Awaited<ReturnType<typeof historyEntries>>[number]
+            | undefined
+          if (
+            operation.tool === 'journey_undo' ||
+            operation.tool === 'journey_redo'
+          ) {
+            const entries = await historyEntries(
+              tx,
+              namespace.id,
+              journey.id,
+              claims.consentHistoryGeneration
+            )
+            const direction =
+              operation.tool === 'journey_undo' ? 'undo' : 'redo'
+            restoredEntry =
+              direction === 'undo'
+                ? [...entries].reverse().find((entry) => !entry.undone)
+                : entries.find((entry) => entry.undone)
+            if (
+              !restoredEntry ||
+              !entries.some((entry) => entry.id === operation.input.entryId)
+            )
+              return reject('HISTORY_UNAVAILABLE')
+            if (restoredEntry.id !== operation.input.entryId)
+              return reject('HISTORY_CONFLICT')
+            try {
+              plans.push(
+                ...(await planHistory(
+                  tx,
+                  journey.id,
+                  restoredEntry.changes,
+                  direction
+                ))
+              )
+            } catch (error) {
+              if (
+                error instanceof Error &&
+                (error.message === 'HISTORY_CONFLICT' ||
+                  error.message === 'HISTORY_UNAVAILABLE')
+              )
+                return reject(error.message)
+              throw error
+            }
+          }
+          for (const command of operation.tool === 'journey_edit'
+            ? operation.input.commands
+            : []) {
             const block =
               projected.get(command.blockId) ??
               (await tx.block.findUnique({
@@ -380,36 +489,7 @@ export function createJourneyEditHandler(
               !block.parentBlockId
             )
               throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-            const card = await tx.block.findUnique({
-              where: {
-                id: block.parentBlockId,
-                journeyId: journey.id,
-                deletedAt: null
-              }
-            })
-            const step = card?.parentBlockId
-              ? await tx.block.findUnique({
-                  where: {
-                    id: card.parentBlockId,
-                    journeyId: journey.id,
-                    deletedAt: null
-                  }
-                })
-              : null
-            if (
-              card?.typename !== 'CardBlock' ||
-              step?.typename !== 'StepBlock' ||
-              step.parentBlockId !== null ||
-              (await tx.block.count({
-                where: {
-                  journeyId: journey.id,
-                  parentBlockId: step.id,
-                  typename: 'CardBlock',
-                  deletedAt: null
-                }
-              })) !== 1
-            )
-              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+            const parent = await typographyParents(tx, journey.id, block)
             const applied = commandRegistry[command.type].apply(block, command)
             if (!applied.changedFields.length) continue
             const patch: Prisma.BlockUpdateInput = {
@@ -423,7 +503,7 @@ export function createJourneyEditHandler(
             plans.push({
               blockId: block.id,
               patch,
-              inverse: applied.inverse,
+              inverse: { ...applied.inverse, parent },
               fields: applied.changedFields
             })
             projected.set(block.id, {
@@ -440,14 +520,15 @@ export function createJourneyEditHandler(
               where: { id: plan.blockId },
               data: plan.patch
             })
-            changes.push(plan.inverse)
+            if (plan.inverse) changes.push(plan.inverse)
           }
           await hooks.checkpoint?.('after_content', context)
           const revision = await readJourneyRevision(tx, journey.id)
           await hooks.checkpoint?.('after_revision', context)
           const completedAt = await editDatabaseTime(tx, hooks.now)
-          const historyId = changes.length ? randomUUID() : null
-          const effectIds = changes.length ? [randomUUID()] : []
+          const historyId =
+            restoredEntry?.id ?? (changes.length ? randomUUID() : null)
+          const effectIds = plans.length ? [randomUUID()] : []
           const receipt: OperationReceipt = {
             contractVersion: '1',
             status: 'committed',
@@ -461,20 +542,32 @@ export function createJourneyEditHandler(
             kind: 'historical_receipt',
             completedAt: completedAt.toISOString(),
             historyId,
+            ...(restoredEntry
+              ? {
+                  historyAction:
+                    operation.tool === 'journey_undo'
+                      ? ('undo' as const)
+                      : ('redo' as const)
+                }
+              : {}),
             changedFields: plans.map(({ blockId, fields }) => ({
               blockId,
               fields
             })),
             idMap: {},
             effectIds,
-            warnings: []
+            warnings: restoredEntry
+              ? [
+                  'Restored recorded content fields. This Typography batch has no upload, generation or provider effects.'
+                ]
+              : []
           }
           await tx.mcpEditOperation.create({
             data: {
               id: receipt.operationId,
               namespaceId: namespace.id,
               idempotencyKey: operation.input.idempotencyKey,
-              payloadHash: canonicalFingerprint(operation.input),
+              payloadHash,
               journeyId: journey.id,
               grantVersion: claims.grantVersion,
               revision,
@@ -483,8 +576,35 @@ export function createJourneyEditHandler(
               result: json(receipt)
             }
           })
+          await tx.mcpEditAudit.create({
+            data: {
+              namespaceId: namespace.id,
+              journeyId: journey.id,
+              operationId: receipt.operationId,
+              action: operation.tool,
+              occurredAt: completedAt,
+              expiresAt: new Date(completedAt.getTime() + 90 * 86400000)
+            }
+          })
           await hooks.checkpoint?.('after_receipt', context)
-          if (historyId) {
+          if (restoredEntry) {
+            await tx.mcpEditHistory.update({
+              where: { id: restoredEntry.id },
+              data: { undone: operation.tool === 'journey_undo' }
+            })
+          } else {
+            await tx.mcpEditHistory.deleteMany({
+              where: {
+                namespaceId: namespace.id,
+                journeyId: journey.id,
+                OR: [
+                  { undone: true },
+                  { historyGeneration: { lt: claims.consentHistoryGeneration } }
+                ]
+              }
+            })
+          }
+          if (historyId && !restoredEntry) {
             await tx.mcpEditHistory.create({
               data: {
                 id: historyId,

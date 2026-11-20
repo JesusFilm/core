@@ -8,6 +8,9 @@ import { z } from 'zod'
 
 import {
   editInput,
+  historyActionInput,
+  historyInput,
+  historyResult,
   operationInput,
   operationResult,
   privateOperationErrorCodes
@@ -134,7 +137,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_read',
       description:
-        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read dependencies before proposing changes; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported Typography fields after a fresh read. Media and undo/redo operations are unavailable.',
+        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read dependencies before proposing changes; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported Typography fields after a fresh read. Use journey_history for the retained connection batches. Media operations are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(journeyInput, { io: 'input' }),
         type: 'object' as const
@@ -159,6 +162,41 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         idempotentHint: true
       }
     },
+    {
+      name: 'journey_history',
+      description:
+        'List up to five saved batches for this same logical connection and ordinary draft, shared across undo and redo. Each committed batch is one step. Read again for the current revision; choose the returned next entry ID. Current Admin rights and active resource access are required. View only retains entries but disables undo/redo. Renewal can preserve eligible history for 30 days after consent expiry; disconnect discards it.',
+      inputSchema: {
+        ...z.toJSONSchema(historyInput, { io: 'input' }),
+        type: 'object' as const
+      },
+      outputSchema: {
+        ...z.toJSONSchema(z.union([historyResult, operationResult]), {
+          io: 'output'
+        }),
+        type: 'object' as const
+      },
+      annotations: { readOnlyHint: true, destructiveHint: false }
+    },
+    ...(['undo', 'redo'] as const).map((direction) => ({
+      name: 'journey_' + direction,
+      description:
+        direction +
+        ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. New committed edits clear redo; rejection and exact replay do not. Typography restoration has no external provider effects. Host changes are excluded.',
+      inputSchema: {
+        ...z.toJSONSchema(historyActionInput, { io: 'input' }),
+        type: 'object' as const
+      },
+      outputSchema: {
+        ...z.toJSONSchema(operationResult, { io: 'output' }),
+        type: 'object' as const
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true
+      }
+    })),
     {
       name: 'journey_operation_get',
       description:
@@ -215,11 +253,13 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
           ),
         tool.name === 'journeys_list'
           ? 'Returned the currently authorized journeys.'
-          : tool.name === 'journey_read'
-            ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
-            : tool.name === 'journey_preview'
-              ? 'Returned the authorized private playback handoff. Open it with your Admin identity. Publish from the normal Admin editor.'
-              : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
+          : tool.name === 'journey_history'
+            ? 'Returned retained batches and current undo/redo availability for this connection.'
+            : tool.name === 'journey_read'
+              ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
+              : tool.name === 'journey_preview'
+                ? 'Returned the authorized private playback handoff. Open it with your Admin identity. Publish from the normal Admin editor.'
+                : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
         tool.inputSchema
       )
       return server.server.projectCallToolResult(response, undefined)

@@ -4,6 +4,9 @@ import { spawnSync } from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
+const issue = process.env.MCP_EDITS_TEST_ISSUE ?? '10553'
+if (!['10553', '10562'].includes(issue))
+  throw new Error('Unsupported isolated test issue')
 const source = new URL(
   process.env.MCP_EDITS_TEST_POSTGRES_URL ??
     'postgresql://postgres:postgres@localhost:5432/postgres'
@@ -27,7 +30,7 @@ function run(args, env = {}) {
 const admin = new Client({ connectionString: source.href })
 await admin.connect()
 try {
-  for (const database of ['auth_issue_10553', 'journeys_issue_10553']) {
+  for (const database of [`auth_issue_${issue}`, `journeys_issue_${issue}`]) {
     const exists = await admin.query(
       'SELECT 1 FROM pg_database WHERE datname=$1',
       [database]
@@ -36,13 +39,13 @@ try {
   }
   if (
     !(
-      await admin.query(
-        "SELECT 1 FROM pg_roles WHERE rolname='mcp_issue_10553'"
-      )
+      await admin.query('SELECT 1 FROM pg_roles WHERE rolname=$1', [
+        `mcp_issue_${issue}`
+      ])
     ).rowCount
   )
     await admin.query(
-      "CREATE ROLE mcp_issue_10553 LOGIN PASSWORD 'controlled-local-10553'"
+      `CREATE ROLE mcp_issue_${issue} LOGIN PASSWORD 'controlled-local-${issue}'`
     )
 } finally {
   await admin.end()
@@ -61,26 +64,26 @@ for (const domain of ['auth', 'journeys'])
     {
       [domain === 'auth'
         ? 'PG_DATABASE_URL_AUTH_MIGRATION'
-        : 'PG_DATABASE_URL_JOURNEYS']: connection(`${domain}_issue_10553`)
+        : 'PG_DATABASE_URL_JOURNEYS']: connection(`${domain}_issue_${issue}`)
     }
   )
-const auth = new Client({ connectionString: connection('auth_issue_10553') })
+const auth = new Client({ connectionString: connection(`auth_issue_${issue}`) })
 await auth.connect()
 try {
   await auth.query(
-    'GRANT CONNECT ON DATABASE auth_issue_10553 TO mcp_issue_10553'
+    `GRANT CONNECT ON DATABASE auth_issue_${issue} TO mcp_issue_${issue}`
   )
   await auth.query('REVOKE CREATE ON SCHEMA public FROM PUBLIC')
-  await auth.query('GRANT USAGE ON SCHEMA public TO mcp_issue_10553')
+  await auth.query(`GRANT USAGE ON SCHEMA public TO mcp_issue_${issue}`)
   await auth.query(
-    'GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO mcp_issue_10553'
+    `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO mcp_issue_${issue}`
   )
 } finally {
   await auth.end()
 }
-const runtime = new URL(connection('auth_issue_10553'))
-runtime.username = 'mcp_issue_10553'
-runtime.password = 'controlled-local-10553'
+const runtime = new URL(connection(`auth_issue_${issue}`))
+runtime.username = `mcp_issue_${issue}`
+runtime.password = `controlled-local-${issue}`
 run(
   [
     'exec',
@@ -90,8 +93,9 @@ run(
     'apis/api-auth/vitest.edits.config.mts'
   ],
   {
+    EDITS_TEST_ISSUE: issue,
     EDITS_TEST_AUTH_DATABASE_URL: runtime.href,
-    EDITS_TEST_JOURNEYS_DATABASE_URL: connection('journeys_issue_10553')
+    EDITS_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`)
   }
 )
 

@@ -131,6 +131,9 @@ export async function cleanupJourneyEdits(
           await db.$transaction(async (tx) => {
             await tx.$queryRaw`SELECT id FROM "McpEditNamespace" WHERE id = ${namespace.id} FOR UPDATE`
             const now = await editDatabaseTime(tx, clock)
+            await tx.mcpEditAudit.deleteMany({
+              where: { namespaceId: namespace.id, expiresAt: { lte: now } }
+            })
             await tx.mcpEditExecution.deleteMany({
               where: {
                 connectionId: namespace.id,
