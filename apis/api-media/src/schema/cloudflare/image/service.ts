@@ -7,6 +7,11 @@
 import 'cloudflare/shims/web'
 
 import Cloudflare from 'cloudflare'
+import { multipartFormRequestOptions } from 'cloudflare/core'
+
+interface ImageGenerationResponse {
+  result?: { image?: string }
+}
 
 export function getClient(): Cloudflare {
   if (process.env.CLOUDFLARE_IMAGES_TOKEN == null)
@@ -27,33 +32,27 @@ export async function createImageByDirectUpload(): Promise<Cloudflare.Images.V2.
   })
 }
 
-export async function createImageFromResponse(
-  response: Response
+export async function createImageFromText(
+  prompt: string
 ): Promise<Cloudflare.Images.V1.Image> {
   if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
 
-  return await getClient().images.v1.create({
-    account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
+  const client = getClient()
+  const response: ImageGenerationResponse = await client.post(
+    `/accounts/${accountId}/ai/run/@cf/black-forest-labs/flux-2-klein-9b`,
+    multipartFormRequestOptions({ body: { prompt } })
+  )
+  const image = response.result?.image
+  if (typeof image !== 'string' || image === '')
+    throw new Error('Workers AI did not return generated image data')
+
+  return await client.images.v1.create({
+    account_id: accountId,
     requireSignedURLs: false,
-    file: response
+    file: new File([Buffer.from(image, 'base64')], 'generated-image')
   })
-}
-
-export async function createImageFromText(prompt: string): Promise<Response> {
-  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
-    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
-
-  return await getClient()
-    .post(
-      `/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/stabilityai/stable-diffusion-xl-base-1.0`,
-      {
-        body: {
-          prompt
-        }
-      }
-    )
-    .asResponse()
 }
 
 export async function createImageFromUrl(

@@ -13,7 +13,6 @@ import { ImageAspectRatio } from './enums'
 import { ImageInput, VideoImagesFilter } from './inputs'
 import {
   createImageByDirectUpload,
-  createImageFromResponse,
   createImageFromText,
   createImageFromUrl,
   deleteImage
@@ -287,9 +286,7 @@ builder.mutationFields((t) => ({
           userId: user.id
         })
 
-        const image = await createImageFromResponse(
-          await createImageFromText(prompt)
-        )
+        const image = await createImageFromText(prompt)
 
         const createdImage = await prisma.cloudflareImage.create({
           ...query,
