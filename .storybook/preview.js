@@ -1,5 +1,5 @@
 import { initialize as mswInitialize, mswLoader } from 'msw-storybook-addon'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/mousewheel'
