@@ -30,8 +30,8 @@ import {
   userTeamAcl
 } from '../schema/userTeam/userTeam.acl'
 import { enqueueJourneyApprovedEmail } from '../workers/email/journeyApproved'
-import { enqueueTeamRemovedEmail } from '../workers/email/teamRemoved'
 import { enqueueTeamInviteAcceptedEmail } from '../workers/email/teamInviteAccepted'
+import { enqueueTeamRemovedEmail } from '../workers/email/teamRemoved'
 import { enqueueTemplateSite } from '../workers/plausible/templateSite'
 import { enqueueShortLinkDeletes } from '../workers/shortlinkDelete/queue'
 
