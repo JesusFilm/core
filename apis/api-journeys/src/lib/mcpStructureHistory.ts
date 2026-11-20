@@ -133,8 +133,22 @@ export async function planStructureHistory(
       row.journeyId !== journey.id
     )
       conflict()
-    // Undoing a creation must not hide newer human-authored fields or children.
-    const checkedFields = change.created ? blockFields : change.fields
+    const removing = direction === 'redo' && removedIds.has(change.id)
+    if (removing) {
+      // Older descriptors lack the action snapshot needed to safely hide content.
+      if (change.removalAction === undefined)
+        throw new Error('HISTORY_UNAVAILABLE')
+      if (
+        !isDeepStrictEqual(
+          state.originalActions.get(change.id) ?? null,
+          change.removalAction
+        )
+      )
+        conflict()
+    }
+    // Hiding a subtree must not discard newer human fields, actions or children.
+    const checkedFields =
+      change.created || removing ? blockFields : change.fields
     if (checkedFields.some((field) => !equalField(row, expected, field)))
       conflict()
     if (change.created || removedIds.has(change.id)) {

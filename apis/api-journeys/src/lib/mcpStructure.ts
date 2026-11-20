@@ -567,7 +567,10 @@ export async function planStructure(
         command.destination === null
           ? null
           : resolve(command.destination, 'StepBlock')
-      if (destination) stepFor(destination)
+      if (destination) {
+        stepFor(destination)
+        if (idOf(step) === idOf(destination)) fail()
+      }
       step.nextBlockId = destination?.id ?? null
       if (destination)
         assignedRoutes.push({

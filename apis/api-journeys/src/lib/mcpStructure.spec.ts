@@ -139,6 +139,77 @@ describe('owning structure planner', () => {
     }
   })
 
+  it.each(['existing', 'local'] as const)(
+    'rejects a default self continuation using %s references',
+    async (reference) => {
+      await expect(
+        plan(
+          reference === 'existing'
+            ? [
+                { type: 'step_position_set', step: { id: 'a' }, x: 1, y: 2 },
+                {
+                  type: 'step_default_set',
+                  step: { id: 'a' },
+                  destination: { id: 'a' }
+                }
+              ]
+            : [
+                {
+                  type: 'step_default_set',
+                  step: { local: 'new' },
+                  destination: { local: 'new' }
+                },
+                {
+                  type: 'step_add',
+                  key: 'new',
+                  cardKey: 'new_card',
+                  placement: end
+                }
+              ]
+        )
+      ).rejects.toThrow('VALIDATION_FAILED')
+    }
+  )
+
+  it.each([
+    'content',
+    'settings',
+    'action-change',
+    'action-add',
+    'action-remove'
+  ])('refuses redo that would hide a newer subtree %s edit', async (edit) => {
+    const initial = [
+      ...base(),
+      row('btext', 'TypographyBlock', 'bc', 1, { content: 'Original heading' })
+    ]
+    const initialActions = [action('yes', 'b'), action('no', 'c')]
+    if (edit !== 'action-add') initialActions.push(action('button', 'c'))
+    readRows(initial, initialActions)
+    const saved = await plan([{ type: 'step_remove', step: { id: 'b' } }])
+    const current = initial.map((block) =>
+      block.id === 'btext'
+        ? {
+            ...block,
+            ...(edit === 'content' ? { content: 'New human heading' } : {}),
+            ...(edit === 'settings'
+              ? { settings: { human: 'New setting' } }
+              : {})
+          }
+        : block
+    )
+    const currentActions = initialActions.filter(
+      (item) => item.parentBlockId !== 'button'
+    )
+    if (edit !== 'action-remove')
+      currentActions.push(
+        action('button', edit === 'action-change' ? 'a' : 'c')
+      )
+    readRows(current, currentActions)
+    await expect(
+      planStructureHistory(tx, journey, saved.changes, 'redo')
+    ).rejects.toThrow('HISTORY_CONFLICT')
+  })
+
   it('keeps all incoming route rows unchanged in a delete-only plan and reports them', async () => {
     const result = await plan([{ type: 'step_remove', step: { id: 'b' } }])
     expect(result.actionWrites).toEqual([])
@@ -361,6 +432,14 @@ describe('owning structure planner', () => {
     await expect(
       planStructureHistory(tx, journey, result.changes, 'undo')
     ).rejects.toThrow('HISTORY_CONFLICT')
+  })
+
+  it('refuses deletion redo from legacy descriptors without an action snapshot', async () => {
+    const saved = await plan([{ type: 'step_remove', step: { id: 'b' } }])
+    for (const change of saved.changes[0].blocks) delete change.removalAction
+    await expect(
+      planStructureHistory(tx, journey, saved.changes, 'redo')
+    ).rejects.toThrow('HISTORY_UNAVAILABLE')
   })
 
   it('rejects untrusted history descriptors instead of accepting hidden Host fields', async () => {

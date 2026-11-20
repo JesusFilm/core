@@ -229,6 +229,8 @@ existing synthetic poll/response content exercises routing and structural copies
 Actions are whole subtype replacements: None, Step, external link, email, chat,
 phone or SMS. Unrelated tracking fields survive. Submit Buttons allow only None
 or Step. New destinations must be live Steps in the same authorized journey.
+Default continuations must target a different Step, including through local
+references. Explicit null still clears an existing continuation.
 Unsafe navigation schemes and hidden owner/Host fields reject the entire batch.
 Duplicate writes to one field or route, duplicate keys, invalid placements and
 overlapping destructive gestures also reject without a partial save.
@@ -240,7 +242,12 @@ a repair performs no write. Apply only requested or accepted repairs as explicit
 route commands, either in a separate save or atomically with deletion. Delete-only
 undo restores the same descendant IDs without touching incoming routes. A combined
 inverse checks its recorded route values, so a later human route edit rejects the
-whole undo instead of being overwritten.
+whole undo instead of being overwritten. Redo of a removal compares every recorded
+block field and the complete action state, including absence, inside the restored
+subtree. Newer edits there reject with HISTORY_CONFLICT before changing content or
+the history cursor; edits outside that subtree remain independent. Older removal
+descriptors without action snapshots return HISTORY_UNAVAILABLE for redo rather
+than hiding potentially newer work.
 
 The save bound is 50 commands, 20 new Steps and 200 affected content objects,
 including required descendants and duplicate/delete expansion. Oversized complete

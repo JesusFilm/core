@@ -132,6 +132,7 @@ const blockChangeSchema = z
     typename: z.string(),
     parentBlockId: z.string().nullable(),
     created: z.boolean(),
+    removalAction: actionStateSchema.nullable().optional(),
     fields: z
       .array(z.enum([...blockFields, 'settings.color']))
       .max(blockFields.length),
@@ -387,6 +388,9 @@ export function finishStructure(
       typename: requiredString(row.typename),
       parentBlockId: parentOf(row),
       created,
+      ...(live(before) && !live(row)
+        ? { removalAction: serialize(state.originalActions.get(id) ?? null) }
+        : {}),
       fields: [...fields],
       before: serialize(before),
       after: serialize(row)

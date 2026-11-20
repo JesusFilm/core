@@ -309,11 +309,34 @@ describe('structural integration', () => {
         ).toBe(0)
       })
 
-      it('supports an explicit self continuation and its removal without changing the start Step', async () => {
-        await f.save([defaults('a')])
-        expect(await block('a')).toMatchObject({
-          nextBlockId: f.id('a'),
-          parentOrder: 0
+      it.each(['existing', 'local'])(
+        'rejects an entire mixed batch with a default self continuation using %s references',
+        async (reference) => {
+          const result = await assertRejected(
+            reference === 'existing'
+              ? [route('yes', 'c'), defaults('a')]
+              : [
+                  {
+                    type: 'step_default_set',
+                    step: local('new'),
+                    destination: local('new')
+                  },
+                  {
+                    type: 'step_add',
+                    key: 'new',
+                    cardKey: 'card',
+                    placement: end
+                  }
+                ]
+          )
+          expect(result.text).toContain('VALIDATION_FAILED')
+        }
+      )
+
+      it('clears a legacy self continuation without changing the start Step', async () => {
+        await f.journeys.block.update({
+          where: { id: f.id('a') },
+          data: { nextBlockId: f.id('a') }
         })
         await f.save([defaults(null)])
         expect(await block('a')).toMatchObject({
@@ -1002,6 +1025,68 @@ describe('structural integration', () => {
         expect(await action('no')).toEqual(untouched)
         expect(await block('a')).toMatchObject({ nextBlockId: f.id('b') })
       })
+
+      it.each([
+        'heading',
+        'settings',
+        'action',
+        'tracking',
+        'added-action',
+        'removed-action',
+        'content-removal'
+      ])(
+        'refuses redo after a newer Admin %s edit in the restored subtree',
+        async (edit) => {
+          const saved = await f.save([
+            edit === 'content-removal'
+              ? { type: 'block_remove', block: ref(f.id('button')) }
+              : { type: 'step_remove', step: ref(f.id('b')) }
+          ])
+          f.receipt(await f.historyAction('undo', saved.historyId!))
+          if (edit === 'heading' || edit === 'settings') {
+            await f.journeys.block.update({
+              where: { id: f.id('btext') },
+              data:
+                edit === 'heading'
+                  ? { content: 'New Admin heading' }
+                  : { settings: { human: 'New Admin setting' } }
+            })
+          } else if (edit === 'added-action') {
+            await f.journeys.action.create({
+              data: {
+                parentBlockId: f.id('video'),
+                blockId: f.id('a'),
+                parentStepId: f.id('b')
+              }
+            })
+          } else if (edit === 'removed-action') {
+            await f.journeys.action.delete({
+              where: { parentBlockId: f.id('button') }
+            })
+          } else {
+            await f.journeys.action.update({
+              where: { parentBlockId: f.id('button') },
+              data:
+                edit === 'tracking'
+                  ? { gtmEventName: 'New Admin tracking' }
+                  : { blockId: f.id('a') }
+            })
+          }
+          const before = await f.snapshot()
+          const history = await f.journeys.mcpEditHistory.findMany({
+            where: { journeyId: f.journeyId }
+          })
+          const result = await f.historyAction('redo', saved.historyId!)
+          expect(result.json.result?.isError, result.text).toBe(true)
+          expect(result.text).toContain('HISTORY_CONFLICT')
+          expect(await f.snapshot()).toEqual(before)
+          expect(
+            await f.journeys.mcpEditHistory.findMany({
+              where: { journeyId: f.journeyId }
+            })
+          ).toEqual(history)
+        }
+      )
 
       it('restores delete-only content with the same complete IDs while preserving newer human routes and Host state', async () => {
         const subtreeIds = [
