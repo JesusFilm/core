@@ -42,6 +42,7 @@ describe('private preview application effects', () => {
     vi.stubEnv('NEXT_PUBLIC_DATADOG_APPLICATION_ID', 'controlled-rum')
     vi.stubEnv('NEXT_PUBLIC_DATADOG_CLIENT_TOKEN', 'controlled-rum-token')
   })
+
   afterEach(() => vi.unstubAllEnvs())
 
   function open(path: string, privatePreview?: boolean): void {

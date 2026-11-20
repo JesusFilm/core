@@ -8,8 +8,8 @@ import {
   treeBlocksVar
 } from '@core/journeys/ui/block'
 import {
-  showNavigationVar,
-  showHeaderFooterVar
+  showHeaderFooterVar,
+  showNavigationVar
 } from '@core/journeys/ui/block/block'
 import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 
@@ -94,6 +94,7 @@ describe('DynamicCardList', () => {
     showNavigationVar(false)
     showHeaderFooterVar(false)
   })
+
   afterEach(() => {
     blockHistoryVar([])
     treeBlocksVar([])

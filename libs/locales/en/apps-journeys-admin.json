@@ -1853,5 +1853,12 @@
   "Leave the editor?": "Leave the editor?",
   "Stay": "Stay",
   "Leave": "Leave",
-  "The translation into {{language}} stops.": "The translation into {{language}} stops."
+  "The translation into {{language}} stops.": "The translation into {{language}} stops.",
+  "Preview unavailable. Check your access or request a new preview of the saved draft.": "Preview unavailable. Check your access or request a new preview of the saved draft.",
+  "Loading preview": "Loading preview",
+  "This journey has no saved cards.": "This journey has no saved cards.",
+  "Open in Admin": "Open in Admin",
+  "Private preview of saved content. Visitor events, submissions and external actions are disabled. Publish from the Admin editor.": "Private preview of saved content. Visitor events, submissions and external actions are disabled. Publish from the Admin editor.",
+  "Journey published": "Journey published",
+  "Unable to publish. Check your current access and try again.": "Unable to publish. Check your current access and try again."
 }
