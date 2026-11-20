@@ -231,7 +231,8 @@ describe('ClientLayout', () => {
               'r2Uploaded',
               'muxCreated',
               'muxReady',
-              'failed'
+              'failed',
+              'variantCreated'
             ]
           },
           limit: 100,
@@ -261,7 +262,8 @@ describe('ClientLayout', () => {
               'r2Uploaded',
               'muxCreated',
               'muxReady',
-              'failed'
+              'failed',
+              'variantCreated'
             ]
           },
           limit: 100,
@@ -275,6 +277,349 @@ describe('ClientLayout', () => {
     expect(screen.getByLabelText('view upload details')).toBeTruthy()
     expect(screen.getByLabelText('copy upload details')).toBeTruthy()
     expect(screen.queryByText(/Upload id:/)).toBeNull()
+  })
+
+  describe('demoting superseded variant upload attempts', () => {
+    function buildAdminVideoResult() {
+      return {
+        data: {
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: mockRefetch,
+        dataState: 'complete' as const,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        startPolling: vi.fn(),
+        stopPolling: vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: { id: 'video123' },
+        previousData: undefined
+      }
+    }
+
+    function buildUploadsResult(
+      uploads: unknown[],
+      overrides: { startPolling?: () => void; stopPolling?: () => void } = {}
+    ) {
+      return {
+        data: { videoVariantUploads: uploads },
+        loading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        refetch: vi.fn(),
+        dataState: 'complete' as const,
+        networkStatus: NetworkStatus.ready,
+        client: {} as any,
+        startPolling: overrides.startPolling ?? vi.fn(),
+        stopPolling: overrides.stopPolling ?? vi.fn(),
+        subscribeToMore: vi.fn(),
+        updateQuery: vi.fn(),
+        observable: {} as any,
+        variables: {},
+        previousData: undefined
+      }
+    }
+
+    function makeUpload(overrides: Record<string, unknown>) {
+      return {
+        id: 'upload-id',
+        source: 'videos-admin',
+        status: 'failed',
+        videoId: 'video123',
+        languageId: 'lang-a',
+        edition: 'base',
+        originalFilename: 'test-video.mp4',
+        errorMessage: null,
+        muxVideoId: null,
+        videoVariantId: null,
+        updatedAt: '2026-06-18T00:00:00.000Z',
+        createdAt: '2026-06-18T00:00:00.000Z',
+        ...overrides
+      }
+    }
+
+    it('demotes an attempt into collapsed history when a later attempt for the same language and edition succeeded', () => {
+      const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+
+      mockedUseQuery
+        .mockReturnValueOnce(buildAdminVideoResult())
+        .mockReturnValueOnce(
+          buildUploadsResult([
+            makeUpload({
+              id: 'upload-failed-old',
+              status: 'failed',
+              errorMessage: 'boom',
+              createdAt: '2026-06-01T00:00:00.000Z'
+            }),
+            makeUpload({
+              id: 'upload-success',
+              status: 'variantCreated',
+              createdAt: '2026-06-02T00:00:00.000Z'
+            })
+          ])
+        )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Failed')).toBeNull()
+      expect(screen.queryByText('boom')).toBeNull()
+      expect(screen.getByText('1 previous attempt')).toBeTruthy()
+      expect(screen.queryByText('Retry')).toBeNull()
+      expect(screen.queryByText('Add again')).toBeNull()
+    })
+
+    it('keeps an attempt outstanding when its only later success is for a different edition', () => {
+      const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+
+      mockedUseQuery
+        .mockReturnValueOnce(buildAdminVideoResult())
+        .mockReturnValueOnce(
+          buildUploadsResult([
+            makeUpload({
+              id: 'upload-failed-base',
+              status: 'failed',
+              edition: 'base',
+              errorMessage: 'still broken',
+              createdAt: '2026-06-01T00:00:00.000Z'
+            }),
+            makeUpload({
+              id: 'upload-success-burned-in',
+              status: 'variantCreated',
+              edition: 'burnedIn',
+              createdAt: '2026-06-02T00:00:00.000Z'
+            })
+          ])
+        )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Failed')).toBeTruthy()
+      expect(screen.getByText('still broken')).toBeTruthy()
+      expect(screen.getByText('Retry')).toBeTruthy()
+      expect(screen.queryByText(/previous attempt/)).toBeNull()
+    })
+
+    it('keeps an attempt outstanding when its only later success is for a different audio language', () => {
+      const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+
+      mockedUseQuery
+        .mockReturnValueOnce(buildAdminVideoResult())
+        .mockReturnValueOnce(
+          buildUploadsResult([
+            makeUpload({
+              id: 'upload-failed-lang-a',
+              status: 'failed',
+              languageId: 'lang-a',
+              errorMessage: 'still broken',
+              createdAt: '2026-06-01T00:00:00.000Z'
+            }),
+            makeUpload({
+              id: 'upload-success-lang-b',
+              status: 'variantCreated',
+              languageId: 'lang-b',
+              createdAt: '2026-06-02T00:00:00.000Z'
+            })
+          ])
+        )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Failed')).toBeTruthy()
+      expect(screen.getByText('still broken')).toBeTruthy()
+      expect(screen.queryByText(/previous attempt/)).toBeNull()
+    })
+
+    it('keeps a failure that happened after the most recent success outstanding', () => {
+      const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+
+      mockedUseQuery
+        .mockReturnValueOnce(buildAdminVideoResult())
+        .mockReturnValueOnce(
+          buildUploadsResult([
+            makeUpload({
+              id: 'upload-success',
+              status: 'variantCreated',
+              createdAt: '2026-06-01T00:00:00.000Z'
+            }),
+            makeUpload({
+              id: 'upload-failed-after-success',
+              status: 'failed',
+              errorMessage: 'newest failure',
+              createdAt: '2026-06-02T00:00:00.000Z'
+            })
+          ])
+        )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Failed')).toBeTruthy()
+      expect(screen.getByText('newest failure')).toBeTruthy()
+      expect(screen.queryByText(/previous attempt/)).toBeNull()
+    })
+
+    it('collapses several superseded attempts into one summary reporting the count, and reveals each attempt on expand', () => {
+      const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+
+      mockedUseQuery
+        .mockReturnValueOnce(buildAdminVideoResult())
+        .mockReturnValueOnce(
+          buildUploadsResult([
+            makeUpload({
+              id: 'attempt-1',
+              status: 'failed',
+              originalFilename: 'attempt-1.mp4',
+              errorMessage: 'attempt 1 failed',
+              createdAt: '2026-06-01T00:00:00.000Z'
+            }),
+            makeUpload({
+              id: 'attempt-2',
+              status: 'failed',
+              originalFilename: 'attempt-2.mp4',
+              errorMessage: 'attempt 2 failed',
+              createdAt: '2026-06-02T00:00:00.000Z'
+            }),
+            makeUpload({
+              id: 'attempt-3',
+              status: 'failed',
+              originalFilename: 'attempt-3.mp4',
+              errorMessage: 'attempt 3 failed',
+              createdAt: '2026-06-03T00:00:00.000Z'
+            }),
+            makeUpload({
+              id: 'attempt-success',
+              status: 'variantCreated',
+              createdAt: '2026-06-04T00:00:00.000Z'
+            })
+          ])
+        )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('3 previous attempts')).toBeTruthy()
+      expect(screen.queryByText('attempt-1.mp4')).toBeNull()
+
+      fireEvent.click(
+        screen.getByLabelText('Language lang-a previous attempts')
+      )
+
+      expect(screen.getByText('attempt-1.mp4')).toBeTruthy()
+      expect(screen.getByText('attempt-2.mp4')).toBeTruthy()
+      expect(screen.getByText('attempt-3.mp4')).toBeTruthy()
+      expect(screen.getByText('attempt 1 failed')).toBeTruthy()
+      expect(screen.queryByText('Retry')).toBeNull()
+      expect(screen.queryByText('Add again')).toBeNull()
+    })
+
+    it('starts polling while an outstanding attempt exists and does not when only superseded attempts remain', () => {
+      const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+      const outstandingStartPolling = vi.fn()
+      const outstandingStopPolling = vi.fn()
+
+      mockedUseQuery
+        .mockReturnValueOnce(buildAdminVideoResult())
+        .mockReturnValueOnce(
+          buildUploadsResult(
+            [
+              makeUpload({
+                id: 'upload-outstanding',
+                status: 'failed',
+                createdAt: '2026-06-01T00:00:00.000Z'
+              })
+            ],
+            {
+              startPolling: outstandingStartPolling,
+              stopPolling: outstandingStopPolling
+            }
+          )
+        )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(outstandingStartPolling).toHaveBeenCalledWith(3000)
+
+      const supersededStartPolling = vi.fn()
+      const supersededStopPolling = vi.fn()
+
+      mockedUseQuery
+        .mockReturnValueOnce(buildAdminVideoResult())
+        .mockReturnValueOnce(
+          buildUploadsResult(
+            [
+              makeUpload({
+                id: 'upload-outstanding',
+                status: 'failed',
+                createdAt: '2026-06-01T00:00:00.000Z'
+              }),
+              makeUpload({
+                id: 'upload-success',
+                status: 'variantCreated',
+                createdAt: '2026-06-02T00:00:00.000Z'
+              })
+            ],
+            {
+              startPolling: supersededStartPolling,
+              stopPolling: supersededStopPolling
+            }
+          )
+        )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(supersededStartPolling).not.toHaveBeenCalled()
+      expect(supersededStopPolling).toHaveBeenCalled()
+    })
   })
 
   it('copies persisted upload debug details to the clipboard', async () => {
