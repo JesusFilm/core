@@ -271,7 +271,7 @@ export function createJourneyReadHandler(
       )
         throw new Error('Access denied')
       const ids =
-        body.request.tool === 'journey_read'
+        body.request.tool !== 'journeys_list'
           ? [body.request.input.journeyId]
           : claims.journeyIds
       if (ids.some((id) => !claims.journeyIds.includes(id)))
@@ -353,7 +353,7 @@ export function createJourneyReadHandler(
               id: claims.subject
             } as Parameters<typeof journeyAcl>[2])
           })
-          if (body.request.tool === 'journey_read' && allowed.length !== 1)
+          if (body.request.tool !== 'journeys_list' && allowed.length !== 1)
             throw new Error('Access denied')
           const witness =
             body.stage === 'output'
@@ -449,7 +449,10 @@ export function createJourneyReadHandler(
 type ReadJourney = Prisma.JourneyGetPayload<{ include: { revision: true } }>
 async function snapshot(
   tx: Prisma.TransactionClient,
-  request: Extract<ReadRequest, { tool: 'journey_read' | 'journeys_list' }>,
+  request: Extract<
+    ReadRequest,
+    { tool: 'journey_read' | 'journeys_list' | 'journey_preview' }
+  >,
   claims: ReadCredential,
   journeys: ReadJourney[],
   config: JourneyReadsConfig
@@ -458,6 +461,7 @@ async function snapshot(
     new URL(`/journeys/${encodeURIComponent(id)}`, config.adminOrigin).href
   const allowedOperations = (journey: ReadJourney) => [
     'journey_read',
+    'journey_preview',
     'journey_operation_get',
     ...(journey.status === 'draft' ? ['journey_history'] : []),
     ...(config.editsEnabled &&
@@ -507,6 +511,70 @@ async function snapshot(
   const journey = journeys[0]
   if (!journey.revision) throw new Error('Access denied')
   const revision = journey.revision.revision.toString()
+  if (request.tool === 'journey_preview') {
+    if (request.input.expectedRevision !== revision)
+      throw new Error('REVISION_CONFLICT')
+    const steps = await tx.block.findMany({
+      where: { journeyId: journey.id, deletedAt: null, typename: 'StepBlock' },
+      select: { id: true, nextBlockId: true, slug: true },
+      orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
+      take: 100001
+    })
+    if (steps.length > 100000) throw new Error('LIMIT_EXCEEDED')
+    if (
+      request.input.startStepId &&
+      !steps.some(({ id }) => id === request.input.startStepId)
+    )
+      throw new Error('Access denied')
+    const stepIds = new Set(steps.map(({ id }) => id))
+    const routes = await tx.block.findMany({
+      where: {
+        journeyId: journey.id,
+        deletedAt: null,
+        action: { blockId: { in: [...stepIds] } }
+      },
+      select: { id: true, action: { select: { blockId: true } } },
+      orderBy: { id: 'asc' },
+      take: 101
+    })
+    const preview = new URL(
+      `/journeys/${encodeURIComponent(journey.id)}/preview`,
+      config.adminOrigin
+    )
+    preview.searchParams.set('revision', revision)
+    if (request.input.startStepId)
+      preview.searchParams.set('stepId', request.input.startStepId)
+    return boundedResult({
+      journeyId: journey.id,
+      revision,
+      status: journey.status,
+      previewLink: preview.href,
+      adminLink: link(journey.id),
+      routeChecklist: {
+        complete: steps.length <= 100 && routes.length <= 100,
+        steps: steps.slice(0, 100).map((step) => ({
+          ...step,
+          nextBlockId:
+            step.nextBlockId && stepIds.has(step.nextBlockId)
+              ? step.nextBlockId
+              : null
+        })),
+        answers: routes.slice(0, 100).map((block) => ({
+          blockId: block.id,
+          nextStepId: block.action?.blockId
+        }))
+      },
+      warnings: [
+        ...(steps.length > 100 || routes.length > 100
+          ? [
+              'Route checklist is partial. Continue checking the remaining routes in private playback.'
+            ]
+          : []),
+        'Private preview requires current Admin access. The link grants no access.',
+        'Preview disables visitor events, submissions and external actions. Public media URLs remain public. Publish through the Admin editor with current Manage rights.'
+      ]
+    })
+  }
   if (request.input.revision && request.input.revision !== revision)
     throw new Error('REVISION_CONFLICT')
   const binding = fingerprint([

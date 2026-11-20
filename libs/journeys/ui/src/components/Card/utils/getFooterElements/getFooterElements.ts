@@ -56,7 +56,12 @@ export function hasAiChatButton({
   renderMode = 'default',
   card
 }: JourneyInfoProps): boolean {
-  if (renderMode === 'admin' || renderMode === 'embed') return false
+  if (
+    renderMode === 'admin' ||
+    renderMode === 'embed' ||
+    renderMode === 'preview'
+  )
+    return false
   // Card-level only. The deprecated `Journey.showAssistant` is intentionally
   // ignored here — the field itself is removed in NES-1624.
   return card?.showAssistant === true

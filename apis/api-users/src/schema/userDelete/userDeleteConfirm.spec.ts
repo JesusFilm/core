@@ -35,6 +35,9 @@ const schema = builder.toSubGraphSchema({
 describe('userDeleteConfirm identity reconciliation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    prismaMock.$transaction.mockImplementation(async (operation) =>
+      operation(prismaMock)
+    )
     vi.stubEnv('MCP_READS_ENABLED', 'true')
     vi.stubEnv('MCP_ACCOUNT_AUTHORITY_URL', 'http://127.0.0.1:4011')
     vi.stubEnv(

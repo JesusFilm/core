@@ -100,7 +100,9 @@ function fixture() {
       [...rows.values()].find((row) =>
         typeof where?.intentHash === 'string'
           ? row.intentHash === where.intentHash &&
-            ['prepared', 'failed'].includes(row.status)
+            typeof where.status === 'object' &&
+            Array.isArray(where.status.in) &&
+            where.status.in.includes(row.status)
           : row.actorId === where?.actorId &&
             row.actorCreatedAt === where?.actorCreatedAt &&
             (where?.status === 'committed'
@@ -357,6 +359,86 @@ describe('cooperative permission mutations', () => {
     expect(await f.coordinator.reconcile()).toBe(0)
     expect(f.writes).toHaveBeenCalledOnce()
     expect([...f.rows.values()][0].reportedAt).toBeInstanceOf(Date)
+  })
+
+  it('resumes the committed deletion receipt after restart and rejects changed target state', async () => {
+    const f = fixture()
+    f.raw.userJourney.findMany.mockResolvedValue([])
+    f.raw.userTeam.findMany.mockResolvedValue([])
+    f.raw.userJourney.count.mockResolvedValue(0)
+    f.raw.userTeam.count.mockResolvedValue(0)
+    const result = {
+      success: true,
+      deletedJourneyIds: ['removed-journey'],
+      deletedTeamIds: ['removed-team'],
+      deletedUserJourneyIds: ['removed-collaboration'],
+      deletedUserTeamIds: ['removed-membership'],
+      logs: [
+        {
+          message: 'Committed',
+          level: 'info',
+          timestamp: '2026-11-20T00:00:00Z'
+        }
+      ]
+    }
+    const operation = vi.fn(async () => result)
+    f.failReports()
+    await expect(
+      f.coordinator.run(
+        'userDeleteJourneysConfirm',
+        { userId: 'manager' },
+        context,
+        operation
+      )
+    ).rejects.toThrow('Report unavailable')
+    const receipt = [...f.rows.values()][0]
+    expect(receipt.status).toBe('committed')
+    f.restoreReports()
+    const restarted = createJourneyPermissionCoordinator(
+      config,
+      f.db,
+      undefined,
+      f.readActor
+    )
+    expect(await restarted.reconcile()).toBe(0)
+    await expect(
+      restarted.run(
+        'userDeleteJourneysConfirm',
+        { userId: 'manager' },
+        context,
+        operation
+      )
+    ).resolves.toEqual(result)
+    expect(operation).toHaveBeenCalledOnce()
+    expect(f.rows.size).toBe(1)
+    expect(f.requests.filter(({ action }) => action === 'begin')).toHaveLength(
+      1
+    )
+    vi.mocked(usersDb.user.findUnique).mockResolvedValue({
+      id: 'recreated-record'
+    } as Awaited<ReturnType<typeof usersDb.user.findUnique>>)
+    await expect(
+      restarted.run(
+        'userDeleteJourneysConfirm',
+        { userId: 'manager' },
+        context,
+        operation
+      )
+    ).rejects.toThrow('target changed')
+    vi.mocked(usersDb.user.findUnique).mockResolvedValue({
+      id: 'manager-record'
+    } as Awaited<ReturnType<typeof usersDb.user.findUnique>>)
+    f.raw.userTeam.count.mockResolvedValue(1)
+    await expect(
+      restarted.run(
+        'userDeleteJourneysConfirm',
+        { userId: 'manager' },
+        context,
+        operation
+      )
+    ).rejects.toThrow('resources changed')
+    expect(operation).toHaveBeenCalledOnce()
+    expect(f.rows.size).toBe(1)
   })
 
   it('positively fences a failed mutation and keeps its gates closed for operator reconciliation', async () => {
@@ -805,8 +887,10 @@ describe('cooperative permission mutations', () => {
         src: 'https://imagedelivery.net/hash/image/public'
       }
     ] as unknown as Awaited<ReturnType<PrismaClient['block']['findMany']>>)
-    vi.mocked(enqueueShortLinkDeletes).mockRejectedValue(
-      new Error('Shortlink service unavailable')
+    vi.mocked(enqueueShortLinkDeletes).mockImplementation(
+      async (_ids, retryOnFailure) => {
+        if (retryOnFailure) throw new Error('Shortlink service unavailable')
+      }
     )
     await expect(
       f.coordinator.runAnonymousCleanup({
@@ -839,7 +923,10 @@ describe('cooperative permission mutations', () => {
     )
     expect(await restarted.reconcile()).toBe(0)
     expect(f.raw.journey.delete).toHaveBeenCalledOnce()
-    expect(enqueueShortLinkDeletes).toHaveBeenLastCalledWith(['short-link'])
+    expect(enqueueShortLinkDeletes).toHaveBeenLastCalledWith(
+      ['short-link'],
+      true
+    )
     expect(deleteUnusedMedia).toHaveBeenCalledWith(
       {
         muxVideoIds: new Set(['video']),

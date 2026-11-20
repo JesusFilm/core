@@ -3,6 +3,7 @@ import { auth } from '@core/yoga/firebaseClient'
 
 import {
   McpAccountRetirementPending,
+  mcpAccountRetirementEnvironment,
   retireMcpAccount
 } from './retireMcpAccount'
 import { LogEntry, createLog, isFirebaseNotFound } from './types'
@@ -31,11 +32,19 @@ const pendingRetirementMessage =
 const forbiddenReconciliationMessage =
   'Forbidden: reconciled UID requires superAdmin authorization'
 
+interface FirebaseCleanupProgress {
+  auditLogId: string
+  firebaseUids: readonly string[]
+  emailLookupPending?: boolean
+}
+
 export async function deleteFirebaseUser(
   firebaseUserId: string,
   firebaseUidOverride: string | null,
   email: string | null,
-  allowReconciledUid = false
+  allowReconciledUid = false,
+  confirmedRetirements: ReadonlySet<string> = new Set(),
+  progress?: FirebaseCleanupProgress
 ): Promise<LogEntry[]> {
   const logs: LogEntry[] = []
   if (
@@ -46,7 +55,14 @@ export async function deleteFirebaseUser(
     logs.push(createLog(forbiddenReconciliationMessage, 'error'))
     return logs
   }
-  const uidsToTry = new Set<string>()
+  const uidsToTry = new Set<string>(progress?.firebaseUids)
+  if (
+    !allowReconciledUid &&
+    [...uidsToTry].some((uid) => uid !== firebaseUserId)
+  ) {
+    logs.push(createLog(forbiddenReconciliationMessage, 'error'))
+    return logs
+  }
 
   // Primary UID from the DB
   uidsToTry.add(firebaseUserId)
@@ -58,10 +74,21 @@ export async function deleteFirebaseUser(
 
   let anyDeleted = false
 
+  async function retireAndDelete(uid: string): Promise<void> {
+    if (!confirmedRetirements.has(uid)) {
+      await retireMcpAccount(uid)
+      if (progress && mcpAccountRetirementEnvironment(process.env))
+        await prisma.userDeleteAuditLog.update({
+          where: { id: progress.auditLogId },
+          data: { retiredFirebaseUids: { push: uid } }
+        })
+    }
+    await auth.deleteUser(uid)
+  }
+
   for (const uid of uidsToTry) {
     try {
-      await retireMcpAccount(uid)
-      await auth.deleteUser(uid)
+      await retireAndDelete(uid)
       logs.push(createLog(`🔥 Firebase auth record deleted (UID: ${uid})`))
       anyDeleted = true
     } catch (error) {
@@ -81,9 +108,18 @@ export async function deleteFirebaseUser(
     }
   }
 
-  // Final safety check: if nothing was deleted by UID, try by email
-  if (!anyDeleted && email != null) {
+  // An interrupted lookup must settle even if another UID was deleted on retry.
+  if (progress?.emailLookupPending && email === null) {
+    logs.push(createLog('Firebase email lookup intent is missing', 'error'))
+    return logs
+  }
+  if ((!anyDeleted || progress?.emailLookupPending) && email != null) {
     try {
+      if (progress)
+        await prisma.userDeleteAuditLog.update({
+          where: { id: progress.auditLogId },
+          data: { firebaseEmailLookupPending: true }
+        })
       const fbUser = await auth.getUserByEmail(email)
       if (fbUser.uid !== firebaseUserId && !allowReconciledUid) {
         logs.push(
@@ -94,8 +130,19 @@ export async function deleteFirebaseUser(
         )
         return logs
       }
-      await retireMcpAccount(fbUser.uid)
-      await auth.deleteUser(fbUser.uid)
+      // Record authorization separately from confirmation. A Pending or lost
+      // retirement response must leave this exact target available to retry.
+      if (progress)
+        await prisma.userDeleteAuditLog.update({
+          where: { id: progress.auditLogId },
+          data: {
+            firebaseEmailLookupPending: false,
+            ...(!uidsToTry.has(fbUser.uid)
+              ? { firebaseCleanupUids: { push: fbUser.uid } }
+              : {})
+          }
+        })
+      await retireAndDelete(fbUser.uid)
       logs.push(
         createLog(
           `🔥 Firebase auth record deleted via email fallback (UID: ${fbUser.uid})`
@@ -107,6 +154,11 @@ export async function deleteFirebaseUser(
         return logs
       }
       if (isFirebaseNotFound(error)) {
+        if (progress)
+          await prisma.userDeleteAuditLog.update({
+            where: { id: progress.auditLogId },
+            data: { firebaseEmailLookupPending: false }
+          })
         logs.push(createLog('🔥 No Firebase auth record found by email either'))
       } else {
         console.error(
@@ -150,6 +202,7 @@ export async function deleteUserData(
       data: {
         deletedUserId: input.userDbId,
         deletedUserFirebaseUid: input.firebaseUserId,
+        firebaseCleanupEmail: input.userEmail,
         callerUserId: input.callerUserId,
         callerEmail: input.callerEmail,
         deletedJourneyIds: input.deletedJourneyIds,
@@ -168,21 +221,31 @@ export async function deleteUserData(
     return { success: false, logs }
   }
 
-  // 2. Delete DB user record FIRST.
-  // Ordering rationale: deleting the DB record before Firebase means that if
-  // Firebase deletion subsequently fails, the user no longer exists in the DB
-  // and a retry will take the firebase-only path, which handles removing the
-  // orphaned Firebase auth record cleanly. The reverse order (Firebase first)
-  // would leave a dangling DB record if Firebase succeeded but DB deletion
-  // failed, which is harder to recover from.
-  try {
-    for (const uid of new Set(
+  // Retirement evidence and SQL deletion commit together for Firebase retries.
+  const confirmedRetirements = new Set<string>()
+  const firebaseUids = [
+    ...new Set(
       [input.firebaseUserId, input.firebaseUidOverride].filter(
         (value): value is string => value !== null
       )
-    ))
+    )
+  ]
+  try {
+    for (const uid of firebaseUids) {
       await retireMcpAccount(uid)
-    await prisma.user.delete({ where: { id: input.userDbId } })
+      if (mcpAccountRetirementEnvironment(process.env))
+        confirmedRetirements.add(uid)
+    }
+    await prisma.$transaction(async (tx) => {
+      await tx.userDeleteAuditLog.update({
+        where: { id: auditLog.id },
+        data: {
+          retiredFirebaseUids: [...confirmedRetirements],
+          firebaseCleanupUids: firebaseUids
+        }
+      })
+      await tx.user.delete({ where: { id: input.userDbId } })
+    })
     logs.push(createLog('🗑️ User record deleted from database'))
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
@@ -210,7 +273,9 @@ export async function deleteUserData(
     input.firebaseUserId,
     input.firebaseUidOverride,
     input.userEmail,
-    input.allowReconciledUid
+    input.allowReconciledUid,
+    confirmedRetirements,
+    { auditLogId: auditLog.id, firebaseUids }
   )
   logs.push(...fbLogs)
 

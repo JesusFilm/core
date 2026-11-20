@@ -1,6 +1,6 @@
 # Granted journey reads
 
-Implements #10573 under PRD #10157. This document covers `journeys_list` and `journey_read`. The shared relay now also supports the [saved Typography edit and operation lookup](SAVED_EDITS.md) from #10553. Reads support ordinary draft and published journeys under both current Admin rights and the connection's selected resources. Source discovery, media, undo/redo and preview tools remain unavailable.
+Implements #10573 under PRD #10157. This document covers `journeys_list`, `journey_read` and `journey_preview`. Reads support ordinary draft and published journeys under both current Admin rights and the connection's selected resources. The shared relay also supports the [saved Typography edit and operation lookup](SAVED_EDITS.md) from #10553. Source discovery, media and undo/redo tools remain unavailable.
 
 ## Service configuration
 
@@ -48,3 +48,83 @@ pnpm exec vitest run --config apis/api-auth/vitest.config.mts apis/api-auth/test
 ```
 
 The suite uses actual OAuth authorization codes and token issuance for separate Alice/Bob identities, the actual MCP HTTP runtime, Hive gateway and the production owning-service read handler over HTTP, real Prisma/PostgreSQL and the shared Admin revision triggers. Firebase identity and consent-eligibility lookup are declared controlled adapters. Generic GraphQL resolver execution is unnecessary for the closed read relay; direct/entity/batch requests with restricted credentials are separately rejected. Local results are not normal Admin browser, live Firebase, AWS or Claude/ChatGPT evidence. Those remain with their existing owners.
+
+## Private preview and human publication
+
+Issue #10563 adds `journey_preview` under the same View or Edit grant as reads.
+Pass an authorized `journeyId`, the saved `expectedRevision` and optionally an
+owned `startStepId`. The bounded route checklist and Admin playback/editor links
+use the real owning read and final MCP output participants. A buffered preview
+result needs fresh rights, matching gate generations, grant state and expiry.
+Withdrawal counts its accepted reader and sender until positive settlement.
+A preview locator carries no credential. Opening it checks the human's current
+Admin session and rights independently of the connection grant.
+
+Admin serves `/journeys/<id>/preview` through request-time authentication and
+an uncached owning-service check. Page props contain no journey or Apollo cache.
+The client fetches current saved content with `no-cache`; denied reads cannot
+hydrate warmed content. Legacy `/api/preview?slug=...` locators resolve current
+Admin access and redirect to this private route. There is no public-viewer fallback.
+Playback uses the shared Conductor or website shell in `preview` mode. Branches,
+forms, media and the existing Host render; visitor events, analytics, submissions,
+chat and external actions are disabled. Known public media files stay public.
+Publish is offered in the ordinary editor only after a current Manage check.
+The ordinary publication mutation independently enforces that right and uses the
+existing permission coordinator and shared database publication/revision fence.
+MCP has no Publish operation.
+
+Run the real MCP/auth/gateway/owning-service coverage route locally without
+running every UI workspace during iteration:
+
+```sh
+MCP_READS_TEST_POSTGRES_URL=postgresql://postgres:postgres@localhost:5432/postgres \
+  pnpm exec tsx apis/api-auth/test/runCoverage.ts --preview
+```
+
+It creates uniquely named issue 10563 logical databases and a restricted runtime
+role, migrates them, runs every Auth integration test without required skips and
+verifies owning-service execution hits. Default invocation still collects every
+workspace for CI. Add `--ready` to run the foreground Phoebe ready gate against
+those same isolated dependencies. Reports retain their existing separate project
+locations; do not replace other shards' reports.
+
+The browser cases are in
+`apps/journeys-admin-e2e/src/e2e/agents/private-preview.spec.ts`. They use normal
+Firebase sign-in and real Admin/gateway/Journeys endpoints. They require three
+synthetic accounts in an approved development project or supported emulator.
+`admin` is the manager, `admin2` is a journey-only Editor and `admin3` has no
+access. Set the normal `PLAYWRIGHT_EMAIL/PASSWORD` pairs for those accounts.
+No fixed test identity header is browser evidence.
+
+Create the synthetic content in a fresh local database:
+
+```sh
+PRIVATE_PREVIEW_TEST_POSTGRES_URL=postgresql://postgres:postgres@localhost:5432/postgres \
+PRIVATE_PREVIEW_MANAGER_UID=<manager-firebase-uid> \
+PRIVATE_PREVIEW_EDITOR_UID=<editor-firebase-uid> \
+PRIVATE_PREVIEW_STRANGER_UID=<stranger-firebase-uid> \
+  pnpm exec tsx apis/api-journeys/test/seedPrivatePreview.ts
+```
+
+The seed accepts loopback PostgreSQL only and prints its new database name and
+two journey IDs. Point local Journeys at that database, use normal local gateway,
+Users, identity and Admin configuration, and point the viewer at the same backend.
+Set `PRIVATE_PREVIEW_JOURNEY_ID`, `PRIVATE_PREVIEW_WEBSITE_ID` from the output and
+`PRIVATE_PREVIEW_PUBLIC_URL` to the first journey's public slug on that viewer.
+With Admin running on `http://localhost:4200`:
+
+```sh
+cd apps/journeys-admin-e2e
+pnpm exec playwright test src/e2e/agents/private-preview.spec.ts --grep @manual --workers=1
+```
+
+These tests publish the first synthetic draft. Reseed for another run. Dispose
+only the printed fixture database after stopping its local services. The cases
+cover branch playback, form/external-effect suppression, page and serialized-data
+denial after warming, website routes, Editor/stranger denial and normal human
+Manage publication. The backend suites separately exercise direct-invocation
+rejection and publication fencing. Record media-player, identity, browser and
+assembled delayed edit/history/attachment observations with the final release
+owner after all participants are integrated. Local automated evidence does not
+claim staging, AWS, Claude or ChatGPT acceptance. The final gate reruns the same
+browser cases against compatible staging services and records deployed versions.

@@ -92,6 +92,7 @@ export default defineConfig({
     ],
     coverage: {
       enabled: true,
+      allowExternal: true,
       provider: 'v8',
       // Vitest 4 emptied coverage's include/exclude defaults and dropped
       // `coverage.all`. Restore the Vitest 3 report shape so untested source
@@ -108,7 +109,7 @@ export default defineConfig({
         '**/*{.,-}{test,spec,bench,benchmark}?(-d).?(c|m)[jt]s?(x)',
         '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*'
       ],
-      reporter: ['cobertura'],
+      reporter: [['cobertura', { projectRoot: resolve(__dirname, '../..') }]],
       reportsDirectory: '../../coverage/apps/journeys-admin'
     },
     retry: process.env.CI === 'true' ? 3 : 0,

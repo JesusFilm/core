@@ -48,6 +48,69 @@ describe('action', () => {
       expect(() => handleAction(router)).not.toThrow()
     })
 
+    it.each([
+      { __typename: 'LinkAction', url: 'https://example.com' },
+      { __typename: 'EmailAction', email: 'synthetic@example.com' },
+      { __typename: 'ChatAction', chatUrl: 'https://example.com/chat' },
+      {
+        __typename: 'PhoneAction',
+        phone: '+15555550123',
+        countryCode: 'US',
+        contactAction: ContactActionType.call
+      }
+    ] as const)(
+      'suppresses $.__typename external actions during private playback',
+      (action) => {
+        window.open = vi.fn()
+        handleAction(
+          router,
+          {
+            parentBlockId: 'button',
+            gtmEventName: null,
+            customizable: false,
+            parentStepId: null,
+            ...action
+          },
+          undefined,
+          'preview'
+        )
+        expect(window.open).not.toHaveBeenCalled()
+        expect(window.location.href).toBe('')
+        expect(router.push).not.toHaveBeenCalled()
+      }
+    )
+
+    it('routes private website answers within the same authenticated Admin page', () => {
+      const replace = vi.fn()
+      const privateRouter = {
+        ...router,
+        pathname: '/journeys/[journeyId]/preview',
+        query: { journeyId: 'saved' },
+        replace
+      }
+      handleAction(
+        privateRouter,
+        {
+          __typename: 'NavigateToBlockAction',
+          parentBlockId: 'answer',
+          gtmEventName: null,
+          blockId: 'answer-step'
+        },
+        '/public/answer',
+        'preview'
+      )
+      expect(nextActiveBlock).toHaveBeenCalledWith({ id: 'answer-step' })
+      expect(replace).toHaveBeenCalledWith(
+        {
+          pathname: '/journeys/[journeyId]/preview',
+          query: { journeyId: 'saved', stepId: 'answer-step' }
+        },
+        undefined,
+        { shallow: true }
+      )
+      expect(router.push).not.toHaveBeenCalled()
+    })
+
     it('should handle NavigateToBlockAction', () => {
       handleAction(router, {
         __typename: 'NavigateToBlockAction',

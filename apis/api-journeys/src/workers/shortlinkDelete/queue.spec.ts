@@ -58,6 +58,14 @@ describe('enqueueShortLinkDeletes', () => {
     expect(mockDeleteShortLink).toHaveBeenCalledWith('a')
   })
 
+  it('leaves durable delivery pending when the queue and direct delete both fail', async () => {
+    mockQueueAdd.mockRejectedValueOnce(new Error('redis down'))
+    mockDeleteShortLink.mockRejectedValueOnce(new Error('gateway down'))
+    await expect(enqueueShortLinkDeletes(['a'], true)).rejects.toThrow(
+      'gateway down'
+    )
+  })
+
   it('adds nothing for an empty list', async () => {
     await enqueueShortLinkDeletes([])
 

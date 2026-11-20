@@ -7,6 +7,7 @@ import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import Script from 'next/script'
 import {
   SSRConfig,
@@ -15,7 +16,7 @@ import {
 } from 'next-i18next/pages'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarKey, SnackbarProvider, closeSnackbar } from 'notistack'
-import { ReactElement, useEffect } from 'react'
+import { Fragment, ReactElement, useEffect } from 'react'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
@@ -50,6 +51,7 @@ type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
   flags?: { [key: string]: boolean }
   initialApolloState?: NormalizedCacheObject
+  privatePreview?: boolean
 }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
@@ -61,6 +63,11 @@ function JourneysAdminApp({
   emotionCache = clientSideEmotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+  const isPrivatePreview =
+    pageProps.privatePreview === true ||
+    /^\/journeys\/[^/]+\/preview(?:[/?#]|$)/.test(router.asPath ?? '')
+  const PageTeamProvider = isPrivatePreview ? Fragment : TeamProvider
 
   const user: User | null =
     pageProps.userSerialized != null
@@ -100,7 +107,8 @@ function JourneysAdminApp({
               crossOrigin=""
             />
           </Head>
-          {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
+          {!isPrivatePreview &&
+            process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
             process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
             process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
             process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
@@ -136,7 +144,7 @@ function JourneysAdminApp({
             )}
           <AuthProvider user={user}>
             <ApolloProvider client={apolloClient}>
-              <TeamProvider>
+              <PageTeamProvider>
                 <SnackbarProvider
                   anchorOrigin={{
                     vertical: 'bottom',
@@ -144,13 +152,15 @@ function JourneysAdminApp({
                   }}
                   action={SnackbarAction}
                 >
-                  <GoogleTagManager
-                    gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
-                    dataLayer={{ userId: user?.id ?? '' }}
-                  />
+                  {!isPrivatePreview && (
+                    <GoogleTagManager
+                      gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
+                      dataLayer={{ userId: user?.id ?? '' }}
+                    />
+                  )}
                   <Component {...pageProps} />
                 </SnackbarProvider>
-              </TeamProvider>
+              </PageTeamProvider>
             </ApolloProvider>
           </AuthProvider>
         </ThemeProvider>
