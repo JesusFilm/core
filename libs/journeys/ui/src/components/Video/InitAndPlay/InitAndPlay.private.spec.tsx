@@ -11,7 +11,9 @@ import { InitAndPlay } from './InitAndPlay'
 const originalMuxPlugin = videojs.getPlugin('mux')
 
 describe('private playback provider telemetry', () => {
-  const monitor = vi.fn(function () {})
+  const monitor = vi.fn(function () {
+    return undefined
+  })
 
   beforeEach(() => {
     monitor.mockClear()
@@ -28,6 +30,7 @@ describe('private playback provider telemetry', () => {
     videojs.deregisterPlugin('mux')
     videojs.registerPlugin('mux', monitor)
   })
+
   afterEach(() => {
     cleanup()
     videojs.getAllPlayers().forEach((player) => player?.dispose())
