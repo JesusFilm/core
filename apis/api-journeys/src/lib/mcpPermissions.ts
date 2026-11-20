@@ -29,8 +29,13 @@ import {
   Action as UserTeamAction,
   userTeamAcl
 } from '../schema/userTeam/userTeam.acl'
+import { enqueueTeamRemovedEmail } from '../workers/email/teamRemoved'
 import { enqueueShortLinkDeletes } from '../workers/shortlinkDelete/queue'
 
+import {
+  permissionEffectSchema,
+  permissionEffectsScope
+} from './mcpPermissionEffects'
 import {
   deleteUnusedMedia,
   extractCloudflareImageId
@@ -309,6 +314,7 @@ const intentSchema = z.object({
   args: z.record(z.string(), z.unknown()),
   revocationTime: z.string().optional(),
   cleanupEffects: cleanupEffectsSchema.optional(),
+  effects: z.array(permissionEffectSchema).optional(),
   accountDeletion: z
     .object({
       userRecordId: z.string().nullable(),
@@ -463,6 +469,15 @@ export function createJourneyPermissionCoordinator(
           args.userId
         )
       }
+      for (const [index, effect] of (intent.effects ?? []).entries()) {
+        if (effect.type === 'shortLinkDelete')
+          await enqueueShortLinkDeletes(effect.shortLinkIds, true)
+        else
+          await enqueueTeamRemovedEmail(
+            { teamName: effect.teamName, userId: effect.userId },
+            `permission-${execution.id}-${index}`
+          )
+      }
       await db.mcpPermissionExecution.update({
         where: { id: execution.id },
         data: { reportedAt: new Date() }
@@ -609,14 +624,17 @@ export function createJourneyPermissionCoordinator(
             })
             intent.accountDeletion = { userRecordId: target?.id ?? null }
           }
-          const value = await journeyAfterCommitScope.run(afterCommit, () =>
-            journeyTransactionScope.run(tx, () =>
-              replayScope.run(id, () =>
-                intent.field === 'anonymousJourneyCleanup'
-                  ? executeAnonymousCleanup(tx, intent.args)
-                  : operation
-                    ? operation(context)
-                    : replay(intent, context, tx)
+          intent.effects = []
+          const value = await permissionEffectsScope.run(intent.effects, () =>
+            journeyAfterCommitScope.run(afterCommit, () =>
+              journeyTransactionScope.run(tx, () =>
+                replayScope.run(id, () =>
+                  intent.field === 'anonymousJourneyCleanup'
+                    ? executeAnonymousCleanup(tx, intent.args)
+                    : operation
+                      ? operation(context)
+                      : replay(intent, context, tx)
+                )
               )
             )
           )

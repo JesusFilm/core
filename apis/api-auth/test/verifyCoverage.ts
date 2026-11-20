@@ -45,9 +45,22 @@ const required: Record<string, string[]> = {
     'assertAccountCleanupResult(value)',
     'await authorizeAccountDeletionResume(execution, storedIntent)',
     'return accountCleanupResultSchema.parse(',
-    'const receipt = intentSchema.parse(committed.intent)'
+    'const receipt = intentSchema.parse(committed.intent)',
+    'await enqueueShortLinkDeletes(effect.shortLinkIds, true)',
+    'await enqueueTeamRemovedEmail('
   ],
 
+  'apis/api-users/src/schema/userDelete/service/resumeUserDeletion.ts': [
+    'const selfDeletion =',
+    'const logs = await deleteFirebaseUser(',
+    'await prisma.userDeleteAuditLog.update('
+  ],
+  'apis/api-users/src/schema/userDelete/service/deleteUserData.ts': [
+    'confirmedRetirements.add(uid)',
+    'await tx.userDeleteAuditLog.update(',
+    'await tx.user.delete('
+  ],
+  'apis/api-journeys/src/workers/email/teamRemoved.ts': ['await queue.add('],
   'apis/api-auth/src/connections.ts': [
     'const expiresAt = calculateExpiry(approvedAt, review.duration)',
     'await tx.agentConnection.update(',

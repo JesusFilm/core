@@ -2,6 +2,7 @@ import { Queue } from 'bullmq'
 
 import { deferJourneyTransactionEffect } from '@core/prisma/journeys/client'
 
+import { capturePermissionEffect } from '../../lib/mcpPermissionEffects'
 import { deleteShortLink } from '../../schema/qrCode/qrCode.service'
 import { connection } from '../lib/connection'
 import { ONE_DAY } from '../lib/jobAge'
@@ -18,13 +19,17 @@ export const queue = new Queue<ShortLinkDeleteJob>(queueName, { connection })
  * has committed. The job id is per short link, so enqueueing an id twice
  * queues it once. Failed jobs are kept a day as the record of what failed.
  * Should the queue itself be unreachable, the link is deleted directly and a
- * failure is logged. Never throws.
+ * failure is logged. Durable receipts request a throw so reconciliation retries.
  */
 export async function enqueueShortLinkDeletes(
-  shortLinkIds: string[]
+  shortLinkIds: string[],
+  retryOnFailure = false
 ): Promise<void> {
+  if (capturePermissionEffect({ type: 'shortLinkDelete', shortLinkIds })) return
   if (
-    deferJourneyTransactionEffect(() => enqueueShortLinkDeletes(shortLinkIds))
+    deferJourneyTransactionEffect(() =>
+      enqueueShortLinkDeletes(shortLinkIds, retryOnFailure)
+    )
   )
     return
   await Promise.all(
@@ -50,6 +55,7 @@ export async function enqueueShortLinkDeletes(
           await deleteShortLink(shortLinkId)
         } catch (error) {
           logger.error({ error, shortLinkId }, 'short link delete failed')
+          if (retryOnFailure) throw error
         }
       }
     })

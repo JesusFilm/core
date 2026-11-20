@@ -4,6 +4,7 @@ import { builder } from '../builder'
 
 import { type LogEntry, createLog, deleteUserData, lookupUser } from './service'
 import { deleteFirebaseOnlyAccount } from './service/deleteFirebaseOnlyAccount'
+import { resumeUserDeletion } from './service/resumeUserDeletion'
 import { UserDeleteIdType, UserDeleteLogEntry } from './userDeleteCheck'
 
 interface UserDeleteConfirmProgressShape {
@@ -55,6 +56,17 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
       ctx
     ) {
       try {
+        const resumed = await resumeUserDeletion(idType, id, ctx.currentUser.id)
+        if (resumed) {
+          for (const log of resumed.logs)
+            yield { log, done: false, success: null }
+          yield {
+            log: createLog('Account deletion retry finished'),
+            done: true,
+            success: resumed.success
+          }
+          return
+        }
         const [{ user, firebase, logs: lookupLogs }, caller] =
           await Promise.all([
             lookupUser(idType, id),
