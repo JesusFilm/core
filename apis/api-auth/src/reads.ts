@@ -155,7 +155,7 @@ export function createReadAuthority(
         )
           throw new Error('Access denied')
         if (
-          input.request.tool === 'journey_read' &&
+          input.request.tool !== 'journeys_list' &&
           !current.journeyIds.includes(input.request.input.journeyId)
         )
           throw new Error('Access denied')

@@ -7,6 +7,11 @@ import { ReactElement } from 'react'
 import X2 from '@core/shared/ui/icons/X2'
 
 import { JourneyMenuButtonIcon } from '../../../../__generated__/globalTypes'
+import {
+  nextActiveBlock,
+  previousActiveBlock,
+  useBlocks
+} from '../../../libs/block'
 import { useEditor } from '../../../libs/EditorProvider'
 import { useJourney } from '../../../libs/JourneyProvider'
 import type { JourneyProviderContext } from '../../../libs/JourneyProvider/JourneyProvider'
@@ -20,12 +25,15 @@ export function StepHeaderMenu(): ReactElement {
   const { menuStepBlock, menuButtonIcon } = journey ?? {}
 
   const router = useRouter()
+  const { blockHistory } = useBlocks()
 
   const stepSlug = router.query.stepSlug as string
 
   const isMenu =
     menuStepBlock != null &&
-    (selectedStep?.id === menuStepBlock.id ||
+    ((renderMode === 'preview' &&
+      blockHistory.at(-1)?.id === menuStepBlock.id) ||
+      selectedStep?.id === menuStepBlock.id ||
       menuStepBlock.slug === stepSlug ||
       menuStepBlock.id === stepSlug)
 
@@ -42,6 +50,11 @@ export function StepHeaderMenu(): ReactElement {
 
   const handleClick = (): void => {
     if (journey == null || menuStepBlock == null) return
+    if (renderMode === 'preview') {
+      if (isMenu) previousActiveBlock()
+      else nextActiveBlock({ id: menuStepBlock.id })
+      return
+    }
 
     if (isMenu) {
       void router.back()
@@ -98,7 +111,8 @@ export function StepHeaderMenu(): ReactElement {
     >
       {Icon != null && (
         <>
-          {renderMode === 'default' && menuStepBlock != null ? (
+          {(renderMode === 'default' || renderMode === 'preview') &&
+          menuStepBlock != null ? (
             <IconButton onClick={handleClick}>
               <Icon
                 data-testid={getIconTestId(Icon, menuButtonIcon, renderMode)}

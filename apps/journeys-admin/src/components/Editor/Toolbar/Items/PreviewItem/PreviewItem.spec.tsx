@@ -68,11 +68,11 @@ describe('PreviewItem', () => {
 
     expect(getByRole('link')).toHaveAttribute(
       'href',
-      '/api/preview?slug=journeySlug'
+      '/journeys/journeyId/preview'
     )
   })
 
-  it('should provide customDomain hostname to preview button', async () => {
+  it('keeps private preview in Admin even when the journey has a public custom domain', async () => {
     const result = vi.fn().mockReturnValue(getCustomDomainMock.result)
     const { getByRole } = render(
       <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
@@ -83,10 +83,9 @@ describe('PreviewItem', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByRole('link')).toHaveAttribute(
       'href',
-      '/api/preview?slug=journeySlug&hostname=example.com'
+      '/journeys/journeyId/preview'
     )
   })
 })

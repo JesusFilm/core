@@ -216,6 +216,7 @@ export function Video({
         reapplyServerSource={reapplyServerSource}
       />
       {activeStep &&
+        (renderMode === 'default' || renderMode === 'embed') &&
         player != null &&
         eventVideoTitle != null &&
         eventVideoId != null && (

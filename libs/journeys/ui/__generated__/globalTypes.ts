@@ -395,6 +395,19 @@ export enum VideoLabel {
   trailer = "trailer",
 }
 
+export enum VisitorStatus {
+  checkMarkSymbol = "checkMarkSymbol",
+  partyPopper = "partyPopper",
+  prohibited = "prohibited",
+  redExclamationMark = "redExclamationMark",
+  redQuestionMark = "redQuestionMark",
+  robotFace = "robotFace",
+  star = "star",
+  thumbsDown = "thumbsDown",
+  thumbsUp = "thumbsUp",
+  warning = "warning",
+}
+
 export interface ButtonClickEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -428,6 +441,13 @@ export interface JourneyProfileUpdateInput {
   journeyFlowBackButtonClicked?: boolean | null;
   plausibleJourneyFlowViewed?: boolean | null;
   plausibleDashboardViewed?: boolean | null;
+}
+
+export interface JourneyViewEventCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label?: string | null;
+  value?: string | null;
 }
 
 export interface JourneysFilter {
@@ -574,6 +594,18 @@ export interface VideoStartEventCreateInput {
   position?: number | null;
   label?: string | null;
   value?: VideoBlockSource | null;
+}
+
+export interface VisitorUpdateInput {
+  email?: string | null;
+  name?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  messagePlatformId?: string | null;
+  notes?: string | null;
+  status?: VisitorStatus | null;
+  countryCode?: string | null;
+  referrer?: string | null;
+  phone?: string | null;
 }
 
 //==============================================================

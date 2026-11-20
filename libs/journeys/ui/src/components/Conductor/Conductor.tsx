@@ -1,0 +1,340 @@
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
+import GlobalStyles from '@mui/material/GlobalStyles'
+import Stack from '@mui/material/Stack'
+import { SxProps, useTheme } from '@mui/material/styles'
+import { sendGTMEvent } from '@next/third-parties/google'
+import { ReactElement, useEffect } from 'react'
+import { HotkeysProvider } from 'react-hotkeys-hook'
+import { v4 as uuidv4 } from 'uuid'
+
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { FontFamilies, ThemeName } from '@core/shared/ui/themes'
+
+import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
+import { toAiChatSettings } from '../../libs/aiChatSettings/aiChatSettings'
+import { blockHistoryVar, useBlocks } from '../../libs/block/block'
+import { getCardChild } from '../../libs/block/getCardChild'
+import { getStepTheme } from '../../libs/block/getStepTheme'
+import { TreeBlock } from '../../libs/block/TreeBlock'
+import { useChatOverlay } from '../../libs/ChatOverlayProvider/ChatOverlayProvider'
+import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
+import { getJourneyRTL } from '../../libs/rtl/rtl'
+import { hasAiChatButton } from '../Card/utils/getFooterElements/getFooterElements'
+import { PinnedChatBar } from '../PinnedChatBar/PinnedChatBar'
+import { StepFields } from '../Step/__generated__/StepFields'
+import { StepFooter } from '../StepFooter/StepFooter'
+import { StepHeader } from '../StepHeader/StepHeader'
+
+import { JourneyViewEventCreate } from './__generated__/JourneyViewEventCreate'
+import { DynamicCardList } from './DynamicCardList'
+import { HotkeyNavigation } from './HotkeyNavigation'
+import { NavigationButton } from './NavigationButton'
+import { SwipeNavigation } from './SwipeNavigation'
+
+export const JOURNEY_VIEW_EVENT_CREATE = gql`
+  mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
+    journeyViewEventCreate(input: $input) {
+      id
+    }
+  }
+`
+
+export const JOURNEY_VISITOR_UPDATE = gql`
+  mutation VisitorUpdateForCurrentUser($input: VisitorUpdateInput!) {
+    visitorUpdateForCurrentUser(input: $input) {
+      id
+    }
+  }
+`
+// Safari on a phone only hides its toolbar when the page itself scrolls. In
+// landscape the page is made a little taller than the screen so a swipe up
+// can hide it, and the journey is pinned so the extra height never shows.
+// 500px is taller than any phone on its side but shorter than a tablet.
+const PHONE_LANDSCAPE =
+  '@media (orientation: landscape) and (pointer: coarse) and (max-height: 500px)'
+
+// The two halves only work together: the page scrolls, the journey stays put
+const toolbarCollapseStyles = {
+  page: {
+    // 100px of scroll is enough for Safari to treat a swipe up as a page scroll
+    [PHONE_LANDSCAPE]: { height: 'calc(100lvh + 100px)' }
+  },
+  journey: {
+    [PHONE_LANDSCAPE]: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '100dvh'
+    }
+  }
+} as const
+
+interface ConductorProps {
+  blocks: TreeBlock[]
+  startStepId?: string
+}
+
+export function Conductor({
+  blocks,
+  startStepId
+}: ConductorProps): ReactElement {
+  const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
+  const theme = useTheme()
+  const { journey, renderMode } = useJourney()
+  const { locale, rtl } = getJourneyRTL(journey)
+  const flags = useFlags()
+  const apologistChatEnabled =
+    flags.apologistChat === true && renderMode !== 'preview'
+
+  // Create font family strings based on journey theme
+  const fontFamilies: FontFamilies = {
+    headerFont: journey?.journeyTheme?.headerFont ?? '',
+    bodyFont: journey?.journeyTheme?.bodyFont ?? '',
+    labelFont: journey?.journeyTheme?.labelFont ?? ''
+  }
+
+  useEffect(() => {
+    setTreeBlocks(blocks)
+    blockHistoryVar([
+      blocks.find((block) => block.id === startStepId) ?? blocks[0]
+    ])
+    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setTreeBlocks, journey?.id])
+
+  const activeBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
+
+  const activeCard = getCardChild(activeBlock)
+
+  const showPinnedChat =
+    apologistChatEnabled &&
+    hasAiChatButton({ journey, renderMode, card: activeCard })
+
+  const { setOpen, shouldAutoOpen, markAutoOpened } = useChatOverlay()
+
+  // Chat auto-open. Pops open by default; only the per-card "collapse chat"
+  // opt-in (legacy `expandChatByDefault === false`) suppresses it. Bridged via
+  // the temporary aiChatSettings mapper — remove with NES-1735. Lives at the
+  // navigation chokepoint so prefetched neighbours mounted off-screen by
+  // DynamicCardList do not trigger it. `open` is shared via
+  // ChatOverlayProvider: on sm+ it shows the ChatOverlay, on xs it
+  // slides up the PinnedChatBar drawer — one effect seeds both.
+  //
+  // Deps include `apologistChatEnabled` so a late-arriving LD flag still
+  // triggers the auto-open after activeBlock has settled (the original
+  // `[activeBlock?.id]` dep set silently lost this race when LD finished
+  // loading after the first card was active). `setOpen` /
+  // `shouldAutoOpen` / `markAutoOpened` are stable callbacks from the
+  // provider — depending on them is cheap and keeps the lint happy
+  // without re-firing on every overlay open/close. `journey` is no
+  // longer in deps: `hasAiChatButton` is purely card-level since
+  // NES-1622 dropped the `Journey.showAssistant` fallback, so depending
+  // on the whole `journey` reference would re-fire on every Apollo
+  // cache write (analytics mutations, language updates, …) for no
+  // signal. Re-firing on the remaining deps is safe: `shouldAutoOpen`
+  // dedups on (journeyId, cardId) via sessionStorage, so a manual
+  // dismiss is not overridden by a later re-evaluation in the same tab.
+  useEffect(() => {
+    if (!apologistChatEnabled) return
+    if (activeCard == null || toAiChatSettings(activeCard).collapseChat) return
+    if (!hasAiChatButton({ journey, renderMode, card: activeCard })) return
+    if (!shouldAutoOpen(activeCard.id)) return
+    markAutoOpened(activeCard.id)
+    setOpen(true)
+    // `journey` intentionally omitted — see comment above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    activeCard?.id,
+    apologistChatEnabled,
+    renderMode,
+    setOpen,
+    shouldAutoOpen,
+    markAutoOpened
+  ])
+
+  const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
+    JOURNEY_VIEW_EVENT_CREATE
+  )
+
+  const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
+    JOURNEY_VISITOR_UPDATE
+  )
+
+  useEffect(() => {
+    if (
+      (renderMode === 'default' || renderMode === 'embed') &&
+      journey != null
+    ) {
+      const id = uuidv4()
+      void journeyViewEventCreate({
+        variables: {
+          input: {
+            id,
+            journeyId: journey.id,
+            label: journey.title,
+            value: journey.language.id
+          }
+        }
+      }).then(() => {
+        void fetch('/api/geolocation').then((response) => {
+          void response
+            .json()
+            .then(
+              (data: { city?: string; country?: string; region?: string }) => {
+                const countryCodes: string[] = []
+                if (data.city != null) countryCodes.push(decodeURI(data.city))
+                if (data.region != null) countryCodes.push(data.region)
+                if (data.country != null) countryCodes.push(data.country)
+
+                if (countryCodes.length > 0 || document.referrer !== '') {
+                  void journeyVisitorUpdate({
+                    variables: {
+                      input: {
+                        countryCode:
+                          countryCodes.length > 0
+                            ? countryCodes.join(', ')
+                            : undefined,
+                        referrer:
+                          document.referrer !== ''
+                            ? document.referrer
+                            : undefined
+                      }
+                    }
+                  })
+                }
+              }
+            )
+        })
+      })
+      sendGTMEvent({
+        event: 'journey_view',
+        journeyId: journey.id,
+        eventId: id,
+        journeyTitle: journey.title
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [journey])
+
+  const avoidsNotch = renderMode === 'default' || renderMode === 'embed'
+  const mobileNotchStyling: SxProps = {
+    width: {
+      xs: avoidsNotch
+        ? 'calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right))'
+        : '100%',
+      lg: 'auto'
+    },
+    left: avoidsNotch ? 'env(safe-area-inset-left)' : undefined,
+    right: avoidsNotch ? 'env(safe-area-inset-right)' : undefined
+  }
+
+  const stepTheme = getStepTheme(activeBlock, journey)
+
+  // Embeds are left alone: scrolling inside an iframe cannot hide the toolbar
+  const canCollapseToolbar = renderMode === 'default'
+
+  return (
+    <HotkeysProvider>
+      {/* Safari tints the areas around its toolbars from the page background */}
+      <GlobalStyles
+        styles={{ body: { backgroundColor: theme.palette.common.black } }}
+      />
+      <HotkeyNavigation rtl={rtl} />
+      <ThemeProvider
+        themeName={ThemeName.journeyUi}
+        themeMode={stepTheme.themeMode}
+        locale={locale}
+        rtl={rtl}
+        nested
+      >
+        <Stack
+          data-testid="Conductor"
+          sx={{
+            justifyContent: 'center',
+            height: '100dvh',
+            background: theme.palette.grey[900],
+            overflow: 'hidden',
+            ...(canCollapseToolbar && toolbarCollapseStyles.page)
+          }}
+        >
+          <Stack
+            sx={{
+              maxHeight: {
+                // 80px to allow for the gap between card and top/bottom of the viewport
+                lg: 'calc(100svh - 80px)'
+              },
+              height: {
+                xs: '100%',
+                // 102px to allow for the gap between card and top/bottom of the viewport
+                lg: 'calc(54.25vw + 102px)'
+              },
+              px: { lg: 6 },
+              ...(canCollapseToolbar && toolbarCollapseStyles.journey)
+            }}
+          >
+            <StepHeader
+              sx={{
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
+              }}
+            />
+            <ThemeProvider
+              {...stepTheme}
+              locale={locale}
+              rtl={rtl}
+              fontFamilies={fontFamilies}
+              nested
+            >
+              <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
+                <DynamicCardList blocks={blocks} />
+              </SwipeNavigation>
+            </ThemeProvider>
+            <NavigationButton
+              variant={rtl ? 'next' : 'previous'}
+              alignment="left"
+            />
+            <NavigationButton
+              variant={rtl ? 'previous' : 'next'}
+              alignment="right"
+            />
+            <StepFooter
+              selectedStep={activeBlock}
+              sx={{
+                ...mobileNotchStyling,
+                display: {
+                  xs: showHeaderFooter ? 'flex' : 'none',
+                  lg: 'flex'
+                }
+              }}
+            />
+            {/* Mobile chat drawer. Rendered alongside (not instead of)
+                the StepFooter: closed it sits off-screen and the
+                footer's chat-button row — including the AiChatButton
+                that opens it — stays visible; open it slides up over
+                the footer. Stays mounted so the conversation survives
+                close → reopen. */}
+            {showPinnedChat && (
+              <PinnedChatBar
+                sx={{
+                  ...mobileNotchStyling,
+                  display: {
+                    xs: showHeaderFooter ? 'flex' : 'none',
+                    sm: 'none'
+                  }
+                }}
+              />
+            )}
+          </Stack>
+        </Stack>
+      </ThemeProvider>
+    </HotkeysProvider>
+  )
+}

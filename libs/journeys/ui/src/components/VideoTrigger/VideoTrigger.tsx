@@ -96,6 +96,10 @@ export function VideoTrigger({
           }
 
           const nextStepSlug = getNextStepSlug(journey, triggerAction)
+          if (renderMode === 'preview') {
+            handleAction(router, triggerAction, nextStepSlug, renderMode)
+            return
+          }
           if (renderMode === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction, nextStepSlug)
             plausible('videoTrigger', input)
