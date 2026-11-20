@@ -10,16 +10,18 @@ import { createAuthDatabase } from '@core/prisma/auth/client'
 const adminUrl = process.env.MCP_READS_TEST_POSTGRES_URL
 if (!adminUrl) throw new Error('MCP_READS_TEST_POSTGRES_URL is required')
 const baseline = process.argv.includes('--baseline')
+const testIssue = baseline ? '10573' : '10575'
 const root = resolve(import.meta.dirname, '../../..')
 const suffix = randomBytes(8).toString('hex')
-const testIssue = baseline ? '10573' : '10574'
 const runtimeRole = `mcp_reads_${suffix}`
 const password = randomBytes(24).toString('hex')
-const databases = [
-  `auth_issue_${testIssue}_${suffix}`,
-  `auth_issue_${testIssue}_reads_${suffix}`,
-  `journeys_issue_${testIssue}_${suffix}`
-]
+const databases = {
+  auth: `auth_issue_${testIssue}_${suffix}`,
+  reads: `auth_issue_${testIssue}_reads_${suffix}`,
+  permissions: `auth_issue_10550_permissions_${suffix}`,
+  journeys: `journeys_issue_${testIssue}_${suffix}`,
+  users: `users_issue_10550_${suffix}`
+}
 const created: string[] = []
 let roleCreated = false
 const admin = createAuthDatabase(adminUrl)
@@ -48,10 +50,21 @@ try {
     `CREATE ROLE "${runtimeRole}" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS PASSWORD '${password}'`
   )
   roleCreated = true
-  for (const [index, database] of databases.entries()) {
+  for (const [database, domain] of [
+    [databases.auth, 'auth'],
+    [databases.reads, 'auth'],
+    [databases.permissions, 'auth'],
+    [databases.journeys, 'journeys'],
+    [databases.users, 'users']
+  ] as const) {
     await admin.$executeRawUnsafe(`CREATE DATABASE "${database}"`)
     created.push(database)
-    const auth = index < 2
+    const auth = domain === 'auth'
+    const migrationVariable = {
+      auth: 'PG_DATABASE_URL_AUTH_MIGRATION',
+      journeys: 'PG_DATABASE_URL_JOURNEYS',
+      users: 'PG_DATABASE_URL_USERS'
+    }[domain]
     run(
       [
         'exec',
@@ -59,11 +72,9 @@ try {
         'migrate',
         'deploy',
         '--config',
-        `libs/prisma/${auth ? 'auth' : 'journeys'}/prisma.config.ts`
+        `libs/prisma/${domain}/prisma.config.ts`
       ],
-      auth
-        ? { PG_DATABASE_URL_AUTH_MIGRATION: url(database) }
-        : { PG_DATABASE_URL_JOURNEYS: url(database) }
+      { [migrationVariable]: url(database) }
     )
     if (!auth) continue
     const migration = createAuthDatabase(url(database))
@@ -91,10 +102,12 @@ try {
     }
   }
   const testEnvironment = {
-    AUTH_TEST_DATABASE_URL: url(databases[0], true),
-    AUTH_TEST_MIGRATION_DATABASE_URL: url(databases[0]),
-    READS_TEST_AUTH_DATABASE_URL: url(databases[1], true),
-    READS_TEST_JOURNEYS_DATABASE_URL: url(databases[2])
+    AUTH_TEST_DATABASE_URL: url(databases.auth, true),
+    AUTH_TEST_MIGRATION_DATABASE_URL: url(databases.auth),
+    PERMISSIONS_TEST_DATABASE_URL: url(databases.permissions, true),
+    READS_TEST_AUTH_DATABASE_URL: url(databases.reads, true),
+    READS_TEST_JOURNEYS_DATABASE_URL: url(databases.journeys),
+    READS_TEST_USERS_DATABASE_URL: url(databases.users)
   }
   const configs = spawnSync(
     'git',

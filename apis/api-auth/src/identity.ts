@@ -10,7 +10,9 @@ export interface Identity {
   check(evidence: IdentityEvidence): Promise<void>
 }
 
-export function firebaseIdentity(config: AuthConfig): Identity {
+export function firebaseIdentity(
+  config: Pick<AuthConfig, 'AUTH_FIREBASE_PROJECT_ID'>
+): Identity {
   const credentials = z
     .object({
       project_id: z.string(),

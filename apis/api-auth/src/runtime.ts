@@ -14,6 +14,7 @@ import {
 } from './consent'
 import { createEligibilityReader } from './eligibility'
 import type { Identity, ReadEligibility } from './identity'
+import { createPermissionAuthority } from './permissions'
 import { createProvider } from './provider'
 import { createReadAuthority } from './reads'
 import {
@@ -41,6 +42,8 @@ class HttpFailure extends Error {
 }
 
 function securityAction(path: string): AuditAction | undefined {
+  if (path === '/internal/permissions/retire-account') return 'account_retire'
+  if (path.startsWith('/internal/permissions/')) return 'permission_change'
   if (path === '/connections') return 'connection_view'
   if (path.endsWith('/disconnect')) return 'disconnect'
   if (/\/connections\/[^/]+\/access-/.test(path)) return 'access_change'
@@ -53,13 +56,13 @@ function securityAction(path: string): AuditAction | undefined {
   return undefined
 }
 
-async function jsonBody(req: IncomingMessage): Promise<unknown> {
+async function jsonBody(req: IncomingMessage, limit = 16384): Promise<unknown> {
   const chunks: Buffer[] = []
   let size = 0
   for await (const chunk of req) {
     const bytes = Buffer.from(chunk as Uint8Array)
     size += bytes.length
-    if (size > 16384) throw new HttpFailure(413)
+    if (size > limit) throw new HttpFailure(413)
     chunks.push(bytes)
   }
   return JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown
@@ -108,6 +111,7 @@ export async function createRuntime(
   )
   provider.proxy = config.AUTH_ENVIRONMENT !== 'local'
   const readAuthority = createReadAuthority(config, db, identity, provider)
+  const permissionAuthority = createPermissionAuthority(config, db)
   const currentRights = createEligibilityReader(db, identity, eligibility)
   const manageConnections = createConnectionManagement(
     config,
@@ -178,6 +182,27 @@ export async function createRuntime(
       ctx.set('Access-Control-Allow-Methods', 'GET, POST')
       ctx.set('Access-Control-Allow-Headers', 'Authorization, Content-Type')
       ctx.status = origin === config.AUTH_ADMIN_ORIGIN ? 204 : 403
+      return
+    }
+    if (ctx.path.startsWith('/internal/permissions/')) {
+      try {
+        if (ctx.method !== 'POST' || origin) throw new HttpFailure(403)
+        ctx.body = await permissionAuthority(
+          ctx.path,
+          ctx.get('Authorization'),
+          await jsonBody(ctx.req, 262144)
+        )
+      } catch {
+        await audit(
+          db,
+          ctx.path.endsWith('/retire-account')
+            ? 'account_retire'
+            : 'permission_change',
+          'denied'
+        ).catch(() => undefined)
+        ctx.status = 403
+        ctx.body = { error: 'ACCESS_DENIED_OR_NOT_FOUND' }
+      }
       return
     }
     if (ctx.path.startsWith('/internal/reads/')) {

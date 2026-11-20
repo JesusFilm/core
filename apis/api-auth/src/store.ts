@@ -56,7 +56,7 @@ export async function assertRuntimeRole(db: Database): Promise<void> {
     throw new Error('Restricted runtime database role required')
   const [permissions] = await db.$queryRaw<Array<{ allowed: boolean }>>`
     SELECT bool_and(has_table_privilege(current_user, quote_ident(name), privilege)) AS allowed
-    FROM unnest(ARRAY['AuthEnvironment', 'OAuthArtifact', 'AgentConnection', 'ConsentReview', 'AgentRenewalReview', 'AuthorizationGate', 'SecurityAudit', 'ReadPermit', 'AgentAccessReview', 'ConnectionChange', 'ConnectionHistoryPurge', 'ReadExecutor']) AS tables(name)
+    FROM unnest(ARRAY['AuthEnvironment', 'OAuthArtifact', 'AgentConnection', 'ConsentReview', 'AgentRenewalReview', 'AuthorizationGate', 'SecurityAudit', 'ReadPermit', 'AgentAccessReview', 'ConnectionChange', 'ConnectionHistoryPurge', 'ReadExecutor', 'PermissionChange', 'RetiredAccount']) AS tables(name)
     CROSS JOIN unnest(ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE']) AS privileges(privilege)`
   if (!permissions?.allowed)
     throw new Error('Auth storage permissions unavailable')
@@ -354,6 +354,8 @@ export type AuditAction =
   | 'renewal'
   | 'access_change'
   | 'disconnect'
+  | 'permission_change'
+  | 'account_retire'
 export async function audit(
   db: Database | Transaction,
   action: AuditAction,

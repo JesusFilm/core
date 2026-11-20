@@ -265,6 +265,8 @@ describe('durable issuer integration', () => {
 
       beforeAll(async () => {
         for (const model of [
+          db.permissionChange,
+          db.retiredAccount,
           db.readPermit,
           db.agentAccessReview,
           db.connectionChange,

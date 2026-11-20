@@ -87,6 +87,12 @@
         }
       ]
     },
+    "codecov": {
+      "cache": false,
+      "options": {
+        "args": ["-X", "search"]
+      }
+    },
     "extract-translations": {
       "cache": false,
       "inputs": ["default"]

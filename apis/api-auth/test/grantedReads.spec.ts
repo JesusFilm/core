@@ -8,13 +8,16 @@ import {
   createGatewayRuntime,
   usePropagateHeaders
 } from '@graphql-hive/gateway'
+import mailchimp from '@mailchimp/mailchimp_marketing'
 import { initContextCache } from '@pothos/core'
-import type { GraphQLSchema } from 'graphql'
+import { type GraphQLSchema, parse, subscribe } from 'graphql'
 import { createYoga } from 'graphql-yoga'
 import pino from 'pino'
 
 import { createAuthDatabase } from '@core/prisma/auth/client'
 import { PrismaClient } from '@core/prisma/journeys/client'
+import { PrismaClient as UsersClient } from '@core/prisma/users/client'
+import { auth as firebaseAuth } from '@core/yoga/firebaseClient'
 import {
   fingerprint,
   internalSignature,
@@ -25,11 +28,12 @@ import { PrismaPg } from '@prisma/adapter-pg'
 /* eslint-disable @nx/enforce-module-boundaries -- This integration harness runs the actual independently deployed API participants. */
 import { commonConfig } from '../../api-gateway/src/common.config'
 import { useMcpReads } from '../../api-gateway/src/mcpReads'
-import '../../api-journeys/test/bullmqMock'
+import type { createJourneyPermissionCoordinator } from '../../api-journeys/src/lib/mcpPermissions'
 import {
   createJourneyReadHandler,
   useJourneyMcpReads
 } from '../../api-journeys/src/lib/mcpReads'
+import { mockQueueAdd } from '../../api-journeys/test/bullmqMock'
 import { readConfig as readMcpConfig } from '../../api-mcp/src/config'
 import { createRuntime as createMcpRuntime } from '../../api-mcp/src/runtime'
 import { message } from '../../api-mcp/test/helpers'
@@ -40,6 +44,7 @@ import { databaseTime, digest } from '../src/store'
 
 const authUrl = process.env.READS_TEST_AUTH_DATABASE_URL
 const journeysUrl = process.env.READS_TEST_JOURNEYS_DATABASE_URL
+const usersUrl = process.env.READS_TEST_USERS_DATABASE_URL
 
 describe('granted journey read authorization', () => {
   describe.skipIf(!authUrl || !journeysUrl)(
@@ -49,6 +54,11 @@ describe('granted journey read authorization', () => {
       const journeys = new PrismaClient({
         adapter: new PrismaPg({ connectionString: journeysUrl })
       })
+      const users = usersUrl
+        ? new UsersClient({
+            adapter: new PrismaPg({ connectionString: usersUrl })
+          })
+        : undefined
       const keys = generateKeyPairSync('rsa', { modulusLength: 2048 })
       const privateKey = keys.privateKey.export({ format: 'jwk' })
       const publicKey = keys.publicKey.export({ format: 'jwk' })
@@ -64,13 +74,23 @@ describe('granted journey read authorization', () => {
       let config: AuthConfig
       let gatewayUrl: string
       let ownerUrl: string
+      let authorityUrl: string
       let mcpUrl: string
       let beforeIdentity: (() => Promise<void>) | undefined
       let beforeAcceptance: ((stage: string) => Promise<void>) | undefined
       let afterAcceptance: ((stage: string) => Promise<void>) | undefined
       let settlementOutage = false
+      let permissionOutage = false
+      let permissionReportOutage = false
+      let beforePermissionBegin: (() => Promise<void>) | undefined
+      let afterPermissionBegin: (() => Promise<void>) | undefined
       const failedFenceReports = new Set<string>()
+      const anonymousProfileActors = new Set<string>()
       let ownerHandler: ReturnType<typeof createJourneyReadHandler>
+      let permissionCoordinator: ReturnType<
+        typeof createJourneyPermissionCoordinator
+      >
+      let restartPermissionCoordinator: typeof createJourneyPermissionCoordinator
       let beforeOutput: ((executorId: string) => Promise<void>) | undefined
       let afterOutput: (() => void) | undefined
       let accessToken: string
@@ -232,15 +252,17 @@ describe('granted journey read authorization', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_105(73|74|75)(_|$)/.test(
+          !/^\/auth_issue_105(50|73|74|75)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_105(73|74|75)(_|$)/.test(
+          !/^\/journeys_issue_105(50|73|74|75)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
           throw new Error('Use isolated issue databases')
         for (const table of [
+          auth.permissionChange,
+          auth.retiredAccount,
           auth.readPermit,
           auth.agentAccessReview,
           auth.connectionChange,
@@ -389,6 +411,10 @@ describe('granted journey read authorization', () => {
             'controlled-introspection-10573-at-least-32',
           AUTH_EXCHANGE_CLIENT_SECRET: exchangeSecret,
           AUTH_READ_OWNER_SECRET: ownerSecret,
+          AUTH_PERMISSION_JOURNEYS_SECRET:
+            'controlled-journeys-permission-10550-at-least-32',
+          AUTH_PERMISSION_USERS_SECRET:
+            'controlled-users-permission-10550-at-least-32',
           AUTH_READ_GATEWAY_AUDIENCE: 'http://127.0.0.1:4000/mcp/reads',
           PG_DATABASE_URL_AUTH: authUrl,
           AUTH_CLIENTS: JSON.stringify([
@@ -449,11 +475,35 @@ describe('granted journey read authorization', () => {
           publicKey
         }
         process.env.SKIP_ENV_VALIDATION = '1'
+        if (users) {
+          if (!/^\/users_issue_10550(_|$)/.test(new URL(usersUrl!).pathname))
+            throw new Error('Use isolated users issue database')
+          vi.doMock('@core/prisma/users/client', async (importOriginal) => ({
+            ...(await importOriginal<
+              typeof import('@core/prisma/users/client')
+            >()),
+            prisma: users
+          }))
+          for (const userId of ['alice', 'bob'])
+            await users.user.upsert({
+              where: { userId },
+              create: {
+                userId,
+                firstName: userId,
+                email: userId + '@synthetic.example'
+              },
+              update: {}
+            })
+        }
         vi.doMock('@core/prisma/journeys/client', async (importOriginal) => ({
           ...(await importOriginal<
             typeof import('@core/prisma/journeys/client')
           >()),
-          prisma: journeys
+          prisma: (
+            await importOriginal<
+              typeof import('@core/prisma/journeys/client')
+            >()
+          ).transactionScopedJourneyClient(journeys)
         }))
         // Load the deployed schema at runtime; its unrelated frontend type graph
         // has a separate JSX-enabled owning-project type-check target.
@@ -466,7 +516,7 @@ describe('granted journey read authorization', () => {
         )) as {
           schema: GraphQLSchema
         }
-        const authorityUrl = await listen(
+        authorityUrl = await listen(
           createServer((req, res) => {
             void (async () => {
               const chunks: Buffer[] = []
@@ -484,6 +534,17 @@ describe('granted journey read authorization', () => {
                     })
                   ).stage
                 : ''
+              if (
+                req.url?.startsWith('/internal/permissions/') &&
+                (permissionOutage ||
+                  (permissionReportOutage && req.url.endsWith('/complete')))
+              ) {
+                res.writeHead(503)
+                res.end('{}')
+                return
+              }
+              if (req.url === '/internal/permissions/begin')
+                await beforePermissionBegin?.()
               if (req.url?.endsWith('/accept')) await beforeAcceptance?.(stage)
               if (
                 req.url?.endsWith('/fence') &&
@@ -497,12 +558,14 @@ describe('granted journey read authorization', () => {
               const response = await fetch(config.AUTH_ISSUER + req.url, {
                 method: 'POST',
                 headers: {
-                  Authorization: `Bearer ${ownerSecret}`,
+                  Authorization: req.headers.authorization ?? '',
                   'Content-Type': 'application/json'
                 },
                 body: raw
               })
               const result = await response.text()
+              if (req.url === '/internal/permissions/begin' && response.ok)
+                await afterPermissionBegin?.()
               if (req.url?.endsWith('/accept') && response.ok)
                 await afterAcceptance?.(stage)
               res.writeHead(response.status, {
@@ -525,9 +588,66 @@ describe('granted journey read authorization', () => {
           },
           journeys
         )
+        const permissionModule = new URL(
+          '../../api-journeys/src/lib/mcpPermissions.ts',
+          import.meta.url
+        ).href
+        const {
+          createJourneyPermissionCoordinator,
+          coordinateJourneyPermissionMutations
+        } = (await import(
+          /* webpackChunkName: "permission-owner-participant" */ permissionModule
+        )) as typeof import('../../api-journeys/src/lib/mcpPermissions')
+        restartPermissionCoordinator = createJourneyPermissionCoordinator
+        permissionCoordinator = createJourneyPermissionCoordinator(
+          {
+            authorityUrl,
+            authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
+          },
+          journeys,
+          undefined,
+          async (userId) => {
+            if (invalidUsers.has(userId))
+              throw new Error('Controlled ineligible actor')
+            return {
+              createdAt: '2026-01-01T00:00:00.000Z',
+              user: {
+                id: userId,
+                email: anonymousProfileActors.has(userId)
+                  ? null
+                  : userId + '@synthetic.example',
+                firstName: userId,
+                emailVerified: true,
+                imageUrl: null
+              }
+            }
+          }
+        )
+        coordinateJourneyPermissionMutations(
+          owningSchema,
+          permissionCoordinator
+        )
         const owner = createYoga({
           schema: owningSchema,
-          context: () => ({ ...initContextCache(), type: 'public' as const }),
+          maskedErrors: true,
+          context: ({ request }) => {
+            const human = request.headers.get('x-controlled-human')
+            return human && ['alice', 'bob'].includes(human)
+              ? {
+                  ...initContextCache(),
+                  type: 'authenticated' as const,
+                  user: {
+                    id: human,
+                    email: human + '@synthetic.example',
+                    firstName: human,
+                    lastName: '',
+                    emailVerified: true,
+                    imageUrl: null
+                  },
+                  currentRoles: []
+                }
+              : { ...initContextCache(), type: 'public' as const }
+          },
           logging: false,
           plugins: [useJourneyMcpReads(ownerHandler)]
         })
@@ -605,8 +725,16 @@ describe('granted journey read authorization', () => {
         beforeAcceptance = undefined
         afterAcceptance = undefined
         settlementOutage = false
+        permissionOutage = false
+        permissionReportOutage = false
+        beforePermissionBegin = undefined
+        afterPermissionBegin = undefined
         failedFenceReports.clear()
+        anonymousProfileActors.clear()
         invalidUsers.clear()
+        await auth.permissionChange.deleteMany()
+        await auth.retiredAccount.deleteMany()
+        await journeys.mcpPermissionExecution.deleteMany()
         await auth.authorizationGate.updateMany({
           data: { open: true, generation: { increment: 1 } }
         })
@@ -614,6 +742,11 @@ describe('granted journey read authorization', () => {
           where: { teamId_userId: { teamId: 'read-team', userId: 'alice' } },
           create: { teamId: 'read-team', userId: 'alice', role: 'manager' },
           update: { role: 'manager' }
+        })
+        await journeys.journeyProfile.upsert({
+          where: { userId: 'alice' },
+          create: { userId: 'alice' },
+          update: {}
         })
         accessToken = await consent('alice', ['read-a'])
       })
@@ -630,6 +763,7 @@ describe('granted journey read authorization', () => {
         await issuer?.close()
         await auth.$disconnect()
         await journeys.$disconnect()
+        await users?.$disconnect()
       })
 
       it('renews an expired connection and resumes granted MCP reads under the same identity with fresh credentials', async () => {
@@ -1999,6 +2133,1827 @@ describe('granted journey read authorization', () => {
           ).status
         ).toBe(403)
       })
+
+      async function humanMutation(
+        query: string,
+        variables: Record<string, unknown> = {},
+        user = 'bob'
+      ) {
+        const response = await fetch(`${ownerUrl}/graphql`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-controlled-human': user
+          },
+          body: JSON.stringify({ query, variables })
+        })
+        return (await response.json()) as {
+          data?: Record<string, unknown>
+          errors?: Array<{
+            message: string
+            extensions?: { code?: string; changeId?: string }
+          }>
+        }
+      }
+      async function permissionActors() {
+        await journeys.userTeam.upsert({
+          where: { teamId_userId: { teamId: 'read-team', userId: 'bob' } },
+          create: { teamId: 'read-team', userId: 'bob', role: 'manager' },
+          update: { role: 'manager' }
+        })
+        return journeys.userTeam.findUniqueOrThrow({
+          where: { teamId_userId: { teamId: 'read-team', userId: 'alice' } }
+        })
+      }
+      const deleteMembership = (id: string) =>
+        humanMutation(
+          'mutation RemoveMembership($id: ID!) { userTeamDelete(id: $id) { id } }',
+          { id }
+        )
+      async function inviteAlice() {
+        await journeys.userTeamInvite.upsert({
+          where: {
+            teamId_email: {
+              teamId: 'read-team',
+              email: 'alice@synthetic.example'
+            }
+          },
+          create: {
+            teamId: 'read-team',
+            email: 'alice@synthetic.example',
+            senderId: 'bob'
+          },
+          update: { acceptedAt: null, removedAt: null }
+        })
+        return humanMutation(
+          'mutation RestoreMembership { userTeamInviteAcceptAll { id } }',
+          {},
+          'alice'
+        )
+      }
+
+      it.each([
+        'commit',
+        'rollback',
+        'delivery-retry',
+        'report-retry',
+        'existing-profile',
+        'anonymous-profile'
+      ] as const)(
+        'persists profile subscription with the owner receipt: %s',
+        async (mode) => {
+          if (mode === 'anonymous-profile') anonymousProfileActors.add('alice')
+          vi.stubEnv('MAILCHIMP_AUDIENCE_ID', 'controlled-profile-audience')
+          const subscription = vi
+            .spyOn(mailchimp.lists, 'setListMember')
+            .mockImplementation(async () => {
+              expect(
+                await journeys.journeyProfile.findUnique({
+                  where: { userId: 'alice' }
+                })
+              ).toMatchObject({ acceptedTermsAt: expect.any(Date) })
+              expect(
+                await journeys.mcpPermissionExecution.findFirst({
+                  where: { status: 'committed' }
+                })
+              ).not.toBeNull()
+              if (mode === 'delivery-retry')
+                throw new Error('Controlled Mailchimp outage')
+              return {} as Awaited<
+                ReturnType<typeof mailchimp.lists.setListMember>
+              >
+            })
+          const configure = vi.spyOn(mailchimp, 'setConfig').mockReturnValue()
+          if (mode !== 'existing-profile')
+            await journeys.journeyProfile.delete({
+              where: { userId: 'alice' }
+            })
+          if (mode === 'rollback') {
+            await journeys.$executeRawUnsafe(
+              `CREATE FUNCTION review_10600_fail_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.status = 'committed' THEN RAISE EXCEPTION 'Controlled receipt failure'; END IF; RETURN NEW; END $$`
+            )
+            await journeys.$executeRawUnsafe(
+              `CREATE TRIGGER review_10600_fail_receipt BEFORE UPDATE ON "McpPermissionExecution" FOR EACH ROW EXECUTE FUNCTION review_10600_fail_receipt()`
+            )
+          }
+          permissionReportOutage = mode === 'report-retry'
+          try {
+            const result = await humanMutation(
+              'mutation CreateProfile { journeyProfileCreate { id acceptedTermsAt } }',
+              {},
+              'alice'
+            )
+            if (mode === 'rollback') {
+              expect(result.errors).toHaveLength(1)
+              expect(
+                await journeys.journeyProfile.findUnique({
+                  where: { userId: 'alice' }
+                })
+              ).toBeNull()
+              expect(subscription).not.toHaveBeenCalled()
+              return
+            }
+            const receipt =
+              await journeys.mcpPermissionExecution.findFirstOrThrow({
+                where: { status: 'committed' }
+              })
+            const user = {
+              email: 'alice@synthetic.example',
+              firstName: 'alice'
+            }
+            expect(receipt.intent).toMatchObject({
+              effects:
+                mode === 'existing-profile' || mode === 'anonymous-profile'
+                  ? []
+                  : [{ type: 'mailchimpSubscription', user }]
+            })
+            if (mode === 'delivery-retry' || mode === 'report-retry') {
+              expect(result.errors).toHaveLength(1)
+              expect(receipt.reportedAt).toBeNull()
+              if (mode === 'report-retry')
+                expect(subscription).not.toHaveBeenCalled()
+              else expect(subscription).toHaveBeenCalled()
+              subscription
+                .mockClear()
+                .mockResolvedValue(
+                  {} as Awaited<
+                    ReturnType<typeof mailchimp.lists.setListMember>
+                  >
+                )
+              permissionReportOutage = false
+              const restarted = restartPermissionCoordinator(
+                {
+                  authorityUrl,
+                  authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
+                },
+                journeys
+              )
+              expect(await restarted.reconcile(receipt.id)).toBe(0)
+              expect(subscription).toHaveBeenCalledExactlyOnceWith(
+                'controlled-profile-audience',
+                user.email,
+                {
+                  email_address: user.email,
+                  status_if_new: 'subscribed',
+                  merge_fields: { FNAME: user.firstName, LNAME: undefined }
+                }
+              )
+              expect(
+                await journeys.mcpPermissionExecution.findUnique({
+                  where: { id: receipt.id }
+                })
+              ).toMatchObject({ reportedAt: expect.any(Date) })
+              expect(await restarted.reconcile(receipt.id)).toBe(0)
+              expect(subscription).toHaveBeenCalledOnce()
+            } else {
+              expect(result.errors).toBeUndefined()
+              expect(receipt.reportedAt).not.toBeNull()
+              if (mode === 'existing-profile' || mode === 'anonymous-profile')
+                expect(subscription).not.toHaveBeenCalled()
+              else expect(subscription).toHaveBeenCalledOnce()
+            }
+          } finally {
+            subscription.mockRestore()
+            configure.mockRestore()
+            vi.unstubAllEnvs()
+            if (mode === 'rollback') {
+              await journeys.$executeRawUnsafe(
+                'DROP TRIGGER review_10600_fail_receipt ON "McpPermissionExecution"'
+              )
+              await journeys.$executeRawUnsafe(
+                'DROP FUNCTION review_10600_fail_receipt()'
+              )
+            }
+          }
+        }
+      )
+
+      it.each(['commit', 'rollback', 'delivery-retry'] as const)(
+        'delivers team removal only from a committed durable receipt: %s',
+        async (mode) => {
+          const membership = await permissionActors()
+          if (mode === 'rollback') {
+            await journeys.$executeRawUnsafe(
+              `CREATE FUNCTION review_10600_fail_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.status = 'committed' THEN RAISE EXCEPTION 'Controlled receipt failure'; END IF; RETURN NEW; END $$`
+            )
+            await journeys.$executeRawUnsafe(
+              `CREATE TRIGGER review_10600_fail_receipt BEFORE UPDATE ON "McpPermissionExecution" FOR EACH ROW EXECUTE FUNCTION review_10600_fail_receipt()`
+            )
+          }
+          mockQueueAdd.mockImplementation(async (name) => {
+            if (name !== 'team-removed') return
+            expect(
+              await journeys.userTeam.findUnique({
+                where: { id: membership.id }
+              })
+            ).toBeNull()
+            expect(
+              await journeys.mcpPermissionExecution.findFirst({
+                where: { status: 'committed' }
+              })
+            ).not.toBeNull()
+            if (mode === 'delivery-retry')
+              throw new Error('Controlled email queue outage')
+          })
+          try {
+            const result = await deleteMembership(membership.id)
+            if (mode === 'rollback') {
+              expect(result.errors).toHaveLength(1)
+              expect(
+                await journeys.userTeam.findUnique({
+                  where: { id: membership.id }
+                })
+              ).not.toBeNull()
+              expect(
+                mockQueueAdd.mock.calls.filter(
+                  ([name]) => name === 'team-removed'
+                )
+              ).toHaveLength(0)
+            } else {
+              const receipt =
+                await journeys.mcpPermissionExecution.findFirstOrThrow({
+                  where: { status: 'committed' }
+                })
+              expect(receipt.intent).toMatchObject({
+                effects: [
+                  {
+                    type: 'teamRemoved',
+                    userId: 'alice',
+                    teamName: expect.any(String)
+                  }
+                ]
+              })
+              if (mode === 'delivery-retry') {
+                expect(result.errors).toHaveLength(1)
+                expect(receipt.reportedAt).toBeNull()
+                const attempts = mockQueueAdd.mock.calls.filter(
+                  ([name]) => name === 'team-removed'
+                )
+                expect(attempts.length).toBeGreaterThan(0)
+                const options = attempts[0][2]
+                mockQueueAdd.mockResolvedValue(undefined)
+                expect(await permissionCoordinator.reconcile()).toBe(0)
+                expect(mockQueueAdd).toHaveBeenLastCalledWith(
+                  'team-removed',
+                  { teamName: expect.any(String), userId: 'alice' },
+                  options
+                )
+              } else expect(result.errors).toBeUndefined()
+            }
+          } finally {
+            if (mode === 'rollback') {
+              await journeys.$executeRawUnsafe(
+                'DROP TRIGGER review_10600_fail_receipt ON "McpPermissionExecution"'
+              )
+              await journeys.$executeRawUnsafe(
+                'DROP FUNCTION review_10600_fail_receipt()'
+              )
+            }
+          }
+        }
+      )
+
+      it.each([
+        'commit',
+        'rollback',
+        'delivery-retry',
+        'report-retry'
+      ] as const)(
+        'captures invitation acceptance notification with the owner receipt: %s',
+        async (mode) => {
+          const membership = await permissionActors()
+          await journeys.userTeam.delete({ where: { id: membership.id } })
+          if (mode === 'rollback') {
+            await journeys.$executeRawUnsafe(
+              `CREATE FUNCTION review_10600_fail_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.status = 'committed' THEN RAISE EXCEPTION 'Controlled receipt failure'; END IF; RETURN NEW; END $$`
+            )
+            await journeys.$executeRawUnsafe(
+              `CREATE TRIGGER review_10600_fail_receipt BEFORE UPDATE ON "McpPermissionExecution" FOR EACH ROW EXECUTE FUNCTION review_10600_fail_receipt()`
+            )
+          }
+          permissionReportOutage = mode === 'report-retry'
+          mockQueueAdd.mockImplementation(async (name) => {
+            if (name !== 'team-invite-accepted') return
+            expect(
+              await journeys.userTeam.findUnique({
+                where: {
+                  teamId_userId: { teamId: 'read-team', userId: 'alice' }
+                }
+              })
+            ).not.toBeNull()
+            expect(
+              await journeys.mcpPermissionExecution.findFirst({
+                where: { status: 'committed' }
+              })
+            ).not.toBeNull()
+            if (mode === 'delivery-retry')
+              throw new Error('Controlled email outage')
+          })
+          try {
+            const result = await inviteAlice()
+            if (mode === 'rollback') {
+              expect(result.errors).toHaveLength(1)
+              expect(
+                await journeys.userTeam.findUnique({
+                  where: {
+                    teamId_userId: { teamId: 'read-team', userId: 'alice' }
+                  }
+                })
+              ).toBeNull()
+              expect(
+                await journeys.userTeamInvite.findUnique({
+                  where: {
+                    teamId_email: {
+                      teamId: 'read-team',
+                      email: 'alice@synthetic.example'
+                    }
+                  }
+                })
+              ).toMatchObject({ acceptedAt: null })
+              expect(
+                mockQueueAdd.mock.calls.filter(
+                  ([name]) => name === 'team-invite-accepted'
+                )
+              ).toHaveLength(0)
+              return
+            }
+            const receipt =
+              await journeys.mcpPermissionExecution.findFirstOrThrow({
+                where: { status: 'committed' }
+              })
+            expect(receipt.intent).toMatchObject({
+              effects: [
+                {
+                  type: 'teamInviteAccepted',
+                  notification: {
+                    team: {
+                      id: 'read-team',
+                      userTeams: expect.arrayContaining([
+                        expect.objectContaining({
+                          userId: 'alice',
+                          role: 'member'
+                        })
+                      ])
+                    },
+                    sender: {
+                      firstName: 'alice',
+                      email: 'alice@synthetic.example'
+                    }
+                  }
+                }
+              ]
+            })
+            if (mode === 'commit') {
+              expect(result.errors).toBeUndefined()
+              expect(receipt.reportedAt).not.toBeNull()
+            } else {
+              expect(result.errors).toHaveLength(1)
+              expect(receipt.reportedAt).toBeNull()
+              if (mode === 'report-retry')
+                expect(
+                  mockQueueAdd.mock.calls.filter(
+                    ([name]) => name === 'team-invite-accepted'
+                  )
+                ).toHaveLength(0)
+              const effects = (
+                receipt.intent as { effects: Array<{ notification: unknown }> }
+              ).effects
+              mockQueueAdd.mockResolvedValue(undefined)
+              permissionReportOutage = false
+              const restarted = restartPermissionCoordinator(
+                {
+                  authorityUrl,
+                  authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
+                },
+                journeys
+              )
+              expect(await restarted.reconcile(receipt.id)).toBe(0)
+              expect(mockQueueAdd).toHaveBeenLastCalledWith(
+                'team-invite-accepted',
+                effects[0].notification,
+                {
+                  jobId: `permission-${receipt.id}-0`,
+                  removeOnComplete: { age: 24 * 3600 },
+                  removeOnFail: { age: 24 * 3600 }
+                }
+              )
+              expect(
+                await journeys.mcpPermissionExecution.findUnique({
+                  where: { id: receipt.id }
+                })
+              ).toMatchObject({ reportedAt: expect.any(Date) })
+            }
+          } finally {
+            if (mode === 'rollback') {
+              await journeys.$executeRawUnsafe(
+                'DROP TRIGGER review_10600_fail_receipt ON "McpPermissionExecution"'
+              )
+              await journeys.$executeRawUnsafe(
+                'DROP FUNCTION review_10600_fail_receipt()'
+              )
+            }
+          }
+        }
+      )
+
+      describe.each(['approval', 'template'] as const)(
+        '%s durable jobs',
+        (kind) => {
+          it.each([
+            'commit',
+            'rollback',
+            'delivery-retry',
+            'report-retry'
+          ] as const)(
+            'dispatches only after commit and recovers the exact intent: %s',
+            async (mode) => {
+              await permissionActors()
+              const journeyId = `read-effect-${kind}-${mode}`
+              const journey = await journeys.journey.create({
+                data: {
+                  id: journeyId,
+                  slug: journeyId,
+                  title: 'Original notification title',
+                  status: 'draft',
+                  languageId: '529',
+                  teamId: 'read-team',
+                  userJourneys: {
+                    create: { userId: 'alice', role: 'inviteRequested' }
+                  }
+                },
+                include: { userJourneys: true }
+              })
+              const collaboratorId = journey.userJourneys[0].id
+              const jobName =
+                kind === 'approval'
+                  ? 'journey-request-approved'
+                  : 'create-template-site'
+              const readState = async () =>
+                kind === 'approval'
+                  ? (
+                      await journeys.userJourney.findUniqueOrThrow({
+                        where: { id: collaboratorId }
+                      })
+                    ).role
+                  : (
+                      await journeys.journey.findUniqueOrThrow({
+                        where: { id: journeyId }
+                      })
+                    ).template
+              const committedState = kind === 'approval' ? 'editor' : true
+              if (mode === 'rollback') {
+                await journeys.$executeRawUnsafe(
+                  `CREATE FUNCTION review_10600_fail_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.status = 'committed' THEN RAISE EXCEPTION 'Controlled receipt failure'; END IF; RETURN NEW; END $$`
+                )
+                await journeys.$executeRawUnsafe(
+                  `CREATE TRIGGER review_10600_fail_receipt BEFORE UPDATE ON "McpPermissionExecution" FOR EACH ROW EXECUTE FUNCTION review_10600_fail_receipt()`
+                )
+              }
+              permissionReportOutage = mode === 'report-retry'
+              mockQueueAdd.mockImplementation(async (name) => {
+                if (name !== jobName) return
+                expect(await readState()).toBe(committedState)
+                expect(
+                  await journeys.mcpPermissionExecution.count({
+                    where: { status: 'committed' }
+                  })
+                ).toBe(1)
+                if (mode === 'delivery-retry')
+                  throw new Error('Controlled job queue outage')
+              })
+              try {
+                const result =
+                  kind === 'approval'
+                    ? await humanMutation(
+                        'mutation Approve($id: ID!) { userJourneyApprove(id: $id) { id role } }',
+                        { id: collaboratorId }
+                      )
+                    : await humanMutation(
+                        'mutation Template($id: ID!) { journeyTemplate(id: $id, input: {template: true}) { id template } }',
+                        { id: journeyId }
+                      )
+                const attempts = () =>
+                  mockQueueAdd.mock.calls.filter(([name]) => name === jobName)
+                if (mode === 'rollback') {
+                  expect(result.errors).toHaveLength(1)
+                  expect(await readState()).toBe(
+                    kind === 'approval' ? 'inviteRequested' : false
+                  )
+                  expect(attempts()).toHaveLength(0)
+                  expect(
+                    await journeys.mcpPermissionExecution.count({
+                      where: { status: 'committed' }
+                    })
+                  ).toBe(0)
+                  expect(await permissionCoordinator.reconcile()).toBe(1)
+                  expect(
+                    await journeys.mcpPermissionExecution.findFirstOrThrow()
+                  ).toMatchObject({
+                    status: 'failed',
+                    reportedAt: null
+                  })
+                  expect(attempts()).toHaveLength(0)
+                  return
+                }
+                expect(await readState()).toBe(committedState)
+                const receipt =
+                  await journeys.mcpPermissionExecution.findFirstOrThrow({
+                    where: { status: 'committed' }
+                  })
+                const payload =
+                  kind === 'approval'
+                    ? {
+                        userId: 'alice',
+                        url: expect.stringContaining(journeyId),
+                        journey: expect.objectContaining({
+                          id: journeyId,
+                          title: journey.title,
+                          primaryImageBlock: null
+                        }),
+                        sender: expect.objectContaining({
+                          firstName: 'bob',
+                          email: 'bob@synthetic.example'
+                        })
+                      }
+                    : {
+                        __typename: 'plausibleCreateTemplateSite',
+                        templateId: journeyId
+                      }
+                expect(receipt.intent).toMatchObject({
+                  effects: [
+                    kind === 'approval'
+                      ? { type: 'journeyApproved', notification: payload }
+                      : { type: 'templateSite', templateId: journeyId }
+                  ]
+                })
+                const options = {
+                  jobId: `permission-${receipt.id}-0`,
+                  removeOnComplete: {
+                    age: kind === 'approval' ? 24 * 3600 : 5 * 24 * 3600
+                  },
+                  removeOnFail:
+                    kind === 'approval'
+                      ? { age: 24 * 3600 }
+                      : { age: 5 * 24 * 3600, count: 50 }
+                }
+                if (mode === 'commit') {
+                  expect(result.errors).toBeUndefined()
+                  expect(receipt.reportedAt).not.toBeNull()
+                  expect(attempts()).toHaveLength(1)
+                } else {
+                  expect(result.errors).toHaveLength(1)
+                  expect(receipt.reportedAt).toBeNull()
+                  if (mode === 'report-retry')
+                    expect(attempts()).toHaveLength(0)
+                  else {
+                    expect(attempts().length).toBeGreaterThan(0)
+                    for (const attempt of attempts())
+                      expect(attempt).toEqual([jobName, payload, options])
+                  }
+                  await journeys.journey.update({
+                    where: { id: journeyId },
+                    data: { title: 'Changed after commit' }
+                  })
+                  const beforeRecovery =
+                    await journeys.userJourney.findUniqueOrThrow({
+                      where: { id: collaboratorId }
+                    })
+                  const restarted = restartPermissionCoordinator(
+                    {
+                      authorityUrl,
+                      authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
+                    },
+                    journeys
+                  )
+                  permissionReportOutage = false
+                  mockQueueAdd.mockResolvedValue(undefined)
+                  expect(await restarted.reconcile()).toBe(0)
+                  expect(
+                    await journeys.userJourney.findUniqueOrThrow({
+                      where: { id: collaboratorId }
+                    })
+                  ).toEqual(beforeRecovery)
+                  expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+                  expect(
+                    (
+                      await journeys.mcpPermissionExecution.findUniqueOrThrow({
+                        where: { id: receipt.id }
+                      })
+                    ).reportedAt
+                  ).not.toBeNull()
+                  const delivered = attempts().length
+                  expect(await restarted.reconcile()).toBe(0)
+                  expect(attempts()).toHaveLength(delivered)
+                }
+                expect(attempts().at(-1)).toEqual([jobName, payload, options])
+              } finally {
+                permissionReportOutage = false
+                if (mode === 'rollback') {
+                  await journeys.$executeRawUnsafe(
+                    'DROP TRIGGER review_10600_fail_receipt ON "McpPermissionExecution"'
+                  )
+                  await journeys.$executeRawUnsafe(
+                    'DROP FUNCTION review_10600_fail_receipt()'
+                  )
+                }
+                await journeys.journey.delete({ where: { id: journeyId } })
+              }
+            }
+          )
+        }
+      )
+
+      it('applies actual team roles/removal and collaboration removal/restoration without widening the grant', async () => {
+        const membership = await permissionActors()
+        const connection = await auth.agentConnection.findFirstOrThrow({
+          orderBy: { approvedAt: 'desc' }
+        })
+        const direct = await journeys.userJourney.create({
+          data: { journeyId: 'read-a', userId: 'alice', role: 'editor' }
+        })
+        const role = await humanMutation(
+          'mutation ChangeRole($id: ID!) { userTeamUpdate(id: $id, input: {role: member}) { role } }',
+          { id: membership.id }
+        )
+        expect(role.errors).toBeUndefined()
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect((await deleteMembership(membership.id)).errors).toBeUndefined()
+        // The independent direct collaboration survives team membership removal.
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        const removed = await humanMutation(
+          'mutation RemoveCollaborator($id: ID!) { userJourneyRemove(id: $id) { id } }',
+          { id: direct.id }
+        )
+        expect(removed.errors).toBeUndefined()
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect((await inviteAlice()).errors).toBeUndefined()
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect(
+          (await call('journey_read', { journeyId: 'read-b', view: 'steps' }))
+            .body
+        ).not.toContain('read-b-text-sentinel')
+        const unchanged = await auth.agentConnection.findUniqueOrThrow({
+          where: { id: connection.id }
+        })
+        expect([
+          unchanged.version,
+          unchanged.expiresAt,
+          unchanged.journeyIds,
+          unchanged.mode
+        ]).toEqual([
+          connection.version,
+          connection.expiresAt,
+          connection.journeyIds,
+          connection.mode
+        ])
+        await auth.agentConnection.update({
+          where: { id: connection.id },
+          data: { expiresAt: new Date(0) }
+        })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+      })
+
+      it('rejects a paused old ACL snapshot across completed real removal and restoration', async () => {
+        const membership = await permissionActors()
+        const pause = barrier()
+        beforeAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const reading = readA()
+        await pause.ready
+        try {
+          expect((await deleteMembership(membership.id)).errors).toBeUndefined()
+          expect((await inviteAlice()).errors).toBeUndefined()
+        } finally {
+          pause.resume()
+        }
+        expect((await reading).body).not.toContain('read-a-text-sentinel')
+        beforeAcceptance = undefined
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+      })
+
+      it('keeps an actual membership removal pending until accepted work settles and replays its durable intent', async () => {
+        const membership = await permissionActors()
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const reading = readA()
+        await pause.ready
+        let changeId: string | undefined
+        try {
+          const pending = await deleteMembership(membership.id)
+          expect(
+            pending.errors?.[0].extensions?.code,
+            JSON.stringify(pending)
+          ).toBe('PERMISSION_CHANGE_PENDING')
+          changeId = pending.errors?.[0].extensions?.changeId
+          expect(changeId).toBeTruthy()
+          const repeated = await deleteMembership(membership.id)
+          expect(repeated.errors?.[0].extensions).toMatchObject({
+            code: 'PERMISSION_CHANGE_PENDING',
+            changeId
+          })
+          expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+          expect(await auth.permissionChange.count()).toBe(1)
+          expect(
+            await journeys.userTeam.findUnique({ where: { id: membership.id } })
+          ).not.toBeNull()
+          expect(
+            await auth.permissionChange.findUnique({ where: { id: changeId! } })
+          ).toMatchObject({ status: 'pending' })
+          expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        } finally {
+          pause.resume()
+        }
+        await reading
+        afterAcceptance = undefined
+        const reconciled = await permissionCoordinator.reconcile()
+        expect(
+          reconciled,
+          JSON.stringify({
+            local: await journeys.mcpPermissionExecution.findUnique({
+              where: { id: changeId! }
+            }),
+            remote: await auth.permissionChange.findUnique({
+              where: { id: changeId! }
+            }),
+            accepted: await auth.readPermit.findMany({
+              where: { status: 'accepted' },
+              select: { id: true, executor: true }
+            })
+          })
+        ).toBe(0)
+        expect(
+          await journeys.userTeam.findUnique({ where: { id: membership.id } })
+        ).toBeNull()
+        expect(
+          await auth.permissionChange.findUnique({ where: { id: changeId! } })
+        ).toMatchObject({ status: 'complete', outcome: 'committed' })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect((await inviteAlice()).errors).toBeUndefined()
+      })
+
+      it('coordinates ownership promotion and lifecycle state through real GraphQL entrypoints', async () => {
+        await permissionActors()
+        const owner = await journeys.userJourney.upsert({
+          where: { journeyId_userId: { journeyId: 'read-a', userId: 'alice' } },
+          create: { journeyId: 'read-a', userId: 'alice', role: 'owner' },
+          update: { role: 'owner' }
+        })
+        const target = await journeys.userJourney.upsert({
+          where: { journeyId_userId: { journeyId: 'read-a', userId: 'bob' } },
+          create: { journeyId: 'read-a', userId: 'bob', role: 'editor' },
+          update: { role: 'editor' }
+        })
+        expect(
+          (
+            await humanMutation(
+              'mutation Promote($id: ID!) { userJourneyPromote(id: $id) { id role } }',
+              { id: target.id }
+            )
+          ).errors
+        ).toBeUndefined()
+        expect(
+          await journeys.userJourney.findUnique({ where: { id: owner.id } })
+        ).toMatchObject({ role: 'editor' })
+        expect(
+          await journeys.userJourney.findUnique({ where: { id: target.id } })
+        ).toMatchObject({ role: 'owner' })
+        expect(
+          (
+            await humanMutation(
+              'mutation Archive($ids: [ID!]!) { journeysArchive(ids: $ids) { id } }',
+              { ids: ['read-a'] }
+            )
+          ).errors
+        ).toBeUndefined()
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect(
+          (
+            await humanMutation(
+              'mutation Restore($ids: [ID!]!) { journeysRestore(ids: $ids) { id } }',
+              { ids: ['read-a'] }
+            )
+          ).errors
+        ).toBeUndefined()
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        await journeys.userJourney.deleteMany({
+          where: { journeyId: 'read-a' }
+        })
+      })
+
+      it('retires account authority through the real users retirement participant, including accepted work and other users', async () => {
+        const bobToken = await consent('bob', ['read-foreign'])
+        // Restore the current Alice credential, whose logical connection is independent.
+        const alice = await auth.agentConnection.findFirstOrThrow({
+          where: { userId: 'alice' },
+          orderBy: { approvedAt: 'desc' }
+        })
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'read') await pause.pause()
+        }
+        const reading = readA()
+        await pause.ready
+        vi.stubEnv('MCP_READS_ENABLED', 'true')
+        vi.stubEnv('MCP_ACCOUNT_AUTHORITY_URL', config.AUTH_ISSUER)
+        vi.stubEnv(
+          'MCP_ACCOUNT_AUTHORITY_SECRET',
+          config.AUTH_PERMISSION_USERS_SECRET
+        )
+        const participantModule = new URL(
+          '../../api-users/src/schema/userDelete/service/retireMcpAccount.ts',
+          import.meta.url
+        ).href
+        const { retireMcpAccount } = (await import(
+          /* webpackChunkName: "account-retirement-participant" */ participantModule
+        )) as { retireMcpAccount(userId: string): Promise<void> }
+        try {
+          await expect(retireMcpAccount('alice')).rejects.toThrow(
+            'MCP authority retirement pending'
+          )
+          expect(
+            await auth.agentConnection.findUnique({ where: { id: alice.id } })
+          ).toMatchObject({ revokedAt: expect.any(Date) })
+          expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        } finally {
+          pause.resume()
+        }
+        await reading
+        afterAcceptance = undefined
+        await retireMcpAccount('alice')
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        expect(
+          (
+            await call(
+              'journey_read',
+              { journeyId: 'read-foreign', view: 'steps' },
+              bobToken
+            )
+          ).body
+        ).toContain('read-foreign-text-sentinel')
+        expect(
+          await auth.connectionHistoryPurge.findUnique({
+            where: { connectionId: alice.id }
+          })
+        ).not.toBeNull()
+        expect(
+          await auth.authorizationGate.findUnique({
+            where: { id: 'account:alice' }
+          })
+        ).toMatchObject({ open: false })
+        vi.unstubAllEnvs()
+      })
+
+      it('fails closed on permission authority outage and recovers a committed ownership receipt without repeating it', async () => {
+        const membership = await permissionActors()
+        permissionOutage = true
+        const unavailable = await deleteMembership(membership.id)
+        expect(unavailable.errors).toHaveLength(1)
+        expect(
+          await journeys.userTeam.findUnique({ where: { id: membership.id } })
+        ).not.toBeNull()
+        permissionOutage = false
+        expect(await permissionCoordinator.reconcile()).toBe(0)
+        expect(
+          await journeys.userTeam.findUnique({ where: { id: membership.id } })
+        ).toBeNull()
+        expect((await inviteAlice()).errors).toBeUndefined()
+        const owner = await journeys.userJourney.create({
+          data: { journeyId: 'read-a', userId: 'alice', role: 'owner' }
+        })
+        const target = await journeys.userJourney.create({
+          data: { journeyId: 'read-a', userId: 'bob', role: 'editor' }
+        })
+        permissionReportOutage = true
+        const lost = await humanMutation(
+          'mutation Promote($id: ID!) { userJourneyPromote(id: $id) { id } }',
+          { id: target.id }
+        )
+        expect(lost.errors).toHaveLength(1)
+        expect(
+          await journeys.userJourney.findUnique({ where: { id: owner.id } })
+        ).toMatchObject({ role: 'editor' })
+        const receipt = await journeys.mcpPermissionExecution.findFirstOrThrow({
+          where: { status: 'committed', reportedAt: null }
+        })
+        expect(
+          await auth.permissionChange.findUnique({ where: { id: receipt.id } })
+        ).toMatchObject({ status: 'ready' })
+        expect((await readA()).body).not.toContain('read-a-text-sentinel')
+        permissionReportOutage = false
+        expect(await permissionCoordinator.reconcile()).toBe(0)
+        expect(
+          await auth.permissionChange.findUnique({ where: { id: receipt.id } })
+        ).toMatchObject({ status: 'complete' })
+        expect(
+          await journeys.userJourney.findUnique({ where: { id: target.id } })
+        ).toMatchObject({ role: 'owner' })
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        await journeys.userJourney.deleteMany({
+          where: { journeyId: 'read-a' }
+        })
+      })
+
+      it('coordinates both teams during the existing ownership transfer entrypoint', async () => {
+        await permissionActors()
+        await journeys.userJourney.create({
+          data: { journeyId: 'read-a', userId: 'alice', role: 'owner' }
+        })
+        await journeys.team.upsert({
+          where: { id: 'read-transfer-team' },
+          create: {
+            id: 'read-transfer-team',
+            title: 'Transfer destination',
+            userTeams: { create: { userId: 'alice', role: 'manager' } }
+          },
+          update: {}
+        })
+        const move = (teamId: string) =>
+          humanMutation(
+            'mutation Move($team: ID!) { journeyTransferFromAnonymous(journeyId: "read-a", teamId: $team) { id team { id } } }',
+            { team: teamId },
+            'alice'
+          )
+        expect((await move('read-transfer-team')).errors).toBeUndefined()
+        expect(
+          await journeys.journey.findUnique({ where: { id: 'read-a' } })
+        ).toMatchObject({ teamId: 'read-transfer-team' })
+        const execution =
+          await journeys.mcpPermissionExecution.findFirstOrThrow({
+            where: { actorId: 'alice' },
+            orderBy: { createdAt: 'desc' }
+          })
+        expect(execution.gateIds).toEqual(
+          expect.arrayContaining([
+            'journey:read-a',
+            'team:read-team',
+            'team:read-transfer-team'
+          ])
+        )
+        expect((await readA()).body).toContain('read-a-text-sentinel')
+        expect((await move('read-team')).errors).toBeUndefined()
+        await journeys.userJourney.deleteMany({
+          where: { journeyId: 'read-a' }
+        })
+      })
+
+      it.each([998, 999, 1000])(
+        'preserves a %i-journey account deletion across accepted-work draining',
+        async (count) => {
+          await permissionActors()
+          const existingCount = await journeys.journey.count({
+            where: { teamId: 'read-team' }
+          })
+          const ids = Array.from(
+            { length: count - existingCount },
+            (_, index) => `read-large-delete-${count}-${index}`
+          )
+          await journeys.journey.createMany({
+            data: ids.map((id) => ({
+              id,
+              slug: id,
+              title: 'Large deletion fixture',
+              languageId: '529',
+              teamId: 'read-team',
+              status: 'draft'
+            }))
+          })
+          await journeys.userJourney.createMany({
+            data: ids.map((journeyId) => ({
+              journeyId,
+              userId: 'alice',
+              role: 'owner'
+            }))
+          })
+          await journeys.userJourney.upsert({
+            where: { journeyId_userId: { journeyId: 'read-a', userId: 'bob' } },
+            create: { journeyId: 'read-a', userId: 'bob', role: 'owner' },
+            update: { role: 'owner' }
+          })
+          expect((await readA()).body).toContain('read-a-text-sentinel')
+          const pause = barrier()
+          afterAcceptance = async (stage) => {
+            if (stage === 'read') await pause.pause()
+          }
+          const reading = readA()
+          await pause.ready
+          const deletion = () =>
+            humanMutation(
+              'mutation LargeDeletion { userDeleteJourneysConfirm(userId: "alice") { success } }',
+              {},
+              'alice'
+            )
+          let changeId: string | undefined
+          try {
+            const pending = await deletion()
+            expect(
+              pending.errors?.[0].extensions?.code,
+              JSON.stringify(pending)
+            ).toBe('PERMISSION_CHANGE_PENDING')
+            changeId = pending.errors?.[0].extensions?.changeId
+            expect((await deletion()).errors?.[0].extensions?.changeId).toBe(
+              changeId
+            )
+            expect(
+              await journeys.journey.count({ where: { id: { in: ids } } })
+            ).toBe(ids.length)
+            const change = await auth.permissionChange.findUniqueOrThrow({
+              where: { id: changeId }
+            })
+            expect(change.gateIds).toHaveLength(count + 2)
+            expect(
+              await auth.authorizationGate.count({
+                where: { id: { in: change.gateIds }, open: false }
+              })
+            ).toBe(count + 2)
+            expect(
+              await journeys.mcpPermissionExecution.count({
+                where: { status: 'committed' }
+              })
+            ).toBe(0)
+            expect((await readA()).body).not.toContain('read-a-text-sentinel')
+          } finally {
+            pause.resume()
+          }
+          await reading
+          afterAcceptance = undefined
+          try {
+            expect(await permissionCoordinator.reconcile()).toBe(0)
+            expect(
+              await auth.permissionChange.findUnique({
+                where: { id: changeId }
+              })
+            ).toMatchObject({ status: 'complete', outcome: 'committed' })
+            expect(
+              await journeys.mcpPermissionExecution.findUnique({
+                where: { id: changeId }
+              })
+            ).toMatchObject({ status: 'committed' })
+            expect(
+              await journeys.journey.count({ where: { id: { in: ids } } })
+            ).toBe(0)
+            expect(
+              await journeys.journey.findUnique({ where: { id: 'read-a' } })
+            ).not.toBeNull()
+            expect(
+              await journeys.userTeam.findUnique({
+                where: { teamId_userId: { teamId: 'read-team', userId: 'bob' } }
+              })
+            ).not.toBeNull()
+            expect(await permissionCoordinator.reconcile()).toBe(0)
+            expect(await auth.permissionChange.count()).toBe(1)
+          } finally {
+            await journeys.journey.deleteMany({ where: { id: { in: ids } } })
+            await journeys.userJourney.deleteMany({
+              where: { journeyId: 'read-a', userId: 'bob' }
+            })
+          }
+        },
+        30000
+      )
+
+      it.each([
+        ['journeysArchive', 'archived'],
+        ['journeysRestore', 'draft'],
+        ['journeysTrash', 'trashed'],
+        ['journeysDelete', 'deleted']
+      ])(
+        'coordinates %s with more than 5,000 duplicate IDs',
+        async (field, status) => {
+          await permissionActors()
+          await journeys.journey.update({
+            where: { id: 'read-a' },
+            data: { status: 'archived', archivedAt: new Date() }
+          })
+          try {
+            const result = await humanMutation(
+              `mutation Batch($ids: [ID!]!) { ${field}(ids: $ids) { id } }`,
+              {
+                ids: [
+                  ...Array<string>(5001).fill('read-a'),
+                  'read-missing',
+                  '',
+                  'x'.repeat(201)
+                ]
+              }
+            )
+            expect(result.errors).toBeUndefined()
+            expect(result.data?.[field]).toEqual([{ id: 'read-a' }])
+            expect(
+              await journeys.journey.findUnique({ where: { id: 'read-a' } })
+            ).toMatchObject({ status })
+            const change = await auth.permissionChange.findFirstOrThrow()
+            expect(change).toMatchObject({
+              status: 'complete',
+              outcome: 'committed',
+              gateIds: ['account:bob', 'journey:read-a', 'team:read-team']
+            })
+            expect(await auth.permissionChange.count()).toBe(1)
+            expect(
+              await journeys.mcpPermissionExecution.findUnique({
+                where: { id: change.id }
+              })
+            ).toMatchObject({ status: 'committed' })
+            expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+            expect(await permissionCoordinator.reconcile()).toBe(0)
+          } finally {
+            await journeys.journey.update({
+              where: { id: 'read-a' },
+              data: {
+                status: 'draft',
+                archivedAt: null,
+                trashedAt: null,
+                deletedAt: null
+              }
+            })
+          }
+        }
+      )
+
+      it('recovers more than 5,000 distinct lifecycle resources after losing a manifest-page response', async () => {
+        await permissionActors()
+        const ids = Array.from(
+          { length: 5001 },
+          (_, index) => `read-large-archive-${index}`
+        )
+        await journeys.journey.createMany({
+          data: ids.map((id) => ({
+            id,
+            slug: id,
+            title: 'Large lifecycle fixture',
+            languageId: '529',
+            teamId: 'read-team',
+            status: 'draft'
+          }))
+        })
+        let pages = 0
+        afterPermissionBegin = async () => {
+          if (++pages === 2) throw new Error('Controlled page outage')
+        }
+        try {
+          const failed = await humanMutation(
+            'mutation LargeArchive($ids: [ID!]!) { journeysArchive(ids: $ids) { id } }',
+            { ids }
+          )
+          expect(failed.errors).toHaveLength(1)
+          const change = await auth.permissionChange.findFirstOrThrow()
+          expect(change).toMatchObject({
+            status: 'collecting',
+            gateCount: ids.length + 2
+          })
+          expect(change.gateIds).toHaveLength(500)
+          expect(
+            await journeys.journey.count({
+              where: { id: { in: ids }, status: 'draft' }
+            })
+          ).toBe(ids.length)
+          afterPermissionBegin = undefined
+          expect(await permissionCoordinator.reconcile()).toBe(0)
+          expect(
+            await journeys.journey.count({
+              where: { id: { in: ids }, status: 'archived' }
+            })
+          ).toBe(ids.length)
+          expect(
+            await auth.permissionChange.findUnique({ where: { id: change.id } })
+          ).toMatchObject({ status: 'complete', outcome: 'committed' })
+          const complete = await auth.permissionChange.findUniqueOrThrow({
+            where: { id: change.id }
+          })
+          expect(complete.gateIds).toHaveLength(ids.length + 2)
+          expect(
+            await auth.authorizationGate.count({
+              where: { id: { in: complete.gateIds }, open: true }
+            })
+          ).toBe(ids.length + 2)
+          expect(await permissionCoordinator.reconcile()).toBe(0)
+          expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+        } finally {
+          afterPermissionBegin = undefined
+          await journeys.journey.deleteMany({ where: { id: { in: ids } } })
+        }
+      }, 120000)
+
+      it.skipIf(!users)(
+        'rejects a foreign ownership transfer before closing any gates',
+        async () => {
+          await permissionActors()
+          await journeys.userJourney.create({
+            data: { journeyId: 'read-a', userId: 'alice', role: 'owner' }
+          })
+          const result = await humanMutation(
+            'mutation ForeignTransfer { journeyTransferFromAnonymous(journeyId: "read-a", teamId: "foreign-team") { id } }'
+          )
+          expect(result.errors).toHaveLength(1)
+          expect(await journeys.mcpPermissionExecution.count()).toBe(0)
+          expect(await auth.permissionChange.count()).toBe(0)
+          expect(
+            await auth.authorizationGate.count({ where: { open: false } })
+          ).toBe(0)
+          expect((await readA()).body).toContain('read-a-text-sentinel')
+          await journeys.userJourney.deleteMany({
+            where: { journeyId: 'read-a' }
+          })
+        }
+      )
+
+      it('fences an invitation arriving after an empty rights-change discovery', async () => {
+        const membership = await permissionActors()
+        await journeys.userTeamInvite.updateMany({
+          where: { email: 'alice@synthetic.example' },
+          data: { acceptedAt: new Date() }
+        })
+        beforePermissionBegin = async () => {
+          beforePermissionBegin = undefined
+          await journeys.userTeamInvite.upsert({
+            where: {
+              teamId_email: {
+                teamId: 'read-team',
+                email: 'alice@synthetic.example'
+              }
+            },
+            create: {
+              teamId: 'read-team',
+              email: 'alice@synthetic.example',
+              senderId: 'bob'
+            },
+            update: { acceptedAt: null, removedAt: null }
+          })
+        }
+        const result = await humanMutation(
+          'mutation AcceptInvites { userTeamInviteAcceptAll { id } }',
+          {},
+          'alice'
+        )
+        expect(result.errors).toHaveLength(1)
+        expect(
+          await journeys.userTeam.findUnique({ where: { id: membership.id } })
+        ).toMatchObject({ role: 'manager' })
+        expect(
+          await journeys.userTeamInvite.findUnique({
+            where: {
+              teamId_email: {
+                teamId: 'read-team',
+                email: 'alice@synthetic.example'
+              }
+            }
+          })
+        ).toMatchObject({ acceptedAt: null })
+        expect(await auth.permissionChange.findFirst()).toMatchObject({
+          status: 'failed'
+        })
+      })
+
+      it
+        .skipIf(!users)
+        .each([
+          'pending',
+          'lost',
+          'delete-failure',
+          'lookup-failure',
+          'lookup-absent'
+        ] as const)(
+        'resumes a recorded email fallback through the Admin database-ID entrypoint after %s',
+        async (mode) => {
+          const target = await users!.user.upsert({
+            where: { userId: 'alice' },
+            create: {
+              userId: 'alice',
+              firstName: 'alice',
+              email: 'alice@synthetic.example'
+            },
+            update: { superAdmin: false }
+          })
+          await users!.user.update({
+            where: { userId: 'bob' },
+            data: { superAdmin: true }
+          })
+          vi.stubEnv('MCP_READS_ENABLED', 'true')
+          vi.stubEnv('MCP_ACCOUNT_AUTHORITY_URL', config.AUTH_ISSUER)
+          vi.stubEnv(
+            'MCP_ACCOUNT_AUTHORITY_SECRET',
+            config.AUTH_PERMISSION_USERS_SECRET
+          )
+          const getUser = vi.spyOn(firebaseAuth, 'getUser').mockResolvedValue({
+            uid: 'alice',
+            email: 'alice@synthetic.example',
+            emailVerified: true,
+            disabled: false,
+            providerData: [],
+            metadata: {
+              creationTime: '2026-01-01T00:00:00.000Z',
+              lastSignInTime: '2026-01-01T00:00:00.000Z',
+              toJSON: () => ({})
+            },
+            toJSON: () => ({})
+          })
+          const emailLookup = vi
+            .spyOn(firebaseAuth, 'getUserByEmail')
+            .mockResolvedValue({
+              uid: 'fallback-alice',
+              email: 'alice@synthetic.example',
+              emailVerified: true,
+              disabled: false,
+              providerData: [],
+              metadata: {
+                creationTime: '2026-01-02T00:00:00.000Z',
+                lastSignInTime: '2026-01-02T00:00:00.000Z',
+                toJSON: () => ({})
+              },
+              toJSON: () => ({})
+            })
+          const lookupInterrupted =
+            mode === 'lookup-failure' || mode === 'lookup-absent'
+          if (lookupInterrupted)
+            emailLookup.mockRejectedValueOnce(
+              new Error('Controlled Firebase email lookup outage')
+            )
+          let interrupted = false
+          const deleteUser = vi
+            .spyOn(firebaseAuth, 'deleteUser')
+            .mockImplementation(async (uid) => {
+              if (uid === 'alice')
+                throw Object.assign(new Error('Firebase user not found'), {
+                  code: 'auth/user-not-found'
+                })
+              expect(uid).toBe('fallback-alice')
+              const audit = await users!.userDeleteAuditLog.findFirstOrThrow({
+                where: { deletedUserId: target.id }
+              })
+              expect(audit.retiredFirebaseUids).toContain(uid)
+              if (mode === 'delete-failure' && !interrupted) {
+                interrupted = true
+                throw new Error('Controlled Firebase delete failure')
+              }
+            })
+          const originalFetch = globalThis.fetch
+          const retireFetch = vi
+            .spyOn(globalThis, 'fetch')
+            .mockImplementation(async (input, init) => {
+              const requestUrl =
+                input instanceof Request
+                  ? input.url
+                  : input instanceof URL
+                    ? input.href
+                    : input
+              const fallback =
+                requestUrl.endsWith('/internal/permissions/retire-account') &&
+                typeof init?.body === 'string' &&
+                JSON.parse(init.body).userId === 'fallback-alice'
+              if (fallback) {
+                const audit = await users!.userDeleteAuditLog.findFirstOrThrow({
+                  where: { deletedUserId: target.id }
+                })
+                expect(audit).toMatchObject({
+                  firebaseCleanupUids: expect.arrayContaining([
+                    'alice',
+                    'fallback-alice'
+                  ]),
+                  retiredFirebaseUids: ['alice'],
+                  success: false
+                })
+              }
+              const response = await originalFetch(input, init)
+              if (
+                fallback &&
+                (mode === 'pending' || mode === 'lost') &&
+                !interrupted
+              ) {
+                interrupted = true
+                expect(response.ok).toBe(true)
+                if (mode === 'lost')
+                  throw new Error(
+                    'Controlled lost fallback retirement response'
+                  )
+                return Response.json({ status: 'pending' })
+              }
+              return response
+            })
+          try {
+            const usersSchemaModule = new URL(
+              '../../api-users/src/schema/schema.ts',
+              import.meta.url
+            ).href
+            const { schema: usersSchema } = (await import(
+              /* webpackChunkName: "users-deletion-fallback-participant" */ usersSchemaModule
+            )) as { schema: GraphQLSchema }
+            const attempt = async () => {
+              const progress = await subscribe({
+                schema: usersSchema,
+                document: parse(
+                  'subscription DeleteFallback($id: String!) { userDeleteConfirm(idType: databaseId, id: $id, deletedJourneyIds: [], deletedTeamIds: [], deletedUserJourneyIds: [], deletedUserTeamIds: []) { done success } }'
+                ),
+                variableValues: { id: target.id },
+                contextValue: {
+                  ...initContextCache(),
+                  type: 'authenticated',
+                  currentUser: { id: 'bob', email: 'bob@synthetic.example' }
+                }
+              })
+              if (!(Symbol.asyncIterator in progress))
+                throw new Error(JSON.stringify(progress))
+              const results = []
+              for await (const result of progress) results.push(result)
+              return results.at(-1)
+            }
+            expect(await attempt()).toMatchObject({
+              data: { userDeleteConfirm: { done: true, success: false } }
+            })
+            expect(
+              await users!.user.findUnique({ where: { id: target.id } })
+            ).toBeNull()
+            const audit = await users!.userDeleteAuditLog.findFirstOrThrow({
+              where: { deletedUserId: target.id }
+            })
+            expect(audit).toMatchObject({
+              success: false,
+              firebaseCleanupEmail: 'alice@synthetic.example',
+              firebaseEmailLookupPending: lookupInterrupted,
+              firebaseCleanupUids: lookupInterrupted
+                ? ['alice']
+                : ['alice', 'fallback-alice'],
+              retiredFirebaseUids:
+                mode === 'delete-failure'
+                  ? ['alice', 'fallback-alice']
+                  : ['alice']
+            })
+            if (lookupInterrupted) {
+              emailLookup.mockRejectedValueOnce(
+                new Error('Controlled repeated Firebase email lookup outage')
+              )
+              expect(await attempt()).toMatchObject({
+                data: { userDeleteConfirm: { done: true, success: false } }
+              })
+              expect(
+                await users!.userDeleteAuditLog.findUnique({
+                  where: { id: audit.id }
+                })
+              ).toMatchObject({ success: false })
+              if (mode === 'lookup-absent')
+                emailLookup.mockRejectedValue(
+                  Object.assign(new Error('Firebase user not found'), {
+                    code: 'auth/user-not-found'
+                  })
+                )
+            } else
+              emailLookup.mockRejectedValue(
+                new Error('Retry must use the recorded UID')
+              )
+            expect(await attempt()).toMatchObject({
+              data: { userDeleteConfirm: { done: true, success: true } }
+            })
+            expect(emailLookup).toHaveBeenCalledTimes(lookupInterrupted ? 3 : 1)
+            if (mode !== 'lookup-absent')
+              expect(deleteUser).toHaveBeenCalledWith('fallback-alice')
+            else expect(deleteUser).not.toHaveBeenCalledWith('fallback-alice')
+            expect(
+              await users!.userDeleteAuditLog.findUnique({
+                where: { id: audit.id }
+              })
+            ).toMatchObject({
+              success: true,
+              firebaseEmailLookupPending: false,
+              retiredFirebaseUids:
+                mode === 'lookup-absent'
+                  ? ['alice']
+                  : ['alice', 'fallback-alice']
+            })
+            const retiredFallback = await auth.retiredAccount.findUnique({
+              where: { userId: 'fallback-alice' }
+            })
+            if (mode === 'lookup-absent') expect(retiredFallback).toBeNull()
+            else expect(retiredFallback).not.toBeNull()
+          } finally {
+            retireFetch.mockRestore()
+            getUser.mockRestore()
+            emailLookup.mockRestore()
+            deleteUser.mockRestore()
+            vi.unstubAllEnvs()
+            await users!.user.update({
+              where: { userId: 'bob' },
+              data: { superAdmin: false }
+            })
+          }
+        }
+      )
+
+      it
+        .skipIf(!users)
+        .each([
+          'complete',
+          'lost',
+          'pending',
+          'recovered',
+          'auth-after-sql',
+          'firebase-retry'
+        ] as const)(
+        'preserves shared deletion outcomes and resumes the Admin workflow after a %s retirement response',
+        async (retirementResponse) => {
+          for (const userId of ['alice', 'bob'])
+            await users!.user.upsert({
+              where: { userId },
+              create: {
+                userId,
+                firstName: userId,
+                email: userId + '@synthetic.example'
+              },
+              update: { superAdmin: false }
+            })
+          await journeys.userJourney.deleteMany({
+            where: { journeyId: 'read-a' }
+          })
+          await journeys.journey.deleteMany({
+            where: { id: 'read-delete-exclusive' }
+          })
+          await journeys.team.deleteMany({
+            where: { id: 'read-delete-exclusive-team' }
+          })
+          await permissionActors()
+          const bobToken = await consent('bob', ['read-foreign'])
+          await journeys.team.upsert({
+            where: { id: 'read-delete-exclusive-team' },
+            create: {
+              id: 'read-delete-exclusive-team',
+              title: 'Exclusive',
+              userTeams: { create: { userId: 'alice', role: 'manager' } }
+            },
+            update: {}
+          })
+          await journeys.journey.create({
+            data: {
+              id: 'read-delete-exclusive',
+              slug: 'read-delete-exclusive',
+              title: 'Exclusive',
+              languageId: '529',
+              teamId: 'read-delete-exclusive-team',
+              status: 'draft',
+              userJourneys: { create: { userId: 'alice', role: 'owner' } }
+            }
+          })
+          await journeys.userJourney.createMany({
+            data: [
+              { journeyId: 'read-a', userId: 'alice', role: 'owner' },
+              { journeyId: 'read-a', userId: 'bob', role: 'editor' }
+            ]
+          })
+          if (retirementResponse === 'recovered')
+            await journeys.qrCode.create({
+              data: {
+                teamId: 'read-delete-exclusive-team',
+                journeyId: 'read-delete-exclusive',
+                toJourneyId: 'read-delete-exclusive',
+                shortLinkId: 'deletion-recovery-short-link'
+              }
+            })
+          permissionOutage = retirementResponse === 'recovered'
+          let deleted = await humanMutation(
+            'mutation DeleteJourneys { userDeleteJourneysConfirm(userId: "alice") { success deletedJourneyIds deletedTeamIds deletedUserJourneyIds deletedUserTeamIds } }',
+            {},
+            'alice'
+          )
+          if (retirementResponse === 'recovered') {
+            expect(deleted.errors).toHaveLength(1)
+            permissionOutage = false
+            permissionReportOutage = true
+            expect(await permissionCoordinator.reconcile()).toBe(1)
+            const receipt =
+              await journeys.mcpPermissionExecution.findFirstOrThrow({
+                where: { status: 'committed' }
+              })
+            expect(receipt.reportedAt).toBeNull()
+            expect(receipt.intent).toMatchObject({
+              effects: [
+                {
+                  type: 'shortLinkDelete',
+                  shortLinkIds: ['deletion-recovery-short-link']
+                }
+              ]
+            })
+            expect(
+              await journeys.qrCode.findFirst({
+                where: { shortLinkId: 'deletion-recovery-short-link' }
+              })
+            ).toBeNull()
+            mockQueueAdd.mockClear()
+            permissionReportOutage = false
+            expect(await permissionCoordinator.reconcile()).toBe(0)
+            expect(mockQueueAdd).toHaveBeenCalledWith(
+              'api-journeys-shortlink-delete-job',
+              { shortLinkId: 'deletion-recovery-short-link' },
+              expect.objectContaining({
+                jobId: 'shortlink-delete-deletion-recovery-short-link'
+              })
+            )
+            deleted = await humanMutation(
+              'mutation DeleteJourneys { userDeleteJourneysConfirm(userId: "alice") { success deletedJourneyIds deletedTeamIds deletedUserJourneyIds deletedUserTeamIds } }',
+              {},
+              'alice'
+            )
+          }
+          expect(deleted.errors).toBeUndefined()
+          const outcomes = deleted.data?.userDeleteJourneysConfirm as {
+            success: boolean
+            deletedJourneyIds: string[]
+            deletedTeamIds: string[]
+            deletedUserJourneyIds: string[]
+            deletedUserTeamIds: string[]
+          }
+          expect(outcomes.success).toBe(true)
+          expect(outcomes.deletedJourneyIds).toContain('read-delete-exclusive')
+          expect(outcomes.deletedTeamIds).toContain(
+            'read-delete-exclusive-team'
+          )
+          expect(
+            await journeys.journey.findUnique({ where: { id: 'read-a' } })
+          ).not.toBeNull()
+          expect(
+            await journeys.userJourney.findUnique({
+              where: {
+                journeyId_userId: { journeyId: 'read-a', userId: 'bob' }
+              }
+            })
+          ).toMatchObject({ role: 'owner' })
+          expect((await readA()).body).not.toContain('read-a-text-sentinel')
+          const uidRecord = await users!.user.findUniqueOrThrow({
+            where: { userId: 'alice' }
+          })
+          vi.stubEnv('MCP_READS_ENABLED', 'true')
+          vi.stubEnv('MCP_ACCOUNT_AUTHORITY_URL', config.AUTH_ISSUER)
+          vi.stubEnv(
+            'MCP_ACCOUNT_AUTHORITY_SECRET',
+            config.AUTH_PERMISSION_USERS_SECRET
+          )
+          const getUser = vi
+            .spyOn(firebaseAuth, 'getUser')
+            .mockImplementation(async (uid) => ({
+              uid,
+              email: uid + '@synthetic.example',
+              emailVerified: true,
+              disabled: false,
+              providerData: [],
+              metadata: {
+                creationTime: '2026-01-01T00:00:00.000Z',
+                lastSignInTime: '2026-01-01T00:00:00.000Z',
+                toJSON: () => ({})
+              },
+              toJSON: () => ({})
+            }))
+          const deleteUser = vi
+            .spyOn(firebaseAuth, 'deleteUser')
+            .mockResolvedValue(undefined)
+          const originalFetch = globalThis.fetch
+          let interruptRetirement = ['lost', 'pending'].includes(
+            retirementResponse
+          )
+          const retirementFetch = vi
+            .spyOn(globalThis, 'fetch')
+            .mockImplementation(async (input, init) => {
+              const requestUrl =
+                input instanceof Request
+                  ? input.url
+                  : input instanceof URL
+                    ? input.href
+                    : input
+              if (
+                requestUrl.endsWith('/internal/permissions/retire-account') &&
+                ['auth-after-sql', 'firebase-retry'].includes(
+                  retirementResponse
+                ) &&
+                !(await users!.user.findUnique({ where: { userId: 'alice' } }))
+              )
+                throw new Error('Controlled Auth outage after SQL deletion')
+              const response = await originalFetch(input, init)
+              if (
+                requestUrl.endsWith('/internal/permissions/retire-account') &&
+                interruptRetirement
+              ) {
+                interruptRetirement = false
+                expect(response.ok).toBe(true)
+                if (retirementResponse === 'lost')
+                  throw new Error('Controlled lost retirement response')
+                return Response.json({ status: 'pending' })
+              }
+              return response
+            })
+          try {
+            const usersSchemaModule = new URL(
+              '../../api-users/src/schema/schema.ts',
+              import.meta.url
+            ).href
+            const { schema: usersSchema } = (await import(
+              /* webpackChunkName: "users-deletion-participant" */ usersSchemaModule
+            )) as { schema: GraphQLSchema }
+            const deleteAccount = async () => {
+              const progress = await subscribe({
+                schema: usersSchema,
+                document: parse(
+                  'subscription DeleteAccount($id: String!, $journeys: [String!]!, $teams: [String!]!, $collaborations: [String!]!, $memberships: [String!]!) { userDeleteConfirm(idType: databaseId, id: $id, deletedJourneyIds: $journeys, deletedTeamIds: $teams, deletedUserJourneyIds: $collaborations, deletedUserTeamIds: $memberships) { done success } }'
+                ),
+                variableValues: {
+                  id: uidRecord.id,
+                  journeys: outcomes.deletedJourneyIds,
+                  teams: outcomes.deletedTeamIds,
+                  collaborations: outcomes.deletedUserJourneyIds,
+                  memberships: outcomes.deletedUserTeamIds
+                },
+                contextValue: {
+                  ...initContextCache(),
+                  type: 'authenticated',
+                  currentUser: { id: 'alice', email: 'alice@synthetic.example' }
+                }
+              })
+              if (!(Symbol.asyncIterator in progress))
+                throw new Error(JSON.stringify(progress))
+              const results = []
+              for await (const result of progress) results.push(result)
+              return results
+            }
+            if (['lost', 'pending'].includes(retirementResponse)) {
+              const interrupted = await deleteAccount()
+              expect(interrupted.at(-1)).toMatchObject({
+                data: { userDeleteConfirm: { done: true, success: false } }
+              })
+              expect(deleteUser).not.toHaveBeenCalled()
+              expect(
+                await users!.user.findUnique({ where: { userId: 'alice' } })
+              ).not.toBeNull()
+              expect(
+                await auth.retiredAccount.findUnique({
+                  where: { userId: 'alice' }
+                })
+              ).not.toBeNull()
+              const closedGate = await auth.authorizationGate.findUniqueOrThrow(
+                { where: { id: 'account:alice' } }
+              )
+              expect(closedGate.open).toBe(false)
+              expect(await permissionCoordinator.reconcile()).toBe(0)
+              const resumed = await humanMutation(
+                'mutation DeleteJourneys { userDeleteJourneysConfirm(userId: "alice") { success deletedJourneyIds deletedTeamIds deletedUserJourneyIds deletedUserTeamIds } }',
+                {},
+                'alice'
+              )
+              expect(resumed.errors).toBeUndefined()
+              expect(resumed.data?.userDeleteJourneysConfirm).toEqual(outcomes)
+              expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+              expect(await auth.permissionChange.count()).toBe(1)
+              expect(
+                await auth.authorizationGate.findUniqueOrThrow({
+                  where: { id: 'account:alice' }
+                })
+              ).toEqual(closedGate)
+            }
+            if (retirementResponse === 'firebase-retry') {
+              deleteUser.mockRejectedValueOnce(
+                new Error('Controlled Firebase outage')
+              )
+              expect((await deleteAccount()).at(-1)).toMatchObject({
+                data: { userDeleteConfirm: { done: true, success: false } }
+              })
+              expect(
+                await users!.user.findUnique({ where: { userId: 'alice' } })
+              ).toBeNull()
+            }
+            const results = await deleteAccount()
+            expect(results.at(-1)).toMatchObject({
+              data: { userDeleteConfirm: { done: true, success: true } }
+            })
+            expect(deleteUser).toHaveBeenCalledWith('alice')
+            expect(
+              await users!.user.findUnique({ where: { userId: 'alice' } })
+            ).toBeNull()
+            expect(
+              await users!.user.findUnique({ where: { userId: 'bob' } })
+            ).not.toBeNull()
+            expect(
+              await auth.retiredAccount.findUnique({
+                where: { userId: 'alice' }
+              })
+            ).not.toBeNull()
+            expect(
+              (
+                await call(
+                  'journey_read',
+                  { journeyId: 'read-foreign', view: 'steps' },
+                  bobToken
+                )
+              ).body
+            ).toContain('read-foreign-text-sentinel')
+            // Account retirement never calls a media deletion participant.
+            expect(
+              await journeys.journey.findUnique({
+                where: { id: 'read-foreign' }
+              })
+            ).not.toBeNull()
+          } finally {
+            retirementFetch.mockRestore()
+            getUser.mockRestore()
+            deleteUser.mockRestore()
+            vi.unstubAllEnvs()
+          }
+        }
+      )
     }
   )
 })

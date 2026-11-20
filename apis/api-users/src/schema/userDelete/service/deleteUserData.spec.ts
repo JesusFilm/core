@@ -30,6 +30,9 @@ const baseInput = {
 describe('deleteFirebaseUser', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    prismaMock.$transaction.mockImplementation(async (operation) =>
+      operation(prismaMock)
+    )
   })
 
   it('should delete firebase user by UID', async () => {
@@ -41,14 +44,15 @@ describe('deleteFirebaseUser', () => {
     expect(logs.some((l) => l.message.includes('deleted'))).toBe(true)
   })
 
-  it('should try override UID as well', async () => {
+  it('allows a superAdmin to try a reconciled UID as well', async () => {
     mockDeleteUser.mockResolvedValueOnce(undefined)
     mockDeleteUser.mockResolvedValueOnce(undefined)
 
     const logs = await deleteFirebaseUser(
       'fb-uid-1',
       'override-uid',
-      'test@example.com'
+      'test@example.com',
+      true
     )
 
     expect(mockDeleteUser).toHaveBeenCalledWith('fb-uid-1')
@@ -56,16 +60,22 @@ describe('deleteFirebaseUser', () => {
     expect(logs.filter((l) => l.message.includes('deleted')).length).toBe(2)
   })
 
-  it('should fall back to email when UID not found', async () => {
+  it('allows an explicit superAdmin email fallback when the UID is not found', async () => {
     mockDeleteUser
       .mockRejectedValueOnce({ code: 'auth/user-not-found' })
       .mockResolvedValueOnce(undefined)
     mockGetUserByEmail.mockResolvedValueOnce({ uid: 'email-uid' })
 
-    const logs = await deleteFirebaseUser('fb-uid-1', null, 'test@example.com')
+    const logs = await deleteFirebaseUser(
+      'fb-uid-1',
+      null,
+      'test@example.com',
+      true
+    )
 
     expect(mockGetUserByEmail).toHaveBeenCalledWith('test@example.com')
     expect(mockDeleteUser).toHaveBeenCalledWith('email-uid')
+    expect(logs.some((log) => log.level === 'error')).toBe(false)
   })
 
   it('should return error log on hard firebase failure', async () => {
@@ -75,11 +85,33 @@ describe('deleteFirebaseUser', () => {
 
     expect(logs.some((l) => l.level === 'error')).toBe(true)
   })
+
+  it('rejects an unapproved reconciled UID before touching either account', async () => {
+    const logs = await deleteFirebaseUser('self-uid', 'foreign-uid', null)
+    expect(logs.some((log) => log.level === 'error')).toBe(true)
+    expect(mockDeleteUser).not.toHaveBeenCalled()
+    expect(mockGetUserByEmail).not.toHaveBeenCalled()
+  })
+
+  it('does not treat an email-reassigned UID as the authorized self-deletion target', async () => {
+    mockDeleteUser.mockRejectedValueOnce({ code: 'auth/user-not-found' })
+    mockGetUserByEmail.mockResolvedValueOnce({ uid: 'foreign-email-owner' })
+    const logs = await deleteFirebaseUser(
+      'self-uid',
+      null,
+      'reassigned@example.com'
+    )
+    expect(logs.some((log) => log.level === 'error')).toBe(true)
+    expect(mockDeleteUser).toHaveBeenCalledExactlyOnceWith('self-uid')
+  })
 })
 
 describe('deleteUserData', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    prismaMock.$transaction.mockImplementation(async (operation) =>
+      operation(prismaMock)
+    )
   })
 
   it('should successfully delete user data', async () => {
@@ -230,5 +262,174 @@ describe('deleteUserData', () => {
       where: { id: 'audit-self' },
       data: { success: true, completedAt: expect.any(Date) }
     })
+  })
+})
+
+describe('MCP retirement through existing account deletion', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    prismaMock.$transaction.mockImplementation(async (operation) =>
+      operation(prismaMock)
+    )
+    vi.stubEnv('MCP_READS_ENABLED', 'true')
+    vi.stubEnv('MCP_ACCOUNT_AUTHORITY_URL', 'http://127.0.0.1:4011')
+    vi.stubEnv(
+      'MCP_ACCOUNT_AUTHORITY_SECRET',
+      'users-permission-secret-at-least-32-characters'
+    )
+    prismaMock.userDeleteAuditLog.create.mockResolvedValue({
+      id: 'audit-mcp'
+    } as Awaited<ReturnType<typeof prismaMock.userDeleteAuditLog.create>>)
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    vi.unstubAllGlobals()
+  })
+
+  it('keeps the DB and Firebase identity while accepted MCP work is unresolved', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockImplementation(async () => Response.json({ status: 'pending' }))
+    )
+    const result = await deleteUserData(baseInput)
+    expect(result.success).toBe(false)
+    expect(
+      result.logs.some((log) =>
+        log.message.includes('MCP withdrawal is Pending')
+      )
+    ).toBe(true)
+    expect(prismaMock.user.delete).not.toHaveBeenCalled()
+    expect(mockDeleteUser).not.toHaveBeenCalled()
+  })
+
+  it('fails closed when the authority cannot confirm retirement', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockRejectedValue(new Error('controlled authority unavailable'))
+    )
+    expect((await deleteUserData(baseInput)).success).toBe(false)
+    expect(prismaMock.user.delete).not.toHaveBeenCalled()
+    expect(mockDeleteUser).not.toHaveBeenCalled()
+  })
+
+  it('rejects a foreign UID override before retiring authority or deleting the database user', async () => {
+    const retire = vi.fn()
+    vi.stubGlobal('fetch', retire)
+    const result = await deleteUserData({
+      ...baseInput,
+      firebaseUidOverride: 'foreign-uid'
+    })
+    expect(result.success).toBe(false)
+    expect(retire).not.toHaveBeenCalled()
+    expect(prismaMock.user.delete).not.toHaveBeenCalled()
+    expect(mockDeleteUser).not.toHaveBeenCalled()
+  })
+
+  it('retires both reconciled UIDs before removing the DB user and preserves shared outcomes', async () => {
+    const retire = vi
+      .fn()
+      .mockImplementation(async () => Response.json({ status: 'complete' }))
+    vi.stubGlobal('fetch', retire)
+    mockDeleteUser.mockResolvedValue(undefined)
+    const result = await deleteUserData({
+      ...baseInput,
+      firebaseUidOverride: 'reconciled-uid',
+      allowReconciledUid: true
+    })
+    expect(result.success).toBe(true)
+    expect(
+      retire.mock.calls
+        .slice(0, 2)
+        .map((call) => JSON.parse(String(call[1].body)))
+    ).toEqual([{ userId: 'fb-uid-1' }, { userId: 'reconciled-uid' }])
+    expect(retire.mock.invocationCallOrder[1]).toBeLessThan(
+      prismaMock.user.delete.mock.invocationCallOrder[0]
+    )
+    expect(prismaMock.userDeleteAuditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          deletedJourneyIds: ['j1'],
+          deletedTeamIds: ['t1'],
+          deletedUserJourneyIds: ['uj1'],
+          deletedUserTeamIds: ['ut1']
+        })
+      })
+    )
+  })
+
+  it('continues Firebase deletion using confirmed retirement when Auth fails after SQL deletion', async () => {
+    const retire = vi
+      .fn()
+      .mockResolvedValueOnce(Response.json({ status: 'complete' }))
+      .mockRejectedValue(new Error('Auth unavailable after SQL deletion'))
+    vi.stubGlobal('fetch', retire)
+    mockDeleteUser.mockResolvedValue(undefined)
+    const result = await deleteUserData(baseInput)
+    expect(result.success).toBe(true)
+    expect(retire).toHaveBeenCalledTimes(1)
+    expect(mockDeleteUser).toHaveBeenCalledWith('fb-uid-1')
+  })
+
+  it('requires fresh retirement for a newly discovered fallback UID after SQL deletion', async () => {
+    const retire = vi
+      .fn()
+      .mockResolvedValueOnce(Response.json({ status: 'complete' }))
+      .mockRejectedValue(new Error('Auth unavailable for fallback'))
+    vi.stubGlobal('fetch', retire)
+    mockDeleteUser.mockRejectedValueOnce({ code: 'auth/user-not-found' })
+    mockGetUserByEmail.mockResolvedValueOnce({ uid: 'new-fallback' })
+    const result = await deleteUserData({
+      ...baseInput,
+      allowReconciledUid: true
+    })
+    expect(result.success).toBe(false)
+    expect(prismaMock.userDeleteAuditLog.update).toHaveBeenCalledWith({
+      where: { id: 'audit-mcp' },
+      data: {
+        firebaseEmailLookupPending: false,
+        firebaseCleanupUids: { push: 'new-fallback' }
+      }
+    })
+    const recorded = prismaMock.userDeleteAuditLog.update.mock.calls.findIndex(
+      ([args]) => JSON.stringify(args.data).includes('new-fallback')
+    )
+    expect(
+      prismaMock.userDeleteAuditLog.update.mock.invocationCallOrder[recorded]
+    ).toBeLessThan(retire.mock.invocationCallOrder[1])
+    expect(prismaMock.userDeleteAuditLog.update).not.toHaveBeenCalledWith({
+      where: { id: 'audit-mcp' },
+      data: { retiredFirebaseUids: { push: 'new-fallback' } }
+    })
+    expect(mockDeleteUser).toHaveBeenCalledExactlyOnceWith('fb-uid-1')
+    expect(
+      retire.mock.calls.map((call) => JSON.parse(String(call[1].body)))
+    ).toEqual([{ userId: 'fb-uid-1' }, { userId: 'new-fallback' }])
+  })
+
+  it('retires an email-reconciled Firebase identity before the fallback delete', async () => {
+    const retire = vi
+      .fn()
+      .mockImplementation(async () => Response.json({ status: 'complete' }))
+    vi.stubGlobal('fetch', retire)
+    mockDeleteUser
+      .mockRejectedValueOnce({ code: 'auth/user-not-found' })
+      .mockResolvedValueOnce(undefined)
+    mockGetUserByEmail.mockResolvedValueOnce({ uid: 'email-reconciled-uid' })
+    const logs = await deleteFirebaseUser(
+      'unknown-uid',
+      null,
+      'synthetic@example.com',
+      true
+    )
+    expect(logs.some((log) => log.level === 'error')).toBe(false)
+    expect(
+      retire.mock.calls.map((call) => JSON.parse(String(call[1].body)))
+    ).toEqual([{ userId: 'unknown-uid' }, { userId: 'email-reconciled-uid' }])
+    expect(retire.mock.invocationCallOrder[1]).toBeLessThan(
+      mockDeleteUser.mock.invocationCallOrder[1]
+    )
   })
 })
