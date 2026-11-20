@@ -27,15 +27,18 @@ test.use({ trace: 'off', video: 'off', screenshot: 'off' })
 
 test.describe('private playback and human publication @manual', () => {
   test('plays saved branches without effects and keeps warmed page data private', async ({
-    page,
+    page: signInPage,
     browser,
     baseURL
   }) => {
     const id = setting('PRIVATE_PREVIEW_JOURNEY_ID')
-    await signIn(page, 'admin2')
+    await signIn(signInPage, 'admin2')
+    const page = await signInPage.context().newPage()
     const effects: string[] = []
     page.on('request', (request) => {
-      if (/plausible|google-analytics|growthspaces/i.test(request.url()))
+      if (
+        /plausible|google-analytics|growthspaces|litix\.io/i.test(request.url())
+      )
         effects.push('analytics or integration request')
       const body = request.postData()
       if (body && /mutation\s+\w*(Event|Visitor|Submission)/.test(body))
