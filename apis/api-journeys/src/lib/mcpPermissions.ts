@@ -29,12 +29,21 @@ import {
   Action as UserTeamAction,
   userTeamAcl
 } from '../schema/userTeam/userTeam.acl'
+import { enqueueJourneyApprovedEmail } from '../workers/email/journeyApproved'
+import { enqueueTeamInviteAcceptedEmail } from '../workers/email/teamInviteAccepted'
+import { enqueueTeamRemovedEmail } from '../workers/email/teamRemoved'
+import { enqueueTemplateSite } from '../workers/plausible/templateSite'
 import { enqueueShortLinkDeletes } from '../workers/shortlinkDelete/queue'
 
+import {
+  permissionEffectSchema,
+  permissionEffectsScope
+} from './mcpPermissionEffects'
 import {
   deleteUnusedMedia,
   extractCloudflareImageId
 } from './mediaCleanup/mediaCleanup'
+import { syncMailChimp } from './syncMailChimp'
 
 export interface JourneyPermissionsConfig {
   authorityUrl: string
@@ -213,8 +222,7 @@ async function affectedResources(
   ) {
     accountIds.add(user.id)
   } else if (field.startsWith('journeys')) {
-    z.array(z.string().min(1).max(200))
-      .max(5000)
+    z.array(z.string())
       .parse(args.ids)
       .forEach((id) => journeyIds.add(id))
   } else {
@@ -288,11 +296,35 @@ const cleanupEffectsSchema = z.object({
   muxVideoIds: z.array(z.string()),
   cloudflareImageIds: z.array(z.string())
 })
+const accountCleanupResultSchema = z.object({
+  success: z.literal(true),
+  deletedJourneyIds: z.array(z.string()),
+  deletedTeamIds: z.array(z.string()),
+  deletedUserJourneyIds: z.array(z.string()),
+  deletedUserTeamIds: z.array(z.string()),
+  logs: z.array(
+    z.object({
+      message: z.string(),
+      level: z.preprocess(
+        (value) => (typeof value === 'string' ? value.toLowerCase() : value),
+        z.enum(['info', 'warn', 'error'])
+      ),
+      timestamp: z.string()
+    })
+  )
+})
 const intentSchema = z.object({
   field: z.enum([...coordinatedPermissionMutations, 'anonymousJourneyCleanup']),
   args: z.record(z.string(), z.unknown()),
   revocationTime: z.string().optional(),
-  cleanupEffects: cleanupEffectsSchema.optional()
+  cleanupEffects: cleanupEffectsSchema.optional(),
+  effects: z.array(permissionEffectSchema).optional(),
+  accountDeletion: z
+    .object({
+      userRecordId: z.string().nullable(),
+      result: accountCleanupResultSchema.optional()
+    })
+    .optional()
 })
 type Intent = z.infer<typeof intentSchema>
 type Execution = Prisma.McpPermissionExecutionGetPayload<Record<string, never>>
@@ -429,7 +461,7 @@ export function createJourneyPermissionCoordinator(
       const intent = intentSchema.parse(execution.intent)
       if (intent.field === 'anonymousJourneyCleanup' && intent.cleanupEffects) {
         const args = cleanupIntentSchema.parse(intent.args)
-        await enqueueShortLinkDeletes(intent.cleanupEffects.shortLinkIds)
+        await enqueueShortLinkDeletes(intent.cleanupEffects.shortLinkIds, true)
         await deleteUnusedMedia(
           {
             muxVideoIds: new Set(intent.cleanupEffects.muxVideoIds),
@@ -440,6 +472,23 @@ export function createJourneyPermissionCoordinator(
           [args.id],
           args.userId
         )
+      }
+      for (const [index, effect] of (intent.effects ?? []).entries()) {
+        const deliveryId = `permission-${execution.id}-${index}`
+        if (effect.type === 'shortLinkDelete')
+          await enqueueShortLinkDeletes(effect.shortLinkIds, true)
+        else if (effect.type === 'teamRemoved')
+          await enqueueTeamRemovedEmail(
+            { teamName: effect.teamName, userId: effect.userId },
+            deliveryId
+          )
+        else if (effect.type === 'journeyApproved')
+          await enqueueJourneyApprovedEmail(effect.notification, deliveryId)
+        else if (effect.type === 'teamInviteAccepted')
+          await enqueueTeamInviteAcceptedEmail(effect.notification, deliveryId)
+        else if (effect.type === 'mailchimpSubscription')
+          await syncMailChimp(effect.user)
+        else await enqueueTemplateSite(effect.templateId, deliveryId)
       }
       await db.mcpPermissionExecution.update({
         where: { id: execution.id },
@@ -469,9 +518,13 @@ export function createJourneyPermissionCoordinator(
     const argumentsList = variables
       .map(({ name }) => `${name}: $${name}`)
       .join(', ')
+    const selection =
+      intent.field === 'userDeleteJourneysConfirm'
+        ? 'success deletedJourneyIds deletedTeamIds deletedUserJourneyIds deletedUserTeamIds logs { message level timestamp }'
+        : '__typename'
     const document =
       parse(`mutation PermissionRecovery${definitions ? `(${definitions})` : ''} {
-      ${intent.field}${argumentsList ? `(${argumentsList})` : ''} { __typename }
+      ${intent.field}${argumentsList ? `(${argumentsList})` : ''} { ${selection} }
     }`)
     const result = await execute({
       schema,
@@ -480,7 +533,9 @@ export function createJourneyPermissionCoordinator(
       contextValue: context
     })
     if (result.errors?.length) throw result.errors[0]
-    return result.data
+    return intent.field === 'userDeleteJourneysConfirm'
+      ? result.data?.[intent.field]
+      : result.data
   }
 
   async function perform<T>(
@@ -490,6 +545,18 @@ export function createJourneyPermissionCoordinator(
     const execution = await db.mcpPermissionExecution.findUniqueOrThrow({
       where: { id }
     })
+    const storedIntent = intentSchema.parse(execution.intent)
+    if (
+      execution.status === 'committed' &&
+      storedIntent.field === 'userDeleteJourneysConfirm'
+    ) {
+      if (operation)
+        await authorizeAccountDeletionResume(execution, storedIntent)
+      await report(execution)
+      return accountCleanupResultSchema.parse(
+        storedIntent.accountDeletion?.result
+      ) as T
+    }
     const input = {
       changeId: id,
       gateIds: execution.gateIds,
@@ -559,19 +626,35 @@ export function createJourneyPermissionCoordinator(
               tx,
               cleanupIntentSchema.parse(intent.args).id
             )
-          const value = await journeyAfterCommitScope.run(afterCommit, () =>
-            journeyTransactionScope.run(tx, () =>
-              replayScope.run(id, () =>
-                intent.field === 'anonymousJourneyCleanup'
-                  ? executeAnonymousCleanup(tx, intent.args)
-                  : operation
-                    ? operation(context)
-                    : replay(intent, context, tx)
+          if (
+            intent.field === 'userDeleteJourneysConfirm' &&
+            !intent.accountDeletion
+          ) {
+            const target = await usersDb.user.findUnique({
+              where: { userId: stringId(intent.args.userId) },
+              select: { id: true }
+            })
+            intent.accountDeletion = { userRecordId: target?.id ?? null }
+          }
+          intent.effects = []
+          const value = await permissionEffectsScope.run(intent.effects, () =>
+            journeyAfterCommitScope.run(afterCommit, () =>
+              journeyTransactionScope.run(tx, () =>
+                replayScope.run(id, () =>
+                  intent.field === 'anonymousJourneyCleanup'
+                    ? executeAnonymousCleanup(tx, intent.args)
+                    : operation
+                      ? operation(context)
+                      : replay(intent, context, tx)
+                )
               )
             )
           )
-          if (intent.field === 'userDeleteJourneysConfirm' && operation)
+          if (intent.field === 'userDeleteJourneysConfirm') {
             assertAccountCleanupResult(value)
+            intent.accountDeletion!.result =
+              accountCleanupResultSchema.parse(value)
+          }
           await tx.mcpPermissionExecution.update({
             where: { id },
             data: {
@@ -587,9 +670,16 @@ export function createJourneyPermissionCoordinator(
         { isolationLevel: 'Serializable', maxWait: 10000, timeout: 120000 }
       )
       for (const effect of afterCommit) await effect()
-      await report(
-        await db.mcpPermissionExecution.findUniqueOrThrow({ where: { id } })
-      )
+      const committed = await db.mcpPermissionExecution.findUniqueOrThrow({
+        where: { id }
+      })
+      await report(committed)
+      if (intent.field === 'userDeleteJourneysConfirm') {
+        const receipt = intentSchema.parse(committed.intent)
+        return accountCleanupResultSchema.parse(
+          receipt.accountDeletion?.result
+        ) as T
+      }
       return output as T | undefined
     } catch (error) {
       // Acquiring the same row lock supplies positive stop evidence. A timeout
@@ -606,6 +696,35 @@ export function createJourneyPermissionCoordinator(
       ).catch(() => undefined)
       throw error
     }
+  }
+
+  async function authorizeAccountDeletionResume(
+    execution: Execution,
+    intent: Intent
+  ): Promise<void> {
+    const context = await currentContext(execution)
+    const userId = stringId(intent.args.userId)
+    if (!context.user.email) deny()
+    const caller = await usersDb.user.findUnique({
+      where: { userId: context.user.id },
+      select: { superAdmin: true }
+    })
+    if (userId !== context.user.id && !caller?.superAdmin) deny()
+    const target = await usersDb.user.findUnique({
+      where: { userId },
+      select: { id: true }
+    })
+    const [collaborations, memberships] = await Promise.all([
+      db.userJourney.count({ where: { userId } }),
+      db.userTeam.count({ where: { userId } })
+    ])
+    if (collaborations || memberships)
+      throw new Error('Account deletion resources changed')
+    if (
+      !intent.accountDeletion ||
+      (target && target.id !== intent.accountDeletion.userRecordId)
+    )
+      throw new Error('Account deletion target changed')
   }
 
   async function submit<T>(
@@ -653,7 +772,15 @@ export function createJourneyPermissionCoordinator(
             }
           ]
         }
-      : { intentHash, status: { in: ['prepared', 'failed'] } }
+      : {
+          intentHash,
+          status: {
+            in:
+              intent.field === 'userDeleteJourneysConfirm'
+                ? ['prepared', 'failed', 'committed']
+                : ['prepared', 'failed']
+          }
+        }
     const dedupeKey = cleanup
       ? fingerprint({
           actorId: actor.user.id,

@@ -1,9 +1,16 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { type MockedFunction } from 'vitest'
 
-import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import {
+  TreeBlock,
+  blockHistoryVar,
+  treeBlocksVar
+} from '@core/journeys/ui/block'
+import {
+  showHeaderFooterVar,
+  showNavigationVar
+} from '@core/journeys/ui/block/block'
 import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
@@ -11,20 +18,10 @@ import { StepViewEventCreate } from '../../../../__generated__/StepViewEventCrea
 
 import { DynamicCardList } from './DynamicCardList'
 
-vi.mock('@core/journeys/ui/block', async () => ({
-  __esModule: true,
-  ...(await vi.importActual<typeof import('@core/journeys/ui/block')>(
-    '@core/journeys/ui/block'
-  )),
-  useBlocks: vi.fn()
-}))
-
 vi.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'
 }))
-
-const mockUseBlocks = useBlocks as unknown as MockedFunction<typeof useBlocks>
 
 describe('DynamicCardList', () => {
   const step1: TreeBlock<StepBlock> = {
@@ -43,7 +40,7 @@ describe('DynamicCardList', () => {
     parentBlockId: null,
     parentOrder: 1,
     locked: false,
-    nextBlockId: null,
+    nextBlockId: 'step3.id',
     slug: null,
     children: []
   }
@@ -89,29 +86,25 @@ describe('DynamicCardList', () => {
         }
       }
     }
-  const defaultUseBlockMocks = {
-    blockHistory: [step1, step2],
-    treeBlocks: [step1, step2, step3, step4],
-    getNextBlock: () => step3,
-    setShowNavigation: vi.fn(),
-    setShowHeaderFooter: vi.fn(),
-    previousActiveBlock: vi.fn(),
-    nextActiveBlock: vi.fn(),
-    setTreeBlocks: vi.fn(),
-    showHeaderFooter: true,
-    showNavigation: true
-  }
+  const blocks = [step1, step2, step3, step4]
+
+  beforeEach(() => {
+    treeBlocksVar(blocks)
+    blockHistoryVar([step1, step2])
+    showNavigationVar(false)
+    showHeaderFooterVar(false)
+  })
 
   afterEach(() => {
+    blockHistoryVar([])
+    treeBlocksVar([])
     vi.clearAllMocks()
   })
 
   it('should prerender cards', () => {
-    mockUseBlocks.mockReturnValue({ ...defaultUseBlockMocks })
-
     const { getByTestId, queryByTestId } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <DynamicCardList blocks={defaultUseBlockMocks.treeBlocks} />
+        <DynamicCardList blocks={blocks} />
       </MockedProvider>
     )
 
@@ -122,50 +115,33 @@ describe('DynamicCardList', () => {
   })
 
   it('should show navigation arrows on click', () => {
-    const mockSetShowNavigation = vi.fn()
-    mockUseBlocks.mockReturnValue({
-      ...defaultUseBlockMocks,
-      setShowNavigation: mockSetShowNavigation
-    })
-
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <DynamicCardList blocks={defaultUseBlockMocks.treeBlocks} />
+        <DynamicCardList blocks={blocks} />
       </MockedProvider>
     )
 
     fireEvent.click(getByTestId('journey-card-step2.id'))
-    expect(mockSetShowNavigation).toHaveBeenCalledWith(true)
+    expect(showNavigationVar()).toBe(true)
   })
 
   it('should set showHeaderAndFooter to true', async () => {
-    const mockSetShowHeaderFooter = vi.fn()
-    mockUseBlocks.mockReturnValue({
-      ...defaultUseBlockMocks,
-      setShowHeaderFooter: mockSetShowHeaderFooter
-    })
-
     render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <DynamicCardList blocks={defaultUseBlockMocks.treeBlocks} />
+        <DynamicCardList blocks={blocks} />
       </MockedProvider>
     )
 
-    await waitFor(() =>
-      expect(mockSetShowHeaderFooter).toHaveBeenCalledWith(true)
-    )
+    await waitFor(() => expect(showHeaderFooterVar()).toBe(true))
   })
 
   it('should show first block if useBlocks has not finished running', () => {
-    mockUseBlocks.mockReturnValue({
-      ...defaultUseBlockMocks,
-      treeBlocks: [],
-      blockHistory: []
-    })
+    treeBlocksVar([])
+    blockHistoryVar([])
 
     const { getByTestId } = render(
       <MockedProvider mocks={[]}>
-        <DynamicCardList blocks={defaultUseBlockMocks.treeBlocks} />
+        <DynamicCardList blocks={blocks} />
       </MockedProvider>
     )
 

@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
 
 import { env } from '../../env'
-import { queue as emailQueue } from '../../workers/email/queue'
+import { enqueueJourneyApprovedEmail } from '../../workers/email/journeyApproved'
 import { builder } from '../builder'
 import { logger } from '../logger'
 
@@ -57,26 +57,14 @@ builder.mutationField('userJourneyApprove', (t) =>
 
         const { id: _id, emailVerified: _ev, ...sender } = context.user
         const url = `${env.JOURNEYS_ADMIN_URL}/journeys/${userJourney.journey.id}`
-        void emailQueue
-          .add(
-            'journey-request-approved',
-            {
-              userId: userJourney.userId,
-              url,
-              journey: userJourney.journey,
-              sender
-            },
-            {
-              removeOnComplete: true,
-              removeOnFail: { age: 24 * 3600 }
-            }
-          )
-          .catch((err) =>
-            logger.error(
-              err,
-              'failed to enqueue journey-request-approved email'
-            )
-          )
+        void enqueueJourneyApprovedEmail({
+          userId: userJourney.userId,
+          url,
+          journey: userJourney.journey,
+          sender
+        }).catch((err) =>
+          logger.error(err, 'failed to enqueue journey-request-approved email')
+        )
 
         return updated
       }

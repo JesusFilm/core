@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { UserTeamRole, prisma } from '@core/prisma/journeys/client'
 
-import { queue as emailQueue } from '../../workers/email/queue'
+import { enqueueTeamInviteAcceptedEmail } from '../../workers/email/teamInviteAccepted'
 import { builder } from '../builder'
 import { logger } from '../logger'
 
@@ -60,27 +60,17 @@ builder.mutationField('userTeamInviteAcceptAll', (t) =>
               })
             ])
 
-            void prisma.team
-              .findUnique({
-                where: { id: invite.teamId },
-                include: { userTeams: true }
-              })
-              .then((team) => {
-                if (team == null) return
-                return emailQueue.add(
-                  'team-invite-accepted',
-                  { team, sender },
-                  {
-                    removeOnComplete: true,
-                    removeOnFail: { age: 24 * 3600 }
-                  }
-                )
-              })
-              .catch((err) =>
-                logger.error(
-                  err,
-                  'failed to enqueue team-invite-accepted email'
-                )
+            const team = await prisma.team.findUnique({
+              where: { id: invite.teamId },
+              include: { userTeams: true }
+            })
+            if (team != null)
+              await enqueueTeamInviteAcceptedEmail({ team, sender }).catch(
+                (err) =>
+                  logger.error(
+                    err,
+                    'failed to enqueue team-invite-accepted email'
+                  )
               )
 
             return redeemedInvite

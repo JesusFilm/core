@@ -1739,6 +1739,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   first.
   """
   journeysByVideo(videoId: ID!, languageId: ID) : [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyPreview(id: ID!, expectedRevision: String) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyPublishPermission(id: ID!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyTemplateLanguageIds: [String!]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS_MODERN) 

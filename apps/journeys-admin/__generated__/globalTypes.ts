@@ -1408,6 +1408,13 @@ export interface JourneyUpdateInput {
   socialNodeY?: number | null;
 }
 
+export interface JourneyViewEventCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label?: string | null;
+  value?: string | null;
+}
+
 export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;

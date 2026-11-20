@@ -29,6 +29,10 @@ import {
   journeyReadsEnvironment,
   useJourneyMcpReads
 } from './lib/mcpReads'
+import {
+  privatePreviewCachePolicy,
+  usePrivatePreview
+} from './lib/privatePreview'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/authScopes'
@@ -92,6 +96,7 @@ export const yoga = createYoga<
         : undefined
     ),
     tracingPlugin,
+    usePrivatePreview(prisma),
     {
       onResponse: ({ response }) => {
         response.headers.set('Cache-Control', 'private, no-store')
@@ -119,6 +124,7 @@ export const yoga = createYoga<
             'Query.journeySimpleGet': 0,
             'Journey.blockTypenames': 0,
             'Query.adminJourney': 0,
+            ...privatePreviewCachePolicy,
             'Query.adminJourneys': 0,
             'Query.customDomain': 0,
             'Query.customDomains': 0,

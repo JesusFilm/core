@@ -53,6 +53,8 @@ export async function deleteFirebaseOnlyAccount(
       data: {
         deletedUserId: input.targetFirebaseUid,
         deletedUserFirebaseUid: input.targetFirebaseUid,
+        firebaseCleanupUids: [input.targetFirebaseUid],
+        firebaseCleanupEmail: input.targetEmail,
         callerUserId: input.callerDbId,
         callerEmail: input.callerEmail,
         deletedJourneyIds: [],
@@ -80,7 +82,9 @@ export async function deleteFirebaseOnlyAccount(
     input.targetFirebaseUid,
     null,
     input.targetEmail,
-    input.callerIsSuperAdmin
+    input.callerIsSuperAdmin,
+    new Set(),
+    { auditLogId: auditLog.id, firebaseUids: [input.targetFirebaseUid] }
   )
   logs.push(...fbLogs)
 
