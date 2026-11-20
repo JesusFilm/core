@@ -2635,10 +2635,61 @@ describe('granted journey read authorization', () => {
         30000
       )
 
-      it('recovers a large lifecycle batch after losing a manifest-page response', async () => {
+      it.each([
+        ['journeysArchive', 'archived'],
+        ['journeysRestore', 'draft'],
+        ['journeysTrash', 'trashed'],
+        ['journeysDelete', 'deleted']
+      ])(
+        'coordinates %s with more than 5,000 duplicate IDs',
+        async (field, status) => {
+          await permissionActors()
+          await journeys.journey.update({
+            where: { id: 'read-a' },
+            data: { status: 'archived', archivedAt: new Date() }
+          })
+          try {
+            const result = await humanMutation(
+              `mutation Batch($ids: [ID!]!) { ${field}(ids: $ids) { id } }`,
+              { ids: [...Array<string>(5001).fill('read-a'), 'read-missing'] }
+            )
+            expect(result.errors).toBeUndefined()
+            expect(result.data?.[field]).toEqual([{ id: 'read-a' }])
+            expect(
+              await journeys.journey.findUnique({ where: { id: 'read-a' } })
+            ).toMatchObject({ status })
+            const change = await auth.permissionChange.findFirstOrThrow()
+            expect(change).toMatchObject({
+              status: 'complete',
+              outcome: 'committed',
+              gateIds: ['account:bob', 'journey:read-a', 'team:read-team']
+            })
+            expect(await auth.permissionChange.count()).toBe(1)
+            expect(
+              await journeys.mcpPermissionExecution.findUnique({
+                where: { id: change.id }
+              })
+            ).toMatchObject({ status: 'committed' })
+            expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+            expect(await permissionCoordinator.reconcile()).toBe(0)
+          } finally {
+            await journeys.journey.update({
+              where: { id: 'read-a' },
+              data: {
+                status: 'draft',
+                archivedAt: null,
+                trashedAt: null,
+                deletedAt: null
+              }
+            })
+          }
+        }
+      )
+
+      it('recovers more than 5,000 distinct lifecycle resources after losing a manifest-page response', async () => {
         await permissionActors()
         const ids = Array.from(
-          { length: 5000 },
+          { length: 5001 },
           (_, index) => `read-large-archive-${index}`
         )
         await journeys.journey.createMany({
@@ -2664,33 +2715,33 @@ describe('granted journey read authorization', () => {
           const change = await auth.permissionChange.findFirstOrThrow()
           expect(change).toMatchObject({
             status: 'collecting',
-            gateCount: 5002
+            gateCount: ids.length + 2
           })
           expect(change.gateIds).toHaveLength(500)
           expect(
             await journeys.journey.count({
               where: { id: { in: ids }, status: 'draft' }
             })
-          ).toBe(5000)
+          ).toBe(ids.length)
           afterPermissionBegin = undefined
           expect(await permissionCoordinator.reconcile()).toBe(0)
           expect(
             await journeys.journey.count({
               where: { id: { in: ids }, status: 'archived' }
             })
-          ).toBe(5000)
+          ).toBe(ids.length)
           expect(
             await auth.permissionChange.findUnique({ where: { id: change.id } })
           ).toMatchObject({ status: 'complete', outcome: 'committed' })
           const complete = await auth.permissionChange.findUniqueOrThrow({
             where: { id: change.id }
           })
-          expect(complete.gateIds).toHaveLength(5002)
+          expect(complete.gateIds).toHaveLength(ids.length + 2)
           expect(
             await auth.authorizationGate.count({
               where: { id: { in: complete.gateIds }, open: true }
             })
-          ).toBe(5002)
+          ).toBe(ids.length + 2)
           expect(await permissionCoordinator.reconcile()).toBe(0)
           expect(await journeys.mcpPermissionExecution.count()).toBe(1)
         } finally {

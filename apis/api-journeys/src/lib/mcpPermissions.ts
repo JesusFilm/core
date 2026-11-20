@@ -214,7 +214,6 @@ async function affectedResources(
     accountIds.add(user.id)
   } else if (field.startsWith('journeys')) {
     z.array(z.string().min(1).max(200))
-      .max(5000)
       .parse(args.ids)
       .forEach((id) => journeyIds.add(id))
   } else {
