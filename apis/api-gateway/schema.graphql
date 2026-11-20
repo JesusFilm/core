@@ -1607,6 +1607,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Remove a YoutubeVideo row.
   """
   youtubeVideoDelete(youtubeVideoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  """
+  Store a channel's daily YouTube Analytics figures, replacing any stored figures for the same days and restarting their 28-day clock. Returns how many days were written.
+  """
+  youtubeChannelAnalyticsDaysUpsert(input: YoutubeChannelAnalyticsDaysUpsertInput!) : Int! @join__field(graph: API_MEDIA) 
+  """
+  Delete every stored YouTube Analytics figure for a channel, as when it is disconnected or its grant is revoked. Returns how many days were deleted; zero when none were stored.
+  """
+  youtubeChannelAnalyticsDelete(channelId: ID!) : Int! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
@@ -2031,6 +2039,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   Look up a single row by its youtubeVideoId.
   """
   youtubeVideoByVideoId(youtubeVideoId: ID!) : YoutubeVideo @join__field(graph: API_MEDIA) 
+  """
+  A channel's stored YouTube Analytics figures, one row per day in the range, oldest first. Days Wheat has not sent, or sent more than 28 days ago, are absent.
+  """
+  youtubeChannelAnalyticsDays(channelId: ID!, startDate: Date!, endDate: Date!) : [YoutubeChannelAnalyticsDay!]! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
   arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
@@ -6105,6 +6117,27 @@ type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
 }
 
 """
+One YouTube channel's YouTube Analytics figures for one day, as Wheat fetched them under the operator's grant. A null figure means YouTube withheld it, not zero. Rows fetched more than 28 days ago are never returned and are deleted nightly, two days inside YouTube API Services policy's 30-day limit. Copies kept elsewhere must be refreshed or deleted within 30 days of fetchedAt.
+"""
+type YoutubeChannelAnalyticsDay @join__type(graph: API_MEDIA)  {
+  id: ID!
+  channelId: ID!
+  day: Date!
+  views: Int
+  estimatedMinutesWatched: Int
+  """
+  Seconds.
+  """
+  averageViewDuration: Int
+  subscribersGained: Int
+  subscribersLost: Int
+  """
+  When Wheat fetched the figures from YouTube. The 28-day clock runs from here.
+  """
+  fetchedAt: DateTime!
+}
+
+"""
 A YouTube video an operator has seen, mirrored into Core. Absence of a row means "not yet seen"; a row count is NOT a channel video count.
 """
 type YoutubeVideo @join__type(graph: API_MEDIA)  {
@@ -6989,6 +7022,7 @@ enum MediaRole @join__type(graph: API_MEDIA)  {
   youtubeAdmin @join__enumValue(graph: API_MEDIA) 
   shortLinkEditor @join__enumValue(graph: API_MEDIA) 
   shortLinkAdmin @join__enumValue(graph: API_MEDIA) 
+  youtubeAnalyticsReader @join__enumValue(graph: API_MEDIA) 
 }
 
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {
@@ -10653,6 +10687,30 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
   published: Boolean
   locked: Boolean
   updatedAt: DateTimeFilter
+}
+
+"""
+One day of figures. Omit or null a figure YouTube withheld; never send zero for it.
+"""
+input YoutubeChannelAnalyticsDayInput @join__type(graph: API_MEDIA)  {
+  day: Date!
+  views: Int
+  estimatedMinutesWatched: Int
+  """
+  Seconds.
+  """
+  averageViewDuration: Int
+  subscribersGained: Int
+  subscribersLost: Int
+}
+
+input YoutubeChannelAnalyticsDaysUpsertInput @join__type(graph: API_MEDIA)  {
+  channelId: ID!
+  """
+  When Wheat fetched these figures from YouTube, not when it sends them: figures served from Wheat's read cache keep the time they were first fetched.
+  """
+  fetchedAt: DateTime!
+  days: [YoutubeChannelAnalyticsDayInput!]!
 }
 
 input YoutubeVideoPlaylistInput @join__type(graph: API_MEDIA)  {

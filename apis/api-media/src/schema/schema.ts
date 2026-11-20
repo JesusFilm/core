@@ -24,6 +24,7 @@ import './tag'
 import './taxonomy'
 import './youtube'
 import './youtubeVideo'
+import './youtubeChannelAnalytics'
 import './arclightApiKey'
 
 import { builder } from './builder'

@@ -136,7 +136,7 @@ A user's media-specific preferences — their interest in particular Videos, lan
 _Avoid_: Account, user (the identity lives elsewhere)
 
 **Media Role**:
-A media-scoped permission held by a user — `publisher`, `youtubeAdmin`, `shortLinkEditor` (links, campaigns, QR codes) or `shortLinkAdmin` (protected links, global links, republishing links, and adding, changing and republishing Short Link Domains). `publisher` has the link powers of `shortLinkAdmin` but only reads domains. The rule: `shortLinkAdmin` is the admin for everything short-link, including the KV namespace a domain publishes into; `superAdmin` is the admin for everything in core. `superAdmin` is not a Media Role: it is the flag on the user in the users database, read here (lazily, failing closed, and only when the role scope fails); it can do everything `shortLinkAdmin` can with domains and is alone in removing one (`shortLinkDomainDelete`).
+A media-scoped permission held by a user — `publisher`, `youtubeAdmin`, `youtubeAnalyticsReader` (reads YouTube Analytics Days and nothing else; `youtubeAdmin` reads them too and is alone in writing them), `shortLinkEditor` (links, campaigns, QR codes) or `shortLinkAdmin` (protected links, global links, republishing links, and adding, changing and republishing Short Link Domains). `publisher` has the link powers of `shortLinkAdmin` but only reads domains. The rule: `shortLinkAdmin` is the admin for everything short-link, including the KV namespace a domain publishes into; `superAdmin` is the admin for everything in core. `superAdmin` is not a Media Role: it is the flag on the user in the users database, read here (lazily, failing closed, and only when the role scope fails); it can do everything `shortLinkAdmin` can with domains and is alone in removing one (`shortLinkDomainDelete`).
 _Avoid_: Permission, access level
 
 ### External media services
@@ -151,3 +151,7 @@ _Avoid_: Bucket, blob, file store (when the specific store matters, name it)
 **YouTube Video**:
 A record of a YouTube video an operator has _reviewed_ against the catalog, carrying a review state (`LINKED`, `DISMISSED`, `SKIPPED`). Absence of a record means "not yet reviewed"; it is a review artifact, not a mirror of a YouTube channel.
 _Avoid_: Video (that is a catalog concept)
+
+**YouTube Analytics Day**:
+One YouTube channel's figures for one day (views, watch time, average view duration, subscribers gained and lost), as Wheat fetched them from the YouTube Analytics API under the operator's own grant. A null figure means YouTube withheld it, not zero. Its **fetchedAt** starts a 28-day clock, two days inside YouTube API Services policy's 30-day limit so a failed nightly run still deletes in time. Reads ignore a day past it, the nightly retention worker deletes it, and re-sending the day restarts it. Copies taken out of Core must be refreshed or deleted within 30 days of fetchedAt.
+_Avoid_: Stats, metrics table (say which figures)

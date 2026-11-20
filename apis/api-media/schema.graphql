@@ -370,6 +370,7 @@ enum MediaRole {
   youtubeAdmin
   shortLinkEditor
   shortLinkAdmin
+  youtubeAnalyticsReader
 }
 
 type Mutation {
@@ -530,6 +531,16 @@ type Mutation {
 
   """Remove a YoutubeVideo row."""
   youtubeVideoDelete(youtubeVideoId: ID!): Boolean!
+
+  """
+  Store a channel's daily YouTube Analytics figures, replacing any stored figures for the same days and restarting their 28-day clock. Returns how many days were written.
+  """
+  youtubeChannelAnalyticsDaysUpsert(input: YoutubeChannelAnalyticsDaysUpsertInput!): Int!
+
+  """
+  Delete every stored YouTube Analytics figure for a channel, as when it is disconnected or its grant is revoked. Returns how many days were deleted; zero when none were stored.
+  """
+  youtubeChannelAnalyticsDelete(channelId: ID!): Int!
 }
 
 input MutationBibleCitationCreateInput {
@@ -1173,6 +1184,11 @@ type Query {
 
   """Look up a single row by its youtubeVideoId."""
   youtubeVideoByVideoId(youtubeVideoId: ID!): YoutubeVideo
+
+  """
+  A channel's stored YouTube Analytics figures, one row per day in the range, oldest first. Days Wheat has not sent, or sent more than 28 days ago, are absent.
+  """
+  youtubeChannelAnalyticsDays(channelId: ID!, startDate: Date!, endDate: Date!): [YoutubeChannelAnalyticsDay!]!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
 }
@@ -2371,6 +2387,51 @@ type Youtube
   id: ID!
   source: VideoBlockSource @shareable
   primaryLanguageId: ID @shareable
+}
+
+"""
+One YouTube channel's YouTube Analytics figures for one day, as Wheat fetched them under the operator's grant. A null figure means YouTube withheld it, not zero. Rows fetched more than 28 days ago are never returned and are deleted nightly, two days inside YouTube API Services policy's 30-day limit. Copies kept elsewhere must be refreshed or deleted within 30 days of fetchedAt.
+"""
+type YoutubeChannelAnalyticsDay {
+  id: ID!
+  channelId: ID!
+  day: Date!
+  views: Int
+  estimatedMinutesWatched: Int
+
+  """Seconds."""
+  averageViewDuration: Int
+  subscribersGained: Int
+  subscribersLost: Int
+
+  """
+  When Wheat fetched the figures from YouTube. The 28-day clock runs from here.
+  """
+  fetchedAt: DateTime!
+}
+
+"""
+One day of figures. Omit or null a figure YouTube withheld; never send zero for it.
+"""
+input YoutubeChannelAnalyticsDayInput {
+  day: Date!
+  views: Int
+  estimatedMinutesWatched: Int
+
+  """Seconds."""
+  averageViewDuration: Int
+  subscribersGained: Int
+  subscribersLost: Int
+}
+
+input YoutubeChannelAnalyticsDaysUpsertInput {
+  channelId: ID!
+
+  """
+  When Wheat fetched these figures from YouTube, not when it sends them: figures served from Wheat's read cache keep the time they were first fetched.
+  """
+  fetchedAt: DateTime!
+  days: [YoutubeChannelAnalyticsDayInput!]!
 }
 
 """

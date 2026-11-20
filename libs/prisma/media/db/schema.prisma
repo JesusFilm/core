@@ -622,6 +622,8 @@ enum MediaRole {
   /// may additionally change domain settings, protected (permanent /
   /// videoEmbedded) links, and republish the edge store
   shortLinkAdmin
+  /// may read stored YouTube Analytics figures, and nothing else YouTube
+  youtubeAnalyticsReader
 }
 
 model UserMediaRole {
@@ -985,4 +987,31 @@ model YoutubeVideo {
   @@index(reviewState)
   @@index([videoId, languageId])
   @@index([updatedAt, id])
+}
+
+/// One YouTube channel's Analytics figures for one day, as Wheat read them
+/// from the YouTube Analytics API under the operator's own grant.
+///
+/// YouTube API Services policy: stored Analytics data is refreshed or deleted
+/// within 30 days of when it was fetched. Core keeps 28, so a failed nightly
+/// run still deletes in time: every read ignores rows whose fetchedAt is older
+/// than 28 days, and the youtubeAnalyticsRetention worker deletes them nightly.
+/// Re-sending a day resets its fetchedAt.
+model YoutubeChannelAnalyticsDay {
+  id                      String   @id @default(uuid())
+  channelId               String
+  day                     DateTime @db.Date
+  // Null = YouTube withheld the figure, never zero.
+  views                   Int?
+  estimatedMinutesWatched Int?
+  averageViewDuration     Int? // seconds
+  subscribersGained       Int?
+  subscribersLost         Int?
+  // When Wheat fetched the figures from YouTube: the 28-day clock.
+  fetchedAt               DateTime
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @default(now()) @updatedAt
+
+  @@unique([channelId, day])
+  @@index([fetchedAt])
 }

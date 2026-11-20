@@ -46,6 +46,10 @@ interface LocalInteropContext extends BaseContext, InteropContext {
 
 export type Context = LocalInteropContext | PublicContext | AuthenticatedContext
 
+const YOUTUBE_ANALYTICS_READER_ROLES: MediaRole[] = [
+  'youtubeAnalyticsReader',
+  'youtubeAdmin'
+]
 const SHORT_LINK_ADMIN_ROLES: MediaRole[] = ['shortLinkAdmin', 'publisher']
 const SHORT_LINK_EDITOR_ROLES: MediaRole[] = [
   'shortLinkEditor',
@@ -70,6 +74,14 @@ export function isShortLinkEditor(roles: MediaRole[]): boolean {
   return roles.some((role) => SHORT_LINK_EDITOR_ROLES.includes(role))
 }
 
+/**
+ * youtubeAnalyticsReader or youtubeAdmin: reads stored YouTube Analytics
+ * figures. Only youtubeAdmin writes or deletes them.
+ */
+export function isYoutubeAnalyticsReader(roles: MediaRole[]): boolean {
+  return roles.some((role) => YOUTUBE_ANALYTICS_READER_ROLES.includes(role))
+}
+
 const createSpan = createOpenTelemetryWrapper(tracer, {
   includeSource: true
 })
@@ -81,6 +93,7 @@ export const builder = new SchemaBuilder<{
     isAnonymous: boolean
     isPublisher: boolean
     isYoutubeAdmin: boolean
+    isYoutubeAnalyticsReader: boolean
     isShortLinkEditor: boolean
     isShortLinkAdmin: boolean
     isShortLinkDomainAdmin: boolean
@@ -91,6 +104,7 @@ export const builder = new SchemaBuilder<{
     isAnonymous: Extract<Context, { type: 'authenticated' }>
     isPublisher: Extract<Context, { type: 'authenticated' }>
     isYoutubeAdmin: Extract<Context, { type: 'authenticated' }>
+    isYoutubeAnalyticsReader: Extract<Context, { type: 'authenticated' }>
     isShortLinkEditor: Extract<Context, { type: 'authenticated' }>
     isShortLinkAdmin: Extract<Context, { type: 'authenticated' }>
     isShortLinkDomainAdmin: Extract<Context, { type: 'authenticated' }>
@@ -130,6 +144,9 @@ export const builder = new SchemaBuilder<{
             isAnonymous: context.user.email == null,
             isPublisher: context.currentRoles.includes('publisher'),
             isYoutubeAdmin: context.currentRoles.includes('youtubeAdmin'),
+            isYoutubeAnalyticsReader: isYoutubeAnalyticsReader(
+              context.currentRoles
+            ),
             isShortLinkEditor: isShortLinkEditor(context.currentRoles),
             isShortLinkAdmin: isShortLinkAdmin(context.currentRoles),
             isShortLinkDomainAdmin: isShortLinkDomainAdmin(
@@ -146,6 +163,7 @@ export const builder = new SchemaBuilder<{
             isAnonymous: false,
             isPublisher: false,
             isYoutubeAdmin: false,
+            isYoutubeAnalyticsReader: false,
             isShortLinkEditor: false,
             isShortLinkAdmin: false,
             isShortLinkDomainAdmin: false,
@@ -158,6 +176,7 @@ export const builder = new SchemaBuilder<{
             isAnonymous: false,
             isPublisher: false,
             isYoutubeAdmin: false,
+            isYoutubeAnalyticsReader: false,
             isShortLinkEditor: false,
             isShortLinkAdmin: false,
             isShortLinkDomainAdmin: false,

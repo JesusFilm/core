@@ -28,7 +28,10 @@ const EXCLUDED_TABLES = [
   'CloudflareImage',
   'MuxVideo',
   'CloudflareR2',
-  'UserMediaRole'
+  'UserMediaRole',
+  // YouTube Analytics figures: a 28-day clock (YouTube API Services policy)
+  // that a long-lived backup in R2 would outlast.
+  'YoutubeChannelAnalyticsDay'
 ]
 
 function getS3Client(): S3Client {
@@ -144,10 +147,12 @@ async function executePgDump(
         PGPASSWORD: decodeURIComponent(databaseUrl.password)
       }
 
-      // Generate exclude table arguments
+      // Generate exclude table arguments. pg_dump folds an unquoted pattern to
+      // lower case, so the mixed-case Prisma table names must be double-quoted
+      // or they match nothing and the table is exported anyway.
       const excludeTableArgs = EXCLUDED_TABLES.flatMap((table) => [
         '--exclude-table',
-        table
+        `"${table}"`
       ])
 
       const args = [

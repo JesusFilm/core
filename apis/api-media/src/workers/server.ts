@@ -115,6 +115,12 @@ async function main(): Promise<void> {
           './shortLinkHealth'
         )
       )
+      run(
+        await import(
+          /* webpackChunkName: "youtube-analytics-retention" */
+          './youtubeAnalyticsRetention'
+        )
+      )
     })
   }
 
