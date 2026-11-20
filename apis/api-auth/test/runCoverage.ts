@@ -10,7 +10,9 @@ import { createAuthDatabase } from '@core/prisma/auth/client'
 const adminUrl = process.env.MCP_READS_TEST_POSTGRES_URL
 if (!adminUrl) throw new Error('MCP_READS_TEST_POSTGRES_URL is required')
 const baseline = process.argv.includes('--baseline')
-const testIssue = baseline ? '10573' : '10575'
+const preview = process.argv.includes('--preview')
+const ready = process.argv.includes('--ready')
+const testIssue = preview ? '10563' : baseline ? '10573' : '10575'
 const root = resolve(import.meta.dirname, '../../..')
 const suffix = randomBytes(8).toString('hex')
 const runtimeRole = `mcp_reads_${suffix}`
@@ -117,7 +119,23 @@ try {
   if (configs.error) throw configs.error
   if (configs.status !== 0 || !configs.stdout.trim())
     throw new Error('Could not enumerate coverage Vitest projects')
-  for (const config of configs.stdout.trim().split('\n'))
+  if (ready) {
+    const gate = spawnSync('bash', ['/etc/phoebe/gate.sh', 'ready'], {
+      cwd: root,
+      stdio: 'inherit',
+      env: { ...process.env, ...testEnvironment }
+    })
+    if (gate.error) throw gate.error
+    if (gate.status !== 0) throw new Error(`ready gate failed: ${gate.status}`)
+  }
+  const selectedConfigs = configs.stdout
+    .trim()
+    .split('\n')
+    .filter(
+      (config) =>
+        !ready && (!preview || config === 'apis/api-auth/vitest.config.mts')
+    )
+  for (const config of selectedConfigs)
     run(
       [
         'exec',

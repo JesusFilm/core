@@ -50,6 +50,7 @@ import { CommandUndoItem } from './Items/CommandUndoItem'
 import { PreviewItem } from './Items/PreviewItem'
 import { JourneyDetails } from './JourneyDetails'
 import { Menu } from './Menu'
+import { PublishButton } from './PublishButton'
 
 const JourneyDetailsDialog = dynamic(
   async () =>
@@ -386,6 +387,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       >
         <Items />
         <PreviewItem variant="icon-button" />
+        <PublishButton />
         <Box ref={menuRef}>
           <Menu user={user} />
         </Box>

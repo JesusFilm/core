@@ -175,7 +175,9 @@ export const SignUp = ({
           if (selectedBlock === undefined) {
             void onSubmitHandler(values).then(() => {
               const nextStepSlug = getNextStepSlug(journey, action)
-              handleAction(router, action, nextStepSlug)
+              if (renderMode === 'preview')
+                handleAction(router, action, nextStepSlug, renderMode)
+              else handleAction(router, action, nextStepSlug)
             })
           }
         }}

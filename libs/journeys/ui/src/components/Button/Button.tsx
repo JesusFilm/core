@@ -329,7 +329,9 @@ export function Button({
     }
 
     const nextStepSlug = getNextStepSlug(journey, action)
-    handleAction(router, action, nextStepSlug)
+    if (renderMode === 'preview')
+      handleAction(router, action, nextStepSlug, renderMode)
+    else handleAction(router, action, nextStepSlug)
   }
 
   // In journey viewer with RTL: swap startIcon/endIcon positions so trailing icons appear on the left

@@ -4,7 +4,7 @@ import { JourneyFields as Journey } from './__generated__/JourneyFields'
 
 export interface JourneyProviderContext {
   journey?: Journey
-  renderMode?: 'default' | 'admin' | 'embed' | 'customize'
+  renderMode?: 'default' | 'admin' | 'embed' | 'customize' | 'preview'
 }
 
 const JourneyContext = createContext<JourneyProviderContext>({
