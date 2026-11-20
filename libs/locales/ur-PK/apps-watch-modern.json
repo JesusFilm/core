@@ -1,17 +1,35 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | یسوع فلم پروجیکٹ"
   },
   "RootIndexPage": {
-    "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
-    "description": "Watch, learn and share the gospel in over 2000 languages"
+    "pageTitle": "دیکھیں",
+    "title": "مفت انجیل ویڈیو <underline>اسٹریمنگ</underline> لائبریری",
+    "description": "2000 سے زائد زبانوں میں خوشخبری دیکھیں، سیکھیں اور شیئر کریں"
+  },
+  "ModernTestPage": {
+    "pageTitle": "جدید ٹیسٹ",
+    "title": "جدید ٹیسٹ صفحہ",
+    "description": "یہ جدید واچ ایپلیکیشن کے لیے ایک ٹیسٹ صفحہ ہے۔ یہ نئے روٹنگ اور پراکسی کی فعالیت کو ظاہر کرتا ہے۔",
+    "feature1": {
+      "title": "جدید فنِ تعمیر",
+      "description": "بہترین کارکردگی اور ڈویلپر کے تجربے کے لیے Next.js ایپ روٹر اور جدید React پیٹرنز کے ساتھ تیار کیا گیا۔"
+    },
+    "feature2": {
+      "title": "ذہین راستہ کاری",
+      "description": "جدید پروکسی روٹنگ جو دانشمندی کے ساتھ ٹریفک کو مناسب بیک اینڈ سروسز کی جانب ہدایت کرتی ہے۔"
+    },
+    "feature3": {
+      "title": "استجابی ڈیزائن",
+      "description": "مکمل طور پر جوابی ڈیزائن جو تمام آلات اور اسکرین سائز پر بلا رکاوٹ کام کرتا ہے۔"
+    },
+    "footer": "یہ صفحہ جدید واچ ایپلیکیشن کے ذریعے ذہین پراکسی روٹنگ کے ذریعے فراہم کیا جاتا ہے۔"
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Something went wrong",
-    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
-    "errorDetails": "Error details",
-    "tryAgain": "Try again",
-    "unknownError": "Unknown error"
+    "somethingWentWrong": "کچھ غلط ہو گیا",
+    "anErrorOccurred": "اس صفحے کو لوڈ کرتے وقت ایک خرابی پیش آئی۔ براہ کرم صفحہ ریفریش کرنے کی کوشش کریں۔",
+    "errorDetails": "خطا کی تفصیلات",
+    "tryAgain": "دوبارہ کوشش کریں",
+    "unknownError": "نامعلوم خرابی"
   }
 }
