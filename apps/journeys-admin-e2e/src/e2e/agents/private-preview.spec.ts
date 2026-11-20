@@ -37,7 +37,9 @@ test.describe('private playback and human publication @manual', () => {
     const effects: string[] = []
     page.on('request', (request) => {
       if (
-        /plausible|google-analytics|growthspaces|litix\.io/i.test(request.url())
+        /plausible|google-analytics|googletagmanager|datadog|growthspaces|litix\.io/i.test(
+          request.url()
+        )
       )
         effects.push('analytics or integration request')
       const body = request.postData()
@@ -71,18 +73,19 @@ test.describe('private playback and human publication @manual', () => {
     await expect(
       page.getByRole('link', { name: 'Open in Admin' })
     ).toHaveAttribute('href', `/journeys/${id}`)
-    const buildId = await page
-      .locator('#__NEXT_DATA__')
-      .evaluate(
-        (element) =>
-          (JSON.parse(element.textContent ?? '{}') as { buildId: string })
-            .buildId
-      )
+    const { buildId, locale } = await page.locator('#__NEXT_DATA__').evaluate(
+      (element) =>
+        JSON.parse(element.textContent ?? '{}') as {
+          buildId: string
+          locale?: string
+        }
+    )
+    const dataLocale = locale ? `/${locale}` : ''
     const anonymous = await browser.newContext()
     try {
       for (const path of [
         `/journeys/${id}/preview`,
-        `/_next/data/${buildId}/journeys/${id}/preview.json`
+        `/_next/data/${buildId}${dataLocale}/journeys/${id}/preview.json`
       ]) {
         const response = await anonymous.request.get(
           new URL(path, baseURL).href,
