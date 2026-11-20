@@ -2954,10 +2954,14 @@ describe('granted journey read authorization', () => {
             .spyOn(globalThis, 'fetch')
             .mockImplementation(async (input, init) => {
               const response = await originalFetch(input, init)
+              const requestUrl =
+                input instanceof Request
+                  ? input.url
+                  : input instanceof URL
+                    ? input.href
+                    : input
               if (
-                String(input).endsWith(
-                  '/internal/permissions/retire-account'
-                ) &&
+                requestUrl.endsWith('/internal/permissions/retire-account') &&
                 interruptRetirement
               ) {
                 interruptRetirement = false
