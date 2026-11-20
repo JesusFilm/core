@@ -9,6 +9,7 @@ import {
   usePropagateHeaders
 } from '@graphql-hive/gateway'
 import { initContextCache } from '@pothos/core'
+import mailchimp from '@mailchimp/mailchimp_marketing'
 import { type GraphQLSchema, parse, subscribe } from 'graphql'
 import { createYoga } from 'graphql-yoga'
 import pino from 'pino'
@@ -2186,6 +2187,140 @@ describe('granted journey read authorization', () => {
           'alice'
         )
       }
+
+      it.each([
+        'commit',
+        'rollback',
+        'delivery-retry',
+        'report-retry',
+        'existing-profile'
+      ] as const)(
+        'persists profile subscription with the owner receipt: %s',
+        async (mode) => {
+          vi.stubEnv('MAILCHIMP_AUDIENCE_ID', 'controlled-profile-audience')
+          const subscription = vi
+            .spyOn(mailchimp.lists, 'setListMember')
+            .mockImplementation(async () => {
+              expect(
+                await journeys.journeyProfile.findUnique({
+                  where: { userId: 'alice' }
+                })
+              ).toMatchObject({ acceptedTermsAt: expect.any(Date) })
+              expect(
+                await journeys.mcpPermissionExecution.findFirst({
+                  where: { status: 'committed' }
+                })
+              ).not.toBeNull()
+              if (mode === 'delivery-retry')
+                throw new Error('Controlled Mailchimp outage')
+              return {} as Awaited<
+                ReturnType<typeof mailchimp.lists.setListMember>
+              >
+            })
+          const configure = vi.spyOn(mailchimp, 'setConfig').mockReturnValue()
+          if (mode !== 'existing-profile')
+            await journeys.journeyProfile.delete({
+              where: { userId: 'alice' }
+            })
+          if (mode === 'rollback') {
+            await journeys.$executeRawUnsafe(
+              `CREATE FUNCTION review_10600_fail_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.status = 'committed' THEN RAISE EXCEPTION 'Controlled receipt failure'; END IF; RETURN NEW; END $$`
+            )
+            await journeys.$executeRawUnsafe(
+              `CREATE TRIGGER review_10600_fail_receipt BEFORE UPDATE ON "McpPermissionExecution" FOR EACH ROW EXECUTE FUNCTION review_10600_fail_receipt()`
+            )
+          }
+          permissionReportOutage = mode === 'report-retry'
+          try {
+            const result = await humanMutation(
+              'mutation CreateProfile { journeyProfileCreate { id acceptedTermsAt } }',
+              {},
+              'alice'
+            )
+            if (mode === 'rollback') {
+              expect(result.errors).toHaveLength(1)
+              expect(
+                await journeys.journeyProfile.findUnique({
+                  where: { userId: 'alice' }
+                })
+              ).toBeNull()
+              expect(subscription).not.toHaveBeenCalled()
+              return
+            }
+            const receipt =
+              await journeys.mcpPermissionExecution.findFirstOrThrow({
+                where: { status: 'committed' }
+              })
+            const user = {
+              email: 'alice@synthetic.example',
+              firstName: 'alice'
+            }
+            expect(receipt.intent).toMatchObject({
+              effects:
+                mode === 'existing-profile'
+                  ? []
+                  : [{ type: 'mailchimpSubscription', user }]
+            })
+            if (mode === 'delivery-retry' || mode === 'report-retry') {
+              expect(result.errors).toHaveLength(1)
+              expect(receipt.reportedAt).toBeNull()
+              if (mode === 'report-retry')
+                expect(subscription).not.toHaveBeenCalled()
+              else expect(subscription).toHaveBeenCalled()
+              subscription
+                .mockClear()
+                .mockResolvedValue(
+                  {} as Awaited<
+                    ReturnType<typeof mailchimp.lists.setListMember>
+                  >
+                )
+              permissionReportOutage = false
+              const restarted = restartPermissionCoordinator(
+                {
+                  authorityUrl,
+                  authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
+                },
+                journeys
+              )
+              expect(await restarted.reconcile(receipt.id)).toBe(0)
+              expect(subscription).toHaveBeenCalledExactlyOnceWith(
+                'controlled-profile-audience',
+                user.email,
+                {
+                  email_address: user.email,
+                  status_if_new: 'subscribed',
+                  merge_fields: { FNAME: user.firstName, LNAME: undefined }
+                }
+              )
+              expect(
+                await journeys.mcpPermissionExecution.findUnique({
+                  where: { id: receipt.id }
+                })
+              ).toMatchObject({ reportedAt: expect.any(Date) })
+              expect(await restarted.reconcile(receipt.id)).toBe(0)
+              expect(subscription).toHaveBeenCalledOnce()
+            } else {
+              expect(result.errors).toBeUndefined()
+              expect(receipt.reportedAt).not.toBeNull()
+              if (mode === 'existing-profile')
+                expect(subscription).not.toHaveBeenCalled()
+              else expect(subscription).toHaveBeenCalledOnce()
+            }
+          } finally {
+            subscription.mockRestore()
+            configure.mockRestore()
+            vi.unstubAllEnvs()
+            if (mode === 'rollback') {
+              await journeys.$executeRawUnsafe(
+                'DROP TRIGGER review_10600_fail_receipt ON "McpPermissionExecution"'
+              )
+              await journeys.$executeRawUnsafe(
+                'DROP FUNCTION review_10600_fail_receipt()'
+              )
+            }
+          }
+        }
+      )
 
       it.each(['commit', 'rollback', 'delivery-retry'] as const)(
         'delivers team removal only from a committed durable receipt: %s',

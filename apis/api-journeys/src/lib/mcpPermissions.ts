@@ -43,6 +43,7 @@ import {
   deleteUnusedMedia,
   extractCloudflareImageId
 } from './mediaCleanup/mediaCleanup'
+import { syncMailChimp } from './syncMailChimp'
 
 export interface JourneyPermissionsConfig {
   authorityUrl: string
@@ -485,6 +486,8 @@ export function createJourneyPermissionCoordinator(
           await enqueueJourneyApprovedEmail(effect.notification, deliveryId)
         else if (effect.type === 'teamInviteAccepted')
           await enqueueTeamInviteAcceptedEmail(effect.notification, deliveryId)
+        else if (effect.type === 'mailchimpSubscription')
+          await syncMailChimp(effect.user)
         else await enqueueTemplateSite(effect.templateId, deliveryId)
       }
       await db.mcpPermissionExecution.update({

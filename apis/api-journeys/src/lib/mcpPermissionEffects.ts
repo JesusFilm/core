@@ -54,10 +54,23 @@ export const permissionEffectSchema = z.discriminatedUnion('type', [
     })
   }),
   z.object({
+    type: z.literal('mailchimpSubscription'),
+    user: z.object({
+      email: z.string().nullable().optional(),
+      firstName: z.string(),
+      lastName: z.string().optional()
+    })
+  }),
+  z.object({
     type: z.literal('templateSite'),
     templateId: z.string()
   })
 ])
+
+export type MailchimpSubscription = Extract<
+  z.infer<typeof permissionEffectSchema>,
+  { type: 'mailchimpSubscription' }
+>['user']
 
 export type JourneyApprovalNotification = Extract<
   z.infer<typeof permissionEffectSchema>,

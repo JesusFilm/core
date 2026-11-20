@@ -48,7 +48,8 @@ const required: Record<string, string[]> = {
     'const receipt = intentSchema.parse(committed.intent)',
     'await enqueueShortLinkDeletes(effect.shortLinkIds, true)',
     'await enqueueTeamRemovedEmail(',
-    'await enqueueTeamInviteAcceptedEmail(effect.notification, deliveryId)'
+    'await enqueueTeamInviteAcceptedEmail(effect.notification, deliveryId)',
+    'await syncMailChimp(effect.user)'
   ],
 
   'apis/api-users/src/schema/userDelete/service/resumeUserDeletion.ts': [
@@ -66,6 +67,11 @@ const required: Record<string, string[]> = {
   'apis/api-journeys/src/workers/email/teamInviteAccepted.ts': [
     'await queue.add('
   ],
+  'apis/api-journeys/src/lib/syncMailChimp.ts': [
+    'await mailchimp.lists.setListMember('
+  ],
+  'apis/api-journeys/src/schema/journeyProfile/journeyProfileCreate.mutation.ts':
+    ["if (!capturePermissionEffect({ type: 'mailchimpSubscription', user }))"],
   'apis/api-journeys/src/schema/userTeamInvite/userTeamInviteAcceptAll.mutation.ts':
     ['const team = await prisma.team.findUnique('],
   'apis/api-journeys/src/workers/email/teamRemoved.ts': ['await queue.add('],

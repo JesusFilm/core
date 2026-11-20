@@ -1,50 +1,11 @@
-import mailchimp from '@mailchimp/mailchimp_marketing'
-
 import { prisma } from '@core/prisma/journeys/client'
 
+import { capturePermissionEffect } from '../../lib/mcpPermissionEffects'
+import { syncMailChimp } from '../../lib/syncMailChimp'
 import { builder } from '../builder'
 import { logger } from '../logger'
 
 import { JourneyProfileRef } from './journeyProfile'
-
-async function syncMailChimp(user: {
-  email?: string | null
-  firstName: string
-  lastName?: string
-}): Promise<void> {
-  try {
-    mailchimp.setConfig({
-      apiKey: process.env.MAILCHIMP_MARKETING_API_KEY,
-      server: process.env.MAILCHIMP_MARKETING_API_SERVER_PREFIX
-    })
-    if (process.env.MAILCHIMP_AUDIENCE_ID == null)
-      throw new Error('Mailchimp Audience ID is undefined')
-    if (user.email == null)
-      throw new Error('User must have an email to receive marketing emails')
-
-    await mailchimp.lists.setListMember(
-      process.env.MAILCHIMP_AUDIENCE_ID,
-      user.email,
-      {
-        email_address: user.email,
-        status_if_new: 'subscribed',
-        merge_fields: {
-          FNAME: user.firstName,
-          LNAME: user.lastName
-        }
-      }
-    )
-  } catch (error) {
-    const detail = (error as any)?.response?.body?.detail
-    if (
-      process.env.GIT_BRANCH !== 'main' &&
-      detail ===
-        `${user.email} looks fake or invalid, please enter a real email address.`
-    )
-      return
-    throw error
-  }
-}
 
 builder.mutationField('journeyProfileCreate', (t) =>
   t
@@ -72,9 +33,15 @@ builder.mutationField('journeyProfileCreate', (t) =>
           }
         })
 
-        void syncMailChimp(context.user).catch((err) =>
-          logger.error(err, 'failed to sync user to MailChimp')
-        )
+        const user = {
+          email: context.user.email,
+          firstName: context.user.firstName,
+          lastName: context.user.lastName
+        }
+        if (!capturePermissionEffect({ type: 'mailchimpSubscription', user }))
+          void syncMailChimp(user).catch((err) =>
+            logger.error(err, 'failed to sync user to MailChimp')
+          )
 
         return created
       }
