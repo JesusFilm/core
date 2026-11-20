@@ -44,8 +44,8 @@ const required: Record<string, string[]> = {
     "state = await authority('status', { changeId: id })",
     'assertAccountCleanupResult(value)',
     'await authorizeAccountDeletionResume(execution, storedIntent)',
-    'storedIntent.accountDeletion?.result',
-    'receipt.accountDeletion?.result'
+    'return accountCleanupResultSchema.parse(',
+    'const receipt = intentSchema.parse(committed.intent)'
   ],
 
   'apis/api-auth/src/connections.ts': [
