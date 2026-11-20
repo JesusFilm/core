@@ -47,10 +47,12 @@ const required: Record<string, string[]> = {
     'return accountCleanupResultSchema.parse(',
     'const receipt = intentSchema.parse(committed.intent)',
     'await enqueueShortLinkDeletes(effect.shortLinkIds, true)',
-    'await enqueueTeamRemovedEmail('
+    'await enqueueTeamRemovedEmail(',
+    'await enqueueTeamInviteAcceptedEmail(effect.notification, deliveryId)'
   ],
 
   'apis/api-users/src/schema/userDelete/service/resumeUserDeletion.ts': [
+    'const firebaseUids = [',
     'progress.deletedUserFirebaseUid === callerFirebaseUid &&',
     'const logs = await deleteFirebaseUser(',
     'await prisma.userDeleteAuditLog.update('
@@ -58,8 +60,14 @@ const required: Record<string, string[]> = {
   'apis/api-users/src/schema/userDelete/service/deleteUserData.ts': [
     'confirmedRetirements.add(uid)',
     'await tx.userDeleteAuditLog.update(',
-    'await tx.user.delete('
+    'await tx.user.delete(',
+    'await retireAndDelete(fbUser.uid)'
   ],
+  'apis/api-journeys/src/workers/email/teamInviteAccepted.ts': [
+    'await queue.add('
+  ],
+  'apis/api-journeys/src/schema/userTeamInvite/userTeamInviteAcceptAll.mutation.ts':
+    ['const team = await prisma.team.findUnique('],
   'apis/api-journeys/src/workers/email/teamRemoved.ts': ['await queue.add('],
   'apis/api-auth/src/connections.ts': [
     'const expiresAt = calculateExpiry(approvedAt, review.duration)',

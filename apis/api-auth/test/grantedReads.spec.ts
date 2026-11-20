@@ -3319,7 +3319,10 @@ describe('granted journey read authorization', () => {
           const deleteUser = vi
             .spyOn(firebaseAuth, 'deleteUser')
             .mockImplementation(async (uid) => {
-              if (uid === 'alice') throw { code: 'auth/user-not-found' }
+              if (uid === 'alice')
+                throw Object.assign(new Error('Firebase user not found'), {
+                  code: 'auth/user-not-found'
+                })
               expect(uid).toBe('fallback-alice')
               const audit = await users!.userDeleteAuditLog.findFirstOrThrow({
                 where: { deletedUserId: target.id }

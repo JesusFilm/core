@@ -86,7 +86,10 @@ describe('resuming committed Users deletion', () => {
       firebaseCleanupUids: ['self', 'fallback-one', 'fallback-two']
     })
     firebase.deleteUser.mockImplementation(async (uid: string) => {
-      if (uid === 'self') throw { code: 'auth/user-not-found' }
+      if (uid === 'self')
+        throw Object.assign(new Error('Firebase user not found'), {
+          code: 'auth/user-not-found'
+        })
     })
     const retire = vi
       .fn()
