@@ -39,6 +39,7 @@ import { useTemplateLabelsQuery } from '../../libs/useTemplateLabelsQuery'
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 import { DateRangePicker } from '../JourneyVisitorsList/FilterDrawer/ExportDialog/DateRangePicker'
 
+import { getBrowserDateFormat } from './getBrowserDateFormat'
 import { InfoIcon } from './InfoIcon'
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
 
@@ -81,6 +82,10 @@ export function TemplateBreakdownAnalyticsDialog({
   handleClose
 }: TemplateBreakdownAnalyticsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [dateFormat, setDateFormat] = useState('dd-MM-yyyy')
+  useEffect(() => {
+    setDateFormat(getBrowserDateFormat())
+  }, [])
   const [includeArchivedJourneys, setIncludeArchivedJourneys] = useState(true)
   const today = useMemo(() => startOfToday(), [])
   const earliestDate = useMemo(() => parseISO(earliestStatsCollected), [])
@@ -273,6 +278,7 @@ export function TemplateBreakdownAnalyticsDialog({
         <Stack direction="row" sx={{ alignItems: 'center' }}>
           <DateRangePicker
             key={datePickerResetKey}
+            format={dateFormat}
             onInputStateChange={setFieldInputState}
             startDate={startDate}
             endDate={endDate}
