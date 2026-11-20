@@ -106,7 +106,7 @@ export function InitAndPlay({
       : null
 
   const muxMetadata = useMemo(() => {
-    return journey != null
+    return journey != null && renderMode !== 'preview'
       ? getMuxMetadata({
           journeyId: journey.id,
           videoBlock: {
@@ -118,7 +118,15 @@ export function InitAndPlay({
           }
         })
       : {}
-  }, [journey, blockId, title, mediaVideo, endAt, videoVariantLanguageId])
+  }, [
+    journey,
+    blockId,
+    title,
+    mediaVideo,
+    endAt,
+    videoVariantLanguageId,
+    renderMode
+  ])
 
   // Initiate video player
   useEffect(() => {
@@ -138,12 +146,15 @@ export function InitAndPlay({
         responsive: true,
         muted: muted === true,
         autoplay: autoplay === true && source === VideoBlockSource.youTube,
-        plugins: {
-          mux: {
-            debug: false,
-            data: muxMetadata
-          }
-        }
+        plugins:
+          renderMode === 'preview'
+            ? {}
+            : {
+                mux: {
+                  debug: false,
+                  data: muxMetadata
+                }
+              }
       }) as VideoJsPlayer
       // A server-rendered <video> is already on its <source> natively, which
       // makes video.js skip its source handlers; feed them once ready.

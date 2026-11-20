@@ -88,6 +88,7 @@ const required: Record<string, string[]> = {
     'failed++'
   ],
   'apis/api-journeys/src/lib/mcpReads.ts': [
+    "if (request.tool === 'journey_preview')",
     'const data = await snapshot(',
     "await authority('accept',",
     'await db.mcpReadExecution.create(',
@@ -95,6 +96,14 @@ const required: Record<string, string[]> = {
     'await tx.mcpReadExecution.update(',
     'await reconcileJourneyReads(db, config, permitId)',
     'await reconcileJourneyReads(db, config, readPermit).catch('
+  ],
+  'apis/api-journeys/src/schema/journey/journeyPreview.query.ts': [
+    "builder.queryField('journeyPreview'",
+    "builder.queryField('journeyPublishPermission'",
+    "throw new GraphQLError('preview unavailable'"
+  ],
+  'apis/api-journeys/src/lib/privatePreview.ts': [
+    'const result = await executeFn(options)'
   ],
   'apis/api-gateway/src/mcpReads.ts': [
     'const response = await fetch(config.ownerUrl,'

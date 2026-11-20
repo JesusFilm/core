@@ -1,67 +1,44 @@
+import { gql } from '@apollo/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getApiRequestTokens } from 'next-firebase-auth-edge'
-import fetch from 'node-fetch'
 
+import { createApolloClient } from '../../src/libs/apolloClient'
 import { authConfig } from '../../src/libs/auth/config'
+import { toUser } from '../../src/libs/auth/getAuthTokens'
 
-async function sleep(ms: number | undefined): Promise<void> {
-  return await new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
+export const GET_PRIVATE_PREVIEW_ID = gql`
+  query GetPrivatePreviewId($slug: ID!) {
+    adminJourney(id: $slug, idType: slug) {
+      id
+    }
+  }
+`
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  if (
-    process.env.JOURNEYS_URL == null ||
-    process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN == null
-  )
-    return res.status(500).json({ error: 'Missing Environment Variables' })
-
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0')
+  res.setHeader('Vary', 'Cookie')
+  if (req.method !== 'GET' || typeof req.query.slug !== 'string') {
+    res.status(400).json({ error: 'Preview unavailable' })
+    return
+  }
   try {
     const tokens = await getApiRequestTokens(req, authConfig)
-    if (tokens == null) {
-      return res.status(403).json({ error: 'Not authorized' })
-    }
-  } catch (e) {
-    return res.status(403).json({ error: 'Not authorized' })
-  }
-
-  const slug = req.query.slug?.toString()
-  const hostname = req?.query?.hostname?.toString()
-
-  if (slug == null) return res.status(400).json({ error: 'Missing Slug' })
-
-  const params: { accessToken: string; slug: string; hostname?: string } = {
-    accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
-    slug
-  }
-
-  if (hostname != null) params.hostname = hostname
-
-  try {
-    const response = await fetch(
-      `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams(
-        params
-      ).toString()}`
+    if (!tokens || toUser(tokens).isAnonymous) throw new Error('Unauthorized')
+    const client = createApolloClient(tokens.token)
+    const { data } = await client.query<{ adminJourney: { id: string } }>({
+      query: GET_PRIVATE_PREVIEW_ID,
+      variables: { slug: req.query.slug },
+      fetchPolicy: 'no-cache'
+    })
+    if (!data) throw new Error('Unauthorized')
+    res.redirect(
+      307,
+      `/journeys/${encodeURIComponent(data.adminJourney.id)}/preview`
     )
-    if (!response.ok)
-      return res.status(response.status).json(await response.text())
-  } catch (e) {
-    return res.status(500).json({ error: 'Error revalidating' })
+  } catch {
+    res.status(403).json({ error: 'Preview unavailable' })
   }
-
-  // 300ms required to invalidate edge caches
-  await sleep(300)
-
-  const proto = process.env.NODE_ENV === 'development' ? 'http://' : 'https://'
-
-  res.redirect(
-    307,
-    `${
-      hostname != null ? `${proto}${hostname}` : process.env.JOURNEYS_URL
-    }/${slug}`
-  )
 }

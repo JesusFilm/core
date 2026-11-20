@@ -54,6 +54,13 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
           additionalProperties: false,
           required: ['journeyId', 'view']
         })
+      }),
+      expect.objectContaining({
+        name: 'journey_preview',
+        inputSchema: expect.objectContaining({
+          additionalProperties: false,
+          required: ['journeyId', 'expectedRevision']
+        })
       })
     ])
     expect(JSON.stringify(response.result.tools[0])).not.toContain('"required"')

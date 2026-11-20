@@ -69,7 +69,9 @@ export default defineConfig({
         '**/*{.,-}{test,spec,bench,benchmark}?(-d).?(c|m)[jt]s?(x)',
         '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*'
       ],
-      reporter: ['cobertura'],
+      reporter: [
+        ['cobertura', { projectRoot: resolve(__dirname, '../../..') }]
+      ],
       reportsDirectory: '../../../coverage/libs/journeys/ui'
     },
     retry: process.env.CI === 'true' ? 3 : 0,

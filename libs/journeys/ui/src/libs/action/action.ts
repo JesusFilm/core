@@ -2,14 +2,30 @@ import { NextRouter } from 'next/dist/client/router'
 
 import { ContactActionType } from '../../../__generated__/globalTypes'
 import { nextActiveBlock } from '../block'
+import type { JourneyProviderContext } from '../JourneyProvider/JourneyProvider'
 
 import { ActionFields } from './__generated__/ActionFields'
 
 export function handleAction(
   router: NextRouter,
   action?: ActionFields | null,
-  nextBlockAddress?: string
+  nextBlockAddress?: string,
+  renderMode?: JourneyProviderContext['renderMode']
 ): void {
+  if (renderMode === 'preview') {
+    if (action?.__typename === 'NavigateToBlockAction') {
+      nextActiveBlock({ id: action.blockId })
+      void router.replace(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, stepId: action.blockId }
+        },
+        undefined,
+        { shallow: true }
+      )
+    }
+    return
+  }
   const journeysUrls = [
     'your.nextstep.is',
     'localhost:4100',

@@ -8,9 +8,18 @@ import {
   createGatewayRuntime,
   usePropagateHeaders
 } from '@graphql-hive/gateway'
+import {
+  createInMemoryCache,
+  useResponseCache
+} from '@graphql-yoga/plugin-response-cache'
 import mailchimp from '@mailchimp/mailchimp_marketing'
 import { initContextCache } from '@pothos/core'
-import { type GraphQLSchema, parse, subscribe } from 'graphql'
+import {
+  type GraphQLObjectType,
+  type GraphQLSchema,
+  parse,
+  subscribe
+} from 'graphql'
 import { createYoga } from 'graphql-yoga'
 import pino from 'pino'
 
@@ -28,11 +37,16 @@ import { PrismaPg } from '@prisma/adapter-pg'
 /* eslint-disable @nx/enforce-module-boundaries -- This integration harness runs the actual independently deployed API participants. */
 import { commonConfig } from '../../api-gateway/src/common.config'
 import { useMcpReads } from '../../api-gateway/src/mcpReads'
+import { lockDraftJourneyRevision } from '../../api-journeys/src/lib/journeyRevision/journeyRevision'
 import type { createJourneyPermissionCoordinator } from '../../api-journeys/src/lib/mcpPermissions'
 import {
   createJourneyReadHandler,
   useJourneyMcpReads
 } from '../../api-journeys/src/lib/mcpReads'
+import {
+  privatePreviewCachePolicy,
+  usePrivatePreview
+} from '../../api-journeys/src/lib/privatePreview'
 import { mockQueueAdd } from '../../api-journeys/test/bullmqMock'
 import { readConfig as readMcpConfig } from '../../api-mcp/src/config'
 import { createRuntime as createMcpRuntime } from '../../api-mcp/src/runtime'
@@ -87,6 +101,7 @@ describe('granted journey read authorization', () => {
       const failedFenceReports = new Set<string>()
       const anonymousProfileActors = new Set<string>()
       let ownerHandler: ReturnType<typeof createJourneyReadHandler>
+      let owningSchema: GraphQLSchema
       let permissionCoordinator: ReturnType<
         typeof createJourneyPermissionCoordinator
       >
@@ -252,10 +267,10 @@ describe('granted journey read authorization', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_105(50|73|74|75)(_|$)/.test(
+          !/^\/auth_issue_105(50|63|73|74|75)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_105(50|73|74|75)(_|$)/.test(
+          !/^\/journeys_issue_105(50|63|73|74|75)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
@@ -511,11 +526,12 @@ describe('granted journey read authorization', () => {
           '../../api-journeys/src/schema/schema.ts',
           import.meta.url
         ).href
-        const { schema: owningSchema } = (await import(
+        const owningModule = (await import(
           /* webpackChunkName: "read-participant-schema" */ schemaModule
         )) as {
           schema: GraphQLSchema
         }
+        owningSchema = owningModule.schema
         authorityUrl = await listen(
           createServer((req, res) => {
             void (async () => {
@@ -632,7 +648,8 @@ describe('granted journey read authorization', () => {
           maskedErrors: true,
           context: ({ request }) => {
             const human = request.headers.get('x-controlled-human')
-            return human && ['alice', 'bob'].includes(human)
+            return human &&
+              ['alice', 'bob', 'preview-editor', 'stranger'].includes(human)
               ? {
                   ...initContextCache(),
                   type: 'authenticated' as const,
@@ -649,7 +666,18 @@ describe('granted journey read authorization', () => {
               : { ...initContextCache(), type: 'public' as const }
           },
           logging: false,
-          plugins: [useJourneyMcpReads(ownerHandler)]
+          plugins: [
+            useJourneyMcpReads(ownerHandler),
+            usePrivatePreview(journeys),
+            useResponseCache({
+              session: () => null,
+              cache: createInMemoryCache(),
+              ttlPerSchemaCoordinate: {
+                Journey: 0,
+                ...privatePreviewCachePolicy
+              }
+            })
+          ]
         })
         ownerUrl = await listen(
           createServer((req, res) => {
@@ -1106,7 +1134,7 @@ describe('granted journey read authorization', () => {
         expect(denied.body).not.toContain('private-read-b-sentinel')
       })
 
-      it('returns published ordinary journeys under a read grant and registers exactly two read tools', async () => {
+      it('returns published ordinary journeys under a read grant and registers the read and private preview tools', async () => {
         accessToken = await consent('alice', ['read-published'])
         const read = await call('journey_read', {
           journeyId: 'read-published',
@@ -1130,11 +1158,375 @@ describe('granted journey read authorization', () => {
         }
         expect(listed.result.tools.map((tool) => tool.name)).toEqual([
           'journeys_list',
-          'journey_read'
+          'journey_read',
+          'journey_preview'
         ])
         expect(
           (await call('journey_edit', { journeyId: 'read-published' })).body
         ).not.toContain('structuredContent')
+      })
+
+      it('previews the exact saved revision with a bounded private Admin handoff and rejects stale or foreign routes', async () => {
+        const revision = (
+          await journeys.journeyRevision.findUniqueOrThrow({
+            where: { journeyId: 'read-a' }
+          })
+        ).revision.toString()
+        const result = await call('journey_preview', {
+          journeyId: 'read-a',
+          expectedRevision: revision,
+          startStepId: 'read-a-step'
+        })
+        expect(result.status).toBe(200)
+        expect(result.body).toContain(
+          `/journeys/read-a/preview?revision=${revision}&stepId=read-a-step`
+        )
+        expect(result.body).toContain('routeChecklist')
+        expect(result.body).not.toContain('read-b-step')
+        expect(result.body).not.toContain('read-a-text-sentinel')
+        expect(
+          (
+            await call('journey_preview', {
+              journeyId: 'read-a',
+              expectedRevision: (BigInt(revision) + 1n).toString()
+            })
+          ).body
+        ).toContain('REVISION_CONFLICT')
+        expect(
+          (
+            await call('journey_preview', {
+              journeyId: 'read-b',
+              expectedRevision: revision
+            })
+          ).body
+        ).toContain('ACCESS_DENIED_OR_NOT_FOUND')
+        expect(
+          (
+            await call('journey_preview', {
+              journeyId: 'read-a',
+              expectedRevision: revision,
+              startStepId: 'read-b-step'
+            })
+          ).body
+        ).toContain('ACCESS_DENIED_OR_NOT_FOUND')
+      })
+
+      it('fences a buffered preview result on completed withdrawal and rechecks current human preview rights independently', async () => {
+        const revision = (
+          await journeys.journeyRevision.findUniqueOrThrow({
+            where: { journeyId: 'read-a' }
+          })
+        ).revision.toString()
+        const context = await manageConnection()
+        beforeOutput = async () => {
+          const response = await context.post('disconnect')
+          expect(await response.json()).toMatchObject({ status: 'complete' })
+        }
+        const result = await call('journey_preview', {
+          journeyId: 'read-a',
+          expectedRevision: revision
+        })
+        expect(result.body).not.toContain('previewLink')
+        beforeOutput = undefined
+        expect(
+          (
+            await call('journey_preview', {
+              journeyId: 'read-a',
+              expectedRevision: revision
+            })
+          ).body
+        ).not.toContain('previewLink')
+        const query = 'query { journeyPreview(id:"read-a") { id title } }'
+        expect(
+          (await humanMutation(query, {}, 'alice')).data?.journeyPreview
+        ).toMatchObject({ id: 'read-a', title: 'Authorized A' })
+        expect((await humanMutation(query, {}, 'stranger')).data).toBeNull()
+        await journeys.userTeam.deleteMany({
+          where: { teamId: 'read-team', userId: 'alice' }
+        })
+        expect((await humanMutation(query, {}, 'alice')).data).toBeNull()
+      })
+
+      it('returns owned answer and default routes from the saved revision', async () => {
+        const prefix = 'preview-routes-' + randomUUID()
+        const original = await journeys.block.findUniqueOrThrow({
+          where: { id: 'read-b-step' }
+        })
+        const defaultStep = `${prefix}-default`
+        const answerStep = `${prefix}-answer`
+        const buttonId = `${prefix}-button`
+        try {
+          await journeys.block.createMany({
+            data: [defaultStep, answerStep].map((id, index) => ({
+              id,
+              journeyId: 'read-b',
+              typename: 'StepBlock',
+              parentOrder: index + 1
+            }))
+          })
+          await journeys.block.update({
+            where: { id: original.id },
+            data: { nextBlockId: defaultStep }
+          })
+          await journeys.block.create({
+            data: {
+              id: buttonId,
+              journeyId: 'read-b',
+              typename: 'ButtonBlock',
+              parentBlockId: original.id,
+              label: 'Synthetic answer',
+              action: { create: { blockId: answerStep } }
+            }
+          })
+          accessToken = await consent('alice', ['read-b'])
+          const revision = (
+            await journeys.journeyRevision.findUniqueOrThrow({
+              where: { journeyId: 'read-b' }
+            })
+          ).revision.toString()
+          const result = await call('journey_preview', {
+            journeyId: 'read-b',
+            expectedRevision: revision
+          })
+          expect(result.status).toBe(200)
+          const data = JSON.parse(result.body) as {
+            result: {
+              structuredContent: {
+                routeChecklist: {
+                  complete: boolean
+                  steps: Array<{ id: string; nextBlockId: string | null }>
+                  answers: Array<{ blockId: string; nextStepId: string }>
+                }
+              }
+            }
+          }
+          expect(data.result.structuredContent.routeChecklist).toMatchObject({
+            complete: true,
+            answers: [{ blockId: buttonId, nextStepId: answerStep }]
+          })
+          expect(
+            data.result.structuredContent.routeChecklist.steps
+          ).toContainEqual(
+            expect.objectContaining({
+              id: original.id,
+              nextBlockId: defaultStep
+            })
+          )
+        } finally {
+          await journeys.block.update({
+            where: { id: original.id },
+            data: { nextBlockId: original.nextBlockId }
+          })
+          await journeys.block.deleteMany({
+            where: { journeyId: 'read-b', id: { startsWith: prefix } }
+          })
+        }
+      })
+
+      it('bounds a large preview checklist while preserving handoff to an owned start Step beyond its first page', async () => {
+        const id = 'read-b'
+        const prefix = 'large-preview-' + randomUUID()
+        try {
+          const steps = Array.from({ length: 101 }, (_, index) => ({
+            id: `${prefix}-${index}`,
+            journeyId: id,
+            typename: 'StepBlock',
+            parentOrder: index
+          }))
+          await journeys.block.createMany({ data: steps })
+          accessToken = await consent('alice', [id])
+          const revision = (
+            await journeys.journeyRevision.findUniqueOrThrow({
+              where: { journeyId: id }
+            })
+          ).revision.toString()
+          const result = await call('journey_preview', {
+            journeyId: id,
+            expectedRevision: revision,
+            startStepId: steps[100].id
+          })
+          expect(result.body).toContain('previewLink')
+          expect(result.body).toContain('"complete":false')
+          expect(result.body).toContain('Route checklist is partial')
+          expect(result.body).toContain(`stepId=${steps[100].id}`)
+        } finally {
+          await journeys.block.deleteMany({
+            where: { journeyId: id, id: { startsWith: prefix } }
+          })
+        }
+      })
+
+      it('keeps preview output withdrawal pending until the accepted real sender settles', async () => {
+        const revision = (
+          await journeys.journeyRevision.findUniqueOrThrow({
+            where: { journeyId: 'read-a' }
+          })
+        ).revision.toString()
+        const context = await manageConnection()
+        const pause = barrier()
+        afterAcceptance = async (stage) => {
+          if (stage === 'output') await pause.pause()
+        }
+        const preview = call('journey_preview', {
+          journeyId: 'read-a',
+          expectedRevision: revision
+        })
+        await pause.ready
+        const change = (await (await context.post('disconnect')).json()) as {
+          changeId: string
+          status: string
+        }
+        expect(change.status).toBe('pending')
+        await ownerHandler.reconcile()
+        expect(
+          await auth.connectionChange.findUnique({
+            where: { id: change.changeId }
+          })
+        ).toMatchObject({ status: 'pending' })
+        pause.resume()
+        expect((await preview).body).toContain('previewLink')
+        await vi.waitFor(async () =>
+          expect(
+            await auth.connectionChange.findUnique({
+              where: { id: change.changeId }
+            })
+          ).toMatchObject({ status: 'complete' })
+        )
+      })
+
+      it('keeps nested private page data in the checked revision snapshot until the bounded read finishes', async () => {
+        const field = (
+          owningSchema.getType('Journey') as GraphQLObjectType
+        ).getFields().blocks
+        const resolve = field.resolve
+        if (!resolve)
+          throw new Error('The owning Journey blocks resolver is required')
+        const pause = barrier()
+        field.resolve = async (...args) => {
+          await pause.pause()
+          return resolve(...args)
+        }
+        const revision = (
+          await journeys.journeyRevision.findUniqueOrThrow({
+            where: { journeyId: 'read-a' }
+          })
+        ).revision.toString()
+        const original = await journeys.block.findUniqueOrThrow({
+          where: { id: 'read-a-text' }
+        })
+        const reading = humanMutation(
+          `query { journeyPreview(id:"read-a", expectedRevision:"${revision}") { id blocks { id ... on TypographyBlock { content } } } }`,
+          {},
+          'alice'
+        )
+        let updating: Promise<unknown> | undefined
+        try {
+          await pause.ready
+          updating = journeys.block
+            .update({
+              where: { id: 'read-a-text' },
+              data: { content: 'changed-after-preview' }
+            })
+            .then((value) => value)
+          await vi.waitFor(async () => {
+            const [state] = await journeys.$queryRaw<
+              { waiting: boolean }[]
+            >`SELECT EXISTS (SELECT 1 FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock' AND pid <> pg_backend_pid()) AS waiting`
+            expect(state.waiting).toBe(true)
+          })
+          pause.resume()
+          const result = await reading
+          expect(JSON.stringify(result.data)).toContain(original.content)
+          expect(JSON.stringify(result.data)).not.toContain(
+            'changed-after-preview'
+          )
+          await updating
+          field.resolve = resolve
+          const stale = await humanMutation(
+            `query { journeyPreview(id:"read-a", expectedRevision:"${revision}") { id } }`,
+            {},
+            'alice'
+          )
+          expect(stale.data).toBeNull()
+          expect(stale.errors?.[0].extensions?.code).toBe('REVISION_CONFLICT')
+        } finally {
+          pause.resume()
+          field.resolve = resolve
+          await reading
+          await updating
+          await journeys.block.update({
+            where: { id: original.id },
+            data: { content: original.content }
+          })
+        }
+      })
+
+      it('publishes through the ordinary human mutation with current Manage rights, preserving public playback and the shared draft fence', async () => {
+        const id = 'human-publish-' + randomUUID()
+        await journeys.journey.create({
+          data: {
+            id,
+            slug: id,
+            title: 'Synthetic publication',
+            teamId: 'read-team',
+            languageId: '529',
+            status: 'draft',
+            userJourneys: {
+              create: { userId: 'preview-editor', role: 'editor' }
+            }
+          }
+        })
+        try {
+          const permission = `query { journeyPublishPermission(id:"${id}") }`
+          expect(
+            (await humanMutation(permission, {}, 'alice')).data
+              ?.journeyPublishPermission
+          ).toBe(true)
+          expect(
+            (await humanMutation(permission, {}, 'preview-editor')).data
+              ?.journeyPublishPermission
+          ).toBe(false)
+          const publish = `mutation { journeyPublish(id:"${id}") { id status } }`
+          expect(
+            (await humanMutation(publish, {}, 'preview-editor')).errors?.[0]
+              .extensions?.code
+          ).toBe('FORBIDDEN')
+          expect(
+            (
+              await journeys.journey.findUniqueOrThrow({
+                where: { id }
+              })
+            ).status
+          ).toBe('draft')
+          expect(
+            (await humanMutation(publish, {}, 'alice')).data?.journeyPublish
+          ).toMatchObject({ id, status: 'published' })
+          expect(
+            (
+              await humanMutation(
+                `query { journey(id:"${id}") { id status } }`,
+                {},
+                'stranger'
+              )
+            ).data?.journey
+          ).toMatchObject({ id, status: 'published' })
+          expect(
+            (await humanMutation(permission, {}, 'alice')).data
+              ?.journeyPublishPermission
+          ).toBe(false)
+          const revision = (
+            await journeys.journeyRevision.findUniqueOrThrow({
+              where: { journeyId: id }
+            })
+          ).revision.toString()
+          await expect(
+            journeys.$transaction((tx) =>
+              lockDraftJourneyRevision(tx, id, revision)
+            )
+          ).rejects.toThrow('not an ordinary draft')
+        } finally {
+          await journeys.journey.delete({ where: { id } })
+        }
       })
 
       it('binds bounded read pages to identity, filters, grant version and the shared Admin revision', async () => {

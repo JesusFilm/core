@@ -1,8 +1,10 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
+import { blockHistoryVar } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
@@ -87,6 +89,40 @@ const block: TreeBlock<VideoFields> = {
 describe('Video', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  it('plays the existing public media source in private preview without visitor mutations', async () => {
+    const link = new MockLink([])
+    const requests = vi.spyOn(link, 'request')
+    blockHistoryVar([
+      {
+        id: 'preview-step',
+        __typename: 'StepBlock',
+        children: [block]
+      } as TreeBlock
+    ])
+    const view = render(
+      <MockedProvider link={link}>
+        <JourneyProvider value={{ renderMode: 'preview' }}>
+          <Video {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const source = view
+      .getByTestId('JourneysVideo-video0.id')
+      .querySelector('.vjs-tech source')
+    expect(source).toHaveAttribute(
+      'src',
+      'https://arc.gt/hls/2_0-FallingPlates/529'
+    )
+    const video = view
+      .getByTestId('JourneysVideo-video0.id')
+      .querySelector('video')
+    expect(video).not.toBeNull()
+    fireEvent.play(video!)
+    fireEvent.pause(video!)
+    expect(requests).not.toHaveBeenCalled()
+    blockHistoryVar([])
   })
 
   it('should render internal video', () => {

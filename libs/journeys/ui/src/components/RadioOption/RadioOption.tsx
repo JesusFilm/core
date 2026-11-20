@@ -30,7 +30,7 @@ export function RadioOption({
   pollOptionImageBlockId,
   children
 }: RadioOptionProps): ReactElement {
-  const { journey } = useJourney()
+  const { journey, renderMode } = useJourney()
   const router = useRouter()
 
   const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
@@ -39,7 +39,9 @@ export function RadioOption({
     e.stopPropagation()
     onClick?.(id, resolvedLabel)
     const nextStepSlug = getNextStepSlug(journey, action)
-    handleAction(router, action, nextStepSlug)
+    if (renderMode === 'preview')
+      handleAction(router, action, nextStepSlug, renderMode)
+    else handleAction(router, action, nextStepSlug)
   }
 
   return gridView === true ? (
