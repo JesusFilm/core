@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { createAuthDatabase } from '@core/prisma/auth/client'
 import { Prisma, PrismaClient } from '@core/prisma/journeys/client'
 import {
+  type TypographyInverse,
   canonicalFingerprint,
   historyResult
 } from '@core/yoga/mcp/editContract'
@@ -4736,6 +4737,142 @@ describe('saved edit integration', () => {
           const afterUndo = await snapshot()
           expect(receipt(await call('journey_undo', input))).toEqual(undone)
           expect(await snapshot()).toEqual(afterUndo)
+        }
+      )
+
+      it.each([
+        { field: 'variant', after: 'not-a-variant' },
+        { field: 'align', after: 'justify' },
+        { field: 'settings.color', after: 'red' },
+        { field: 'settings.color', after: '#abcdef00' },
+        { field: 'content', after: 'x'.repeat(262145) }
+      ])(
+        'rejects malformed retained Typography forward $field before redo acceptance and recovers after repair',
+        async ({ field, after }) => {
+          const original = {
+            content: 'Legacy heading',
+            variant: 'legacy-variant',
+            align: 'legacy-align',
+            settings: { color: { retained: ['legacy', 42] }, human: 'preserve' }
+          }
+          await journeys.block.update({
+            where: { id: `${journeyId}-text` },
+            data: original
+          })
+          const saved = receipt(
+            await edit({
+              ...(await editInput()),
+              commands: [
+                {
+                  type: 'typography_set',
+                  blockId: `${journeyId}-text`,
+                  content: 'Saved heading',
+                  variant: 'h1',
+                  align: 'center',
+                  color: '#ABCDEF'
+                }
+              ]
+            })
+          )
+          const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+            where: { id: saved.historyId! }
+          })
+          await historyAction('undo', entry.id)
+          expect(await textBlock()).toMatchObject(original)
+          const changes = structuredClone(
+            entry.changes
+          ) as unknown as TypographyInverse[]
+          expect(changes[0].type).toBe('typography_restore')
+          const changedField = changes[0].fields.find(
+            (change) => change.field === field
+          )!
+          expect(changedField).toBeDefined()
+          changedField.after = after
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: changes as unknown as Prisma.InputJsonValue }
+          })
+          const snapshot = async () => ({
+            blocks: await journeys.block.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            revision: await revision(),
+            cursor: await history(),
+            entries: await journeys.mcpEditHistory.findMany({
+              where: { journeyId },
+              orderBy: { ordinal: 'asc' }
+            }),
+            operations: await journeys.mcpEditOperation.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            counts: await counts(),
+            audit: await journeys.mcpEditAudit.count({ where: { journeyId } })
+          })
+          const before = await snapshot()
+          const input = await historyInput(entry.id)
+          const acceptance = vi.fn()
+          checkpoint = async (point, context) => {
+            if (point === 'before_accept' && context.operationId) acceptance()
+          }
+          for (let attempt = 0; attempt < 2; attempt++) {
+            const response = await call('journey_redo', input)
+            expect(response.json.result?.isError).toBe(true)
+            expect(response.text).toContain('HISTORY_UNAVAILABLE')
+            expect(acceptance).not.toHaveBeenCalled()
+            expect(await snapshot()).toEqual(before)
+          }
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: entry.changes! }
+          })
+          const redone = receipt(await call('journey_redo', input))
+          expect(acceptance).toHaveBeenCalled()
+          expect(await textBlock()).toMatchObject({
+            content: 'Saved heading',
+            variant: 'h1',
+            align: 'center',
+            settings: { color: '#ABCDEF', human: 'preserve' }
+          })
+          expect((await history()).undoEntryId).toBe(entry.id)
+          const afterRedo = await snapshot()
+          expect(receipt(await call('journey_redo', input))).toEqual(redone)
+          expect(await snapshot()).toEqual(afterRedo)
+        }
+      )
+
+      it.each([
+        {
+          label: 'markup',
+          content: '<p>Historical <strong>heading</strong></p>'
+        },
+        { label: 'maximum length', content: 'x'.repeat(262144) }
+      ])(
+        'restores historically accepted Typography content with $label',
+        async ({ content }) => {
+          const saved = receipt(await edit(await editInput()))
+          const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+            where: { id: saved.historyId! }
+          })
+          const changes = structuredClone(
+            entry.changes
+          ) as unknown as TypographyInverse[]
+          expect(changes[0].fields).toHaveLength(1)
+          expect(changes[0].fields[0].field).toBe('content')
+          changes[0].fields[0].after = content
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: changes as unknown as Prisma.InputJsonValue }
+          })
+          await journeys.block.update({
+            where: { id: `${journeyId}-text` },
+            data: { content }
+          })
+          await historyAction('undo', entry.id)
+          expect((await textBlock()).content).toBe('Original heading')
+          await historyAction('redo', entry.id)
+          expect((await textBlock()).content).toBe(content)
         }
       )
 

@@ -3,7 +3,11 @@ import { isDeepStrictEqual } from 'node:util'
 import { z } from 'zod'
 
 import { Prisma } from '@core/prisma/journeys/client'
-import { type HistoryResult, historyResult } from '@core/yoga/mcp/editContract'
+import {
+  type HistoryResult,
+  historyResult,
+  typographyCommand
+} from '@core/yoga/mcp/editContract'
 import {
   createdInverse,
   deriveSubmitRole,
@@ -24,6 +28,13 @@ type Block = Prisma.BlockGetPayload<Record<string, never>>
 
 // Persisted descriptors are internal, versioned by their discriminant. Neither
 // clients nor generic field names can introduce writes into this closed union.
+const typographyForwardFields = {
+  // Retained descriptors predate the plain-text-only content constraint.
+  content: z.string().max(262144),
+  variant: typographyCommand.shape.variant,
+  align: typographyCommand.shape.align,
+  'settings.color': typographyCommand.shape.color
+}
 const typographyInverse = z
   .object({
     type: z.literal('typography_restore'),
@@ -40,10 +51,11 @@ const typographyInverse = z
           })
           .strict()
           .refine(
-            ({ field, before }) =>
-              field === 'settings.color' ||
-              before === null ||
-              typeof before === 'string'
+            ({ field, before, after }) =>
+              typographyForwardFields[field].safeParse(after).success &&
+              (field === 'settings.color' ||
+                before === null ||
+                typeof before === 'string')
           )
       )
       .min(1)
