@@ -88,6 +88,7 @@ describe('granted journey read authorization', () => {
       let permissionCoordinator: ReturnType<
         typeof createJourneyPermissionCoordinator
       >
+      let restartPermissionCoordinator: typeof createJourneyPermissionCoordinator
       let beforeOutput: ((executorId: string) => Promise<void>) | undefined
       let afterOutput: (() => void) | undefined
       let accessToken: string
@@ -595,6 +596,7 @@ describe('granted journey read authorization', () => {
         } = (await import(
           /* webpackChunkName: "permission-owner-participant" */ permissionModule
         )) as typeof import('../../api-journeys/src/lib/mcpPermissions')
+        restartPermissionCoordinator = createJourneyPermissionCoordinator
         permissionCoordinator = createJourneyPermissionCoordinator(
           {
             authorityUrl,
@@ -2432,9 +2434,7 @@ describe('granted journey read authorization', () => {
                     await journeys.userJourney.findUniqueOrThrow({
                       where: { id: collaboratorId }
                     })
-                  const { createJourneyPermissionCoordinator: restart } =
-                    await import('../../api-journeys/src/lib/mcpPermissions')
-                  const restarted = restart(
+                  const restarted = restartPermissionCoordinator(
                     {
                       authorityUrl,
                       authoritySecret: config.AUTH_PERMISSION_JOURNEYS_SECRET!
