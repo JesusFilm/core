@@ -42,7 +42,10 @@ const required: Record<string, string[]> = {
   'apis/api-journeys/src/lib/mcpPermissions.ts': [
     'const gateIdsHash = fingerprint(execution.gateIds)',
     "state = await authority('status', { changeId: id })",
-    'assertAccountCleanupResult(value)'
+    'assertAccountCleanupResult(value)',
+    'await authorizeAccountDeletionResume(execution, storedIntent)',
+    'storedIntent.accountDeletion?.result',
+    'receipt.accountDeletion?.result'
   ],
 
   'apis/api-auth/src/connections.ts': [

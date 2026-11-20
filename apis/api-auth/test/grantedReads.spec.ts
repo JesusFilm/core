@@ -2651,7 +2651,14 @@ describe('granted journey read authorization', () => {
           try {
             const result = await humanMutation(
               `mutation Batch($ids: [ID!]!) { ${field}(ids: $ids) { id } }`,
-              { ids: [...Array<string>(5001).fill('read-a'), 'read-missing'] }
+              {
+                ids: [
+                  ...Array<string>(5001).fill('read-a'),
+                  'read-missing',
+                  '',
+                  'x'.repeat(201)
+                ]
+              }
             )
             expect(result.errors).toBeUndefined()
             expect(result.data?.[field]).toEqual([{ id: 'read-a' }])
@@ -2820,9 +2827,30 @@ describe('granted journey read authorization', () => {
         })
       })
 
-      it.skipIf(!users)(
-        'preserves real shared deletion outcomes and retires identity through the existing users subscription',
-        async () => {
+      it
+        .skipIf(!users)
+        .each(['complete', 'lost', 'pending', 'recovered'] as const)(
+        'preserves shared deletion outcomes and resumes the Admin workflow after a %s retirement response',
+        async (retirementResponse) => {
+          for (const userId of ['alice', 'bob'])
+            await users!.user.upsert({
+              where: { userId },
+              create: {
+                userId,
+                firstName: userId,
+                email: userId + '@synthetic.example'
+              },
+              update: { superAdmin: false }
+            })
+          await journeys.userJourney.deleteMany({
+            where: { journeyId: 'read-a' }
+          })
+          await journeys.journey.deleteMany({
+            where: { id: 'read-delete-exclusive' }
+          })
+          await journeys.team.deleteMany({
+            where: { id: 'read-delete-exclusive-team' }
+          })
           await permissionActors()
           const bobToken = await consent('bob', ['read-foreign'])
           await journeys.team.upsert({
@@ -2851,11 +2879,22 @@ describe('granted journey read authorization', () => {
               { journeyId: 'read-a', userId: 'bob', role: 'editor' }
             ]
           })
-          const deleted = await humanMutation(
+          permissionOutage = retirementResponse === 'recovered'
+          let deleted = await humanMutation(
             'mutation DeleteJourneys { userDeleteJourneysConfirm(userId: "alice") { success deletedJourneyIds deletedTeamIds deletedUserJourneyIds deletedUserTeamIds } }',
             {},
             'alice'
           )
+          if (retirementResponse === 'recovered') {
+            expect(deleted.errors).toHaveLength(1)
+            permissionOutage = false
+            expect(await permissionCoordinator.reconcile()).toBe(0)
+            deleted = await humanMutation(
+              'mutation DeleteJourneys { userDeleteJourneysConfirm(userId: "alice") { success deletedJourneyIds deletedTeamIds deletedUserJourneyIds deletedUserTeamIds } }',
+              {},
+              'alice'
+            )
+          }
           expect(deleted.errors).toBeUndefined()
           const outcomes = deleted.data?.userDeleteJourneysConfirm as {
             success: boolean
@@ -2907,6 +2946,28 @@ describe('granted journey read authorization', () => {
           const deleteUser = vi
             .spyOn(firebaseAuth, 'deleteUser')
             .mockResolvedValue(undefined)
+          const originalFetch = globalThis.fetch
+          let interruptRetirement = ['lost', 'pending'].includes(
+            retirementResponse
+          )
+          const retirementFetch = vi
+            .spyOn(globalThis, 'fetch')
+            .mockImplementation(async (input, init) => {
+              const response = await originalFetch(input, init)
+              if (
+                String(input).endsWith(
+                  '/internal/permissions/retire-account'
+                ) &&
+                interruptRetirement
+              ) {
+                interruptRetirement = false
+                expect(response.ok).toBe(true)
+                if (retirementResponse === 'lost')
+                  throw new Error('Controlled lost retirement response')
+                return Response.json({ status: 'pending' })
+              }
+              return response
+            })
           try {
             const usersSchemaModule = new URL(
               '../../api-users/src/schema/schema.ts',
@@ -2915,28 +2976,66 @@ describe('granted journey read authorization', () => {
             const { schema: usersSchema } = (await import(
               /* webpackChunkName: "users-deletion-participant" */ usersSchemaModule
             )) as { schema: GraphQLSchema }
-            const progress = await subscribe({
-              schema: usersSchema,
-              document: parse(
-                'subscription DeleteAccount($id: String!, $journeys: [String!]!, $teams: [String!]!, $collaborations: [String!]!, $memberships: [String!]!) { userDeleteConfirm(idType: databaseId, id: $id, deletedJourneyIds: $journeys, deletedTeamIds: $teams, deletedUserJourneyIds: $collaborations, deletedUserTeamIds: $memberships) { done success } }'
-              ),
-              variableValues: {
-                id: uidRecord.id,
-                journeys: outcomes.deletedJourneyIds,
-                teams: outcomes.deletedTeamIds,
-                collaborations: outcomes.deletedUserJourneyIds,
-                memberships: outcomes.deletedUserTeamIds
-              },
-              contextValue: {
-                ...initContextCache(),
-                type: 'authenticated',
-                currentUser: { id: 'alice', email: 'alice@synthetic.example' }
-              }
-            })
-            if (!(Symbol.asyncIterator in progress))
-              throw new Error(JSON.stringify(progress))
-            const results = []
-            for await (const result of progress) results.push(result)
+            const deleteAccount = async () => {
+              const progress = await subscribe({
+                schema: usersSchema,
+                document: parse(
+                  'subscription DeleteAccount($id: String!, $journeys: [String!]!, $teams: [String!]!, $collaborations: [String!]!, $memberships: [String!]!) { userDeleteConfirm(idType: databaseId, id: $id, deletedJourneyIds: $journeys, deletedTeamIds: $teams, deletedUserJourneyIds: $collaborations, deletedUserTeamIds: $memberships) { done success } }'
+                ),
+                variableValues: {
+                  id: uidRecord.id,
+                  journeys: outcomes.deletedJourneyIds,
+                  teams: outcomes.deletedTeamIds,
+                  collaborations: outcomes.deletedUserJourneyIds,
+                  memberships: outcomes.deletedUserTeamIds
+                },
+                contextValue: {
+                  ...initContextCache(),
+                  type: 'authenticated',
+                  currentUser: { id: 'alice', email: 'alice@synthetic.example' }
+                }
+              })
+              if (!(Symbol.asyncIterator in progress))
+                throw new Error(JSON.stringify(progress))
+              const results = []
+              for await (const result of progress) results.push(result)
+              return results
+            }
+            if (['lost', 'pending'].includes(retirementResponse)) {
+              const interrupted = await deleteAccount()
+              expect(interrupted.at(-1)).toMatchObject({
+                data: { userDeleteConfirm: { done: true, success: false } }
+              })
+              expect(deleteUser).not.toHaveBeenCalled()
+              expect(
+                await users!.user.findUnique({ where: { userId: 'alice' } })
+              ).not.toBeNull()
+              expect(
+                await auth.retiredAccount.findUnique({
+                  where: { userId: 'alice' }
+                })
+              ).not.toBeNull()
+              const closedGate = await auth.authorizationGate.findUniqueOrThrow(
+                { where: { id: 'account:alice' } }
+              )
+              expect(closedGate.open).toBe(false)
+              expect(await permissionCoordinator.reconcile()).toBe(0)
+              const resumed = await humanMutation(
+                'mutation DeleteJourneys { userDeleteJourneysConfirm(userId: "alice") { success deletedJourneyIds deletedTeamIds deletedUserJourneyIds deletedUserTeamIds } }',
+                {},
+                'alice'
+              )
+              expect(resumed.errors).toBeUndefined()
+              expect(resumed.data?.userDeleteJourneysConfirm).toEqual(outcomes)
+              expect(await journeys.mcpPermissionExecution.count()).toBe(1)
+              expect(await auth.permissionChange.count()).toBe(1)
+              expect(
+                await auth.authorizationGate.findUniqueOrThrow({
+                  where: { id: 'account:alice' }
+                })
+              ).toEqual(closedGate)
+            }
+            const results = await deleteAccount()
             expect(results.at(-1)).toMatchObject({
               data: { userDeleteConfirm: { done: true, success: true } }
             })
@@ -2968,6 +3067,7 @@ describe('granted journey read authorization', () => {
               })
             ).not.toBeNull()
           } finally {
+            retirementFetch.mockRestore()
             getUser.mockRestore()
             deleteUser.mockRestore()
             vi.unstubAllEnvs()
