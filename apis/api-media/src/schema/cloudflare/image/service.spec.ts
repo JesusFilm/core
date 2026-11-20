@@ -1,12 +1,10 @@
 import Cloudflare from 'cloudflare'
-import { APIPromise } from 'cloudflare/core'
 import clone from 'lodash/clone'
 import { vi } from 'vitest'
 import { mockDeep } from 'vitest-mock-extended'
 
 import {
   createImageByDirectUpload,
-  createImageFromResponse,
   createImageFromText,
   createImageFromUrl,
   deleteImage
@@ -68,45 +66,44 @@ describe('ImageService', () => {
     })
   })
 
-  describe('createImageFromResponse', () => {
-    it('returns image', async () => {
-      mockCloudflare.images.v1.create.mockResolvedValueOnce({
-        id: '1'
+  describe('createImageFromText', () => {
+    it('sends a multipart prompt to FLUX and uploads the decoded image', async () => {
+      const imageBytes = Buffer.from([255, 216, 255, 217])
+      mockCloudflare.post.mockResolvedValueOnce({
+        result: { image: imageBytes.toString('base64') }
       })
-      const response = new Response()
-      expect(await createImageFromResponse(response)).toEqual({
-        id: '1'
-      })
-      expect(mockCloudflare.images.v1.create).toHaveBeenCalledWith({
+      mockCloudflare.images.v1.create.mockResolvedValueOnce({ id: '1' })
+
+      expect(await createImageFromText('test prompt')).toEqual({ id: '1' })
+
+      const [path, options] = mockCloudflare.post.mock.calls[0]
+      expect(path).toBe(
+        '/accounts/cf_account_id/ai/run/@cf/black-forest-labs/flux-2-klein-9b'
+      )
+      const { body: multipart } = (await options) ?? {}
+      expect(multipart).toEqual(
+        expect.objectContaining({ body: expect.any(FormData) })
+      )
+      const { body: form } = multipart as { body: FormData }
+      expect(form.get('prompt')).toBe('test prompt')
+
+      const [upload] = mockCloudflare.images.v1.create.mock.calls[0]
+      expect(upload).toEqual({
         account_id: 'cf_account_id',
         requireSignedURLs: false,
-        file: response
+        file: expect.any(File)
       })
+      const file = upload.file as File
+      expect(Buffer.from(await file.arrayBuffer())).toEqual(imageBytes)
     })
 
-    it('throws error when missing CLOUDFLARE_ACCOUNT_ID', async () => {
-      delete process.env.CLOUDFLARE_ACCOUNT_ID
-      await expect(createImageFromResponse(new Response())).rejects.toThrow(
-        'Missing CLOUDFLARE_ACCOUNT_ID'
-      )
-    })
-  })
+    it('does not upload when Workers AI returns no image', async () => {
+      mockCloudflare.post.mockResolvedValueOnce({ result: {} })
 
-  describe('createImageFromText', () => {
-    it('returns response', async () => {
-      const response = new Response()
-      mockCloudflare.post.mockReturnValue({
-        asResponse: vi.fn().mockResolvedValueOnce(response)
-      } as unknown as APIPromise<unknown>)
-      expect(await createImageFromText('prompt')).toEqual(response)
-      expect(mockCloudflare.post).toHaveBeenCalledWith(
-        '/accounts/cf_account_id/ai/run/@cf/stabilityai/stable-diffusion-xl-base-1.0',
-        {
-          body: {
-            prompt: 'prompt'
-          }
-        }
+      await expect(createImageFromText('prompt')).rejects.toThrow(
+        'Workers AI did not return generated image data'
       )
+      expect(mockCloudflare.images.v1.create).not.toHaveBeenCalled()
     })
 
     it('throws error when missing CLOUDFLARE_ACCOUNT_ID', async () => {
