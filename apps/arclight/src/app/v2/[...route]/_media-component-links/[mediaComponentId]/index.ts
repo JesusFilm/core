@@ -3,6 +3,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { getComponentType } from '../../../../../lib/mediaComponentType'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 const GET_VIDEO_CHILDREN = graphql(`
@@ -56,6 +57,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variants(input: { languageId: "529" }) {
           hls
+          dash
           lengthInMilliseconds
           language {
             id
@@ -116,6 +118,7 @@ const GET_VIDEO_CHILDREN = graphql(`
         availableLanguages
         variants(input: { languageId: "529" }) {
           hls
+          dash
           lengthInMilliseconds
           language {
             id
@@ -144,6 +147,14 @@ type VideoVariant = Video['children'][number]['variants'][number]
 // Helper function to get the primary variant (first variant)
 const getPrimaryVariant = (variants: VideoVariant[]): VideoVariant | null =>
   variants?.[0] || null
+
+// Same rule as the other /media-components routes: only a variant with playable
+// media can be downloaded. The raw flag alone is not enough, since it defaults
+// to true, including on the generated parent variants of a collection or
+// series, which have no media.
+const isVariantDownloadable = (variant: VideoVariant | null): boolean =>
+  getComponentType(variant?.hls, variant?.dash) === 'content' &&
+  (variant?.downloadable ?? false)
 
 const ParamsSchema = z.object({
   mediaComponentId: z.string()
@@ -334,7 +345,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                     },
                     lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
                     containsCount: childrenCount,
-                    isDownloadable: variant?.downloadable ?? false,
+                    isDownloadable: isVariantDownloadable(variant),
                     downloadSizes: {
                       approximateSmallDownloadSizeInBytes:
                         variant?.downloads?.find((d) => d.quality === 'low')
@@ -423,7 +434,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                           lengthInMilliseconds:
                             variant?.lengthInMilliseconds ?? 0,
                           containsCount: childrenCount,
-                          isDownloadable: variant?.downloadable ?? false,
+                          isDownloadable: isVariantDownloadable(variant),
                           downloadSizes: {
                             approximateSmallDownloadSizeInBytes:
                               variant?.downloads?.find(
