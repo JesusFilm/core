@@ -16,6 +16,8 @@ const progress = {
   callerEmail: 'self@example.com',
   retiredFirebaseUids: ['self'],
   firebaseCleanupUids: ['self'],
+  firebaseCleanupEmail: 'self@example.com',
+  firebaseEmailLookupPending: false,
   deletedJourneyIds: [],
   deletedTeamIds: [],
   deletedUserJourneyIds: [],
@@ -123,5 +125,45 @@ describe('resuming committed Users deletion', () => {
       where: { id: 'audit' },
       data: { success: true, completedAt: expect.any(Date), errorMessage: null }
     })
+  })
+
+  it('keeps an interrupted email lookup pending even when a recorded UID is deleted on retry', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      superAdmin: true
+    } as NonNullable<Awaited<ReturnType<typeof prismaMock.user.findUnique>>>)
+    prismaMock.userDeleteAuditLog.findFirst.mockResolvedValue({
+      ...progress,
+      callerEmail: 'admin@example.com',
+      firebaseEmailLookupPending: true
+    })
+    firebase.getUserByEmail.mockRejectedValue(new Error('Firebase unavailable'))
+
+    expect(
+      await resumeUserDeletion('databaseId', 'user-record', 'admin')
+    ).toMatchObject({ success: false })
+    expect(firebase.deleteUser).toHaveBeenCalledExactlyOnceWith('self')
+    expect(firebase.getUserByEmail).toHaveBeenCalledWith('self@example.com')
+    expect(prismaMock.userDeleteAuditLog.update).toHaveBeenLastCalledWith({
+      where: { id: 'audit' },
+      data: {
+        success: false,
+        errorMessage: 'Firebase deletion pending after SQL deletion'
+      }
+    })
+  })
+
+  it('cannot use a self-deletion lookup intent to retire a foreign identity', async () => {
+    prismaMock.userDeleteAuditLog.findFirst.mockResolvedValue({
+      ...progress,
+      firebaseEmailLookupPending: true
+    })
+    firebase.deleteUser.mockRejectedValue({ code: 'auth/user-not-found' })
+    firebase.getUserByEmail.mockResolvedValue({ uid: 'foreign' })
+
+    expect(
+      await resumeUserDeletion('databaseId', 'user-record', 'self')
+    ).toMatchObject({ success: false })
+    expect(firebase.deleteUser).toHaveBeenCalledExactlyOnceWith('self')
+    expect(fetch).not.toHaveBeenCalled()
   })
 })

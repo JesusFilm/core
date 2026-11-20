@@ -35,6 +35,7 @@ const forbiddenReconciliationMessage =
 interface FirebaseCleanupProgress {
   auditLogId: string
   firebaseUids: readonly string[]
+  emailLookupPending?: boolean
 }
 
 export async function deleteFirebaseUser(
@@ -107,9 +108,18 @@ export async function deleteFirebaseUser(
     }
   }
 
-  // Final safety check: if nothing was deleted by UID, try by email
-  if (!anyDeleted && email != null) {
+  // An interrupted lookup must settle even if another UID was deleted on retry.
+  if (progress?.emailLookupPending && email === null) {
+    logs.push(createLog('Firebase email lookup intent is missing', 'error'))
+    return logs
+  }
+  if ((!anyDeleted || progress?.emailLookupPending) && email != null) {
     try {
+      if (progress)
+        await prisma.userDeleteAuditLog.update({
+          where: { id: progress.auditLogId },
+          data: { firebaseEmailLookupPending: true }
+        })
       const fbUser = await auth.getUserByEmail(email)
       if (fbUser.uid !== firebaseUserId && !allowReconciledUid) {
         logs.push(
@@ -122,10 +132,15 @@ export async function deleteFirebaseUser(
       }
       // Record authorization separately from confirmation. A Pending or lost
       // retirement response must leave this exact target available to retry.
-      if (progress && !uidsToTry.has(fbUser.uid))
+      if (progress)
         await prisma.userDeleteAuditLog.update({
           where: { id: progress.auditLogId },
-          data: { firebaseCleanupUids: { push: fbUser.uid } }
+          data: {
+            firebaseEmailLookupPending: false,
+            ...(!uidsToTry.has(fbUser.uid)
+              ? { firebaseCleanupUids: { push: fbUser.uid } }
+              : {})
+          }
         })
       await retireAndDelete(fbUser.uid)
       logs.push(
@@ -139,6 +154,11 @@ export async function deleteFirebaseUser(
         return logs
       }
       if (isFirebaseNotFound(error)) {
+        if (progress)
+          await prisma.userDeleteAuditLog.update({
+            where: { id: progress.auditLogId },
+            data: { firebaseEmailLookupPending: false }
+          })
         logs.push(createLog('🔥 No Firebase auth record found by email either'))
       } else {
         console.error(
@@ -182,6 +202,7 @@ export async function deleteUserData(
       data: {
         deletedUserId: input.userDbId,
         deletedUserFirebaseUid: input.firebaseUserId,
+        firebaseCleanupEmail: input.userEmail,
         callerUserId: input.callerUserId,
         callerEmail: input.callerEmail,
         deletedJourneyIds: input.deletedJourneyIds,

@@ -58,10 +58,15 @@ export async function resumeUserDeletion(
   const logs = await deleteFirebaseUser(
     progress.deletedUserFirebaseUid,
     retiredUids.find((uid) => uid !== progress.deletedUserFirebaseUid) ?? null,
-    selfDeletion ? progress.callerEmail : null,
+    progress.firebaseCleanupEmail ??
+      (selfDeletion ? progress.callerEmail : null),
     caller?.superAdmin ?? false,
     new Set(retiredUids),
-    { auditLogId: progress.id, firebaseUids }
+    {
+      auditLogId: progress.id,
+      firebaseUids,
+      emailLookupPending: progress.firebaseEmailLookupPending
+    }
   )
   const success = !logs.some(({ level }) => level === 'error')
   await prisma.userDeleteAuditLog.update({

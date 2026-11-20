@@ -54,6 +54,7 @@ export async function deleteFirebaseOnlyAccount(
         deletedUserId: input.targetFirebaseUid,
         deletedUserFirebaseUid: input.targetFirebaseUid,
         firebaseCleanupUids: [input.targetFirebaseUid],
+        firebaseCleanupEmail: input.targetEmail,
         callerUserId: input.callerDbId,
         callerEmail: input.callerEmail,
         deletedJourneyIds: [],

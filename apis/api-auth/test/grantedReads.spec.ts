@@ -3265,7 +3265,15 @@ describe('granted journey read authorization', () => {
         })
       })
 
-      it.skipIf(!users).each(['pending', 'lost', 'delete-failure'] as const)(
+      it
+        .skipIf(!users)
+        .each([
+          'pending',
+          'lost',
+          'delete-failure',
+          'lookup-failure',
+          'lookup-absent'
+        ] as const)(
         'resumes a recorded email fallback through the Admin database-ID entrypoint after %s',
         async (mode) => {
           const target = await users!.user.upsert({
@@ -3315,6 +3323,12 @@ describe('granted journey read authorization', () => {
               },
               toJSON: () => ({})
             })
+          const lookupInterrupted =
+            mode === 'lookup-failure' || mode === 'lookup-absent'
+          if (lookupInterrupted)
+            emailLookup.mockRejectedValueOnce(
+              new Error('Controlled Firebase email lookup outage')
+            )
           let interrupted = false
           const deleteUser = vi
             .spyOn(firebaseAuth, 'deleteUser')
@@ -3361,7 +3375,11 @@ describe('granted journey read authorization', () => {
                 })
               }
               const response = await originalFetch(input, init)
-              if (fallback && mode !== 'delete-failure' && !interrupted) {
+              if (
+                fallback &&
+                (mode === 'pending' || mode === 'lost') &&
+                !interrupted
+              ) {
                 interrupted = true
                 expect(response.ok).toBe(true)
                 if (mode === 'lost')
@@ -3410,33 +3428,62 @@ describe('granted journey read authorization', () => {
             })
             expect(audit).toMatchObject({
               success: false,
-              firebaseCleanupUids: ['alice', 'fallback-alice'],
+              firebaseCleanupEmail: 'alice@synthetic.example',
+              firebaseEmailLookupPending: lookupInterrupted,
+              firebaseCleanupUids: lookupInterrupted
+                ? ['alice']
+                : ['alice', 'fallback-alice'],
               retiredFirebaseUids:
                 mode === 'delete-failure'
                   ? ['alice', 'fallback-alice']
                   : ['alice']
             })
-            emailLookup.mockRejectedValue(
-              new Error('Retry must use the recorded UID')
-            )
+            if (lookupInterrupted) {
+              emailLookup.mockRejectedValueOnce(
+                new Error('Controlled repeated Firebase email lookup outage')
+              )
+              expect(await attempt()).toMatchObject({
+                data: { userDeleteConfirm: { done: true, success: false } }
+              })
+              expect(
+                await users!.userDeleteAuditLog.findUnique({
+                  where: { id: audit.id }
+                })
+              ).toMatchObject({ success: false })
+              if (mode === 'lookup-absent')
+                emailLookup.mockRejectedValue(
+                  Object.assign(new Error('Firebase user not found'), {
+                    code: 'auth/user-not-found'
+                  })
+                )
+            } else
+              emailLookup.mockRejectedValue(
+                new Error('Retry must use the recorded UID')
+              )
             expect(await attempt()).toMatchObject({
               data: { userDeleteConfirm: { done: true, success: true } }
             })
-            expect(emailLookup).toHaveBeenCalledTimes(1)
-            expect(deleteUser).toHaveBeenCalledWith('fallback-alice')
+            expect(emailLookup).toHaveBeenCalledTimes(lookupInterrupted ? 3 : 1)
+            if (mode !== 'lookup-absent')
+              expect(deleteUser).toHaveBeenCalledWith('fallback-alice')
+            else expect(deleteUser).not.toHaveBeenCalledWith('fallback-alice')
             expect(
               await users!.userDeleteAuditLog.findUnique({
                 where: { id: audit.id }
               })
             ).toMatchObject({
               success: true,
-              retiredFirebaseUids: ['alice', 'fallback-alice']
+              firebaseEmailLookupPending: false,
+              retiredFirebaseUids:
+                mode === 'lookup-absent'
+                  ? ['alice']
+                  : ['alice', 'fallback-alice']
             })
-            expect(
-              await auth.retiredAccount.findUnique({
-                where: { userId: 'fallback-alice' }
-              })
-            ).not.toBeNull()
+            const retiredFallback = await auth.retiredAccount.findUnique({
+              where: { userId: 'fallback-alice' }
+            })
+            if (mode === 'lookup-absent') expect(retiredFallback).toBeNull()
+            else expect(retiredFallback).not.toBeNull()
           } finally {
             retireFetch.mockRestore()
             getUser.mockRestore()

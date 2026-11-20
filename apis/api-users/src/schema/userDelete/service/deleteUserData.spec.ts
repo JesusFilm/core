@@ -388,7 +388,10 @@ describe('MCP retirement through existing account deletion', () => {
     expect(result.success).toBe(false)
     expect(prismaMock.userDeleteAuditLog.update).toHaveBeenCalledWith({
       where: { id: 'audit-mcp' },
-      data: { firebaseCleanupUids: { push: 'new-fallback' } }
+      data: {
+        firebaseEmailLookupPending: false,
+        firebaseCleanupUids: { push: 'new-fallback' }
+      }
     })
     const recorded = prismaMock.userDeleteAuditLog.update.mock.calls.findIndex(
       ([args]) => JSON.stringify(args.data).includes('new-fallback')
