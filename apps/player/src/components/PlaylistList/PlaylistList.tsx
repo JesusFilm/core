@@ -15,6 +15,7 @@ interface PlaylistItem {
       id: string
       name: {
         value: string
+        primary: boolean
       }[]
     }
     video: {
@@ -61,7 +62,11 @@ export function PlaylistList({
           item.videoVariant.video?.images?.[0]?.mobileCinematicHigh ?? null
         const duration = item.videoVariant.duration
         const hasHls = item.videoVariant.hls != null
-        const languageName = item.videoVariant.language?.name?.[0]?.value ?? ''
+        const languageName =
+          item.videoVariant.language?.name?.find(({ primary }) => !primary)
+            ?.value ??
+          item.videoVariant.language?.name?.[0]?.value ??
+          ''
 
         return (
           <button

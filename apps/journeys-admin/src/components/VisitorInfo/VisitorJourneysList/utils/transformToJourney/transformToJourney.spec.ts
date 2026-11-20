@@ -34,7 +34,8 @@ describe('transformVisitorEvents', () => {
         name: [
           {
             __typename: 'LanguageName',
-            value: 'Hobbitish'
+            value: 'Hobbitish',
+            primary: true
           }
         ]
       }
@@ -69,7 +70,8 @@ describe('transformVisitorEvents', () => {
         name: [
           {
             __typename: 'LanguageName',
-            value: 'Hobbitish'
+            value: 'Hobbitish',
+            primary: true
           }
         ]
       }
@@ -108,7 +110,8 @@ describe('transformVisitorEvents', () => {
           name: [
             {
               value: 'Hobbitish',
-              __typename: 'LanguageName'
+              __typename: 'LanguageName',
+              primary: true
             }
           ]
         }
@@ -152,7 +155,8 @@ describe('transformVisitorEvents', () => {
           name: [
             {
               value: 'Hobbitish',
-              __typename: 'LanguageName'
+              __typename: 'LanguageName',
+              primary: true
             }
           ]
         }
@@ -166,5 +170,28 @@ describe('transformVisitorEvents', () => {
 
   it('transforms visitor events to journey format', () => {
     expect(transformToJourney(events)).toEqual([journey2, journey1])
+  })
+
+  it('uses the non-primary (local) name when the native autonym is primary', () => {
+    const eventWithAutonymPrimary: Event = {
+      __typename: 'JourneyViewEvent',
+      id: 'eventId6',
+      journeyId: 'journeyId2',
+      label: 'Autonym Journey',
+      value: '19',
+      createdAt: '2022-11-02T03:20:26.368Z',
+      language: {
+        __typename: 'Language',
+        id: 'languageId',
+        name: [
+          { __typename: 'LanguageName', value: 'Hobbitish', primary: false },
+          { __typename: 'LanguageName', value: 'Hobbitisch', primary: true }
+        ]
+      }
+    }
+
+    const [journey] = transformToJourney([eventWithAutonymPrimary])
+
+    expect(journey.subtitle).toBe('Hobbitish')
   })
 })

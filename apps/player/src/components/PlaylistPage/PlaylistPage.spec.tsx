@@ -47,7 +47,7 @@ describe('PlaylistPage', () => {
             duration: 3600,
             language: {
               id: 'lang-1',
-              name: [{ value: 'English' }]
+              name: [{ value: 'English', primary: true }]
             },
             video: {
               id: 'video-1',
@@ -106,7 +106,7 @@ describe('PlaylistPage', () => {
             duration: 3600,
             language: {
               id: 'lang-1',
-              name: [{ value: 'English' }]
+              name: [{ value: 'English', primary: true }]
             },
             video: {
               id: 'video-1',
@@ -126,7 +126,7 @@ describe('PlaylistPage', () => {
             duration: 1800,
             language: {
               id: 'lang-2',
-              name: [{ value: 'Spanish' }]
+              name: [{ value: 'Spanish', primary: true }]
             },
             video: {
               id: 'video-2',
@@ -164,7 +164,7 @@ describe('PlaylistPage', () => {
             duration: 3600,
             language: {
               id: 'lang-1',
-              name: [{ value: 'English' }]
+              name: [{ value: 'English', primary: true }]
             },
             video: {
               id: 'video-1',
@@ -184,7 +184,7 @@ describe('PlaylistPage', () => {
             duration: 1800,
             language: {
               id: 'lang-2',
-              name: [{ value: 'Spanish' }]
+              name: [{ value: 'Spanish', primary: true }]
             },
             video: {
               id: 'video-2',
@@ -222,7 +222,7 @@ describe('PlaylistPage', () => {
             duration: 3600,
             language: {
               id: 'lang-1',
-              name: [{ value: 'English' }]
+              name: [{ value: 'English', primary: true }]
             },
             video: {
               id: 'video-1',
