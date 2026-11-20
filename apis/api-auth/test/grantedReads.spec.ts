@@ -8,8 +8,8 @@ import {
   createGatewayRuntime,
   usePropagateHeaders
 } from '@graphql-hive/gateway'
-import { initContextCache } from '@pothos/core'
 import mailchimp from '@mailchimp/mailchimp_marketing'
+import { initContextCache } from '@pothos/core'
 import { type GraphQLSchema, parse, subscribe } from 'graphql'
 import { createYoga } from 'graphql-yoga'
 import pino from 'pino'
