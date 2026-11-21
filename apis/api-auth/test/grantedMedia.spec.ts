@@ -169,6 +169,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         ).toBe(0),
       { timeout: 5000 }
     )
+    await guard.recover()
   }
 
   beforeEach(async () => {
@@ -1137,12 +1138,14 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       expect(
         await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
       ).not.toBeNull()
+      await guard.recover()
     } finally {
       resume()
     }
     await attaching
     expect((await image()).src).toContain(f.id('asset'))
     f.checkpoint = undefined
+    await settleMedia()
     await protectedMedia.cloudflareImage.delete({
       where: { id: f.id('asset') }
     })
@@ -1421,7 +1424,6 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       expect(await image('video')).toMatchObject({ videoId: f.id('mux') })
       f.checkpoint = undefined
       await settleMedia()
-      await guard.recover()
       expect((await remove()).errors).toBeUndefined()
       expect(dispatches).toBe(1)
       f.receipt(await f.edit(input))
