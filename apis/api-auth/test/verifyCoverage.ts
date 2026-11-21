@@ -89,7 +89,7 @@ const required: Record<string, string[]> = {
   ],
   'apis/api-journeys/src/lib/mcpReads.ts': [
     "if (request.tool === 'journey_preview')",
-    'data = await snapshot(',
+    'const allowedOperations = (journey: ReadJourney) => [',
     "await authority('accept',",
     'await db.mcpReadExecution.create(',
     'const execution = await tx.mcpReadExecution.findUniqueOrThrow',
