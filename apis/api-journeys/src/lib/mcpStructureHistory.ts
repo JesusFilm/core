@@ -7,6 +7,11 @@ import { deriveSubmitRole } from '@core/yoga/mcp/presentationContract'
 
 import { type ContentBlock, assertOwnedButtonIcon } from './mcpContent'
 import {
+  type DestinationAccess,
+  validateFormDestinations
+} from './mcpFormDestinations'
+import { validateFormIcons, validateForms } from './mcpForms'
+import {
   type ActionField,
   type BlockChangeField,
   type BlockField,
@@ -78,6 +83,7 @@ export async function planStructureHistory(
   tx: Prisma.TransactionClient,
   journey: {
     id: string
+    teamId?: string | null
     website: boolean | null
     menuStepBlockId: string | null
     socialNodeX: number | null
@@ -85,7 +91,8 @@ export async function planStructureHistory(
   },
   changes: unknown,
   direction: 'undo' | 'redo',
-  canEditChat: () => Promise<boolean> = async () => false
+  canEditChat: () => Promise<boolean> = async () => false,
+  destinationAccess?: DestinationAccess
 ) {
   const parsed = z.array(structureInverseSchema).length(1).safeParse(changes)
   if (!parsed.success) throw new Error('HISTORY_UNAVAILABLE')
@@ -395,6 +402,39 @@ export async function planStructureHistory(
     const menu = state.journey.menuStepBlockId
     if (typeof menu === 'string' && createdIds.has(menu)) conflict()
   }
+  const legacyBounds = new Set(
+    inverse.blocks
+      .filter(
+        (change) =>
+          direction === 'undo' &&
+          change.typename === 'MultiselectBlock' &&
+          change.formBounds?.beforeValid === false &&
+          [...state.blocks.values()].filter(
+            (option) =>
+              live(option) &&
+              option.parentBlockId === change.id &&
+              option.typename === 'MultiselectOptionBlock'
+          ).length === change.formBounds.beforeCount &&
+          change.fields.some((field) => field === 'min' || field === 'max') &&
+          isDeepStrictEqual(
+            state.blocks.get(change.id)?.min,
+            change.before.min
+          ) &&
+          isDeepStrictEqual(state.blocks.get(change.id)?.max, change.before.max)
+      )
+      .map((change) => change.id)
+  )
+  try {
+    validateForms(
+      state,
+      new Set(inverse.blocks.map((change) => change.id)),
+      legacyBounds
+    )
+  } catch {
+    conflict()
+  }
+  await validateFormIcons(tx, state)
+  await validateFormDestinations(tx, journey, state, destinationAccess)
   const plan = finishStructure(state, new Date().toISOString())
   plan.requiresChat = requiresChat
   plan.changes = []

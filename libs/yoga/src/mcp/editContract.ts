@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 
 import { z } from 'zod'
 
+import { formChangedFields, formCommand } from './formContract'
 import {
   plainText,
   presentationCommand,
@@ -13,6 +14,7 @@ import {
   affectedLink,
   changedField,
   localKey,
+  generatedLocalKey,
   structureCommand,
   structureCommandNames
 } from './structureContract'
@@ -48,6 +50,7 @@ export const typographyCommand = z
 const editCommand = z.union([
   typographyCommand,
   presentationCommand,
+  formCommand,
   structureCommand
 ])
 
@@ -156,6 +159,7 @@ export const operationReceipt = z
                 z.enum([
                   ...changedField.options,
                   ...presentationFields,
+                  ...formChangedFields,
                   'deleted'
                 ])
               )
@@ -164,13 +168,7 @@ export const operationReceipt = z
           .strict()
       )
       .max(200),
-    idMap: z.record(
-      z.union([
-        localKey,
-        z.string().regex(/^[a-z][a-z0-9_]{0,31}\.(?:startIcon|endIcon)$/)
-      ]),
-      id
-    ),
+    idMap: z.record(z.union([localKey, generatedLocalKey]), id),
     duplicateIdMap: z.record(id, id).optional(),
     duplicateMaps: z
       .record(

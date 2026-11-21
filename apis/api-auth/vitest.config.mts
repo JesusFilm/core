@@ -22,7 +22,8 @@ export default defineConfig({
       '**/node_modules/**',
       '**/.git/**',
       '**/test/grantedEdits.spec.ts',
-      '**/test/grantedStructure.spec.ts'
+      '**/test/grantedStructure.spec.ts',
+      '**/test/grantedForms.spec.ts'
     ],
     globals: true,
     environment: 'node',

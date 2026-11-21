@@ -277,7 +277,7 @@ export function structureFixture() {
   beforeAll(async () => {
     const issue = process.env.MCP_STRUCTURE_TEST_ISSUE ?? '10557'
     if (
-      !['10556', '10557'].includes(issue) ||
+      !['10556', '10557', '10558'].includes(issue) ||
       !new RegExp(`^/auth_issue_${issue}(_|$)`).test(
         new URL(structureAuthUrl!).pathname
       ) ||

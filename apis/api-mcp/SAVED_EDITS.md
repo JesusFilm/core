@@ -356,3 +356,57 @@ reports to Codecov alongside the standard workspace reports for stacked PRs.
 Normal Admin browser flows, real Firebase, host/container qualification, AWS and
 Claude/ChatGPT checks remain deferred to the assembled feature. Promote code and
 migrations, never these synthetic identities, credentials or local data.
+
+## Polls, response fields and form destinations
+
+Issue #10558 extends the same owning transaction and structural history participant.
+Structural `block_add` and `step_add` accept `poll`, `multiselect` and `response`
+content. Poll and multiselect options supply unique batch-local keys and labels.
+Multiselect starts with at least two options. Responses and multiselects create
+one shared submit Button and two distinct owned Icons when their Card lacks one.
+The generated Button is returned as `<field-key>.submit` and accepts only None
+or Step navigation. Existing legacy SignUp supports edits, never creation.
+
+`poll_set`, the `poll_option_*` and `multiselect_option_*` commands,
+`multiselect_set` and `options_reorder` preserve untouched option IDs and routes.
+Deleting the final option is valid. Deletion clamps each nonnull bound in the
+same saved batch and inverse, preserving null bounds. Explicit invalid bounds
+reject the whole batch. Option images follow their owned subtree on removal;
+media source selection belongs to the separate media participant.
+The named Add-option gesture keeps the editor's 12-option limit. Existing larger
+questions remain editable, and generic duplication retains its existing behavior.
+Undo can restore recorded legacy bounds while rejecting a restoration that would
+invalidate later human bounds it did not record.
+
+`response_set` preserves omitted fields and clears nullable fields on null.
+An explicit `responseType` resets the label using the supplied Admin `locale`,
+defaulting to English, unless the command supplies a replacement label. Changing
+to freeForm or phone clears both destination references. The mounted field limit
+is 250 characters and rows are null or 1 through 4. `signup_set` and
+`signup_icon_set` edit only the existing legacy submit label and owned icon.
+
+Read `journey_read` with `view: form_destinations` for current safe integration IDs
+and route names. No credential fields or visitor responses are returned.
+`form_destination_set` accepts an existing integration ID and optional route ID,
+or null to clear. Switching integration clears an omitted route. Only name/email
+responses can select destinations. The owner checks current team membership,
+actual journey team ownership, Growth Spaces availability and route membership
+after owning locks, on forward writes and restoration. Integration rows remain
+locked against local replacement/deletion until commit. Provider route GETs are
+bounded and fail closed. Configuration creates no submissions, deliveries or syncs.
+
+Run the isolated PostgreSQL route with:
+
+```sh
+MCP_STRUCTURE_TEST_ISSUE=10558 node tools/scripts/test-mcp-structure.mjs
+```
+
+The suite executes actual OAuth, MCP HTTP, gateway, owning transactions, replay
+and undo/redo. Firebase identity is controlled. A loopback Growth Spaces adapter
+serves routes and controlled revocations; production credential decryption and
+route fetching execute against it. No real provider delivery is attempted.
+Coverage and test counts go to `coverage/integration/mcp-forms`, separately from
+other suites, and CI uploads that report to Codecov. The runner rejects missing
+execution coverage and skipped tests. Browser inspection, real Firebase/provider
+qualification, host/container checks and Claude/ChatGPT remain deferred feature
+checks. Local results do not establish deployment or release acceptance.
