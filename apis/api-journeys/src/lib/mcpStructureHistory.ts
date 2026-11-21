@@ -325,12 +325,18 @@ export async function planStructureHistory(
           ).length !== 1
         )
           throw new Error('HISTORY_UNAVAILABLE')
-        await assertOwnedButtonIcon(
-          tx,
-          row as unknown as ContentBlock,
-          icon as unknown as ContentBlock,
-          projected
-        )
+        try {
+          await assertOwnedButtonIcon(
+            tx,
+            row as unknown as ContentBlock,
+            icon as unknown as ContentBlock,
+            projected
+          )
+        } catch (error) {
+          if (error instanceof Error && error.message === 'HISTORY_CONFLICT')
+            throw new Error('HISTORY_UNAVAILABLE', { cause: error })
+          throw error
+        }
       }
   }
   const plan = finishStructure(state, new Date().toISOString())
