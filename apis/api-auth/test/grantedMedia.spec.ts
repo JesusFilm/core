@@ -1381,7 +1381,9 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         async (input: string | URL | Request, options?: RequestInit) => {
           const url = input instanceof Request ? input.url : String(input)
           if (url.endsWith('/internal/permissions/begin') && !changeId) {
-            changeId = JSON.parse(String(options?.body)).changeId
+            if (typeof options?.body !== 'string')
+              throw new Error('Expected JSON authority request')
+            changeId = JSON.parse(options.body).changeId
             const response = await originalFetch(input, options)
             ready()
             await continuation
