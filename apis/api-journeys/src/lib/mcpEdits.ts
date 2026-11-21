@@ -34,7 +34,6 @@ import {
   sameSecret,
   verifyReadCredential
 } from '@core/yoga/mcp/readContract'
-import type { StructureCommand } from '@core/yoga/mcp/structureContract'
 
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
 
@@ -490,7 +489,8 @@ export function createJourneyEditHandler(
                     tx,
                     journey,
                     restoredEntry.changes,
-                    direction
+                    direction,
+                    canEditChat
                   )
                 } else {
                   plans.push(
@@ -531,15 +531,14 @@ export function createJourneyEditHandler(
                 )
                 plans.push(...planned.plans)
                 idMap = planned.idMap
-              } else if (
-                commands.every(
-                  (command): command is StructureCommand | TypographyCommand =>
-                    command.type === 'typography_set' ||
-                    isStructureCommand(command)
-                )
-              ) {
+              } else {
                 try {
-                  structuralPlan = await planStructure(tx, journey, commands)
+                  structuralPlan = await planStructure(
+                    tx,
+                    journey,
+                    commands,
+                    canEditChat
+                  )
                 } catch (error) {
                   if (
                     error instanceof Error &&
@@ -548,10 +547,6 @@ export function createJourneyEditHandler(
                     return reject('LIMIT_EXCEEDED')
                   throw error
                 }
-              } else {
-                // Neither planner can project this whole batch or record a single
-                // reversible change set. Never apply just a subset of its commands.
-                throw new Error('VALIDATION_FAILED')
               }
             }
             if (structuralPlan) {
@@ -577,6 +572,7 @@ export function createJourneyEditHandler(
               }
             }
             needsChatGate =
+              structuralPlan?.requiresChat === true ||
               plans.some((plan) => plan.gate === 'aiChatEditor') ||
               (operation.tool === 'journey_edit' && requiresChat)
             context.operationId ??= randomUUID()
@@ -584,7 +580,9 @@ export function createJourneyEditHandler(
             if (needsChatGate && !(await canEditChat()))
               throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
             if (structuralPlan) {
-              await executeStructure(tx, structuralPlan)
+              await executeStructure(tx, structuralPlan, async () => {
+                await hooks.checkpoint?.('after_child', context)
+              })
               changes.push(...structuralPlan.changes)
             }
             for (const plan of plans) {

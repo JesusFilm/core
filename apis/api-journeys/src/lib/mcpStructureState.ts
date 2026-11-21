@@ -5,6 +5,10 @@ import { z } from 'zod'
 
 import { Prisma } from '@core/prisma/journeys/client'
 import type { OperationReceipt } from '@core/yoga/mcp/editContract'
+import {
+  presentationFields,
+  presentationInverse
+} from '@core/yoga/mcp/presentationContract'
 
 // These are owning-service scalar descriptors, never client-controlled patches.
 // Retaining every scalar makes complete subtree copies preserve unmounted data.
@@ -113,7 +117,10 @@ export const journeyFields = [
   'socialNodeY'
 ] as const
 export type BlockField = (typeof blockFields)[number]
-export type BlockChangeField = BlockField | 'settings.color'
+export type BlockChangeField =
+  | BlockField
+  | 'settings.color'
+  | 'settings.alignment'
 export type ActionField = (typeof actionFields)[number]
 export type JourneyField = (typeof journeyFields)[number]
 export type Scalar = z.infer<ReturnType<typeof z.json>>
@@ -126,6 +133,17 @@ export type ActionRow = Prisma.ActionGetPayload<Record<string, never>>
 const scalar = z.json()
 const blockStateSchema = z.record(z.enum(blockFields), scalar)
 const actionStateSchema = z.record(z.enum(actionFields), scalar)
+// New mixed entries retain the mounted validators and gates. Values remain in
+// the owning snapshots; retained structural entries need no descriptor rewrite.
+const presentationCheck = z
+  .object({
+    parent: presentationInverse.shape.parent,
+    owner: presentationInverse.shape.owner,
+    gate: presentationInverse.shape.gate,
+    fields: z.array(z.enum(presentationFields)).min(1).max(20)
+  })
+  .strict()
+type PresentationCheck = z.infer<typeof presentationCheck>
 const blockChangeSchema = z
   .object({
     id: z.string(),
@@ -133,13 +151,43 @@ const blockChangeSchema = z
     parentBlockId: z.string().nullable(),
     created: z.boolean(),
     removalAction: actionStateSchema.nullable().optional(),
+    presentation: presentationCheck.optional(),
     fields: z
-      .array(z.enum([...blockFields, 'settings.color']))
+      .array(z.enum([...blockFields, 'settings.color', 'settings.alignment']))
       .max(blockFields.length),
     before: blockStateSchema,
     after: blockStateSchema
   })
   .strict()
+  .refine((change) => {
+    if (!change.presentation) return true
+    const fields = change.presentation.fields.map((field) => {
+      const key = field.startsWith('settings.') ? field.slice(9) : field
+      const source = (row: BlockState): Record<string, Scalar> =>
+        field.startsWith('settings.') ? settingValues(row) : row
+      return {
+        field,
+        before: source(change.before)[key] ?? null,
+        after: source(change.after)[key] ?? null,
+        beforePresent: Object.prototype.hasOwnProperty.call(
+          source(change.before),
+          key
+        )
+      }
+    })
+    return (
+      change.presentation.fields.every(
+        (field) => change.created || change.fields.includes(field)
+      ) &&
+      presentationInverse.safeParse({
+        ...change.presentation,
+        type: 'presentation_restore',
+        blockId: change.id,
+        typename: change.typename,
+        fields
+      }).success
+    )
+  })
 const actionChangeSchema = z
   .object({
     id: z.string(),
@@ -190,6 +238,7 @@ export const structureInverseSchema = z
   .strict()
 export type StructureInverse = z.infer<typeof structureInverseSchema>
 export interface StructurePlan {
+  requiresChat?: boolean
   journeyId: string
   changes: StructureInverse[]
   blockWrites: Array<{
@@ -212,6 +261,7 @@ export interface StructurePlan {
   objectCount: number
 }
 export interface StructureState {
+  presentation: Map<string, PresentationCheck>
   journey: JourneyState
   originalJourney: JourneyState
   blocks: Map<string, BlockState>
@@ -224,6 +274,13 @@ export interface StructureState {
 
 export function serialize<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T
+}
+function settingValues(row: BlockState): Record<string, Scalar> {
+  return row.settings !== null &&
+    typeof row.settings === 'object' &&
+    !Array.isArray(row.settings)
+    ? row.settings
+    : {}
 }
 export function blockState(row: BlockRow): BlockState {
   return Object.fromEntries(
@@ -336,6 +393,7 @@ export async function loadStructure(
     socialNodeY: journey.socialNodeY
   }
   return {
+    presentation: new Map(),
     journey: { ...journeyState },
     originalJourney: journeyState,
     blocks: new Map([...blocks].map(([id, row]) => [id, serialize(row)])),
@@ -380,7 +438,18 @@ export function finishStructure(
       (field) => !isDeepStrictEqual(before[field], row[field])
     )
     if (!created && fields.includes('settings')) {
-      fields.splice(fields.indexOf('settings'), 1, 'settings.color')
+      const settingsFields = (['color', 'alignment'] as const)
+        .filter((key) => {
+          const a = settingValues(before),
+            b = settingValues(row)
+          return (
+            Object.prototype.hasOwnProperty.call(a, key) !==
+              Object.prototype.hasOwnProperty.call(b, key) ||
+            !isDeepStrictEqual(a[key], b[key])
+          )
+        })
+        .map((key) => `settings.${key}` as const)
+      fields.splice(fields.indexOf('settings'), 1, ...settingsFields)
     }
     if (!created && !fields.length) continue
     inverse.blocks.push({
@@ -388,6 +457,9 @@ export function finishStructure(
       typename: requiredString(row.typename),
       parentBlockId: parentOf(row),
       created,
+      ...(state.presentation.has(id)
+        ? { presentation: state.presentation.get(id) }
+        : {}),
       ...(live(before) && !live(row)
         ? { removalAction: serialize(state.originalActions.get(id) ?? null) }
         : {}),
@@ -400,9 +472,9 @@ export function finishStructure(
       ...(created ? { create: serialize(row) } : {}),
       patch: Object.fromEntries(
         fields.map((field) =>
-          field === 'settings.color'
+          field.startsWith('settings.')
             ? ['settings', row.settings]
-            : [field, row[field]]
+            : [field, row[field as BlockField]]
         )
       )
     })
@@ -551,7 +623,8 @@ function blockInput(
 /** The caller accepts once after planning and executes inside its owning transaction. */
 export async function executeStructure(
   tx: Prisma.TransactionClient,
-  plan: StructurePlan
+  plan: StructurePlan,
+  afterChild?: () => Promise<void>
 ): Promise<void> {
   // Create shells first because cover/poster/icon references can point forward.
   for (const write of plan.blockWrites) {
@@ -570,6 +643,7 @@ export async function executeStructure(
       where: { id: write.id },
       data: blockInput(write.create ?? write.patch)
     })
+    if (write.create?.typename === 'IconBlock') await afterChild?.()
   }
   for (const write of plan.actionWrites) {
     if (write.value === null) {

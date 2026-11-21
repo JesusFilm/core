@@ -5,8 +5,16 @@ import slugify from 'slugify'
 import { Prisma } from '@core/prisma/journeys/client'
 import {
   type TypographyCommand,
-  commandRegistry
+  commandRegistry,
+  isStructureCommand
 } from '@core/yoga/mcp/editContract'
+import {
+  type PresentationCommand,
+  type PresentationField,
+  type PresentationInverse,
+  deriveSubmitRole,
+  presentationPatch
+} from '@core/yoga/mcp/presentationContract'
 import {
   type ActionValue,
   type BlockReference,
@@ -16,6 +24,7 @@ import {
   normalizeActionUrl
 } from '@core/yoga/mcp/structureContract'
 
+import { type ContentBlock, assertOwnedButtonIcon } from './mcpContent'
 import {
   type BlockState,
   type StructurePlan,
@@ -81,7 +90,8 @@ function missing(): never {
 export async function planStructure(
   tx: Prisma.TransactionClient,
   journey: Journey,
-  commands: Array<StructureCommand | TypographyCommand>
+  commands: Array<StructureCommand | TypographyCommand | PresentationCommand>,
+  canEditChat: () => Promise<boolean> = async () => false
 ) {
   const state = await loadStructure(tx, journey)
   const locals = new Map<string, string>()
@@ -122,6 +132,19 @@ export async function planStructure(
     if (explicitWrites.has(key)) fail()
     explicitWrites.add(key)
   }
+  const resolveContentId = (id: string) =>
+    id.startsWith('$') ? (locals.get(id.slice(1)) ?? missing()) : id
+  const placementFor = (
+    command: Extract<(typeof commands)[number], { type: 'block_add' }>
+  ): Placement => {
+    if ('card' in command) return command.placement
+    return command.placement.position === 'end'
+      ? command.placement
+      : {
+          position: command.placement.position,
+          anchor: { id: resolveContentId(command.placement.blockId) }
+        }
+  }
   const create = (
     typename: string,
     id: string,
@@ -157,6 +180,24 @@ export async function planStructure(
     const card = get(parentOf(row) ?? missing(), 'CardBlock')
     stepFor(card)
     return card
+  }
+  const recordPresentation = (
+    row: BlockState,
+    fields: PresentationField[],
+    metadata: Pick<PresentationInverse, 'owner' | 'gate'> = {}
+  ) => {
+    if (!fields.length) return
+    const content = metadata.owner
+      ? get(metadata.owner.blockId, 'ButtonBlock')
+      : row
+    const card = content.typename === 'CardBlock' ? content : cardFor(content)
+    const prior = state.presentation.get(idOf(row))
+    state.presentation.set(idOf(row), {
+      parent: { cardId: idOf(card), stepId: idOf(stepFor(card)) },
+      ...prior,
+      ...metadata,
+      fields: [...new Set([...(prior?.fields ?? []), ...fields])]
+    })
   }
   const eligibleContent = (row: BlockState, duplicate = false): void => {
     if (row.parentOrder === null) fail()
@@ -241,6 +282,17 @@ export async function planStructure(
       video: 'VideoBlock'
     }[content.kind]
     const row = create(typename, id, cardId)
+    for (const [field, value] of Object.entries(content)) {
+      if (field === 'kind' || value === undefined) continue
+      claim(
+        id,
+        field === 'color' && typename === 'TypographyBlock'
+          ? 'settings.color'
+          : field === 'align' && typename === 'ButtonBlock'
+            ? 'settings.alignment'
+            : field
+      )
+    }
     if (content.kind === 'typography') {
       row.content = content.content ?? ''
       row.variant =
@@ -259,17 +311,19 @@ export async function planStructure(
       row.size = content.size ?? 'medium'
       row.settings = { alignment: content.align ?? 'justify' }
       const siblings = children(state, cardId)
-      row.submitEnabled =
-        siblings.some((child) => child.typename === 'TextResponseBlock') &&
-        !siblings.some(
-          (child) =>
-            child.typename === 'ButtonBlock' &&
-            child.id !== id &&
-            child.submitEnabled === true
-        )
+      row.submitEnabled = deriveSubmitRole(
+        'create',
+        siblings
+          .filter((child) => child.id !== id)
+          .map((child) => ({
+            typename: requiredString(child.typename),
+            submitEnabled: child.submitEnabled === true
+          }))
+      )
       for (const slot of ['startIconId', 'endIconId'] as const) {
         const icon = create('IconBlock', randomUUID(), id)
         row[slot] = icon.id
+        recordPresentation(icon, ['name'], { owner: { blockId: id, slot } })
       }
     } else if (content.kind === 'spacer') row.spacing = content.spacing ?? 100
     else if (content.kind === 'image') row.alt = ''
@@ -280,6 +334,24 @@ export async function planStructure(
       row.fullsize = true
     }
     if (content.kind === 'video' && card.fullscreen === false) fail()
+    if (content.kind === 'button')
+      recordPresentation(row, [
+        'label',
+        'variant',
+        'color',
+        'size',
+        'settings.alignment',
+        'startIconId',
+        'endIconId'
+      ])
+    else if (content.kind === 'spacer') recordPresentation(row, ['spacing'])
+    else if (content.kind === 'typography')
+      recordPresentation(row, [
+        'content',
+        'variant',
+        ...(content.align ? ['align' as const] : []),
+        ...(content.color ? ['settings.color' as const] : [])
+      ])
     return row
   }
   // Allocate the complete local namespace before resolving any reference.
@@ -299,7 +371,10 @@ export async function planStructure(
   ).length
   for (const command of commands) {
     if ('key' in command && 'placement' in command)
-      pendingPlacements.set(locals.get(command.key)!, command.placement)
+      pendingPlacements.set(
+        locals.get(command.key)!,
+        command.type === 'block_add' ? placementFor(command) : command.placement
+      )
   }
   if (newSteps > 20) throw new Error('LIMIT_EXCEEDED')
   // Materialize required descendants before route resolution, including forward locals.
@@ -314,6 +389,10 @@ export async function planStructure(
     Object.assign(card, command.card ?? {})
     if (card.themeMode !== null && card.themeName === null)
       card.themeName = 'base'
+    for (const [field, value] of Object.entries(command.card ?? {})) {
+      if (value !== undefined) claim(idOf(card), field)
+      if (field === 'themeMode') claim(idOf(card), 'themeName')
+    }
     for (const [index, child] of (command.content ?? []).entries()) {
       addContent(
         locals.get(child.key)!,
@@ -324,11 +403,44 @@ export async function planStructure(
   }
   for (const command of commands) {
     if (command.type !== 'block_add') continue
-    addContent(
+    const row = addContent(
       locals.get(command.key)!,
-      idOf(resolve(command.card, 'CardBlock')),
-      command.content
+      'card' in command
+        ? idOf(resolve(command.card, 'CardBlock'))
+        : resolveContentId(command.cardId),
+      'card' in command
+        ? command.content
+        : command.block.kind === 'button'
+          ? {
+              kind: 'button',
+              label: command.block.label,
+              variant: command.block.variant,
+              size: command.block.size,
+              color: command.block.color,
+              align: command.block.alignment
+            }
+          : command.block
     )
+    if (!('card' in command)) {
+      const value = command.block
+      if (value.kind === 'button') {
+        for (const slot of ['start', 'end'] as const) {
+          const icon = get(requiredString(row[`${slot}IconId`]), 'IconBlock')
+          locals.set(`${command.key}.${slot}Icon`, idOf(icon))
+          const supplied = value[`${slot}Icon`]
+          if (!supplied) continue
+          Object.assign(icon, supplied)
+          for (const field of Object.keys(supplied)) claim(idOf(icon), field)
+          recordPresentation(
+            icon,
+            supplied.color ? ['name', 'color'] : ['name'],
+            {
+              owner: { blockId: idOf(row), slot: `${slot}IconId` }
+            }
+          )
+        }
+      }
+    }
   }
   const duplicateCommands = commands.filter(
     (command) =>
@@ -486,7 +598,10 @@ export async function planStructure(
       command.type === 'step_duplicate' ||
       command.type === 'block_duplicate'
     ) {
-      insert(get(locals.get(command.key)!), command.placement)
+      insert(
+        get(locals.get(command.key)!),
+        command.type === 'block_add' ? placementFor(command) : command.placement
+      )
       continue
     }
     if (command.type === 'step_remove' || command.type === 'block_remove') {
@@ -615,10 +730,11 @@ export async function planStructure(
           ? null
           : slugify(command.slug, { lower: true, strict: true }) || null
     } else if (command.type === 'typography_set') {
-      const row = get(command.blockId, 'TypographyBlock')
+      const row = get(resolveContentId(command.blockId), 'TypographyBlock')
       cardFor(row)
       for (const field of ['content', 'variant', 'align', 'color'] as const)
-        if (command[field] !== undefined) claim(idOf(row), field)
+        if (command[field] !== undefined)
+          claim(idOf(row), field === 'color' ? 'settings.color' : field)
       const result = commandRegistry.typography_set.apply(
         {
           content: row.content as string | null,
@@ -629,6 +745,54 @@ export async function planStructure(
         command
       )
       Object.assign(row, result.patch)
+      recordPresentation(
+        row,
+        result.inverse.fields.map(({ field }) => field)
+      )
+    } else if (!isStructureCommand(command)) {
+      const row = get(
+        resolveContentId(command.blockId),
+        commandRegistry[command.type].typename
+      )
+      const card =
+        row.typename === 'CardBlock'
+          ? row
+          : get(parentOf(row) ?? missing(), 'CardBlock')
+      stepFor(card)
+      let target = row
+      let owner:
+        | { blockId: string; slot: 'startIconId' | 'endIconId' }
+        | undefined
+      if (command.type === 'button_icon_set') {
+        const slot = command.slot === 'start' ? 'startIconId' : 'endIconId'
+        owner = { blockId: idOf(row), slot }
+        if (row[slot] === null) {
+          target = create('IconBlock', randomUUID(), idOf(row))
+          row[slot] = target.id
+          recordPresentation(target, ['name'], { owner })
+        } else target = get(requiredString(row[slot]), 'IconBlock')
+        await assertOwnedButtonIcon(
+          tx,
+          row as unknown as ContentBlock,
+          target as unknown as ContentBlock,
+          state.blocks as unknown as Map<string, ContentBlock>
+        )
+      }
+      if (command.type === 'card_chat_set' && !(await canEditChat())) missing()
+      for (const { field } of presentationPatch({}, command).fields)
+        claim(idOf(target), field)
+      const applied = presentationPatch(target, command)
+      Object.assign(target, applied.patch)
+      recordPresentation(
+        target,
+        applied.fields.map(({ field }) => field),
+        {
+          ...(owner ? { owner } : {}),
+          ...(command.type === 'card_chat_set'
+            ? { gate: 'aiChatEditor' as const }
+            : {})
+        }
+      )
     }
   }
   // Recheck assigned routes against final projected state. Legacy unresolved
@@ -643,6 +807,16 @@ export async function planStructure(
   }
   const slugs = new Set<string>()
   for (const row of state.blocks.values()) {
+    if (
+      live(row) &&
+      row.typename === 'CardBlock' &&
+      row.fullscreen === true &&
+      explicitWrites.has(`${idOf(row)}\0fullscreen`) &&
+      children(state, idOf(row)).some(
+        (child) => child.typename === 'VideoBlock'
+      )
+    )
+      fail()
     if (!live(row) || typeof row.slug !== 'string') continue
     if (slugs.has(row.slug)) fail()
     slugs.add(row.slug)
@@ -665,6 +839,9 @@ export async function planStructure(
     )
       fail()
   const plan = finishStructure(state, now)
+  plan.requiresChat = commands.some(
+    (command) => command.type === 'card_chat_set'
+  )
   plan.idMap = Object.fromEntries(locals)
   plan.duplicateIdMap = duplicateIdMap
   plan.duplicateMaps = duplicateMaps

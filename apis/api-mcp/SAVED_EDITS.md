@@ -272,11 +272,12 @@ same authority, ordinary-draft, revision, replay, history and private-output gat
 as Typography edits. Structural history checks recorded affected state and current
 dependencies before restoring anything.
 
-Typography edits can accompany structural commands or presentation commands in
-one save. For a change that also needs a non-Typography presentation command
-and a structural command, submit separate saves and use the committed revision
-for the second save. Each save has its own undo entry. Sending both kinds in
-one batch fails validation before either change is applied.
+Supported content and presentation commands can accompany structural commands
+in one save. For example, relabel a Button and change its action destination in
+the same batch. The owner projects every command before acceptance and commits
+one revision, receipt and reversible history entry. Local references, overlap
+checks, current feature gates and the combined 200-object limit apply to the
+whole batch. Undo and redo preserve later unrelated presentation and settings.
 
 | Command                                                          | Saved gesture                                                                 |
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |

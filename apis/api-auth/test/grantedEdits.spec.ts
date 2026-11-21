@@ -3206,36 +3206,674 @@ describe('saved edit integration', () => {
         }
       )
 
-      it('rejects a batch that mixes a structural edit with a Card presentation edit before writing either', async () => {
-        const before = await revision()
-        const step = { id: `${journeyId}-step` }
-        const card = { id: `${journeyId}-card` }
-        const state = () =>
-          journeys.block.findMany({
-            where: { id: { in: [step.id, card.id] } },
-            select: { id: true, x: true, y: true, fullscreen: true },
-            orderBy: { id: 'asc' }
-          })
-        const original = await state()
-        const result = await call('journey_edit', {
+      it('saves a Button label and destination atomically with one replayable undo entry', async () => {
+        await seedPresentation()
+        const buttonId = `${journeyId}-button`
+        await journeys.action.create({
+          data: {
+            parentBlockId: buttonId,
+            url: 'https://synthetic.example/original',
+            gtmEventName: 'retained-tracking'
+          }
+        })
+        const originalAction = await journeys.action.findUniqueOrThrow({
+          where: { parentBlockId: buttonId }
+        })
+        const input = {
           journeyId,
-          expectedRevision: before,
+          expectedRevision: await revision(),
           idempotencyKey: randomUUID(),
           commands: [
-            { type: 'step_position_set', step, x: 421, y: 219 },
-            { type: 'card_set', blockId: card.id, fullscreen: true }
+            { type: 'button_set', blockId: buttonId, label: 'Continue here' },
+            {
+              type: 'action_set',
+              block: { id: buttonId },
+              action: { kind: 'step', destination: { id: `${journeyId}-step` } }
+            }
+          ]
+        }
+        const saved = receipt(await edit(input))
+        expect(BigInt(saved.committedRevision)).toBe(
+          BigInt(input.expectedRevision) + 1n
+        )
+        expect(await counts()).toEqual({
+          operations: 1,
+          history: 1,
+          effects: 1
+        })
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+        ).toMatchObject({ label: 'Continue here' })
+        expect(
+          await journeys.action.findUnique({
+            where: { parentBlockId: buttonId }
+          })
+        ).toMatchObject({ blockId: `${journeyId}-step` })
+        const committedRevision = await revision()
+        expect(receipt(await edit(input))).toEqual(saved)
+        expect(await revision()).toBe(committedRevision)
+        expect(await counts()).toEqual({
+          operations: 1,
+          history: 1,
+          effects: 1
+        })
+        await historyAction('undo', saved.historyId!)
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+        ).toMatchObject({ label: 'Original button' })
+        expect(
+          await journeys.action.findUnique({
+            where: { parentBlockId: buttonId }
+          })
+        ).toMatchObject({ ...originalAction, updatedAt: expect.any(Date) })
+        await historyAction('redo', saved.historyId!)
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+        ).toMatchObject({ label: 'Continue here' })
+        expect(
+          await journeys.action.findUnique({
+            where: { parentBlockId: buttonId }
+          })
+        ).toMatchObject({ blockId: `${journeyId}-step` })
+      })
+
+      it.each([
+        'typography_set',
+        'button_set',
+        'button_icon_start',
+        'button_icon_end',
+        'spacer_set',
+        'card_set',
+        'card_chat_set'
+      ])(
+        'projects mixed %s with structural edits and preserves later unrelated fields through history',
+        async (name) => {
+          await seedPresentation()
+          const fixture = presentationCase(name)
+          const original = await journeys.block.findUniqueOrThrow({
+            where: { id: fixture.targetId }
+          })
+          const stepId = `${journeyId}-step`
+          const originalStep = await journeys.block.findUniqueOrThrow({
+            where: { id: stepId }
+          })
+          const input = {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              fixture.command,
+              {
+                type: 'step_position_set',
+                step: { id: stepId },
+                x: 421,
+                y: 219
+              }
+            ]
+          }
+          const saved = receipt(await edit(input))
+          expect(await counts()).toEqual({
+            operations: 1,
+            history: 1,
+            effects: 1
+          })
+          expect(receipt(await edit(input))).toEqual(saved)
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: fixture.targetId }
+            })
+          ).toMatchObject(fixture.expected)
+          await journeys.block.update({
+            where: { id: fixture.targetId },
+            data: fixture.unrelated
+          })
+          await historyAction('undo', saved.historyId!)
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: fixture.targetId }
+            })
+          ).toMatchObject({
+            ...original,
+            ...fixture.unrelated,
+            updatedAt: expect.any(Date)
+          })
+          expect(
+            await journeys.block.findUniqueOrThrow({ where: { id: stepId } })
+          ).toMatchObject({ x: originalStep.x, y: originalStep.y })
+          await historyAction('redo', saved.historyId!)
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: fixture.targetId }
+            })
+          ).toMatchObject({ ...fixture.expected, ...fixture.unrelated })
+          expect(
+            await journeys.block.findUniqueOrThrow({ where: { id: stepId } })
+          ).toMatchObject({ x: 421, y: 219 })
+        }
+      )
+
+      async function mixedSnapshot() {
+        return {
+          blocks: await journeys.block.findMany({
+            where: { journeyId },
+            orderBy: { id: 'asc' }
+          }),
+          actions: await journeys.action.findMany({
+            where: { parentBlock: { journeyId } },
+            orderBy: { parentBlockId: 'asc' }
+          }),
+          revision: await revision(),
+          entries: await journeys.mcpEditHistory.findMany({
+            where: { journeyId },
+            orderBy: { ordinal: 'asc' }
+          }),
+          operations: await journeys.mcpEditOperation.findMany({
+            where: { journeyId },
+            orderBy: { id: 'asc' }
+          }),
+          effects: await journeys.mcpEditEffect.findMany({
+            where: { journeyId },
+            orderBy: { id: 'asc' }
+          }),
+          audit: await journeys.mcpEditAudit.count({ where: { journeyId } })
+        }
+      }
+
+      it.each([
+        'duplicate-noop',
+        'destroy-before',
+        'destroy-after',
+        'removed-destination',
+        'wrong-destination'
+      ])(
+        'rejects mixed %s before acceptance without changing saved state',
+        async (failure) => {
+          await seedPresentation()
+          const buttonId = `${journeyId}-button`
+          const label = {
+            type: 'button_set',
+            blockId: buttonId,
+            label: 'Original button'
+          }
+          const remove = { type: 'block_remove', block: { id: buttonId } }
+          const route = {
+            type: 'action_set',
+            block: { id: buttonId },
+            action: { kind: 'step', destination: { id: `${journeyId}-step` } }
+          }
+          const commands =
+            failure === 'duplicate-noop'
+              ? [label, label, route]
+              : failure === 'destroy-before'
+                ? [remove, label]
+                : failure === 'destroy-after'
+                  ? [label, remove]
+                  : failure === 'removed-destination'
+                    ? [
+                        label,
+                        route,
+                        {
+                          type: 'step_remove',
+                          step: { id: `${journeyId}-step` }
+                        }
+                      ]
+                    : [
+                        label,
+                        {
+                          ...route,
+                          action: {
+                            kind: 'step',
+                            destination: { id: buttonId }
+                          }
+                        }
+                      ]
+          const before = await mixedSnapshot()
+          const acceptance = vi.fn()
+          checkpoint = async (point, context) => {
+            if (point === 'before_accept' && context.operationId) acceptance()
+          }
+          const result = await edit({
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands
+          })
+          expect(result.json.result?.isError, result.text).toBe(true)
+          expect(acceptance).not.toHaveBeenCalled()
+          expect(await mixedSnapshot()).toEqual(before)
+        }
+      )
+
+      it('resolves mixed forward locals and saves complete Button Icons, routes and presentation in one entry', async () => {
+        const saved = receipt(
+          await edit({
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              { type: 'button_set', blockId: '$continue', alignment: 'left' },
+              {
+                type: 'block_add',
+                key: 'continue',
+                cardId: '$new_card',
+                placement: { position: 'end' },
+                block: {
+                  kind: 'button',
+                  label: 'Continue',
+                  startIcon: { name: 'Home4' },
+                  endIcon: { name: 'ArrowForwardRounded', color: 'primary' }
+                }
+              },
+              {
+                type: 'action_set',
+                block: { local: 'continue' },
+                action: { kind: 'step', destination: { local: 'new_step' } }
+              },
+              {
+                type: 'step_add',
+                key: 'new_step',
+                cardKey: 'new_card',
+                placement: { position: 'end' }
+              }
+            ]
+          })
+        )
+        const buttonId = saved.idMap.continue
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+        ).toMatchObject({
+          parentBlockId: saved.idMap.new_card,
+          label: 'Continue',
+          settings: { alignment: 'left' },
+          startIconId: saved.idMap['continue.startIcon'],
+          endIconId: saved.idMap['continue.endIcon']
+        })
+        expect(
+          await journeys.block.findUniqueOrThrow({
+            where: { id: saved.idMap['continue.startIcon'] }
+          })
+        ).toMatchObject({ name: 'Home4', parentBlockId: buttonId })
+        expect(
+          await journeys.block.findUniqueOrThrow({
+            where: { id: saved.idMap['continue.endIcon'] }
+          })
+        ).toMatchObject({ name: 'ArrowForwardRounded', color: 'primary' })
+        expect(
+          await journeys.action.findUnique({
+            where: { parentBlockId: buttonId }
+          })
+        ).toMatchObject({ blockId: saved.idMap.new_step })
+        await historyAction('undo', saved.historyId!)
+        expect(
+          await journeys.block.count({
+            where: { id: { in: Object.values(saved.idMap) }, deletedAt: null }
+          })
+        ).toBe(0)
+        await historyAction('redo', saved.historyId!)
+        expect(
+          await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+        ).toMatchObject({ deletedAt: null, settings: { alignment: 'left' } })
+      })
+
+      it.each([
+        {
+          name: 'button_set',
+          field: 'settings',
+          after: { alignment: 'invalid' }
+        },
+        { name: 'typography_set', field: 'variant', after: 'not-a-variant' },
+        { name: 'button_icon_start', field: 'name', after: 'not-an-icon' },
+        { name: 'spacer_set', field: 'spacing', after: 2147483648 },
+        { name: 'card_set', field: 'fullscreen', after: 'invalid' }
+      ])(
+        'rejects malformed mixed $name history before acceptance and recovers after repair',
+        async ({ name, field, after }) => {
+          await seedPresentation()
+          const fixture = presentationCase(name)
+          const saved = receipt(
+            await edit({
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [
+                fixture.command,
+                {
+                  type: 'step_position_set',
+                  step: { id: `${journeyId}-step` },
+                  x: 421,
+                  y: 219
+                }
+              ]
+            })
+          )
+          await historyAction('undo', saved.historyId!)
+          const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+            where: { id: saved.historyId! }
+          })
+          const changes = structuredClone(entry.changes) as unknown as Array<{
+            blocks: Array<{
+              id: string
+              after: Record<string, unknown>
+            }>
+          }>
+          changes[0].blocks.find(
+            (change) => change.id === fixture.targetId
+          )!.after[field] = after
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: changes as Prisma.InputJsonValue }
+          })
+          const before = await mixedSnapshot()
+          const acceptance = vi.fn()
+          checkpoint = async (point, context) => {
+            if (point === 'before_accept' && context.operationId) acceptance()
+          }
+          const input = await historyInput(entry.id)
+          for (let attempt = 0; attempt < 2; attempt++) {
+            const result = await call('journey_redo', input)
+            expect(result.text).toContain('HISTORY_UNAVAILABLE')
+            expect(acceptance).not.toHaveBeenCalled()
+            expect(await mixedSnapshot()).toEqual(before)
+          }
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: entry.changes! }
+          })
+          const redone = receipt(await call('journey_redo', input))
+          expect(receipt(await call('journey_redo', input))).toEqual(redone)
+        }
+      )
+
+      it.each([
+        'forward',
+        'undo',
+        'redo',
+        'final-forward',
+        'final-undo',
+        'final-redo'
+      ] as const)(
+        'enforces mixed Card chat gates for %s and recovers with the same key',
+        async (stage) => {
+          const commands = [
+            {
+              type: 'card_chat_set',
+              blockId: `${journeyId}-card`,
+              enabled: true,
+              collapse: false
+            },
+            {
+              type: 'step_position_set',
+              step: { id: `${journeyId}-step` },
+              x: 421,
+              y: 219
+            }
+          ]
+          const direction = stage.replace('final-', '')
+          let entryId: string | undefined
+          if (direction !== 'forward') {
+            entryId = receipt(
+              await edit({
+                journeyId,
+                expectedRevision: await revision(),
+                idempotencyKey: randomUUID(),
+                commands
+              })
+            ).historyId!
+            if (direction === 'redo') await historyAction('undo', entryId)
+          }
+          const tool =
+            direction === 'forward' ? 'journey_edit' : `journey_${direction}`
+          const input = entryId
+            ? await historyInput(entryId)
+            : {
+                journeyId,
+                expectedRevision: await revision(),
+                idempotencyKey: randomUUID(),
+                commands
+              }
+          if (stage.startsWith('final-'))
+            checkpoint = async (point) => {
+              if (point === 'before_accept') chatEnabled = false
+            }
+          else chatEnabled = false
+          const before = await mixedSnapshot()
+          const response = await call(tool, input)
+          expect(response.json.result?.isError, response.text).toBe(true)
+          expect(await mixedSnapshot()).toEqual(before)
+          checkpoint = undefined
+          chatEnabled = true
+          const saved = receipt(await call(tool, input))
+          expect(receipt(await call(tool, input))).toEqual(saved)
+        }
+      )
+
+      it('rolls back a mixed batch when a required Icon child write fails', async () => {
+        const before = await mixedSnapshot()
+        checkpoint = async (point) => {
+          if (point === 'after_child') throw new Error('injected child failure')
+        }
+        const input = {
+          journeyId,
+          expectedRevision: await revision(),
+          idempotencyKey: randomUUID(),
+          commands: [
+            {
+              type: 'step_position_set',
+              step: { id: `${journeyId}-step` },
+              x: 421,
+              y: 219
+            },
+            {
+              type: 'block_add',
+              key: 'new_button',
+              cardId: `${journeyId}-card`,
+              placement: { position: 'end' },
+              block: { kind: 'button', label: 'Complete button' }
+            }
+          ]
+        }
+        expect((await edit(input)).json.result?.isError).toBe(true)
+        expect(await mixedSnapshot()).toEqual(before)
+        checkpoint = undefined
+        receipt(await edit(input))
+      })
+
+      it.each(['label', 'icon'] as const)(
+        'rejects mixed creation %s aliases even when the repeated value is a no-op',
+        async (field) => {
+          const before = await mixedSnapshot()
+          const response = await edit({
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              {
+                type: 'block_add',
+                key: 'new_button',
+                cardId: `${journeyId}-card`,
+                placement: { position: 'end' },
+                block: {
+                  kind: 'button',
+                  label: 'Complete button',
+                  startIcon: { name: 'Home4' }
+                }
+              },
+              field === 'label'
+                ? {
+                    type: 'button_set',
+                    blockId: '$new_button',
+                    label: 'Complete button'
+                  }
+                : {
+                    type: 'button_icon_set',
+                    blockId: '$new_button',
+                    slot: 'start',
+                    name: 'Home4'
+                  },
+              {
+                type: 'action_set',
+                block: { local: 'new_button' },
+                action: {
+                  kind: 'step',
+                  destination: { id: `${journeyId}-step` }
+                }
+              }
+            ]
+          })
+          expect(response.text).toContain('VALIDATION_FAILED')
+          expect(await mixedSnapshot()).toEqual(before)
+        }
+      )
+
+      it('counts structural and presentation objects together before mixed acceptance', async () => {
+        await journeys.block.createMany({
+          data: Array.from({ length: 80 }, (_, index) => ({
+            id: `${journeyId}-sibling-${index}`,
+            journeyId,
+            typename: 'SpacerBlock',
+            parentBlockId: `${journeyId}-card`,
+            parentOrder: index + 1,
+            spacing: 100
+          }))
+        })
+        const before = await mixedSnapshot()
+        const response = await edit({
+          journeyId,
+          expectedRevision: await revision(),
+          idempotencyKey: randomUUID(),
+          commands: [
+            ...Array.from({ length: 49 }, (_, index) => ({
+              type: 'block_add',
+              key: `button_${index}`,
+              cardId: `${journeyId}-card`,
+              placement: { position: 'before', blockId: `${journeyId}-text` },
+              block: { kind: 'button', label: 'New button' }
+            })),
+            {
+              type: 'step_position_set',
+              step: { id: `${journeyId}-step` },
+              x: 421,
+              y: 219
+            }
           ]
         })
+        expect(response.text).toContain('LIMIT_EXCEEDED')
+        expect(await mixedSnapshot()).toEqual(before)
+      })
 
-        expect(result.json.result?.isError).toBe(true)
-        expect(result.text).toContain('VALIDATION_FAILED')
-        expect(await state()).toEqual(original)
-        expect(await revision()).toBe(before)
-        expect(await counts()).toEqual({
-          operations: 0,
-          history: 0,
-          effects: 0
+      it.each(['start', 'end'] as const)(
+        'validates mixed restored %s Icon slots before redo and recovers after repair',
+        async (slot) => {
+          await seedPresentation()
+          const buttonId = `${journeyId}-button`
+          const field = `${slot}IconId` as const
+          await journeys.block.update({
+            where: { id: buttonId },
+            data: { [field]: null }
+          })
+          const saved = receipt(
+            await edit({
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [
+                {
+                  type: 'button_icon_set',
+                  blockId: buttonId,
+                  slot,
+                  name: 'Home4'
+                },
+                {
+                  type: 'step_position_set',
+                  step: { id: `${journeyId}-step` },
+                  x: 421,
+                  y: 219
+                }
+              ]
+            })
+          )
+          await historyAction('undo', saved.historyId!)
+          const entry = await journeys.mcpEditHistory.findUniqueOrThrow({
+            where: { id: saved.historyId! }
+          })
+          const changes = structuredClone(entry.changes) as unknown as Array<{
+            blocks: Array<{ id: string; after: Record<string, unknown> }>
+          }>
+          changes[0].blocks.find((change) => change.id === buttonId)!.after[
+            field
+          ] = `${buttonId}-${slot === 'start' ? 'end' : 'start'}`
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: changes as Prisma.InputJsonValue }
+          })
+          const before = await mixedSnapshot()
+          const input = await historyInput(entry.id)
+          expect((await call('journey_redo', input)).text).toContain(
+            'HISTORY_UNAVAILABLE'
+          )
+          expect(await mixedSnapshot()).toEqual(before)
+          await journeys.mcpEditHistory.update({
+            where: { id: entry.id },
+            data: { changes: entry.changes! }
+          })
+          receipt(await call('journey_redo', input))
+        }
+      )
+
+      it('rejects mixed expanded layout when the final projection contains Video and preserves saved state', async () => {
+        const input = {
+          journeyId,
+          expectedRevision: await revision(),
+          idempotencyKey: randomUUID(),
+          commands: [
+            {
+              type: 'card_set',
+              blockId: `${journeyId}-card`,
+              fullscreen: true
+            },
+            {
+              type: 'step_position_set',
+              step: { id: `${journeyId}-step` },
+              x: 421,
+              y: 219
+            }
+          ]
+        }
+        const saved = receipt(await edit(input))
+        await historyAction('undo', saved.historyId!)
+        const video = await journeys.block.create({
+          data: {
+            journeyId,
+            typename: 'VideoBlock',
+            parentBlockId: `${journeyId}-card`
+          }
         })
+        const before = await mixedSnapshot()
+        expect(
+          (
+            await edit({
+              ...input,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID()
+            })
+          ).text
+        ).toContain('VALIDATION_FAILED')
+        expect(await mixedSnapshot()).toEqual(before)
+        const redoInput = await historyInput(saved.historyId!)
+        expect((await call('journey_redo', redoInput)).text).toContain(
+          'HISTORY_CONFLICT'
+        )
+        expect(await mixedSnapshot()).toEqual(before)
+        await journeys.block.update({
+          where: { id: video.id },
+          data: { deletedAt: new Date() }
+        })
+        receipt(
+          await call('journey_redo', {
+            ...redoInput,
+            expectedRevision: await revision()
+          })
+        )
       })
 
       it('enforces the current Card chat gate for edits and undo/redo and preserves nullable defaults', async () => {
