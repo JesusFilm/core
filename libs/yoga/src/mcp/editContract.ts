@@ -13,8 +13,8 @@ import {
   type StructureCommand,
   affectedLink,
   changedField,
-  localKey,
   generatedLocalKey,
+  localKey,
   structureCommand,
   structureCommandNames
 } from './structureContract'

@@ -24,6 +24,7 @@ describe('complete form authoring contract', () => {
       ).success
     ).toBe(false)
   })
+
   it('accepts complete questions, response fields and their named edits', () => {
     const commands = [
       {

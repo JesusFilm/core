@@ -63,7 +63,9 @@ export async function assertOwnedIcon(
     icon.deletedAt ||
     icon.typename !== 'IconBlock' ||
     icon.parentBlockId !== owner.id ||
-    [owner.startIconId, owner.endIconId, owner.submitIconId].filter(id => id === icon.id).length !== 1
+    [owner.startIconId, owner.endIconId, owner.submitIconId].filter(
+      (id) => id === icon.id
+    ).length !== 1
   )
     throw new Error('HISTORY_CONFLICT')
   const references = new Map(
