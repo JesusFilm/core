@@ -1,19 +1,21 @@
 import { createServer } from 'node:http'
-import { createYoga } from 'graphql-yoga'
+
 import { buildSchema, graphql } from 'graphql'
+import { createYoga } from 'graphql-yoga'
 
-import { PrismaPg } from '@prisma/adapter-pg'
-
+import { PrismaClient as LanguagesDatabase } from '@core/prisma/languages/client'
 import {
   PrismaClient as MediaDatabase,
+  sourceTransaction,
   transactionScopedMediaClient
 } from '@core/prisma/media/client'
-import { PrismaClient as LanguagesDatabase } from '@core/prisma/languages/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Exercise the real separately deployed media participant. */
-import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
 import { createMediaMutationGuard } from '../../api-media/src/lib/mcpMediaMutations'
 import type { MediaProviders } from '../../api-media/src/lib/mcpMediaProviders'
+import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
+
 /* eslint-enable @nx/enforce-module-boundaries */
 import { structureFixture } from './grantedStructureFixture'
 
@@ -41,6 +43,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
   let guard: ReturnType<typeof createMediaMutationGuard>
   let flags = { mediaLibrary: true, websiteMode: true }
   let providerFailure = false
+  let captionsUnavailable = false
   const readyImage = {
     kind: 'image' as const,
     width: 1200,
@@ -48,6 +51,9 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     blurhash: 'trusted-media-blurhash'
   }
   const providers: MediaProviders = {
+    async catalog() {
+      if (providerFailure) throw new Error('controlled unready catalog stream')
+    },
     async image(src) {
       if (providerFailure)
         throw new Error('credential-sentinel raw-provider-failure')
@@ -75,7 +81,8 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         description: 'Trusted provider description',
         image: 'https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg',
         duration: 90,
-        subtitleBcp47: ['en']
+        subtitleBcp47: captionsUnavailable ? [] : ['en'],
+        subtitleStatus: captionsUnavailable ? 'unavailable' : 'ready'
       }
     }
   }
@@ -86,6 +93,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     'controlled-media-internal-10559-at-least-32-characters'
   const f = structureFixture({
     issue: '10559',
+    startupTimeoutMs: 120000,
     authUrl,
     journeysUrl,
     authEnv: {
@@ -107,7 +115,13 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
           MCP_PERMISSION_MEDIA_SECRET: mutationSecret,
           CLOUDFLARE_IMAGE_ACCOUNT: 'synthetic-account'
         },
-        { media, journeys, languages, providers, flags: async () => flags }
+        {
+          media,
+          journeys,
+          languages,
+          providers,
+          flags: async () => ({ ...flags })
+        }
       )
       guard = runtime.mutations!
       const yoga = createYoga({
@@ -115,7 +129,11 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         plugins: runtime.plugins,
         logging: false
       })
-      const url = await listen(createServer(yoga))
+      const url = await listen(
+        createServer((request, response) => {
+          void yoga(request, response)
+        })
+      )
       return { url: url + '/mcp/media-sources', internalSecret }
     }
   })
@@ -152,9 +170,11 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       { timeout: 5000 }
     )
   }
+
   beforeEach(async () => {
     flags = { mediaLibrary: true, websiteMode: true }
     providerFailure = false
+    captionsUnavailable = false
     for (const [id, bcp47] of [
       ['529', 'en'],
       ['21028', 'es']
@@ -202,7 +222,11 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         primaryLanguageId: '529',
         published: true,
         title: {
-          create: { value: 'Synthetic film', languageId: '529', primary: true }
+          create: {
+            value: `Synthetic film ${f.journeyId}`,
+            languageId: '529',
+            primary: true
+          }
         },
         videoEditions: { create: { name: 'base' } }
       }
@@ -246,6 +270,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       }
     })
   })
+
   afterAll(async () => {
     await media.$disconnect()
     await languages.$disconnect()
@@ -259,7 +284,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect(result.text).not.toContain(f.id('foreign-asset'))
     expect(result.text).not.toContain(f.id('unready'))
     for (const [source, more, expected] of [
-      ['internal', {}, f.id('film')],
+      ['internal', { query: f.journeyId }, f.id('film')],
       ['languages', { videoId: f.id('film') }, '529'],
       ['mux', {}, f.id('mux')],
       ['unsplash', {}, 'synthetic-photo']
@@ -269,6 +294,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       expect(found.text).toContain(expected)
     }
   })
+
   it('selects a ready image, preserves metadata on focal edits, and clears only the ordinary source and alt', async () => {
     const heading = await f.journeys.block.findUniqueOrThrow({
       where: { id: f.id('heading') }
@@ -315,6 +341,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
     ).not.toBeNull()
   })
+
   it.each(['cover', 'poster', 'poll', 'logo', 'social'] as const)(
     'creates, clears, undoes and redoes a complete owned %s slot without deleting the asset',
     async (slot) => {
@@ -394,6 +421,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       ).not.toBeNull()
     }
   )
+
   it.each(['internal', 'youTube', 'mux'])(
     'selects and configures ready %s video without changing its ID or adjacent content',
     async (source) => {
@@ -427,6 +455,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       })
     }
   )
+
   it('configures source-specific subtitle fields together and preserves poster references', async () => {
     await f.save([selectVideo()])
     await f.save([
@@ -469,6 +498,144 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       }
     ])
   })
+
+  it('selects a source and playback limits atomically, and keeps video usable when caption authorization is unavailable', async () => {
+    captionsUnavailable = true
+    await f.save([
+      {
+        ...selectVideo({ source: 'youTube', videoId: 'abcdefghijk' }),
+        settings: { startAt: 3, endAt: 8, muted: true, autoplay: false }
+      }
+    ])
+    expect(await image('video')).toMatchObject({
+      videoId: 'abcdefghijk',
+      startAt: 3,
+      endAt: 8,
+      muted: true,
+      autoplay: false,
+      objectFit: 'fit'
+    })
+    const found = await search('youTube', { videoId: 'abcdefghijk' })
+    expect(found.json.result?.isError, found.text).not.toBe(true)
+    expect(found.text).toContain('unavailable')
+    await f.save([
+      { type: 'video_settings_set', block: ref('video'), endAt: 10 }
+    ])
+    await reject([
+      {
+        type: 'video_settings_set',
+        block: ref('video'),
+        subtitleLanguageId: '529'
+      }
+    ])
+  })
+
+  it('rejects media children referenced by a foreign journey without changing either owner', async () => {
+    await f.save([selectImage()])
+    await f.journeys.journey.create({
+      data: {
+        id: f.id('foreign-journey'),
+        slug: f.id('foreign-journey'),
+        languageId: '529',
+        teamId: 'structure-team-alice',
+        blocks: {
+          create: {
+            id: f.id('foreign-ac'),
+            typename: 'CardBlock',
+            coverBlockId: f.id('image')
+          }
+        }
+      }
+    })
+    const foreign = await f.journeys.block.findUniqueOrThrow({
+      where: { id: f.id('foreign-ac') }
+    })
+    await reject([{ type: 'image_set', block: ref('image'), focalLeft: 10 }])
+    expect(
+      await f.journeys.block.findUniqueOrThrow({ where: { id: foreign.id } })
+    ).toEqual(foreign)
+  })
+
+  it('clears an ordinary Video and its owned poster as one reversible edit while retaining settings and provider assets', async () => {
+    await f.save([selectVideo()])
+    await f.save([
+      {
+        type: 'media_slot_set',
+        target: { slot: 'poster', owner: ref('video') },
+        media: {
+          kind: 'image',
+          source: { source: 'library', id: f.id('asset') }
+        }
+      }
+    ])
+    const before = await image('video'),
+      poster = before.posterBlockId!
+    const saved = await f.save([
+      { type: 'video_source_clear', block: ref('video') }
+    ])
+    expect(await image('video')).toMatchObject({
+      id: before.id,
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: 'internal',
+      startAt: null,
+      endAt: null,
+      posterBlockId: null,
+      autoplay: before.autoplay,
+      muted: before.muted,
+      settings: before.settings,
+      deletedAt: null
+    })
+    expect(
+      (await f.journeys.block.findUniqueOrThrow({ where: { id: poster } }))
+        .deletedAt
+    ).not.toBeNull()
+    f.receipt(await f.historyAction('undo', saved.historyId!))
+    expect(await image('video')).toMatchObject({
+      videoId: before.videoId,
+      posterBlockId: poster,
+      startAt: before.startAt,
+      endAt: before.endAt
+    })
+    f.receipt(await f.historyAction('redo', saved.historyId!))
+    expect(
+      await media.muxVideo.findUnique({ where: { id: before.videoId! } })
+    ).not.toBeNull()
+    expect(
+      await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
+    ).not.toBeNull()
+  })
+
+  it('authorizes copied media and rejects duplication of a revoked nested source', async () => {
+    await f.save([selectImage()])
+    const saved = await f.save([
+      {
+        type: 'block_duplicate',
+        key: 'image_copy',
+        source: ref('image'),
+        placement: { position: 'end' }
+      }
+    ])
+    expect(
+      await f.journeys.block.findUniqueOrThrow({
+        where: { id: saved.idMap.image_copy }
+      })
+    ).toMatchObject({ src: (await image()).src, width: 1200, height: 800 })
+    await settleMedia()
+    await protectedMedia.cloudflareImage.update({
+      where: { id: f.id('asset') },
+      data: { uploaded: false }
+    })
+    await reject([
+      {
+        type: 'block_duplicate',
+        key: 'revoked_copy',
+        source: ref('image'),
+        placement: { position: 'end' }
+      }
+    ])
+  })
+
   it('enforces background video autoplay, mute, subtitles and fullscreen layout', async () => {
     await f.save([
       {
@@ -502,6 +669,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       { type: 'video_settings_set', block: { id: cover }, startAt: 1 }
     ])
   })
+
   it.each(['foreign-asset', 'unready', 'missing'])(
     'rejects an inaccessible or unready %s without partial changes',
     async (suffix) => {
@@ -515,6 +683,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       ])
     }
   )
+
   it('rejects foreign nested history IDs and user-forged source metadata or URLs', async () => {
     await reject([
       {
@@ -537,6 +706,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       }
     ])
   })
+
   it('rejects disabled library and logo controls through direct invocation', async () => {
     flags.mediaLibrary = false
     expect((await search('library')).json.result?.isError).toBe(true)
@@ -566,6 +736,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       }
     ])
   })
+
   it('denies view-only grants, removed Admin rights, stale revisions and published writes', async () => {
     const view = await f.consent('view')
     expect(
@@ -593,6 +764,15 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     })
     await reject([selectImage()])
   })
+
+  it('rejects video attachment in an expanded Card', async () => {
+    await f.journeys.block.update({
+      where: { id: f.id('bc') },
+      data: { fullscreen: false }
+    })
+    await reject([selectVideo()])
+  })
+
   it('rejects invalid timing, rendition and source-specific fit combinations', async () => {
     await f.save([selectVideo()])
     for (const patch of [
@@ -626,6 +806,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       { type: 'video_settings_set', block: ref('video'), objectFit: 'fill' }
     ])
   })
+
   it('redacts provider failures and leaves content, receipts, history and assets intact', async () => {
     providerFailure = true
     await reject([selectImage()])
@@ -636,6 +817,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
     ).not.toBeNull()
   })
+
   it('replays a lost attachment response once, rejects changed key reuse and preserves unrelated later human edits during undo', async () => {
     const input = await f.input([selectImage()])
     f.loseNextResponse()
@@ -662,6 +844,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     f.receipt(await f.historyAction('redo', saved.historyId!))
     expect((await image()).src).toContain(f.id('asset'))
   })
+
   it('rejects history conflicts and a source revoked before redo without deleting provider assets', async () => {
     const saved = await f.save([selectImage()])
     await f.journeys.block.update({
@@ -689,6 +872,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).toBe(true)
     expect(await f.snapshot()).toEqual(before)
   })
+
   it('binds discovery pagination to identity, filters, journey revision and source generation', async () => {
     const first = await search('library', { limit: 1 })
     const cursor = first.json.result?.structuredContent?.nextCursor
@@ -708,6 +892,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       (await search('library', { limit: 1, cursor })).json.result?.isError
     ).toBe(true)
   })
+
   it('cancels a prepared attachment when a source changes before acceptance', async () => {
     let changed = false
     f.checkpoint = async (point) => {
@@ -720,6 +905,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     }
     await reject([selectImage()])
   })
+
   it('keeps source withdrawal pending until an accepted attachment settles, then safely completes the source write', async () => {
     let ready!: () => void, resume!: () => void
     const paused = new Promise<void>((resolve) => {
@@ -756,6 +942,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     f.receipt(await f.edit(input))
     expect(await f.counts()).toEqual({ operations: 1, history: 1, effects: 1 })
   })
+
   it('revalidates history sources, YouTube subtitles and website fit', async () => {
     await f.save([selectImage()])
     const found = await search('history')
@@ -800,6 +987,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       { type: 'video_settings_set', block: ref('video'), objectFit: 'zoomed' }
     ])
   })
+
   it('rejects revoked or invalid sources and rolls back an interrupted attachment', async () => {
     await media.video.update({
       where: { id: f.id('film') },
@@ -839,6 +1027,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     await reject([selectImage()])
     expect(await f.counts()).toEqual({ operations: 0, history: 0, effects: 0 })
   })
+
   it('rejects overlapping media writes and disables recorded media inverses when its participant is disabled', async () => {
     await reject([
       { type: 'image_set', block: ref('image'), focalLeft: 10 },
@@ -856,6 +1045,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       f.ownerConfig.media = config
     }
   })
+
   it('fences failed SQL writes and recovers a lost source-change completion report', async () => {
     await expect(
       protectedMedia.muxVideo.update({
@@ -869,7 +1059,13 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     vi.stubGlobal(
       'fetch',
       async (input: string | URL | Request, options?: RequestInit) => {
-        if (String(input).endsWith('/internal/permissions/complete'))
+        const url =
+          input instanceof Request
+            ? input.url
+            : input instanceof URL
+              ? input.href
+              : input
+        if (url.endsWith('/internal/permissions/complete'))
           return Response.json(
             { error: 'controlled report failure' },
             { status: 503 }
@@ -902,6 +1098,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       })
     ).toBe(0)
   })
+
   it('keeps uncertain external deletion closed and resumes its explicit authorized retry', async () => {
     const schema = buildSchema(
       'type Query { ping: Boolean } type Mutation { deleteCloudflareImage(id: ID!): Boolean! }'
@@ -935,5 +1132,109 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
     ).toBeNull()
     expect((await search('library')).json.result?.isError).not.toBe(true)
+  })
+
+  it.each(['videoDelete', 'videoVariantDelete'] as const)(
+    'drains accepted attachments before dispatching %s provider effects',
+    async (name) => {
+      const schema = buildSchema(
+        `type Query { ping: Boolean } type Mutation { ${name}(id: ID!): Boolean! }`
+      )
+      let dispatches = 0
+      schema.getMutationType()!.getFields()[name].resolve = () => {
+        dispatches++
+        return true
+      }
+      guard.plugin.onSchemaChange!({ schema } as Parameters<
+        NonNullable<typeof guard.plugin.onSchemaChange>
+      >[0])
+      const remove = () =>
+        graphql({
+          schema,
+          source: `mutation($id: ID!) { ${name}(id: $id) }`,
+          variableValues: {
+            id: f.id(name === 'videoDelete' ? 'film' : 'variant')
+          },
+          contextValue: { user: { id: 'alice' }, currentRoles: ['publisher'] }
+        })
+      let ready!: () => void, resume!: () => void
+      const paused = new Promise<void>((resolve) => {
+        ready = resolve
+      })
+      const continuation = new Promise<void>((resolve) => {
+        resume = resolve
+      })
+      f.checkpoint = async (point) => {
+        if (point === 'after_accept') {
+          ready()
+          await continuation
+        }
+      }
+      const input = await f.input([selectVideo()])
+      const attaching = f.edit(input)
+      await paused
+      try {
+        expect((await remove()).errors?.[0].message).toContain(
+          'pending accepted work'
+        )
+        expect(dispatches).toBe(0)
+      } finally {
+        resume()
+      }
+      expect((await attaching).json.error).toBeDefined()
+      expect(await image('video')).toMatchObject({ videoId: f.id('mux') })
+      f.checkpoint = undefined
+      await settleMedia()
+      expect((await remove()).errors).toBeUndefined()
+      expect(dispatches).toBe(1)
+      f.receipt(await f.edit(input))
+      expect(await f.counts()).toEqual({
+        operations: 1,
+        history: 1,
+        effects: 1
+      })
+    }
+  )
+  it('keeps source transactions atomic and reopens admission only after their owning outcome is recorded', async () => {
+    await expect(
+      sourceTransaction(protectedMedia, async (tx) => {
+        await tx.cloudflareImage.update({
+          where: { id: f.id('asset') },
+          data: { uploaded: false }
+        })
+        await tx.muxVideo.update({
+          where: { id: f.id('mux') },
+          data: { readyToStream: false }
+        })
+        throw new Error('controlled source transaction failure')
+      })
+    ).rejects.toThrow('controlled source transaction failure')
+    expect(
+      await media.cloudflareImage.findUniqueOrThrow({
+        where: { id: f.id('asset') }
+      })
+    ).toMatchObject({ uploaded: true })
+    expect(
+      await media.muxVideo.findUniqueOrThrow({ where: { id: f.id('mux') } })
+    ).toMatchObject({ readyToStream: true })
+    expect((await search('library')).json.result?.isError).not.toBe(true)
+    await settleMedia()
+    await sourceTransaction(protectedMedia, async (tx) => {
+      await tx.cloudflareImage.update({
+        where: { id: f.id('asset') },
+        data: { uploaded: false }
+      })
+      await tx.muxVideo.update({
+        where: { id: f.id('mux') },
+        data: { readyToStream: false }
+      })
+    })
+    await reject([selectImage()])
+    await reject([selectVideo()])
+    expect(
+      await media.mcpMediaMutation.count({
+        where: { status: 'committed', reportedAt: null }
+      })
+    ).toBe(0)
   })
 })

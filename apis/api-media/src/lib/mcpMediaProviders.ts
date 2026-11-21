@@ -14,7 +14,11 @@ const hosts = new Set([
 
 export function publicMediaUrl(value: string): string {
   let url: URL
-  try { url = new URL(value) } catch { throw new Error('VALIDATION_FAILED') }
+  try {
+    url = new URL(value)
+  } catch {
+    throw new Error('VALIDATION_FAILED')
+  }
   if (
     url.protocol !== 'https:' ||
     !hosts.has(url.hostname) ||
@@ -28,7 +32,11 @@ export function publicMediaUrl(value: string): string {
 }
 export function catalogStreamUrl(value: string): string {
   let url: URL
-  try { url = new URL(value) } catch { throw new Error('VALIDATION_FAILED') }
+  try {
+    url = new URL(value)
+  } catch {
+    throw new Error('VALIDATION_FAILED')
+  }
   const trusted =
     ['stream.mux.com', 'arc.gt', 'video-cdn.jesusfilm.org'].includes(
       url.hostname
@@ -59,6 +67,7 @@ async function providerJson(
   return boundedJson(response)
 }
 export interface MediaProviders {
+  catalog: (url: string) => Promise<void>
   image: (url: string) => Promise<ReadyImage>
   unsplash: (id: string) => Promise<ReadyImage>
   searchUnsplash: (
@@ -72,6 +81,7 @@ export interface MediaProviders {
     image: string
     duration: number
     subtitleBcp47: string[]
+    subtitleStatus: 'ready' | 'unavailable'
   }>
 }
 const photo = z.object({
@@ -87,6 +97,43 @@ const photo = z.object({
  * never accepted as source identities, including Unsplash download locations.
  */
 export function mediaProviders(env: NodeJS.ProcessEnv): MediaProviders {
+  let cachedCaptionToken: { token: string; expiresAt: number } | undefined
+  const captionToken = async (): Promise<string | undefined> => {
+    if (env.YOUTUBE_CAPTIONS_ACCESS_TOKEN)
+      return env.YOUTUBE_CAPTIONS_ACCESS_TOKEN
+    const configured = [
+      env.YOUTUBE_CAPTIONS_CLIENT_ID,
+      env.YOUTUBE_CAPTIONS_CLIENT_SECRET,
+      env.YOUTUBE_CAPTIONS_REFRESH_TOKEN
+    ]
+    if (!configured.every(Boolean)) return
+    if (cachedCaptionToken && cachedCaptionToken.expiresAt > Date.now())
+      return cachedCaptionToken.token
+    const response = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      redirect: 'error',
+      signal: AbortSignal.timeout(10000),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        client_id: env.YOUTUBE_CAPTIONS_CLIENT_ID!,
+        client_secret: env.YOUTUBE_CAPTIONS_CLIENT_SECRET!,
+        refresh_token: env.YOUTUBE_CAPTIONS_REFRESH_TOKEN!
+      })
+    })
+    if (!response.ok) throw new Error('DEPENDENCY_UNAVAILABLE')
+    const value = z
+      .object({
+        access_token: z.string().min(1),
+        expires_in: z.number().positive()
+      })
+      .parse(await boundedJson(response))
+    cachedCaptionToken = {
+      token: value.access_token,
+      expiresAt: Date.now() + Math.max(0, value.expires_in - 30) * 1000
+    }
+    return value.access_token
+  }
   const unsplash = async (
     path: string,
     params: Record<string, string> = {}
@@ -99,6 +146,46 @@ export function mediaProviders(env: NodeJS.ProcessEnv): MediaProviders {
     })
   }
   return {
+    async catalog(value) {
+      let url = catalogStreamUrl(value)
+      for (let redirect = 0; redirect <= 3; redirect++) {
+        const response = await fetch(url, {
+          redirect: 'manual',
+          signal: AbortSignal.timeout(10000)
+        })
+        if (response.status >= 300 && response.status < 400) {
+          await response.body?.cancel()
+          const location = response.headers.get('location')
+          if (!location || redirect === 3) throw new Error('VALIDATION_FAILED')
+          url = catalogStreamUrl(new URL(location, url).href)
+          continue
+        }
+        if (!response.ok || !response.body)
+          throw new Error('DEPENDENCY_UNAVAILABLE')
+        const reader = response.body.getReader(),
+          chunks: Uint8Array[] = []
+        let bytes = 0
+        try {
+          while (true) {
+            const chunk = await reader.read()
+            if (chunk.done) break
+            bytes += chunk.value.length
+            if (bytes > 524288) throw new Error('LIMIT_EXCEEDED')
+            chunks.push(chunk.value)
+          }
+        } finally {
+          await reader.cancel()
+        }
+        if (
+          !Buffer.concat(chunks)
+            .toString('utf8')
+            .trimStart()
+            .startsWith('#EXTM3U')
+        )
+          throw new Error('VALIDATION_FAILED')
+        return
+      }
+    },
     async image(value) {
       const url = publicMediaUrl(value)
       if (
@@ -211,32 +298,51 @@ export function mediaProviders(env: NodeJS.ProcessEnv): MediaProviders {
       )
       if (!duration) throw new Error('VALIDATION_FAILED')
       const subtitleBcp47: string[] = []
-      if (value.contentDetails.caption === 'true') {
+      let subtitleStatus: 'ready' | 'unavailable' = 'ready'
+      const token =
+        value.contentDetails.caption === 'true'
+          ? await captionToken().catch(() => undefined)
+          : undefined
+      if (value.contentDetails.caption === 'true' && !token)
+        subtitleStatus = 'unavailable'
+      if (value.contentDetails.caption === 'true' && token) {
         const captions = new URL(
           'https://www.googleapis.com/youtube/v3/captions'
         )
         captions.search = new URLSearchParams({
-          key: env.FIREBASE_API_KEY,
           videoId: id,
           part: 'snippet'
         }).toString()
-        const tracks = z
-          .object({
-            items: z.array(
-              z.object({
-                snippet: z.object({
-                  language: z.string(),
-                  trackKind: z.string()
+        try {
+          const tracks = z
+            .object({
+              items: z.array(
+                z.object({
+                  snippet: z.object({
+                    language: z.string(),
+                    trackKind: z.string(),
+                    status: z.string(),
+                    isDraft: z.boolean()
+                  })
                 })
-              })
+              )
+            })
+            .parse(
+              await providerJson(captions, { Authorization: `Bearer ${token}` })
             )
-          })
-          .parse(await providerJson(captions))
-        subtitleBcp47.push(
-          ...tracks.items
-            .filter((item) => item.snippet.trackKind === 'standard')
-            .map((item) => item.snippet.language.toLowerCase())
-        )
+          subtitleBcp47.push(
+            ...tracks.items
+              .filter(
+                (item) =>
+                  item.snippet.trackKind === 'standard' &&
+                  item.snippet.status === 'serving' &&
+                  !item.snippet.isDraft
+              )
+              .map((item) => item.snippet.language.toLowerCase())
+          )
+        } catch {
+          subtitleStatus = 'unavailable'
+        }
       }
       return {
         title: value.snippet.title,
@@ -246,7 +352,8 @@ export function mediaProviders(env: NodeJS.ProcessEnv): MediaProviders {
           Number(duration[1] ?? 0) * 3600 +
           Number(duration[2] ?? 0) * 60 +
           Number(duration[3] ?? 0),
-        subtitleBcp47
+        subtitleBcp47,
+        subtitleStatus
       }
     }
   }

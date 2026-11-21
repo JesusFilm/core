@@ -28,6 +28,17 @@ export const mediaSlot = z.discriminatedUnion('slot', [
   z.object({ slot: z.literal('logo') }).strict(),
   z.object({ slot: z.literal('social') }).strict()
 ])
+const videoSettings = z
+  .object({
+    objectFit: z.enum(['fill', 'fit', 'zoomed']).optional(),
+    startAt: z.number().int().min(0).max(2147483647).optional(),
+    endAt: z.number().int().min(0).max(2147483647).optional(),
+    autoplay: z.boolean().optional(),
+    muted: z.boolean().optional(),
+    subtitleLanguageId: id.nullable().optional(),
+    showGeneratedSubtitles: z.boolean().optional()
+  })
+  .strict()
 const focal = z.number().int().min(0).max(100).nullable().optional()
 export const mediaCommand = z.discriminatedUnion('type', [
   z
@@ -56,23 +67,21 @@ export const mediaCommand = z.discriminatedUnion('type', [
     .object({
       type: z.literal('video_source_set'),
       block: blockReference,
-      source: videoSource
+      source: videoSource,
+      settings: videoSettings.optional()
     })
     .strict(),
   z
     .object({
       type: z.literal('video_settings_set'),
       block: blockReference,
-      objectFit: z.enum(['fill', 'fit', 'zoomed']).optional(),
-      startAt: z.number().int().min(0).max(2147483647).optional(),
-      endAt: z.number().int().min(0).max(2147483647).optional(),
-      autoplay: z.boolean().optional(),
-      muted: z.boolean().optional(),
-      subtitleLanguageId: id.nullable().optional(),
-      showGeneratedSubtitles: z.boolean().optional()
+      ...videoSettings.shape
     })
     .strict()
     .refine((value) => Object.keys(value).length > 2),
+  z
+    .object({ type: z.literal('video_source_clear'), block: blockReference })
+    .strict(),
   z
     .object({
       type: z.literal('media_slot_set'),
@@ -85,7 +94,13 @@ export const mediaCommand = z.discriminatedUnion('type', [
             alt: z.string().max(262144).optional()
           })
           .strict(),
-        z.object({ kind: z.literal('video'), source: videoSource }).strict()
+        z
+          .object({
+            kind: z.literal('video'),
+            source: videoSource,
+            settings: videoSettings.optional()
+          })
+          .strict()
       ])
     })
     .strict()
@@ -96,38 +111,56 @@ export const mediaCommand = z.discriminatedUnion('type', [
 ])
 export type MediaCommand = z.infer<typeof mediaCommand>
 export type ImageSource = z.infer<typeof imageSource>
+export type VideoSettings = z.infer<typeof videoSettings>
 export type VideoSource = z.infer<typeof videoSource>
 export type MediaSlot = z.infer<typeof mediaSlot>
 export const mediaCommandNames = mediaCommand.options.map(
   (option) => option.shape.type.value
 )
 
-export const mediaSearchInput = z
-  .object({
-    journeyId: id,
-    source: z.enum([
-      'library',
-      'history',
-      'unsplash',
-      'internal',
-      'mux',
-      'youTube',
-      'languages'
-    ]),
-    query: z.string().max(200).optional(),
-    videoId: id.optional(),
-    limit: z.number().int().min(1).max(50).default(20),
-    cursor: z.string().max(4096).optional()
-  })
-  .strict()
-  .refine(
-    (value) =>
-      !['languages', 'youTube'].includes(value.source) || Boolean(value.videoId)
-  )
-  .refine(
-    (value) =>
-      value.source !== 'youTube' || /^[-\w]{11}$/.test(value.videoId ?? '')
-  )
+const searchCommon = {
+  journeyId: id,
+  limit: z.number().int().min(1).max(50).default(20),
+  cursor: z.string().max(4096).optional()
+}
+const query = z.string().max(200).optional()
+export const mediaSearchInput = z.discriminatedUnion('source', [
+  z
+    .object({
+      ...searchCommon,
+      source: z.literal('library'),
+      isAi: z.boolean().optional()
+    })
+    .strict(),
+  z.object({ ...searchCommon, source: z.literal('history'), query }).strict(),
+  z.object({ ...searchCommon, source: z.literal('unsplash'), query }).strict(),
+  z
+    .object({
+      ...searchCommon,
+      source: z.literal('internal'),
+      query,
+      videoId: id.optional()
+    })
+    .strict(),
+  z
+    .object({ ...searchCommon, source: z.literal('languages'), videoId: id })
+    .strict(),
+  z
+    .object({
+      ...searchCommon,
+      source: z.literal('mux'),
+      query,
+      videoId: id.optional()
+    })
+    .strict(),
+  z
+    .object({
+      ...searchCommon,
+      source: z.literal('youTube'),
+      videoId: z.string().regex(/^[-\w]{11}$/)
+    })
+    .strict()
+])
 
 export const readyImage = z
   .object({
@@ -148,7 +181,8 @@ export const readyVideo = z
     description: z.string().max(262144).nullable(),
     image: z.string().url().nullable(),
     duration: z.number().int().min(3).max(2147483647),
-    subtitleLanguageIds: z.array(id).max(10000)
+    subtitleLanguageIds: z.array(id).max(10000),
+    subtitleStatus: z.enum(['ready', 'unavailable']).default('ready')
   })
   .strict()
 export type ReadyImage = z.infer<typeof readyImage>
@@ -163,6 +197,7 @@ export function mediaSourceKey(source: ImageSource | VideoSource): string {
 }
 
 const mediaFixtures: Record<MediaCommand['type'], MediaCommand> = {
+  video_source_clear: { type: 'video_source_clear', block: { id: 'video' } },
   image_set: {
     type: 'image_set',
     block: { id: 'image' },
@@ -191,6 +226,21 @@ const mediaFixtures: Record<MediaCommand['type'], MediaCommand> = {
   media_slot_clear: { type: 'media_slot_clear', target: { slot: 'social' } }
 }
 const mediaWrites: Record<MediaCommand['type'], readonly string[]> = {
+  video_source_clear: [
+    'source',
+    'videoId',
+    'videoVariantLanguageId',
+    'title',
+    'description',
+    'image',
+    'duration',
+    'startAt',
+    'endAt',
+    'subtitleLanguageId',
+    'showGeneratedSubtitles',
+    'posterBlockId',
+    'deletedAt'
+  ],
   image_set: [
     'src',
     'width',
@@ -214,6 +264,8 @@ const mediaWrites: Record<MediaCommand['type'], readonly string[]> = {
     'endAt',
     'subtitleLanguageId',
     'showGeneratedSubtitles',
+    'autoplay',
+    'muted',
     'objectFit'
   ],
   video_settings_set: [
@@ -226,6 +278,25 @@ const mediaWrites: Record<MediaCommand['type'], readonly string[]> = {
     'showGeneratedSubtitles'
   ],
   media_slot_set: [
+    'src',
+    'width',
+    'height',
+    'blurhash',
+    'alt',
+    'source',
+    'videoId',
+    'videoVariantLanguageId',
+    'title',
+    'description',
+    'image',
+    'duration',
+    'startAt',
+    'endAt',
+    'objectFit',
+    'autoplay',
+    'muted',
+    'subtitleLanguageId',
+    'showGeneratedSubtitles',
     'created',
     'deletedAt',
     'coverBlockId',

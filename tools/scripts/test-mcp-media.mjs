@@ -125,6 +125,10 @@ if (!tests.numTotalTests || tests.numPassedTests !== tests.numTotalTests)
 const coverage = JSON.parse(
   readFileSync(`${reportDirectory}/coverage-final.json`, 'utf8')
 )
+const cobertura = readFileSync(
+  `${reportDirectory}/cobertura-coverage.xml`,
+  'utf8'
+)
 for (const module of [
   'apis/api-journeys/src/lib/mcpMedia.ts',
   'apis/api-journeys/src/lib/mcpMediaClient.ts',
@@ -132,6 +136,8 @@ for (const module of [
   'apis/api-journeys/src/lib/mcpStructureHistory.ts',
   'apis/api-media/src/lib/mcpMediaSources.ts',
   'apis/api-media/src/lib/mcpMediaMutations.ts',
+  'apis/api-media/src/lib/mcpMediaProviders.ts',
+  'apis/api-media/src/lib/mcpMediaRuntime.ts',
   'libs/prisma/media/src/client.ts',
   'libs/yoga/src/mcp/mediaContract.ts'
 ]) {
@@ -140,4 +146,6 @@ for (const module of [
   )?.[1]
   if (!entry || !Object.values(entry.s).some((hits) => hits > 0))
     throw new Error(`Missing executed owning/shared coverage for ${module}`)
+  if (!cobertura.includes(`filename="${module}"`))
+    throw new Error(`Missing repository-relative Codecov path: ${module}`)
 }

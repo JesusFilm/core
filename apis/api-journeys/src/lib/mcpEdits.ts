@@ -48,11 +48,11 @@ import {
   planHistory,
   typographyParents
 } from './mcpHistory'
+import { validateMediaPlan } from './mcpMedia'
+import { hasMediaCommands, resolveEditMedia } from './mcpMediaClient'
 import type { JourneyReadsConfig } from './mcpReads'
 import { executeStructure, planStructure } from './mcpStructure'
 import { planStructureHistory } from './mcpStructureHistory'
-import { hasMediaCommands, resolveEditMedia } from './mcpMediaClient'
-import { validateMediaPlan } from './mcpMedia'
 import type { StructureInverse, StructurePlan } from './mcpStructureState'
 
 export type EditCheckpoint =
@@ -152,6 +152,12 @@ export function createJourneyEditHandler(
       const usesMedia = Boolean(
         config.media &&
           (hasMediaCommands(operation) ||
+            (operation.tool === 'journey_edit' &&
+              operation.input.commands.some(
+                (command) =>
+                  command.type === 'step_duplicate' ||
+                  command.type === 'block_duplicate'
+              )) ||
             operation.tool === 'journey_undo' ||
             operation.tool === 'journey_redo')
       )
@@ -246,9 +252,16 @@ export function createJourneyEditHandler(
         return journey
       }
       const authorized = await authorizedJourney(db)
-      const retained = usesMedia && 'idempotencyKey' in operation.input
-        ? await db.mcpEditOperation.findFirst({ where: { namespaceId: claims.connectionId, journeyId: authorized.id, idempotencyKey: operation.input.idempotencyKey } })
-        : null
+      const retained =
+        usesMedia && 'idempotencyKey' in operation.input
+          ? await db.mcpEditOperation.findFirst({
+              where: {
+                namespaceId: claims.connectionId,
+                journeyId: authorized.id,
+                idempotencyKey: operation.input.idempotencyKey
+              }
+            })
+          : null
       const mediaProjection =
         usesMedia && body.stage === 'read' && !retained
           ? await resolveEditMedia(
@@ -259,7 +272,7 @@ export function createJourneyEditHandler(
               db,
               claims.connectionId,
               claims.consentHistoryGeneration,
-              authorized.website
+              { website: authorized.website, languageId: authorized.languageId }
             )
           : undefined
       await hooks.checkpoint?.('before_accept', context)
@@ -498,7 +511,18 @@ export function createJourneyEditHandler(
               return reject('HISTORY_UNAVAILABLE')
             if (restoredEntry.id !== operation.input.entryId)
               return reject('HISTORY_CONFLICT')
-            if (!config.media && Array.isArray(restoredEntry.changes) && restoredEntry.changes.some((change) => change && typeof change === 'object' && 'media' in change && change.media === true)) throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+            if (
+              !config.media &&
+              Array.isArray(restoredEntry.changes) &&
+              restoredEntry.changes.some(
+                (change) =>
+                  change &&
+                  typeof change === 'object' &&
+                  'media' in change &&
+                  change.media === true
+              )
+            )
+              throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
             try {
               if (
                 Array.isArray(restoredEntry.changes) &&
@@ -600,7 +624,8 @@ export function createJourneyEditHandler(
             })
           }
           if (structuralPlan) {
-            if (usesMedia) await validateMediaPlan(tx, structuralPlan, mediaProjection)
+            if (usesMedia)
+              await validateMediaPlan(tx, structuralPlan, mediaProjection)
             // Incoming links are reported without being written. Reserve room
             // for the fixed receipt envelope before accepting an expanded save.
             try {

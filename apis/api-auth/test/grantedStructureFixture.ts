@@ -49,6 +49,7 @@ type Checkpoint = NonNullable<
 export function structureFixture(
   options: {
     issue?: string
+    startupTimeoutMs?: number
     authUrl?: string
     journeysUrl?: string
     authEnv?: NodeJS.ProcessEnv
@@ -519,7 +520,7 @@ export function structureFixture(
     )) as {
       schema: GraphQLSchema
     })
-  }, 30000)
+  }, options.startupTimeoutMs ?? 30000)
 
   beforeEach(async () => {
     checkpoint = undefined

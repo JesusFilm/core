@@ -141,6 +141,17 @@ describe('ImageService', () => {
   })
 
   describe('deleteImage', () => {
+    it('accepts a confirmed missing provider image but preserves uncertain failures', async () => {
+      mockCloudflare.images.v1.delete.mockRejectedValueOnce({ status: 404 })
+      await expect(deleteImage('already-gone')).resolves.toBeUndefined()
+      mockCloudflare.images.v1.delete.mockRejectedValueOnce(
+        new Error('controlled network uncertainty')
+      )
+      await expect(deleteImage('unknown')).rejects.toThrow(
+        'controlled network uncertainty'
+      )
+    })
+
     it('does not throw error', async () => {
       mockCloudflare.images.v1.delete.mockResolvedValueOnce({})
       expect(await deleteImage('1')).toEqual({})

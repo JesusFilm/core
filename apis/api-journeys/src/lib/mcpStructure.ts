@@ -4,7 +4,11 @@ import slugify from 'slugify'
 
 import { Prisma } from '@core/prisma/journeys/client'
 import { type EditInput, commandRegistry } from '@core/yoga/mcp/editContract'
-import { mediaCommand, mediaCommandNames } from '@core/yoga/mcp/mediaContract'
+import {
+  mediaCommand,
+  mediaCommandNames,
+  mediaSourceKey
+} from '@core/yoga/mcp/mediaContract'
 import {
   type ActionValue,
   type BlockReference,
@@ -367,6 +371,18 @@ export async function planStructure(
       for (const original of originals) {
         const id = mapping.get(idOf(original))!,
           row = serialize(original)
+        if (media && original.typename === 'ImageBlock' && original.src) {
+          const source = media.sources.get(
+            mediaSourceKey({ source: 'history', blockId: idOf(original) })
+          )
+          if (!source || source.kind !== 'image') missing()
+          Object.assign(row, {
+            src: source.src,
+            width: source.width,
+            height: source.height,
+            blurhash: source.blurhash
+          })
+        }
         row.id = id
         row.slug = null
         row.deletedAt = null
@@ -678,7 +694,19 @@ export async function planStructure(
     )
       fail()
   const plan = finishStructure(state, now)
-  if (commands.some((command) => (mediaCommandNames as readonly string[]).includes(command.type))) for (const inverse of plan.changes) inverse.media = true
+  if (
+    media &&
+    plan.blockWrites.some(
+      (write) => write.create && (write.create.src || write.create.videoId)
+    )
+  )
+    for (const inverse of plan.changes) inverse.media = true
+  if (
+    commands.some((command) =>
+      (mediaCommandNames as readonly string[]).includes(command.type)
+    )
+  )
+    for (const inverse of plan.changes) inverse.media = true
   plan.idMap = Object.fromEntries(locals)
   plan.duplicateIdMap = duplicateIdMap
   plan.duplicateMaps = duplicateMaps

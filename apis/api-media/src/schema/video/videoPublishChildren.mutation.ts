@@ -1,4 +1,4 @@
-import { sourceTransaction, prisma  } from '@core/prisma/media/client'
+import { prisma, sourceTransaction } from '@core/prisma/media/client'
 
 import {
   videoCacheReset,

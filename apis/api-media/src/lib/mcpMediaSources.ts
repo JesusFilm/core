@@ -6,8 +6,8 @@ import { z } from 'zod'
 import type { PrismaClient as JourneysDatabase } from '@core/prisma/journeys/client'
 import type { PrismaClient as LanguagesDatabase } from '@core/prisma/languages/client'
 import type {
-  Prisma,
-  PrismaClient as MediaDatabase
+  PrismaClient as MediaDatabase,
+  Prisma
 } from '@core/prisma/media/client'
 import {
   type ImageSource,
@@ -289,7 +289,7 @@ export function createMediaSourceHandler(
             source.videoId
           )
           const subtitles = await languages.language.findMany({
-            where: { bcp47: { in: subtitleBcp47 } },
+            where: { bcp47: { in: subtitleBcp47, mode: 'insensitive' } },
             select: { id: true }
           })
           return readyVideo.parse({
@@ -315,11 +315,20 @@ export function createMediaSourceHandler(
               subtitles: { where: { status: 'ready', source: 'generated' } }
             }
           })
-          if (!video?.playbackId || !/^[a-zA-Z0-9]+$/.test(video.playbackId))
+          if (
+            !video?.playbackId ||
+            !/^[a-zA-Z0-9_-]{1,200}$/.test(video.playbackId)
+          )
             denied()
+          await providers.catalog(
+            `https://stream.mux.com/${video.playbackId}.m3u8`
+          )
           const subtitles = await languages.language.findMany({
             where: {
-              bcp47: { in: video.subtitles.map((track) => track.bcp47) }
+              bcp47: {
+                in: video.subtitles.map((track) => track.bcp47),
+                mode: 'insensitive'
+              }
             },
             select: { id: true }
           })
@@ -363,6 +372,7 @@ export function createMediaSourceHandler(
         )
           denied()
         catalogStreamUrl(variant.hls!)
+        await providers.catalog(variant.hls!)
         return readyVideo.parse({
           kind: 'video',
           source: 'internal',
@@ -420,7 +430,7 @@ export function createMediaSourceHandler(
           if (page.binding !== binding) throw new Error('REVISION_CONFLICT')
           skip = page.offset
         }
-        const query = search.query?.trim()
+        const query = 'query' in search ? search.query?.trim() : undefined
         if (
           ['library', 'history', 'mux'].includes(search.source) &&
           !flags.mediaLibrary
@@ -428,7 +438,17 @@ export function createMediaSourceHandler(
           denied()
         if (search.source === 'library') {
           const images = await media.cloudflareImage.findMany({
-            where: { uploaded: true, ...owner },
+            where: {
+              uploaded: true,
+              AND: [
+                owner,
+                ...(search.isAi === true
+                  ? [{ isAi: true }]
+                  : search.isAi === false
+                    ? [{ OR: [{ isAi: false }, { isAi: null }] }]
+                    : [])
+              ]
+            },
             orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
             take: take + 1,
             skip
@@ -471,7 +491,13 @@ export function createMediaSourceHandler(
                   alt: image.alt
                 })
             } catch (error) {
-              if (!(error instanceof Error) || !['ACCESS_DENIED_OR_NOT_FOUND', 'VALIDATION_FAILED'].includes(error.message)) throw new Error('DEPENDENCY_UNAVAILABLE')
+              if (
+                !(error instanceof Error) ||
+                !['ACCESS_DENIED_OR_NOT_FOUND', 'VALIDATION_FAILED'].includes(
+                  error.message
+                )
+              )
+                throw new Error('DEPENDENCY_UNAVAILABLE', { cause: error })
             }
           }
           data = { items, hasMore: images.length > take }
@@ -487,7 +513,7 @@ export function createMediaSourceHandler(
         } else if (search.source === 'youTube') {
           data = {
             items: [
-              await resolve({ source: 'youTube', videoId: search.videoId! })
+              await resolve({ source: 'youTube', videoId: search.videoId })
             ],
             hasMore: false
           }
@@ -495,6 +521,7 @@ export function createMediaSourceHandler(
           const videos = await media.muxVideo.findMany({
             where: {
               ...owner,
+              ...(search.videoId ? { id: search.videoId } : {}),
               readyToStream: true,
               playbackId: { not: null },
               duration: { gte: 3 },
@@ -507,25 +534,24 @@ export function createMediaSourceHandler(
             skip
           })
           data = {
-            items: videos.slice(0, take).map((video) => ({
-              videoId: video.id,
-              source: 'mux',
-              title: video.name,
-              duration: video.duration
-            })),
+            items: await Promise.all(
+              videos
+                .slice(0, take)
+                .map((video) => resolve({ source: 'mux', videoId: video.id }))
+            ),
             hasMore: videos.length > take
           }
         } else if (search.source === 'languages') {
           if (
             !(await media.video.findFirst({
-              where: { id: search.videoId!, ...catalogWhere },
+              where: { id: search.videoId, ...catalogWhere },
               select: { id: true }
             }))
           )
             denied()
           const variants = await media.videoVariant.findMany({
             where: {
-              videoId: search.videoId!,
+              videoId: search.videoId,
               published: true,
               hls: { not: null },
               duration: { gte: 3 }
@@ -562,6 +588,7 @@ export function createMediaSourceHandler(
           const videos = await media.video.findMany({
             where: {
               ...catalogWhere,
+              ...(search.videoId ? { id: search.videoId } : {}),
               variants: {
                 some: {
                   published: true,
@@ -630,27 +657,31 @@ export function useMcpMediaSources(
   handler?: ReturnType<typeof createMediaSourceHandler>
 ): Plugin {
   return {
-    async onRequest({ request, endResponse }) {
-      if (new URL(request.url).pathname !== '/mcp/media-sources') {
+    async onRequest(payload) {
+      const { request } = payload
+      if (
+        new URL(request.url, 'http://localhost').pathname !==
+        '/mcp/media-sources'
+      ) {
         if (
           request.headers.has('x-mcp-context') ||
           request.headers.has('x-mcp-signature') ||
           /^MCP /i.test(request.headers.get('authorization') ?? '')
         )
-          endResponse(
+          payload.endResponse(
             Response.json(
               { error: 'ACCESS_DENIED_OR_NOT_FOUND' },
-              { status: 403 }
+              { status: 403, headers: { 'Cache-Control': 'private, no-store' } }
             )
           )
         return
       }
-      endResponse(
+      payload.endResponse(
         handler
           ? await handler(request)
           : Response.json(
               { error: 'ACCESS_DENIED_OR_NOT_FOUND' },
-              { status: 403 }
+              { status: 403, headers: { 'Cache-Control': 'private, no-store' } }
             )
       )
     }

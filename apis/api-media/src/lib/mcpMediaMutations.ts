@@ -20,6 +20,7 @@ interface MutationConfig {
   authoritySecret: string
 }
 const active = new AsyncLocalStorage<boolean>()
+const terminalMutationStatus = z.enum(['committed', 'fenced'])
 
 /** Cooperative source writes use one conservative gate, including worker
  * updates. The owning SQL receipt positively fences a delayed executor. An
@@ -39,7 +40,10 @@ export function createMediaMutationGuard(
           `Bearer ${config.authoritySecret}`
         )
       )
-  const report = async (id: string, status: string) => {
+  const report = async (
+    id: string,
+    status: z.infer<typeof terminalMutationStatus>
+  ) => {
     const result = await authority('complete', {
       changeId: id,
       outcome: status === 'committed' ? 'committed' : 'cancelled'
@@ -130,7 +134,10 @@ export function createMediaMutationGuard(
         const current = await db.mcpMediaMutation.findUniqueOrThrow({
           where: { id: receipt.id }
         })
-        await report(receipt.id, current.status).catch(() => undefined)
+        await report(
+          receipt.id,
+          terminalMutationStatus.parse(current.status)
+        ).catch(() => undefined)
       }
       throw error
     }
@@ -161,14 +168,19 @@ export function createMediaMutationGuard(
           gateIds: ['media:sources'],
           intentHash: current.intentHash
         })
-        await report(current.id, current.status)
+        await report(current.id, terminalMutationStatus.parse(current.status))
       }
     }
   }
   const wrapped = new WeakSet<object>()
   const plugin: Plugin = {
     onSchemaChange({ schema }) {
-      for (const name of ['deleteCloudflareImage', 'deleteMuxVideo']) {
+      for (const name of [
+        'deleteCloudflareImage',
+        'deleteMuxVideo',
+        'videoDelete',
+        'videoVariantDelete'
+      ]) {
         const field = schema.getMutationType()?.getFields()[name]
         if (!field || wrapped.has(field)) continue
         wrapped.add(field)
@@ -180,6 +192,11 @@ export function createMediaMutationGuard(
           info: GraphQLResolveInfo
         ) => {
           if (!context.user) throw new GraphQLError('Access denied')
+          if (
+            (name === 'videoDelete' || name === 'videoVariantDelete') &&
+            !context.currentRoles?.includes('publisher')
+          )
+            throw new GraphQLError('Access denied')
           const owner = context.currentRoles?.includes('publisher')
             ? {}
             : { userId: context.user.id }
@@ -189,11 +206,27 @@ export function createMediaMutationGuard(
                   where: { id: String(args.id), ...owner },
                   select: { id: true }
                 })
-              : await db.muxVideo.findFirst({
-                  where: { id: String(args.id), ...owner },
-                  select: { id: true }
-                })
+              : name === 'videoDelete'
+                ? await db.video.findUnique({
+                    where: { id: String(args.id) },
+                    select: { id: true, publishedAt: true }
+                  })
+                : name === 'videoVariantDelete'
+                  ? await db.videoVariant.findUnique({
+                      where: { id: String(args.id) },
+                      select: { id: true }
+                    })
+                  : await db.muxVideo.findFirst({
+                      where: { id: String(args.id), ...owner },
+                      select: { id: true }
+                    })
           if (!source) throw new GraphQLError('Access denied')
+          if (
+            name === 'videoDelete' &&
+            'publishedAt' in source &&
+            source.publishedAt !== null
+          )
+            throw new GraphQLError('Published video deletion is unavailable')
           return run(
             { name, args, actorId: context.user.id },
             async () => original(parent, args, context, info),

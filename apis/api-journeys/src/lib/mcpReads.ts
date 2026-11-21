@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
+import { mediaCommandNames } from '@core/yoga/mcp/mediaContract'
 import {
   type ReadCredential,
   type ReadRequest,
@@ -31,10 +32,9 @@ import { structureCommandNames } from '@core/yoga/mcp/structureContract'
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
 
 import { type JourneyEditHooks, createJourneyEditHandler } from './mcpEdits'
+import { type MediaClientConfig, mediaRequest } from './mcpMediaClient'
 import { boundedReadPage } from './mcpReadPage'
 import { reconcileJourneyReads } from './mcpReadSettlement'
-import { type MediaClientConfig, mediaRequest } from './mcpMediaClient'
-import { mediaCommandNames } from '@core/yoga/mcp/mediaContract'
 
 export interface JourneyReadsConfig extends ReadTrust {
   internalSecret: string
@@ -495,6 +495,7 @@ async function snapshot(
     'journey_read',
     'journey_preview',
     'journey_operation_get',
+    ...(config.media ? ['journey_media_search'] : []),
     ...(journey.status === 'draft' ? ['journey_history'] : []),
     ...(config.editsEnabled &&
     claims.mode === 'edit' &&

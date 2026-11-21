@@ -16,6 +16,10 @@ import {
   privateOperationErrorCodes
 } from '@core/yoga/mcp/editContract'
 import {
+  mediaCommandNames,
+  mediaSearchInput
+} from '@core/yoga/mcp/mediaContract'
+import {
   InputLimitExceeded,
   type ReadRequest,
   type ReadResult,
@@ -31,7 +35,6 @@ import {
   safeReadError
 } from '@core/yoga/mcp/readContract'
 import { structureCommandNames } from '@core/yoga/mcp/structureContract'
-import { mediaCommandNames, mediaSearchInput } from '@core/yoga/mcp/mediaContract'
 
 import type { ReadSession } from './reads'
 
@@ -129,8 +132,12 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
   const tools = [
     {
       name: 'journey_media_search',
-      description: 'Discover ready authorized image library/history/Unsplash or catalog videos, languages and existing Mux media for this granted journey. Source IDs do not grant access. Preserve public file delivery; source metadata and search results require current rights and this grant. Follow nextCursor with identical filters. Use canonical YouTube IDs directly with video_source_set. Upload and generation are separate unavailable capabilities.',
-      inputSchema: { ...z.toJSONSchema(mediaSearchInput, { io: 'input' }), type: 'object' as const },
+      description:
+        'Discover ready authorized image library/history/Unsplash or catalog videos, languages and existing Mux media for this granted journey. Source IDs do not grant access. Preserve public file delivery; source metadata and search results require current rights and this grant. Follow nextCursor with identical filters. Use canonical YouTube IDs directly with video_source_set. Upload and generation are separate unavailable capabilities.',
+      inputSchema: {
+        ...z.toJSONSchema(mediaSearchInput, { io: 'input' }),
+        type: 'object' as const
+      },
       annotations: { readOnlyHint: true, destructiveHint: false }
     },
     {
@@ -158,7 +165,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
       description:
         'Save one bounded atomic batch in an existing ordinary draft. Commands: typography_set, ' +
         [...structureCommandNames, ...mediaCommandNames].join(', ') +
-        '. Read affected content and routes first. Supply current expectedRevision and reuse the exact idempotencyKey and payload after uncertain responses. Existing references are {id}; new objects have unique lowercase local keys and references {local}, including forward references. step_add creates a complete Step/Card and ordered typed content. Button creation includes icons; Image/Video creation is an empty placeholder. Forms creation, uploads and generation are unavailable. image_set preserves omitted dimensions and focal fields. image_source_clear retains an ordinary Image block. media_slot_set and media_slot_clear own cover/poster/poll/logo/social references and their children, retaining shared provider assets. video_source_set accepts catalog video plus language, canonical YouTube IDs or ready authorized Mux IDs. video_settings_set enforces fit, timing, captions and background restrictions. Placement is before/after an owned sibling anchor or end. Reorder supplies the complete sibling set; Step order determines the start. A Card slug is the Step website slug. Actions configure navigation only, never execute it. Step duplication clears default continuation, remaps owned references and preserves authorized action destinations. Standalone Video duplication is unavailable. Deleting a requested Step preserves and reports incoming routes. Change a route only when the user requested or accepted that specific repair; a proposal makes no write. Explicit delete and repair commands can share this atomic batch. Omitted content and unrelated Host state are preserved. The receipt describes a historical committed revision. Host, publication, raw GraphQL and whole-journey replacement are unavailable.',
+        '. Read affected content and routes first. Supply current expectedRevision and reuse the exact idempotencyKey and payload after uncertain responses. Existing references are {id}; new objects have unique lowercase local keys and references {local}, including forward references. step_add creates a complete Step/Card and ordered typed content. Button creation includes icons; Image/Video creation is an empty placeholder. Forms creation, uploads and generation are unavailable. image_set preserves omitted dimensions and focal fields. image_source_clear retains an ordinary Image block. video_source_clear retains an ordinary Video, its playback preferences and layout while clearing the source and owned poster. media_slot_set and media_slot_clear own cover/poster/poll/logo/social references and their children, retaining shared provider assets. video_source_set accepts catalog video plus language, canonical YouTube IDs or ready authorized Mux IDs and optional nested settings for atomic source and playback configuration. video_settings_set enforces fit, timing, captions and background restrictions. Placement is before/after an owned sibling anchor or end. Reorder supplies the complete sibling set; Step order determines the start. A Card slug is the Step website slug. Actions configure navigation only, never execute it. Step duplication clears default continuation, remaps owned references and preserves authorized action destinations. Standalone Video duplication is unavailable. Deleting a requested Step preserves and reports incoming routes. Change a route only when the user requested or accepted that specific repair; a proposal makes no write. Explicit delete and repair commands can share this atomic batch. Omitted content and unrelated Host state are preserved. The receipt describes a historical committed revision. Host, publication, raw GraphQL and whole-journey replacement are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
         type: 'object' as const
@@ -264,13 +271,15 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
           ),
         tool.name === 'journeys_list'
           ? 'Returned the currently authorized journeys.'
-          : tool.name === 'journey_history'
-            ? 'Returned retained batches and current undo/redo availability for this connection.'
-            : tool.name === 'journey_read'
-              ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
-              : tool.name === 'journey_preview'
-                ? 'Returned the authorized private playback handoff. Open it with your Admin identity. Publish from the normal Admin editor.'
-                : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
+          : tool.name === 'journey_media_search'
+            ? 'Returned currently authorized ready media and source-specific configuration availability. Follow nextCursor with identical filters.'
+            : tool.name === 'journey_history'
+              ? 'Returned retained batches and current undo/redo availability for this connection.'
+              : tool.name === 'journey_read'
+                ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
+                : tool.name === 'journey_preview'
+                  ? 'Returned the authorized private playback handoff. Open it with your Admin identity. Publish from the normal Admin editor.'
+                  : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
         tool.inputSchema
       )
       return server.server.projectCallToolResult(response, undefined)

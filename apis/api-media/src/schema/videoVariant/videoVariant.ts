@@ -1,6 +1,11 @@
 import compact from 'lodash/compact'
 
-import { sourceTransaction, Platform, prisma  } from '@core/prisma/media/client'
+import {
+  Platform,
+  prisma,
+  rethrowCoordinatedMediaFailure,
+  sourceTransaction
+} from '@core/prisma/media/client'
 import type { VideoVariant as PrismaVideoVariant } from '@core/prisma/media/client'
 
 import { ensureLanguageHasVideosTrue } from '../../lib/languages/ensureLanguageHasVideos'
@@ -948,6 +953,7 @@ builder.mutationFields((t) => ({
           })
         } catch (error) {
           // Log error but continue with other deletions
+          rethrowCoordinatedMediaFailure(error)
           console.error(`Failed to delete R2 asset ${assetId}:`, error)
           notifyMediaSlackOfOperationFailure({
             operation: 'Video variant R2 cleanup failed',
@@ -976,6 +982,7 @@ builder.mutationFields((t) => ({
           })
         } catch (error) {
           // Log error but continue with variant deletion
+          rethrowCoordinatedMediaFailure(error)
           console.error(
             `Failed to delete Mux video ${variant.muxVideoId}:`,
             error

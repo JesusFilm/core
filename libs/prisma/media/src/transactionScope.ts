@@ -21,3 +21,7 @@ export function configureMediaWriteGuard(guard: MediaWriteGuard): void {
 export function getMediaWriteGuard(): MediaWriteGuard | undefined {
   return writeGuard
 }
+/** A coordinated deletion cannot commit while a provider outcome is unknown. */
+export function rethrowCoordinatedMediaFailure(error: unknown): void {
+  if (mediaTransactionScope.getStore()) throw error
+}

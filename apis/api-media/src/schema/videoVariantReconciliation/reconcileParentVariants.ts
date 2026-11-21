@@ -1,4 +1,8 @@
-import { sourceTransaction, type VideoLabel, prisma  } from '@core/prisma/media/client'
+import {
+  type VideoLabel,
+  prisma,
+  sourceTransaction
+} from '@core/prisma/media/client'
 
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'

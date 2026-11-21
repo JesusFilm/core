@@ -3,12 +3,12 @@ import { randomUUID } from 'node:crypto'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 import { PrismaClient } from './__generated__/client/client'
+import type { Prisma } from './__generated__/client/client'
 import {
   type MediaTransactionOptions,
   getMediaWriteGuard,
   mediaTransactionScope
 } from './transactionScope'
-import type { Prisma } from './__generated__/client/client'
 
 const globalForPrisma = global as unknown as { prismaMedia: PrismaClient }
 
@@ -123,6 +123,7 @@ export async function sourceTransaction<T>(
 export const prisma = transactionScopedMediaClient(root)
 export {
   type MediaTransactionOptions,
+  rethrowCoordinatedMediaFailure,
   mediaTransactionScope,
   configureMediaWriteGuard
 } from './transactionScope'

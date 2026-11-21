@@ -3,7 +3,6 @@ import { createHash } from 'node:crypto'
 import { z } from 'zod'
 
 import { mediaCommand } from './mediaContract'
-
 import {
   affectedLink,
   changedField,

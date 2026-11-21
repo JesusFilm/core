@@ -10,7 +10,6 @@ import {
 } from 'node:crypto'
 
 import { z } from 'zod'
-import { mediaSearchInput } from './mediaContract'
 
 import {
   editInput,
@@ -18,6 +17,7 @@ import {
   historyInput,
   operationInput
 } from './editContract'
+import { mediaSearchInput } from './mediaContract'
 
 export const resultContractVersion = '1' as const
 export const readResult = z

@@ -16,6 +16,7 @@ describe('typed mounted media commands', () => {
       expect(entry.dependencies).toContain('media-source-generation')
     }
   )
+
   it.each([-1, 101, 0.5])('rejects focal percentage %s', (focalLeft) => {
     expect(
       mediaCommand.safeParse({
@@ -25,6 +26,7 @@ describe('typed mounted media commands', () => {
       }).success
     ).toBe(false)
   })
+
   it.each([99, 105, 201])(
     'rejects zoom percentage %s outside the mounted increments',
     (scale) => {
@@ -37,6 +39,7 @@ describe('typed mounted media commands', () => {
       ).toBe(false)
     }
   )
+
   it('rejects empty sparse edits and unsupported provider or metadata injection', () => {
     for (const value of [
       { type: 'image_set', block: { id: 'image' } },
@@ -61,6 +64,7 @@ describe('typed mounted media commands', () => {
     ])
       expect(mediaCommand.safeParse(value).success).toBe(false)
   })
+
   it('bounds discovery and requires the selected video for language and YouTube lookup', () => {
     expect(
       mediaSearchInput.parse({ journeyId: 'j', source: 'library' }).limit
@@ -75,6 +79,7 @@ describe('typed mounted media commands', () => {
         mediaSearchInput.safeParse({ journeyId: 'j', ...value }).success
       ).toBe(false)
   })
+
   it('accepts source selection in the same closed atomic edit envelope', () => {
     expect(
       editInput.safeParse({

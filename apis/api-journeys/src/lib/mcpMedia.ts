@@ -1,10 +1,12 @@
 import { randomUUID } from 'node:crypto'
 
+import type { Prisma } from '@core/prisma/journeys/client'
 import {
   type MediaCommand,
   type MediaSlot,
   type ReadyMedia,
   type ReadyVideo,
+  type VideoSettings,
   mediaSourceKey
 } from '@core/yoga/mcp/mediaContract'
 import type { BlockReference } from '@core/yoga/mcp/structureContract'
@@ -12,6 +14,7 @@ import type { BlockReference } from '@core/yoga/mcp/structureContract'
 import {
   type BlockField,
   type BlockState,
+  StructurePlan,
   type StructureState,
   emptyBlock,
   idOf,
@@ -19,13 +22,12 @@ import {
   parentOf,
   requiredString
 } from './mcpStructureState'
-import type { Prisma } from '@core/prisma/journeys/client'
-import type { StructurePlan } from './mcpStructureState'
 
 export interface MediaProjection {
   sources: ReadonlyMap<string, ReadyMedia>
   website: boolean | null
   websiteMode: boolean
+  languageId?: string
 }
 interface ProjectionContext {
   state: StructureState
@@ -39,6 +41,73 @@ function invalid(): never {
 }
 function denied(): never {
   throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+}
+
+type PlaybackState = Partial<
+  Pick<
+    BlockState,
+    | 'source'
+    | 'startAt'
+    | 'endAt'
+    | 'objectFit'
+    | 'autoplay'
+    | 'muted'
+    | 'subtitleLanguageId'
+    | 'showGeneratedSubtitles'
+  >
+>
+function validatePlayback(
+  row: PlaybackState,
+  metadata: ReadyVideo,
+  facts: {
+    website: boolean
+    background: boolean
+    fullscreen: boolean
+    validateSubtitles: boolean
+    languageId?: string
+  }
+): void {
+  const start = row.startAt ?? 0,
+    end = row.endAt ?? metadata.duration,
+    source = row.source ?? 'internal',
+    subtitle = row.subtitleLanguageId ?? null
+  if (
+    typeof start !== 'number' ||
+    typeof end !== 'number' ||
+    start < 0 ||
+    end > metadata.duration ||
+    end - start < 3
+  )
+    invalid()
+  if ((source === 'youTube' || facts.website) && row.objectFit !== 'fit')
+    invalid()
+  if (row.showGeneratedSubtitles === true && source !== 'mux') invalid()
+  if (source === 'internal' && subtitle !== null) invalid()
+  if (
+    source === 'mux' &&
+    (row.showGeneratedSubtitles === true) !== (subtitle !== null)
+  )
+    invalid()
+  if (facts.validateSubtitles && subtitle !== null) {
+    if (source === 'mux' && subtitle !== facts.languageId) invalid()
+    if (metadata.subtitleStatus === 'unavailable')
+      throw new Error('DEPENDENCY_UNAVAILABLE')
+    if (
+      typeof subtitle !== 'string' ||
+      !metadata.subtitleLanguageIds.includes(subtitle)
+    )
+      invalid()
+  }
+  if (
+    facts.background &&
+    (!facts.fullscreen ||
+      row.autoplay !== true ||
+      row.muted !== true ||
+      subtitle !== null ||
+      row.showGeneratedSubtitles === true)
+  )
+    invalid()
+  if (!facts.fullscreen) invalid()
 }
 
 /** Applies complete media gestures to the same projected graph as other edits.
@@ -148,74 +217,67 @@ export function applyMedia(
     if (value.kind !== 'video') denied()
     return value
   }
-  const checkVideo = (row: BlockState, metadata: ReadyVideo): void => {
-    const start = row.startAt ?? 0,
-      end = row.endAt ?? metadata.duration
-    if (
-      typeof start !== 'number' ||
-      typeof end !== 'number' ||
-      start < 0 ||
-      end > metadata.duration ||
-      end - start < 3
-    )
-      invalid()
-    if (
-      (row.source === 'youTube' || media?.website === true) &&
-      row.objectFit !== 'fit'
-    )
-      invalid()
-    if (background(row)) {
-      if (
-        row.autoplay !== true ||
-        row.muted !== true ||
-        row.subtitleLanguageId !== null ||
-        row.showGeneratedSubtitles === true
-      )
-        invalid()
-      const card = get(parentOf(row)!, 'CardBlock')
-      if (card.fullscreen === false) invalid()
+  const checkVideo = (
+    row: BlockState,
+    metadata: ReadyVideo,
+    validateSubtitles = true
+  ): void => {
+    const isBackground = background(row)
+    let card = row
+    while (card.typename !== 'CardBlock') {
+      const parent = parentOf(card)
+      if (!parent) denied()
+      card = get(parent)
     }
-    if (row.showGeneratedSubtitles === true && row.source !== 'mux') invalid()
-    if (row.source === 'internal' && row.subtitleLanguageId !== null) invalid()
-    if (
-      typeof row.subtitleLanguageId === 'string' &&
-      !metadata.subtitleLanguageIds.includes(row.subtitleLanguageId)
-    )
-      invalid()
-    if (
-      row.source === 'mux' &&
-      (row.showGeneratedSubtitles === true) !==
-        (row.subtitleLanguageId !== null)
-    )
-      invalid()
+    validatePlayback(row, metadata, {
+      website: media?.website === true,
+      background: isBackground,
+      fullscreen: card.fullscreen !== false,
+      validateSubtitles,
+      languageId: media?.languageId
+    })
   }
   const setVideo = (
     row: BlockState,
-    source: Extract<MediaCommand, { type: 'video_source_set' }>['source']
+    source: Extract<MediaCommand, { type: 'video_source_set' }>['source'],
+    settings?: VideoSettings
   ) => {
     const value = sourceFor(source, 'video')
     if (value.kind !== 'video') denied()
-    for (const field of [
-      'source',
-      'videoId',
-      'videoVariantLanguageId',
-      'title',
-      'description',
-      'image',
-      'duration'
-    ] as const)
-      set(row, field, value[field])
-    set(row, 'startAt', 0)
-    set(row, 'endAt', value.duration)
-    set(row, 'subtitleLanguageId', null)
-    set(row, 'showGeneratedSubtitles', false)
-    if (value.source === 'youTube' || media?.website === true)
-      set(row, 'objectFit', 'fit')
-    if (background(row)) {
-      set(row, 'muted', true)
-      set(row, 'autoplay', true)
+    const patch: Partial<BlockState> = {
+      source: value.source,
+      videoId: value.videoId,
+      videoVariantLanguageId: value.videoVariantLanguageId,
+      title: value.title,
+      description: value.description,
+      image: value.image,
+      duration: value.duration,
+      startAt: 0,
+      endAt: value.duration,
+      subtitleLanguageId: null,
+      showGeneratedSubtitles: false,
+      ...(value.source === 'youTube' || media?.website === true
+        ? { objectFit: 'fit' }
+        : {}),
+      ...(background(row) ? { muted: true, autoplay: true } : {}),
+      ...settings
     }
+    for (const field of Object.keys(patch) as BlockField[])
+      set(row, field, patch[field]!)
     checkVideo(row, value)
+  }
+  const removeOwned = (root: BlockState): void => {
+    const queue = [root]
+    while (queue.length) {
+      const row = queue.shift()!
+      for (const field of Object.keys(row)) claim(idOf(row), field)
+      row.deletedAt = now
+      queue.push(
+        ...[...state.blocks.values()].filter(
+          (child) => live(child) && child.parentBlockId === row.id
+        )
+      )
+    }
   }
   const slot = (target: MediaSlot) => {
     if (target.slot === 'logo' || target.slot === 'social') {
@@ -260,9 +322,7 @@ export function applyMedia(
     claim(ownerId, target.field)
     const currentId = target.owner
       ? target.owner[target.field as BlockField]
-      : state.journey[
-          target.field as 'logoImageBlockId' | 'primaryImageBlockId'
-        ]
+      : state.journey[target.field]
     const current = typeof currentId === 'string' ? get(currentId) : null
     if (
       current &&
@@ -281,19 +341,7 @@ export function applyMedia(
     const remove =
       current &&
       (command.type === 'media_slot_clear' || current.typename !== desiredType)
-    if (remove) {
-      const queue = [current]
-      while (queue.length) {
-        const row = queue.shift()!
-        for (const field of Object.keys(row)) claim(idOf(row), field)
-        row.deletedAt = now
-        queue.push(
-          ...[...state.blocks.values()].filter(
-            (child) => live(child) && child.parentBlockId === row.id
-          )
-        )
-      }
-    }
+    if (remove) removeOwned(current)
     let next: BlockState | null = null
     if (command.type === 'media_slot_set') {
       next =
@@ -314,14 +362,11 @@ export function applyMedia(
       if (command.media.kind === 'image') {
         setImage(next, command.media.source)
         if (command.media.alt !== undefined) set(next, 'alt', command.media.alt)
-      } else setVideo(next, command.media.source)
+      } else setVideo(next, command.media.source, command.media.settings)
     }
     if (target.owner)
       target.owner[target.field as BlockField] = next?.id ?? null
-    else
-      state.journey[
-        target.field as 'logoImageBlockId' | 'primaryImageBlockId'
-      ] = next?.id ?? null
+    else state.journey[target.field] = next?.id ?? null
     return
   }
   const row = resolve(
@@ -337,7 +382,31 @@ export function applyMedia(
     setImage(row, command.source)
     for (const field of ['alt', 'scale', 'focalLeft', 'focalTop'] as const)
       if (command[field] !== undefined) set(row, field, command[field])
-  } else if (command.type === 'video_source_set') setVideo(row, command.source)
+  } else if (command.type === 'video_source_clear') {
+    if (row.parentOrder === null) invalid()
+    if (typeof row.posterBlockId === 'string') {
+      const poster = get(row.posterBlockId, 'ImageBlock')
+      if (poster.parentBlockId !== row.id || poster.parentOrder !== null)
+        denied()
+      removeOwned(poster)
+    }
+    set(row, 'source', 'internal')
+    for (const field of [
+      'videoId',
+      'videoVariantLanguageId',
+      'title',
+      'description',
+      'image',
+      'duration',
+      'startAt',
+      'endAt',
+      'posterBlockId',
+      'subtitleLanguageId'
+    ] as const)
+      set(row, field, null)
+    set(row, 'showGeneratedSubtitles', false)
+  } else if (command.type === 'video_source_set')
+    setVideo(row, command.source, command.settings)
   else {
     if (
       (command.showGeneratedSubtitles !== undefined ||
@@ -364,7 +433,12 @@ export function applyMedia(
       'showGeneratedSubtitles'
     ] as const)
       if (command[field] !== undefined) set(row, field, command[field])
-    checkVideo(row, videoMetadata(row))
+    checkVideo(
+      row,
+      videoMetadata(row),
+      command.subtitleLanguageId !== undefined ||
+        command.showGeneratedSubtitles !== undefined
+    )
   }
 }
 
@@ -377,6 +451,8 @@ export async function validateMediaPlan(
   plan: StructurePlan,
   projection?: MediaProjection
 ): Promise<void> {
+  for (const id of plan.blockWrites.map((write) => write.id).sort())
+    await tx.$queryRaw`SELECT id FROM "Block" WHERE id = ${id} FOR UPDATE`
   const get = async (id: string) => {
     const current = await tx.block.findUnique({
       where: { id, journeyId: plan.journeyId }
@@ -390,6 +466,7 @@ export async function validateMediaPlan(
     const changedMedia = fields.some((field) =>
       [
         'src',
+        'alt',
         'source',
         'videoId',
         'videoVariantLanguageId',
@@ -407,9 +484,79 @@ export async function validateMediaPlan(
     )
     if (!attaching && !changedMedia) continue
     const row = await get(write.id)
+    if (row.typename === 'ImageBlock' || row.typename === 'VideoBlock') {
+      const references = await tx.block.findMany({
+        where: {
+          OR: [
+            { coverBlockId: write.id },
+            { posterBlockId: write.id },
+            { pollOptionImageBlockId: write.id }
+          ]
+        }
+      })
+      let owners = 0
+      for (const reference of references) {
+        if (reference.journeyId !== plan.journeyId) denied()
+        const owner = await get(reference.id)
+        for (const field of [
+          'coverBlockId',
+          'posterBlockId',
+          'pollOptionImageBlockId'
+        ] as const) {
+          if (owner[field] !== write.id) continue
+          const expected = {
+            coverBlockId: 'CardBlock',
+            posterBlockId: 'VideoBlock',
+            pollOptionImageBlockId: 'RadioOptionBlock'
+          }[field]
+          if (
+            owner.journeyId !== plan.journeyId ||
+            owner.id !== row.parentBlockId ||
+            owner.typename !== expected ||
+            row.parentOrder !== null ||
+            (field !== 'coverBlockId' && row.typename !== 'ImageBlock')
+          )
+            denied()
+          owners++
+        }
+      }
+      const roots = await tx.journey.findMany({
+        where: {
+          OR: [
+            { logoImageBlockId: write.id },
+            { primaryImageBlockId: write.id }
+          ]
+        },
+        select: { id: true, logoImageBlockId: true, primaryImageBlockId: true }
+      })
+      for (const owner of roots) {
+        if (owner.id !== plan.journeyId) denied()
+        for (const field of [
+          'logoImageBlockId',
+          'primaryImageBlockId'
+        ] as const) {
+          const reference = Object.prototype.hasOwnProperty.call(
+            plan.journeyPatch,
+            field
+          )
+            ? plan.journeyPatch[field]
+            : owner[field]
+          if (reference !== write.id) continue
+          if (
+            row.parentBlockId !== null ||
+            row.parentOrder !== null ||
+            row.typename !== 'ImageBlock'
+          )
+            denied()
+          owners++
+        }
+      }
+      if (owners > 1) denied()
+    }
     if (
       row.deletedAt !== null ||
-      !['ImageBlock', 'VideoBlock'].includes(String(row.typename))
+      typeof row.typename !== 'string' ||
+      !['ImageBlock', 'VideoBlock'].includes(row.typename)
     )
       continue
     if (row.typename === 'ImageBlock') {
@@ -428,55 +575,48 @@ export async function validateMediaPlan(
       row.source === 'internal'
         ? mediaSourceKey({
             source: 'internal',
-            videoId: String(row.videoId),
-            languageId: String(row.videoVariantLanguageId)
+            videoId: requiredString(row.videoId),
+            languageId: requiredString(row.videoVariantLanguageId ?? null)
           })
         : row.source === 'mux' || row.source === 'youTube'
-          ? mediaSourceKey({ source: row.source, videoId: String(row.videoId) })
+          ? mediaSourceKey({
+              source: row.source,
+              videoId: requiredString(row.videoId)
+            })
           : denied()
     const source = projection?.sources.get(key)
     if (!source || source.kind !== 'video') denied()
-    const start = row.startAt ?? 0,
-      end = row.endAt ?? source.duration
-    if (
-      typeof start !== 'number' ||
-      typeof end !== 'number' ||
-      start < 0 ||
-      end > source.duration ||
-      end - start < 3
-    )
-      invalid()
-    if (
-      (row.source === 'youTube' || projection?.website) &&
-      row.objectFit !== 'fit'
-    )
-      invalid()
-    if (row.showGeneratedSubtitles === true && row.source !== 'mux') invalid()
-    if (
-      row.subtitleLanguageId &&
-      !source.subtitleLanguageIds.includes(String(row.subtitleLanguageId))
-    )
-      invalid()
-    if (
-      row.source === 'mux' &&
-      (row.showGeneratedSubtitles === true) !== Boolean(row.subtitleLanguageId)
-    )
-      invalid()
-    if (row.parentOrder === null) {
-      const card = row.parentBlockId
-        ? await get(String(row.parentBlockId))
-        : null
-      if (
-        card?.typename !== 'CardBlock' ||
-        card.coverBlockId !== write.id ||
-        card.fullscreen === false ||
-        row.muted !== true ||
-        row.autoplay !== true ||
-        row.subtitleLanguageId ||
-        row.showGeneratedSubtitles === true
-      )
-        invalid()
+    const isBackground = row.parentOrder === null
+    let card = row
+    const ancestors = new Set<string>()
+    while (card.typename !== 'CardBlock') {
+      const parentId = requiredString(card.parentBlockId ?? null)
+      if (ancestors.has(parentId)) invalid()
+      ancestors.add(parentId)
+      card = await get(parentId)
     }
+    if (
+      isBackground &&
+      (card?.typename !== 'CardBlock' || card.coverBlockId !== write.id)
+    )
+      invalid()
+    validatePlayback(row, source, {
+      website: projection?.website === true,
+      background: isBackground,
+      fullscreen: card?.fullscreen !== false,
+      languageId: projection?.languageId,
+      validateSubtitles: Boolean(
+        attaching ||
+          fields.some((field) =>
+            [
+              'source',
+              'videoId',
+              'subtitleLanguageId',
+              'showGeneratedSubtitles'
+            ].includes(field)
+          )
+      )
+    })
   }
   if (
     plan.journeyPatch.logoImageBlockId &&

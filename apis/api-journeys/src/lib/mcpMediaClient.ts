@@ -82,7 +82,7 @@ export async function resolveEditMedia(
   db: PrismaClient,
   connectionId: string,
   historyGeneration: number,
-  website: boolean | null
+  journey: { website: boolean | null; languageId: string }
 ): Promise<MediaProjection> {
   const sources = new Map<string, ImageSource | VideoSource>()
   const add = (source: ImageSource | VideoSource) =>
@@ -107,6 +107,30 @@ export async function resolveEditMedia(
     else throw new Error('VALIDATION_FAILED')
   }
   if (request.tool === 'journey_edit') {
+    const duplicates = request.input.commands.filter(
+      (command) =>
+        command.type === 'step_duplicate' || command.type === 'block_duplicate'
+    )
+    if (duplicates.length) {
+      const rows = await db.block.findMany({
+        where: { journeyId: request.input.journeyId, deletedAt: null },
+        take: 100001
+      })
+      if (rows.length > 100000) throw new Error('LIMIT_EXCEEDED')
+      for (const command of duplicates) {
+        if (!('id' in command.source)) continue
+        const sourceId = command.source.id
+        const queue = rows.filter((row) => row.id === sourceId)
+        for (let index = 0; index < queue.length; index++) {
+          if (queue.length > 200) throw new Error('LIMIT_EXCEEDED')
+          const row = queue[index]
+          if (row.typename === 'ImageBlock' && row.src)
+            add({ source: 'history', blockId: row.id })
+          if (row.typename === 'VideoBlock' && row.videoId) video(row)
+          queue.push(...rows.filter((child) => child.parentBlockId === row.id))
+        }
+      }
+    }
     for (const command of request.input.commands) {
       if (command.type === 'image_set' && command.source) add(command.source)
       if (command.type === 'video_source_set') add(command.source)
@@ -195,5 +219,10 @@ export async function resolveEditMedia(
   const values = new Map<string, ReadyMedia>(Object.entries(response.sources))
   if ([...sources.keys()].some((key) => !values.has(key)))
     throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-  return { sources: values, website, websiteMode: response.flags.websiteMode }
+  return {
+    sources: values,
+    website: journey.website,
+    languageId: journey.languageId,
+    websiteMode: response.flags.websiteMode
+  }
 }
