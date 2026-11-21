@@ -325,12 +325,6 @@ export function createJourneyEditHandler(
               code: (typeof privateOperationErrorCodes)[number]
             ) => {
               if (!executionId) throw new Error(code)
-              if (preflight)
-                return operationFailure.parse({
-                  contractVersion: '1',
-                  kind: 'operation_failure',
-                  code
-                })
               await tx.mcpEditExecution.update({
                 where: { id: executionId },
                 data: {
@@ -426,6 +420,12 @@ export function createJourneyEditHandler(
                 fingerprint(retained) !== body.dataHash
               )
                 throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+              if (
+                preflight &&
+                executionId &&
+                retained.kind === 'operation_failure'
+              )
+                return reject(retained.code)
               await settle('settled')
               return operationResult.parse(retained)
             }
@@ -770,13 +770,15 @@ export function createJourneyEditHandler(
         )
       // Validate without holding owning locks across coordinator acceptance, then
       // repeat the checks under locks so concurrent Admin changes still win.
-      await execute(true)
-      await hooks.checkpoint?.('before_accept', context)
-      if (needsChatGate && !(await canEditChat()))
-        throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-      await authority('accept', { credential, permitId })
-      await hooks.checkpoint?.('after_accept', context)
-      const result = await execute(false)
+      let result = await execute(true)
+      if (body.stage !== 'read' || result?.kind !== 'operation_failure') {
+        await hooks.checkpoint?.('before_accept', context)
+        if (needsChatGate && !(await canEditChat()))
+          throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+        await authority('accept', { credential, permitId })
+        await hooks.checkpoint?.('after_accept', context)
+        result = await execute(false)
+      }
       if (!result) throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
       await hooks.checkpoint?.('after_commit', context)
       if (result.kind === 'operation_failure')

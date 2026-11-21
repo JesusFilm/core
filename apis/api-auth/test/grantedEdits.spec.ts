@@ -3725,41 +3725,77 @@ describe('saved edit integration', () => {
         }
       )
 
-      it('counts structural and presentation objects together before mixed acceptance', async () => {
-        await journeys.block.createMany({
-          data: Array.from({ length: 80 }, (_, index) => ({
-            id: `${journeyId}-sibling-${index}`,
-            journeyId,
-            typename: 'SpacerBlock',
-            parentBlockId: `${journeyId}-card`,
-            parentOrder: index + 1,
-            spacing: 100
-          }))
-        })
-        const before = await mixedSnapshot()
-        const response = await edit({
-          journeyId,
-          expectedRevision: await revision(),
-          idempotencyKey: randomUUID(),
-          commands: [
-            ...Array.from({ length: 49 }, (_, index) => ({
-              type: 'block_add',
-              key: `button_${index}`,
-              cardId: `${journeyId}-card`,
-              placement: { position: 'before', blockId: `${journeyId}-text` },
-              block: { kind: 'button', label: 'New button' }
-            })),
-            {
-              type: 'step_position_set',
-              step: { id: `${journeyId}-step` },
-              x: 421,
-              y: 219
+      it.each(['authorized', 'withdrawn'] as const)(
+        'counts structural and presentation objects before mixed acceptance with %s output',
+        async (authority) => {
+          await journeys.block.createMany({
+            data: Array.from({ length: 80 }, (_, index) => ({
+              id: `${journeyId}-sibling-${index}`,
+              journeyId,
+              typename: 'SpacerBlock',
+              parentBlockId: `${journeyId}-card`,
+              parentOrder: index + 1,
+              spacing: 100
+            }))
+          })
+          const before = await mixedSnapshot()
+          const context = await management()
+          const acceptance = vi.fn<(stage: string) => void>()
+          beforeAcceptance = async (stage) => {
+            acceptance(stage)
+          }
+          if (authority === 'withdrawn')
+            beforeOutput = async () => {
+              beforeOutput = undefined
+              const withdrawn = await context.post('disconnect')
+              expect(withdrawn.status, await withdrawn.clone().text()).toBe(200)
             }
-          ]
-        })
-        expect(response.text).toContain('LIMIT_EXCEEDED')
-        expect(await mixedSnapshot()).toEqual(before)
-      })
+          const response = await edit({
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              ...Array.from({ length: 49 }, (_, index) => ({
+                type: 'block_add',
+                key: `button_${index}`,
+                cardId: `${journeyId}-card`,
+                placement: { position: 'before', blockId: `${journeyId}-text` },
+                block: { kind: 'button', label: 'New button' }
+              })),
+              {
+                type: 'step_position_set',
+                step: { id: `${journeyId}-step` },
+                x: 421,
+                y: 219
+              }
+            ]
+          })
+          expect(acceptance).not.toHaveBeenCalledWith('read')
+          if (authority === 'authorized') {
+            expect(response.json.result?.structuredContent).toMatchObject({
+              kind: 'operation_failure',
+              code: 'LIMIT_EXCEEDED'
+            })
+            expect(acceptance).toHaveBeenCalledWith('output')
+          } else {
+            expect(response.text).not.toContain('LIMIT_EXCEEDED')
+            expect(response.text).not.toContain('operation_failure')
+          }
+          expect(await mixedSnapshot()).toEqual(before)
+          expect(
+            await journeys.mcpEditExecution.findFirstOrThrow({
+              where: {
+                connectionId: context.connection.id,
+                failureCode: 'LIMIT_EXCEEDED'
+              }
+            })
+          ).toMatchObject({
+            status: 'settled',
+            operationId: null,
+            reportedAt: expect.any(Date)
+          })
+        }
+      )
 
       it.each(
         (['start', 'end'] as const).flatMap((slot) =>
