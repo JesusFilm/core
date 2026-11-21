@@ -47,8 +47,12 @@ Source writes use one conservative `media:sources` authorization gate. A source
 change cancels prepared attachments and returns Pending while accepted work is
 unsettled. Worker writes and interactive media transactions participate through
 the scoped Prisma client. The source write and owning mutation receipt commit
-together. Recovery takes the same receipt lock before fencing delayed SQL work
-or reporting a committed result. An uncertain external deletion keeps admission
+together. A PostgreSQL transaction owns the source executor lock before publishing
+its receipt and retains it through authorization, execution and outcome reporting.
+Other workers' recovery sweeps skip that lock without waiting. After ownership is
+lost, recovery takes the receipt lock before fencing delayed SQL work or reporting
+a committed result. Delayed executors still check their receipt before dispatch.
+An uncertain external deletion keeps admission
 closed until an explicit authorized retry settles it. Age and missing responses
 never prove that a provider stopped. This gate favors correctness over unrelated
 source-write concurrency during the initial buildout.
