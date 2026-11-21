@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto'
 
 import { z } from 'zod'
 
+import { mediaCommand } from './mediaContract'
+
 import {
   affectedLink,
   changedField,
@@ -43,7 +45,7 @@ export const editInput = z
     expectedRevision: revisionInput,
     idempotencyKey: idempotencyKeyInput,
     commands: z
-      .array(z.union([typographyCommand, structureCommand]))
+      .array(z.union([typographyCommand, structureCommand, mediaCommand]))
       .min(1)
       .max(50)
   })

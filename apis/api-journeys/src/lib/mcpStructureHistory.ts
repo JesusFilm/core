@@ -202,6 +202,15 @@ export async function planStructureHistory(
     if (!live(row)) continue
     let current = row
     const visited = new Set<string>()
+    if (
+      current.typename === 'ImageBlock' &&
+      current.parentBlockId === null &&
+      [
+        state.journey.logoImageBlockId,
+        state.journey.primaryImageBlockId
+      ].includes(current.id)
+    )
+      continue
     while (current.typename !== 'StepBlock') {
       const parent = parentOf(current)
       if (parent === null || visited.has(parent)) conflict()

@@ -1,6 +1,6 @@
 import compact from 'lodash/compact'
 
-import { Platform, prisma } from '@core/prisma/media/client'
+import { sourceTransaction, Platform, prisma  } from '@core/prisma/media/client'
 import type { VideoVariant as PrismaVideoVariant } from '@core/prisma/media/client'
 
 import { ensureLanguageHasVideosTrue } from '../../lib/languages/ensureLanguageHasVideos'
@@ -119,7 +119,7 @@ export async function createEmptyParentVariant(
   // The language update is a single atomic UPDATE (not a findUnique-then-set)
   // so it can't lose a concurrent caller's own append to the same array --
   // see addLanguageToVideo's doc comment in updateAvailableLanguages.ts.
-  const newVariant = await prisma.$transaction(async (tx) => {
+  const newVariant = await sourceTransaction(prisma, async (tx) => {
     const variant = await tx.videoVariant.create({
       data: {
         id: `${languageId}_${parentVideoId}`,
@@ -373,7 +373,7 @@ async function checkAndRemoveEmptyParentVariant(
   // the row lock open for unrelated I/O and risk tripping Prisma's
   // interactive-transaction timeout.
   if (parentVariant != null) {
-    await prisma.$transaction(async (tx) => {
+    await sourceTransaction(prisma, async (tx) => {
       await tx.videoVariant.delete({ where: { id: parentVariant.id } })
       await updateVideoAvailableLanguages(parentVideoId, {
         client: tx,

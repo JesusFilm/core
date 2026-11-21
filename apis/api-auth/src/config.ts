@@ -42,9 +42,11 @@ const configuration = z.object({
   AUTH_INTROSPECTION_CLIENT_SECRET: z.string().min(32),
   AUTH_EXCHANGE_CLIENT_SECRET: z.string().min(32).optional(),
   AUTH_READ_OWNER_SECRET: z.string().min(32).optional(),
+  AUTH_READ_MEDIA_SECRET: z.string().min(32).optional(),
   AUTH_READ_GATEWAY_AUDIENCE: z.string().url().optional(),
   AUTH_PERMISSION_JOURNEYS_SECRET: z.string().min(32).optional(),
   AUTH_PERMISSION_USERS_SECRET: z.string().min(32).optional(),
+  AUTH_PERMISSION_MEDIA_SECRET: z.string().min(32).optional(),
   PG_DATABASE_URL_AUTH: z.string().url(),
   AUTH_HOST: z.string().default('127.0.0.1'),
   AUTH_PORT: z.coerce.number().int().min(1).max(65535).default(4011),
@@ -71,6 +73,11 @@ export type AuthConfig = z.infer<typeof configuration>
 
 export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
   const config = configuration.parse(env)
+  if (
+    Boolean(config.AUTH_READ_MEDIA_SECRET) !==
+    Boolean(config.AUTH_PERMISSION_MEDIA_SECRET)
+  )
+    throw new Error('Both media participant credentials are required')
   const readSettings = [
     config.AUTH_EXCHANGE_CLIENT_SECRET,
     config.AUTH_READ_OWNER_SECRET,
@@ -93,6 +100,8 @@ export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
     config.AUTH_INTROSPECTION_CLIENT_SECRET,
     config.AUTH_EXCHANGE_CLIENT_SECRET,
     config.AUTH_READ_OWNER_SECRET,
+    config.AUTH_READ_MEDIA_SECRET,
+    config.AUTH_PERMISSION_MEDIA_SECRET,
     ...permissionSecrets
   ].filter((secret): secret is string => Boolean(secret))
   if (new Set(serviceSecrets).size !== serviceSecrets.length)

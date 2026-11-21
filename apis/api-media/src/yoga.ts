@@ -16,6 +16,7 @@ import { getInteropContext } from '@core/yoga/interop'
 
 import { cache } from './cache'
 import { logger } from './logger'
+import { mediaRuntime } from './lib/mcpMediaRuntime'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
@@ -67,6 +68,7 @@ export const yoga = createYoga<
     }
   },
   plugins: [
+    ...mediaRuntime(process.env).plugins,
     tracingPlugin,
     useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'

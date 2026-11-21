@@ -31,6 +31,7 @@ import {
   safeReadError
 } from '@core/yoga/mcp/readContract'
 import { structureCommandNames } from '@core/yoga/mcp/structureContract'
+import { mediaCommandNames, mediaSearchInput } from '@core/yoga/mcp/mediaContract'
 
 import type { ReadSession } from './reads'
 
@@ -127,6 +128,12 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
   }
   const tools = [
     {
+      name: 'journey_media_search',
+      description: 'Discover ready authorized image library/history/Unsplash or catalog videos, languages and existing Mux media for this granted journey. Source IDs do not grant access. Preserve public file delivery; source metadata and search results require current rights and this grant. Follow nextCursor with identical filters. Use canonical YouTube IDs directly with video_source_set. Upload and generation are separate unavailable capabilities.',
+      inputSchema: { ...z.toJSONSchema(mediaSearchInput, { io: 'input' }), type: 'object' as const },
+      annotations: { readOnlyHint: true, destructiveHint: false }
+    },
+    {
       name: 'journeys_list',
       description:
         'List only ordinary journeys covered by current Admin rights and this connection grant. Use returned IDs. A public URL does not grant access.',
@@ -139,7 +146,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_read',
       description:
-        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read affected content, routes and dependencies before editing; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported structure, routing and Typography commands, and journey_history for retained batches. Media acquisition and source attachment are unavailable.',
+        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read affected content, routes and dependencies before editing; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported structure, routing and Typography commands, and journey_history for retained batches. Discover permitted ready sources with journey_media_search and attach through typed journey_edit media commands. Upload and generation remain unavailable.',
       inputSchema: {
         ...z.toJSONSchema(journeyInput, { io: 'input' }),
         type: 'object' as const
@@ -150,8 +157,8 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
       name: 'journey_edit',
       description:
         'Save one bounded atomic batch in an existing ordinary draft. Commands: typography_set, ' +
-        structureCommandNames.join(', ') +
-        '. Read affected content and routes first. Supply current expectedRevision and reuse the exact idempotencyKey and payload after uncertain responses. Existing references are {id}; new objects have unique lowercase local keys and references {local}, including forward references. step_add creates a complete Step/Card and ordered typed content. Button creation includes icons; Image/Video creation is an empty placeholder. Forms creation and media source attachment are unavailable. Placement is before/after an owned sibling anchor or end. Reorder supplies the complete sibling set; Step order determines the start. A Card slug is the Step website slug. Actions configure navigation only, never execute it. Step duplication clears default continuation, remaps owned references and preserves authorized action destinations. Standalone Video duplication is unavailable. Deleting a requested Step preserves and reports incoming routes. Change a route only when the user requested or accepted that specific repair; a proposal makes no write. Explicit delete and repair commands can share this atomic batch. Omitted content and unrelated Host state are preserved. The receipt describes a historical committed revision. Host, publication, raw GraphQL and whole-journey replacement are unavailable.',
+        [...structureCommandNames, ...mediaCommandNames].join(', ') +
+        '. Read affected content and routes first. Supply current expectedRevision and reuse the exact idempotencyKey and payload after uncertain responses. Existing references are {id}; new objects have unique lowercase local keys and references {local}, including forward references. step_add creates a complete Step/Card and ordered typed content. Button creation includes icons; Image/Video creation is an empty placeholder. Forms creation, uploads and generation are unavailable. image_set preserves omitted dimensions and focal fields. image_source_clear retains an ordinary Image block. media_slot_set and media_slot_clear own cover/poster/poll/logo/social references and their children, retaining shared provider assets. video_source_set accepts catalog video plus language, canonical YouTube IDs or ready authorized Mux IDs. video_settings_set enforces fit, timing, captions and background restrictions. Placement is before/after an owned sibling anchor or end. Reorder supplies the complete sibling set; Step order determines the start. A Card slug is the Step website slug. Actions configure navigation only, never execute it. Step duplication clears default continuation, remaps owned references and preserves authorized action destinations. Standalone Video duplication is unavailable. Deleting a requested Step preserves and reports incoming routes. Change a route only when the user requested or accepted that specific repair; a proposal makes no write. Explicit delete and repair commands can share this atomic batch. Omitted content and unrelated Host state are preserved. The receipt describes a historical committed revision. Host, publication, raw GraphQL and whole-journey replacement are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
         type: 'object' as const

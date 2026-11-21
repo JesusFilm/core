@@ -39,7 +39,8 @@ const prepareInput = z
           .strict()
       )
       .max(50),
-    outputHash: z.string().length(64).optional()
+    outputHash: z.string().length(64).optional(),
+    media: z.boolean().optional()
   })
   .strict()
 
@@ -108,6 +109,51 @@ export function createReadAuthority(
       authorization,
       `Bearer ${config.AUTH_READ_OWNER_SECRET}`
     )
+    if (path === '/internal/reads/media-check') {
+      if (
+        !config.AUTH_READ_MEDIA_SECRET ||
+        !sameSecret(authorization, `Bearer ${config.AUTH_READ_MEDIA_SECRET}`)
+      )
+        throw new Error('Access denied')
+      const input = z
+        .object({ credential: z.string(), permitId: z.string().uuid() })
+        .strict()
+        .parse(body)
+      const { claims, connection } = await connectionFor(input.credential)
+      return db.$transaction(async (tx) => {
+        const permit = await tx.readPermit.findUniqueOrThrow({
+          where: { id: input.permitId }
+        })
+        const gates = z
+          .array(z.object({ id: z.string(), generation: z.number().int() }))
+          .parse(permit.gates)
+        if (!gates.some((gate) => gate.id === 'media:sources'))
+          throw new Error('Access denied')
+        await lockGates(tx, gates)
+        await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`
+        const current = await tx.agentConnection.findUniqueOrThrow({
+          where: { id: connection.id }
+        })
+        const now = await databaseTime(tx)
+        if (
+          !['prepared', 'accepted'].includes(permit.status) ||
+          permit.connectionId !== connection.id ||
+          permit.requestHash !== claims.requestHash ||
+          permit.requestId !== claims.requestId ||
+          permit.grantVersion !== claims.grantVersion ||
+          current.version !== claims.grantVersion ||
+          current.revokedAt ||
+          current.expiresAt <= now ||
+          claims.expiresAt <= now.getTime()
+        )
+          throw new Error('Access denied')
+        return {
+          allowed: true,
+          generation: gates.find((gate) => gate.id === 'media:sources')!
+            .generation
+        }
+      })
+    }
     if (path === '/internal/reads/purge-complete') {
       if (!isOwner) throw new Error('Access denied')
       const input = z
@@ -355,6 +401,7 @@ export function createReadAuthority(
       )
         throw new Error('Access denied')
       const gates = await captureGates(db, [
+        ...(input.media ? ['media:sources'] : []),
         `account:${connection.userId}`,
         `connection:${connection.id}`,
         ...input.resources.flatMap(({ journeyId, teamId }) => [

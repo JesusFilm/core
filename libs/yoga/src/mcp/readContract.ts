@@ -10,6 +10,7 @@ import {
 } from 'node:crypto'
 
 import { z } from 'zod'
+import { mediaSearchInput } from './mediaContract'
 
 import {
   editInput,
@@ -62,6 +63,12 @@ export const previewInput = z
   })
   .strict()
 export const readRequest = z.discriminatedUnion('tool', [
+  z
+    .object({
+      tool: z.literal('journey_media_search'),
+      input: mediaSearchInput
+    })
+    .strict(),
   z.object({ tool: z.literal('journeys_list'), input: listInput }).strict(),
   z.object({ tool: z.literal('journey_read'), input: journeyInput }).strict(),
   z.object({ tool: z.literal('journey_edit'), input: editInput }).strict(),

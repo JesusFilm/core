@@ -281,7 +281,31 @@ export const changedField = z.enum([
   'submitIconId',
   'submitEnabled',
   'min',
-  'max'
+  'max',
+  'src',
+  'width',
+  'height',
+  'blurhash',
+  'alt',
+  'scale',
+  'focalLeft',
+  'focalTop',
+  'source',
+  'videoId',
+  'videoVariantLanguageId',
+  'title',
+  'description',
+  'image',
+  'duration',
+  'startAt',
+  'endAt',
+  'objectFit',
+  'muted',
+  'autoplay',
+  'subtitleLanguageId',
+  'showGeneratedSubtitles',
+  'logoImageBlockId',
+  'primaryImageBlockId'
 ])
 export type ChangedField = z.infer<typeof changedField>
 
