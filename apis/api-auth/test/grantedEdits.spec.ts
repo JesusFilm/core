@@ -5180,6 +5180,120 @@ describe('saved edit integration', () => {
         }
       )
 
+      it.each(['undo-shifted', 'redo-shifted', 'redo-revived'] as const)(
+        'rejects final sibling-order collisions for %s before acceptance and recovers after the human moves the sibling',
+        async (scenario) => {
+          const sibling = await journeys.block.create({
+            data: {
+              journeyId,
+              typename: 'SpacerBlock',
+              parentBlockId: `${journeyId}-card`,
+              parentOrder: 1,
+              spacing: 100
+            }
+          })
+          const saved = receipt(
+            await call('journey_edit', {
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [
+                {
+                  type: 'block_add',
+                  key: 'inserted',
+                  cardId: `${journeyId}-card`,
+                  placement: { position: 'before', blockId: sibling.id },
+                  block: { kind: 'button', label: 'Inserted' }
+                }
+              ]
+            })
+          )
+          const direction = scenario === 'undo-shifted' ? 'undo' : 'redo'
+          if (direction === 'redo')
+            await historyAction('undo', saved.historyId!)
+          const humanSibling = await journeys.block.create({
+            data: {
+              journeyId,
+              typename: 'TypographyBlock',
+              parentBlockId: `${journeyId}-card`,
+              parentOrder: scenario === 'redo-shifted' ? 2 : 1,
+              content: 'Later human content'
+            }
+          })
+          const snapshot = async () => ({
+            blocks: await journeys.block.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            revision: await revision(),
+            cursor: await history(),
+            entries: await journeys.mcpEditHistory.findMany({
+              where: { journeyId },
+              orderBy: { ordinal: 'asc' }
+            }),
+            operations: await journeys.mcpEditOperation.findMany({
+              where: { journeyId },
+              orderBy: { id: 'asc' }
+            }),
+            counts: await counts(),
+            audit: await journeys.mcpEditAudit.count({ where: { journeyId } })
+          })
+          const before = await snapshot()
+          const input = await historyInput(saved.historyId!)
+          const acceptance = vi.fn()
+          checkpoint = async (point, context) => {
+            if (point === 'before_accept' && context.operationId) acceptance()
+          }
+          for (let attempt = 0; attempt < 2; attempt++) {
+            const response = await call(`journey_${direction}`, input)
+            expect(response.json.result?.isError).toBe(true)
+            expect(response.text).toContain('HISTORY_CONFLICT')
+            expect(acceptance).not.toHaveBeenCalled()
+            expect(await snapshot()).toEqual(before)
+          }
+          await journeys.block.update({
+            where: { id: humanSibling.id },
+            data: { parentOrder: 3 }
+          })
+          const repairedInput = { ...input, expectedRevision: await revision() }
+          const restored = receipt(
+            await call(`journey_${direction}`, repairedInput)
+          )
+          expect(acceptance).toHaveBeenCalled()
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: humanSibling.id }
+            })
+          ).toMatchObject({ parentOrder: 3, content: humanSibling.content })
+          const siblings = await journeys.block.findMany({
+            where: {
+              journeyId,
+              parentBlockId: `${journeyId}-card`,
+              deletedAt: null
+            },
+            orderBy: { parentOrder: 'asc' }
+          })
+          expect(siblings.map(({ id }) => id)).toEqual(
+            direction === 'redo'
+              ? [
+                  `${journeyId}-text`,
+                  saved.idMap.inserted,
+                  sibling.id,
+                  humanSibling.id
+                ]
+              : [`${journeyId}-text`, sibling.id, humanSibling.id]
+          )
+          expect(siblings.map(({ parentOrder }) => parentOrder)).toEqual(
+            direction === 'redo' ? [0, 1, 2, 3] : [0, 1, 3]
+          )
+          const after = await snapshot()
+          expect(
+            receipt(await call(`journey_${direction}`, repairedInput))
+          ).toEqual(restored)
+          expect(await snapshot()).toEqual(after)
+        }
+      )
+
       it('rejects unstorable saved sibling order before redo acceptance and recovers after repair', async () => {
         const saved = receipt(
           await call('journey_edit', {

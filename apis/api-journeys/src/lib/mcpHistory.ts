@@ -133,6 +133,7 @@ export async function planHistory(
     direction === 'undo' ? [...parsed.data].reverse() : parsed.data
   const projected = new Map<string, Block>()
   const plans: ContentPlan[] = []
+  const orderedParents = new Set<string>()
   for (const inverse of inverses) {
     if (inverse.type === 'content_created') {
       const card = await tx.block.findUnique({
@@ -203,30 +204,8 @@ export async function planHistory(
           !isDeepStrictEqual(createdState(block), item.state)
         )
           throw new Error('HISTORY_CONFLICT')
-        if (direction === 'redo' && block.parentOrder !== null) {
-          const siblings = await tx.block.findMany({
-            where: {
-              journeyId,
-              parentBlockId: block.parentBlockId,
-              deletedAt: null
-            }
-          })
-          const currentSiblings = new Map(
-            siblings.map((sibling) => [sibling.id, sibling])
-          )
-          for (const [id, state] of projected)
-            if (state.parentBlockId === block.parentBlockId)
-              currentSiblings.set(id, state)
-          if (
-            [...currentSiblings.values()].some(
-              (sibling) =>
-                sibling.id !== block.id &&
-                !sibling.deletedAt &&
-                sibling.parentOrder === block.parentOrder
-            )
-          )
-            throw new Error('HISTORY_CONFLICT')
-        }
+        if (block.parentOrder !== null && block.parentBlockId !== null)
+          orderedParents.add(block.parentBlockId)
         if (
           direction === 'redo' &&
           block.typename === 'ButtonBlock' &&
@@ -333,6 +312,11 @@ export async function planHistory(
       }
     }
     projected.set(block.id, next)
+    if (
+      Object.prototype.hasOwnProperty.call(patch, 'parentOrder') &&
+      block.parentBlockId !== null
+    )
+      orderedParents.add(block.parentBlockId)
     for (const slot of ['startIconId', 'endIconId'] as const) {
       if (!Object.prototype.hasOwnProperty.call(patch, slot)) continue
       const iconId = next[slot]
@@ -369,6 +353,22 @@ export async function planHistory(
         ? { gate: inverse.gate }
         : {})
     })
+  }
+  // Check the completed projection: shifted and revived siblings can both
+  // collide with later human additions, while intermediate positions may overlap.
+  for (const parentId of orderedParents) {
+    const positions = new Set<number>()
+    for (const sibling of await contentSiblings(
+      tx,
+      journeyId,
+      parentId,
+      projected
+    )) {
+      if (sibling.parentOrder === null) continue
+      if (positions.has(sibling.parentOrder))
+        throw new Error('HISTORY_CONFLICT')
+      positions.add(sibling.parentOrder)
+    }
   }
   return plans
 }
