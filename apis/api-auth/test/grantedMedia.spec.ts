@@ -535,6 +535,8 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     await f.journeys.journey.create({
       data: {
         id: f.id('foreign-journey'),
+        title: 'Synthetic foreign draft',
+        status: 'draft',
         slug: f.id('foreign-journey'),
         languageId: '529',
         teamId: 'structure-team-alice',
@@ -636,6 +638,53 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ])
   })
 
+  it('copies an authorized media subtree with fresh owned references and rejects a revoked nested rendition', async () => {
+    await f.save([
+      selectVideo(),
+      ...(['cover', 'poster'] as const).map((slot) => ({
+        type: 'media_slot_set',
+        target: { slot, owner: ref(slot === 'cover' ? 'bc' : 'video') },
+        media: {
+          kind: 'image',
+          source: { source: 'library', id: f.id('asset') }
+        }
+      }))
+    ])
+    const before = await image('video')
+    const saved = await f.save([
+      {
+        type: 'step_duplicate',
+        source: ref('b'),
+        key: 'media_copy',
+        placement: { position: 'end' }
+      }
+    ])
+    const map = saved.duplicateIdMap!
+    expect(
+      await f.journeys.block.findUniqueOrThrow({
+        where: { id: map[f.id('video')] }
+      })
+    ).toMatchObject({
+      videoId: before.videoId,
+      parentBlockId: map[f.id('bc')],
+      posterBlockId: map[before.posterBlockId!]
+    })
+    expect(await image('video')).toEqual(before)
+    await settleMedia()
+    await protectedMedia.muxVideo.update({
+      where: { id: f.id('mux') },
+      data: { readyToStream: false }
+    })
+    await reject([
+      {
+        type: 'step_duplicate',
+        source: ref('b'),
+        key: 'revoked_step',
+        placement: { position: 'end' }
+      }
+    ])
+  })
+
   it('enforces background video autoplay, mute, subtitles and fullscreen layout', async () => {
     await f.save([
       {
@@ -694,6 +743,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ])
     for (const source of [
       { source: 'library', id: f.id('asset'), width: 1 },
+      { source: 'existingImage', blockId: f.id('image') },
       { source: 'url', url: 'http://169.254.169.254/latest/meta-data' },
       { source: 'unsplash', id: 'https://127.0.0.1' }
     ])
@@ -720,6 +770,30 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       }
     ])
     await f.save([{ type: 'image_set', block: ref('image'), focalLeft: 25 }])
+    const cleared = await f.save([
+      { type: 'image_source_clear', block: ref('image') }
+    ])
+    f.receipt(await f.historyAction('undo', cleared.historyId!))
+    expect((await image()).src).toBe(
+      'https://images.unsplash.com/synthetic-photo'
+    )
+    f.receipt(await f.historyAction('redo', cleared.historyId!))
+    expect((await image()).src).toBeNull()
+    expect((await search('history')).json.result?.isError).toBe(true)
+    f.receipt(await f.historyAction('undo', cleared.historyId!))
+    const copied = await f.save([
+      {
+        type: 'block_duplicate',
+        source: ref('image'),
+        key: 'copy_unsplash',
+        placement: { position: 'end' }
+      }
+    ])
+    expect(
+      await f.journeys.block.findUniqueOrThrow({
+        where: { id: copied.idMap.copy_unsplash }
+      })
+    ).toMatchObject({ src: 'https://images.unsplash.com/synthetic-photo' })
     flags.websiteMode = false
     await f.journeys.journey.update({
       where: { id: f.journeyId },
@@ -1038,12 +1112,35 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     try {
       f.ownerConfig.media = undefined
       await reject([{ type: 'image_set', block: ref('image'), focalLeft: 20 }])
+      await reject([
+        {
+          type: 'block_duplicate',
+          source: ref('image'),
+          key: 'blocked_copy',
+          placement: { position: 'end' }
+        }
+      ])
       expect(
         (await f.historyAction('undo', saved.historyId!)).json.result?.isError
       ).toBe(true)
     } finally {
       f.ownerConfig.media = config
     }
+    const removed = await f.save([
+      { type: 'block_remove', block: ref('image') }
+    ])
+    const beforeUndo = await f.snapshot()
+    try {
+      f.ownerConfig.media = undefined
+      expect(
+        (await f.historyAction('undo', removed.historyId!)).json.result?.isError
+      ).toBe(true)
+      expect(await f.snapshot()).toEqual(beforeUndo)
+    } finally {
+      f.ownerConfig.media = config
+    }
+    f.receipt(await f.historyAction('undo', removed.historyId!))
+    expect((await image()).deletedAt).toBeNull()
   })
 
   it('fences failed SQL writes and recovers a lost source-change completion report', async () => {

@@ -10,14 +10,12 @@ import type {
   Prisma
 } from '@core/prisma/media/client'
 import {
-  type ImageSource,
+  type MediaResolutionSource,
   type ReadyMedia,
-  type VideoSource,
-  imageSource,
+  mediaResolutionSource,
   mediaSearchInput,
   mediaSourceKey,
-  readyVideo,
-  videoSource
+  readyVideo
 } from '@core/yoga/mcp/mediaContract'
 import {
   type ReadTrust,
@@ -52,10 +50,7 @@ export const mediaSourceRequest = z
     credential: z.string().max(32768),
     permitId: z.string().uuid(),
     request: readRequest,
-    sources: z
-      .array(z.union([imageSource, videoSource]))
-      .max(200)
-      .optional(),
+    sources: z.array(mediaResolutionSource).max(200).optional(),
     search: mediaSearchInput.optional()
   })
   .strict()
@@ -198,7 +193,7 @@ export function createMediaSourceHandler(
           `https://imagedelivery.net/${encodeURIComponent(config.imageAccount)}/${encodeURIComponent(id)}/public`
         )
       const resolve = async (
-        source: ImageSource | VideoSource
+        source: MediaResolutionSource
       ): Promise<ReadyMedia> => {
         if (source.source === 'library') {
           if (!flags.mediaLibrary) denied()
@@ -208,8 +203,7 @@ export function createMediaSourceHandler(
           if (!image) denied()
           return providers.image(imageUrl(image.id))
         }
-        if (source.source === 'history') {
-          if (!flags.mediaLibrary) denied()
+        if (source.source === 'history' || source.source === 'existingImage') {
           let image: {
             src: string | null
             width: number | null
@@ -257,7 +251,8 @@ export function createMediaSourceHandler(
                 blurhash: z.string().nullable()
               })
               .parse(restored)
-          } else
+          } else {
+            if (source.source === 'history' && !flags.mediaLibrary) denied()
             image = await journeys.block.findFirst({
               where: {
                 id: source.blockId,
@@ -266,10 +261,12 @@ export function createMediaSourceHandler(
                 deletedAt: null
               }
             })
+          }
           if (!image?.src) denied()
           const src = publicMediaUrl(image.src),
             url = new URL(src)
           if (url.hostname === 'imagedelivery.net') {
+            if (!flags.mediaLibrary) denied()
             const parts = url.pathname.split('/').filter(Boolean)
             if (parts[0] !== config.imageAccount || !parts[1]) denied()
             const asset = await media.cloudflareImage.findFirst({

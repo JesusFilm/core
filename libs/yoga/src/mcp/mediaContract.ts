@@ -21,6 +21,17 @@ export const videoSource = z.discriminatedUnion('source', [
     .strict(),
   z.object({ source: z.literal('mux'), videoId: id }).strict()
 ])
+/** Internal owning-service resolution; unavailable as a user command source. */
+const existingImageSource = z
+  .object({ source: z.literal('existingImage'), blockId: id })
+  .strict()
+export const mediaResolutionSource = z.union([
+  imageSource,
+  videoSource,
+  existingImageSource
+])
+export type MediaResolutionSource = z.infer<typeof mediaResolutionSource>
+
 export const mediaSlot = z.discriminatedUnion('slot', [
   z.object({ slot: z.literal('cover'), owner: blockReference }).strict(),
   z.object({ slot: z.literal('poster'), owner: blockReference }).strict(),
@@ -189,8 +200,9 @@ export type ReadyImage = z.infer<typeof readyImage>
 export type ReadyVideo = z.infer<typeof readyVideo>
 export type ReadyMedia = ReadyImage | ReadyVideo
 
-export function mediaSourceKey(source: ImageSource | VideoSource): string {
-  if (source.source === 'history') return `history:${source.blockId}`
+export function mediaSourceKey(source: MediaResolutionSource): string {
+  if (source.source === 'history' || source.source === 'existingImage')
+    return `${source.source}:${source.blockId}`
   if (source.source === 'library' || source.source === 'unsplash')
     return `${source.source}:${source.id}`
   return `${source.source}:${source.videoId}:${source.source === 'internal' ? source.languageId : ''}`

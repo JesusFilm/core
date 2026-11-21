@@ -301,12 +301,12 @@ export function structureFixture(
 
   beforeAll(async () => {
     if (
-      !new RegExp(`^/auth_issue_${options.issue ?? '10557'}(_|$)`).test(
-        new URL(authUrl).pathname
-      ) ||
-      !new RegExp(`^/journeys_issue_${options.issue ?? '10557'}(_|$)`).test(
-        new URL(journeysUrl).pathname
-      )
+      !new RegExp(
+        `^/auth_issue_${options.issue ?? process.env.STRUCTURE_TEST_ISSUE ?? '10557'}(_|$)`
+      ).test(new URL(authUrl).pathname) ||
+      !new RegExp(
+        `^/journeys_issue_${options.issue ?? process.env.STRUCTURE_TEST_ISSUE ?? '10557'}(_|$)`
+      ).test(new URL(journeysUrl).pathname)
     )
       throw new Error('Use isolated issue 10557 databases')
     for (const table of [
@@ -658,7 +658,7 @@ export function structureFixture(
               parentBlockId: id('bc'),
               parentOrder: 2,
               source: 'youTube',
-              videoId: 'dQw4w9WgXcQ',
+              videoId: options.media ? 'dQw4w9WgXcQ' : null,
               muted: false,
               autoplay: true
             },
@@ -667,7 +667,9 @@ export function structureFixture(
               typename: 'ImageBlock',
               parentBlockId: id('video'),
               parentOrder: null,
-              src: 'https://example.com/synthetic-poster.jpg',
+              src: options.media
+                ? 'https://example.com/synthetic-poster.jpg'
+                : null,
               alt: 'Synthetic existing poster'
             },
             {
@@ -675,7 +677,9 @@ export function structureFixture(
               typename: 'ImageBlock',
               parentBlockId: id('bc'),
               parentOrder: null,
-              src: 'https://example.com/synthetic-cover.jpg',
+              src: options.media
+                ? 'https://example.com/synthetic-cover.jpg'
+                : null,
               alt: 'Synthetic existing cover'
             },
             {

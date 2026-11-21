@@ -371,9 +371,15 @@ export async function planStructure(
       for (const original of originals) {
         const id = mapping.get(idOf(original))!,
           row = serialize(original)
+        if (
+          !media &&
+          ((original.typename === 'ImageBlock' && original.src) ||
+            (original.typename === 'VideoBlock' && original.videoId))
+        )
+          missing()
         if (media && original.typename === 'ImageBlock' && original.src) {
           const source = media.sources.get(
-            mediaSourceKey({ source: 'history', blockId: idOf(original) })
+            mediaSourceKey({ source: 'existingImage', blockId: idOf(original) })
           )
           if (!source || source.kind !== 'image') missing()
           Object.assign(row, {
@@ -695,15 +701,18 @@ export async function planStructure(
       fail()
   const plan = finishStructure(state, now)
   if (
-    media &&
-    plan.blockWrites.some(
-      (write) => write.create && (write.create.src || write.create.videoId)
-    )
-  )
-    for (const inverse of plan.changes) inverse.media = true
-  if (
     commands.some((command) =>
       (mediaCommandNames as readonly string[]).includes(command.type)
+    ) ||
+    plan.changes.some((inverse) =>
+      inverse.blocks.some((change) =>
+        [change.before, change.after].some(
+          (row) =>
+            row &&
+            ((row.typename === 'ImageBlock' && row.src) ||
+              (row.typename === 'VideoBlock' && row.videoId))
+        )
+      )
     )
   )
     for (const inverse of plan.changes) inverse.media = true

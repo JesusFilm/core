@@ -2,9 +2,8 @@ import { z } from 'zod'
 
 import type { PrismaClient } from '@core/prisma/journeys/client'
 import {
-  type ImageSource,
+  type MediaResolutionSource,
   type ReadyMedia,
-  type VideoSource,
   mediaCommandNames,
   mediaSourceKey,
   readyImage,
@@ -84,8 +83,8 @@ export async function resolveEditMedia(
   historyGeneration: number,
   journey: { website: boolean | null; languageId: string }
 ): Promise<MediaProjection> {
-  const sources = new Map<string, ImageSource | VideoSource>()
-  const add = (source: ImageSource | VideoSource) =>
+  const sources = new Map<string, MediaResolutionSource>()
+  const add = (source: MediaResolutionSource) =>
     sources.set(mediaSourceKey(source), source)
   const video = (row: {
     source: unknown
@@ -125,7 +124,7 @@ export async function resolveEditMedia(
           if (queue.length > 200) throw new Error('LIMIT_EXCEEDED')
           const row = queue[index]
           if (row.typename === 'ImageBlock' && row.src)
-            add({ source: 'history', blockId: row.id })
+            add({ source: 'existingImage', blockId: row.id })
           if (row.typename === 'VideoBlock' && row.videoId) video(row)
           queue.push(...rows.filter((child) => child.parentBlockId === row.id))
         }

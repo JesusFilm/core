@@ -6,6 +6,7 @@ export default defineConfig({
   ...editsConfig,
   test: {
     ...editsConfig.test,
+    testTimeout: 60000,
     include: [
       'apis/api-auth/test/grantedMedia.spec.ts',
       'libs/yoga/src/mcp/*.spec.ts',

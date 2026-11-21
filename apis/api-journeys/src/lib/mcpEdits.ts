@@ -624,7 +624,11 @@ export function createJourneyEditHandler(
             })
           }
           if (structuralPlan) {
-            if (usesMedia)
+            if (
+              usesMedia ||
+              operation.tool === 'journey_undo' ||
+              operation.tool === 'journey_redo'
+            )
               await validateMediaPlan(tx, structuralPlan, mediaProjection)
             // Incoming links are reported without being written. Reserve room
             // for the fixed receipt envelope before accepting an expanded save.
