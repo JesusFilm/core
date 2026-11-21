@@ -13,6 +13,8 @@ import {
   type BlockState,
   type Scalar,
   actionFields,
+  actionState,
+  blockState,
   blockFields,
   finishStructure,
   idOf,
@@ -338,6 +340,60 @@ export async function planStructureHistory(
           throw error
         }
       }
+  }
+  if (direction === 'undo' && createdIds.size) {
+    const ids = [...createdIds]
+    const referenceFields = [
+      'parentBlockId',
+      'startIconId',
+      'endIconId',
+      'submitIconId',
+      'nextBlockId',
+      'coverBlockId',
+      'posterBlockId',
+      'pollOptionImageBlockId'
+    ] as const
+    const references = await tx.block.findMany({
+      where: {
+        deletedAt: null,
+        OR: referenceFields.map((field) => ({ [field]: { in: ids } }))
+      }
+    })
+    // Own references can be removed by this same undo. Inspect the completed
+    // projection before hiding a newly created object used by later work.
+    const outsideReferences = references
+      .filter((reference) => !state.originalBlocks.has(reference.id))
+      .map(blockState)
+    for (const row of [...state.blocks.values(), ...outsideReferences]) {
+      if (!live(row) || createdIds.has(idOf(row))) continue
+      if (
+        referenceFields.some(
+          (field) =>
+            typeof row[field] === 'string' && createdIds.has(row[field])
+        )
+      )
+        conflict()
+    }
+    const actions = await tx.action.findMany({
+      where: {
+        OR: [{ parentBlockId: { in: ids } }, { blockId: { in: ids } }]
+      }
+    })
+    const outsideActions = actions
+      .filter(
+        (reference) => !state.originalActions.has(reference.parentBlockId)
+      )
+      .map(actionState)
+    for (const action of [...state.actions.values(), ...outsideActions]) {
+      if (
+        [action.parentBlockId, action.blockId].some(
+          (id) => typeof id === 'string' && createdIds.has(id)
+        )
+      )
+        conflict()
+    }
+    const menu = state.journey.menuStepBlockId
+    if (typeof menu === 'string' && createdIds.has(menu)) conflict()
   }
   const plan = finishStructure(state, new Date().toISOString())
   plan.requiresChat = requiresChat

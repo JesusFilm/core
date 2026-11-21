@@ -3830,6 +3830,185 @@ describe('saved edit integration', () => {
         }
       )
 
+      it.each(
+        (['complete-button', 'slot-repair'] as const).flatMap((mode) =>
+          (['button-slot', 'card-cover'] as const).map((reference) => ({
+            mode,
+            reference
+          }))
+        )
+      )(
+        'rejects mixed $mode undo when a later $reference aliases its Icon and recovers after repair',
+        async ({ mode, reference }) => {
+          await seedPresentation()
+          const existingButton = `${journeyId}-button`
+          if (mode === 'slot-repair')
+            await journeys.block.update({
+              where: { id: existingButton },
+              data: { startIconId: null }
+            })
+          const saved = receipt(
+            await edit({
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [
+                mode === 'complete-button'
+                  ? {
+                      type: 'block_add',
+                      key: 'new_button',
+                      cardId: `${journeyId}-card`,
+                      placement: { position: 'end' },
+                      block: { kind: 'button', label: 'New button' }
+                    }
+                  : {
+                      type: 'button_icon_set',
+                      blockId: existingButton,
+                      slot: 'start',
+                      name: 'Home4'
+                    },
+                {
+                  type: 'step_position_set',
+                  step: { id: `${journeyId}-step` },
+                  x: 421,
+                  y: 219
+                }
+              ]
+            })
+          )
+          const buttonId =
+            mode === 'complete-button' ? saved.idMap.new_button : existingButton
+          const button = await journeys.block.findUniqueOrThrow({
+            where: { id: buttonId }
+          })
+          const alias =
+            reference === 'button-slot'
+              ? await journeys.block.create({
+                  data: {
+                    journeyId,
+                    typename: 'ButtonBlock',
+                    parentBlockId: `${journeyId}-card`,
+                    parentOrder: null,
+                    label: 'Later Icon alias',
+                    startIconId: button.startIconId,
+                    submitEnabled: false
+                  }
+                })
+              : await journeys.block.update({
+                  where: { id: `${journeyId}-card` },
+                  data: { coverBlockId: button.startIconId }
+                })
+          const before = await mixedSnapshot()
+          const input = await historyInput(saved.historyId!)
+          const acceptance = vi.fn()
+          checkpoint = async (point, context) => {
+            if (point === 'before_accept' && context.operationId) acceptance()
+          }
+          for (let attempt = 0; attempt < 2; attempt++) {
+            const result = await call('journey_undo', input)
+            expect(result.text).toContain('HISTORY_CONFLICT')
+            expect(acceptance).not.toHaveBeenCalled()
+            expect(await mixedSnapshot()).toEqual(before)
+          }
+          await journeys.block.update({
+            where: { id: alias.id },
+            data:
+              reference === 'button-slot'
+                ? { startIconId: null }
+                : { coverBlockId: null }
+          })
+          checkpoint = undefined
+          const undoInput = await historyInput(saved.historyId!)
+          const undone = receipt(await call('journey_undo', undoInput))
+          expect(receipt(await call('journey_undo', undoInput))).toEqual(undone)
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: button.startIconId! }
+            })
+          ).toMatchObject({ deletedAt: expect.any(Date) })
+          await historyAction('redo', saved.historyId!)
+          expect(
+            await journeys.block.findUniqueOrThrow({ where: { id: buttonId } })
+          ).toMatchObject({ deletedAt: null, startIconId: button.startIconId })
+        }
+      )
+
+      it.each(['route', 'menu'] as const)(
+        'rejects mixed creation undo with a later incoming %s dependency and preserves own route restoration',
+        async (dependency) => {
+          await seedPresentation()
+          const buttonId = `${journeyId}-button`
+          const saved = receipt(
+            await edit({
+              journeyId,
+              expectedRevision: await revision(),
+              idempotencyKey: randomUUID(),
+              commands: [
+                {
+                  type: 'step_add',
+                  key: 'new_step',
+                  cardKey: 'new_card',
+                  placement: { position: 'end' }
+                },
+                {
+                  type: 'button_set',
+                  blockId: buttonId,
+                  label: 'Updated label'
+                }
+              ]
+            })
+          )
+          if (dependency === 'route')
+            await journeys.action.create({
+              data: { parentBlockId: buttonId, blockId: saved.idMap.new_step }
+            })
+          else
+            await journeys.journey.update({
+              where: { id: journeyId },
+              data: { menuStepBlockId: saved.idMap.new_step }
+            })
+          const before = await mixedSnapshot()
+          const input = await historyInput(saved.historyId!)
+          const acceptance = vi.fn()
+          checkpoint = async (point, context) => {
+            if (point === 'before_accept' && context.operationId) acceptance()
+          }
+          const result = await call('journey_undo', input)
+          expect(result.text).toContain('HISTORY_CONFLICT')
+          expect(acceptance).not.toHaveBeenCalled()
+          expect(await mixedSnapshot()).toEqual(before)
+          if (dependency === 'route')
+            await journeys.action.update({
+              where: { parentBlockId: buttonId },
+              data: { blockId: `${journeyId}-step` }
+            })
+          else {
+            expect(
+              await journeys.journey.findUniqueOrThrow({
+                where: { id: journeyId }
+              })
+            ).toMatchObject({ menuStepBlockId: saved.idMap.new_step })
+            await journeys.journey.update({
+              where: { id: journeyId },
+              data: { menuStepBlockId: null }
+            })
+          }
+          checkpoint = undefined
+          await historyAction('undo', saved.historyId!)
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: saved.idMap.new_step }
+            })
+          ).toMatchObject({ deletedAt: expect.any(Date) })
+          await historyAction('redo', saved.historyId!)
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: saved.idMap.new_step }
+            })
+          ).toMatchObject({ deletedAt: null })
+        }
+      )
+
       it('rejects mixed expanded layout when the final projection contains Video and preserves saved state', async () => {
         const input = {
           journeyId,
