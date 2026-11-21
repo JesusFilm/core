@@ -52,6 +52,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let providerUnknown = false
   let jobs: MediaJobs
   let uploadOrigin = ''
+  let afterPrepare: ((action: string) => Promise<void>) | undefined
   let beforeAccept: ((action: string) => Promise<void>) | undefined
   let beforeSend: (() => Promise<void>) | undefined
   const storage: UploadStorage = {
@@ -153,6 +154,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
               return token
             },
             hooks: {
+              afterPrepare: async (action) => afterPrepare?.(action),
               beforeAccept: async (action) => beforeAccept?.(action),
               beforeSend: async () => beforeSend?.()
             }
@@ -175,6 +177,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   })
 
   beforeEach(async () => {
+    afterPrepare = undefined
     beforeAccept = undefined
     beforeSend = undefined
     dispatchCount = 0
@@ -536,6 +539,51 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(
       await media.cloudflareImage.findUnique({ where: { id: asset.id } })
     ).toMatchObject({ uploaded: true })
+  })
+
+  it('finishes an upload when background recovery overlaps preparation and accepted dispatch', async () => {
+    afterPrepare = async (action) => {
+      if (action === 'admit') await jobs.recover()
+    }
+    const job = await start()
+    const id = String(job.jobId)
+    afterPrepare = undefined
+    await upload(id, await fileBytes())
+    beforeSend = () => jobs.recover()
+    expect((await status(id)).state).toBe('ready')
+    expect(dispatchCount).toBe(1)
+  })
+
+  it('fences an abandoned pre-send receipt and lets the same job dispatch once on retry', async () => {
+    const id = String((await start()).jobId)
+    await upload(id, await fileBytes())
+    let receiptId!: string
+    beforeSend = async () => {
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      receiptId = job.dispatchReceiptId!
+      const abandonedAt = new Date(0)
+      await media.mcpMediaExecution.update({
+        where: { id: receiptId },
+        data: { createdAt: abandonedAt, completedAt: abandonedAt }
+      })
+      await jobs.recover()
+    }
+
+    expect((await browser(id, 'POST', 'resume')).status).toBe(403)
+    expect(receiptId).toBeDefined()
+    expect(
+      await media.mcpMediaExecution.findUniqueOrThrow({
+        where: { id: receiptId }
+      })
+    ).toMatchObject({ status: 'fenced', reportedAt: expect.any(Date) })
+    expect(
+      await f.auth.readPermit.findUniqueOrThrow({ where: { id: receiptId } })
+    ).toMatchObject({ status: 'settled' })
+    expect(dispatchCount).toBe(0)
+
+    beforeSend = undefined
+    expect((await status(id)).state).toBe('ready')
+    expect(dispatchCount).toBe(1)
   })
 
   it('keeps withdrawal Pending for an accepted dispatcher and positively fences it before HTTP send', async () => {

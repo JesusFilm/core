@@ -43,6 +43,8 @@ interface JobConfig {
 type Action = 'admit' | 'transfer' | 'dispatch' | 'cancel' | 'release'
 type Transaction = Prisma.TransactionClient
 const resultLifetime = 30 * 86400000
+// Allow the bounded execution (up to 65s plus lock acquisition) to start.
+const backgroundFenceDelayMs = 120_000
 const terminal = ['ready', 'failed', 'cancelled', 'transfer_expired']
 const stagingDescriptor = z.object({
   objectKey: z.string(),
@@ -68,6 +70,7 @@ export function createMediaJobs(
   storage: UploadStorage,
   provider: ImageUploadProvider,
   hooks: {
+    afterPrepare?: (action: Action) => Promise<void>
     beforeAccept?: (action: Action) => Promise<void>
     beforeSend?: () => Promise<void>
     afterSend?: () => Promise<void>
@@ -176,6 +179,7 @@ export function createMediaJobs(
       denied()
     await media.mcpMediaExecution.create({ data: { id: prepared.permitId } })
     try {
+      await hooks.afterPrepare?.(action)
       const result = await journeys.$transaction(
         async (jtx) => {
           await jtx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${context.journeyId} FOR SHARE`
@@ -247,7 +251,7 @@ export function createMediaJobs(
                       : action === 'dispatch' || deferred
                         ? 'accepted'
                         : 'settled',
-                  completedAt: new Date()
+                  completedAt: await clock(tx)
                 }
               })
               return value
@@ -286,16 +290,26 @@ export function createMediaJobs(
       }
     })
   }
-  async function recoverExecution(id: string) {
+  async function recoverExecution(
+    id: string,
+    mode: 'explicit' | 'background' = 'explicit'
+  ) {
     const status = await media.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${id} FOR UPDATE`
       const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
         where: { id }
       })
       if (receipt.status === 'prepared' || receipt.status === 'accepted') {
+        const now = await clock(tx)
+        const lastTransition = receipt.completedAt ?? receipt.createdAt
+        if (
+          mode === 'background' &&
+          now.getTime() - lastTransition.getTime() < backgroundFenceDelayMs
+        )
+          return receipt.status
         await tx.mcpMediaExecution.update({
           where: { id },
-          data: { status: 'fenced', completedAt: await clock(tx) }
+          data: { status: 'fenced', completedAt: now }
         })
         if (receipt.jobId) {
           await tx.mcpMediaChunk.deleteMany({
@@ -769,15 +783,15 @@ export function createMediaJobs(
       .status(known.providerId)
       .catch(() => 'unknown' as const)
     if (status === 'unknown') return
-    await media.$transaction(
+    const settled = await media.$transaction(
       async (tx) => {
         await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${known.dispatchReceiptId} FOR UPDATE`
         const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
           where: { id: known.dispatchReceiptId! }
         })
-        if (!['sending', 'settled'].includes(receipt.status)) return
+        if (!['sending', 'settled'].includes(receipt.status)) return false
         const job = await lockJob(tx, jobId)
-        if (!job.active) return
+        if (!job.active) return false
         await tx.mcpMediaExecution.update({
           where: { id: receipt.id },
           data: { status: 'settled', completedAt: await clock(tx) }
@@ -788,7 +802,7 @@ export function createMediaJobs(
               where: { id: jobId },
               data: { state: 'processing' }
             })
-          return
+          return true
         }
         const metadata = z
           .object({
@@ -809,15 +823,12 @@ export function createMediaJobs(
           },
           update: { uploaded: true, blurhash: metadata.blurhash }
         })
-        await tx.mcpMediaExecution.update({
-          where: { id: receipt.id },
-          data: { status: 'settled', completedAt: await clock(tx) }
-        })
         await terminalJob(tx, job, 'ready')
+        return true
       },
       { timeout: 60000 }
     )
-    await recoverExecution(known.dispatchReceiptId)
+    if (settled) await settle(known.dispatchReceiptId)
   }
   async function cancel(context: JobContext, jobId: string, key: string) {
     await own(jobId, context)
@@ -886,7 +897,7 @@ export function createMediaJobs(
       if (!executions.length) break
       after = executions[executions.length - 1].id
       for (const receipt of executions)
-        await recoverExecution(receipt.id).catch(() => undefined)
+        await recoverExecution(receipt.id, 'background').catch(() => undefined)
     }
     after = undefined
     while (true) {
