@@ -1404,9 +1404,15 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       const attaching = f.edit(input)
       await paused
       try {
-        expect((await remove()).errors?.[0].message).toContain(
-          'pending accepted work'
-        )
+        const blocked = await remove()
+        expect(blocked.errors?.[0].message).toContain('pending accepted work')
+        expect(dispatches).toBe(0)
+        await guard.recover()
+        expect(
+          await media.mcpMediaMutation.findUniqueOrThrow({
+            where: { id: String(blocked.errors![0].extensions.changeId) }
+          })
+        ).toMatchObject({ status: 'fenced', reportedAt: null })
         expect(dispatches).toBe(0)
       } finally {
         resume()
@@ -1415,6 +1421,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       expect(await image('video')).toMatchObject({ videoId: f.id('mux') })
       f.checkpoint = undefined
       await settleMedia()
+      await guard.recover()
       expect((await remove()).errors).toBeUndefined()
       expect(dispatches).toBe(1)
       f.receipt(await f.edit(input))
