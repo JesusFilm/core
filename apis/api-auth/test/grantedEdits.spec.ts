@@ -5294,6 +5294,61 @@ describe('saved edit integration', () => {
         }
       )
 
+      it('preserves an unordered Card cover while undoing and redoing ordered content', async () => {
+        const cover = await journeys.block.create({
+          data: {
+            journeyId,
+            typename: 'ImageBlock',
+            parentBlockId: `${journeyId}-card`,
+            parentOrder: null,
+            src: 'https://example.com/cover.jpg'
+          }
+        })
+        await journeys.block.update({
+          where: { id: `${journeyId}-card` },
+          data: { coverBlockId: cover.id }
+        })
+        const card = await journeys.block.findUniqueOrThrow({
+          where: { id: `${journeyId}-card` }
+        })
+        const saved = receipt(
+          await call('journey_edit', {
+            journeyId,
+            expectedRevision: await revision(),
+            idempotencyKey: randomUUID(),
+            commands: [
+              {
+                type: 'block_add',
+                key: 'inserted',
+                cardId: card.id,
+                placement: { position: 'before', blockId: `${journeyId}-text` },
+                block: { kind: 'spacer', spacing: 100 }
+              }
+            ]
+          })
+        )
+        for (const direction of ['undo', 'redo'] as const) {
+          await historyAction(direction, saved.historyId!)
+          expect(
+            await journeys.block.findUniqueOrThrow({ where: { id: cover.id } })
+          ).toEqual(cover)
+          expect(
+            await journeys.block.findUniqueOrThrow({ where: { id: card.id } })
+          ).toEqual(card)
+          expect(await textBlock()).toMatchObject({
+            parentOrder: direction === 'undo' ? 0 : 1
+          })
+          expect(
+            await journeys.block.findUniqueOrThrow({
+              where: { id: saved.idMap.inserted }
+            })
+          ).toMatchObject({
+            parentOrder: 0,
+            deletedAt: direction === 'undo' ? expect.any(Date) : null
+          })
+        }
+      })
+
       it('rejects unstorable saved sibling order before redo acceptance and recovers after repair', async () => {
         const saved = receipt(
           await call('journey_edit', {
