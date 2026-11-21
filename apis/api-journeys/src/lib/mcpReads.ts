@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
 import { mediaCommandNames } from '@core/yoga/mcp/mediaContract'
+import { mediaJobTools } from '@core/yoga/mcp/mediaJobContract'
 import {
   type ReadCredential,
   type ReadRequest,
@@ -271,7 +272,8 @@ export function createJourneyReadHandler(
           })
         )
       const dataRequest = body.request
-      if (dataRequest.tool === 'journey_media_search' && !config.media)
+      const mediaJob = (mediaJobTools as readonly string[]).includes(dataRequest.tool)
+      if ((dataRequest.tool === 'journey_media_search' || mediaJob) && !config.media)
         throw new Error('Access denied')
       if (
         !sameSecret(
@@ -322,11 +324,11 @@ export function createJourneyReadHandler(
         readPermit = permitId
       }
       const mediaSearch =
-        dataRequest.tool === 'journey_media_search'
-          ? await mediaRequest(config.media!, credential, {
+        dataRequest.tool === 'journey_media_search' || mediaJob
+          ? await mediaRequest(mediaJob ? { ...config.media!, url: new URL('/mcp/media-jobs', config.media!.url).href } : config.media!, credential, {
               permitId,
               request: dataRequest,
-              search: dataRequest.input
+              ...(mediaJob ? {} : { search: dataRequest.input })
             })
           : undefined
       const result = await db.$transaction(
@@ -395,14 +397,14 @@ export function createJourneyReadHandler(
           } else {
             try {
               data =
-                dataRequest.tool === 'journey_media_search'
+                dataRequest.tool === 'journey_media_search' || mediaJob
                   ? {
                       contractVersion: resultContractVersion,
                       kind: 'media_sources',
-                      journeyId: dataRequest.input.journeyId,
+                      journeyId: ids[0],
                       ...z.record(z.string(), z.unknown()).parse(mediaSearch)
                     }
-                  : await snapshot(tx, dataRequest, claims, allowed, config)
+                  : await snapshot(tx, dataRequest as Parameters<typeof snapshot>[1], claims, allowed, config)
             } catch (error) {
               const failure = z
                 .enum(['REVISION_CONFLICT', 'LIMIT_EXCEEDED'])

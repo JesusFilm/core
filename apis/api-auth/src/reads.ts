@@ -15,6 +15,7 @@ import {
 
 import type { AuthConfig } from './config'
 import type { Identity } from './identity'
+import { createMediaJobAuthority } from './mediaJobs'
 import {
   type Database,
   audit,
@@ -55,6 +56,7 @@ export function createReadAuthority(
   identity: Identity,
   provider: OidcProvider
 ) {
+  const mediaJobs = createMediaJobAuthority(config, db, identity)
   const key = config.AUTH_JWKS.keys.find((key) => key.kty === 'RSA')
   if (config.AUTH_EXCHANGE_CLIENT_SECRET && !key)
     throw new Error('RSA read signing key required')
@@ -94,6 +96,8 @@ export function createReadAuthority(
     authorization: string,
     body: unknown
   ): Promise<unknown> => {
+    if (path.startsWith('/internal/reads/media-jobs/'))
+      return mediaJobs(path, authorization, body)
     if (
       !trust ||
       !key ||

@@ -17,6 +17,82 @@ datasource db {
   provider = "postgresql"
 }
 
+// Shared image/video upload capacity is serialized by the user row.
+model McpMediaUser {
+  userId String @id
+}
+
+model McpMediaCancellation {
+  id String @id @default(uuid())
+  connectionId String
+  key String
+  jobId String
+  outcome Json?
+  completedAt DateTime
+  resultExpiresAt DateTime
+
+  @@unique([connectionId, key])
+  @@index([resultExpiresAt])
+}
+
+model McpMediaJob {
+  id String @id @default(uuid())
+  connectionId String
+  userId String
+  clientId String
+  journeyId String
+  teamId String
+  key String
+  payloadHash String
+  kind String
+  state String @default("waiting_for_file")
+  active Boolean @default(true)
+  admittedAt DateTime @default(now())
+  transferDeadline DateTime
+  transferCompletedAt DateTime?
+  file Json?
+  receivedBytes Int @default(0)
+  metadata Json?
+  providerId String @unique
+  dispatchReceiptId String? @unique
+  completedAt DateTime?
+  resultExpiresAt DateTime?
+  privatePurgedAt DateTime?
+  chunks McpMediaChunk[]
+
+  @@unique([connectionId, key])
+  @@index([userId, active])
+  @@index([state, transferDeadline])
+  @@index([resultExpiresAt])
+}
+
+model McpMediaChunk {
+  jobId String
+  offset Int
+  bytes Int
+  sha256 String
+  objectKey String @unique
+  stored Boolean @default(false)
+  executionId String?
+  job McpMediaJob @relation(fields: [jobId], references: [id])
+
+  @@id([jobId, offset])
+}
+
+// Final acceptance and owning writes share this lock. A sending receipt is
+// unresolved until authenticated provider evidence establishes the outcome.
+model McpMediaExecution {
+  id String @id
+  jobId String?
+  staging Json?
+  status String @default("prepared")
+  createdAt DateTime @default(now())
+  completedAt DateTime?
+  reportedAt DateTime?
+
+  @@index([reportedAt])
+}
+
 // Source mutations close new MCP admission and drain accepted attachments.
 // This receipt and the source write commit in the same owning transaction.
 model McpMediaMutation {

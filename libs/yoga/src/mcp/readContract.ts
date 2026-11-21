@@ -18,6 +18,11 @@ import {
   operationInput
 } from './editContract'
 import { mediaSearchInput } from './mediaContract'
+import {
+  mediaStartInput,
+  mediaJobInput,
+  mediaCancelInput
+} from './mediaJobContract'
 
 export const resultContractVersion = '1' as const
 export const readResult = z
@@ -64,6 +69,18 @@ export const previewInput = z
   .strict()
 export const readRequest = z.discriminatedUnion('tool', [
   z
+    .object({ tool: z.literal('journey_media_start'), input: mediaStartInput })
+    .strict(),
+  z
+    .object({ tool: z.literal('journey_media_status'), input: mediaJobInput })
+    .strict(),
+  z
+    .object({
+      tool: z.literal('journey_media_cancel'),
+      input: mediaCancelInput
+    })
+    .strict(),
+  z
     .object({
       tool: z.literal('journey_media_search'),
       input: mediaSearchInput
@@ -89,6 +106,9 @@ export const readRequest = z.discriminatedUnion('tool', [
 export type ReadRequest = z.infer<typeof readRequest>
 export function isContentWrite(tool: ReadRequest['tool']): boolean {
   return (
+    tool === 'journey_media_start' ||
+    tool === 'journey_media_status' ||
+    tool === 'journey_media_cancel' ||
     tool === 'journey_edit' ||
     tool === 'journey_undo' ||
     tool === 'journey_redo'

@@ -1,0 +1,1 @@
+export { McpImageUpload } from './McpImageUpload'

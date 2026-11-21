@@ -195,6 +195,24 @@ export function createMediaSourceHandler(
       const resolve = async (
         source: MediaResolutionSource
       ): Promise<ReadyMedia> => {
+        if (source.source === 'upload') {
+          const job = await media.mcpMediaJob.findFirst({
+            where: {
+              id: source.jobId,
+              userId: claims.subject,
+              connectionId: claims.connectionId,
+              journeyId,
+              state: 'ready',
+              active: false
+            }
+          })
+          if (!job) denied()
+          const image = await media.cloudflareImage.findFirst({
+            where: { id: job.providerId, uploaded: true, ...owner }
+          })
+          if (!image) denied()
+          return providers.image(imageUrl(image.id))
+        }
         if (source.source === 'library') {
           if (!flags.mediaLibrary) denied()
           const image = await media.cloudflareImage.findFirst({
@@ -266,9 +284,23 @@ export function createMediaSourceHandler(
           const src = publicMediaUrl(image.src),
             url = new URL(src)
           if (url.hostname === 'imagedelivery.net') {
-            if (!flags.mediaLibrary) denied()
             const parts = url.pathname.split('/').filter(Boolean)
             if (parts[0] !== config.imageAccount || !parts[1]) denied()
+            if (
+              !flags.mediaLibrary &&
+              !(await media.mcpMediaJob.findFirst({
+                where: {
+                  providerId: decodeURIComponent(parts[1]),
+                  userId: claims.subject,
+                  connectionId: claims.connectionId,
+                  journeyId,
+                  state: 'ready',
+                  active: false
+                },
+                select: { id: true }
+              }))
+            )
+              denied()
             const asset = await media.cloudflareImage.findFirst({
               where: {
                 id: decodeURIComponent(parts[1]),
@@ -656,6 +688,14 @@ export function useMcpMediaSources(
   return {
     async onRequest(payload) {
       const { request } = payload
+      if (
+        new URL(request.url, 'http://localhost').pathname ===
+          '/mcp/media-jobs' ||
+        new URL(request.url, 'http://localhost').pathname.startsWith(
+          '/mcp/uploads/'
+        )
+      )
+        return
       if (
         new URL(request.url, 'http://localhost').pathname !==
         '/mcp/media-sources'
