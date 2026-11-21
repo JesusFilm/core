@@ -1292,6 +1292,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       })
     }
   )
+
   it('keeps source transactions atomic and reopens admission only after their owning outcome is recorded', async () => {
     await expect(
       sourceTransaction(protectedMedia, async (tx) => {
