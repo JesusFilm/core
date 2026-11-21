@@ -3231,7 +3231,11 @@ describe('saved edit integration', () => {
         expect(result.text).toContain('VALIDATION_FAILED')
         expect(await state()).toEqual(original)
         expect(await revision()).toBe(before)
-        expect(await counts()).toEqual({ operations: 0, history: 0, effects: 0 })
+        expect(await counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
       })
 
       it('enforces the current Card chat gate for edits and undo/redo and preserves nullable defaults', async () => {

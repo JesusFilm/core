@@ -3,7 +3,10 @@ import { randomUUID } from 'node:crypto'
 import slugify from 'slugify'
 
 import { Prisma } from '@core/prisma/journeys/client'
-import { type TypographyCommand, commandRegistry } from '@core/yoga/mcp/editContract'
+import {
+  type TypographyCommand,
+  commandRegistry
+} from '@core/yoga/mcp/editContract'
 import {
   type ActionValue,
   type BlockReference,
@@ -288,9 +291,7 @@ export async function planStructure(
     } else if (
       ['block_add', 'step_duplicate', 'block_duplicate'].includes(command.type)
     )
-      allocate(
-        (command as Extract<StructureCommand, { key: string }>).key
-      )
+      allocate((command as Extract<StructureCommand, { key: string }>).key)
   }
   const newSteps = commands.filter(
     (command) =>
