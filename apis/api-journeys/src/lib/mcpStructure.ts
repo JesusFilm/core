@@ -4,12 +4,17 @@ import slugify from 'slugify'
 
 import { Prisma } from '@core/prisma/journeys/client'
 import {
-  type TypographyCommand,
+  type EditInput,
   commandRegistry,
   isStructureCommand
 } from '@core/yoga/mcp/editContract'
 import {
-  type PresentationCommand,
+  type ReadyImage,
+  mediaCommand,
+  mediaCommandNames,
+  mediaSourceKey
+} from '@core/yoga/mcp/mediaContract'
+import {
   type PresentationField,
   type PresentationInverse,
   deriveSubmitRole,
@@ -25,6 +30,7 @@ import {
 } from '@core/yoga/mcp/structureContract'
 
 import { type ContentBlock, assertOwnedButtonIcon } from './mcpContent'
+import { type MediaProjection, applyMedia } from './mcpMedia'
 import {
   type BlockState,
   type StructurePlan,
@@ -51,6 +57,8 @@ type Journey = {
   menuStepBlockId: string | null
   socialNodeX: number | null
   socialNodeY: number | null
+  logoImageBlockId?: string | null
+  primaryImageBlockId?: string | null
 }
 const contentTypes = new Set([
   'TypographyBlock',
@@ -90,13 +98,15 @@ function missing(): never {
 export async function planStructure(
   tx: Prisma.TransactionClient,
   journey: Journey,
-  commands: Array<StructureCommand | TypographyCommand | PresentationCommand>,
+  commands: EditInput['commands'],
+  media?: MediaProjection,
   canEditChat: () => Promise<boolean> = async () => false
 ) {
   const state = await loadStructure(tx, journey)
   const locals = new Map<string, string>()
   const duplicateIdMap: Record<string, string> = Object.create(null)
   const duplicateMaps: StructurePlan['duplicateMaps'] = Object.create(null)
+  const copiedImageSources = new Map<string, ReadyImage>()
   const explicitWrites = new Set<string>()
   const destroyed = new Set<string>()
   const afterAnchors = new Map<string, string>()
@@ -200,7 +210,7 @@ export async function planStructure(
     })
   }
   const eligibleContent = (row: BlockState, duplicate = false): void => {
-    if (row.parentOrder === null) fail()
+    if (row.parentOrder === null && !pendingPlacements.has(idOf(row))) fail()
     if (contentTypes.has(requiredString(row.typename))) cardFor(row)
     else if (row.typename === 'RadioOptionBlock') {
       const parent = get(parentOf(row) ?? missing(), 'RadioQuestionBlock')
@@ -476,6 +486,30 @@ export async function planStructure(
       for (const original of originals) {
         const id = mapping.get(idOf(original))!,
           row = serialize(original)
+        if (
+          !media &&
+          ((original.typename === 'ImageBlock' && original.src) ||
+            (original.typename === 'VideoBlock' && original.videoId))
+        )
+          missing()
+        if (media && original.typename === 'ImageBlock' && original.src) {
+          const source =
+            copiedImageSources.get(idOf(original)) ??
+            media.sources.get(
+              mediaSourceKey({
+                source: 'existingImage',
+                blockId: idOf(original)
+              })
+            )
+          if (!source || source.kind !== 'image') missing()
+          copiedImageSources.set(id, source)
+          Object.assign(row, {
+            src: source.src,
+            width: source.width,
+            height: source.height,
+            blurhash: source.blurhash
+          })
+        }
         row.id = id
         row.slug = null
         row.deletedAt = null
@@ -592,6 +626,16 @@ export async function planStructure(
     state.actions.set(id, next)
   }
   for (const command of commands) {
+    if ((mediaCommandNames as readonly string[]).includes(command.type)) {
+      applyMedia(mediaCommand.parse(command), {
+        state,
+        resolve,
+        claim,
+        now,
+        media
+      })
+      continue
+    }
     if (
       command.type === 'step_add' ||
       command.type === 'block_add' ||
@@ -839,6 +883,22 @@ export async function planStructure(
     )
       fail()
   const plan = finishStructure(state, now)
+  if (
+    commands.some((command) =>
+      (mediaCommandNames as readonly string[]).includes(command.type)
+    ) ||
+    plan.changes.some((inverse) =>
+      inverse.blocks.some((change) =>
+        [change.before, change.after].some(
+          (row) =>
+            row &&
+            ((row.typename === 'ImageBlock' && row.src) ||
+              (row.typename === 'VideoBlock' && row.videoId))
+        )
+      )
+    )
+  )
+    for (const inverse of plan.changes) inverse.media = true
   plan.requiresChat = commands.some(
     (command) => command.type === 'card_chat_set'
   )

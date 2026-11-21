@@ -5,8 +5,8 @@ import { spawnSync } from 'node:child_process'
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
 const issue = process.env.MCP_STRUCTURE_TEST_ISSUE ?? '10557'
-if (!['10556', '10557'].includes(issue))
-  throw new Error('Unsupported isolated test issue')
+if (!/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue))
+  throw new Error('Use an issue-specific isolated database name')
 const source = new URL(
   process.env.MCP_STRUCTURE_TEST_POSTGRES_URL ??
     'postgresql://postgres:postgres@localhost:5432/postgres'
@@ -105,6 +105,7 @@ run(
     'apis/api-auth/vitest.structure.config.mts'
   ],
   {
+    STRUCTURE_TEST_ISSUE: issue,
     STRUCTURE_TEST_AUTH_DATABASE_URL: runtime.href,
     STRUCTURE_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`),
     AUTH_TEST_DATABASE_URL: issuerRuntime.href,

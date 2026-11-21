@@ -73,7 +73,17 @@ export async function deleteImage(imageId: string): Promise<unknown> {
   if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
 
-  return await getClient().images.v1.delete(imageId, {
-    account_id: process.env.CLOUDFLARE_ACCOUNT_ID
-  })
+  try {
+    return await getClient().images.v1.delete(imageId, {
+      account_id: process.env.CLOUDFLARE_ACCOUNT_ID
+    })
+  } catch (error) {
+    if (
+      !error ||
+      typeof error !== 'object' ||
+      !('status' in error) ||
+      error.status !== 404
+    )
+      throw error
+  }
 }

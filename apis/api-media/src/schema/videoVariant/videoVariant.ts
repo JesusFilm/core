@@ -1,6 +1,11 @@
 import compact from 'lodash/compact'
 
-import { Platform, prisma } from '@core/prisma/media/client'
+import {
+  Platform,
+  prisma,
+  rethrowCoordinatedMediaFailure,
+  sourceTransaction
+} from '@core/prisma/media/client'
 import type { VideoVariant as PrismaVideoVariant } from '@core/prisma/media/client'
 
 import { ensureLanguageHasVideosTrue } from '../../lib/languages/ensureLanguageHasVideos'
@@ -119,7 +124,7 @@ export async function createEmptyParentVariant(
   // The language update is a single atomic UPDATE (not a findUnique-then-set)
   // so it can't lose a concurrent caller's own append to the same array --
   // see addLanguageToVideo's doc comment in updateAvailableLanguages.ts.
-  const newVariant = await prisma.$transaction(async (tx) => {
+  const newVariant = await sourceTransaction(prisma, async (tx) => {
     const variant = await tx.videoVariant.create({
       data: {
         id: `${languageId}_${parentVideoId}`,
@@ -373,7 +378,7 @@ async function checkAndRemoveEmptyParentVariant(
   // the row lock open for unrelated I/O and risk tripping Prisma's
   // interactive-transaction timeout.
   if (parentVariant != null) {
-    await prisma.$transaction(async (tx) => {
+    await sourceTransaction(prisma, async (tx) => {
       await tx.videoVariant.delete({ where: { id: parentVariant.id } })
       await updateVideoAvailableLanguages(parentVideoId, {
         client: tx,
@@ -948,6 +953,7 @@ builder.mutationFields((t) => ({
           })
         } catch (error) {
           // Log error but continue with other deletions
+          rethrowCoordinatedMediaFailure(error)
           console.error(`Failed to delete R2 asset ${assetId}:`, error)
           notifyMediaSlackOfOperationFailure({
             operation: 'Video variant R2 cleanup failed',
@@ -976,6 +982,7 @@ builder.mutationFields((t) => ({
           })
         } catch (error) {
           // Log error but continue with variant deletion
+          rethrowCoordinatedMediaFailure(error)
           console.error(
             `Failed to delete Mux video ${variant.muxVideoId}:`,
             error

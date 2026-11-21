@@ -3,6 +3,11 @@ import { createHash } from 'node:crypto'
 import { z } from 'zod'
 
 import {
+  type MediaCommand,
+  mediaCommand,
+  mediaCommandNames
+} from './mediaContract'
+import {
   plainText,
   presentationCommand,
   presentationFields,
@@ -48,14 +53,17 @@ export const typographyCommand = z
 const editCommand = z.union([
   typographyCommand,
   presentationCommand,
-  structureCommand
+  structureCommand,
+  mediaCommand
 ])
 
 export function isStructureCommand(
   command: z.infer<typeof editCommand>
-): command is StructureCommand {
+): command is StructureCommand | MediaCommand {
   if (command.type === 'block_add') return 'card' in command
-  return structureCommandNames.some((name) => name === command.type)
+  return [...structureCommandNames, ...mediaCommandNames].some(
+    (name) => name === command.type
+  )
 }
 
 export const editInput = z
