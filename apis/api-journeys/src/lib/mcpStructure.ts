@@ -5,6 +5,11 @@ import slugify from 'slugify'
 import { Prisma } from '@core/prisma/journeys/client'
 import { type EditInput, commandRegistry } from '@core/yoga/mcp/editContract'
 import {
+  mediaCommand,
+  mediaCommandNames,
+  mediaSourceKey
+} from '@core/yoga/mcp/mediaContract'
+import {
   type ActionValue,
   type BlockReference,
   type ContentCreate,
@@ -12,6 +17,7 @@ import {
   normalizeActionUrl
 } from '@core/yoga/mcp/structureContract'
 
+import { type MediaProjection, applyMedia } from './mcpMedia'
 import {
   type BlockState,
   type StructurePlan,
@@ -38,6 +44,8 @@ type Journey = {
   menuStepBlockId: string | null
   socialNodeX: number | null
   socialNodeY: number | null
+  logoImageBlockId?: string | null
+  primaryImageBlockId?: string | null
 }
 const contentTypes = new Set([
   'TypographyBlock',
@@ -77,7 +85,8 @@ function missing(): never {
 export async function planStructure(
   tx: Prisma.TransactionClient,
   journey: Journey,
-  commands: EditInput['commands']
+  commands: EditInput['commands'],
+  media?: MediaProjection
 ) {
   const state = await loadStructure(tx, journey)
   const locals = new Map<string, string>()
@@ -362,6 +371,24 @@ export async function planStructure(
       for (const original of originals) {
         const id = mapping.get(idOf(original))!,
           row = serialize(original)
+        if (
+          !media &&
+          ((original.typename === 'ImageBlock' && original.src) ||
+            (original.typename === 'VideoBlock' && original.videoId))
+        )
+          missing()
+        if (media && original.typename === 'ImageBlock' && original.src) {
+          const source = media.sources.get(
+            mediaSourceKey({ source: 'existingImage', blockId: idOf(original) })
+          )
+          if (!source || source.kind !== 'image') missing()
+          Object.assign(row, {
+            src: source.src,
+            width: source.width,
+            height: source.height,
+            blurhash: source.blurhash
+          })
+        }
         row.id = id
         row.slug = null
         row.deletedAt = null
@@ -478,6 +505,16 @@ export async function planStructure(
     state.actions.set(id, next)
   }
   for (const command of commands) {
+    if ((mediaCommandNames as readonly string[]).includes(command.type)) {
+      applyMedia(mediaCommand.parse(command), {
+        state,
+        resolve,
+        claim,
+        now,
+        media
+      })
+      continue
+    }
     if (
       command.type === 'step_add' ||
       command.type === 'block_add' ||
@@ -663,6 +700,22 @@ export async function planStructure(
     )
       fail()
   const plan = finishStructure(state, now)
+  if (
+    commands.some((command) =>
+      (mediaCommandNames as readonly string[]).includes(command.type)
+    ) ||
+    plan.changes.some((inverse) =>
+      inverse.blocks.some((change) =>
+        [change.before, change.after].some(
+          (row) =>
+            row &&
+            ((row.typename === 'ImageBlock' && row.src) ||
+              (row.typename === 'VideoBlock' && row.videoId))
+        )
+      )
+    )
+  )
+    for (const inverse of plan.changes) inverse.media = true
   plan.idMap = Object.fromEntries(locals)
   plan.duplicateIdMap = duplicateIdMap
   plan.duplicateMaps = duplicateMaps

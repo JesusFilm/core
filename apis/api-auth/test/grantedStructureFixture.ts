@@ -1,4 +1,9 @@
-import { generateKeyPairSync, randomBytes, randomUUID } from 'node:crypto'
+import {
+  type JsonWebKey,
+  generateKeyPairSync,
+  randomBytes,
+  randomUUID
+} from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { type Server, createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
@@ -18,7 +23,10 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { useMcpReads } from '../../api-gateway/src/mcpReads'
 import '../../api-journeys/test/bullmqMock'
 import { createJourneyEditHandler } from '../../api-journeys/src/lib/mcpEdits'
-import { createJourneyReadHandler } from '../../api-journeys/src/lib/mcpReads'
+import {
+  type JourneyReadsConfig,
+  createJourneyReadHandler
+} from '../../api-journeys/src/lib/mcpReads'
 import { readConfig as readMcpConfig } from '../../api-mcp/src/config'
 import { createRuntime as createMcpRuntime } from '../../api-mcp/src/runtime'
 import { message } from '../../api-mcp/test/helpers'
@@ -38,10 +46,26 @@ type Checkpoint = NonNullable<
 /** Only Firebase identity/selection and explicit owner fault hooks are controlled.
  * OAuth, grants, protocol, gateway, owning executor and both stores are real.
  */
-export function structureFixture() {
-  const auth = createAuthDatabase(structureAuthUrl!)
+export function structureFixture(
+  options: {
+    issue?: string
+    startupTimeoutMs?: number
+    authUrl?: string
+    journeysUrl?: string
+    authEnv?: NodeJS.ProcessEnv
+    media?: (context: {
+      config: AuthConfig
+      journeys: PrismaClient
+      publicKey: JsonWebKey
+      listen: (server: Server) => Promise<string>
+    }) => Promise<NonNullable<JourneyReadsConfig['media']>>
+  } = {}
+) {
+  const authUrl = options.authUrl ?? structureAuthUrl!
+  const journeysUrl = options.journeysUrl ?? structureJourneysUrl!
+  const auth = createAuthDatabase(authUrl)
   const journeys = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: structureJourneysUrl })
+    adapter: new PrismaPg({ connectionString: journeysUrl })
   })
   const keys = generateKeyPairSync('rsa', { modulusLength: 2048 })
   const privateKey = keys.privateKey.export({ format: 'jwk' })
@@ -65,6 +89,7 @@ export function structureFixture() {
   let checkpoint: Checkpoint
   let discardResponse = false
   let adminSchema: GraphQLSchema
+  let ownerConfig: JourneyReadsConfig
 
   async function adminBlockMutation(
     operation: 'Delete' | 'Restore',
@@ -276,10 +301,12 @@ export function structureFixture() {
 
   beforeAll(async () => {
     if (
-      !/^\/auth_issue_10557(_|$)/.test(new URL(structureAuthUrl!).pathname) ||
-      !/^\/journeys_issue_10557(_|$)/.test(
-        new URL(structureJourneysUrl!).pathname
-      )
+      !new RegExp(
+        `^/auth_issue_${options.issue ?? process.env.STRUCTURE_TEST_ISSUE ?? '10557'}(_|$)`
+      ).test(new URL(authUrl).pathname) ||
+      !new RegExp(
+        `^/journeys_issue_${options.issue ?? process.env.STRUCTURE_TEST_ISSUE ?? '10557'}(_|$)`
+      ).test(new URL(journeysUrl).pathname)
     )
       throw new Error('Use isolated issue 10557 databases')
     for (const table of [
@@ -336,7 +363,8 @@ export function structureFixture() {
       AUTH_PERMISSION_USERS_SECRET:
         'controlled-structure-users-10557-at-least-32-characters',
       AUTH_READ_GATEWAY_AUDIENCE: 'http://127.0.0.1:4000/mcp/reads',
-      PG_DATABASE_URL_AUTH: structureAuthUrl,
+      PG_DATABASE_URL_AUTH: authUrl,
+      ...options.authEnv,
       AUTH_CLIENTS: JSON.stringify([
         {
           client_id: 'structure-client',
@@ -377,7 +405,7 @@ export function structureFixture() {
         resolve
       )
     )
-    const ownerConfig = {
+    ownerConfig = {
       issuer: issuerUrl,
       audience: config.AUTH_READ_GATEWAY_AUDIENCE!,
       environment: 'local',
@@ -388,6 +416,13 @@ export function structureFixture() {
       adminOrigin: config.AUTH_ADMIN_ORIGIN + '/',
       editsEnabled: true
     }
+    if (options.media)
+      ownerConfig.media = await options.media({
+        config,
+        journeys,
+        publicKey,
+        listen
+      })
     ownerHandler = createJourneyEditHandler(ownerConfig, journeys, {
       checkpoint: async (point, context) => checkpoint?.(point, context)
     })
@@ -485,7 +520,7 @@ export function structureFixture() {
     )) as {
       schema: GraphQLSchema
     })
-  }, 30000)
+  }, options.startupTimeoutMs ?? 30000)
 
   beforeEach(async () => {
     checkpoint = undefined
@@ -623,7 +658,7 @@ export function structureFixture() {
               parentBlockId: id('bc'),
               parentOrder: 2,
               source: 'youTube',
-              videoId: 'dQw4w9WgXcQ',
+              videoId: options.media ? 'dQw4w9WgXcQ' : null,
               muted: false,
               autoplay: true
             },
@@ -632,7 +667,9 @@ export function structureFixture() {
               typename: 'ImageBlock',
               parentBlockId: id('video'),
               parentOrder: null,
-              src: 'https://example.com/synthetic-poster.jpg',
+              src: options.media
+                ? 'https://example.com/synthetic-poster.jpg'
+                : null,
               alt: 'Synthetic existing poster'
             },
             {
@@ -640,7 +677,9 @@ export function structureFixture() {
               typename: 'ImageBlock',
               parentBlockId: id('bc'),
               parentOrder: null,
-              src: 'https://example.com/synthetic-cover.jpg',
+              src: options.media
+                ? 'https://example.com/synthetic-cover.jpg'
+                : null,
               alt: 'Synthetic existing cover'
             },
             {
@@ -744,6 +783,9 @@ export function structureFixture() {
     snapshot,
     consent,
     adminBlockMutation,
+    get ownerConfig() {
+      return ownerConfig
+    },
     get journeyId() {
       return journeyId
     },

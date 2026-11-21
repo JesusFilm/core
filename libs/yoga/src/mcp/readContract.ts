@@ -17,6 +17,7 @@ import {
   historyInput,
   operationInput
 } from './editContract'
+import { mediaSearchInput } from './mediaContract'
 
 export const resultContractVersion = '1' as const
 export const readResult = z
@@ -62,6 +63,12 @@ export const previewInput = z
   })
   .strict()
 export const readRequest = z.discriminatedUnion('tool', [
+  z
+    .object({
+      tool: z.literal('journey_media_search'),
+      input: mediaSearchInput
+    })
+    .strict(),
   z.object({ tool: z.literal('journeys_list'), input: listInput }).strict(),
   z.object({ tool: z.literal('journey_read'), input: journeyInput }).strict(),
   z.object({ tool: z.literal('journey_edit'), input: editInput }).strict(),

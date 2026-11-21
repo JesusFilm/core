@@ -6,7 +6,8 @@ import orderBy from 'lodash/orderBy'
 import {
   Prisma,
   Platform as PrismaPlatform,
-  prisma
+  prisma,
+  rethrowCoordinatedMediaFailure
 } from '@core/prisma/media/client'
 
 import { videoCacheReset } from '../../lib/videoCacheReset'
@@ -1034,6 +1035,7 @@ builder.mutationFields((t) => ({
           })
         } catch (error) {
           // Log error but continue with other deletions
+          rethrowCoordinatedMediaFailure(error)
           console.error(`Failed to delete R2 asset ${asset.id}:`, error)
         }
       }
@@ -1051,6 +1053,7 @@ builder.mutationFields((t) => ({
             })
           } catch (error) {
             // Log error but continue with deletion
+            rethrowCoordinatedMediaFailure(error)
             console.error(
               `Failed to delete Mux video ${variant.muxVideoId}:`,
               error

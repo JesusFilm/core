@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma/media/client'
+import { prisma, sourceTransaction } from '@core/prisma/media/client'
 
 import {
   videoCacheReset,
@@ -485,7 +485,7 @@ export async function executeVideoPublishChildren(
     }
   }
 
-  await prisma.$transaction(async (tx) => {
+  await sourceTransaction(prisma, async (tx) => {
     if (videoIdsToPublish.length > 0) {
       await tx.video.updateMany({
         where: { id: { in: videoIdsToPublish } },

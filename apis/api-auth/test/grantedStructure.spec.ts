@@ -631,7 +631,7 @@ describe('structural integration', () => {
         ).toMatchObject({
           parentBlockId: map[f.id('bc')],
           posterBlockId: map[f.id('poster')],
-          videoId: 'dQw4w9WgXcQ',
+          videoId: null,
           source: 'youTube',
           parentOrder: 2
         })
@@ -850,7 +850,7 @@ describe('structural integration', () => {
         ).toMatchObject({ submitEnabled: true })
       })
 
-      it('preserves unsupported Cloudflare media when duplicating its owning Step', async () => {
+      it('rejects source-bearing duplication when its media participant is unavailable', async () => {
         await f.journeys.block.update({
           where: { id: f.id('video') },
           data: {
@@ -859,23 +859,19 @@ describe('structural integration', () => {
             notes: 'unmounted publisher notes'
           }
         })
-        const saved = await f.save([
-          {
-            type: 'step_duplicate',
-            source: ref(f.id('b')),
-            key: 'copy',
-            placement: end
-          }
-        ])
-        expect(
-          await f.journeys.block.findUnique({
-            where: { id: saved.duplicateIdMap![f.id('video')] }
-          })
-        ).toMatchObject({
-          source: 'cloudflare',
-          videoId: 'legacy-cloudflare-id',
-          notes: 'unmounted publisher notes'
-        })
+        const before = await f.snapshot()
+        const response = await f.edit(
+          await f.input([
+            {
+              type: 'step_duplicate',
+              source: ref(f.id('b')),
+              key: 'copy',
+              placement: end
+            }
+          ])
+        )
+        expect(response.json.result?.isError, response.text).toBe(true)
+        expect(await f.snapshot()).toEqual(before)
       })
 
       it('clears and restores the owning menu reference as part of Step deletion', async () => {

@@ -15,6 +15,7 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 
 import { cache } from './cache'
+import { mediaRuntime } from './lib/mcpMediaRuntime'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
@@ -67,6 +68,7 @@ export const yoga = createYoga<
     }
   },
   plugins: [
+    ...mediaRuntime(process.env).plugins,
     tracingPlugin,
     useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'
