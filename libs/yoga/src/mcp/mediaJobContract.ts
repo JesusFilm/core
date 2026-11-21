@@ -9,6 +9,7 @@ export const mediaFile = z
       .string()
       .min(1)
       .max(255)
+      // eslint-disable-next-line no-control-regex -- Upload filenames must reject ASCII control characters.
       .regex(/^[^/\\\u0000-\u001f]+\.(png|jpe?g|webp|gif)$/i),
     mime: z.enum(['image/png', 'image/jpeg', 'image/webp', 'image/gif']),
     size: z.number().int().positive().max(imageByteLimit),

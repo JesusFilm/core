@@ -25,7 +25,8 @@ export function mediaJobHttp(
   browserIdentity: (token: string) => Promise<string>
 ): Plugin {
   return {
-    async onRequest({ request, endResponse, serverContext }) {
+    async onRequest(payload) {
+      const { request, serverContext } = payload
       const url = new URL(request.url, 'http://localhost')
       if (
         url.pathname !== '/mcp/media-jobs' &&
@@ -51,20 +52,19 @@ export function mediaJobHttp(
         const response = (serverContext as { res?: ServerResponse }).res
         if (!response || response.destroyed || response.writableEnded)
           throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-        let closed = false
-        let permitId: string | undefined
-        const close = () => {
-          closed = true
-          if (permitId) void jobs.closeOutput(permitId).catch(() => undefined)
-        }
-        response.once('finish', close)
-        response.once('close', close)
-        permitId = await jobs.holdOutput(context, jobId)
-        if (closed) {
+        const permitId = await jobs.holdOutput(context, jobId)
+        if (response.closed || response.destroyed || response.writableEnded) {
           await jobs.closeOutput(permitId)
           throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
         }
-        endResponse(Response.json({ data }, { headers }))
+        const close = () => {
+          response.off('finish', close)
+          response.off('close', close)
+          void jobs.closeOutput(permitId).catch(() => undefined)
+        }
+        response.once('finish', close)
+        response.once('close', close)
+        payload.endResponse(Response.json({ data }, { headers }))
       }
       try {
         if (url.search || url.hash) throw new Error('VALIDATION_FAILED')
@@ -133,7 +133,7 @@ export function mediaJobHttp(
         )
           throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
         if (request.method === 'OPTIONS') {
-          endResponse(
+          payload.endResponse(
             new Response(null, {
               status: 204,
               headers: {
@@ -194,7 +194,7 @@ export function mediaJobHttp(
           throw new Error('VALIDATION_FAILED')
         await privateResponse(context, jobId, await jobs.result(context, jobId))
       } catch (error) {
-        endResponse(
+        payload.endResponse(
           Response.json(
             { error: safeReadError(error) },
             { status: 403, headers }

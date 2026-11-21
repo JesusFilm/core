@@ -10,8 +10,6 @@ const file = (bytes: Buffer, mime = 'image/png', name = 'fixture.png') => ({
   sha256: imageHash(bytes)
 })
 
-afterEach(() => vi.unstubAllGlobals())
-
 describe('trusted image content validation', () => {
   it.each(['png', 'jpeg', 'webp', 'gif'] as const)(
     'decodes actual %s bytes and derives image metadata',
@@ -65,6 +63,8 @@ describe('trusted image content validation', () => {
 })
 
 describe('credential-owning Cloudflare upload adapter', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
   const provider = () =>
     cloudflareUploadProvider({
       CLOUDFLARE_ACCOUNT_ID: 'controlled-account',

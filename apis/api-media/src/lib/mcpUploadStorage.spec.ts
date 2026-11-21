@@ -20,9 +20,9 @@ vi.mock('@aws-sdk/client-s3', async (importOriginal) => {
 const jobId = '12345678-1234-1234-1234-123456789abc'
 const key = `${jobId}/0-${'a'.repeat(64)}`
 
-beforeEach(() => send.mockReset())
-
 describe('private encrypted staging adapter', () => {
+  beforeEach(() => send.mockReset())
+
   it('writes only server-owned keys with encryption and reads bounded private bytes', async () => {
     send.mockResolvedValueOnce({}).mockResolvedValueOnce({
       ContentLength: 3,

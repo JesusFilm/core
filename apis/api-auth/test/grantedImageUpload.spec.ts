@@ -134,7 +134,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
                 blurhash: 'controlled'
               }
             },
-            async catalog() {},
+            catalog: async () => undefined,
             async unsplash() {
               throw new Error('unused')
             },
