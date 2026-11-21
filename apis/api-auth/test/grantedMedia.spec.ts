@@ -146,6 +146,11 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     block: ref('image'),
     source: { source: 'library', id }
   })
+  const renameButton = () => ({
+    type: 'button_set',
+    blockId: f.id('button'),
+    label: 'Explore'
+  })
   const selectVideo = (source = { source: 'mux', videoId: f.id('mux') }) => ({
     type: 'video_source_set',
     block: ref('video'),
@@ -169,6 +174,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         ).toBe(0),
       { timeout: 5000 }
     )
+    await guard.recover()
   }
 
   beforeEach(async () => {
@@ -340,6 +346,27 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect(
       await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
     ).not.toBeNull()
+  })
+
+  it('saves media and presentation together with one reversible history entry', async () => {
+    const before = { image: await image(), button: await image('button') }
+    const saved = await f.save([
+      selectImage(),
+      { type: 'button_set', blockId: f.id('button'), label: 'Updated button' }
+    ])
+    expect(await image()).toMatchObject({
+      width: readyImage.width,
+      height: readyImage.height,
+      blurhash: readyImage.blurhash
+    })
+    expect((await image()).src).not.toBeNull()
+    expect(await image('button')).toMatchObject({ label: 'Updated button' })
+    f.receipt(await f.historyAction('undo', saved.historyId!))
+    expect(await image()).toMatchObject({ src: before.image.src })
+    expect(await image('button')).toMatchObject({ label: before.button.label })
+    f.receipt(await f.historyAction('redo', saved.historyId!))
+    expect((await image()).src).not.toBeNull()
+    expect(await image('button')).toMatchObject({ label: 'Updated button' })
   })
 
   it.each(['cover', 'poster', 'poll', 'logo', 'social'] as const)(
@@ -638,6 +665,118 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ])
   })
 
+  it.each([
+    { type: 'block_duplicate', forward: false },
+    { type: 'block_duplicate', forward: true },
+    { type: 'step_duplicate', forward: false },
+    { type: 'step_duplicate', forward: true }
+  ] as const)(
+    'chains $type with forward references $forward, replay and reversible media ownership',
+    async ({ type, forward }) => {
+      await f.save([
+        selectImage(),
+        {
+          type: 'media_slot_set',
+          target: { slot: 'cover', owner: ref('ac') },
+          media: {
+            kind: 'image',
+            source: { source: 'library', id: f.id('asset') }
+          }
+        }
+      ])
+      const original = await image()
+      const originalCard = await image('ac')
+      const commands = ['copy1', 'copy2', 'copy3'].map((key, index) => ({
+        type,
+        source:
+          index === 0
+            ? ref(type === 'block_duplicate' ? 'image' : 'a')
+            : { local: `copy${index}` },
+        key,
+        placement: { position: 'end' }
+      }))
+      const input = await f.input(forward ? commands.reverse() : commands)
+      const saved = f.receipt(await f.edit(input))
+      const committed = await f.snapshot()
+      expect(f.receipt(await f.edit(input))).toEqual(saved)
+      expect(await f.snapshot()).toEqual(committed)
+      const copiedIds: string[] = []
+      let sourceImageId = original.id
+      let sourceCardId = originalCard.id
+      let sourceCoverId = originalCard.coverBlockId!
+      for (const key of ['copy1', 'copy2', 'copy3']) {
+        const mapping = new Map(
+          saved.duplicateMaps![key].map(({ sourceId, blockId }) => [
+            sourceId,
+            blockId
+          ])
+        )
+        sourceImageId = mapping.get(sourceImageId)!
+        expect(sourceImageId).toBeDefined()
+        const copy = await f.journeys.block.findUniqueOrThrow({
+          where: { id: sourceImageId }
+        })
+        copiedIds.push(copy.id)
+        if (type === 'step_duplicate') {
+          sourceCardId = mapping.get(sourceCardId)!
+          sourceCoverId = mapping.get(sourceCoverId)!
+          const card = await f.journeys.block.findUniqueOrThrow({
+            where: { id: sourceCardId }
+          })
+          expect(card.coverBlockId).toBe(sourceCoverId)
+          expect(
+            await f.journeys.block.findUniqueOrThrow({
+              where: { id: sourceCoverId }
+            })
+          ).toMatchObject({
+            parentBlockId: sourceCardId,
+            parentOrder: null,
+            src: original.src,
+            width: readyImage.width,
+            height: readyImage.height,
+            blurhash: readyImage.blurhash
+          })
+          copiedIds.push(sourceCoverId)
+        }
+        expect(copy).toMatchObject({
+          parentBlockId: sourceCardId,
+          src: original.src,
+          width: original.width,
+          height: original.height,
+          blurhash: original.blurhash,
+          alt: original.alt,
+          scale: original.scale,
+          settings: original.settings
+        })
+      }
+      expect(new Set(copiedIds).size).toBe(copiedIds.length)
+      expect(copiedIds).not.toContain(original.id)
+      expect(copiedIds).not.toContain(originalCard.coverBlockId)
+      expect(await image()).toEqual(original)
+      f.receipt(await f.historyAction('undo', saved.historyId!))
+      for (const id of copiedIds)
+        expect(
+          (await f.journeys.block.findUniqueOrThrow({ where: { id } }))
+            .deletedAt
+        ).not.toBeNull()
+      f.receipt(await f.historyAction('redo', saved.historyId!))
+      for (const id of copiedIds)
+        expect(
+          await f.journeys.block.findUniqueOrThrow({ where: { id } })
+        ).toMatchObject({ deletedAt: null, src: original.src })
+      await settleMedia()
+      await protectedMedia.cloudflareImage.update({
+        where: { id: f.id('asset') },
+        data: { uploaded: false }
+      })
+      await reject(commands)
+      expect(await image()).toEqual(original)
+      expect(
+        await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
+      ).not.toBeNull()
+    }
+  )
+
   it('copies an authorized media subtree with fresh owned references and rejects a revoked nested rendition', async () => {
     await f.save([
       selectVideo(),
@@ -892,15 +1031,25 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).not.toBeNull()
   })
 
-  it('replays a lost attachment response once, rejects changed key reuse and preserves unrelated later human edits during undo', async () => {
-    const input = await f.input([selectImage()])
+  it('replays a lost attachment and button edit once, rejects changed key reuse and preserves unrelated human edits through undo and redo', async () => {
+    const button = renameButton()
+    const readButton = () =>
+      f.journeys.block.findUniqueOrThrow({ where: { id: button.blockId } })
+    const originalLabel = (await readButton()).label
+    const input = await f.input([selectImage(), button])
     f.loseNextResponse()
     expect((await f.edit(input)).json.result?.isError).toBe(true)
     const saved = f.receipt(await f.edit(input))
     expect(await f.counts()).toEqual({ operations: 1, history: 1, effects: 1 })
+    expect((await image()).src).toContain(f.id('asset'))
+    expect((await readButton()).label).toBe(button.label)
     expect(
-      (await f.edit({ ...input, commands: [selectImage(f.id('team-asset'))] }))
-        .text
+      (
+        await f.edit({
+          ...input,
+          commands: [selectImage(f.id('team-asset')), button]
+        })
+      ).text
     ).toContain('IDEMPOTENCY_KEY_REUSED')
     await f.journeys.block.update({
       where: { id: f.id('heading') },
@@ -908,6 +1057,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     })
     f.receipt(await f.historyAction('undo', saved.historyId!))
     expect((await image()).src).toBeNull()
+    expect((await readButton()).label).toBe(originalLabel)
     expect(
       (
         await f.journeys.block.findUniqueOrThrow({
@@ -917,7 +1067,60 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).toBe('New human heading')
     f.receipt(await f.historyAction('redo', saved.historyId!))
     expect((await image()).src).toContain(f.id('asset'))
+    expect((await readButton()).label).toBe(button.label)
   })
+
+  it.each([
+    {
+      slot: 'social',
+      field: 'primaryImageBlockId',
+      laterField: 'logoImageBlockId'
+    },
+    {
+      slot: 'logo',
+      field: 'logoImageBlockId',
+      laterField: 'primaryImageBlockId'
+    }
+  ] as const)(
+    'protects a later Journey image reference when undoing creation of the $slot image',
+    async ({ slot, field, laterField }) => {
+      const where = { id: f.journeyId }
+      await f.journeys.journey.update({ where, data: { website: true } })
+      const saved = await f.save([
+        {
+          type: 'media_slot_set',
+          target: { slot },
+          media: {
+            kind: 'image',
+            source: { source: 'library', id: f.id('asset') }
+          }
+        }
+      ])
+      const imageId = (await f.journeys.journey.findUniqueOrThrow({ where }))[
+        field
+      ]!
+      expect(imageId).toEqual(expect.any(String))
+      await f.journeys.journey.update({
+        where,
+        data: { [laterField]: imageId }
+      })
+      const before = await f.snapshot()
+      expect((await f.historyAction('undo', saved.historyId!)).text).toContain(
+        'HISTORY_CONFLICT'
+      )
+      expect(await f.snapshot()).toEqual(before)
+
+      await f.journeys.journey.update({ where, data: { [laterField]: null } })
+      f.receipt(await f.historyAction('undo', saved.historyId!))
+      expect(
+        (await f.journeys.journey.findUniqueOrThrow({ where }))[field]
+      ).toBeNull()
+      expect(
+        (await f.journeys.block.findUniqueOrThrow({ where: { id: imageId } }))
+          .deletedAt
+      ).not.toBeNull()
+    }
+  )
 
   it('rejects history conflicts and a source revoked before redo without deleting provider assets', async () => {
     const saved = await f.save([selectImage()])
@@ -967,7 +1170,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).toBe(true)
   })
 
-  it('cancels a prepared attachment when a source changes before acceptance', async () => {
+  it('cancels a prepared attachment and its batched button edit when a source changes before acceptance', async () => {
     let changed = false
     f.checkpoint = async (point) => {
       if (point === 'before_accept' && !changed) {
@@ -977,7 +1180,8 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         })
       }
     }
-    await reject([selectImage()])
+    await reject([renameButton(), selectImage()])
+    expect(changed).toBe(true)
   })
 
   it('keeps source withdrawal pending until an accepted attachment settles, then safely completes the source write', async () => {
@@ -1004,12 +1208,14 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       expect(
         await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
       ).not.toBeNull()
+      await guard.recover()
     } finally {
       resume()
     }
     await attaching
     expect((await image()).src).toContain(f.id('asset'))
     f.checkpoint = undefined
+    await settleMedia()
     await protectedMedia.cloudflareImage.delete({
       where: { id: f.id('asset') }
     })
@@ -1271,9 +1477,15 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       const attaching = f.edit(input)
       await paused
       try {
-        expect((await remove()).errors?.[0].message).toContain(
-          'pending accepted work'
-        )
+        const blocked = await remove()
+        expect(blocked.errors?.[0].message).toContain('pending accepted work')
+        expect(dispatches).toBe(0)
+        await guard.recover()
+        expect(
+          await media.mcpMediaMutation.findUniqueOrThrow({
+            where: { id: String(blocked.errors![0].extensions.changeId) }
+          })
+        ).toMatchObject({ status: 'fenced', reportedAt: null })
         expect(dispatches).toBe(0)
       } finally {
         resume()

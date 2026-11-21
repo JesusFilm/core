@@ -1,7 +1,6 @@
 import { mockDeep } from 'vitest-mock-extended'
 
 import { Prisma } from '@core/prisma/journeys/client'
-import type { EditInput } from '@core/yoga/mcp/editContract'
 
 import { planStructure } from './mcpStructure'
 import { planStructureHistory } from './mcpStructureHistory'
@@ -78,7 +77,9 @@ function base() {
 function action(id: string, target: string): ActionState {
   return { ...emptyAction(id), blockId: target, parentStepId: 'a' }
 }
-async function plan(commands: EditInput['commands']) {
+type StructureCommands = Parameters<typeof planStructure>[2]
+
+async function plan(commands: StructureCommands) {
   return planStructure(tx, journey, commands)
 }
 
@@ -90,7 +91,7 @@ describe('owning structure planner', () => {
   })
 
   it('resolves forward placement anchors and rejects cyclic placement dependencies', async () => {
-    const commands: EditInput['commands'] = [
+    const commands: StructureCommands = [
       {
         type: 'step_add',
         key: 'first',

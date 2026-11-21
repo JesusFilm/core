@@ -1,5 +1,79 @@
 # Saved draft edits
 
+## Mounted content and presentation
+
+Issue #10556 extends the same owning participant, replay namespace and persistent
+history service with these closed commands:
+
+| Command           | Mounted controls                                                                                                                                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `typography_set`  | Plain multiline content, h1–h6/body1/body2/caption, left/center/right and hex RGB color.                                                                                            |
+| `button_set`      | Label, text/contained/outlined, small/medium/large, primary/secondary/error and left/center/right/justify.                                                                          |
+| `button_icon_set` | An owned start/end slot, mounted icon name or null and inherit/primary/secondary/error color. Missing children are created internally.                                              |
+| `spacer_set`      | Integer spacing 20–400 in increments of ten.                                                                                                                                        |
+| `card_set`        | Fullscreen layout, nullable hex RGB/RGBA background, nullable integer blur 0–25 and nullable light/dark theme. Selecting a theme writes base; clearing it clears both theme fields. |
+| `card_chat_set`   | Explicit enabled/collapse under the current `aiChatEditor` gate. Writes showAssistant and the inverse of collapse to expandChatByDefault.                                           |
+| `block_add`       | Complete Typography, Button or Spacer in an existing Card, with explicit before/after/end placement.                                                                                |
+
+Typography variants use the existing journey header/body fonts. The mounted font
+editor changes the journey theme, so catalog font selection and owned theme
+creation remain with journey appearance. There is no per-block font URL or font
+family setter. Media selection, cover replacement, image/video zoom and focal
+controls remain with the media owner. Existing media and Host fields survive
+presentation changes. Expanded layout rejects Cards containing Video, including
+when an inverse would restore that layout. Hidden Icon sizes/colors and deprecated
+icon choices remain unchanged unless a mounted field is deliberately replaced.
+
+Each creation supplies a unique lowercase key, up to 32 letters/digits/underscores,
+and the server returns its ID in idMap. Button creation also returns
+`key.startIcon` and `key.endIcon`. A later command in the batch can use `$key` as
+its blockId or placement anchor. Repeated insertions after the same anchor keep
+their declared order. At most 200 distinct changed/new blocks are accepted per batch,
+including required children and sibling order changes. Oversize expansion rejects
+before acceptance. The shared decoded-input and command limits still apply.
+
+Each explicit persisted field can be requested only once in a batch, including a
+no-op value and references through a local key or owned Icon slot. Disjoint fields
+on one block remain valid. Creation claims its explicitly supplied fields; omitted
+server defaults and derived sibling placement do not count as duplicate requests.
+New duplicate saves reject before acceptance without content, revision, history,
+receipt, audit or effect changes. Retained legacy sequential inverse descriptors
+remain safely reversible; they cannot enable a new duplicate request.
+
+Buttons always create both owned Icons and their references in the same
+transaction. The first Button on a Card with TextResponse or Multiselect and no
+submit control derives the submit role; subsequent Buttons are ordinary.
+Standalone content duplication clears submit, while whole-Step duplication keeps
+the original role. No independent submitEnabled setter is exposed. Structural
+duplicate commands remain owned by the structure slice.
+
+Sparse inverses restore only changed mounted fields and required slot references.
+Unknown settings and later unrelated fields, tracking, Host and routes survive.
+Creation history records the server-created group and soft-deletes/restores the
+same IDs. Later changes to a created child, new descendants, new actions or outside
+references conflict atomically instead of being erased. Chat edits and their
+inverses require the current flag; the owning participant rechecks it immediately
+before acceptance. Firebase identity/flag initialization occurs before the owning
+content transaction, and the final check reads the SDK's current local flag state.
+
+The first response returns the persisted receipt. This matters because PostgreSQL
+JSONB orders idMap keys differently from insertion order; initial delivery and
+replay must hash the same private result before release.
+
+Reproduce the slice checks with
+`MCP_EDITS_TEST_ISSUE=10556 node tools/scripts/test-mcp-edits.mjs`. This uses
+`auth_issue_10556`, `journeys_issue_10556`, a restricted auth login, actual local
+OAuth/MCP HTTP/Hive/Journeys PostgreSQL participants, and controlled Firebase
+identity, eligibility and Card-chat flag adapters. It does not qualify normal
+Admin browser interaction, live Firebase/LaunchDarkly, containers, AWS or real
+Claude/ChatGPT clients. Those remain deferred feature checks.
+
+Deploy compatible shared command contracts, MCP and Journeys participants with
+edits disabled, then enable after their automated checks pass. Older binaries
+cannot restore the new descriptors; drain or positively fence accepted work and
+keep new edit admission off before any binary rollback. Preserve retained history,
+receipts and replay markers.
+
 Implements #10553 under PRD #10157. This extends the existing signed data relay
 through MCP, api-auth, Hive gateway and api-journeys. It adds `journey_edit` and
 `journey_operation_get`. The first command is `typography_set` on an existing
@@ -198,6 +272,13 @@ same authority, ordinary-draft, revision, replay, history and private-output gat
 as Typography edits. Structural history checks recorded affected state and current
 dependencies before restoring anything.
 
+Supported content and presentation commands can accompany structural commands
+in one save. For example, relabel a Button and change its action destination in
+the same batch. The owner projects every command before acceptance and commits
+one revision, receipt and reversible history entry. Local references, overlap
+checks, current feature gates and the combined 200-object limit apply to the
+whole batch. Undo and redo preserve later unrelated presentation and settings.
+
 | Command                                                          | Saved gesture                                                                 |
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | `step_add`                                                       | One Step, its Card and ordered typed content, with required Button icons      |
@@ -259,6 +340,8 @@ Run the actual OAuth/MCP HTTP/Hive/owning-PostgreSQL structural tests with:
 ```sh
 node tools/scripts/test-mcp-structure.mjs
 MCP_EDITS_TEST_ISSUE=10557 node tools/scripts/test-mcp-edits.mjs
+# Content/presentation review fixes can run structural regressions in their own databases.
+MCP_STRUCTURE_TEST_ISSUE=10556 node tools/scripts/test-mcp-structure.mjs
 ```
 
 Both routes use issue-specific loopback PostgreSQL databases and restricted auth

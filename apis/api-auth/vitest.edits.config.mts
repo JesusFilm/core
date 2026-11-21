@@ -11,6 +11,8 @@ export default defineConfig({
   root: fileURLToPath(new URL('../..', import.meta.url)),
   test: {
     ...authConfig.test,
+    // Cross-service HTTP/database scenarios collect coverage on shared runners.
+    testTimeout: 60000,
     exclude: ['**/node_modules/**', '**/.git/**'],
     include: [
       'apis/api-auth/test/grantedEdits.spec.ts',

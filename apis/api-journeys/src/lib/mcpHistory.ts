@@ -3,45 +3,38 @@ import { isDeepStrictEqual } from 'node:util'
 import { z } from 'zod'
 
 import { Prisma } from '@core/prisma/journeys/client'
-import { type HistoryResult, historyResult } from '@core/yoga/mcp/editContract'
+import {
+  type HistoryResult,
+  historyResult,
+  typographyCommand
+} from '@core/yoga/mcp/editContract'
+import {
+  createdInverse,
+  deriveSubmitRole,
+  presentationInverse,
+  settingsObject
+} from '@core/yoga/mcp/presentationContract'
+
+import {
+  type ContentPlan,
+  assertOwnedButtonIcon,
+  checkCardLayout,
+  contentParents,
+  contentSiblings,
+  createdState
+} from './mcpContent'
 
 type Block = Prisma.BlockGetPayload<Record<string, never>>
 
-/** Both forward edits and inverses resolve the actual live owning chain. */
-export async function typographyParents(
-  tx: Prisma.TransactionClient,
-  journeyId: string,
-  block: Block
-): Promise<{ cardId: string; stepId: string }> {
-  if (block.typename !== 'TypographyBlock' || !block.parentBlockId)
-    throw new Error('HISTORY_CONFLICT')
-  const card = await tx.block.findUnique({
-    where: { id: block.parentBlockId, journeyId, deletedAt: null }
-  })
-  const step = card?.parentBlockId
-    ? await tx.block.findUnique({
-        where: { id: card.parentBlockId, journeyId, deletedAt: null }
-      })
-    : null
-  if (
-    card?.typename !== 'CardBlock' ||
-    step?.typename !== 'StepBlock' ||
-    step.parentBlockId !== null ||
-    (await tx.block.count({
-      where: {
-        journeyId,
-        parentBlockId: step.id,
-        typename: 'CardBlock',
-        deletedAt: null
-      }
-    })) !== 1
-  )
-    throw new Error('HISTORY_CONFLICT')
-  return { cardId: card.id, stepId: step.id }
-}
-
 // Persisted descriptors are internal, versioned by their discriminant. Neither
 // clients nor generic field names can introduce writes into this closed union.
+const typographyForwardFields = {
+  // Retained descriptors predate the plain-text-only content constraint.
+  content: z.string().max(262144),
+  variant: typographyCommand.shape.variant,
+  align: typographyCommand.shape.align,
+  'settings.color': typographyCommand.shape.color
+}
 const typographyInverse = z
   .object({
     type: z.literal('typography_restore'),
@@ -57,6 +50,13 @@ const typographyInverse = z
             beforePresent: z.boolean()
           })
           .strict()
+          .refine(
+            ({ field, before, after }) =>
+              typographyForwardFields[field].safeParse(after).success &&
+              (field === 'settings.color' ||
+                before === null ||
+                typeof before === 'string')
+          )
       )
       .min(1)
       .max(4)
@@ -74,6 +74,37 @@ export async function historyEntries(
     orderBy: { ordinal: 'asc' },
     take: 5
   })
+}
+
+export function hasStructureHistory(changes: Prisma.JsonValue): boolean {
+  return (
+    Array.isArray(changes) &&
+    changes.some(
+      (change) =>
+        change !== null &&
+        typeof change === 'object' &&
+        !Array.isArray(change) &&
+        change.type === 'structure_restore'
+    )
+  )
+}
+
+function historyLabel(
+  changes: Prisma.JsonValue
+): HistoryResult['entries'][number]['label'] {
+  if (hasStructureHistory(changes)) return 'Structure edit'
+  if (
+    Array.isArray(changes) &&
+    changes.every(
+      (change) =>
+        change !== null &&
+        typeof change === 'object' &&
+        !Array.isArray(change) &&
+        change.type === 'typography_restore'
+    )
+  )
+    return 'Typography edit'
+  return 'Content and presentation edit'
 }
 
 export function describeHistory(
@@ -96,17 +127,7 @@ export function describeHistory(
     entries: entries.map((entry) => ({
       entryId: entry.id,
       operationId: entry.operationId,
-      label:
-        Array.isArray(entry.changes) &&
-        entry.changes.some(
-          (change) =>
-            change &&
-            typeof change === 'object' &&
-            'type' in change &&
-            change.type === 'structure_restore'
-        )
-          ? 'Structure edit'
-          : 'Typography edit',
+      label: historyLabel(entry.changes),
       state: entry.undone ? 'redo' : 'undo',
       createdAt: entry.createdAt.toISOString()
     }))
@@ -120,69 +141,255 @@ export async function planHistory(
   tx: Prisma.TransactionClient,
   journeyId: string,
   changes: unknown,
-  direction: 'undo' | 'redo'
+  direction: 'undo' | 'redo',
+  canEditChat: () => Promise<boolean>
 ) {
-  const parsed = z.array(typographyInverse).min(1).max(50).safeParse(changes)
+  const parsed = z
+    .array(z.union([typographyInverse, presentationInverse, createdInverse]))
+    .min(1)
+    .max(10000)
+    .safeParse(changes)
   if (!parsed.success) throw new Error('HISTORY_UNAVAILABLE')
   const inverses =
     direction === 'undo' ? [...parsed.data].reverse() : parsed.data
   const projected = new Map<string, Block>()
-  const plans: Array<{
-    blockId: string
-    patch: Prisma.BlockUpdateInput
-    fields: Array<'content' | 'variant' | 'align' | 'settings.color'>
-  }> = []
+  const plans: ContentPlan[] = []
+  const orderedParents = new Set<string>()
   for (const inverse of inverses) {
+    if (inverse.type === 'content_created') {
+      const card = await tx.block.findUnique({
+        where: { id: inverse.parent.cardId, journeyId, deletedAt: null }
+      })
+      if (
+        !card ||
+        !isDeepStrictEqual(
+          await contentParents(tx, journeyId, card),
+          inverse.parent
+        )
+      )
+        throw new Error('HISTORY_CONFLICT')
+      const ids = inverse.blocks.map(({ id }) => id)
+      if (direction === 'undo') {
+        const references = await tx.block.findMany({
+          where: {
+            journeyId,
+            deletedAt: null,
+            OR: [
+              { parentBlockId: { in: ids } },
+              { startIconId: { in: ids } },
+              { endIconId: { in: ids } },
+              { submitIconId: { in: ids } },
+              { nextBlockId: { in: ids } },
+              { coverBlockId: { in: ids } },
+              { posterBlockId: { in: ids } },
+              { pollOptionImageBlockId: { in: ids } }
+            ]
+          }
+        })
+        const affected = new Set(ids)
+        for (const reference of references) {
+          const current = projected.get(reference.id) ?? reference
+          if (affected.has(current.id) || current.deletedAt) continue
+          if (
+            [
+              current.parentBlockId,
+              current.startIconId,
+              current.endIconId,
+              current.submitIconId,
+              current.nextBlockId,
+              current.coverBlockId,
+              current.posterBlockId,
+              current.pollOptionImageBlockId
+            ].some((id) => id !== null && affected.has(id))
+          )
+            throw new Error('HISTORY_CONFLICT')
+        }
+        if (
+          await tx.action.count({
+            where: {
+              OR: [{ parentBlockId: { in: ids } }, { blockId: { in: ids } }]
+            }
+          })
+        )
+          throw new Error('HISTORY_CONFLICT')
+      }
+      for (const item of inverse.blocks) {
+        const block =
+          projected.get(item.id) ??
+          (await tx.block.findUnique({ where: { id: item.id, journeyId } }))
+        if (
+          !block ||
+          (direction === 'undo'
+            ? block.deletedAt !== null
+            : block.deletedAt === null) ||
+          !isDeepStrictEqual(createdState(block), item.state)
+        )
+          throw new Error('HISTORY_CONFLICT')
+        if (block.parentOrder !== null && block.parentBlockId !== null)
+          orderedParents.add(block.parentBlockId)
+        if (
+          direction === 'redo' &&
+          block.typename === 'ButtonBlock' &&
+          block.submitEnabled === true
+        ) {
+          const siblings = await contentSiblings(
+            tx,
+            journeyId,
+            inverse.parent.cardId,
+            projected
+          )
+          if (
+            !deriveSubmitRole(
+              'create',
+              siblings.filter((sibling) => sibling.id !== block.id)
+            )
+          )
+            throw new Error('HISTORY_CONFLICT')
+        }
+        const deletedAt = direction === 'undo' ? new Date() : null
+        projected.set(block.id, { ...block, deletedAt })
+        plans.push({
+          blockId: block.id,
+          patch: { deletedAt },
+          fields: [direction === 'undo' ? 'deleted' : 'created']
+        })
+      }
+      continue
+    }
     const block =
       projected.get(inverse.blockId) ??
       (await tx.block.findUnique({
         where: { id: inverse.blockId, journeyId, deletedAt: null }
       }))
-    if (!block) throw new Error('HISTORY_CONFLICT')
-    const parent = await typographyParents(tx, journeyId, block)
+    if (!block || block.deletedAt) throw new Error('HISTORY_CONFLICT')
+    if (
+      inverse.type === 'presentation_restore' &&
+      inverse.gate &&
+      !(await canEditChat())
+    )
+      throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+    let owningBlock = block
+    if (inverse.type === 'presentation_restore' && inverse.owner) {
+      const owner =
+        projected.get(inverse.owner.blockId) ??
+        (await tx.block.findUnique({
+          where: { id: inverse.owner.blockId, journeyId, deletedAt: null }
+        }))
+      if (
+        !owner ||
+        owner.typename !== 'ButtonBlock' ||
+        owner[inverse.owner.slot] !== block.id ||
+        block.parentBlockId !== owner.id
+      )
+        throw new Error('HISTORY_CONFLICT')
+      owningBlock = owner
+      await assertOwnedButtonIcon(tx, owner, block, projected)
+    }
+    if (
+      block.typename !==
+      (inverse.type === 'typography_restore'
+        ? 'TypographyBlock'
+        : inverse.typename)
+    )
+      throw new Error('HISTORY_CONFLICT')
+    const parent = await contentParents(tx, journeyId, owningBlock)
     if (!isDeepStrictEqual(parent, inverse.parent))
       throw new Error('HISTORY_CONFLICT')
     const next = { ...block }
-    const patch: Prisma.BlockUpdateInput = {}
+    const patch: Record<string, unknown> = {}
     for (const field of inverse.fields) {
       const expected = direction === 'undo' ? field.after : field.before
       const value = direction === 'undo' ? field.before : field.after
-      if (field.field === 'settings.color') {
+      if (field.field.startsWith('settings.')) {
         if (
           next.settings !== null &&
           (typeof next.settings !== 'object' || Array.isArray(next.settings))
         )
           throw new Error('HISTORY_CONFLICT')
-        const settings = { ...(next.settings ?? {}) }
-        const present = Object.prototype.hasOwnProperty.call(settings, 'color')
+        const settings = { ...settingsObject(next.settings) }
+        const key = field.field.slice(9)
+        const present = Object.prototype.hasOwnProperty.call(settings, key)
         const expectedPresent = direction === 'undo' || field.beforePresent
         if (
           present !== expectedPresent ||
-          (present && !isDeepStrictEqual(settings.color, expected))
+          (present && !isDeepStrictEqual(settings[key], expected))
         )
           throw new Error('HISTORY_CONFLICT')
-        if (direction === 'undo' && !field.beforePresent) delete settings.color
-        else settings.color = value
-        next.settings = settings
+        if (direction === 'undo' && !field.beforePresent) delete settings[key]
+        else settings[key] = value
+        next.settings = settings as Prisma.JsonObject
         patch.settings = settings
       } else {
+        if (!field.beforePresent) throw new Error('HISTORY_UNAVAILABLE')
         if (
-          !field.beforePresent ||
-          (value !== null && typeof value !== 'string')
+          !isDeepStrictEqual(
+            (next as Record<string, unknown>)[field.field],
+            expected
+          )
         )
-          throw new Error('HISTORY_UNAVAILABLE')
-        if (!isDeepStrictEqual(next[field.field], expected))
           throw new Error('HISTORY_CONFLICT')
-        next[field.field] = value
+        ;(next as Record<string, unknown>)[field.field] = value
         patch[field.field] = value
       }
     }
     projected.set(block.id, next)
+    if (
+      Object.prototype.hasOwnProperty.call(patch, 'parentOrder') &&
+      block.parentBlockId !== null
+    )
+      orderedParents.add(block.parentBlockId)
+    for (const slot of ['startIconId', 'endIconId'] as const) {
+      if (!Object.prototype.hasOwnProperty.call(patch, slot)) continue
+      const iconId = next[slot]
+      if (iconId === null) continue
+      const icon =
+        projected.get(iconId) ??
+        (await tx.block.findUnique({
+          where: { id: iconId, journeyId, deletedAt: null }
+        }))
+      if (
+        !icon ||
+        icon.deletedAt ||
+        icon.journeyId !== journeyId ||
+        [next.startIconId, next.endIconId, next.submitIconId].filter(
+          (id) => id === iconId
+        ).length !== 1
+      )
+        throw new Error('HISTORY_UNAVAILABLE')
+      try {
+        await assertOwnedButtonIcon(tx, next, icon, projected)
+      } catch (error) {
+        if (error instanceof Error && error.message === 'HISTORY_CONFLICT')
+          throw new Error('HISTORY_UNAVAILABLE', { cause: error })
+        throw error
+      }
+    }
+    if (block.typename === 'CardBlock')
+      await checkCardLayout(tx, journeyId, block.id, patch.fullscreen)
     plans.push({
       blockId: block.id,
-      patch,
-      fields: inverse.fields.map(({ field }) => field)
+      patch: patch,
+      fields: inverse.fields.map(({ field }) => field),
+      ...(inverse.type === 'presentation_restore' && inverse.gate
+        ? { gate: inverse.gate }
+        : {})
     })
+  }
+  // Check the completed projection: shifted and revived siblings can both
+  // collide with later human additions, while intermediate positions may overlap.
+  for (const parentId of orderedParents) {
+    const positions = new Set<number>()
+    for (const sibling of await contentSiblings(
+      tx,
+      journeyId,
+      parentId,
+      projected
+    )) {
+      if (sibling.parentOrder === null) continue
+      if (positions.has(sibling.parentOrder))
+        throw new Error('HISTORY_CONFLICT')
+      positions.add(sibling.parentOrder)
+    }
   }
   return plans
 }

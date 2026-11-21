@@ -300,15 +300,21 @@ export function structureFixture(
   }
 
   beforeAll(async () => {
+    const issue =
+      options.issue ??
+      process.env.MCP_STRUCTURE_TEST_ISSUE ??
+      process.env.STRUCTURE_TEST_ISSUE ??
+      '10557'
     if (
-      !new RegExp(
-        `^/auth_issue_${options.issue ?? process.env.STRUCTURE_TEST_ISSUE ?? '10557'}(_|$)`
-      ).test(new URL(authUrl).pathname) ||
-      !new RegExp(
-        `^/journeys_issue_${options.issue ?? process.env.STRUCTURE_TEST_ISSUE ?? '10557'}(_|$)`
-      ).test(new URL(journeysUrl).pathname)
+      !/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue) ||
+      !new RegExp(`^/auth_issue_${issue}(_|$)`).test(
+        new URL(authUrl).pathname
+      ) ||
+      !new RegExp(`^/journeys_issue_${issue}(_|$)`).test(
+        new URL(journeysUrl).pathname
+      )
     )
-      throw new Error('Use isolated issue 10557 databases')
+      throw new Error('Use isolated issue databases')
     for (const table of [
       auth.permissionChange,
       auth.retiredAccount,
