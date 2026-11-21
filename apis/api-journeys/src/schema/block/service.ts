@@ -96,10 +96,20 @@ export async function removeBlockAndChildren(
   tx?: Prisma.TransactionClient
 ): Promise<BlockWithAction[]> {
   const run = async (client: Prisma.TransactionClient) => {
+    const siblings = await getSiblingsInternal(
+      block.journeyId,
+      block.parentBlockId,
+      client
+    )
+    const visibleOrder = siblings.findIndex(({ id }) => id === block.id)
     const currentTime = new Date().toISOString()
     const updatedBlock = await client.block.update({
       where: { id: block.id },
-      data: { deletedAt: currentTime }
+      data: {
+        deletedAt: currentTime,
+        // Restore inserts at this ordinal after the remaining siblings compact.
+        ...(visibleOrder >= 0 ? { parentOrder: visibleOrder } : {})
+      }
     })
     await client.journey.update({
       where: {
@@ -108,7 +118,7 @@ export async function removeBlockAndChildren(
       data: { updatedAt: currentTime }
     })
     const result = await reorderSiblings(
-      await getSiblingsInternal(block.journeyId, block.parentBlockId, client),
+      siblings.filter(({ id }) => id !== block.id),
       client
     )
     return result

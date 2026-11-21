@@ -22,5 +22,12 @@ export function transformer(data: BlockFields[]): TreeBlock[] {
       tree.push(newNode)
     }
   })
-  return tree.filter(({ __typename: typename }) => typename === 'StepBlock')
+  // Persisted Step ranks can have deletion gaps. Rendered Steps use visible
+  // ordinals so first-Step and next-Step controls keep their normal behavior.
+  let visibleOrder = 0
+  return tree
+    .filter(({ __typename: typename }) => typename === 'StepBlock')
+    .map((step) =>
+      step.parentOrder == null ? step : { ...step, parentOrder: visibleOrder++ }
+    )
 }

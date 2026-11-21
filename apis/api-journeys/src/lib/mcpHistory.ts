@@ -96,7 +96,17 @@ export function describeHistory(
     entries: entries.map((entry) => ({
       entryId: entry.id,
       operationId: entry.operationId,
-      label: 'Typography edit',
+      label:
+        Array.isArray(entry.changes) &&
+        entry.changes.some(
+          (change) =>
+            change &&
+            typeof change === 'object' &&
+            'type' in change &&
+            change.type === 'structure_restore'
+        )
+          ? 'Structure edit'
+          : 'Typography edit',
       state: entry.undone ? 'redo' : 'undo',
       createdAt: entry.createdAt.toISOString()
     }))

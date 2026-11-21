@@ -5,7 +5,7 @@ through MCP, api-auth, Hive gateway and api-journeys. It adds `journey_edit` and
 `journey_operation_get`. The first command is `typography_set` on an existing
 Typography block in an ordinary draft. Its optional fields are plain `content`,
 whole-block `variant`, `align` and hex RGB `color`. Empty text is valid. Unknown
-fields, arbitrary settings, Host fields, raw GraphQL and other command names are
+fields, arbitrary settings, Host fields, raw GraphQL and unregistered commands are
 rejected. A batch cannot supply the same field on the same block twice, even
 when one assignment is a no-op. Disjoint fields on one block are allowed.
 Existing IDs, legacy fields and unrelated settings survive.
@@ -119,9 +119,8 @@ pnpm exec vitest run --config apis/api-auth/vitest.edits.config.mts
 
 These checks do not establish normal Admin browser behavior, live Firebase,
 container hosting, AWS deployment or Claude/ChatGPT compatibility. Those checks
-remain on the assembled feature's acceptance checklist. This slice exposes no
-Step deletion, route edit or media-provider command; their capability owners must
-supply their own command and provider evidence when extending this registry.
+remain on the assembled feature's acceptance checklist. The structural participant
+below extends the same transaction. Media-provider commands remain unavailable.
 
 ## Persistent undo and redo
 
@@ -184,9 +183,93 @@ MCP_EDITS_TEST_ISSUE=10562 node tools/scripts/test-mcp-edits.mjs
 This uses auth_issue_10562 and journeys_issue_10562 on loopback PostgreSQL with
 controlled Firebase identity/eligibility adapters, actual OAuth/MCP HTTP/Hive/owning
 transactions and generated migrations. It does not qualify Admin browser behavior,
-real Firebase/providers, containers, AWS or real Claude/ChatGPT clients. Step deletion,
-route repair and media attachment are future command families; their handlers must
-extend the closed descriptor planner and executable registry with their own stable
-IDs, dependency/conflict checks, effect summaries and full-path tests. Typography
+real Firebase/providers, containers, AWS or real Claude/ChatGPT clients. Media
+attachment remains a future command family requiring its own closed descriptor,
+dependency/conflict checks, effect summaries and full-path tests. Typography
 undo restores content fields and truthfully reports that it has no external media
 provider effect to reverse.
+
+## Steps, structure and navigation
+
+Issue #10557 adds the owning structural participant. The strict schemas and
+command metadata live in `libs/yoga/src/mcp/structureContract.ts`; the owner plans
+the whole batch before acceptance in `mcpStructure.ts`. These commands share the
+same authority, ordinary-draft, revision, replay, history and private-output gates
+as Typography edits. Structural history checks recorded affected state and current
+dependencies before restoring anything.
+
+| Command                                                          | Saved gesture                                                                 |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `step_add`                                                       | One Step, its Card and ordered typed content, with required Button icons      |
+| `block_add`                                                      | Typography, Button, Spacer or empty Image/Video inside an owned Card          |
+| `step_duplicate`, `block_duplicate`                              | Copy descendants with new owned IDs and complete reference mapping            |
+| `step_remove`, `block_remove`                                    | Soft-delete the requested subtree and record its inverse                      |
+| `steps_reorder`, `content_reorder`                               | Validate and order the complete live sibling set; Step order determines start |
+| `step_default_set`, `action_set`                                 | Change only the specified continuation or action                              |
+| `step_position_set`, `social_position_set`, `graph_auto_arrange` | Persist graph coordinates, using Admin layout behavior for arrangement        |
+| `card_slug_set`                                                  | Normalize or clear a Step's website Card slug and enforce uniqueness          |
+
+References are exactly `{id}` or `{local}`. Creation keys are unique lowercase
+letters, digits and underscores, up to 32 characters. The reserved object key
+`__proto__` is rejected before acceptance. IDs are allocated before
+resolving local references, including a destination declared later in the batch.
+Placements are `end`, or `before`/`after` with an actual same-parent anchor.
+Multiple insertions at an anchor preserve declared order. Receipts contain local
+`idMap` and source-to-copy `duplicateIdMap` mappings. `duplicateMaps` contains
+complete `{sourceId, blockId}` entries per local copy key, including when the same
+source is copied several times. Opaque source IDs remain values in these entries.
+
+Step copies clear their default continuation and retain authorized action
+destinations according to Admin's source rules. Standalone Video duplication is
+unavailable; a whole-Step copy may include Video and preserved legacy descendants.
+Standalone submit Button copies become ordinary Buttons. Host state is preserved.
+This slice does not create poll/response families or acquire/attach media sources;
+existing synthetic poll/response content exercises routing and structural copies.
+
+Actions are whole subtype replacements: None, Step, external link, email, chat,
+phone or SMS. Unrelated tracking fields survive. Submit Buttons allow only None
+or Step. New destinations must be live Steps in the same authorized journey.
+Default continuations must target a different Step, including through local
+references. Explicit null still clears an existing continuation.
+Unsafe navigation schemes and hidden owner/Host fields reject the entire batch.
+Duplicate writes to one field or route, duplicate keys, invalid placements and
+overlapping destructive gestures also reject without a partial save.
+
+Deleting a Step leaves incoming default/action rows unchanged, including their
+timestamps. The protected receipt reports those `affectedLinks`; reads identify
+owned deleted destinations as unresolved. Unrelated edits remain valid. Proposing
+a repair performs no write. Apply only requested or accepted repairs as explicit
+route commands, either in a separate save or atomically with deletion. Delete-only
+undo restores the same descendant IDs without touching incoming routes. A combined
+inverse checks its recorded route values, so a later human route edit rejects the
+whole undo instead of being overwritten. Redo of a removal compares every recorded
+block field and the complete action state, including absence, inside the restored
+subtree. Newer edits there reject with HISTORY_CONFLICT before changing content or
+the history cursor; edits outside that subtree remain independent. Older removal
+descriptors without action snapshots return HISTORY_UNAVAILABLE for redo rather
+than hiding potentially newer work.
+
+The save bound is 50 commands, 20 new Steps and 200 affected content objects,
+including required descendants and duplicate/delete expansion. Oversized complete
+gestures fail without partial effects. Structural restoration has no external
+upload, generation or provider effect to reverse; successful media assets remain.
+
+Run the actual OAuth/MCP HTTP/Hive/owning-PostgreSQL structural tests with:
+
+```sh
+node tools/scripts/test-mcp-structure.mjs
+MCP_EDITS_TEST_ISSUE=10557 node tools/scripts/test-mcp-edits.mjs
+```
+
+Both routes use issue-specific loopback PostgreSQL databases and restricted auth
+runtime grants. Firebase identity and eligibility are controlled test adapters.
+The structural suite also exercises normal Admin delete/restore mutations after
+MCP deletion and the existing issuer HTTP, replica and storage-failure cases in a
+separate isolated auth database. It collects owning-service and shared-module coverage and test counts
+in `coverage/integration/mcp-structure`, separately from the saved-edit and workspace
+reports. The runner rejects skipped tests and missing execution hits in structural
+planning, history and Admin deletion/restoration modules. CI uploads both integration
+reports to Codecov alongside the standard workspace reports for stacked PRs.
+Normal Admin browser flows, real Firebase, host/container qualification, AWS and
+Claude/ChatGPT checks remain deferred to the assembled feature. Promote code and
+migrations, never these synthetic identities, credentials or local data.

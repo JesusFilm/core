@@ -285,7 +285,7 @@ describe('saved edit integration', () => {
         }
       }
       async function edit(
-        input: Awaited<ReturnType<typeof editInput>>,
+        input: Record<string, unknown>,
         accessToken = token,
         url = mcpUrl
       ) {
@@ -420,10 +420,10 @@ describe('saved edit integration', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_(10553|10562)(_|$)/.test(
+          !/^\/auth_issue_(10553|10557|10562)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_(10553|10562)(_|$)/.test(
+          !/^\/journeys_issue_(10553|10557|10562)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
@@ -2364,7 +2364,7 @@ describe('saved edit integration', () => {
         const saved = receipt(await call('journey_edit', input))
         expect(BigInt(saved.committedRevision)).toBe(BigInt(before) + 1n)
         expect(
-          await journeys.block.findUnique({
+          await journeys.block.findUniqueOrThrow({
             where: { id: `${journeyId}-text` }
           })
         ).toMatchObject({

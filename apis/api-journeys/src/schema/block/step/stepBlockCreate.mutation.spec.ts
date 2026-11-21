@@ -121,66 +121,76 @@ describe('stepBlockCreate', () => {
     })
   })
 
-  it('creates with all optional fields', async () => {
-    const tx = {
-      block: {
-        create: vi.fn().mockResolvedValue({
-          id: 'customId',
-          typename: 'StepBlock',
-          parentOrder: 3,
-          journeyId: 'journeyId',
-          parentBlockId: null,
-          locked: true,
-          nextBlockId: 'nextStepId',
-          x: 100,
-          y: 200,
-          journey: { id: 'journeyId' }
-        }),
-        findMany: vi.fn().mockResolvedValue([{}, {}, {}])
-      },
-      journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
-    }
-    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
-
-    const fullInput = {
-      ...input,
-      id: 'customId',
-      locked: true,
-      nextBlockId: 'nextStepId',
-      x: 100,
-      y: 200
-    }
-
-    const result = await authClient({
-      document: STEP_BLOCK_CREATE,
-      variables: { input: fullInput }
-    })
-
-    expect(tx.block.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          id: 'customId',
-          typename: 'StepBlock',
-          locked: true,
-          nextBlock: { connect: { id: 'nextStepId' } },
-          x: 100,
-          y: 200,
-          parentOrder: 3
-        })
-      })
-    )
-
-    expect(result).toEqual({
-      data: {
-        stepBlockCreate: expect.objectContaining({
-          id: 'customId',
-          locked: true,
-          nextBlockId: 'nextStepId',
-          x: 100,
-          y: 200,
-          parentOrder: 3
-        })
+  it.each([
+    { ranks: [0, 1, 2], expectedOrder: 3 },
+    { ranks: [0, 2, 5], expectedOrder: 6 }
+  ])(
+    'creates with all optional fields after live sibling ranks $ranks',
+    async ({ ranks, expectedOrder }) => {
+      const tx = {
+        block: {
+          create: vi.fn().mockResolvedValue({
+            id: 'customId',
+            typename: 'StepBlock',
+            parentOrder: expectedOrder,
+            journeyId: 'journeyId',
+            parentBlockId: null,
+            locked: true,
+            nextBlockId: 'nextStepId',
+            x: 100,
+            y: 200,
+            journey: { id: 'journeyId' }
+          }),
+          findMany: vi
+            .fn()
+            .mockResolvedValue(ranks.map((parentOrder) => ({ parentOrder })))
+        },
+        journey: { update: vi.fn().mockResolvedValue({ id: 'journeyId' }) }
       }
-    })
-  })
+      prismaMock.$transaction.mockImplementation(
+        async (cb: any) => await cb(tx)
+      )
+
+      const fullInput = {
+        ...input,
+        id: 'customId',
+        locked: true,
+        nextBlockId: 'nextStepId',
+        x: 100,
+        y: 200
+      }
+
+      const result = await authClient({
+        document: STEP_BLOCK_CREATE,
+        variables: { input: fullInput }
+      })
+
+      expect(tx.block.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            id: 'customId',
+            typename: 'StepBlock',
+            locked: true,
+            nextBlock: { connect: { id: 'nextStepId' } },
+            x: 100,
+            y: 200,
+            parentOrder: expectedOrder
+          })
+        })
+      )
+
+      expect(result).toEqual({
+        data: {
+          stepBlockCreate: expect.objectContaining({
+            id: 'customId',
+            locked: true,
+            nextBlockId: 'nextStepId',
+            x: 100,
+            y: 200,
+            parentOrder: expectedOrder
+          })
+        }
+      })
+    }
+  )
 })
