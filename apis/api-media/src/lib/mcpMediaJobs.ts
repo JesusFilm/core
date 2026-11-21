@@ -141,15 +141,19 @@ export function createMediaJobs(
     })
   }
   /** Capture generations before rights reads. Hold the owning journey against
-   * publication and the receipt against recovery during final acceptance.
+   * publication and the receipt against recovery during final acceptance. Each
+   * stage acquires its owning locks and validates state before calling accept.
    */
   async function authorized<T>(
     context: JobContext,
     action: Action,
     operation: (
       tx: Transaction,
-      permitId: string,
-      clientId: string
+      stage: {
+        permitId: string
+        clientId: string
+        accept: () => Promise<void>
+      }
     ) => Promise<T>,
     deferred: boolean | 'output' = false
   ): Promise<T> {
@@ -235,13 +239,19 @@ export function createMediaJobs(
                 where: { id: prepared.permitId }
               })
               if (receipt.status !== 'prepared') denied()
-              await hooks.beforeAccept?.(action)
-              await authority('accept', { permitId: prepared.permitId })
-              const value = await operation(
-                tx,
-                prepared.permitId,
-                prepared.clientId
-              )
+              let accepted = false
+              const accept = async () => {
+                if (accepted) throw new Error('Permit already accepted')
+                await hooks.beforeAccept?.(action)
+                await authority('accept', { permitId: prepared.permitId })
+                accepted = true
+              }
+              const value = await operation(tx, {
+                permitId: prepared.permitId,
+                clientId: prepared.clientId,
+                accept
+              })
+              if (!accepted) throw new Error('Permit was not accepted')
               await tx.mcpMediaExecution.update({
                 where: { id: prepared.permitId },
                 data: {
@@ -396,7 +406,7 @@ export function createMediaJobs(
     context: JobContext,
     input: { idempotencyKey: string; kind: 'image_upload'; file?: MediaFile }
   ) {
-    return authorized(context, 'admit', async (tx, _permit, clientId) => {
+    return authorized(context, 'admit', async (tx, { clientId, accept }) => {
       await tx.mcpMediaUser.upsert({
         where: { userId: context.userId },
         create: { userId: context.userId },
@@ -426,6 +436,7 @@ export function createMediaJobs(
       if (prior) {
         if (prior.payloadHash !== payloadHash)
           throw new Error('IDEMPOTENCY_KEY_REUSED')
+        await accept()
         return prior.id
       }
       const active = await tx.mcpMediaJob.count({
@@ -436,6 +447,7 @@ export function createMediaJobs(
         }
       })
       if (active >= config.uploadLimit) throw new Error('LIMIT_EXCEEDED')
+      await accept()
       const now = await clock(tx)
       const team = await journeys.journey.findUniqueOrThrow({
         where: { id: context.journeyId },
@@ -462,8 +474,9 @@ export function createMediaJobs(
   }
   async function result(context: JobContext, jobId: string) {
     await own(jobId, context)
-    return authorized(context, 'release', async (tx) => {
+    return authorized(context, 'release', async (tx, { accept }) => {
       const job = await lockJob(tx, jobId)
+      await accept()
       const now = await clock(tx)
       if (
         job.privatePurgedAt ||
@@ -508,11 +521,12 @@ export function createMediaJobs(
   async function bind(context: JobContext, jobId: string, input: MediaFile) {
     await own(jobId, context)
     const file = mediaFile.parse(input)
-    await authorized(context, 'transfer', async (tx) => {
+    await authorized(context, 'transfer', async (tx, { accept }) => {
       const job = await lockJob(tx, jobId)
       if (job.file) {
         if (fingerprint(mediaFile.parse(job.file)) !== fingerprint(file))
           throw new Error('IDEMPOTENCY_KEY_REUSED')
+        await accept()
         return
       }
       if (
@@ -520,6 +534,7 @@ export function createMediaJobs(
         job.transferDeadline <= (await clock(tx))
       )
         throw new Error('VALIDATION_FAILED')
+      await accept()
       await tx.mcpMediaJob.update({ where: { id: job.id }, data: { file } })
     })
   }
@@ -534,7 +549,7 @@ export function createMediaJobs(
     const plan = await authorized(
       context,
       'transfer',
-      async (tx, permitId) => {
+      async (tx, { permitId, accept }) => {
         const job = await lockJob(tx, jobId)
         const file = mediaFile.parse(job.file)
         const now = await clock(tx)
@@ -590,6 +605,7 @@ export function createMediaJobs(
         if (prior) {
           if (prior.sha256 !== checksum || prior.bytes !== bytes)
             throw new Error('IDEMPOTENCY_KEY_REUSED')
+          await accept()
           return {
             permitId,
             data,
@@ -599,6 +615,7 @@ export function createMediaJobs(
           }
         }
         if (offset !== job.receivedBytes) throw new Error('VALIDATION_FAILED')
+        await accept()
         const transferReceivedAt = await clock(tx)
         const objectKey = `${job.id}/${offset}-${checksum}`
         await tx.mcpMediaChunk.create({
@@ -684,8 +701,9 @@ export function createMediaJobs(
   }
   async function validate(context: JobContext, jobId: string) {
     await own(jobId, context)
-    await authorized(context, 'transfer', async (tx) => {
+    await authorized(context, 'transfer', async (tx, { accept }) => {
       const job = await lockJob(tx, jobId)
+      await accept()
       if (job.state !== 'validating') return
       const file = mediaFile.parse(job.file)
       const bytes = await assembled(tx, job)
@@ -705,10 +723,11 @@ export function createMediaJobs(
     const receiptId = await authorized(
       context,
       'dispatch',
-      async (tx, permitId) => {
+      async (tx, { permitId, accept }) => {
         const job = await lockJob(tx, jobId)
         if (job.state !== 'dispatch_pending' || job.dispatchReceiptId)
           throw new Error('VALIDATION_FAILED')
+        await accept()
         await tx.mcpMediaExecution.update({
           where: { id: permitId },
           data: { jobId }
@@ -748,7 +767,7 @@ export function createMediaJobs(
           if (receipt.status !== 'sending') denied()
           const job = await lockJob(tx, jobId)
           const file = mediaFile.parse(job.file)
-          await provider.dispatch(
+          const outcome = await provider.dispatch(
             job.providerId,
             await assembled(tx, job),
             file.mime
@@ -756,16 +775,24 @@ export function createMediaJobs(
           await hooks.afterSend?.()
           await tx.mcpMediaJob.update({
             where: { id: jobId },
-            data: { state: 'processing' }
+            data: {
+              state: outcome === 'rejected' ? 'reconciling' : 'processing'
+            }
           })
           await tx.mcpMediaExecution.update({
             where: { id: receiptId },
-            data: { status: 'settled', completedAt: await clock(tx) }
+            data: {
+              status: outcome === 'rejected' ? 'rejected' : 'settled',
+              completedAt: await clock(tx)
+            }
           })
         },
         { timeout: 60000 }
       )
-      await settle(receiptId)
+      const receipt = await media.mcpMediaExecution.findUniqueOrThrow({
+        where: { id: receiptId }
+      })
+      if (receipt.status === 'settled') await settle(receiptId)
     } catch {
       await media.mcpMediaJob.updateMany({
         where: { id: jobId, active: true },
@@ -779,9 +806,15 @@ export function createMediaJobs(
       where: { id: jobId }
     })
     if (!known.dispatchReceiptId || !known.active) return
-    const status = await provider
-      .status(known.providerId)
-      .catch(() => 'unknown' as const)
+    const execution = await media.mcpMediaExecution.findUniqueOrThrow({
+      where: { id: known.dispatchReceiptId }
+    })
+    const status =
+      execution.status === 'rejected'
+        ? 'rejected'
+        : await provider
+            .status(known.providerId)
+            .catch(() => 'unknown' as const)
     if (status === 'unknown') return
     const settled = await media.$transaction(
       async (tx) => {
@@ -789,9 +822,21 @@ export function createMediaJobs(
         const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
           where: { id: known.dispatchReceiptId! }
         })
-        if (!['sending', 'settled'].includes(receipt.status)) return false
+        if (!['sending', 'settled', 'rejected'].includes(receipt.status))
+          return false
         const job = await lockJob(tx, jobId)
         if (!job.active) return false
+        if (status === 'rejected') {
+          if (receipt.status !== 'rejected') return false
+          // The durable rejection survives failed cleanup and worker restarts.
+          // Capacity and withdrawal stay pending until private input is removed.
+          await terminalJob(tx, job, 'failed')
+          await tx.mcpMediaExecution.update({
+            where: { id: receipt.id },
+            data: { status: 'settled', completedAt: await clock(tx) }
+          })
+          return true
+        }
         await tx.mcpMediaExecution.update({
           where: { id: receipt.id },
           data: { status: 'settled', completedAt: await clock(tx) }
@@ -832,7 +877,7 @@ export function createMediaJobs(
   }
   async function cancel(context: JobContext, jobId: string, key: string) {
     await own(jobId, context)
-    return authorized(context, 'cancel', async (tx) => {
+    return authorized(context, 'cancel', async (tx, { accept }) => {
       await tx.mcpMediaUser.upsert({
         where: { userId: context.userId },
         create: { userId: context.userId },
@@ -840,10 +885,14 @@ export function createMediaJobs(
       })
       await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${context.userId} FOR UPDATE`
       const prior = await tx.mcpMediaCancellation.findUnique({
-        where: { connectionId_key: { connectionId: context.connectionId, key } }
+        where: {
+          connectionId_key: { connectionId: context.connectionId, key }
+        }
       })
       if (prior) {
         if (prior.jobId !== jobId) throw new Error('IDEMPOTENCY_KEY_REUSED')
+        await lockJob(tx, jobId)
+        await accept()
         if (!prior.outcome || prior.resultExpiresAt <= (await clock(tx)))
           return { code: 'RESULT_EXPIRED' }
         return prior.outcome
@@ -857,6 +906,7 @@ export function createMediaJobs(
       )
         throw new Error('IDEMPOTENCY_KEY_REUSED')
       const job = await lockJob(tx, jobId)
+      await accept()
       if (
         !terminal.includes(job.state) &&
         (job.dispatchReceiptId ||
@@ -1016,7 +1066,11 @@ export function createMediaJobs(
     return authorized(
       context,
       'release',
-      async (_tx, permitId) => permitId,
+      async (tx, { permitId, accept }) => {
+        await lockJob(tx, jobId)
+        await accept()
+        return permitId
+      },
       'output'
     )
   }

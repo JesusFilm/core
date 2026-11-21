@@ -86,6 +86,18 @@ export function McpImageUpload({
       clearInterval(timer)
     }
   }, [request])
+  const handleResume = async () => {
+    if (busy) return
+    setBusy(true)
+    setError(false)
+    try {
+      await request('POST', 'resume')
+    } catch {
+      setError(true)
+    } finally {
+      setBusy(false)
+    }
+  }
   const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file || busy) return
@@ -187,6 +199,17 @@ export function McpImageUpload({
                   void handleFile(event)
                 }}
               />
+            </Button>
+          )}
+          {['validating', 'dispatch_pending'].includes(job.state) && (
+            <Button
+              disabled={busy}
+              variant="contained"
+              onClick={() => {
+                void handleResume()
+              }}
+            >
+              {t('Resume image processing')}
             </Button>
           )}
           {!['ready', 'cancelled', 'failed', 'transfer_expired'].includes(

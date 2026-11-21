@@ -55,10 +55,16 @@ A lost PUT response is reconciled through a strong read of that immutable object
 Missing objects and expired leases are not positive stop evidence. Temporary
 cleanup waits for unresolved writes and positively fenced executors.
 
+Admin offers "Resume image processing" for `validating` and `dispatch_pending`,
+including after refresh or a lost final PUT response. It uses the same authorized
+resume route without rebinding the file or admitting another job.
+
 ## Dispatch, output and attachment
 
 Gate generations are captured before owning rights reads. Final acceptance locks
-and rechecks current generations, connection state and current time. Admission,
+the owning user or job before checking current generations, connection state and
+current time at Auth. Each stage validates its locked state before acceptance.
+Admission,
 each chunk, dispatch, cancellation and private output are separate bounded actions.
 Accepted physical output holds a permit until the actual Node response finishes or
 closes. Unknown provider sends and unconfirmed output executors keep withdrawal
@@ -72,6 +78,15 @@ settle the short dispatch participant while provider processing retains the job'
 capacity. An unknown handoff stays unresolved. Cloudflare has no qualified
 in-flight cancellation guarantee, so cancellation after dispatch reconciles the
 existing image and retains successful assets.
+
+Definitive rejection is deliberately narrow. HTTP 401, 403, 413 and 415 with a
+valid Cloudflare failure envelope and no result mean the request was refused,
+as specified by [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-client-error-4xx).
+The executor persists `rejected` before cleanup. Recovery retries private staging
+cleanup before releasing capacity and settling the receipt, even if authenticated
+status returns 404. Network failures, timeouts, conflicts, 5xx, other unqualified
+statuses and contradictory or malformed bodies remain unresolved. Provider error
+messages are not stored or returned.
 
 A ready result returns an `upload` source reference for a separate `journey_edit`
 image or owned-slot command. This requires current target rights/grant, ordinary

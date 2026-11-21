@@ -7,7 +7,7 @@ export interface ImageUploadProvider {
     id: string,
     bytes: Buffer,
     mime: string
-  ): Promise<'processing' | 'ready'>
+  ): Promise<'rejected' | 'processing' | 'ready'>
   status(id: string): Promise<'unknown' | 'processing' | 'ready'>
 }
 
@@ -55,7 +55,26 @@ export function cloudflareUploadProvider(
         redirect: 'error',
         signal: AbortSignal.timeout(30000)
       })
-      if (!response.ok) throw new Error('Provider handoff unresolved')
+      if (!response.ok) {
+        // RFC 9110 sections 15.5.2, 15.5.4, 15.5.14 and 15.5.16 specify
+        // refusal before processing. Require the provider's failure envelope;
+        // conflicts, timeouts, unknown errors and malformed replies stay unknown.
+        if ([401, 403, 413, 415].includes(response.status)) {
+          const rejection = z
+            .object({
+              success: z.literal(false),
+              result: z.null().optional(),
+              errors: z.array(z.object({ code: z.number().int() })).min(1)
+            })
+            .safeParse(
+              await boundedJson(new Response(response.body)).catch(
+                () => undefined
+              )
+            )
+          if (rejection.success) return 'rejected'
+        }
+        throw new Error('Provider handoff unresolved')
+      }
       return parse(await boundedJson(response), id)
     },
     async status(id) {

@@ -46,6 +46,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   const providerAssets = new Map<string, 'processing' | 'ready'>()
   let dispatchCount = 0
   let loseDispatch = false
+  let rejectDispatch = false
+  let cleanupUnavailable = false
   let stagingUnknown = false
   let mediaLibrary = true
   let providerReady = true
@@ -68,6 +70,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       return Buffer.from(bytes)
     },
     async removeJob(jobId) {
+      if (cleanupUnavailable) throw new Error('Controlled cleanup failure')
       for (const key of objects.keys())
         if (key.startsWith(jobId + '/')) objects.delete(key)
     }
@@ -75,6 +78,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   const provider: ImageUploadProvider = {
     async dispatch(id) {
       dispatchCount++
+      if (rejectDispatch) return 'rejected'
       providerAssets.set(id, providerReady ? 'ready' : 'processing')
       if (loseDispatch)
         throw new Error('controlled lost response credential-sentinel')
@@ -182,6 +186,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     beforeSend = undefined
     dispatchCount = 0
     loseDispatch = false
+    rejectDispatch = false
+    cleanupUnavailable = false
     stagingUnknown = false
     providerReady = true
     mediaLibrary = true
@@ -772,6 +778,166 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     ).toMatchObject({ status: 'complete' })
     expect((await browser(id)).status).toBe(403)
     expect(dispatchCount).toBe(1)
+  })
+
+  it.each(['admit', 'dispatch', 'transfer', 'cancel', 'release'] as const)(
+    'denies %s after an actual owning lock wait crosses connection expiry',
+    async (action) => {
+      const id = String((await start()).jobId)
+      const stored = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id }
+      })
+      const context = {
+        userId: stored.userId,
+        connectionId: stored.connectionId,
+        journeyId: stored.journeyId
+      }
+      if (action === 'dispatch') {
+        await upload(id, await fileBytes())
+        await jobs.validate(context, id)
+      }
+      const before = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id }
+      })
+      let unlock!: () => void
+      let locked!: () => void
+      const acquired = new Promise<void>((resolve) => {
+        locked = resolve
+      })
+      const release = new Promise<void>((resolve) => {
+        unlock = resolve
+      })
+      const blocker = media.$transaction(
+        async (tx) => {
+          if (action === 'admit' || action === 'cancel')
+            await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${stored.userId} FOR UPDATE`
+          else
+            await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE`
+          locked()
+          await release
+        },
+        { timeout: 20000 }
+      )
+      await acquired
+      const pending = (
+        action === 'admit'
+          ? jobs.admit(context, {
+              kind: 'image_upload',
+              idempotencyKey: randomUUID()
+            })
+          : action === 'dispatch'
+            ? jobs.dispatch(context, id)
+            : action === 'transfer'
+              ? jobs.bind(
+                  context,
+                  id,
+                  manifest(await fileBytes()) as Parameters<typeof jobs.bind>[2]
+                )
+              : action === 'cancel'
+                ? jobs.cancel(context, id, randomUUID())
+                : jobs.result(context, id)
+      ).then(
+        () => 'accepted',
+        () => 'denied'
+      )
+      try {
+        await vi.waitFor(
+          async () => {
+            const waiting = await media.$queryRaw<
+              Array<{ count: bigint }>
+            >`SELECT count(*) FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock'`
+            expect(Number(waiting[0].count)).toBeGreaterThan(0)
+          },
+          { timeout: 10000 }
+        )
+        await f.auth.agentConnection.update({
+          where: { id: stored.connectionId },
+          data: { expiresAt: new Date(Date.now() - 1) }
+        })
+      } finally {
+        unlock()
+        await blocker
+      }
+      expect(await pending).toBe('denied')
+      expect(
+        await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      ).toEqual(before)
+      expect(
+        await media.mcpMediaJob.count({ where: { userId: stored.userId } })
+      ).toBe(1)
+      expect(dispatchCount).toBe(0)
+      const permits = await f.auth.readPermit.findMany({
+        where: { connectionId: stored.connectionId, stage: 'media_' + action },
+        orderBy: { preparedAt: 'desc' }
+      })
+      expect(permits[0].acceptedAt).toBeNull()
+      expect(permits[0].status).toBe('settled')
+    }
+  )
+
+  it('releases capacity and settles definitive provider rejections without allocating or retrying', async () => {
+    rejectDispatch = true
+    for (let index = 0; index < 3; index++) {
+      const id = String((await start()).jobId)
+      await upload(id, await fileBytes())
+      expect((await browser(id, 'POST', 'resume')).json.data.state).toBe(
+        'failed'
+      )
+      const stored = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id }
+      })
+      expect(stored.active).toBe(false)
+      expect([...objects.keys()].some((key) => key.startsWith(id + '/'))).toBe(
+        false
+      )
+      expect(
+        await media.mcpMediaExecution.findUniqueOrThrow({
+          where: { id: stored.dispatchReceiptId! }
+        })
+      ).toMatchObject({ status: 'settled', reportedAt: expect.any(Date) })
+      expect(
+        await f.auth.readPermit.findUniqueOrThrow({
+          where: { id: stored.dispatchReceiptId! }
+        })
+      ).toMatchObject({ status: 'settled' })
+    }
+    expect(dispatchCount).toBe(3)
+    expect(providerAssets.size).toBe(0)
+  })
+
+  it('preserves durable rejection and pending withdrawal until failed cleanup safely retries', async () => {
+    const id = String((await start()).jobId)
+    await upload(id, await fileBytes())
+    rejectDispatch = true
+    cleanupUnavailable = true
+    await browser(id, 'POST', 'resume')
+    const stored = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    expect(stored).toMatchObject({ state: 'reconciling', active: true })
+    expect(
+      await media.mcpMediaExecution.findUniqueOrThrow({
+        where: { id: stored.dispatchReceiptId! }
+      })
+    ).toMatchObject({ status: 'rejected', reportedAt: null })
+    const change = await withdraw(id)
+    await reconcileConnectionChanges(f.auth)
+    expect(
+      await f.auth.connectionChange.findUniqueOrThrow({
+        where: { id: change.id }
+      })
+    ).toMatchObject({ status: 'pending' })
+    cleanupUnavailable = false
+    await jobs.recover()
+    expect(
+      await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    ).toMatchObject({ state: 'failed', active: false })
+    expect(
+      await f.auth.connectionChange.findUniqueOrThrow({
+        where: { id: change.id }
+      })
+    ).toMatchObject({ status: 'complete' })
+    expect(dispatchCount).toBe(1)
+    expect(providerAssets.size).toBe(0)
+    expect(objects.size).toBe(0)
   })
 
   it('denies new final acceptance at expiry and after a captured rights generation changes', async () => {

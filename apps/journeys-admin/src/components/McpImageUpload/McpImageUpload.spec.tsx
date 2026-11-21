@@ -74,6 +74,115 @@ describe('McpImageUpload', () => {
     expect(calls.every((call) => call.init.credentials === 'omit')).toBe(true)
   })
 
+  it.each(['validating', 'dispatch_pending'])(
+    'resumes the same completed transfer after refresh in %s',
+    async (state) => {
+      const calls: RequestInit[] = []
+      vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+        calls.push(init)
+        const action = (init.headers as Record<string, string>)[
+          'X-Upload-Action'
+        ]
+        return Response.json({
+          data: {
+            ...job,
+            state: action === 'resume' ? 'ready' : state,
+            receivedBytes: 3
+          }
+        })
+      })
+      const { container } = render(<McpImageUpload endpoint={endpoint} />)
+      fireEvent.click(
+        await screen.findByRole('button', { name: 'Resume image processing' })
+      )
+      expect(
+        await screen.findByText(/Ready in your media library/)
+      ).toBeInTheDocument()
+      expect(screen.getByText(/2026-11-21T06:00:00Z/)).toBeInTheDocument()
+      expect(container.querySelector('input[type=file]')).toBeNull()
+      expect(calls.filter((call) => call.method === 'POST')).toHaveLength(1)
+      expect(calls[1].headers).toMatchObject({
+        Authorization: 'JWT controlled-firebase-token',
+        'X-Upload-Action': 'resume'
+      })
+    }
+  )
+
+  it('recovers a lost final-chunk response through status and a same-job resume, without sending the file again', async () => {
+    vi.stubGlobal('crypto', webcrypto)
+    let transferred = false
+    const calls: RequestInit[] = []
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      calls.push(init)
+      const action = (init.headers as Record<string, string>)['X-Upload-Action']
+      if (init.method === 'PUT') {
+        transferred = true
+        throw new Error('Controlled lost final response')
+      }
+      return Response.json({
+        data: {
+          ...job,
+          receivedBytes: transferred ? 3 : 0,
+          state:
+            action === 'resume'
+              ? 'ready'
+              : transferred
+                ? 'validating'
+                : 'waiting_for_file'
+        }
+      })
+    })
+    const { container, unmount } = render(
+      <McpImageUpload endpoint={endpoint} />
+    )
+    await screen.findByText(/synthetic-client/)
+    const file = new File(['abc'], 'fixture.png', { type: 'image/png' })
+    Object.defineProperty(file, 'arrayBuffer', {
+      value: async () => new TextEncoder().encode('abc').buffer
+    })
+    fireEvent.change(container.querySelector('input[type=file]')!, {
+      target: { files: [file] }
+    })
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Your original job and deadline are preserved'
+    )
+    unmount()
+    render(<McpImageUpload endpoint={endpoint} />)
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Resume image processing' })
+    )
+    expect(
+      await screen.findByText(/Ready in your media library/)
+    ).toBeInTheDocument()
+    expect(calls.filter((call) => call.method === 'PUT')).toHaveLength(1)
+    expect(
+      calls.filter(
+        (call) =>
+          (call.headers as Record<string, string>)['X-Upload-Action'] === 'bind'
+      )
+    ).toHaveLength(1)
+  })
+
+  it('keeps a denied resume available on the original job', async () => {
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) =>
+      init.method === 'POST'
+        ? new Response('{}', { status: 403 })
+        : Response.json({ data: { ...job, state: 'validating' } })
+    )
+    render(<McpImageUpload endpoint={endpoint} />)
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Resume image processing' })
+    )
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Your original job and deadline are preserved'
+    )
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Resume image processing' })
+      ).toBeEnabled()
+    )
+  })
+
   it('shows origin-grant denial without starting another upload', async () => {
     const fetch = vi.fn(async () => new Response('{}', { status: 403 }))
     vi.stubGlobal('fetch', fetch)

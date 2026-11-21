@@ -103,6 +103,68 @@ describe('credential-owning Cloudflare upload adapter', () => {
     })
   })
 
+  it.each([401, 403, 413, 415])(
+    'recognizes a documented refusal with a valid failure envelope, HTTP %s',
+    async (status) => {
+      vi.stubGlobal('fetch', async () =>
+        Response.json(
+          {
+            success: false,
+            result: null,
+            errors: [{ code: 10000, message: 'private-provider-error' }]
+          },
+          { status }
+        )
+      )
+      expect(
+        await provider().dispatch(
+          'stable-id',
+          Buffer.from('validated input'),
+          'image/png'
+        )
+      ).toBe('rejected')
+    }
+  )
+
+  it.each([
+    [400, { success: false, errors: [{ code: 5408 }] }],
+    [409, { success: false, errors: [{ code: 10000 }] }],
+    [408, { success: false, errors: [{ code: 10000 }] }],
+    [500, { success: false, errors: [{ code: 10000 }] }],
+    [413, { success: true, result: { id: 'stable-id' } }],
+    [415, { success: false, errors: [] }],
+    [
+      403,
+      { success: false, result: { id: 'stable-id' }, errors: [{ code: 10000 }] }
+    ]
+  ])(
+    'keeps ambiguous or contradictory HTTP %s replies unresolved',
+    async (status, body) => {
+      vi.stubGlobal('fetch', async () => Response.json(body, { status }))
+      await expect(
+        provider().dispatch(
+          'stable-id',
+          Buffer.from('validated input'),
+          'image/png'
+        )
+      ).rejects.toThrow('unresolved')
+    }
+  )
+
+  it('keeps an unreadable rejection response unresolved', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () => new Response('not json', { status: 413 })
+    )
+    await expect(
+      provider().dispatch(
+        'stable-id',
+        Buffer.from('validated input'),
+        'image/png'
+      )
+    ).rejects.toThrow('unresolved')
+  })
+
   it('keeps missing allocations, forged identities, redirects and lost responses unresolved', async () => {
     const adapter = provider()
     vi.stubGlobal('fetch', async () => new Response(null, { status: 404 }))
