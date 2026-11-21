@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process'
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
 const issue = process.env.MCP_STRUCTURE_TEST_ISSUE ?? '10557'
-if (!['10556', '10557'].includes(issue))
+if (!['10556', '10557', '10558'].includes(issue))
   throw new Error('Unsupported isolated test issue')
 const source = new URL(
   process.env.MCP_STRUCTURE_TEST_POSTGRES_URL ??
@@ -102,7 +102,9 @@ run(
     'vitest',
     'run',
     '--config',
-    'apis/api-auth/vitest.structure.config.mts'
+    issue === '10558'
+      ? 'apis/api-auth/vitest.forms.config.mts'
+      : 'apis/api-auth/vitest.structure.config.mts'
   ],
   {
     STRUCTURE_TEST_AUTH_DATABASE_URL: runtime.href,
@@ -112,7 +114,10 @@ run(
   }
 )
 
-const reportDirectory = 'coverage/integration/mcp-structure'
+const reportDirectory =
+  issue === '10558'
+    ? 'coverage/integration/mcp-forms'
+    : 'coverage/integration/mcp-structure'
 const tests = JSON.parse(
   readFileSync(`${reportDirectory}/test-results.json`, 'utf8')
 )
@@ -130,7 +135,14 @@ for (const module of [
   'apis/api-journeys/src/schema/block/service.ts',
   'apis/api-journeys/src/schema/block/blockDelete.mutation.ts',
   'apis/api-journeys/src/schema/block/blockRestore.mutation.ts',
-  'libs/yoga/src/mcp/structureContract.ts'
+  'libs/yoga/src/mcp/structureContract.ts',
+  ...(issue === '10558'
+    ? [
+        'apis/api-journeys/src/lib/mcpForms.ts',
+        'apis/api-journeys/src/lib/mcpFormDestinations.ts',
+        'libs/yoga/src/mcp/formContract.ts'
+      ]
+    : [])
 ]) {
   const entry = Object.entries(coverage).find(([path]) =>
     path.endsWith('/' + module)

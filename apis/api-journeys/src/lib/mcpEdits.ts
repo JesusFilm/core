@@ -16,6 +16,7 @@ import {
   operationResult,
   privateOperationErrorCodes
 } from '@core/yoga/mcp/editContract'
+import { isFormCommand } from '@core/yoga/mcp/formContract'
 import {
   type PresentationCommand,
   createdInverse
@@ -53,6 +54,7 @@ import {
   editDatabaseTime,
   reconcileJourneyEdits
 } from './mcpEditsStore'
+import type { DestinationRoutes } from './mcpFormDestinations'
 import {
   describeHistory,
   hasStructureHistory,
@@ -86,6 +88,7 @@ export interface JourneyEditHooks {
   checkpoint?: (point: EditCheckpoint, context: EditContext) => Promise<void>
   now?: () => Date
   canEditChat?: (userId: string) => Promise<boolean>
+  destinationRoutes?: DestinationRoutes
 }
 
 function json(value: unknown): Prisma.InputJsonValue {
@@ -490,7 +493,8 @@ export function createJourneyEditHandler(
                     journey,
                     restoredEntry.changes,
                     direction,
-                    canEditChat
+                    canEditChat,
+                    { userId: claims.subject, routes: hooks.destinationRoutes }
                   )
                 } else {
                   plans.push(
@@ -520,7 +524,7 @@ export function createJourneyEditHandler(
                   (
                     command
                   ): command is PresentationCommand | TypographyCommand =>
-                    !isStructureCommand(command)
+                    !isStructureCommand(command) && !isFormCommand(command)
                 )
               ) {
                 const planned = await planContent(
@@ -537,7 +541,8 @@ export function createJourneyEditHandler(
                     tx,
                     journey,
                     commands,
-                    canEditChat
+                    canEditChat,
+                    { userId: claims.subject, routes: hooks.destinationRoutes }
                   )
                 } catch (error) {
                   if (

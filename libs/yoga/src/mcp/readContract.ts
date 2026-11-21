@@ -44,7 +44,7 @@ export const listInput = z
 export const journeyInput = z
   .object({
     journeyId: id,
-    view: z.enum(['outline', 'steps', 'settings']),
+    view: z.enum(['outline', 'steps', 'settings', 'form_destinations']),
     stepIds: z.array(id).min(1).max(20).optional(),
     revision: z
       .string()

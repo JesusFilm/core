@@ -8,6 +8,7 @@ import {
   commandRegistry,
   isStructureCommand
 } from '@core/yoga/mcp/editContract'
+import { type FormCommand, isFormCommand } from '@core/yoga/mcp/formContract'
 import {
   type PresentationCommand,
   type PresentationField,
@@ -25,6 +26,14 @@ import {
 } from '@core/yoga/mcp/structureContract'
 
 import { type ContentBlock, assertOwnedButtonIcon } from './mcpContent'
+import { validateFormDestinations } from './mcpFormDestinations'
+import { formLabel } from './mcpFormLabels'
+import {
+  applyFormCommand,
+  createFormContent,
+  validateFormIcons,
+  validateForms
+} from './mcpForms'
 import {
   type BlockState,
   type StructurePlan,
@@ -47,6 +56,7 @@ export type { StructureInverse, StructurePlan } from './mcpStructureState'
 
 type Journey = {
   id: string
+  teamId?: string | null
   website: boolean | null
   menuStepBlockId: string | null
   socialNodeX: number | null
@@ -90,10 +100,14 @@ function missing(): never {
 export async function planStructure(
   tx: Prisma.TransactionClient,
   journey: Journey,
-  commands: Array<StructureCommand | TypographyCommand | PresentationCommand>,
-  canEditChat: () => Promise<boolean> = async () => false
+  commands: Array<
+    StructureCommand | TypographyCommand | PresentationCommand | FormCommand
+  >,
+  canEditChat: () => Promise<boolean> = async () => false,
+  destinationRoutes?: Parameters<typeof validateFormDestinations>[3]
 ) {
   const state = await loadStructure(tx, journey)
+  const formLocales = new Map<string, Parameters<typeof formLabel>[1]>()
   const locals = new Map<string, string>()
   const duplicateIdMap: Record<string, string> = Object.create(null)
   const duplicateMaps: StructurePlan['duplicateMaps'] = Object.create(null)
@@ -123,6 +137,31 @@ export async function planStructure(
     const row = state.blocks.get(id)
     if (!live(row) || (type && row.typename !== type)) missing()
     return row
+  }
+  const willRemove = (row: BlockState): boolean => {
+    const roots = new Set(
+      commands.flatMap((command) =>
+        command.type === 'block_remove'
+          ? [resolveId(command.block)]
+          : command.type === 'step_remove'
+            ? [resolveId(command.step)]
+            : command.type === 'poll_option_remove' ||
+                command.type === 'multiselect_option_remove'
+              ? [resolveId(command.block)]
+              : []
+      )
+    )
+    let current: BlockState | undefined = row
+    const seen = new Set<string>()
+    while (current) {
+      const id = idOf(current)
+      if (roots.has(id)) return true
+      if (seen.has(id)) fail()
+      seen.add(id)
+      const parent = parentOf(current)
+      current = parent === null ? undefined : state.blocks.get(parent)
+    }
+    return false
   }
   const resolve = (ref: BlockReference, type?: string) =>
     get(resolveId(ref), type)
@@ -274,6 +313,14 @@ export async function planStructure(
   ): BlockState => {
     const card = get(cardId, 'CardBlock')
     stepFor(card)
+    if (
+      content.kind === 'poll' ||
+      content.kind === 'multiselect' ||
+      content.kind === 'response'
+    ) {
+      formLocales.set(id, 'locale' in content ? content.locale : undefined)
+      return createFormContent({ create, allocate, claim }, id, cardId, content)
+    }
     const typename = {
       typography: 'TypographyBlock',
       button: 'ButtonBlock',
@@ -314,7 +361,7 @@ export async function planStructure(
       row.submitEnabled = deriveSubmitRole(
         'create',
         siblings
-          .filter((child) => child.id !== id)
+          .filter((child) => child.id !== id && !willRemove(child))
           .map((child) => ({
             typename: requiredString(child.typename),
             submitEnabled: child.submitEnabled === true
@@ -361,9 +408,18 @@ export async function planStructure(
       allocate(command.cardKey)
       for (const child of command.content ?? []) allocate(child.key)
     } else if (
-      ['block_add', 'step_duplicate', 'block_duplicate'].includes(command.type)
+      [
+        'block_add',
+        'step_duplicate',
+        'block_duplicate',
+        'poll_option_add',
+        'multiselect_option_add'
+      ].includes(command.type)
     )
-      allocate((command as Extract<StructureCommand, { key: string }>).key)
+      allocate(
+        (command as Extract<StructureCommand | FormCommand, { key: string }>)
+          .key
+      )
   }
   const newSteps = commands.filter(
     (command) =>
@@ -441,6 +497,26 @@ export async function planStructure(
         }
       }
     }
+  }
+  for (const command of commands) {
+    if (
+      command.type !== 'poll_option_add' &&
+      command.type !== 'multiselect_option_add'
+    )
+      continue
+    const poll = command.type === 'poll_option_add'
+    const question = resolve(
+      command.question,
+      poll ? 'RadioQuestionBlock' : 'MultiselectBlock'
+    )
+    cardFor(question)
+    const option = create(
+      poll ? 'RadioOptionBlock' : 'MultiselectOptionBlock',
+      locals.get(command.key)!,
+      idOf(question)
+    )
+    option.label = command.label
+    claim(idOf(option), 'label')
   }
   const duplicateCommands = commands.filter(
     (command) =>
@@ -541,6 +617,46 @@ export async function planStructure(
     if (!progress) missing()
     remaining = next
   }
+  // Place the complete newly materialized content before deriving shared submits.
+  for (const command of commands) {
+    if (
+      command.type === 'block_add' ||
+      command.type === 'step_add' ||
+      command.type === 'block_duplicate' ||
+      command.type === 'step_duplicate'
+    )
+      insert(
+        get(locals.get(command.key)!),
+        command.type === 'block_add' ? placementFor(command) : command.placement
+      )
+  }
+  for (const [id, locale] of formLocales) {
+    const row = get(id)
+    if (
+      !['TextResponseBlock', 'MultiselectBlock'].includes(
+        requiredString(row.typename)
+      )
+    )
+      continue
+    const cardId = parentOf(row) ?? missing()
+    if (
+      children(state, cardId).some(
+        (child) =>
+          child.typename === 'ButtonBlock' &&
+          child.submitEnabled === true &&
+          !willRemove(child)
+      )
+    )
+      continue
+    const key = [...locals].find(([, value]) => value === id)?.[0] ?? fail()
+    const button = addContent(allocate(key + '.submit'), cardId, {
+      kind: 'button',
+      label: formLabel('Submit', locale)
+    })
+    // Generated defaults may be replaced by an explicit command in this batch.
+    explicitWrites.delete(`${idOf(button)}\0label`)
+    insert(button, { position: 'end' })
+  }
   const setAction = (row: BlockState, action: ActionValue): void => {
     if (!actionTypes.has(requiredString(row.typename))) fail()
     if (
@@ -591,6 +707,45 @@ export async function planStructure(
     }
     state.actions.set(id, next)
   }
+  const removeContent = (row: BlockState) => {
+    const removed = subtree(row)
+    for (const child of removed) {
+      const id = idOf(child)
+      if (
+        destroyed.has(id) ||
+        state.created.has(id) ||
+        [...explicitWrites].some((key) => key.startsWith(`${id}\0`))
+      )
+        fail()
+      destroyed.add(id)
+      child.deletedAt = now
+    }
+    const parent = parentOf(row)
+    state.siblingParents.add(parent)
+    // Step order is the sorted sibling order, so gaps are valid. Retaining
+    // those values also preserves every surviving incoming route row,
+    // including a later sibling whose continuation points at this Step.
+    if (row.typename !== 'StepBlock')
+      siblingsFrom(state.blocks, parent).forEach((id, index) => {
+        get(id).parentOrder = index
+      })
+    if (row.typename === 'StepBlock') {
+      if (state.journey.menuStepBlockId === row.id)
+        state.journey.menuStepBlockId = null
+    }
+    if (row.typename === 'MultiselectOptionBlock') {
+      const owner = get(parent ?? missing(), 'MultiselectBlock'),
+        count = children(state, idOf(owner)).length
+      if (typeof owner.max === 'number')
+        owner.max = Math.min(Math.max(owner.max, count > 0 ? 1 : 0), count)
+      if (typeof owner.min === 'number')
+        owner.min = Math.min(
+          Math.max(owner.min, 0),
+          count,
+          typeof owner.max === 'number' ? owner.max : count
+        )
+    }
+  }
   for (const command of commands) {
     if (
       command.type === 'step_add' ||
@@ -611,43 +766,7 @@ export async function planStructure(
           : resolve(command.block)
       if (command.type === 'step_remove') stepFor(row)
       else eligibleContent(row)
-      const removed = subtree(row)
-      for (const child of removed) {
-        const id = idOf(child)
-        if (
-          destroyed.has(id) ||
-          state.created.has(id) ||
-          [...explicitWrites].some((key) => key.startsWith(`${id}\0`))
-        )
-          fail()
-        destroyed.add(id)
-        child.deletedAt = now
-      }
-      const parent = parentOf(row)
-      state.siblingParents.add(parent)
-      // Step order is the sorted sibling order, so gaps are valid. Retaining
-      // those values also preserves every surviving incoming route row,
-      // including a later sibling whose continuation points at this Step.
-      if (command.type === 'block_remove')
-        siblingsFrom(state.blocks, parent).forEach((id, index) => {
-          get(id).parentOrder = index
-        })
-      if (command.type === 'step_remove') {
-        if (state.journey.menuStepBlockId === row.id)
-          state.journey.menuStepBlockId = null
-      }
-      if (row.typename === 'MultiselectOptionBlock') {
-        const owner = get(parent ?? missing(), 'MultiselectBlock'),
-          count = children(state, idOf(owner)).length
-        if (typeof owner.max === 'number')
-          owner.max = Math.min(Math.max(owner.max, 0), count)
-        if (typeof owner.min === 'number')
-          owner.min = Math.min(
-            Math.max(owner.min, 0),
-            count,
-            typeof owner.max === 'number' ? owner.max : count
-          )
-      }
+      removeContent(row)
       continue
     }
     if (
@@ -729,6 +848,21 @@ export async function planStructure(
         command.slug === null
           ? null
           : slugify(command.slug, { lower: true, strict: true }) || null
+    } else if (isFormCommand(command)) {
+      applyFormCommand(
+        {
+          state,
+          allocate,
+          create,
+          resolve,
+          claim,
+          cardFor,
+          insert,
+          setAction,
+          remove: removeContent
+        },
+        command
+      )
     } else if (command.type === 'typography_set') {
       const row = get(resolveContentId(command.blockId), 'TypographyBlock')
       cardFor(row)
@@ -838,7 +972,35 @@ export async function planStructure(
       })
     )
       fail()
+  const changedForms = new Set(
+    [...state.blocks]
+      .filter(
+        ([id, row]) =>
+          state.created.has(id) ||
+          JSON.stringify(row) !== JSON.stringify(state.originalBlocks.get(id))
+      )
+      .map(([id]) => id)
+  )
+  validateForms(state, changedForms)
+  await validateFormIcons(tx, state)
+  await validateFormDestinations(tx, journey, state, destinationRoutes)
   const plan = finishStructure(state, now)
+  if (
+    [...new Set([...changedForms, ...state.siblingParents])].some((id) => {
+      if (id === null) return false
+      const row = state.blocks.get(id)
+      return (
+        live(row) &&
+        ['RadioQuestionBlock', 'MultiselectBlock'].includes(
+          requiredString(row.typename)
+        ) &&
+        children(state, id).length === 0
+      )
+    })
+  )
+    plan.warnings.push(
+      'An edited question has no options. Add options when ready.'
+    )
   plan.requiresChat = commands.some(
     (command) => command.type === 'card_chat_set'
   )

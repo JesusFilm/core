@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
+import { formCommandNames } from '@core/yoga/mcp/formContract'
 import {
   type ReadCredential,
   type ReadRequest,
@@ -31,6 +32,10 @@ import { structureCommandNames } from '@core/yoga/mcp/structureContract'
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
 
 import { type JourneyEditHooks, createJourneyEditHandler } from './mcpEdits'
+import {
+  type DestinationRoutes,
+  eligibleDestinations
+} from './mcpFormDestinations'
 import { boundedReadPage } from './mcpReadPage'
 import { reconcileJourneyReads } from './mcpReadSettlement'
 
@@ -370,7 +375,14 @@ export function createJourneyReadHandler(
             })
           } else {
             try {
-              data = await snapshot(tx, dataRequest, claims, allowed, config)
+              data = await snapshot(
+                tx,
+                dataRequest,
+                claims,
+                allowed,
+                config,
+                editHooks?.destinationRoutes
+              )
             } catch (error) {
               const failure = z
                 .enum(['REVISION_CONFLICT', 'LIMIT_EXCEEDED'])
@@ -455,7 +467,8 @@ async function snapshot(
   >,
   claims: ReadCredential,
   journeys: ReadJourney[],
-  config: JourneyReadsConfig
+  config: JourneyReadsConfig,
+  destinationRoutes?: DestinationRoutes
 ): Promise<ReadResult> {
   const link = (id: string) =>
     new URL(`/journeys/${encodeURIComponent(id)}`, config.adminOrigin).href
@@ -602,10 +615,23 @@ async function snapshot(
       config.editsEnabled &&
       claims.mode === 'edit' &&
       journey.status === 'draft'
-        ? ['typography_set', ...structureCommandNames]
+        ? ['typography_set', ...structureCommandNames, ...formCommandNames]
         : [],
     adminLink: link(journey.id),
     warnings
+  }
+  if (request.input.view === 'form_destinations') {
+    if (offset !== 0 || request.input.stepIds)
+      throw new Error('VALIDATION_FAILED')
+    return boundedResult({
+      ...base,
+      destinations: await eligibleDestinations(tx, journey, {
+        userId: claims.subject,
+        routes: destinationRoutes
+      }),
+      complete: true,
+      nextCursor: null
+    })
   }
   const ids = await tx.block.findMany({
     where: { journeyId: journey.id, deletedAt: null },
