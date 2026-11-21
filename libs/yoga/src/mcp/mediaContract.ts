@@ -5,6 +5,7 @@ import { blockReference } from './structureContract'
 const id = z.string().min(1).max(200)
 const providerId = z.string().regex(/^[a-zA-Z0-9_-]{1,200}$/)
 export const imageSource = z.discriminatedUnion('source', [
+  z.object({ source: z.literal('upload'), jobId: z.string().uuid() }).strict(),
   z.object({ source: z.literal('library'), id }).strict(),
   z.object({ source: z.literal('history'), blockId: id }).strict(),
   z.object({ source: z.literal('unsplash'), id: providerId }).strict()
@@ -201,6 +202,7 @@ export type ReadyVideo = z.infer<typeof readyVideo>
 export type ReadyMedia = ReadyImage | ReadyVideo
 
 export function mediaSourceKey(source: MediaResolutionSource): string {
+  if (source.source === 'upload') return `upload:${source.jobId}`
   if (source.source === 'history' || source.source === 'existingImage')
     return `${source.source}:${source.blockId}`
   if (source.source === 'library' || source.source === 'unsplash')

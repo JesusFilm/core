@@ -15,6 +15,7 @@ on:
       - 'tools/scripts/test-mcp-edits.mjs'
       - 'tools/scripts/test-mcp-structure.mjs'
       - 'tools/scripts/test-mcp-media.mjs'
+      - 'tools/scripts/test-mcp-image-upload.mjs'
       - '.github/workflows/mcp-edits.yml'
 
 permissions:
@@ -63,6 +64,50 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/integration/mcp-media/cobertura-coverage.xml
           flags: integration.mcp-media
+          disable_search: true
+          fail_ci_if_error: true
+  image-upload:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: image-upload-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Exercise same-job image ingress, recovery, cancellation and separate attachment
+        run: node tools/scripts/test-mcp-image-upload.mjs
+        env:
+          MCP_UPLOAD_TEST_POSTGRES_URL: postgresql://postgres:image-upload-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Preserve media coverage and executed test counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-image-upload-coverage
+          path: coverage/integration/mcp-image-upload
+          if-no-files-found: error
+      - name: Upload owning image job coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-image-upload/cobertura-coverage.xml
+          flags: integration.mcp-image-upload
           disable_search: true
           fail_ci_if_error: true
   saved-edits:

@@ -341,6 +341,12 @@ export async function lockGates(
 }
 
 export type AuditAction =
+  | 'media_accept'
+  | 'media_admit'
+  | 'media_transfer'
+  | 'media_dispatch'
+  | 'media_cancel'
+  | 'media_release'
   | 'authorization'
   | 'consent'
   | 'login'
