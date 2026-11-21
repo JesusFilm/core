@@ -13,7 +13,14 @@ if (baseUrl == null) {
     'JOURNEY_REVISION_TEST_DATABASE_URL must name a local test PostgreSQL server with CREATEDB rights'
   )
 }
-const databaseName = `journey_revision_${randomUUID().replaceAll('-', '')}`
+const issue = process.env.JOURNEY_REVISION_TEST_ISSUE
+if (issue !== undefined && !/^\d{1,10}$/.test(issue))
+  throw new Error('Use a numeric issue ID for an isolated revision database')
+const databaseName =
+  `journey_revision_${issue ? `issue_${issue}_` : ''}${randomUUID().replaceAll('-', '')}`.slice(
+    0,
+    63
+  )
 const databaseUrl = new URL(baseUrl)
 databaseUrl.pathname = `/${databaseName}`
 

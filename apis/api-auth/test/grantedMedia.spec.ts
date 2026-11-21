@@ -342,6 +342,27 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).not.toBeNull()
   })
 
+  it('saves media and presentation together with one reversible history entry', async () => {
+    const before = { image: await image(), button: await image('button') }
+    const saved = await f.save([
+      selectImage(),
+      { type: 'button_set', blockId: f.id('button'), label: 'Updated button' }
+    ])
+    expect(await image()).toMatchObject({
+      width: readyImage.width,
+      height: readyImage.height,
+      blurhash: readyImage.blurhash
+    })
+    expect((await image()).src).not.toBeNull()
+    expect(await image('button')).toMatchObject({ label: 'Updated button' })
+    f.receipt(await f.historyAction('undo', saved.historyId!))
+    expect(await image()).toMatchObject({ src: before.image.src })
+    expect(await image('button')).toMatchObject({ label: before.button.label })
+    f.receipt(await f.historyAction('redo', saved.historyId!))
+    expect((await image()).src).not.toBeNull()
+    expect(await image('button')).toMatchObject({ label: 'Updated button' })
+  })
+
   it.each(['cover', 'poster', 'poll', 'logo', 'social'] as const)(
     'creates, clears, undoes and redoes a complete owned %s slot without deleting the asset',
     async (slot) => {
