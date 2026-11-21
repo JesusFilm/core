@@ -3761,9 +3761,16 @@ describe('saved edit integration', () => {
         expect(await mixedSnapshot()).toEqual(before)
       })
 
-      it.each(['start', 'end'] as const)(
-        'validates mixed restored %s Icon slots before redo and recovers after repair',
-        async (slot) => {
+      it.each(
+        (['start', 'end'] as const).flatMap((slot) =>
+          ['other-slot', 'wrong-type'].map((corruption) => ({
+            slot,
+            corruption
+          }))
+        )
+      )(
+        'validates mixed restored $slot Icon slots against $corruption before redo and recovers after repair',
+        async ({ slot, corruption }) => {
           await seedPresentation()
           const buttonId = `${journeyId}-button`
           const field = `${slot}IconId` as const
@@ -3801,7 +3808,10 @@ describe('saved edit integration', () => {
           }>
           changes[0].blocks.find((change) => change.id === buttonId)!.after[
             field
-          ] = `${buttonId}-${slot === 'start' ? 'end' : 'start'}`
+          ] =
+            corruption === 'wrong-type'
+              ? `${journeyId}-text`
+              : `${buttonId}-${slot === 'start' ? 'end' : 'start'}`
           await journeys.mcpEditHistory.update({
             where: { id: entry.id },
             data: { changes: changes as Prisma.InputJsonValue }
