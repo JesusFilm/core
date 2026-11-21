@@ -5,6 +5,7 @@ import slugify from 'slugify'
 import { Prisma } from '@core/prisma/journeys/client'
 import { type EditInput, commandRegistry } from '@core/yoga/mcp/editContract'
 import {
+  type ReadyImage,
   mediaCommand,
   mediaCommandNames,
   mediaSourceKey
@@ -92,6 +93,7 @@ export async function planStructure(
   const locals = new Map<string, string>()
   const duplicateIdMap: Record<string, string> = Object.create(null)
   const duplicateMaps: StructurePlan['duplicateMaps'] = Object.create(null)
+  const copiedImageSources = new Map<string, ReadyImage>()
   const explicitWrites = new Set<string>()
   const destroyed = new Set<string>()
   const afterAnchors = new Map<string, string>()
@@ -164,7 +166,7 @@ export async function planStructure(
     return card
   }
   const eligibleContent = (row: BlockState, duplicate = false): void => {
-    if (row.parentOrder === null) fail()
+    if (row.parentOrder === null && !pendingPlacements.has(idOf(row))) fail()
     if (contentTypes.has(requiredString(row.typename))) cardFor(row)
     else if (row.typename === 'RadioOptionBlock') {
       const parent = get(parentOf(row) ?? missing(), 'RadioQuestionBlock')
@@ -378,10 +380,16 @@ export async function planStructure(
         )
           missing()
         if (media && original.typename === 'ImageBlock' && original.src) {
-          const source = media.sources.get(
-            mediaSourceKey({ source: 'existingImage', blockId: idOf(original) })
-          )
+          const source =
+            copiedImageSources.get(idOf(original)) ??
+            media.sources.get(
+              mediaSourceKey({
+                source: 'existingImage',
+                blockId: idOf(original)
+              })
+            )
           if (!source || source.kind !== 'image') missing()
+          copiedImageSources.set(id, source)
           Object.assign(row, {
             src: source.src,
             width: source.width,

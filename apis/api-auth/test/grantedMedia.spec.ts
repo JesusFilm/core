@@ -638,6 +638,118 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ])
   })
 
+  it.each([
+    { type: 'block_duplicate', forward: false },
+    { type: 'block_duplicate', forward: true },
+    { type: 'step_duplicate', forward: false },
+    { type: 'step_duplicate', forward: true }
+  ] as const)(
+    'chains $type with forward references $forward, replay and reversible media ownership',
+    async ({ type, forward }) => {
+      await f.save([
+        selectImage(),
+        {
+          type: 'media_slot_set',
+          target: { slot: 'cover', owner: ref('ac') },
+          media: {
+            kind: 'image',
+            source: { source: 'library', id: f.id('asset') }
+          }
+        }
+      ])
+      const original = await image()
+      const originalCard = await image('ac')
+      const commands = ['copy1', 'copy2', 'copy3'].map((key, index) => ({
+        type,
+        source:
+          index === 0
+            ? ref(type === 'block_duplicate' ? 'image' : 'a')
+            : { local: `copy${index}` },
+        key,
+        placement: { position: 'end' }
+      }))
+      const input = await f.input(forward ? commands.reverse() : commands)
+      const saved = f.receipt(await f.edit(input))
+      const committed = await f.snapshot()
+      expect(f.receipt(await f.edit(input))).toEqual(saved)
+      expect(await f.snapshot()).toEqual(committed)
+      const copiedIds: string[] = []
+      let sourceImageId = original.id
+      let sourceCardId = originalCard.id
+      let sourceCoverId = originalCard.coverBlockId!
+      for (const key of ['copy1', 'copy2', 'copy3']) {
+        const mapping = new Map(
+          saved.duplicateMaps![key].map(({ sourceId, blockId }) => [
+            sourceId,
+            blockId
+          ])
+        )
+        sourceImageId = mapping.get(sourceImageId)!
+        expect(sourceImageId).toBeDefined()
+        const copy = await f.journeys.block.findUniqueOrThrow({
+          where: { id: sourceImageId }
+        })
+        copiedIds.push(copy.id)
+        if (type === 'step_duplicate') {
+          sourceCardId = mapping.get(sourceCardId)!
+          sourceCoverId = mapping.get(sourceCoverId)!
+          const card = await f.journeys.block.findUniqueOrThrow({
+            where: { id: sourceCardId }
+          })
+          expect(card.coverBlockId).toBe(sourceCoverId)
+          expect(
+            await f.journeys.block.findUniqueOrThrow({
+              where: { id: sourceCoverId }
+            })
+          ).toMatchObject({
+            parentBlockId: sourceCardId,
+            parentOrder: null,
+            src: original.src,
+            width: readyImage.width,
+            height: readyImage.height,
+            blurhash: readyImage.blurhash
+          })
+          copiedIds.push(sourceCoverId)
+        }
+        expect(copy).toMatchObject({
+          parentBlockId: sourceCardId,
+          src: original.src,
+          width: original.width,
+          height: original.height,
+          blurhash: original.blurhash,
+          alt: original.alt,
+          scale: original.scale,
+          settings: original.settings
+        })
+      }
+      expect(new Set(copiedIds).size).toBe(copiedIds.length)
+      expect(copiedIds).not.toContain(original.id)
+      expect(copiedIds).not.toContain(originalCard.coverBlockId)
+      expect(await image()).toEqual(original)
+      f.receipt(await f.historyAction('undo', saved.historyId!))
+      for (const id of copiedIds)
+        expect(
+          (await f.journeys.block.findUniqueOrThrow({ where: { id } }))
+            .deletedAt
+        ).not.toBeNull()
+      f.receipt(await f.historyAction('redo', saved.historyId!))
+      for (const id of copiedIds)
+        expect(
+          await f.journeys.block.findUniqueOrThrow({ where: { id } })
+        ).toMatchObject({ deletedAt: null, src: original.src })
+      await settleMedia()
+      await protectedMedia.cloudflareImage.update({
+        where: { id: f.id('asset') },
+        data: { uploaded: false }
+      })
+      await reject(commands)
+      expect(await image()).toEqual(original)
+      expect(
+        await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
+      ).not.toBeNull()
+    }
+  )
+
   it('copies an authorized media subtree with fresh owned references and rejects a revoked nested rendition', async () => {
     await f.save([
       selectVideo(),
