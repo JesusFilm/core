@@ -3,14 +3,19 @@ import { isDeepStrictEqual } from 'node:util'
 import { z } from 'zod'
 
 import { Prisma } from '@core/prisma/journeys/client'
+import { deriveSubmitRole } from '@core/yoga/mcp/presentationContract'
 
+import { type ContentBlock, assertOwnedButtonIcon } from './mcpContent'
 import {
   type ActionField,
   type BlockChangeField,
+  type BlockField,
   type BlockState,
   type Scalar,
   actionFields,
+  actionState,
   blockFields,
+  blockState,
   finishStructure,
   idOf,
   live,
@@ -36,14 +41,18 @@ function equalField(
   expected: BlockState,
   field: BlockChangeField
 ): boolean {
-  if (field !== 'settings.color')
-    return isDeepStrictEqual(current[field], expected[field])
+  if (!field.startsWith('settings.'))
+    return isDeepStrictEqual(
+      current[field as BlockField],
+      expected[field as BlockField]
+    )
+  const key = field.slice(9)
   const a = settings(current),
     b = settings(expected)
   return (
-    Object.prototype.hasOwnProperty.call(a, 'color') ===
-      Object.prototype.hasOwnProperty.call(b, 'color') &&
-    isDeepStrictEqual(a.color, b.color)
+    Object.prototype.hasOwnProperty.call(a, key) ===
+      Object.prototype.hasOwnProperty.call(b, key) &&
+    isDeepStrictEqual(a[key], b[key])
   )
 }
 function setField(
@@ -51,15 +60,15 @@ function setField(
   value: BlockState,
   field: BlockChangeField
 ): void {
-  if (field !== 'settings.color') {
-    current[field] = serialize(value[field])
+  if (!field.startsWith('settings.')) {
+    current[field as BlockField] = serialize(value[field as BlockField])
     return
   }
   const next = { ...settings(current) },
     source = settings(value)
-  if (Object.prototype.hasOwnProperty.call(source, 'color'))
-    next.color = source.color
-  else delete next.color
+  const key = field.slice(9)
+  if (Object.prototype.hasOwnProperty.call(source, key)) next[key] = source[key]
+  else delete next[key]
   current.settings = next
 }
 
@@ -75,12 +84,22 @@ export async function planStructureHistory(
     socialNodeY: number | null
   },
   changes: unknown,
-  direction: 'undo' | 'redo'
+  direction: 'undo' | 'redo',
+  canEditChat: () => Promise<boolean> = async () => false
 ) {
   const parsed = z.array(structureInverseSchema).length(1).safeParse(changes)
   if (!parsed.success) throw new Error('HISTORY_UNAVAILABLE')
   const inverse = parsed.data[0],
     state = await loadStructure(tx, journey, true)
+  const requiresChat = inverse.blocks.some(
+    (change) =>
+      change.presentation?.gate === 'aiChatEditor' ||
+      change.fields.some(
+        (field) => field === 'showAssistant' || field === 'expandChatByDefault'
+      )
+  )
+  if (requiresChat && !(await canEditChat()))
+    throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
   const expectedSide = direction === 'undo' ? 'after' : 'before',
     nextSide = direction === 'undo' ? 'before' : 'after'
   for (const dependency of inverse.owners) {
@@ -245,7 +264,139 @@ export async function planStructureHistory(
     )
       conflict()
   }
+  const projected = state.blocks as unknown as Map<string, ContentBlock>
+  for (const change of inverse.blocks) {
+    const row = state.blocks.get(change.id)!
+    if (!live(row)) continue
+    if (
+      row.typename === 'CardBlock' &&
+      row.fullscreen === true &&
+      change.presentation?.fields.includes('fullscreen') &&
+      [...state.blocks.values()].some(
+        (child) =>
+          live(child) &&
+          child.parentBlockId === row.id &&
+          child.typename === 'VideoBlock'
+      )
+    )
+      conflict()
+    if (
+      row.typename === 'ButtonBlock' &&
+      row.submitEnabled === true &&
+      change.created &&
+      direction === 'redo'
+    ) {
+      const siblings = [...state.blocks.values()].filter(
+        (sibling) =>
+          live(sibling) &&
+          sibling.id !== row.id &&
+          sibling.parentBlockId === row.parentBlockId
+      )
+      if (
+        !deriveSubmitRole(
+          'create',
+          siblings.map((sibling) => ({
+            typename: requiredString(sibling.typename),
+            submitEnabled: sibling.submitEnabled === true
+          }))
+        )
+      )
+        conflict()
+    }
+    const owner = change.presentation?.owner
+    if (owner) {
+      const button = state.blocks.get(owner.blockId)
+      if (!live(button) || button[owner.slot] !== row.id) conflict()
+      await assertOwnedButtonIcon(
+        tx,
+        button as unknown as ContentBlock,
+        row as unknown as ContentBlock,
+        projected
+      )
+    }
+    if (row.typename === 'ButtonBlock')
+      for (const slot of ['startIconId', 'endIconId'] as const) {
+        if (!change.created && !change.fields.includes(slot)) continue
+        if (row[slot] === null) continue
+        const icon = state.blocks.get(requiredString(row[slot]))
+        if (
+          !live(icon) ||
+          icon.journeyId !== journey.id ||
+          [row.startIconId, row.endIconId, row.submitIconId].filter(
+            (id) => id === icon.id
+          ).length !== 1
+        )
+          throw new Error('HISTORY_UNAVAILABLE')
+        try {
+          await assertOwnedButtonIcon(
+            tx,
+            row as unknown as ContentBlock,
+            icon as unknown as ContentBlock,
+            projected
+          )
+        } catch (error) {
+          if (error instanceof Error && error.message === 'HISTORY_CONFLICT')
+            throw new Error('HISTORY_UNAVAILABLE', { cause: error })
+          throw error
+        }
+      }
+  }
+  if (direction === 'undo' && createdIds.size) {
+    const ids = [...createdIds]
+    const referenceFields = [
+      'parentBlockId',
+      'startIconId',
+      'endIconId',
+      'submitIconId',
+      'nextBlockId',
+      'coverBlockId',
+      'posterBlockId',
+      'pollOptionImageBlockId'
+    ] as const
+    const references = await tx.block.findMany({
+      where: {
+        deletedAt: null,
+        OR: referenceFields.map((field) => ({ [field]: { in: ids } }))
+      }
+    })
+    // Own references can be removed by this same undo. Inspect the completed
+    // projection before hiding a newly created object used by later work.
+    const outsideReferences = references
+      .filter((reference) => !state.originalBlocks.has(reference.id))
+      .map(blockState)
+    for (const row of [...state.blocks.values(), ...outsideReferences]) {
+      if (!live(row) || createdIds.has(idOf(row))) continue
+      if (
+        referenceFields.some(
+          (field) =>
+            typeof row[field] === 'string' && createdIds.has(row[field])
+        )
+      )
+        conflict()
+    }
+    const actions = await tx.action.findMany({
+      where: {
+        OR: [{ parentBlockId: { in: ids } }, { blockId: { in: ids } }]
+      }
+    })
+    const outsideActions = actions
+      .filter(
+        (reference) => !state.originalActions.has(reference.parentBlockId)
+      )
+      .map(actionState)
+    for (const action of [...state.actions.values(), ...outsideActions]) {
+      if (
+        [action.parentBlockId, action.blockId].some(
+          (id) => typeof id === 'string' && createdIds.has(id)
+        )
+      )
+        conflict()
+    }
+    const menu = state.journey.menuStepBlockId
+    if (typeof menu === 'string' && createdIds.has(menu)) conflict()
+  }
   const plan = finishStructure(state, new Date().toISOString())
+  plan.requiresChat = requiresChat
   plan.changes = []
   plan.warnings.push(
     'Restored recorded content, order and routes only. Successful media assets and external effects are retained.'

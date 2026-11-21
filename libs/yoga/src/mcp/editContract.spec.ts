@@ -88,9 +88,15 @@ describe('closed executable typography registry', () => {
   })
 
   it.each(['content', 'variant', 'align', 'color'] as const)(
-    'rejects repeated %s assignments regardless of their values',
+    'parses legacy repeated %s assignments for owning-service replay checks',
     (field) => {
-      for (const value of [command[field], 'different']) {
+      const replacement = {
+        content: 'Another heading',
+        variant: 'h2',
+        align: 'left',
+        color: '#abcdef'
+      }
+      for (const value of [command[field], replacement[field]]) {
         expect(
           editInput.safeParse({
             ...input,
@@ -103,7 +109,7 @@ describe('closed executable typography registry', () => {
               }
             ]
           }).success
-        ).toBe(false)
+        ).toBe(true)
       }
     }
   )
@@ -113,6 +119,25 @@ describe('closed executable typography registry', () => {
       { type: 'typography_set', blockId: 'first', content: 'Heading' },
       { type: 'typography_set', blockId: 'first', color: '#123456' },
       { type: 'typography_set', blockId: 'second', content: 'Heading' }
+    ]
+    expect(editInput.parse({ ...input, commands }).commands).toEqual(commands)
+  })
+
+  it('allows color assignments to a Button and its distinct owned Icon slots', () => {
+    const commands = [
+      { type: 'button_set', blockId: 'button', color: 'secondary' },
+      {
+        type: 'button_icon_set',
+        blockId: 'button',
+        slot: 'start',
+        color: 'error'
+      },
+      {
+        type: 'button_icon_set',
+        blockId: 'button',
+        slot: 'end',
+        color: 'primary'
+      }
     ]
     expect(editInput.parse({ ...input, commands }).commands).toEqual(commands)
   })

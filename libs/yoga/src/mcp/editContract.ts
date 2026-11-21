@@ -3,10 +3,18 @@ import { createHash } from 'node:crypto'
 import { z } from 'zod'
 
 import {
+  plainText,
+  presentationCommand,
+  presentationFields,
+  presentationRegistry
+} from './presentationContract'
+import {
+  type StructureCommand,
   affectedLink,
   changedField,
   localKey,
-  structureCommand
+  structureCommand,
+  structureCommandNames
 } from './structureContract'
 
 const id = z.string().min(1).max(200)
@@ -19,7 +27,7 @@ export const typographyCommand = z
   .object({
     type: z.literal('typography_set'),
     blockId: id,
-    content: z.string().max(262144).optional(),
+    content: plainText.optional(),
     variant: z
       .enum(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body1', 'body2', 'caption'])
       .optional(),
@@ -37,18 +45,31 @@ export const typographyCommand = z
       ),
     'At least one supported field must be supplied'
   )
+const editCommand = z.union([
+  typographyCommand,
+  presentationCommand,
+  structureCommand
+])
+
+export function isStructureCommand(
+  command: z.infer<typeof editCommand>
+): command is StructureCommand {
+  if (command.type === 'block_add') return 'card' in command
+  return structureCommandNames.some((name) => name === command.type)
+}
+
 export const editInput = z
   .object({
     journeyId: id,
     expectedRevision: revisionInput,
     idempotencyKey: idempotencyKeyInput,
-    commands: z
-      .array(z.union([typographyCommand, structureCommand]))
-      .min(1)
-      .max(50)
+    commands: z.array(editCommand).min(1).max(50)
   })
   .strict()
   .superRefine((input, context) => {
+    // Old content-only receipts can contain repeated assignments. The owner
+    // checks their replay keys before validating new writes.
+    if (!input.commands.some(isStructureCommand)) return
     const writes = new Map<string, Set<string>>()
     input.commands.forEach((command, index) => {
       if (command.type !== 'typography_set') return
@@ -89,7 +110,11 @@ export const historyResult = z
           .object({
             entryId: z.string().uuid(),
             operationId: z.string().uuid(),
-            label: z.enum(['Typography edit', 'Structure edit']),
+            label: z.enum([
+              'Typography edit',
+              'Content and presentation edit',
+              'Structure edit'
+            ]),
             state: z.enum(['undo', 'redo']),
             createdAt: z.string().datetime()
           })
@@ -126,12 +151,26 @@ export const operationReceipt = z
         z
           .object({
             blockId: id,
-            fields: z.array(changedField).max(32)
+            fields: z
+              .array(
+                z.enum([
+                  ...changedField.options,
+                  ...presentationFields,
+                  'deleted'
+                ])
+              )
+              .max(32)
           })
           .strict()
       )
       .max(200),
-    idMap: z.record(localKey, id),
+    idMap: z.record(
+      z.union([
+        localKey,
+        z.string().regex(/^[a-z][a-z0-9_]{0,31}\.(?:startIcon|endIcon)$/)
+      ]),
+      id
+    ),
     duplicateIdMap: z.record(id, id).optional(),
     duplicateMaps: z
       .record(
@@ -276,6 +315,7 @@ function applyTypography(
  * Adding a command requires an executable row and its positive/negative fixtures.
  */
 export const commandRegistry = {
+  ...presentationRegistry,
   typography_set: {
     schema: typographyCommand,
     resultSchema: operationReceipt,

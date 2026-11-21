@@ -529,6 +529,7 @@ describe('shared journey revision integration', () => {
       ' 1',
       '1e2',
       '18446744073709551616',
+      '123456789012345678901',
       '100000000000000000000'
     ])('rejects malformed revision %j before writing', async (expected) => {
       const before = await revision()
