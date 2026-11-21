@@ -1872,5 +1872,6 @@
   "Waiting for one image": "Waiting for one image",
   "This upload has ended.": "This upload has ended.",
   "Choose the same image to upload or resume": "Choose the same image to upload or resume",
-  "Cancel upload": "Cancel upload"
+  "Cancel upload": "Cancel upload",
+  "Resume image processing": "Resume image processing"
 }
