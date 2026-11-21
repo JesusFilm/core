@@ -401,8 +401,14 @@ export async function planStructureHistory(
       )
         conflict()
     }
-    const menu = state.journey.menuStepBlockId
-    if (typeof menu === 'string' && createdIds.has(menu)) conflict()
+    const { menuStepBlockId, logoImageBlockId, primaryImageBlockId } =
+      state.journey
+    if (
+      [menuStepBlockId, logoImageBlockId, primaryImageBlockId].some(
+        (id) => typeof id === 'string' && createdIds.has(id)
+      )
+    )
+      conflict()
   }
   const plan = finishStructure(state, new Date().toISOString())
   plan.requiresChat = requiresChat

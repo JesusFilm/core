@@ -146,6 +146,11 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     block: ref('image'),
     source: { source: 'library', id }
   })
+  const renameButton = () => ({
+    type: 'button_set',
+    blockId: f.id('button'),
+    label: 'Explore'
+  })
   const selectVideo = (source = { source: 'mux', videoId: f.id('mux') }) => ({
     type: 'video_source_set',
     block: ref('video'),
@@ -1026,15 +1031,25 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).not.toBeNull()
   })
 
-  it('replays a lost attachment response once, rejects changed key reuse and preserves unrelated later human edits during undo', async () => {
-    const input = await f.input([selectImage()])
+  it('replays a lost attachment and button edit once, rejects changed key reuse and preserves unrelated human edits through undo and redo', async () => {
+    const button = renameButton()
+    const readButton = () =>
+      f.journeys.block.findUniqueOrThrow({ where: { id: button.blockId } })
+    const originalLabel = (await readButton()).label
+    const input = await f.input([selectImage(), button])
     f.loseNextResponse()
     expect((await f.edit(input)).json.result?.isError).toBe(true)
     const saved = f.receipt(await f.edit(input))
     expect(await f.counts()).toEqual({ operations: 1, history: 1, effects: 1 })
+    expect((await image()).src).toContain(f.id('asset'))
+    expect((await readButton()).label).toBe(button.label)
     expect(
-      (await f.edit({ ...input, commands: [selectImage(f.id('team-asset'))] }))
-        .text
+      (
+        await f.edit({
+          ...input,
+          commands: [selectImage(f.id('team-asset')), button]
+        })
+      ).text
     ).toContain('IDEMPOTENCY_KEY_REUSED')
     await f.journeys.block.update({
       where: { id: f.id('heading') },
@@ -1042,6 +1057,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     })
     f.receipt(await f.historyAction('undo', saved.historyId!))
     expect((await image()).src).toBeNull()
+    expect((await readButton()).label).toBe(originalLabel)
     expect(
       (
         await f.journeys.block.findUniqueOrThrow({
@@ -1051,7 +1067,60 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).toBe('New human heading')
     f.receipt(await f.historyAction('redo', saved.historyId!))
     expect((await image()).src).toContain(f.id('asset'))
+    expect((await readButton()).label).toBe(button.label)
   })
+
+  it.each([
+    {
+      slot: 'social',
+      field: 'primaryImageBlockId',
+      laterField: 'logoImageBlockId'
+    },
+    {
+      slot: 'logo',
+      field: 'logoImageBlockId',
+      laterField: 'primaryImageBlockId'
+    }
+  ] as const)(
+    'protects a later Journey image reference when undoing creation of the $slot image',
+    async ({ slot, field, laterField }) => {
+      const where = { id: f.journeyId }
+      await f.journeys.journey.update({ where, data: { website: true } })
+      const saved = await f.save([
+        {
+          type: 'media_slot_set',
+          target: { slot },
+          media: {
+            kind: 'image',
+            source: { source: 'library', id: f.id('asset') }
+          }
+        }
+      ])
+      const imageId = (await f.journeys.journey.findUniqueOrThrow({ where }))[
+        field
+      ]!
+      expect(imageId).toEqual(expect.any(String))
+      await f.journeys.journey.update({
+        where,
+        data: { [laterField]: imageId }
+      })
+      const before = await f.snapshot()
+      expect((await f.historyAction('undo', saved.historyId!)).text).toContain(
+        'HISTORY_CONFLICT'
+      )
+      expect(await f.snapshot()).toEqual(before)
+
+      await f.journeys.journey.update({ where, data: { [laterField]: null } })
+      f.receipt(await f.historyAction('undo', saved.historyId!))
+      expect(
+        (await f.journeys.journey.findUniqueOrThrow({ where }))[field]
+      ).toBeNull()
+      expect(
+        (await f.journeys.block.findUniqueOrThrow({ where: { id: imageId } }))
+          .deletedAt
+      ).not.toBeNull()
+    }
+  )
 
   it('rejects history conflicts and a source revoked before redo without deleting provider assets', async () => {
     const saved = await f.save([selectImage()])
@@ -1101,7 +1170,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).toBe(true)
   })
 
-  it('cancels a prepared attachment when a source changes before acceptance', async () => {
+  it('cancels a prepared attachment and its batched button edit when a source changes before acceptance', async () => {
     let changed = false
     f.checkpoint = async (point) => {
       if (point === 'before_accept' && !changed) {
@@ -1111,7 +1180,8 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         })
       }
     }
-    await reject([selectImage()])
+    await reject([renameButton(), selectImage()])
+    expect(changed).toBe(true)
   })
 
   it('keeps source withdrawal pending until an accepted attachment settles, then safely completes the source write', async () => {
