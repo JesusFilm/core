@@ -2,12 +2,13 @@ import { randomUUID } from 'node:crypto'
 
 import { Prisma } from '@core/prisma/journeys/client'
 import {
-  type EditInput,
+  type TypographyCommand,
   type TypographyInverse,
   commandRegistry
 } from '@core/yoga/mcp/editContract'
 import {
   type CreatedInverse,
+  type PresentationCommand,
   type PresentationField,
   type PresentationInverse,
   deriveSubmitRole,
@@ -133,7 +134,7 @@ export async function contentParents(
 export async function planContent(
   tx: Prisma.TransactionClient,
   journeyId: string,
-  commands: EditInput['commands'],
+  commands: Array<PresentationCommand | TypographyCommand>,
   canEditChat: () => Promise<boolean>
 ) {
   const plans: ContentPlan[] = []

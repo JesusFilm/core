@@ -428,10 +428,10 @@ describe('saved edit integration', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_(10553|10562|10556)(_|$)/.test(
+          !/^\/auth_issue_(10553|10556|10557|10562)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_(10553|10562|10556)(_|$)/.test(
+          !/^\/journeys_issue_(10553|10556|10557|10562)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
@@ -2373,7 +2373,7 @@ describe('saved edit integration', () => {
         const saved = receipt(await call('journey_edit', input))
         expect(BigInt(saved.committedRevision)).toBe(BigInt(before) + 1n)
         expect(
-          await journeys.block.findUnique({
+          await journeys.block.findUniqueOrThrow({
             where: { id: `${journeyId}-text` }
           })
         ).toMatchObject({
@@ -3205,6 +3205,34 @@ describe('saved edit integration', () => {
           expect(await snapshot()).toEqual(after)
         }
       )
+
+      it('rejects a batch that mixes a structural edit with a Card presentation edit before writing either', async () => {
+        const before = await revision()
+        const step = { id: `${journeyId}-step` }
+        const card = { id: `${journeyId}-card` }
+        const state = () =>
+          journeys.block.findMany({
+            where: { id: { in: [step.id, card.id] } },
+            select: { id: true, x: true, y: true, fullscreen: true },
+            orderBy: { id: 'asc' }
+          })
+        const original = await state()
+        const result = await call('journey_edit', {
+          journeyId,
+          expectedRevision: before,
+          idempotencyKey: randomUUID(),
+          commands: [
+            { type: 'step_position_set', step, x: 421, y: 219 },
+            { type: 'card_set', blockId: card.id, fullscreen: true }
+          ]
+        })
+
+        expect(result.json.result?.isError).toBe(true)
+        expect(result.text).toContain('VALIDATION_FAILED')
+        expect(await state()).toEqual(original)
+        expect(await revision()).toBe(before)
+        expect(await counts()).toEqual({ operations: 0, history: 0, effects: 0 })
+      })
 
       it('enforces the current Card chat gate for edits and undo/redo and preserves nullable defaults', async () => {
         const input = {

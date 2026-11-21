@@ -11,6 +11,7 @@ on:
       - 'libs/prisma/auth/**'
       - 'libs/prisma/journeys/**'
       - 'tools/scripts/test-mcp-edits.mjs'
+      - 'tools/scripts/test-mcp-structure.mjs'
       - '.github/workflows/mcp-edits.yml'
 
 permissions:
@@ -46,6 +47,10 @@ jobs:
         run: node tools/scripts/test-mcp-edits.mjs
         env:
           MCP_EDITS_TEST_POSTGRES_URL: postgresql://postgres:edit-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Exercise structural edits, routes and complete inverses
+        run: node tools/scripts/test-mcp-structure.mjs
+        env:
+          MCP_STRUCTURE_TEST_POSTGRES_URL: postgresql://postgres:edit-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
       - name: Preserve owning-service coverage and test counts
         if: always()
         uses: actions/upload-artifact@v4
@@ -59,5 +64,20 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/integration/mcp-edits/cobertura-coverage.xml
           flags: integration.mcp-edits
+          disable_search: true
+          fail_ci_if_error: true
+      - name: Preserve structural coverage and test counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-structural-coverage
+          path: coverage/integration/mcp-structure
+          if-no-files-found: error
+      - name: Upload structural coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-structure/cobertura-coverage.xml
+          flags: integration.mcp-structure
           disable_search: true
           fail_ci_if_error: true

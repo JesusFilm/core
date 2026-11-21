@@ -8,6 +8,14 @@ import {
   presentationFields,
   presentationRegistry
 } from './presentationContract'
+import {
+  type StructureCommand,
+  affectedLink,
+  changedField,
+  localKey,
+  structureCommand,
+  structureCommandNames
+} from './structureContract'
 
 const id = z.string().min(1).max(200)
 export const revisionInput = z
@@ -37,18 +45,48 @@ export const typographyCommand = z
       ),
     'At least one supported field must be supplied'
   )
-// The owner checks field uniqueness after looking up exact legacy replays.
+const editCommand = z.union([
+  typographyCommand,
+  presentationCommand,
+  structureCommand
+])
+
+export function isStructureCommand(
+  command: z.infer<typeof editCommand>
+): command is StructureCommand {
+  if (command.type === 'block_add') return 'card' in command
+  return structureCommandNames.some((name) => name === command.type)
+}
+
 export const editInput = z
   .object({
     journeyId: id,
     expectedRevision: revisionInput,
     idempotencyKey: idempotencyKeyInput,
-    commands: z
-      .array(z.union([typographyCommand, presentationCommand]))
-      .min(1)
-      .max(50)
+    commands: z.array(editCommand).min(1).max(50)
   })
   .strict()
+  .superRefine((input, context) => {
+    // Old content-only receipts can contain repeated assignments. The owner
+    // checks their replay keys before validating new writes.
+    if (!input.commands.some(isStructureCommand)) return
+    const writes = new Map<string, Set<string>>()
+    input.commands.forEach((command, index) => {
+      if (command.type !== 'typography_set') return
+      const fields = writes.get(command.blockId) ?? new Set<string>()
+      for (const field of ['content', 'variant', 'align', 'color'] as const) {
+        if (command[field] === undefined) continue
+        if (fields.has(field))
+          context.addIssue({
+            code: 'custom',
+            path: ['commands', index, field],
+            message: 'A batch cannot write the same block field twice'
+          })
+        fields.add(field)
+      }
+      writes.set(command.blockId, fields)
+    })
+  })
 export const historyInput = z.object({ journeyId: id }).strict()
 export const historyActionInput = z
   .object({
@@ -72,7 +110,11 @@ export const historyResult = z
           .object({
             entryId: z.string().uuid(),
             operationId: z.string().uuid(),
-            label: z.enum(['Typography edit', 'Content and presentation edit']),
+            label: z.enum([
+              'Typography edit',
+              'Content and presentation edit',
+              'Structure edit'
+            ]),
             state: z.enum(['undo', 'redo']),
             createdAt: z.string().datetime()
           })
@@ -110,18 +152,39 @@ export const operationReceipt = z
           .object({
             blockId: id,
             fields: z
-              .array(z.enum([...presentationFields, 'created', 'deleted']))
-              .max(20)
+              .array(
+                z.enum([
+                  ...changedField.options,
+                  ...presentationFields,
+                  'deleted'
+                ])
+              )
+              .max(32)
           })
           .strict()
       )
       .max(200),
-    idMap: z.record(z.string().max(64), id),
+    idMap: z.record(
+      z.union([
+        localKey,
+        z.string().regex(/^[a-z][a-z0-9_]{0,31}\.(?:startIcon|endIcon)$/)
+      ]),
+      id
+    ),
+    duplicateIdMap: z.record(id, id).optional(),
+    duplicateMaps: z
+      .record(
+        localKey,
+        z.array(z.object({ sourceId: id, blockId: id }).strict()).max(200)
+      )
+      .optional(),
+    affectedLinks: z.array(affectedLink).optional(),
     effectIds: z.array(z.string().uuid()).max(200),
     warnings: z.array(z.string().max(4096)).max(100)
   })
   .strict()
 export const privateOperationErrorCodes = [
+  'LIMIT_EXCEEDED',
   'IDEMPOTENCY_KEY_REUSED',
   'RESULT_EXPIRED',
   'RESULT_UNAVAILABLE',

@@ -76,6 +76,37 @@ export async function historyEntries(
   })
 }
 
+export function hasStructureHistory(changes: Prisma.JsonValue): boolean {
+  return (
+    Array.isArray(changes) &&
+    changes.some(
+      (change) =>
+        change !== null &&
+        typeof change === 'object' &&
+        !Array.isArray(change) &&
+        change.type === 'structure_restore'
+    )
+  )
+}
+
+function historyLabel(
+  changes: Prisma.JsonValue
+): HistoryResult['entries'][number]['label'] {
+  if (hasStructureHistory(changes)) return 'Structure edit'
+  if (
+    Array.isArray(changes) &&
+    changes.every(
+      (change) =>
+        change !== null &&
+        typeof change === 'object' &&
+        !Array.isArray(change) &&
+        change.type === 'typography_restore'
+    )
+  )
+    return 'Typography edit'
+  return 'Content and presentation edit'
+}
+
 export function describeHistory(
   journeyId: string,
   revision: string,
@@ -96,17 +127,7 @@ export function describeHistory(
     entries: entries.map((entry) => ({
       entryId: entry.id,
       operationId: entry.operationId,
-      label:
-        Array.isArray(entry.changes) &&
-        entry.changes.every(
-          (change) =>
-            change !== null &&
-            typeof change === 'object' &&
-            !Array.isArray(change) &&
-            change.type === 'typography_restore'
-        )
-          ? 'Typography edit'
-          : 'Content and presentation edit',
+      label: historyLabel(entry.changes),
       state: entry.undone ? 'redo' : 'undo',
       createdAt: entry.createdAt.toISOString()
     }))

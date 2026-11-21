@@ -1,6 +1,28 @@
 import { transformer } from './transformer'
 
 describe('transformer', () => {
+  it('presents dense Step ordinals after deletion without changing stored ranks or route references', () => {
+    const first = {
+      __typename: 'StepBlock' as const,
+      parentBlockId: null,
+      parentOrder: 2,
+      id: 'first',
+      nextBlockId: 'removed',
+      locked: false,
+      slug: null
+    }
+    const last = { ...first, parentOrder: 5, id: 'last', nextBlockId: null }
+    const unmounted = { ...first, id: 'unmounted', parentOrder: null }
+    const input = [last, first, unmounted]
+    const result = transformer(input)
+    expect(result).toMatchObject([
+      { id: 'first', parentOrder: 0, nextBlockId: 'removed' },
+      { id: 'last', parentOrder: 1, nextBlockId: null },
+      { id: 'unmounted', parentOrder: null, nextBlockId: 'removed' }
+    ])
+    expect(input.map(({ parentOrder }) => parentOrder)).toEqual([5, 2, null])
+  })
+
   it('should change flat array into tree successfully', () => {
     expect(
       transformer([

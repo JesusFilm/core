@@ -8,15 +8,21 @@ import {
   type HistoryResult,
   type OperationReceipt,
   type OperationResult,
+  type TypographyCommand,
   canonicalFingerprint,
+  isStructureCommand,
   operationFailure,
   operationReceipt,
   operationResult,
   privateOperationErrorCodes
 } from '@core/yoga/mcp/editContract'
-import { createdInverse } from '@core/yoga/mcp/presentationContract'
+import {
+  type PresentationCommand,
+  createdInverse
+} from '@core/yoga/mcp/presentationContract'
 import {
   assertRequestInputSize,
+  assertStructuredResultSize,
   boundedJson,
   fingerprint,
   internalSignature,
@@ -28,6 +34,7 @@ import {
   sameSecret,
   verifyReadCredential
 } from '@core/yoga/mcp/readContract'
+import type { StructureCommand } from '@core/yoga/mcp/structureContract'
 
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
 
@@ -47,8 +54,16 @@ import {
   editDatabaseTime,
   reconcileJourneyEdits
 } from './mcpEditsStore'
-import { describeHistory, historyEntries, planHistory } from './mcpHistory'
+import {
+  describeHistory,
+  hasStructureHistory,
+  historyEntries,
+  planHistory
+} from './mcpHistory'
 import type { JourneyReadsConfig } from './mcpReads'
+import { executeStructure, planStructure } from './mcpStructure'
+import { planStructureHistory } from './mcpStructureHistory'
+import type { StructureInverse, StructurePlan } from './mcpStructureState'
 
 export type EditCheckpoint =
   | 'execution_prepared'
@@ -439,7 +454,8 @@ export function createJourneyEditHandler(
               if (!failure.success) throw error
               return reject(failure.data)
             }
-            const changes: ContentInverse[] = []
+            const changes: Array<ContentInverse | StructureInverse> = []
+            let structuralPlan: StructurePlan | undefined
             const plans: ContentPlan[] = []
             let idMap: Record<string, string> = {}
             let restoredEntry:
@@ -469,15 +485,24 @@ export function createJourneyEditHandler(
               if (restoredEntry.id !== operation.input.entryId)
                 return reject('HISTORY_CONFLICT')
               try {
-                plans.push(
-                  ...(await planHistory(
+                if (hasStructureHistory(restoredEntry.changes)) {
+                  structuralPlan = await planStructureHistory(
                     tx,
-                    journey.id,
+                    journey,
                     restoredEntry.changes,
-                    direction,
-                    canEditChat
-                  ))
-                )
+                    direction
+                  )
+                } else {
+                  plans.push(
+                    ...(await planHistory(
+                      tx,
+                      journey.id,
+                      restoredEntry.changes,
+                      direction,
+                      canEditChat
+                    ))
+                  )
+                }
               } catch (error) {
                 if (
                   error instanceof Error &&
@@ -489,14 +514,67 @@ export function createJourneyEditHandler(
               }
             }
             if (operation.tool === 'journey_edit') {
-              const planned = await planContent(
-                tx,
-                journey.id,
-                operation.input.commands,
-                canEditChat
-              )
-              plans.push(...planned.plans)
-              idMap = planned.idMap
+              const commands = operation.input.commands
+              if (
+                commands.every(
+                  (
+                    command
+                  ): command is PresentationCommand | TypographyCommand =>
+                    !isStructureCommand(command)
+                )
+              ) {
+                const planned = await planContent(
+                  tx,
+                  journey.id,
+                  commands,
+                  canEditChat
+                )
+                plans.push(...planned.plans)
+                idMap = planned.idMap
+              } else if (
+                commands.every(
+                  (command): command is StructureCommand | TypographyCommand =>
+                    command.type === 'typography_set' ||
+                    isStructureCommand(command)
+                )
+              ) {
+                try {
+                  structuralPlan = await planStructure(tx, journey, commands)
+                } catch (error) {
+                  if (
+                    error instanceof Error &&
+                    error.message === 'LIMIT_EXCEEDED'
+                  )
+                    return reject('LIMIT_EXCEEDED')
+                  throw error
+                }
+              } else {
+                // Neither planner can project this whole batch or record a single
+                // reversible change set. Never apply just a subset of its commands.
+                throw new Error('VALIDATION_FAILED')
+              }
+            }
+            if (structuralPlan) {
+              // Make room for the fixed receipt envelope before accepting a
+              // plan that may report many incoming links and copied IDs.
+              try {
+                assertStructuredResultSize({
+                  changedFields: structuralPlan.changedFields,
+                  idMap: structuralPlan.idMap,
+                  duplicateIdMap: structuralPlan.duplicateIdMap,
+                  duplicateMaps: structuralPlan.duplicateMaps,
+                  affectedLinks: structuralPlan.affectedLinks,
+                  warnings: structuralPlan.warnings,
+                  receiptEnvelope: ' '.repeat(4096)
+                })
+              } catch (error) {
+                if (
+                  error instanceof Error &&
+                  error.message === 'LIMIT_EXCEEDED'
+                )
+                  return reject('LIMIT_EXCEEDED')
+                throw error
+              }
             }
             needsChatGate =
               plans.some((plan) => plan.gate === 'aiChatEditor') ||
@@ -505,6 +583,10 @@ export function createJourneyEditHandler(
             if (preflight) return null
             if (needsChatGate && !(await canEditChat()))
               throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
+            if (structuralPlan) {
+              await executeStructure(tx, structuralPlan)
+              changes.push(...structuralPlan.changes)
+            }
             for (const plan of plans) {
               if (plan.create) {
                 await tx.block.create({ data: plan.create })
@@ -540,7 +622,8 @@ export function createJourneyEditHandler(
             const completedAt = await editDatabaseTime(tx, hooks.now)
             const historyId =
               restoredEntry?.id ?? (changes.length ? randomUUID() : null)
-            const effectIds = plans.length ? [randomUUID()] : []
+            const effectIds =
+              plans.length || structuralPlan?.objectCount ? [randomUUID()] : []
             const changedFields = new Map<
               string,
               Set<OperationReceipt['changedFields'][number]['fields'][number]>
@@ -571,18 +654,30 @@ export function createJourneyEditHandler(
                         : ('redo' as const)
                   }
                 : {}),
-              changedFields: [...changedFields].map(([blockId, fields]) => ({
-                blockId,
-                fields: [...fields]
-              })),
-              idMap,
+              changedFields:
+                structuralPlan?.changedFields ??
+                [...changedFields].map(([blockId, fields]) => ({
+                  blockId,
+                  fields: [...fields]
+                })),
+              idMap: structuralPlan?.idMap ?? idMap,
+              ...(structuralPlan
+                ? {
+                    duplicateIdMap: structuralPlan.duplicateIdMap,
+                    duplicateMaps: structuralPlan.duplicateMaps,
+                    affectedLinks: structuralPlan.affectedLinks
+                  }
+                : {}),
               effectIds,
-              warnings: restoredEntry
-                ? [
-                    'Restored recorded content and presentation. This batch has no upload, generation or provider effects.'
-                  ]
-                : []
+              warnings:
+                structuralPlan?.warnings ??
+                (restoredEntry
+                  ? [
+                      'Restored recorded content and presentation. This batch has no upload, generation or provider effects.'
+                    ]
+                  : [])
             }
+            assertStructuredResultSize(receipt)
             const storedOperation = await tx.mcpEditOperation.create({
               data: {
                 id: receipt.operationId,

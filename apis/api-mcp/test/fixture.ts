@@ -28,6 +28,8 @@ export function fixtureFactory(replica: string) {
       async ({ value, delayMs, ignoreAbort, outputBytes }) => {
         process.send?.({ event: 'fixture_started' })
         await setTimeout(delayMs ?? 0, undefined, {
+          // The shutdown regression deliberately keeps its uncooperative task alive.
+          ref: ignoreAbort === true,
           signal: ignoreAbort ? undefined : requestInfo?.signal
         })
         const output = {

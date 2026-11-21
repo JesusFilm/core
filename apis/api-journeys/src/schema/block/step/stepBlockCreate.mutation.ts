@@ -26,6 +26,11 @@ builder.mutationField('stepBlockCreate', (t) =>
       await authorizeBlockCreate(input.journeyId, context.user)
 
       return await prisma.$transaction(async (tx) => {
+        const siblings = await getSiblingsInternal(input.journeyId, null, tx)
+        const lastOrder = siblings.reduce(
+          (maximum, sibling) => Math.max(maximum, sibling.parentOrder ?? -1),
+          -1
+        )
         const block = await tx.block.create({
           data: {
             ...omit(input, 'journeyId', 'nextBlockId'),
@@ -36,8 +41,7 @@ builder.mutationField('stepBlockCreate', (t) =>
               input.nextBlockId != null
                 ? { connect: { id: input.nextBlockId } }
                 : undefined,
-            parentOrder: (await getSiblingsInternal(input.journeyId, null, tx))
-              .length
+            parentOrder: lastOrder + 1
           }
         })
         await setJourneyUpdatedAt(tx, block)

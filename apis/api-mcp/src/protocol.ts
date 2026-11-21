@@ -30,6 +30,7 @@ import {
   resultContractVersion,
   safeReadError
 } from '@core/yoga/mcp/readContract'
+import { structureCommandNames } from '@core/yoga/mcp/structureContract'
 
 import type { ReadSession } from './reads'
 
@@ -86,9 +87,10 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
       // Resource state, key existence and retention outcomes require an
       // authorized data result. Exceptions cannot bypass final release.
       const code =
-        privateOperationErrorCodes.some(
-          (privateCode) => privateCode === unsafeCode
-        ) ||
+        (unsafeCode !== 'LIMIT_EXCEEDED' &&
+          privateOperationErrorCodes.some(
+            (privateCode) => privateCode === unsafeCode
+          )) ||
         (unsafeCode === 'LIMIT_EXCEEDED' &&
           !(error instanceof InputLimitExceeded))
           ? 'ACCESS_DENIED_OR_NOT_FOUND'
@@ -138,7 +140,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_read',
       description:
-        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read dependencies before proposing changes; preserve omitted content. Published journeys remain read-only. Use journey_edit for mounted content and presentation after a fresh read. Use journey_history for the retained connection batches. Media operations are unavailable.',
+        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read affected content, routes and dependencies before editing; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported structure, routing, content and presentation commands, and journey_history for retained batches. Media acquisition and source attachment are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(journeyInput, { io: 'input' }),
         type: 'object' as const
@@ -148,7 +150,13 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_edit',
       description:
-        'Save one atomic batch of at most 50 typed commands and 200 affected objects in an existing ordinary draft. typography_set edits plain multiline content, mounted whole-block variant, alignment and hex RGB color; variants use the existing journey fonts. button_set edits label, variant, size, enum color and alignment. button_icon_set edits an owned start/end icon name or null and mounted color; no icon IDs or size. spacer_set uses 20–400 in steps of 10. card_set edits layout, hex background including alpha, blur 0–25 and themeMode, with null resetting the theme. card_chat_set requires the current aiChatEditor gate and explicit enabled/collapse booleans. block_add creates Typography, Button or Spacer in an existing Card using a unique lowercase key and before/after/end placement; Buttons include both owned Icons and derive submit role. Reference a preceding created key as $key in blockId or placement. Journey font/theme creation and media slots have separate owners. Read affected content first. Supply current expectedRevision. Retry the exact idempotencyKey and payload after uncertain responses. Omitted and legacy fields survive. Request each persisted field at most once per batch, including no-op values and local/slot aliases; disjoint fields are allowed. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL and whole-journey replacement are unavailable.',
+        'Save one atomic batch of at most 50 commands and 200 affected objects in an existing ordinary draft. Structural commands and non-Typography presentation commands require separate requests. typography_set can be used with either family. Never split a requested atomic gesture across saves. Read affected content and routes first. Supply current expectedRevision. Retry the exact idempotencyKey and payload after uncertain responses. Request each persisted field at most once, including no-op values and local/slot aliases; disjoint fields are allowed. ' +
+        'typography_set edits plain multiline content, whole-block variant, alignment and hex RGB color using existing journey fonts. button_set edits label, variant, size, enum color and alignment. button_icon_set edits an owned start/end icon name or null and mounted color. spacer_set uses 20–400 in steps of 10. card_set edits layout, hex background including alpha, blur 0–25 and themeMode, with null resetting the theme. card_chat_set requires the current aiChatEditor gate and explicit enabled/collapse booleans. ' +
+        'For presentation block_add, supply cardId, block and before/after/end placement. It creates Typography, Button or Spacer; Buttons include both owned Icons and derive submit role. Use $key in blockId or placement to reference a preceding created key. ' +
+        'Structure commands: ' +
+        structureCommandNames.join(', ') +
+        '. Existing references are {id}; new objects have unique lowercase keys and references {local}, including forward references. step_add creates a complete Step/Card and ordered typed content. Structural block_add uses card and content; an Image/Video is an empty placeholder. Placement is before/after an owned sibling anchor or end. Reorder supplies the complete sibling set; Step order determines the start. A Card slug is the Step website slug. Actions configure navigation only. Step duplication clears default continuation, remaps owned references and preserves authorized action destinations. Standalone Video duplication is unavailable. Deleting a requested Step preserves and reports incoming routes. Repair only routes the user requested or accepted; a proposal makes no write. Explicit delete and repair can share the atomic batch. ' +
+        'Omitted and legacy fields and unrelated Host state are preserved. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL, whole-journey replacement, journey-wide font/theme creation, form creation and media source attachment are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
         type: 'object' as const
@@ -183,7 +191,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
       name: 'journey_' + direction,
       description:
         direction +
-        ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. New committed edits clear redo; rejection and exact replay do not. These content and presentation restorations have no external provider effects. Host changes are excluded.',
+        ' the next retained batch in this same connection and ordinary draft. Supply entryId from journey_history, the current expectedRevision and a new idempotencyKey. After an uncertain response retry the exact key and payload, including the old expectedRevision. The whole saved batch changes atomically. Refresh after revision conflicts; affected-field or required-parent conflicts cannot overwrite human work. Delete-only undo restores the same Step and descendant IDs without changing incoming routes. A combined delete and repair restores only its recorded changes and refuses conflicting human route edits. New committed edits clear redo; rejection and exact replay do not. These structure, content and presentation batches have no external provider effects. Host changes are excluded.',
       inputSchema: {
         ...z.toJSONSchema(historyActionInput, { io: 'input' }),
         type: 'object' as const
