@@ -286,7 +286,7 @@ export function createMediaJobs(
     if (
       await tx.mcpMediaChunk.count({ where: { jobId: job.id, stored: false } })
     )
-      return
+      return false
     // Only call while every transfer/dispatch is stopped under the job lock.
     await storage.removeJob(job.id)
     const now = await clock(tx)
@@ -299,6 +299,7 @@ export function createMediaJobs(
         resultExpiresAt: new Date(now.getTime() + resultLifetime)
       }
     })
+    return true
   }
   async function recoverExecution(
     id: string,
@@ -830,7 +831,7 @@ export function createMediaJobs(
           if (receipt.status !== 'rejected') return false
           // The durable rejection survives failed cleanup and worker restarts.
           // Capacity and withdrawal stay pending until private input is removed.
-          await terminalJob(tx, job, 'failed')
+          if (!(await terminalJob(tx, job, 'failed'))) return false
           await tx.mcpMediaExecution.update({
             where: { id: receipt.id },
             data: { status: 'settled', completedAt: await clock(tx) }
