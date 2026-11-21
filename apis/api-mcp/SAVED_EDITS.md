@@ -340,6 +340,8 @@ Run the actual OAuth/MCP HTTP/Hive/owning-PostgreSQL structural tests with:
 ```sh
 node tools/scripts/test-mcp-structure.mjs
 MCP_EDITS_TEST_ISSUE=10557 node tools/scripts/test-mcp-edits.mjs
+# Content/presentation review fixes can run structural regressions in their own databases.
+MCP_STRUCTURE_TEST_ISSUE=10556 node tools/scripts/test-mcp-structure.mjs
 ```
 
 Both routes use issue-specific loopback PostgreSQL databases and restricted auth

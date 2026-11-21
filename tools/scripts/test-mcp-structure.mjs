@@ -4,7 +4,9 @@ import { spawnSync } from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
-const issue = '10557'
+const issue = process.env.MCP_STRUCTURE_TEST_ISSUE ?? '10557'
+if (!['10556', '10557'].includes(issue))
+  throw new Error('Unsupported isolated test issue')
 const source = new URL(
   process.env.MCP_STRUCTURE_TEST_POSTGRES_URL ??
     'postgresql://postgres:postgres@localhost:5432/postgres'
