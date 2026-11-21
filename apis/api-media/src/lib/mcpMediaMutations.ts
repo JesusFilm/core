@@ -21,6 +21,7 @@ interface MutationConfig {
 }
 const active = new AsyncLocalStorage<boolean>()
 const terminalMutationStatus = z.enum(['committed', 'fenced'])
+const executorLock = 'media:sources:executor'
 
 /** Cooperative source writes use one conservative gate, including worker
  * updates. The owning SQL receipt positively fences a delayed executor. An
@@ -62,6 +63,35 @@ export function createMediaMutationGuard(
   ): Promise<T> {
     if (active.getStore()) return operation()
     const intentHash = fingerprint(intent)
+    // Own the source gate before publishing its receipt. Recovery in any worker must
+    // acquire the same lock before it can fence a prepared executor. SQL work
+    // still locks and checks the receipt, even if this transaction is lost.
+    return db.$transaction(
+      async (owner) => {
+        const [ownership] = await owner.$queryRaw<{ acquired: boolean }[]>`
+          SELECT pg_try_advisory_xact_lock(hashtextextended(${executorLock}, 0)) AS acquired
+        `
+        if (!ownership.acquired)
+          throw new GraphQLError(
+            'media source change is pending accepted work',
+            {
+              extensions: { code: 'PERMISSION_CHANGE_PENDING' }
+            }
+          )
+        return runOwned(intentHash, operation, external, transactionOptions)
+      },
+      {
+        maxWait: 10000,
+        timeout: (transactionOptions?.timeout ?? 120000) + 60000
+      }
+    )
+  }
+  async function runOwned<T>(
+    intentHash: string,
+    operation: () => Promise<T>,
+    external: boolean,
+    transactionOptions?: MediaTransactionOptions
+  ): Promise<T> {
     const prior = await db.mcpMediaMutation.findFirst({
       where: {
         intentHash,
@@ -149,27 +179,39 @@ export function createMediaMutationGuard(
       take: 100
     })
     for (const receipt of pending) {
-      await db.$transaction(async (tx) => {
-        await tx.$queryRaw`SELECT id FROM "McpMediaMutation" WHERE id = ${receipt.id} FOR UPDATE`
-        await tx.mcpMediaMutation.updateMany({
-          where: {
-            id: receipt.id,
-            status: { in: ['prepared', 'prepared_external'] }
-          },
-          data: { status: 'fenced', completedAt: new Date() }
-        })
-      })
-      const current = await db.mcpMediaMutation.findUniqueOrThrow({
-        where: { id: receipt.id }
-      })
-      if (current.status !== 'external') {
-        await authority('begin', {
-          changeId: current.id,
-          gateIds: ['media:sources'],
-          intentHash: current.intentHash
-        })
-        await report(current.id, terminalMutationStatus.parse(current.status))
-      }
+      await db.$transaction(
+        async (owner) => {
+          const [ownership] = await owner.$queryRaw<{ acquired: boolean }[]>`
+            SELECT pg_try_advisory_xact_lock(hashtextextended(${executorLock}, 0)) AS acquired
+          `
+          if (!ownership.acquired) return
+          await db.$transaction(async (tx) => {
+            await tx.$queryRaw`SELECT id FROM "McpMediaMutation" WHERE id = ${receipt.id} FOR UPDATE`
+            await tx.mcpMediaMutation.updateMany({
+              where: {
+                id: receipt.id,
+                status: { in: ['prepared', 'prepared_external'] }
+              },
+              data: { status: 'fenced', completedAt: new Date() }
+            })
+          })
+          const current = await db.mcpMediaMutation.findUniqueOrThrow({
+            where: { id: receipt.id }
+          })
+          if (current.status !== 'external') {
+            await authority('begin', {
+              changeId: current.id,
+              gateIds: ['media:sources'],
+              intentHash: current.intentHash
+            })
+            await report(
+              current.id,
+              terminalMutationStatus.parse(current.status)
+            )
+          }
+        },
+        { maxWait: 10000, timeout: 180000 }
+      )
     }
   }
   const wrapped = new WeakSet<object>()

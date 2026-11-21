@@ -1349,6 +1349,138 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect((await image()).deletedAt).toBeNull()
   })
 
+  it.each([
+    { external: false, loseOwner: false },
+    { external: true, loseOwner: false },
+    { external: false, loseOwner: true },
+    { external: true, loseOwner: true }
+  ])(
+    'preserves live source work and fences abandoned work across workers, external=$external, loseOwner=$loseOwner',
+    async ({ external, loseOwner }) => {
+      const worker = new MediaDatabase({
+        adapter: new PrismaPg({ connectionString: mediaUrl })
+      })
+      const recovery = createMediaMutationGuard(
+        {
+          authorityUrl: f.ownerConfig.authorityUrl,
+          authoritySecret: mutationSecret
+        },
+        worker
+      )
+      let ready!: () => void, resume!: () => void
+      const paused = new Promise<void>((resolve) => {
+        ready = resolve
+      })
+      const continuation = new Promise<void>((resolve) => {
+        resume = resolve
+      })
+      const originalFetch = globalThis.fetch
+      let changeId: string | undefined
+      vi.stubGlobal(
+        'fetch',
+        async (input: string | URL | Request, options?: RequestInit) => {
+          const url = input instanceof Request ? input.url : String(input)
+          if (url.endsWith('/internal/permissions/begin') && !changeId) {
+            changeId = JSON.parse(String(options?.body)).changeId
+            const response = await originalFetch(input, options)
+            ready()
+            await continuation
+            return response
+          }
+          return originalFetch(input, options)
+        }
+      )
+      let dispatches = 0
+      const deleting = guard.run(
+        { delete: f.id('asset'), external },
+        async () => {
+          dispatches++
+          await protectedMedia.cloudflareImage.delete({
+            where: { id: f.id('asset') }
+          })
+          return true
+        },
+        external
+      )
+      // Attach a handler before checking the paused executor's receipt.
+      const outcome = deleting.then(
+        (value) => ({ value, error: undefined }),
+        (error: unknown) => ({ value: undefined, error })
+      )
+      try {
+        await paused
+        await recovery.recover()
+        expect(
+          await worker.mcpMediaMutation.findUniqueOrThrow({
+            where: { id: changeId }
+          })
+        ).toMatchObject({
+          status: external ? 'prepared_external' : 'prepared',
+          reportedAt: null
+        })
+        expect(dispatches).toBe(0)
+        await expect(
+          recovery.run({ other: f.id('asset') }, async () => {
+            throw new Error('competing source write must not dispatch')
+          })
+        ).rejects.toThrow('pending accepted work')
+        if (loseOwner) {
+          // Kill only the ownership session in this issue's isolated database.
+          // The executor remains paused, so recovery must positively fence it.
+          const terminated = await worker.$queryRaw<{ terminated: boolean }[]>`
+            SELECT pg_terminate_backend(pid) AS terminated
+            FROM pg_locks
+            WHERE locktype = 'advisory' AND granted AND objsubid = 1
+              AND database = (SELECT oid FROM pg_database WHERE datname = current_database())
+              AND classid = ((hashtextextended('media:sources:executor', 0) >> 32) & 4294967295)::oid
+              AND objid = (hashtextextended('media:sources:executor', 0) & 4294967295)::oid
+          `
+          expect(terminated).toEqual([{ terminated: true }])
+          await recovery.recover()
+          expect(
+            await worker.mcpMediaMutation.findUniqueOrThrow({
+              where: { id: changeId }
+            })
+          ).toMatchObject({
+            status: 'fenced',
+            completedAt: expect.any(Date),
+            reportedAt: expect.any(Date)
+          })
+        }
+      } finally {
+        resume()
+        await outcome
+        vi.unstubAllGlobals()
+        await worker.$disconnect()
+      }
+      if (loseOwner) {
+        expect((await outcome).error).toBeDefined()
+        expect(dispatches).toBe(0)
+        expect(
+          await media.cloudflareImage.findUnique({
+            where: { id: f.id('asset') }
+          })
+        ).not.toBeNull()
+        await guard.run(
+          { delete: f.id('asset'), external },
+          async () => {
+            await protectedMedia.cloudflareImage.delete({
+              where: { id: f.id('asset') }
+            })
+          },
+          external
+        )
+      } else {
+        expect(await outcome).toEqual({ value: true, error: undefined })
+        expect(dispatches).toBe(1)
+      }
+      expect(
+        await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
+      ).toBeNull()
+      expect((await search('library')).json.result?.isError).not.toBe(true)
+    }
+  )
+
   it('fences failed SQL writes and recovers a lost source-change completion report', async () => {
     await expect(
       protectedMedia.muxVideo.update({
