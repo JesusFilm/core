@@ -20,6 +20,11 @@ import {
   mediaSearchInput
 } from '@core/yoga/mcp/mediaContract'
 import {
+  mediaCancelInput,
+  mediaJobInput,
+  mediaStartInput
+} from '@core/yoga/mcp/mediaJobContract'
+import {
   InputLimitExceeded,
   type ReadRequest,
   type ReadResult,
@@ -35,11 +40,6 @@ import {
   safeReadError
 } from '@core/yoga/mcp/readContract'
 import { structureCommandNames } from '@core/yoga/mcp/structureContract'
-import {
-  mediaJobInput,
-  mediaStartInput,
-  mediaCancelInput
-} from '@core/yoga/mcp/mediaJobContract'
 
 import type { ReadSession } from './reads'
 

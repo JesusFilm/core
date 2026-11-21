@@ -5,21 +5,22 @@ import { buildSchema } from 'graphql'
 import { createYoga } from 'graphql-yoga'
 import sharp from 'sharp'
 
-import { PrismaClient as MediaDatabase } from '@core/prisma/media/client'
 import { PrismaClient as LanguagesDatabase } from '@core/prisma/languages/client'
+import { PrismaClient as MediaDatabase } from '@core/prisma/media/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Qualify the actual separately deployed media executor. */
-import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
 import { imageHash } from '../../api-media/src/lib/mcpImageInput'
-import type { MediaJobs } from '../../api-media/src/lib/mcpMediaJobs'
-import type { UploadStorage } from '../../api-media/src/lib/mcpUploadStorage'
 import type { ImageUploadProvider } from '../../api-media/src/lib/mcpImageProvider'
+import type { MediaJobs } from '../../api-media/src/lib/mcpMediaJobs'
+import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
+import type { UploadStorage } from '../../api-media/src/lib/mcpUploadStorage'
+import { captureGates, lockGates } from '../src/store'
 import {
   beginConnectionChange,
   reconcileConnectionChanges
 } from '../src/withdrawal'
-import { captureGates, lockGates } from '../src/store'
+
 /* eslint-enable @nx/enforce-module-boundaries */
 import { structureFixture } from './grantedStructureFixture'
 
@@ -172,6 +173,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       return { url: uploadOrigin + '/mcp/media-sources', internalSecret }
     }
   })
+
   beforeEach(async () => {
     beforeAccept = undefined
     beforeSend = undefined
@@ -196,10 +198,12 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     await media.mcpMediaJob.deleteMany()
     await media.mcpMediaExecution.deleteMany()
   })
+
   afterAll(async () => {
     await media.$disconnect()
     await languages.$disconnect()
   })
+
   const content = (response: Awaited<ReturnType<typeof f.call>>) => {
     expect(response.json.result?.isError, response.text).not.toBe(true)
     expect(response.json.result?.structuredContent, response.text).toBeDefined()
@@ -325,6 +329,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect((await status(id)).state).toBe('ready')
     expect(dispatchCount).toBe(1)
   })
+
   it('accepts exactly 10,000,000 real bytes and requires a separate fresh revision save and undo', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -364,6 +369,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     ).toMatchObject({ uploaded: true })
     expect(objects.size).toBe(0)
   })
+
   it('rejects one byte over, forged size/MIME/extension and replacing the admitted file', async () => {
     const over = await f.call('journey_media_start', {
       journeyId: f.journeyId,
@@ -418,6 +424,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     ).toBe(403)
     expect(dispatchCount).toBe(0)
   })
+
   it('serializes the combined two-job cap across connections and preserves it for processing and unknown outcomes', async () => {
     const token2 = await f.consent()
     const inputs = [0, 1, 2].map(() => ({
@@ -443,6 +450,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect((await status(String(first.jobId))).active).toBe(true)
     expect(dispatchCount).toBe(1)
   })
+
   it('denies another signed-in user and a broader Admin owner with a reduced, expired or disconnected origin grant', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -478,6 +486,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       ).status
     ).toBe(403)
   })
+
   it('preserves the transfer cutoff and rejects further chunks before safely expiring incomplete input', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -504,6 +513,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect((await browser(id)).json.data.state).toBe('transfer_expired')
     expect(await media.mcpMediaJob.count({ where: { active: true } })).toBe(0)
   })
+
   it('allows pre-cutoff completed transfer to process later and retains successful assets after result expiry and disconnect', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -527,6 +537,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       await media.cloudflareImage.findUnique({ where: { id: asset.id } })
     ).toMatchObject({ uploaded: true })
   })
+
   it('keeps withdrawal Pending for an accepted dispatcher and positively fences it before HTTP send', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -561,6 +572,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     ).toMatchObject({ status: 'complete' })
     expect(dispatchCount).toBe(0)
   })
+
   it('reconciles lost provider and tool responses without duplicate allocation and preserves assets on cancellation', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -585,6 +597,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       })
     ).toMatchObject({ uploaded: true })
   })
+
   it('rejects actual excess chunk bytes, checksum substitution, file reuse and unsafe source inputs', async () => {
     const bytes = await fileBytes()
     const job = await start(manifest(bytes))
@@ -651,6 +664,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(unsafe.json.result?.isError).toBe(true)
     expect(dispatchCount).toBe(0)
   })
+
   it('reconciles a lost immutable staging PUT before capacity release or cleanup', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -678,6 +692,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(objects.size).toBe(0)
     expect(dispatchCount).toBe(0)
   })
+
   it('keeps unknown provider cancellation and withdrawal pending until authenticated status proves handoff', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -710,6 +725,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect((await browser(id)).status).toBe(403)
     expect(dispatchCount).toBe(1)
   })
+
   it('denies new final acceptance at expiry and after a captured rights generation changes', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -746,6 +762,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     ).toBe(403)
     expect(dispatchCount).toBe(0)
   })
+
   it('denies dispatch and attachment after publication and preserves a ready library asset', async () => {
     const job = await start()
     const id = String(job.jobId)
@@ -787,6 +804,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       await media.cloudflareImage.findUnique({ where: { id: asset.id } })
     ).toMatchObject({ uploaded: true })
   })
+
   it('retires account authority, purges safe private results and retains unattached successful images and redacted audit', async () => {
     const job = await start()
     const id = String(job.jobId)

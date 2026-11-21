@@ -11,6 +11,12 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { auth } from '@core/yoga/firebaseClient'
 import { readTrustSchema, serviceUrl } from '@core/yoga/mcp/readContract'
 
+import {
+  type ImageUploadProvider,
+  cloudflareUploadProvider
+} from './mcpImageProvider'
+import { mediaJobHttp } from './mcpMediaJobHttp'
+import { createMediaJobs } from './mcpMediaJobs'
 import { createMediaMutationGuard } from './mcpMediaMutations'
 import { mediaProviders } from './mcpMediaProviders'
 import {
@@ -18,10 +24,7 @@ import {
   createMediaSourceHandler,
   useMcpMediaSources
 } from './mcpMediaSources'
-import { createMediaJobs } from './mcpMediaJobs'
-import { mediaJobHttp } from './mcpMediaJobHttp'
-import { cloudflareUploadProvider, type ImageUploadProvider } from './mcpImageProvider'
-import { s3UploadStorage, type UploadStorage } from './mcpUploadStorage'
+import { type UploadStorage, s3UploadStorage } from './mcpUploadStorage'
 
 export function mediaRuntime(
   env: NodeJS.ProcessEnv,
@@ -31,7 +34,12 @@ export function mediaRuntime(
     languages?: Parameters<typeof createMediaSourceHandler>[3]
     providers?: Parameters<typeof createMediaSourceHandler>[4]
     flags?: MediaSourcesConfig['flags']
-    uploads?: { storage: UploadStorage; provider: ImageUploadProvider; browserIdentity: (token: string) => Promise<string>; hooks?: Parameters<typeof createMediaJobs>[5] }
+    uploads?: {
+      storage: UploadStorage
+      provider: ImageUploadProvider
+      browserIdentity: (token: string) => Promise<string>
+      hooks?: Parameters<typeof createMediaJobs>[5]
+    }
   } = {}
 ) {
   if (!env.MCP_MEDIA_ENABLED || env.MCP_MEDIA_ENABLED === 'false')
@@ -95,19 +103,60 @@ export function mediaRuntime(
     dependencies.languages ?? languages,
     dependencies.providers ?? mediaProviders(env)
   )
-  const uploads = env.MCP_IMAGE_UPLOADS_ENABLED === 'true'
-    ? z.object({ adminOrigin: serviceUrl, ingressOrigin: serviceUrl, ticketSecret: z.string().min(32), uploadLimit: z.coerce.number().int().min(1).default(2) }).parse({
-        adminOrigin: env.JOURNEYS_ADMIN_URL, ingressOrigin: env.MCP_MEDIA_INGRESS_URL,
-        ticketSecret: env.MCP_MEDIA_UPLOAD_TICKET_SECRET, uploadLimit: env.MCP_MEDIA_UPLOAD_LIMIT
-      }) : undefined
-  const jobs = uploads ? createMediaJobs({ ...uploads, authorityUrl: config.authorityUrl, authoritySecret: config.authoritySecret }, dependencies.media ?? mediaRootClient, dependencies.journeys ?? journeys,
-    dependencies.uploads?.storage ?? s3UploadStorage(z.string().min(1).parse(env.MCP_MEDIA_STAGING_BUCKET)),
-    dependencies.uploads?.provider ?? cloudflareUploadProvider(env), dependencies.uploads?.hooks) : undefined
+  const uploads =
+    env.MCP_IMAGE_UPLOADS_ENABLED === 'true'
+      ? z
+          .object({
+            adminOrigin: serviceUrl,
+            ingressOrigin: serviceUrl,
+            ticketSecret: z.string().min(32),
+            uploadLimit: z.coerce.number().int().min(1).default(2)
+          })
+          .parse({
+            adminOrigin: env.JOURNEYS_ADMIN_URL,
+            ingressOrigin: env.MCP_MEDIA_INGRESS_URL,
+            ticketSecret: env.MCP_MEDIA_UPLOAD_TICKET_SECRET,
+            uploadLimit: env.MCP_MEDIA_UPLOAD_LIMIT
+          })
+      : undefined
+  const jobs = uploads
+    ? createMediaJobs(
+        {
+          ...uploads,
+          authorityUrl: config.authorityUrl,
+          authoritySecret: config.authoritySecret
+        },
+        dependencies.media ?? mediaRootClient,
+        dependencies.journeys ?? journeys,
+        dependencies.uploads?.storage ??
+          s3UploadStorage(
+            z.string().min(1).parse(env.MCP_MEDIA_STAGING_BUCKET)
+          ),
+        dependencies.uploads?.provider ?? cloudflareUploadProvider(env),
+        dependencies.uploads?.hooks
+      )
+    : undefined
   return {
     mutations,
     jobs,
     plugins: [
-      ...(jobs && uploads ? [mediaJobHttp({ ...config, ...uploads, flags: dependencies.flags ?? (async () => ({ mediaLibrary: true, websiteMode: false })) }, dependencies.media ?? mediaRootClient, jobs, dependencies.uploads?.browserIdentity ?? (async token => (await auth.verifyIdToken(token, true)).uid))] : []),
+      ...(jobs && uploads
+        ? [
+            mediaJobHttp(
+              {
+                ...config,
+                ...uploads,
+                flags:
+                  dependencies.flags ??
+                  (async () => ({ mediaLibrary: true, websiteMode: false }))
+              },
+              dependencies.media ?? mediaRootClient,
+              jobs,
+              dependencies.uploads?.browserIdentity ??
+                (async (token) => (await auth.verifyIdToken(token, true)).uid)
+            )
+          ]
+        : []),
       useMcpMediaSources(handler),
       mutations.plugin,
       {

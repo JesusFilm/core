@@ -1,8 +1,8 @@
 import {
+  DeleteObjectsCommand,
   GetObjectCommand,
-  PutObjectCommand,
   ListObjectsV2Command,
-  DeleteObjectsCommand
+  PutObjectCommand
 } from '@aws-sdk/client-s3'
 
 import { s3UploadStorage } from './mcpUploadStorage'
@@ -19,7 +19,9 @@ vi.mock('@aws-sdk/client-s3', async (importOriginal) => {
 })
 const jobId = '12345678-1234-1234-1234-123456789abc'
 const key = `${jobId}/0-${'a'.repeat(64)}`
+
 beforeEach(() => send.mockReset())
+
 describe('private encrypted staging adapter', () => {
   it('writes only server-owned keys with encryption and reads bounded private bytes', async () => {
     send.mockResolvedValueOnce({}).mockResolvedValueOnce({
@@ -44,6 +46,7 @@ describe('private encrypted staging adapter', () => {
       storage.put('../foreign', Buffer.from('abc'))
     ).rejects.toThrow()
   })
+
   it('rejects unknown, oversized and unexpectedly growing objects', async () => {
     const storage = s3UploadStorage('controlled-private-bucket')
     send.mockResolvedValueOnce({ ContentLength: 10000001, Body: {} })
@@ -58,6 +61,7 @@ describe('private encrypted staging adapter', () => {
     send.mockRejectedValueOnce(new Error('controlled unknown GET'))
     await expect(storage.get(key)).rejects.toThrow()
   })
+
   it('deletes only a stopped job prefix, follows pages and leaves failed cleanup unresolved', async () => {
     send
       .mockResolvedValueOnce({

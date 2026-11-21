@@ -19,9 +19,9 @@ import {
 } from './editContract'
 import { mediaSearchInput } from './mediaContract'
 import {
-  mediaStartInput,
+  mediaCancelInput,
   mediaJobInput,
-  mediaCancelInput
+  mediaStartInput
 } from './mediaJobContract'
 
 export const resultContractVersion = '1' as const

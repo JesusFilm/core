@@ -1,7 +1,7 @@
 import sharp from 'sharp'
 
-import { cloudflareUploadProvider } from './mcpImageProvider'
 import { imageHash, validateImageInput } from './mcpImageInput'
+import { cloudflareUploadProvider } from './mcpImageProvider'
 
 const file = (bytes: Buffer, mime = 'image/png', name = 'fixture.png') => ({
   name,
@@ -9,7 +9,9 @@ const file = (bytes: Buffer, mime = 'image/png', name = 'fixture.png') => ({
   size: bytes.length,
   sha256: imageHash(bytes)
 })
+
 afterEach(() => vi.unstubAllGlobals())
+
 describe('trusted image content validation', () => {
   it.each(['png', 'jpeg', 'webp', 'gif'] as const)(
     'decodes actual %s bytes and derives image metadata',
@@ -27,6 +29,7 @@ describe('trusted image content validation', () => {
       expect(metadata.blurhash).toHaveLength(36)
     }
   )
+
   it('rejects false hashes, format declarations, unsupported decoded content and oversized dimensions', async () => {
     const bytes = await sharp({
       create: { width: 4, height: 3, channels: 3, background: 'red' }
@@ -60,12 +63,14 @@ describe('trusted image content validation', () => {
     ).rejects.toThrow()
   })
 })
+
 describe('credential-owning Cloudflare upload adapter', () => {
   const provider = () =>
     cloudflareUploadProvider({
       CLOUDFLARE_ACCOUNT_ID: 'controlled-account',
       CLOUDFLARE_IMAGES_TOKEN: 'credential-sentinel'
     })
+
   it('uses one persisted custom identity and authenticated status, without exposing credentials or allocation as readiness', async () => {
     const calls: Array<{ url: string; init?: RequestInit }> = []
     vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
@@ -97,6 +102,7 @@ describe('credential-owning Cloudflare upload adapter', () => {
       Authorization: 'Bearer credential-sentinel'
     })
   })
+
   it('keeps missing allocations, forged identities, redirects and lost responses unresolved', async () => {
     const adapter = provider()
     vi.stubGlobal('fetch', async () => new Response(null, { status: 404 }))

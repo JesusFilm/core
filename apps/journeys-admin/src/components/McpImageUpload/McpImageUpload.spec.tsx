@@ -23,6 +23,7 @@ const job = {
   transferDeadline: '2026-11-21T06:00:00Z',
   receivedBytes: 0
 }
+
 afterEach(() => vi.unstubAllGlobals())
 
 it('shows the originating client and deadline and streams the same image separately from attachment', async () => {
@@ -71,6 +72,7 @@ it('shows the originating client and deadline and streams the same image separat
   expect(calls.some((call) => call.url.includes('journey_edit'))).toBe(false)
   expect(calls.every((call) => call.init.credentials === 'omit')).toBe(true)
 })
+
 it('shows origin-grant denial without starting another upload', async () => {
   const fetch = vi.fn(async () => new Response('{}', { status: 403 }))
   vi.stubGlobal('fetch', fetch)

@@ -272,8 +272,13 @@ export function createJourneyReadHandler(
           })
         )
       const dataRequest = body.request
-      const mediaJob = (mediaJobTools as readonly string[]).includes(dataRequest.tool)
-      if ((dataRequest.tool === 'journey_media_search' || mediaJob) && !config.media)
+      const mediaJob = (mediaJobTools as readonly string[]).includes(
+        dataRequest.tool
+      )
+      if (
+        (dataRequest.tool === 'journey_media_search' || mediaJob) &&
+        !config.media
+      )
         throw new Error('Access denied')
       if (
         !sameSecret(
@@ -325,11 +330,20 @@ export function createJourneyReadHandler(
       }
       const mediaSearch =
         dataRequest.tool === 'journey_media_search' || mediaJob
-          ? await mediaRequest(mediaJob ? { ...config.media!, url: new URL('/mcp/media-jobs', config.media!.url).href } : config.media!, credential, {
-              permitId,
-              request: dataRequest,
-              ...(mediaJob ? {} : { search: dataRequest.input })
-            })
+          ? await mediaRequest(
+              mediaJob
+                ? {
+                    ...config.media!,
+                    url: new URL('/mcp/media-jobs', config.media!.url).href
+                  }
+                : config.media!,
+              credential,
+              {
+                permitId,
+                request: dataRequest,
+                ...(mediaJob ? {} : { search: dataRequest.input })
+              }
+            )
           : undefined
       const result = await db.$transaction(
         async (tx) => {
@@ -404,7 +418,13 @@ export function createJourneyReadHandler(
                       journeyId: ids[0],
                       ...z.record(z.string(), z.unknown()).parse(mediaSearch)
                     }
-                  : await snapshot(tx, dataRequest as Parameters<typeof snapshot>[1], claims, allowed, config)
+                  : await snapshot(
+                      tx,
+                      dataRequest as Parameters<typeof snapshot>[1],
+                      claims,
+                      allowed,
+                      config
+                    )
             } catch (error) {
               const failure = z
                 .enum(['REVISION_CONFLICT', 'LIMIT_EXCEEDED'])
