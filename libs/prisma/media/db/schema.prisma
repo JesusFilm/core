@@ -92,6 +92,7 @@ model McpMediaExecution {
   reportedAt DateTime?
 
   @@index([reportedAt])
+  @@index([jobId, createdAt])
 }
 
 // Source mutations close new MCP admission and drain accepted attachments.

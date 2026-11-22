@@ -760,6 +760,17 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       ).toBe(0)
       stagingRejected = false
       if (ending === 'retry') {
+        const substituted = Buffer.from(bytes)
+        substituted[0] ^= 1
+        expect(
+          (
+            await browser(id, 'PUT', undefined, substituted, 'alice', {
+              'X-Upload-Offset': '0',
+              'X-Upload-Sha256': imageHash(substituted)
+            })
+          ).status
+        ).toBe(403)
+        expect(objects.size).toBe(0)
         await upload(id, bytes)
         expect((await status(id)).state).toBe('ready')
         expect(

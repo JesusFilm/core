@@ -635,6 +635,18 @@ export function createMediaJobs(
             duplicate: true
           }
         }
+        // A safely fenced reservation may have been removed for retry. Its
+        // durable receipt still binds the original immutable chunk identity.
+        const original = await tx.mcpMediaExecution.findFirst({
+          where: { jobId, staging: { path: ['offset'], equals: offset } },
+          orderBy: { createdAt: 'asc' },
+          select: { staging: true }
+        })
+        if (original) {
+          const recorded = stagingDescriptor.parse(original.staging)
+          if (recorded.sha256 !== checksum || recorded.bytes !== bytes)
+            throw new Error('IDEMPOTENCY_KEY_REUSED')
+        }
         if (offset !== job.receivedBytes) throw new Error('VALIDATION_FAILED')
         await accept()
         const transferReceivedAt = await clock(tx)
