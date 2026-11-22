@@ -45,7 +45,9 @@ export function createReadSession(
           await postJson(
             new URL('/mcp/reads', config.gatewayUrl).href,
             { request, stage: 'read' },
-            `MCP ${credential}`
+            `MCP ${credential}`,
+            // Owning writes plan and execute within the gateway's 15s budget.
+            15000
           )
         )
       if (outputClosed) throw new Error('Sender closed')
