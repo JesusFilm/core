@@ -52,8 +52,17 @@ Private S3 objects use a server-owned prefix and encryption. There are no public
 staging URLs, presigned object writes or provider upload credentials in tool or
 browser results. Each durable input-write receipt records the exact object hash.
 A lost PUT response is reconciled through a strong read of that immutable object.
-Missing objects and expired leases are not positive stop evidence. Temporary
-cleanup waits for unresolved writes and positively fenced executors.
+The durable pre-write intent is fenced under the receipt lock before any send
+can start. A separate writing marker precedes the external PUT. Qualified S3
+403 authentication/authorization rejections and 400 EntityTooLarge responses
+from one confirmed send, as defined by the [S3 error codes](https://docs.aws.amazon.com/AmazonS3/latest/API/API_Error.html),
+persist rejection, remove only the unstored chunk reservation and settle its
+permit. SDK retries are disabled so a later rejection cannot hide an earlier
+uncertain send. The same file/chunk identity can then retry on the original job
+before its original deadline. Cancellation and expiry can clean up safely.
+Missing objects and expired leases are not positive stop evidence for a writing
+receipt, including legacy staging receipts. Temporary cleanup waits for unresolved
+writes and positively fenced executors.
 
 Admin offers "Resume image processing" for `validating` and `dispatch_pending`,
 including after refresh or a lost final PUT response. It uses the same authorized
@@ -69,6 +78,14 @@ each chunk, dispatch, cancellation and private output are separate bounded actio
 Accepted physical output holds a permit until the actual Node response finishes or
 closes. Unknown provider sends and unconfirmed output executors keep withdrawal
 Pending. Recovery locks the same receipt before fencing a delayed executor.
+Output receipts additionally persist the Linux boot ID, PID namespace, process ID
+and process start ticks. Recovery in that same boot and PID namespace can prove
+the original process exited or its PID was reused, then fence and settle it.
+Live processes, foreign hosts/namespaces, unreadable procfs and legacy receipts
+without an identity remain pending. A process restart is recoverable when it
+shares the original host PID namespace. Rescheduling to another host/container
+namespace requires external positive-stop evidence and is not inferred from age.
+The Media runtime requires readable Linux procfs for new output admission.
 
 Cloudflare POST uses the persisted custom image identity once. A lost response
 never causes another POST. Authenticated Cloudflare details reconcile readiness;

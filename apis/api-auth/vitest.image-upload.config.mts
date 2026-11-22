@@ -10,6 +10,7 @@ export default defineConfig({
       'apis/api-auth/test/grantedImageUpload.spec.ts',
       'apis/api-media/src/lib/mcpImageUploadAdapters.spec.ts',
       'apis/api-media/src/lib/mcpUploadStorage.spec.ts',
+      'apis/api-media/src/lib/mcpMediaExecutor.spec.ts',
       'libs/yoga/src/mcp/*.spec.ts'
     ],
     coverage: {

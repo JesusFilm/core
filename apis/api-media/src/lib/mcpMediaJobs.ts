@@ -24,6 +24,7 @@ import {
 
 import { imageHash, validateImageInput } from './mcpImageInput'
 import type { ImageUploadProvider } from './mcpImageProvider'
+import { mediaExecutorIdentity, mediaExecutorStopped } from './mcpMediaExecutor'
 import type { UploadStorage } from './mcpUploadStorage'
 
 interface JobContext {
@@ -74,6 +75,7 @@ export function createMediaJobs(
     beforeAccept?: (action: Action) => Promise<void>
     beforeSend?: () => Promise<void>
     afterSend?: () => Promise<void>
+    beforeStagingWrite?: () => Promise<void>
   } = {}
 ) {
   const authority = (action: string, body: unknown) =>
@@ -181,7 +183,14 @@ export function createMediaJobs(
       )
     if (context.grantVersion && context.grantVersion !== prepared.grantVersion)
       denied()
-    await media.mcpMediaExecution.create({ data: { id: prepared.permitId } })
+    await media.mcpMediaExecution.create({
+      data: {
+        id: prepared.permitId,
+        ...(deferred === 'output'
+          ? { executor: await mediaExecutorIdentity() }
+          : {})
+      }
+    })
     try {
       await hooks.afterPrepare?.(action)
       const result = await journeys.$transaction(
@@ -310,11 +319,21 @@ export function createMediaJobs(
       const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
         where: { id }
       })
-      if (receipt.status === 'prepared' || receipt.status === 'accepted') {
+      if (
+        [
+          'prepared',
+          'accepted',
+          'staging_prepared',
+          'staging_rejected'
+        ].includes(receipt.status) ||
+        (receipt.status === 'output' &&
+          (await mediaExecutorStopped(receipt.executor)))
+      ) {
         const now = await clock(tx)
         const lastTransition = receipt.completedAt ?? receipt.createdAt
         if (
           mode === 'background' &&
+          !['output', 'staging_rejected'].includes(receipt.status) &&
           now.getTime() - lastTransition.getTime() < backgroundFenceDelayMs
         )
           return receipt.status
@@ -344,13 +363,14 @@ export function createMediaJobs(
       return receipt.status
     })
     if (status === 'settled' || status === 'fenced') await settle(id)
-    else if (status === 'staging') await reconcileStaging(id)
+    else if (['staging', 'writing'].includes(status)) await reconcileStaging(id)
   }
   async function acknowledgeStaging(tx: Transaction, id: string) {
     const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
       where: { id }
     })
-    if (receipt.status !== 'staging' || !receipt.jobId) denied()
+    if (!['staging', 'writing'].includes(receipt.status) || !receipt.jobId)
+      denied()
     const input = stagingDescriptor.parse(receipt.staging)
     const job = await lockJob(tx, receipt.jobId)
     const file = mediaFile.parse(job.file)
@@ -387,7 +407,7 @@ export function createMediaJobs(
         const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
           where: { id }
         })
-        if (receipt.status !== 'staging') return false
+        if (!['staging', 'writing'].includes(receipt.status)) return false
         const input = stagingDescriptor.parse(receipt.staging)
         const bytes = await storage.get(input.objectKey).catch(() => undefined)
         if (
@@ -663,7 +683,21 @@ export function createMediaJobs(
       if (receipt.status !== 'accepted') denied()
       await tx.mcpMediaExecution.update({
         where: { id: plan.permitId },
-        data: { status: 'staging' }
+        data: { status: 'staging_prepared' }
+      })
+    })
+    await hooks.beforeStagingWrite?.()
+    // Recovery can fence staging intents. A writing marker means an external
+    // send may have happened and requires storage evidence to settle.
+    await media.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${plan.permitId} FOR UPDATE`
+      const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
+        where: { id: plan.permitId }
+      })
+      if (receipt.status !== 'staging_prepared') denied()
+      await tx.mcpMediaExecution.update({
+        where: { id: plan.permitId },
+        data: { status: 'writing' }
       })
     })
     try {
@@ -673,13 +707,19 @@ export function createMediaJobs(
           const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
             where: { id: plan.permitId }
           })
-          if (receipt.status !== 'staging') denied()
-          await storage.put(plan.objectKey, plan.data)
+          if (receipt.status !== 'writing') denied()
+          if ((await storage.put(plan.objectKey, plan.data)) === 'rejected') {
+            await tx.mcpMediaExecution.update({
+              where: { id: plan.permitId },
+              data: { status: 'staging_rejected', completedAt: await clock(tx) }
+            })
+            return
+          }
           await acknowledgeStaging(tx, plan.permitId)
         },
         { timeout: 60000 }
       )
-      await settle(plan.permitId)
+      await recoverExecution(plan.permitId)
     } catch {
       // A lost PUT response can leave an input write running. Confirm the exact
       // immutable object through strong storage reads before settlement/cleanup.

@@ -132,6 +132,7 @@ const cobertura = readFileSync(
 for (const module of [
   'apis/api-auth/src/mediaJobs.ts',
   'apis/api-media/src/lib/mcpMediaJobs.ts',
+  'apis/api-media/src/lib/mcpMediaExecutor.ts',
   'apis/api-media/src/lib/mcpMediaJobHttp.ts',
   'apis/api-media/src/lib/mcpImageInput.ts',
   'apis/api-journeys/src/lib/mcpMediaClient.ts',

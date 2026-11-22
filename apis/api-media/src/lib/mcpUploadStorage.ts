@@ -9,7 +9,7 @@ import {
 import { imageByteLimit } from '@core/yoga/mcp/mediaJobContract'
 
 export interface UploadStorage {
-  put(key: string, bytes: Buffer): Promise<void>
+  put(key: string, bytes: Buffer): Promise<void | 'rejected'>
   get(key: string): Promise<Buffer>
   removeJob(jobId: string): Promise<void>
 }
@@ -18,7 +18,8 @@ export interface UploadStorage {
  * and bucket public-access/least-privilege policy are deployment requirements.
  */
 export function s3UploadStorage(bucket: string): UploadStorage {
-  const client = new S3Client({})
+  // A later rejection cannot qualify an earlier, automatically retried send.
+  const client = new S3Client({ maxAttempts: 1 })
   const keyFor = (key: string) => {
     if (!/^[a-f0-9-]{36}\/[0-9]+-[a-f0-9]{64}$/.test(key))
       throw new Error('Invalid staging key')
@@ -26,15 +27,35 @@ export function s3UploadStorage(bucket: string): UploadStorage {
   }
   return {
     async put(key, bytes) {
-      await client.send(
-        new PutObjectCommand({
-          Bucket: bucket,
-          Key: keyFor(key),
-          Body: bytes,
-          ServerSideEncryption: 'AES256',
-          ContentType: 'application/octet-stream'
-        })
-      )
+      try {
+        await client.send(
+          new PutObjectCommand({
+            Bucket: bucket,
+            Key: keyFor(key),
+            Body: bytes,
+            ServerSideEncryption: 'AES256',
+            ContentType: 'application/octet-stream'
+          })
+        )
+      } catch (error) {
+        const failure = error as {
+          name?: string
+          $metadata?: { httpStatusCode?: number; attempts?: number }
+        }
+        const status = failure.$metadata?.httpStatusCode
+        if (
+          failure.$metadata?.attempts === 1 &&
+          ((status === 403 &&
+            [
+              'AccessDenied',
+              'InvalidAccessKeyId',
+              'SignatureDoesNotMatch'
+            ].includes(failure.name ?? '')) ||
+            (status === 400 && failure.name === 'EntityTooLarge'))
+        )
+          return 'rejected'
+        throw error
+      }
     },
     async get(key) {
       const response = await client.send(

@@ -85,6 +85,7 @@ model McpMediaExecution {
   id String @id
   jobId String?
   staging Json?
+  executor Json?
   status String @default("prepared")
   createdAt DateTime @default(now())
   completedAt DateTime?

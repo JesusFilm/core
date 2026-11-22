@@ -47,6 +47,50 @@ describe('private encrypted staging adapter', () => {
     ).rejects.toThrow()
   })
 
+  it.each([
+    [403, 'AccessDenied', 'rejected'],
+    [403, 'InvalidAccessKeyId', 'rejected'],
+    [403, 'SignatureDoesNotMatch', 'rejected'],
+    [400, 'EntityTooLarge', 'rejected'],
+    [413, 'EntityTooLarge', 'unknown'],
+    [500, 'InternalError', 'unknown'],
+    [403, 'UnexpectedError', 'unknown'],
+    [undefined, 'TimeoutError', 'unknown']
+  ])(
+    'classifies storage rejection %s %s without treating uncertainty as stop evidence',
+    async (status, name, outcome) => {
+      const error = Object.assign(new Error('controlled storage failure'), {
+        name,
+        $metadata: { httpStatusCode: status, attempts: 1 }
+      })
+      send.mockRejectedValueOnce(error)
+      const result = s3UploadStorage('controlled-private-bucket').put(
+        key,
+        Buffer.from('abc')
+      )
+      if (outcome === 'rejected') await expect(result).resolves.toBe('rejected')
+      else await expect(result).rejects.toBe(error)
+    }
+  )
+
+  it.each([undefined, 2])(
+    'keeps rejection with %s send attempts uncertain',
+    async (attempts) => {
+      send.mockRejectedValueOnce(
+        Object.assign(new Error('uncertain earlier send'), {
+          name: 'AccessDenied',
+          $metadata: { httpStatusCode: 403, attempts }
+        })
+      )
+      await expect(
+        s3UploadStorage('controlled-private-bucket').put(
+          key,
+          Buffer.from('abc')
+        )
+      ).rejects.toThrow('uncertain earlier send')
+    }
+  )
+
   it('rejects unknown, oversized and unexpectedly growing objects', async () => {
     const storage = s3UploadStorage('controlled-private-bucket')
     send.mockResolvedValueOnce({ ContentLength: 10000001, Body: {} })

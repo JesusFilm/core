@@ -1,5 +1,8 @@
+import { fork } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
+import { once } from 'node:events'
 import { createServer } from 'node:http'
+import { resolve } from 'node:path'
 
 import { buildSchema } from 'graphql'
 import { createYoga } from 'graphql-yoga'
@@ -49,16 +52,20 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let rejectDispatch = false
   let cleanupUnavailable = false
   let stagingUnknown = false
+  let stagingRejected = false
   let mediaLibrary = true
   let providerReady = true
   let providerUnknown = false
   let jobs: MediaJobs
   let uploadOrigin = ''
+  let authorityUrl = ''
   let afterPrepare: ((action: string) => Promise<void>) | undefined
   let beforeAccept: ((action: string) => Promise<void>) | undefined
   let beforeSend: (() => Promise<void>) | undefined
+  let beforeStagingWrite: (() => Promise<void>) | undefined
   const storage: UploadStorage = {
     async put(key, bytes) {
+      if (stagingRejected) return 'rejected' as const
       objects.set(key, Buffer.from(bytes))
       if (stagingUnknown) throw new Error('Controlled lost storage response')
     },
@@ -102,6 +109,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         'controlled-upload-permission-10560-at-least-32-characters'
     },
     async media({ config, journeys, publicKey, listen }) {
+      authorityUrl = config.AUTH_ISSUER
       await media.mcpMediaChunk.deleteMany()
       await media.mcpMediaJob.deleteMany()
       await media.mcpMediaExecution.deleteMany()
@@ -160,7 +168,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
             hooks: {
               afterPrepare: async (action) => afterPrepare?.(action),
               beforeAccept: async (action) => beforeAccept?.(action),
-              beforeSend: async () => beforeSend?.()
+              beforeSend: async () => beforeSend?.(),
+              beforeStagingWrite: async () => beforeStagingWrite?.()
             }
           }
         }
@@ -184,11 +193,13 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     afterPrepare = undefined
     beforeAccept = undefined
     beforeSend = undefined
+    beforeStagingWrite = undefined
     dispatchCount = 0
     loseDispatch = false
     rejectDispatch = false
     cleanupUnavailable = false
     stagingUnknown = false
+    stagingRejected = false
     providerReady = true
     mediaLibrary = true
     providerUnknown = false
@@ -719,33 +730,254 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(dispatchCount).toBe(0)
   })
 
-  it('reconciles a lost immutable staging PUT before capacity release or cleanup', async () => {
-    const job = await start()
-    const id = String(job.jobId)
-    const bytes = await fileBytes()
-    await browser(id, 'POST', 'bind', JSON.stringify(manifest(bytes)))
-    stagingUnknown = true
-    const response = await browser(id, 'PUT', undefined, bytes, 'alice', {
-      'X-Upload-Offset': '0',
-      'X-Upload-Sha256': imageHash(bytes)
-    })
-    expect(response.status).toBe(200)
-    expect(response.json.data.receivedBytes).toBe(0)
-    await browser(id, 'POST', 'cancel')
-    await media.mcpMediaJob.update({
-      where: { id },
-      data: { transferDeadline: new Date(Date.now() - 1) }
-    })
-    await jobs.recover()
-    expect((await browser(id)).json.data.active).toBe(true)
-    expect(objects.size).toBe(1)
-    stagingUnknown = false
-    await jobs.recover()
-    expect((await browser(id)).json.data.state).toBe('cancelled')
-    expect((await browser(id)).json.data.active).toBe(false)
-    expect(objects.size).toBe(0)
-    expect(dispatchCount).toBe(0)
+  it.each(['retry', 'cancel', 'expire'] as const)(
+    'recovers a definitively rejected staging write through %s without resetting its identity or deadline',
+    async (ending) => {
+      const id = String((await start()).jobId)
+      const bytes = await fileBytes()
+      await browser(id, 'POST', 'bind', JSON.stringify(manifest(bytes)))
+      const original = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id }
+      })
+      stagingRejected = true
+      await browser(id, 'PUT', undefined, bytes, 'alice', {
+        'X-Upload-Offset': '0',
+        'X-Upload-Sha256': imageHash(bytes)
+      })
+      expect(
+        await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      ).toMatchObject({
+        receivedBytes: 0,
+        active: true,
+        transferDeadline: original.transferDeadline,
+        file: original.file
+      })
+      expect(await media.mcpMediaChunk.count({ where: { jobId: id } })).toBe(0)
+      expect(
+        await media.mcpMediaExecution.count({
+          where: { jobId: id, reportedAt: null }
+        })
+      ).toBe(0)
+      stagingRejected = false
+      if (ending === 'retry') {
+        await upload(id, bytes)
+        expect((await status(id)).state).toBe('ready')
+        expect(
+          await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+        ).toMatchObject({
+          transferDeadline: original.transferDeadline,
+          file: original.file
+        })
+        return
+      }
+      if (ending === 'cancel') await browser(id, 'POST', 'cancel')
+      else
+        await media.mcpMediaJob.update({
+          where: { id },
+          data: { transferDeadline: new Date(0) }
+        })
+      const change = await withdraw(id)
+      await jobs.recover()
+      await reconcileConnectionChanges(f.auth)
+      expect(
+        await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      ).toMatchObject({
+        active: false,
+        state: ending === 'cancel' ? 'cancelled' : 'transfer_expired'
+      })
+      expect(
+        await f.auth.connectionChange.findUniqueOrThrow({
+          where: { id: change.id }
+        })
+      ).toMatchObject({ status: 'complete' })
+    }
+  )
+
+  it.each(['cancel', 'expire'] as const)(
+    'fences an unsent staging intent before %s and settles withdrawal',
+    async (ending) => {
+      const id = String((await start()).jobId)
+      const bytes = await fileBytes()
+      await browser(id, 'POST', 'bind', JSON.stringify(manifest(bytes)))
+      let release!: () => void
+      let reached!: () => void
+      const paused = new Promise<void>((resolve) => {
+        reached = resolve
+      })
+      beforeStagingWrite = async () => {
+        reached()
+        await new Promise<void>((resolve) => {
+          release = resolve
+        })
+      }
+      const pending = browser(id, 'PUT', undefined, bytes, 'alice', {
+        'X-Upload-Offset': '0',
+        'X-Upload-Sha256': imageHash(bytes)
+      })
+      await paused
+      const receipt = await media.mcpMediaExecution.findFirstOrThrow({
+        where: { jobId: id, status: 'staging_prepared' }
+      })
+      try {
+        if (ending === 'cancel') await browser(id, 'POST', 'cancel')
+        else
+          await media.mcpMediaJob.update({
+            where: { id },
+            data: { transferDeadline: new Date(0) }
+          })
+        const change = await withdraw(id)
+        await jobs.recoverExecution(receipt.id)
+        await jobs.recover()
+        await reconcileConnectionChanges(f.auth)
+        expect(
+          await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+        ).toMatchObject({
+          state: ending === 'cancel' ? 'cancelled' : 'transfer_expired',
+          active: false
+        })
+        expect(
+          await f.auth.connectionChange.findUniqueOrThrow({
+            where: { id: change.id }
+          })
+        ).toMatchObject({ status: 'complete' })
+        expect(
+          await f.auth.readPermit.findUniqueOrThrow({
+            where: { id: receipt.id }
+          })
+        ).toMatchObject({ status: 'settled' })
+      } finally {
+        release()
+        await pending
+      }
+      expect(objects.size).toBe(0)
+    }
+  )
+
+  it('recovers an output receipt only after its original process is proven stopped', async () => {
+    const id = String((await start()).jobId)
+    const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    const context = {
+      userId: job.userId,
+      connectionId: job.connectionId,
+      journeyId: job.journeyId
+    }
+    const child = fork(
+      resolve('apis/api-media/test/mcpMediaOutputExecutor.ts'),
+      [],
+      {
+        execArgv: ['--import', 'tsx'],
+        env: {
+          ...process.env,
+          TSX_TSCONFIG_PATH: resolve('apis/api-auth/tsconfig.json')
+        },
+        stdio: ['ignore', 'ignore', 'inherit', 'ipc']
+      }
+    )
+    await once(child, 'spawn')
+    try {
+      const accepted = once(child, 'message', {
+        signal: AbortSignal.timeout(10000)
+      })
+      child.send({
+        config: {
+          authorityUrl,
+          authoritySecret: mediaSecret,
+          ticketSecret: 'controlled-upload-ticket-10560-at-least-32-characters',
+          adminOrigin: 'http://127.0.0.1:4200',
+          ingressOrigin: uploadOrigin,
+          uploadLimit: 2
+        },
+        context,
+        jobId: id,
+        mediaUrl,
+        journeysUrl
+      })
+      const [message] = (await accepted) as [
+        { permitId?: string; error?: string }
+      ]
+      expect(message.error).toBeUndefined()
+      expect(message.permitId).toBeDefined()
+      const receiptId = message.permitId!
+      const receipt = await media.mcpMediaExecution.findUniqueOrThrow({
+        where: { id: receiptId }
+      })
+      expect(receipt.executor).toMatchObject({ pid: child.pid })
+      const change = await withdraw(id)
+      await jobs.recover()
+      await reconcileConnectionChanges(f.auth)
+      expect(
+        await f.auth.connectionChange.findUniqueOrThrow({
+          where: { id: change.id }
+        })
+      ).toMatchObject({ status: 'pending' })
+      expect(
+        await media.mcpMediaExecution.findUniqueOrThrow({
+          where: { id: receiptId }
+        })
+      ).toMatchObject({ status: 'output', reportedAt: null })
+      const exit = once(child, 'exit')
+      child.kill('SIGKILL')
+      await exit
+      await jobs.recover()
+      await reconcileConnectionChanges(f.auth)
+      expect(
+        await media.mcpMediaExecution.findUniqueOrThrow({
+          where: { id: receiptId }
+        })
+      ).toMatchObject({ status: 'fenced', reportedAt: expect.any(Date) })
+      expect(
+        await f.auth.connectionChange.findUniqueOrThrow({
+          where: { id: change.id }
+        })
+      ).toMatchObject({ status: 'complete' })
+    } finally {
+      if (child.exitCode === null) child.kill('SIGKILL')
+    }
   })
+
+  it.each(['writing', 'staging'])(
+    'keeps a missing object in uncertain %s pending until its immutable write is observed',
+    async (receiptStatus) => {
+      const job = await start()
+      const id = String(job.jobId)
+      const bytes = await fileBytes()
+      await browser(id, 'POST', 'bind', JSON.stringify(manifest(bytes)))
+      stagingUnknown = true
+      const response = await browser(id, 'PUT', undefined, bytes, 'alice', {
+        'X-Upload-Offset': '0',
+        'X-Upload-Sha256': imageHash(bytes)
+      })
+      expect(response.status).toBe(200)
+      expect(response.json.data.receivedBytes).toBe(0)
+      const objectKey = [...objects.keys()][0]
+      objects.clear()
+      await media.mcpMediaExecution.updateMany({
+        where: { jobId: id, status: 'writing' },
+        data: { status: receiptStatus }
+      })
+      await browser(id, 'POST', 'cancel')
+      await media.mcpMediaJob.update({
+        where: { id },
+        data: { transferDeadline: new Date(Date.now() - 1) }
+      })
+      await jobs.recover()
+      expect((await browser(id)).json.data.active).toBe(true)
+      expect(objects.size).toBe(0)
+      stagingUnknown = false
+      await jobs.recover()
+      expect((await browser(id)).json.data.active).toBe(true)
+      expect(
+        await media.mcpMediaChunk.count({ where: { jobId: id, stored: false } })
+      ).toBe(1)
+      // The controlled remote store completes the earlier uncertain write later.
+      objects.set(objectKey, Buffer.from(bytes))
+      await jobs.recover()
+      expect((await browser(id)).json.data.state).toBe('cancelled')
+      expect((await browser(id)).json.data.active).toBe(false)
+      expect(objects.size).toBe(0)
+      expect(dispatchCount).toBe(0)
+    }
+  )
 
   it('keeps unknown provider cancellation and withdrawal pending until authenticated status proves handoff', async () => {
     const job = await start()
