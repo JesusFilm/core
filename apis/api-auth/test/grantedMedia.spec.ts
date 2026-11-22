@@ -1572,11 +1572,14 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     const findSource = media.muxVideo.findFirst.bind(media.muxVideo)
     const lookup = vi
       .spyOn(media.muxVideo, 'findFirst')
-      .mockImplementationOnce(async (args) => {
-        const source = await findSource(args)
-        ready()
-        await continuation
-        return source
+      .mockImplementationOnce((args) => {
+        const query = findSource(args)
+        const result = query.then(async (source) => {
+          ready()
+          await continuation
+          return source
+        })
+        return Object.assign(query, { then: result.then.bind(result) })
       })
     const stale = remove()
     try {
