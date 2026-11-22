@@ -1,5 +1,47 @@
 # Saved draft edits
 
+## Journey metadata, appearance and menus
+
+Issue #10561 extends `journey_edit` with the following mounted controls. All use
+the existing Admin rights, edit grant, ordinary-draft, revision, exact-replay and
+private-output checks. Undo and redo recheck current rights and feature gates.
+
+| Command                                                    | Owned fields and behavior                                                                                                                                                                                                                                                                                                                        |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `journey_details_set`                                      | Required nonempty title, nullable description and language ID. Omitted fields are retained.                                                                                                                                                                                                                                                      |
+| `journey_social_set`                                       | Social title and description, bounded to 49 and 179 characters. Empty text clears them.                                                                                                                                                                                                                                                          |
+| `journey_fonts_set`                                        | Header/body/label choices from the corresponding Admin font catalogs. Creates an owned theme when absent; otherwise patches only requested fonts.                                                                                                                                                                                                |
+| `journey_appearance_set`                                   | Website mode under `websiteMode`, nullable display title, website menu icon, and flow-mode share/like/dislike reaction switches. Null display title restores the social-title fallback; empty text hides it.                                                                                                                                     |
+| `menu_create`                                              | In website mode under `websiteMode`, creates one Step, one dark/base Card, heading, subheading and three actionless Buttons. Returns all seven IDs and sets the journey menu reference. The batch key supports 32 characters; descendant receipt keys use `.card`, `.heading`, `.subheading` and `.button1`, `.button2` and `.button3` suffixes. |
+| `menu_remove`                                              | Resolves the current owned menu, soft-deletes its complete subtree, clears its reference and reports surviving inbound links.                                                                                                                                                                                                                    |
+| `chat_button_add`, `chat_button_set`, `chat_button_remove` | Owned platform/link rows, at most two. Uses the mounted platform enum, nullable clears and safe HTTP/email/phone/SMS link normalization. Template customization is preserved and cannot be set.                                                                                                                                                  |
+| `tracking_set`                                             | Card, Button, RadioOption and inline Video event labels under `editJourneyTrackingMetrics`; Video also supports an end label. Explicit null clears a label.                                                                                                                                                                                      |
+
+`card_slug_set` writes the owning Step's website slug, with current website
+eligibility and journey-scoped uniqueness. `media_slot_set` and `media_slot_clear`
+reuse #10559's owned logo/social-image participants. `card_chat_set` remains owned
+by Card presentation under `aiChatEditor`. Card starters belong to #10555.
+
+The font catalogs come from `libs/shared/ui/src/libs/fontFamilies/fontFamilies.ts`.
+The menu recipe follows Admin's `MenuActionButton`. Generic Journey palettes,
+visibility fields without mounted writers, creator/template/lifecycle settings,
+Host profiles and assignments, public slugs/domains, sharing administration,
+analytics, visitor data and integration credentials remain excluded. The share
+reaction configures player presentation only.
+
+History stores affected journey fields and owned theme/chat rows. It restores the
+same IDs, checks complete rows before entity removal, and preserves later changes
+to unrelated fields. A child-write failure rolls the gesture, revision, receipt,
+history and effect record back together. Successful library assets are retained.
+
+Run `node tools/scripts/test-mcp-appearance.mjs` for isolated issue 10561 PostgreSQL
+setup and the OAuth/MCP/gateway/Journeys integration suite. Only identity, selection,
+feature flags and explicit fault hooks are controlled. Required tests cannot skip.
+Its dedicated `coverage/integration/mcp-appearance` report includes executed owning
+and shared modules and uploads separately in the `appearance` CI job. Admin
+GraphQL assertions are automated; browser rendering, private playback and real
+client qualification remain deferred to the assembled feature.
+
 ## Mounted content and presentation
 
 Issue #10556 extends the same owning participant, replay namespace and persistent

@@ -3,6 +3,12 @@ import { createHash } from 'node:crypto'
 import { z } from 'zod'
 
 import {
+  type AppearanceCommand,
+  appearanceChangedFields,
+  appearanceCommand,
+  isAppearanceCommand
+} from './appearanceContract'
+import {
   type MediaCommand,
   mediaCommand,
   mediaCommandNames
@@ -54,12 +60,14 @@ const editCommand = z.union([
   typographyCommand,
   presentationCommand,
   structureCommand,
-  mediaCommand
+  mediaCommand,
+  appearanceCommand
 ])
 
 export function isStructureCommand(
   command: z.infer<typeof editCommand>
-): command is StructureCommand | MediaCommand {
+): command is StructureCommand | MediaCommand | AppearanceCommand {
+  if (isAppearanceCommand(command)) return true
   if (command.type === 'block_add') return 'card' in command
   return [...structureCommandNames, ...mediaCommandNames].some(
     (name) => name === command.type
@@ -163,6 +171,7 @@ export const operationReceipt = z
               .array(
                 z.enum([
                   ...changedField.options,
+                  ...appearanceChangedFields,
                   ...presentationFields,
                   'deleted'
                 ])
@@ -175,7 +184,11 @@ export const operationReceipt = z
     idMap: z.record(
       z.union([
         localKey,
-        z.string().regex(/^[a-z][a-z0-9_]{0,31}\.(?:startIcon|endIcon)$/)
+        z
+          .string()
+          .regex(
+            /^[a-z0-9_]{1,32}\.(?:startIcon|endIcon|card|heading|subheading|button[123])$/
+          )
       ]),
       id
     ),

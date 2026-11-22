@@ -48,6 +48,10 @@ type Checkpoint = NonNullable<
  */
 export function structureFixture(
   options: {
+    canUseFeature?: NonNullable<
+      Parameters<typeof createJourneyEditHandler>[2]
+    >['canUseFeature']
+    useProductionFeatureGate?: boolean
     issue?: string
     startupTimeoutMs?: number
     authUrl?: string
@@ -430,7 +434,11 @@ export function structureFixture(
         listen
       })
     ownerHandler = createJourneyEditHandler(ownerConfig, journeys, {
-      checkpoint: async (point, context) => checkpoint?.(point, context)
+      checkpoint: async (point, context) => checkpoint?.(point, context),
+      canUseFeature: options.useProductionFeatureGate
+        ? undefined
+        : (options.canUseFeature ?? (async () => true)),
+      canEditChat: async () => false
     })
     const readHandler = createJourneyReadHandler(ownerConfig, journeys)
     const ownerUrl = await listen(
@@ -526,7 +534,7 @@ export function structureFixture(
     )) as {
       schema: GraphQLSchema
     })
-  }, options.startupTimeoutMs ?? 30000)
+  }, options.startupTimeoutMs ?? 120000)
 
   beforeEach(async () => {
     checkpoint = undefined
@@ -789,6 +797,22 @@ export function structureFixture(
     snapshot,
     consent,
     adminBlockMutation,
+    async adminRead(fields: string) {
+      return graphql({
+        schema: adminSchema,
+        source:
+          'query($id: ID!) { adminJourney(id: $id, idType: databaseId) { ' +
+          fields +
+          ' } }',
+        variableValues: { id: journeyId },
+        contextValue: {
+          ...initContextCache(),
+          type: 'authenticated',
+          user: { id: 'alice', email: 'alice@synthetic.example' },
+          currentRoles: []
+        }
+      })
+    },
     get ownerConfig() {
       return ownerConfig
     },

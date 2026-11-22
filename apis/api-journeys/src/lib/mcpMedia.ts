@@ -449,7 +449,8 @@ export function applyMedia(
 export async function validateMediaPlan(
   tx: Prisma.TransactionClient,
   plan: StructurePlan,
-  projection?: MediaProjection
+  projection?: MediaProjection,
+  currentWebsite = projection?.website === true
 ): Promise<void> {
   for (const id of plan.blockWrites.map((write) => write.id).sort())
     await tx.$queryRaw`SELECT id FROM "Block" WHERE id = ${id} FOR UPDATE`
@@ -466,7 +467,20 @@ export async function validateMediaPlan(
       select: { id: true }
     }))
   )
-    checkLogo(projection)
+    checkLogo(
+      projection
+        ? {
+            ...projection,
+            website:
+              projection.website ||
+              (currentWebsite &&
+                Object.prototype.hasOwnProperty.call(
+                  plan.journeyPatch,
+                  'website'
+                ))
+          }
+        : undefined
+    )
   const get = async (id: string) => {
     const current = await tx.block.findUnique({
       where: { id, journeyId: plan.journeyId }

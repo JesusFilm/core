@@ -4,7 +4,12 @@ import { spawnSync } from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
-const issue = process.env.MCP_STRUCTURE_TEST_ISSUE ?? '10557'
+const suite = process.env.MCP_STRUCTURE_TEST_SUITE ?? 'structure'
+if (!['structure', 'appearance'].includes(suite))
+  throw new Error('Unknown MCP integration suite')
+const issue =
+  process.env.MCP_STRUCTURE_TEST_ISSUE ??
+  (suite === 'appearance' ? '10561' : '10557')
 if (!/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue))
   throw new Error('Use an issue-specific isolated database name')
 const source = new URL(
@@ -102,7 +107,7 @@ run(
     'vitest',
     'run',
     '--config',
-    'apis/api-auth/vitest.structure.config.mts'
+    `apis/api-auth/vitest.${suite}.config.mts`
   ],
   {
     STRUCTURE_TEST_ISSUE: issue,
@@ -113,7 +118,7 @@ run(
   }
 )
 
-const reportDirectory = 'coverage/integration/mcp-structure'
+const reportDirectory = `coverage/integration/mcp-${suite}`
 const tests = JSON.parse(
   readFileSync(`${reportDirectory}/test-results.json`, 'utf8')
 )
@@ -124,18 +129,35 @@ if (!tests.numTotalTests || tests.numPassedTests !== tests.numTotalTests)
 const coverage = JSON.parse(
   readFileSync(`${reportDirectory}/coverage-final.json`, 'utf8')
 )
-for (const module of [
-  'apis/api-journeys/src/lib/mcpStructure.ts',
-  'apis/api-journeys/src/lib/mcpStructureState.ts',
-  'apis/api-journeys/src/lib/mcpStructureHistory.ts',
-  'apis/api-journeys/src/schema/block/service.ts',
-  'apis/api-journeys/src/schema/block/blockDelete.mutation.ts',
-  'apis/api-journeys/src/schema/block/blockRestore.mutation.ts',
-  'libs/yoga/src/mcp/structureContract.ts'
-]) {
+for (const module of suite === 'appearance'
+  ? [
+      'apis/api-journeys/src/lib/mcpAppearance.ts',
+      'apis/api-journeys/src/lib/mcpAppearanceEntities.ts',
+      'libs/yoga/src/mcp/appearanceContract.ts',
+      'libs/shared/ui/src/libs/fontFamilies/fontFamilies.ts'
+    ]
+  : [
+      'apis/api-journeys/src/lib/mcpStructure.ts',
+      'apis/api-journeys/src/lib/mcpStructureState.ts',
+      'apis/api-journeys/src/lib/mcpStructureHistory.ts',
+      'apis/api-journeys/src/schema/block/service.ts',
+      'apis/api-journeys/src/schema/block/blockDelete.mutation.ts',
+      'apis/api-journeys/src/schema/block/blockRestore.mutation.ts',
+      'libs/yoga/src/mcp/structureContract.ts'
+    ]) {
   const entry = Object.entries(coverage).find(([path]) =>
     path.endsWith('/' + module)
   )?.[1]
   if (!entry || !Object.values(entry.s).some((hits) => hits > 0))
     throw new Error(`Missing executed owning/shared coverage for ${module}`)
 }
+
+// Static barrel exports have no V8 statement counters. Keep their report while
+// requiring execution hits in the catalog consumed through that barrel above.
+if (
+  suite === 'appearance' &&
+  !Object.keys(coverage).some((path) =>
+    path.endsWith('/libs/shared/ui/src/libs/fontFamilies/index.ts')
+  )
+)
+  throw new Error('Missing shared font barrel coverage report')
