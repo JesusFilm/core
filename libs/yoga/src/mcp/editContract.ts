@@ -6,6 +6,7 @@ import {
   type AppearanceCommand,
   appearanceChangedFields,
   appearanceCommand,
+  appearanceCommandRegistry,
   isAppearanceCommand
 } from './appearanceContract'
 import {
@@ -336,6 +337,7 @@ function applyTypography(
  * Adding a command requires an executable row and its positive/negative fixtures.
  */
 export const commandRegistry = {
+  ...appearanceCommandRegistry,
   ...presentationRegistry,
   typography_set: {
     schema: typographyCommand,

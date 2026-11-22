@@ -221,3 +221,206 @@ export const appearanceChangedFields = [
   'eventLabel',
   'endEventLabel'
 ] as const
+
+const appearanceRows = {
+  journey_details_set: {
+    controls: ['Journey title', 'Journey description', 'Journey language'],
+    writeSet: ['Journey.title', 'Journey.description', 'Journey.languageId'],
+    flags: [],
+    sources: ['current-language-catalog-reference'],
+    fixture: { type: 'journey_details_set', title: 'Title', languageId: '529' }
+  },
+  journey_social_set: {
+    controls: ['Social preview title', 'Social preview description'],
+    writeSet: ['Journey.seoTitle', 'Journey.seoDescription'],
+    flags: [],
+    sources: ['social-title-max-49', 'social-description-max-179'],
+    fixture: { type: 'journey_social_set', seoTitle: 'Preview' }
+  },
+  journey_fonts_set: {
+    controls: ['Header font', 'Body font', 'Label font'],
+    writeSet: [
+      'JourneyTheme.create',
+      'JourneyTheme.headerFont',
+      'JourneyTheme.bodyFont',
+      'JourneyTheme.labelFont'
+    ],
+    flags: [],
+    sources: ['role-specific-curated-font-catalog', 'unique-owned-theme'],
+    fixture: { type: 'journey_fonts_set', headerFont: 'Montserrat' }
+  },
+  journey_appearance_set: {
+    controls: [
+      'Website mode',
+      'Display title',
+      'Menu icon',
+      'Share reaction',
+      'Like reaction',
+      'Dislike reaction'
+    ],
+    writeSet: [
+      'Journey.website',
+      'Journey.displayTitle',
+      'Journey.menuButtonIcon',
+      'Journey.showShareButton',
+      'Journey.showLikeButton',
+      'Journey.showDislikeButton'
+    ],
+    flags: ['websiteMode: website/menu icon changes'],
+    sources: ['menu-icon-requires-website', 'reactions-require-nonwebsite'],
+    fixture: { type: 'journey_appearance_set', website: true }
+  },
+  menu_create: {
+    controls: ['Create website menu'],
+    writeSet: [
+      'StepBlock.create',
+      'CardBlock.create',
+      'TypographyBlock.create:2',
+      'ButtonBlock.create:3',
+      'StepBlock.parentOrder',
+      'Journey.menuStepBlockId'
+    ],
+    flags: ['websiteMode'],
+    sources: [
+      'website-mode',
+      'no-existing-menu',
+      'twenty-step-bound',
+      'step-order-int-bound',
+      'unique-batch-local-namespace'
+    ],
+    fixture: { type: 'menu_create', key: 'menu' }
+  },
+  menu_remove: {
+    controls: ['Remove website menu'],
+    writeSet: [
+      'owned-menu-descendants.deletedAt',
+      'retained-siblings.parentOrder',
+      'Journey.menuStepBlockId'
+    ],
+    flags: ['websiteMode'],
+    sources: [
+      'website-mode',
+      'live-owned-menu-step',
+      'complete-owned-descendants'
+    ],
+    fixture: { type: 'menu_remove' }
+  },
+  chat_button_add: {
+    controls: ['Add chat link'],
+    writeSet: ['ChatButton.create'],
+    flags: [],
+    sources: [
+      'two-chat-button-bound',
+      'mounted-platform-enum',
+      'normalized-safe-link'
+    ],
+    fixture: { type: 'chat_button_add', key: 'chat', platform: null, link: '' }
+  },
+  chat_button_set: {
+    controls: ['Chat platform', 'Chat link'],
+    writeSet: ['ChatButton.platform', 'ChatButton.link'],
+    flags: [],
+    sources: [
+      'owned-chat-button',
+      'mounted-platform-enum',
+      'normalized-safe-link'
+    ],
+    fixture: { type: 'chat_button_set', chatButtonId: 'chat', link: null }
+  },
+  chat_button_remove: {
+    controls: ['Remove chat link'],
+    writeSet: ['ChatButton.delete'],
+    flags: [],
+    sources: ['owned-chat-button', 'complete-row-history-conflict-check'],
+    fixture: { type: 'chat_button_remove', chatButtonId: 'chat' }
+  },
+  tracking_set: {
+    controls: [
+      'Card tracking label',
+      'Button tracking label',
+      'Poll option tracking label',
+      'Video start/end tracking labels'
+    ],
+    writeSet: ['Block.eventLabel', 'VideoBlock.endEventLabel'],
+    flags: ['editJourneyTrackingMetrics'],
+    sources: ['mounted-block-kind', 'mounted-position', 'mounted-label-enum'],
+    fixture: { type: 'tracking_set', block: { id: 'card' }, eventLabel: null }
+  }
+} as const satisfies Record<
+  AppearanceCommand['type'],
+  {
+    controls: readonly string[]
+    writeSet: readonly string[]
+    flags: readonly string[]
+    sources: readonly string[]
+    fixture: AppearanceCommand
+  }
+>
+
+/** Release rows bind each enabled schema to its actual owner and evidence.
+ * Media controls remain registered by their composed owned-slot handlers. */
+function appearanceRow(type: AppearanceCommand['type']) {
+  const row = appearanceRows[type]
+  return {
+    schema: appearanceCommand.options.find(
+      (option) => option.shape.type.value === type
+    )!,
+    handler: 'apis/api-journeys/src/lib/mcpStructure.ts:planStructure',
+    planners: [
+      'apis/api-journeys/src/lib/mcpAppearance.ts:appearancePlanner',
+      'apis/api-journeys/src/lib/mcpAppearanceEntities.ts:appearanceEntities'
+    ],
+    mountedControls: row.controls,
+    requiredRole: 'journey:update',
+    requiredGrant: 'journeys:edit',
+    featureChecks: row.flags,
+    sourceChecks: ['ordinary-draft', 'live-owned-journey', ...row.sources],
+    dependencies: [
+      'journey-revision',
+      'current-authorization-generations',
+      'payload-bound-operation-key',
+      'affected-field-history'
+    ],
+    writeSet: row.writeSet,
+    preserved: [
+      'unrequested-fields',
+      'Host',
+      'creator-template-lifecycle-share-admin',
+      'integration-credentials'
+    ],
+    effects: ['journey_content_changed'],
+    inverseType: 'structure_restore',
+    evidence: {
+      positive:
+        'apis/api-auth/test/grantedAppearance.spec.ts: supported fields, menu recipe, fonts, chats and tracking',
+      negative:
+        'apis/api-auth/test/grantedAppearance.spec.ts: rejects stale, read-only, role-ineligible and published writes without effects',
+      replay:
+        'apis/api-auth/test/grantedAppearance.spec.ts: stable replay/history IDs and lost font/chat response',
+      race: 'apis/api-auth/test/grantedAppearance.spec.ts: current feature checks at acceptance, affected-field history conflicts and child-write rollback',
+      deferred: [
+        'normal Admin browser',
+        'private playback',
+        'live identities/providers',
+        'assembled release qualification'
+      ]
+    },
+    fixtures: {
+      accepted: row.fixture,
+      rejected: { ...row.fixture, hostId: 'excluded' }
+    }
+  }
+}
+
+export const appearanceCommandRegistry = {
+  journey_details_set: appearanceRow('journey_details_set'),
+  journey_social_set: appearanceRow('journey_social_set'),
+  journey_fonts_set: appearanceRow('journey_fonts_set'),
+  journey_appearance_set: appearanceRow('journey_appearance_set'),
+  menu_create: appearanceRow('menu_create'),
+  menu_remove: appearanceRow('menu_remove'),
+  chat_button_add: appearanceRow('chat_button_add'),
+  chat_button_set: appearanceRow('chat_button_set'),
+  chat_button_remove: appearanceRow('chat_button_remove'),
+  tracking_set: appearanceRow('tracking_set')
+} satisfies Record<AppearanceCommand['type'], ReturnType<typeof appearanceRow>>

@@ -133,6 +133,8 @@ for (const module of suite === 'appearance'
   ? [
       'apis/api-journeys/src/lib/mcpAppearance.ts',
       'apis/api-journeys/src/lib/mcpAppearanceEntities.ts',
+      'apis/api-journeys/src/schema/campaign/gatewayClient.ts',
+      'apis/api-journeys/src/lib/gateway/graphqlRequest.ts',
       'libs/yoga/src/mcp/appearanceContract.ts',
       'libs/shared/ui/src/libs/fontFamilies/fontFamilies.ts'
     ]

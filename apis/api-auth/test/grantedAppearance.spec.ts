@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto'
+import { createServer } from 'node:http'
+import type { AddressInfo } from 'node:net'
 
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { auth as firebaseAuth } from '@core/yoga/firebaseClient'
@@ -20,6 +22,55 @@ describe('appearance through OAuth, MCP HTTP, gateway and the real Journeys stor
       'Run node tools/scripts/test-mcp-appearance.mjs with isolated issue databases'
     )
   let features = { websiteMode: true, editJourneyTrackingMetrics: true }
+  let catalog = new Set(['529', '496'])
+  let catalogUnavailable = false
+  const catalogRequests: string[] = []
+  const catalogServer = createServer((request, response) => {
+    void (async () => {
+      const chunks: Buffer[] = []
+      for await (const chunk of request) chunks.push(Buffer.from(chunk))
+      const body = JSON.parse(Buffer.concat(chunks).toString()) as {
+        variables: { id: string }
+      }
+      catalogRequests.push(body.variables.id)
+      response.writeHead(catalogUnavailable ? 503 : 200, {
+        'Content-Type': 'application/json'
+      })
+      response.end(
+        JSON.stringify({
+          data: {
+            language: catalog.has(body.variables.id)
+              ? { id: body.variables.id, bcp47: 'en' }
+              : null
+          }
+        })
+      )
+    })()
+  })
+  let journeysEnv: { GATEWAY_URL: string }
+  let originalGateway: string
+
+  beforeAll(async () => {
+    process.env.SKIP_ENV_VALIDATION = '1'
+    /* eslint-disable @nx/enforce-module-boundaries -- Configure the controlled catalog HTTP participant. */
+    journeysEnv = (
+      await import(
+        /* webpackChunkName: "appearance-catalog-env" */ '../../api-journeys/src/env'
+      )
+    ).env
+    /* eslint-enable @nx/enforce-module-boundaries */
+    originalGateway = journeysEnv.GATEWAY_URL
+    await new Promise<void>((resolve) =>
+      catalogServer.listen(0, '127.0.0.1', resolve)
+    )
+    journeysEnv.GATEWAY_URL = `http://127.0.0.1:${(catalogServer.address() as AddressInfo).port}/graphql`
+  })
+
+  afterAll(async () => {
+    journeysEnv.GATEWAY_URL = originalGateway
+    await new Promise<void>((resolve) => catalogServer.close(() => resolve()))
+  })
+
   const f = structureFixture({
     issue: process.env.STRUCTURE_TEST_ISSUE ?? '10561',
     startupTimeoutMs: 120000,
@@ -50,6 +101,9 @@ describe('appearance through OAuth, MCP HTTP, gateway and the real Journeys stor
   }
 
   beforeEach(() => {
+    catalog = new Set(['529', '496'])
+    catalogUnavailable = false
+    catalogRequests.length = 0
     features = { websiteMode: true, editJourneyTrackingMetrics: true }
     vi.mocked(firebaseAuth.getUser).mockResolvedValue({
       uid: 'alice',
@@ -61,6 +115,73 @@ describe('appearance through OAuth, MCP HTTP, gateway and the real Journeys stor
         toJSON: () => ({ ...features, aiChatEditor: false })
       })
     } as unknown as Awaited<ReturnType<typeof getLaunchDarklyClient>>)
+  })
+
+  it('rejects an unknown language without changing content, revision or history', async () => {
+    const before = await snapshot()
+    denied(
+      await f.edit(
+        await f.input([
+          {
+            type: 'journey_details_set',
+            title: 'Must roll back',
+            languageId: 'unknown-language'
+          }
+        ])
+      ),
+      'VALIDATION_FAILED'
+    )
+    expect(await snapshot()).toEqual(before)
+    expect(catalogRequests).toContain('unknown-language')
+  })
+
+  it('fails closed on catalog outage and retries the same key after recovery', async () => {
+    const before = await snapshot()
+    const input = await f.input([
+      { type: 'journey_details_set', languageId: '496' }
+    ])
+    catalogUnavailable = true
+    denied(await f.call('journey_edit', input), 'DEPENDENCY_UNAVAILABLE')
+    expect(await snapshot()).toEqual(before)
+    catalogUnavailable = false
+    f.receipt(await f.call('journey_edit', input))
+    expect((await journey()).languageId).toBe('496')
+  })
+
+  it('validates history language targets and preserves exact replay without another catalog lookup', async () => {
+    const input = await f.input([
+      { type: 'journey_details_set', languageId: '496' }
+    ])
+    const saved = f.receipt(await f.call('journey_edit', input))
+    const lookups = catalogRequests.length
+    catalog.clear()
+    expect(f.receipt(await f.call('journey_edit', input))).toEqual(saved)
+    expect(catalogRequests).toHaveLength(lookups)
+    const before = await snapshot()
+    denied(await f.historyAction('undo', saved.historyId!), 'VALIDATION_FAILED')
+    expect(await snapshot()).toEqual(before)
+    catalog.add('529')
+    f.receipt(await f.historyAction('undo', saved.historyId!))
+    const undone = await snapshot()
+    denied(await f.historyAction('redo', saved.historyId!), 'VALIDATION_FAILED')
+    expect(await snapshot()).toEqual(undone)
+    catalog.add('496')
+    f.receipt(await f.historyAction('redo', saved.historyId!))
+    expect((await journey()).languageId).toBe('496')
+  })
+
+  it('reads the current language catalog after preflight and rejects a withdrawn target before acceptance', async () => {
+    const before = await snapshot()
+    f.checkpoint = async (point) => {
+      if (point === 'before_accept') catalog.delete('496')
+    }
+    denied(
+      await f.edit(
+        await f.input([{ type: 'journey_details_set', languageId: '496' }])
+      ),
+      'VALIDATION_FAILED'
+    )
+    expect(await snapshot()).toEqual(before)
   })
 
   const cases = [

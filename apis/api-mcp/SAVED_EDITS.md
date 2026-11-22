@@ -2,6 +2,18 @@
 
 ## Journey metadata, appearance and menus
 
+`appearanceCommandRegistry` in `libs/yoga/src/mcp/appearanceContract.ts` registers
+every enabled command below and extends the shared `commandRegistry`. Each row
+records its mounted controls, schema, owner, role/grant/feature checks, source
+checks, complete write set, effects, inverse, fixtures and automated/deferred
+evidence. The appearance contract suite requires all ten entries.
+
+Language changes resolve the exact target ID through the existing trusted gateway
+catalog client before acceptance, outside owning locks. The locked write must
+match that validated target. Unknown IDs and catalog failures leave content,
+revision and history unchanged. Undo/redo validates the restored language, while
+exact replay returns its retained receipt without another catalog lookup.
+
 Issue #10561 extends `journey_edit` with the following mounted controls. All use
 the existing Admin rights, edit grant, ordinary-draft, revision, exact-replay and
 private-output checks. Undo and redo recheck current rights and feature gates.

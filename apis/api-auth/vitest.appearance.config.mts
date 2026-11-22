@@ -15,6 +15,8 @@ export default defineConfig({
       ...editsConfig.test?.coverage,
       include: [
         ...(editsConfig.test?.coverage?.include ?? []),
+        'apis/api-journeys/src/schema/campaign/gatewayClient.ts',
+        'apis/api-journeys/src/lib/gateway/graphqlRequest.ts',
         'libs/shared/ui/src/libs/fontFamilies/*.ts'
       ],
       reportsDirectory: 'coverage/integration/mcp-appearance'

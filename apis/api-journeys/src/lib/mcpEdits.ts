@@ -268,6 +268,8 @@ export function createJourneyEditHandler(
           ? hooks.canUseFeature(claims.subject, feature)
           : featureGate(feature)
       let requiredFeatures: Parameters<FeatureCheck>[0][] = []
+      let requiredLanguageId: string | undefined
+      let validatedLanguageId: string | undefined
       const canEditChat = hooks.canEditChat
         ? () => hooks.canEditChat!(claims.subject)
         : () => featureGate('aiChatEditor')
@@ -675,6 +677,24 @@ export function createJourneyEditHandler(
               }
             }
             requiredFeatures = structuralPlan?.requiredFeatures ?? []
+            const requestedLanguage =
+              operation.tool === 'journey_edit'
+                ? operation.input.commands.find(
+                    (command) =>
+                      command.type === 'journey_details_set' &&
+                      command.languageId !== undefined
+                  )
+                : undefined
+            const languageId =
+              structuralPlan?.journeyPatch.languageId ??
+              (requestedLanguage?.type === 'journey_details_set'
+                ? requestedLanguage.languageId
+                : undefined)
+            if (languageId !== undefined && typeof languageId !== 'string')
+              throw new Error('VALIDATION_FAILED')
+            if (preflight) requiredLanguageId = languageId
+            else if (languageId !== validatedLanguageId)
+              throw new Error('VALIDATION_FAILED')
             needsChatGate =
               structuralPlan?.requiresChat === true ||
               plans.some((plan) => plan.gate === 'aiChatEditor') ||
@@ -879,6 +899,22 @@ export function createJourneyEditHandler(
       let result = await execute(true)
       if (body.stage !== 'read' || result?.kind !== 'operation_failure') {
         await hooks.checkpoint?.('before_accept', context)
+        // Resolve catalog references outside owning locks. Execution below binds
+        // the final locked plan to this exact validated target, including history.
+        if (requiredLanguageId !== undefined) {
+          let language: { id: string } | null
+          try {
+            const { fetchLanguage } = await import(
+              /* webpackChunkName: "mcp-language-catalog" */ '../schema/campaign/gatewayClient'
+            )
+            language = await fetchLanguage(requiredLanguageId)
+          } catch {
+            throw new Error('DEPENDENCY_UNAVAILABLE')
+          }
+          if (language?.id !== requiredLanguageId)
+            throw new Error('VALIDATION_FAILED')
+          validatedLanguageId = requiredLanguageId
+        }
         for (const feature of requiredFeatures)
           await requireEditorFeature(canUseFeature, feature)
         if (needsChatGate && !(await canEditChat()))

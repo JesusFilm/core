@@ -1,7 +1,49 @@
-import { appearanceCommand, normalizeChatLink } from './appearanceContract'
-import { editInput } from './editContract'
+import {
+  appearanceCommand,
+  appearanceCommandNames,
+  appearanceCommandRegistry,
+  normalizeChatLink
+} from './appearanceContract'
+import { commandRegistry, editInput } from './editContract'
 
 describe('closed mounted appearance commands', () => {
+  it('registers every enabled schema without missing or extra command names', () => {
+    const enabled = appearanceCommand.options
+      .map((schema) => schema.shape.type.value)
+      .sort()
+    expect(Object.keys(appearanceCommandRegistry).sort()).toEqual(enabled)
+    expect([...appearanceCommandNames].sort()).toEqual(enabled)
+  })
+  it.each(appearanceCommandNames)(
+    'registers complete secured metadata and evidence for %s',
+    (type) => {
+      const row = appearanceCommandRegistry[type]
+      expect(commandRegistry[type]).toBe(row)
+      expect(row.schema.parse(row.fixtures.accepted)).toEqual(
+        row.fixtures.accepted
+      )
+      expect(appearanceCommand.safeParse(row.fixtures.rejected).success).toBe(
+        false
+      )
+      expect(row).toMatchObject({
+        requiredRole: 'journey:update',
+        requiredGrant: 'journeys:edit',
+        inverseType: 'structure_restore'
+      })
+      expect(row.handler).toContain('mcpStructure.ts:planStructure')
+      expect(row.sourceChecks).toContain('ordinary-draft')
+      expect(row.preserved).toContain('Host')
+      for (const values of [
+        row.mountedControls,
+        row.writeSet,
+        row.dependencies,
+        row.effects
+      ])
+        expect(values.length).toBeGreaterThan(0)
+      for (const axis of ['positive', 'negative', 'replay', 'race'] as const)
+        expect(row.evidence[axis]).toContain('grantedAppearance.spec.ts:')
+    }
+  )
   it.each([
     { type: 'journey_social_set', seoTitle: 'a'.repeat(50) },
     { type: 'journey_social_set', seoDescription: 'a'.repeat(180) },
