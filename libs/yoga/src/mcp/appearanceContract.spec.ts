@@ -14,6 +14,7 @@ describe('closed mounted appearance commands', () => {
     expect(Object.keys(appearanceCommandRegistry).sort()).toEqual(enabled)
     expect([...appearanceCommandNames].sort()).toEqual(enabled)
   })
+
   it.each(appearanceCommandNames)(
     'registers complete secured metadata and evidence for %s',
     (type) => {
@@ -44,6 +45,7 @@ describe('closed mounted appearance commands', () => {
         expect(row.evidence[axis]).toContain('grantedAppearance.spec.ts:')
     }
   )
+
   it.each([
     { type: 'journey_social_set', seoTitle: 'a'.repeat(50) },
     { type: 'journey_social_set', seoDescription: 'a'.repeat(180) },
