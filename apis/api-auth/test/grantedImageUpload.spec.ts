@@ -53,6 +53,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let cleanupUnavailable = false
   let stagingUnknown = false
   let stagingRejected = false
+  let stagingWrites = 0
   let mediaLibrary = true
   let providerReady = true
   let providerUnknown = false
@@ -65,6 +66,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let beforeStagingWrite: (() => Promise<void>) | undefined
   const storage: UploadStorage = {
     async put(key, bytes) {
+      stagingWrites++
       if (stagingRejected) return 'rejected' as const
       objects.set(key, Buffer.from(bytes))
       if (stagingUnknown) throw new Error('Controlled lost storage response')
@@ -200,6 +202,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     cleanupUnavailable = false
     stagingUnknown = false
     stagingRejected = false
+    stagingWrites = 0
     providerReady = true
     mediaLibrary = true
     providerUnknown = false
@@ -966,6 +969,13 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         where: { jobId: id, status: 'writing' },
         data: { status: receiptStatus }
       })
+      const replay = await browser(id, 'PUT', undefined, bytes, 'alice', {
+        'X-Upload-Offset': '0',
+        'X-Upload-Sha256': imageHash(bytes)
+      })
+      expect(replay.status).toBe(200)
+      expect(replay.json.data.receivedBytes).toBe(0)
+      expect(stagingWrites).toBe(1)
       await browser(id, 'POST', 'cancel')
       await media.mcpMediaJob.update({
         where: { id },
