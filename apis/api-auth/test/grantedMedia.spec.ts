@@ -1536,6 +1536,81 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ).toBe(0)
   })
 
+  it('rejects a stale second delete without provider dispatch or stranding the source gate', async () => {
+    const schema = buildSchema(
+      'type Query { ping: Boolean } type Mutation { deleteMuxVideo(id: ID!): Boolean! }'
+    )
+    let dispatches = 0
+    schema.getMutationType()!.getFields().deleteMuxVideo.resolve = async (
+      _parent: unknown,
+      args: { id: string }
+    ) => {
+      await protectedMedia.muxVideo.findUniqueOrThrow({
+        where: { id: args.id, userId: 'alice' }
+      })
+      dispatches++
+      await protectedMedia.muxVideo.delete({ where: { id: args.id } })
+      return true
+    }
+    guard.plugin.onSchemaChange!({ schema } as Parameters<
+      NonNullable<typeof guard.plugin.onSchemaChange>
+    >[0])
+    const remove = () =>
+      graphql({
+        schema,
+        source: 'mutation($id: ID!) { deleteMuxVideo(id: $id) }',
+        variableValues: { id: f.id('mux') },
+        contextValue: { user: { id: 'alice' }, currentRoles: [] }
+      })
+    let ready!: () => void, resume!: () => void
+    const paused = new Promise<void>((resolve) => {
+      ready = resolve
+    })
+    const continuation = new Promise<void>((resolve) => {
+      resume = resolve
+    })
+    const findSource = media.muxVideo.findFirst.bind(media.muxVideo)
+    const lookup = vi
+      .spyOn(media.muxVideo, 'findFirst')
+      .mockImplementationOnce(async (args) => {
+        const source = await findSource(args)
+        ready()
+        await continuation
+        return source
+      })
+    const stale = remove()
+    try {
+      await paused
+      expect((await remove()).errors).toBeUndefined()
+      expect(dispatches).toBe(1)
+      expect(
+        await media.muxVideo.findUnique({ where: { id: f.id('mux') } })
+      ).toBeNull()
+    } finally {
+      resume()
+      await stale
+      lookup.mockRestore()
+    }
+    expect((await stale).errors).toBeDefined()
+    expect(dispatches).toBe(1)
+    await guard.recover()
+    expect(
+      await media.mcpMediaMutation.count({
+        where: { status: 'external', reportedAt: null }
+      })
+    ).toBe(0)
+    expect((await search('library')).json.result?.isError).not.toBe(true)
+    await protectedMedia.cloudflareImage.update({
+      where: { id: f.id('asset') },
+      data: { blurhash: 'gate-reopened' }
+    })
+    expect(
+      await media.cloudflareImage.findUniqueOrThrow({
+        where: { id: f.id('asset') }
+      })
+    ).toMatchObject({ blurhash: 'gate-reopened' })
+  })
+
   it('keeps uncertain external deletion closed and resumes its explicit authorized retry', async () => {
     const schema = buildSchema(
       'type Query { ping: Boolean } type Mutation { deleteCloudflareImage(id: ID!): Boolean! }'
