@@ -950,6 +950,129 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ])
   })
 
+  it.each([
+    { edit: 'source', disabled: 'websiteMode' },
+    { edit: 'focal', disabled: 'websiteMode' },
+    { edit: 'source', disabled: 'website' },
+    { edit: 'focal', disabled: 'website' }
+  ] as const)(
+    'gates existing logo $edit edits and undo/redo when $disabled is disabled',
+    async ({ edit, disabled }) => {
+      const where = { id: f.journeyId }
+      await f.journeys.journey.update({ where, data: { website: true } })
+      await f.save([
+        {
+          type: 'media_slot_set',
+          target: { slot: 'logo' },
+          media: {
+            kind: 'image',
+            source: { source: 'unsplash', id: 'original-logo' },
+            alt: 'Existing logo'
+          }
+        }
+      ])
+      const logoId = (await f.journeys.journey.findUniqueOrThrow({ where }))
+        .logoImageBlockId!
+      const before = await f.journeys.block.findUniqueOrThrow({
+        where: { id: logoId }
+      })
+      const command = {
+        type: 'image_set',
+        block: { id: logoId },
+        ...(edit === 'source'
+          ? { source: { source: 'unsplash', id: 'replacement-logo' } }
+          : { focalLeft: 25 })
+      }
+      const saved = await f.save([command])
+      const after = await f.journeys.block.findUniqueOrThrow({
+        where: { id: logoId }
+      })
+      expect(after).toMatchObject({
+        id: logoId,
+        alt: before.alt,
+        width: before.width,
+        height: before.height,
+        blurhash: before.blurhash,
+        ...(edit === 'source'
+          ? { src: 'https://images.unsplash.com/replacement-logo' }
+          : { focalLeft: 25 })
+      })
+      const enable = async (enabled: boolean) => {
+        if (disabled === 'websiteMode') flags.websiteMode = enabled
+        else
+          await f.journeys.journey.update({
+            where,
+            data: { website: enabled }
+          })
+      }
+      await enable(false)
+      const blocked = {
+        ...command,
+        ...(edit === 'source'
+          ? { source: { source: 'unsplash', id: 'blocked-logo' } }
+          : { focalLeft: 50 })
+      }
+      expect((await reject([renameButton(), blocked])).text).toContain(
+        'ACCESS_DENIED_OR_NOT_FOUND'
+      )
+      for (const direction of ['undo', 'redo'] as const) {
+        const snapshot = await f.snapshot()
+        expect(
+          (await f.historyAction(direction, saved.historyId!)).text
+        ).toContain('ACCESS_DENIED_OR_NOT_FOUND')
+        expect(await f.snapshot()).toEqual(snapshot)
+        await enable(true)
+        f.receipt(await f.historyAction(direction, saved.historyId!))
+        expect(
+          await f.journeys.block.findUniqueOrThrow({ where: { id: logoId } })
+        ).toEqual({
+          ...(direction === 'undo' ? before : after),
+          updatedAt: expect.any(Date)
+        })
+        expect(
+          (await f.journeys.journey.findUniqueOrThrow({ where }))
+            .logoImageBlockId
+        ).toBe(logoId)
+        await enable(false)
+      }
+    }
+  )
+
+  it.each(['creation', 'clearing'] as const)(
+    'gates undo/redo of logo %s when website mode is disabled',
+    async (operation) => {
+      await f.journeys.journey.update({
+        where: { id: f.journeyId },
+        data: { website: true }
+      })
+      let saved = await f.save([
+        {
+          type: 'media_slot_set',
+          target: { slot: 'logo' },
+          media: {
+            kind: 'image',
+            source: { source: 'unsplash', id: 'original-logo' }
+          }
+        }
+      ])
+      if (operation === 'clearing')
+        saved = await f.save([
+          { type: 'media_slot_clear', target: { slot: 'logo' } }
+        ])
+      flags.websiteMode = false
+      for (const direction of ['undo', 'redo'] as const) {
+        const before = await f.snapshot()
+        expect(
+          (await f.historyAction(direction, saved.historyId!)).text
+        ).toContain('ACCESS_DENIED_OR_NOT_FOUND')
+        expect(await f.snapshot()).toEqual(before)
+        flags.websiteMode = true
+        f.receipt(await f.historyAction(direction, saved.historyId!))
+        flags.websiteMode = false
+      }
+    }
+  )
+
   it('denies view-only grants, removed Admin rights, stale revisions and published writes', async () => {
     const view = await f.consent('view')
     expect(
