@@ -81,11 +81,19 @@ Pending. Recovery locks the same receipt before fencing a delayed executor.
 Output receipts additionally persist the Linux boot ID, PID namespace, process ID
 and process start ticks. Recovery in that same boot and PID namespace can prove
 the original process exited or its PID was reused, then fence and settle it.
-Live processes, foreign hosts/namespaces, unreadable procfs and legacy receipts
-without an identity remain pending. A process restart is recoverable when it
-shares the original host PID namespace. Rescheduling to another host/container
-namespace requires external positive-stop evidence and is not inferred from age.
-The Media runtime requires readable Linux procfs for new output admission.
+A task identity from the server-controlled ECS v4 metadata endpoint is also
+persisted when Media runs on ECS. Across host/container replacement, recovery
+uses read-only DescribeTasks and requires the exact task and cluster ARNs with
+lastStatus STOPPED. Desired stop, a missing task, a timeout or a denied lookup
+supply no stop evidence. See the [task metadata contract](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-metadata-endpoint-v4-response.html)
+and [DescribeTasks](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTasks.html).
+Live processes, unverified foreign executors and legacy receipts without an
+identity remain pending. The Media runtime requires readable Linux procfs for
+new output admission. ECS deployments additionally need task metadata and
+read-only ecs:DescribeTasks access for the owning task/cluster. Applying and
+qualifying those deployment permissions stays with the existing operations
+owners. Local tests use real process stop evidence and a controlled ECS adapter;
+they do not establish deployed ECS recovery.
 
 Cloudflare POST uses the persisted custom image identity once. A lost response
 never causes another POST. Authenticated Cloudflare details reconcile readiness;
