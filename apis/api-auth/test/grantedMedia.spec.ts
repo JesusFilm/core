@@ -1,6 +1,6 @@
 import { createServer } from 'node:http'
 
-import { buildSchema, graphql } from 'graphql'
+import { GraphQLError, buildSchema, graphql } from 'graphql'
 import { createYoga } from 'graphql-yoga'
 
 import { PrismaClient as LanguagesDatabase } from '@core/prisma/languages/client'
@@ -1216,9 +1216,47 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect((await image()).src).toContain(f.id('asset'))
     f.checkpoint = undefined
     await settleMedia()
-    await protectedMedia.cloudflareImage.delete({
-      where: { id: f.id('asset') }
+    let recoveryReady!: () => void, finishRecovery!: () => void
+    const recoveryOwnsLock = new Promise<void>((resolve) => {
+      recoveryReady = resolve
     })
+    const releaseRecovery = new Promise<void>((resolve) => {
+      finishRecovery = resolve
+    })
+    // Hold the executor lock as a concurrent recovery sweep would.
+    const recovering = media.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended('media:sources:executor', 0))`
+      recoveryReady()
+      await releaseRecovery
+    })
+    await recoveryOwnsLock
+    let pendingAttempts = 0
+    try {
+      await vi.waitUntil(
+        async () => {
+          try {
+            await protectedMedia.cloudflareImage.delete({
+              where: { id: f.id('asset') }
+            })
+            return true
+          } catch (error) {
+            if (
+              !(error instanceof GraphQLError) ||
+              error.extensions.code !== 'PERMISSION_CHANGE_PENDING'
+            )
+              throw error
+            pendingAttempts++
+            finishRecovery()
+            return false
+          }
+        },
+        { timeout: 5000 }
+      )
+      expect(pendingAttempts).toBeGreaterThan(0)
+    } finally {
+      finishRecovery()
+      await recovering
+    }
     f.receipt(await f.edit(input))
     expect(await f.counts()).toEqual({ operations: 1, history: 1, effects: 1 })
   })
