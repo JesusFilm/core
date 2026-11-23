@@ -893,7 +893,7 @@
   "DNS Config": "Configuração do DNS",
   "Valid Configuration": "Configuração válida",
   "Invalid Configuration": "Configuração inválida",
-  "Pending Verfication": "Verificação pendente",
+  "Pending Verification": "Verificação pendente",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "O domínio {{ customDomainName }} foi adicionado a uma equipe diferente. Conclua a verificação para adicioná-lo a esta equipe.",
   "Domain name is a required field": "O nome de domínio é um campo obrigatório",
   "Must be a valid URL": "Deve ser um URL válido",

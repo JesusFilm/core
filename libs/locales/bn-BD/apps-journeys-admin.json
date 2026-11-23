@@ -893,7 +893,7 @@
   "DNS Config": "DNS কনফিগ",
   "Valid Configuration": "বৈধ কনফিগারেশন",
   "Invalid Configuration": "অবৈধ কনফিগারেশন",
-  "Pending Verfication": "যাচাই প্রক্রিয়াধীন",
+  "Pending Verification": "যাচাই প্রক্রিয়াধীন",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "ডোমেইন {{ customDomainName }} অন্য একটি টিমে যোগ করা হয়েছে। এই টিমে যোগ করতে অনুগ্রহ করে যাচাই সম্পন্ন করুন।",
   "Domain name is a required field": "ডোমেইন নাম একটি আবশ্যক ক্ষেত্র",
   "Must be a valid URL": "একটি বৈধ URL হতে হবে",
