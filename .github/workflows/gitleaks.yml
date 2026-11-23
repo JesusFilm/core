@@ -45,7 +45,7 @@ jobs:
           echo "$install_dir" >> "$GITHUB_PATH"
 
       - name: Scan commits without publishing secret values
-        shell: python
+        shell: python3 {0}
         run: |
           import json
           import os
