@@ -893,7 +893,7 @@
   "DNS Config": "DNS тохиргоо",
   "Valid Configuration": "Зөв тохиргоо",
   "Invalid Configuration": "Буруу тохиргоо",
-  "Pending Verfication": "Баталгаажуулалт хүлээгдэж байна",
+  "Pending Verification": "Баталгаажуулалт хүлээгдэж байна",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "{{ customDomainName }} домэйн өөр багт нэмэгдсэн байна. Үүнийг энэ багт нэмэхийн тулд баталгаажуулалтыг гүйцээнэ үү.",
   "Domain name is a required field": "Домэйн нэр нь заавал бөглөх талбар",
   "Must be a valid URL": "Зөв URL байх ёстой",
