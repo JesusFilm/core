@@ -1235,6 +1235,14 @@ describe('videoVariant', () => {
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
           restrictTranslations: false,
+          gospelPresentation: null,
+          gospelStartSeconds: null,
+          gospelEndSeconds: null,
+          opportunityToRespond: null,
+          opportunityToRespondEndSeconds: null,
+          biblicallyAccuratePortrayal: null,
+          personOfJesusDisplayed: null,
+          validationComments: null,
           publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
@@ -1253,6 +1261,14 @@ describe('videoVariant', () => {
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
           restrictTranslations: false,
+          gospelPresentation: null,
+          gospelStartSeconds: null,
+          gospelEndSeconds: null,
+          opportunityToRespond: null,
+          opportunityToRespondEndSeconds: null,
+          biblicallyAccuratePortrayal: null,
+          personOfJesusDisplayed: null,
+          validationComments: null,
           publishedAt: null
         })
         const result = await authClient({
@@ -1415,6 +1431,14 @@ describe('videoVariant', () => {
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
           restrictTranslations: false,
+          gospelPresentation: null,
+          gospelStartSeconds: null,
+          gospelEndSeconds: null,
+          opportunityToRespond: null,
+          opportunityToRespondEndSeconds: null,
+          biblicallyAccuratePortrayal: null,
+          personOfJesusDisplayed: null,
+          validationComments: null,
           publishedAt: null
         })
         prismaMock.video.update.mockResolvedValue({
@@ -1433,6 +1457,14 @@ describe('videoVariant', () => {
           restrictDownloadPlatforms: [],
           restrictViewPlatforms: [],
           restrictTranslations: false,
+          gospelPresentation: null,
+          gospelStartSeconds: null,
+          gospelEndSeconds: null,
+          opportunityToRespond: null,
+          opportunityToRespondEndSeconds: null,
+          biblicallyAccuratePortrayal: null,
+          personOfJesusDisplayed: null,
+          validationComments: null,
           publishedAt: null
         })
 

@@ -87,6 +87,10 @@ _Avoid_: Reference, verse, scripture link
 **Bible Book**:
 A book of the Bible (with its OSIS id, Paratext abbreviation, testament, and localized names) that Citations point at.
 
+**Media Validation**:
+A publisher's internal, per-Video assessment of gospel content and portrayal: whether the gospel is presented and over what span (`gospelStartSeconds`/`gospelEndSeconds`), whether there is an opportunity to respond and when it ends, whether the portrayal is biblically accurate, whether the person of Jesus is displayed, and free-text comments. All eight fields are nullable — null means not yet assessed — and readable/writable only by a publisher. The name comes from the "Global Media Validation and Data Entry" sheet this assessment was tracked in before moving into the catalog.
+_Avoid_: Publishing Validation (a different, publish-blocking check — see `apps/videos-admin/GLOSSARY.md`; Media Validation never blocks publishing)
+
 ### Distribution & access
 
 **Platform**:

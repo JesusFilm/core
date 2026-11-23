@@ -156,41 +156,49 @@ enum VideoLabel {
 }
 
 model Video {
-  id                        String                       @id @default(uuid())
-  label                     VideoLabel
-  primaryLanguageId         String
-  published                 Boolean                      @default(true)
-  title                     VideoTitle[]
-  snippet                   VideoSnippet[]
-  description               VideoDescription[]
-  studyQuestions            VideoStudyQuestion[]
-  imageAlt                  VideoImageAlt[]
-  slug                      String?                      @unique
-  noIndex                   Boolean?
-  childIds                  String[] // needed for child sort order
-  locked                    Boolean                      @default(false)
-  restrictTranslations      Boolean                      @default(false)
-  subtitles                 VideoSubtitle[]
-  children                  Video[]                      @relation("ParentChild")
-  parents                   Video[]                      @relation("ParentChild")
-  variants                  VideoVariant[]
-  variantUploads            VideoVariantUpload[]
-  variantReconciliations    VideoVariantReconciliation[]
-  bibleCitation             BibleCitation[]
-  keywords                  Keyword[]                    @relation("VideoToKeyword")
-  images                    CloudflareImage[]
-  cloudflareAssets          CloudflareR2[]
-  videoEditions             VideoEdition[]
-  availableLanguages        String[]                     @default([])
-  origin                    VideoOrigin?                 @relation(fields: [originId], references: [id])
-  originId                  String?
-  restrictDownloadPlatforms Platform[]                   @default([])
-  restrictViewPlatforms     Platform[]                   @default([])
-  publishedAt               DateTime?
-  createdAt                 DateTime                     @default(now())
-  updatedAt                 DateTime                     @default(now()) @updatedAt
-  userMediaProfiles         UserMediaProfile[]
-  shortLinks                ShortLink[]
+  id                             String                       @id @default(uuid())
+  label                          VideoLabel
+  primaryLanguageId              String
+  published                      Boolean                      @default(true)
+  title                          VideoTitle[]
+  snippet                        VideoSnippet[]
+  description                    VideoDescription[]
+  studyQuestions                 VideoStudyQuestion[]
+  imageAlt                       VideoImageAlt[]
+  slug                           String?                      @unique
+  noIndex                        Boolean?
+  childIds                       String[] // needed for child sort order
+  locked                         Boolean                      @default(false)
+  restrictTranslations           Boolean                      @default(false)
+  subtitles                      VideoSubtitle[]
+  children                       Video[]                      @relation("ParentChild")
+  parents                        Video[]                      @relation("ParentChild")
+  variants                       VideoVariant[]
+  variantUploads                 VideoVariantUpload[]
+  variantReconciliations         VideoVariantReconciliation[]
+  bibleCitation                  BibleCitation[]
+  keywords                       Keyword[]                    @relation("VideoToKeyword")
+  images                         CloudflareImage[]
+  cloudflareAssets               CloudflareR2[]
+  videoEditions                  VideoEdition[]
+  availableLanguages             String[]                     @default([])
+  origin                         VideoOrigin?                 @relation(fields: [originId], references: [id])
+  originId                       String?
+  restrictDownloadPlatforms      Platform[]                   @default([])
+  restrictViewPlatforms          Platform[]                   @default([])
+  publishedAt                    DateTime?
+  createdAt                      DateTime                     @default(now())
+  updatedAt                      DateTime                     @default(now()) @updatedAt
+  userMediaProfiles              UserMediaProfile[]
+  shortLinks                     ShortLink[]
+  gospelPresentation             Boolean?
+  gospelStartSeconds             Int?
+  gospelEndSeconds               Int?
+  opportunityToRespond           Boolean?
+  opportunityToRespondEndSeconds Int?
+  biblicallyAccuratePortrayal    Boolean?
+  personOfJesusDisplayed         Boolean?
+  validationComments             String?
 
   @@index(label)
   @@index(childIds)
@@ -742,54 +750,54 @@ model ShortLinkDomain {
 }
 
 model ShortLink {
-  id                 String                        @id @default(uuid())
+  id                    String                        @id @default(uuid())
   /// should not include the leading slash
-  pathname           String
+  pathname              String
   /// the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
-  to                 String
-  domainId           String
+  to                    String
+  domainId              String
   /// the user created this short link (if empty, it was created by a subgraph)
-  userId             String?
+  userId                String?
   /// the service that created this short link
-  service            Service
+  service               Service
   /// brightcove video ID for video redirects
-  brightcoveId       String?
+  brightcoveId          String?
   /// type of video redirect (hls, dl, dh, s)
-  redirectType       VideoRedirectType?
+  redirectType          VideoRedirectType?
   /// bitrate of the video variant download
-  bitrate            Int?
+  bitrate               Int?
   /// a single namespaced `<scheme>:<value>` attribution for the thing this link
   /// was minted for (e.g. `youtube-channel:UC...`), one value per link
-  sourceRef          String?
-  createdAt          DateTime                      @default(now())
-  updatedAt          DateTime                      @updatedAt
-  domain             ShortLinkDomain               @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  sourceRef             String?
+  createdAt             DateTime                      @default(now())
+  updatedAt             DateTime                      @updatedAt
+  domain                ShortLinkDomain               @relation(fields: [domainId], references: [id], onDelete: Restrict)
   /// human label shown in the admin app
-  name               String?
-  description        String?
-  assetClass         ShortLinkAssetClass           @default(standard)
-  status             ShortLinkStatus               @default(active)
+  name                  String?
+  description           String?
+  assetClass            ShortLinkAssetClass           @default(standard)
+  status                ShortLinkStatus               @default(active)
   /// per-link override of the domain's redirect status
-  redirectStatus     Int?
+  redirectStatus        Int?
   /// per-link override of the domain's fallbackTo (used while paused)
-  fallbackTo         String?
-  placement          ShortLinkPlacement?
+  fallbackTo            String?
+  placement             ShortLinkPlacement?
   /// BCP-47 language tag, for filtering and reporting
-  language           String?
-  tags               String[]                      @default([])
+  language              String?
+  tags                  String[]                      @default([])
   /// core Video this link belongs to, if any
-  videoId            String?
-  video              Video?                        @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  videoId               String?
+  video                 Video?                        @relation(fields: [videoId], references: [id], onDelete: SetNull)
   /// YouTube video id the link is placed in (distinct from the core videoId)
-  youtubeVideoId     String?
-  campaigns          ShortLinkCampaign[]
-  destinationHistory ShortLinkDestinationHistory[]
+  youtubeVideoId        String?
+  campaigns             ShortLinkCampaign[]
+  destinationHistory    ShortLinkDestinationHistory[]
   /// soft delete; the pathname is never reissued
-  deletedAt          DateTime?
+  deletedAt             DateTime?
   /// when the routing record was last written to the edge store
-  edgePublishedAt    DateTime?
-  healthStatus       ShortLinkHealth?
-  healthCheckedAt    DateTime?
+  edgePublishedAt       DateTime?
+  healthStatus          ShortLinkHealth?
+  healthCheckedAt       DateTime?
   /// set when the health check paused this link (auto failover); cleared by a
   /// manual status change, or by the health check when the destination
   /// recovers and the link is resumed
@@ -797,8 +805,8 @@ model ShortLink {
   /// when true the pathname also resolves on every domain that has no link
   /// of its own for it (published to the global namespace); global pathnames
   /// are unique across all domains, see ShortLinkGlobalSlug
-  global             Boolean                       @default(false)
-  globalSlug         ShortLinkGlobalSlug?
+  global                Boolean                       @default(false)
+  globalSlug            ShortLinkGlobalSlug?
 
   @@unique([pathname, domainId])
   @@index([service, sourceRef])
