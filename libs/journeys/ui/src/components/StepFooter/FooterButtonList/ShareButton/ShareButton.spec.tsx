@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -57,6 +57,67 @@ describe('ShareButton', () => {
 
     fireEvent.click(getByRole('button'))
     expect(navigatorMock).toHaveBeenCalled()
+  })
+
+  it('should fall back to share dialog when native share is not allowed', async () => {
+    mockUsePlausible.mockReturnValue(vi.fn())
+    const navigatorMock = vi
+      .fn()
+      .mockRejectedValue(new DOMException('Not allowed', 'NotAllowedError'))
+
+    Object.assign(navigator, {
+      share: navigatorMock
+    })
+
+    render(
+      <SnackbarProvider>
+        <JourneyProvider
+          value={{
+            journey: { slug: 'test-slug' } as unknown as Journey
+          }}
+        >
+          <ShareButton />
+        </JourneyProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+    expect(navigatorMock).toHaveBeenCalled()
+    expect(
+      await screen.findByRole('dialog', { name: 'Share' })
+    ).toBeInTheDocument()
+  })
+
+  it('should not open share dialog when native share is cancelled', async () => {
+    mockUsePlausible.mockReturnValue(vi.fn())
+    const navigatorMock = vi
+      .fn()
+      .mockRejectedValue(new DOMException('Share canceled', 'AbortError'))
+
+    Object.assign(navigator, {
+      share: navigatorMock
+    })
+
+    render(
+      <SnackbarProvider>
+        <JourneyProvider
+          value={{
+            journey: { slug: 'test-slug' } as unknown as Journey
+          }}
+        >
+          <ShareButton />
+        </JourneyProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(navigatorMock).toHaveBeenCalled())
+    await act(async () => {
+      await navigatorMock.mock.results[0].value.catch(() => undefined)
+    })
+    expect(
+      screen.queryByRole('dialog', { name: 'Share' })
+    ).not.toBeInTheDocument()
   })
 
   it('should open share dialog on desktop', () => {

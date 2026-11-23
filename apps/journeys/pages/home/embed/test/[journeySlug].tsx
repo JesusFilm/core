@@ -59,7 +59,7 @@ export function IFrameTest(): ReactElement {
           <iframe
             src={`/embed/${query.journeySlug?.toString() ?? ''}`}
             style={{ border: 0, width: 360, height: 640 }}
-            allow="fullscreen; autoplay"
+            allow="fullscreen; autoplay; web-share"
             allowFullScreen
           />
         </Stack>
