@@ -65,7 +65,7 @@ describe('custom domain /<journeySlug>', () => {
     if (!('props' in result)) throw new Error('expected props')
 
     expect(result.props).not.toHaveProperty('hostname')
-    render(<HostSlugPage {...(result.props as never)} />)
+    render(<HostSlugPage {...result.props} />)
 
     expect(screen.getByTestId('NextSeoMock')).toHaveAttribute(
       'data-og-url',

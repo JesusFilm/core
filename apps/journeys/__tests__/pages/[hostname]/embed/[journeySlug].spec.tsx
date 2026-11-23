@@ -63,7 +63,7 @@ describe('custom domain /embed/<journeySlug>', () => {
     )
     if (!('props' in result)) throw new Error('expected props')
 
-    render(<HostJourneyEmbedPage {...(result.props as never)} />)
+    render(<HostJourneyEmbedPage {...result.props} />)
 
     expect(screen.getByTestId('NextSeoMock')).toHaveAttribute(
       'data-og-url',
