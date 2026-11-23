@@ -1,6 +1,12 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -405,7 +411,12 @@ describe('HostForm', () => {
     })
   })
 
-  it('should call createhost mutation on location change if host does not exist', async () => {
+  it('should not create a host when only a location is entered', async () => {
+    const mockCreateResult = vi.fn(() => ({
+      data: {
+        hostCreate: { __typename: 'Host' as const, id: 'host.id', title: '' }
+      }
+    }))
     const hostCreateMock: MockLink.MockedResponse<
       CreateHost,
       CreateHostVariables
@@ -417,12 +428,51 @@ describe('HostForm', () => {
           input: { title: '', location: 'California, USA' }
         }
       },
+      result: mockCreateResult
+    }
+
+    render(
+      <MockedProvider mocks={[hostCreateMock]}>
+        <JourneyProvider
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
+        >
+          <HostForm handleSelection={vi.fn()} getAllTeamHostsQuery={vi.fn()} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox', { name: 'Location' })
+    fireEvent.change(input, { target: { value: 'California, USA' } })
+    fireEvent.submit(input)
+
+    // let any (unwanted) hostCreate mock resolve before asserting it never ran
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+    expect(mockCreateResult).not.toHaveBeenCalled()
+    expect(screen.getByRole('textbox', { name: 'Location' })).toHaveValue(
+      'California, USA'
+    )
+  })
+
+  it('should create a host with the pending location once a name is entered', async () => {
+    const hostCreateMock: MockLink.MockedResponse<
+      CreateHost,
+      CreateHostVariables
+    > = {
+      request: {
+        query: CREATE_HOST,
+        variables: {
+          teamId: 'team.id',
+          input: { title: 'Cru International', location: 'California, USA' }
+        }
+      },
       result: {
         data: {
           hostCreate: {
             __typename: 'Host',
             id: 'host.id',
-            title: 'value'
+            title: 'Cru International'
           }
         }
       }
@@ -432,8 +482,6 @@ describe('HostForm', () => {
     const mockJourneyUpdateResult = vi
       .fn()
       .mockReturnValue(updateJourneyHostMock.result)
-    const handleSelection = vi.fn()
-    const mockGetAllTeamHostsQuery = vi.fn()
 
     render(
       <MockedProvider
@@ -445,19 +493,63 @@ describe('HostForm', () => {
         <JourneyProvider
           value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
-          <HostForm
-            handleSelection={handleSelection}
-            getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
-          />
+          <HostForm handleSelection={vi.fn()} getAllTeamHostsQuery={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const input = screen.getByRole('textbox', { name: 'Location' })
-    fireEvent.change(input, { target: { value: 'California, USA' } })
+    const locationInput = screen.getByRole('textbox', { name: 'Location' })
+    fireEvent.change(locationInput, { target: { value: 'California, USA' } })
+    fireEvent.submit(locationInput)
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: 'Location' })).toHaveValue(
+        'California, USA'
+      )
+    )
+    expect(mockCreateResult).not.toHaveBeenCalled()
+
+    const titleInput = screen.getByRole('textbox', { name: 'Host Name' })
+    fireEvent.change(titleInput, { target: { value: '  Cru International  ' } })
+    fireEvent.submit(titleInput)
+
+    await waitFor(() => expect(mockCreateResult).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(mockJourneyUpdateResult).toHaveBeenCalled())
+  })
+
+  it('should not create a host when the name is blank', async () => {
+    const mockCreateResult = vi.fn(() => ({
+      data: {
+        hostCreate: { __typename: 'Host' as const, id: 'host.id', title: '' }
+      }
+    }))
+    const hostCreateMock: MockLink.MockedResponse<
+      CreateHost,
+      CreateHostVariables
+    > = {
+      request: {
+        query: CREATE_HOST,
+        variables: { teamId: 'team.id', input: { title: '', location: '' } }
+      },
+      result: mockCreateResult
+    }
+
+    render(
+      <MockedProvider mocks={[hostCreateMock]}>
+        <JourneyProvider
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
+        >
+          <HostForm handleSelection={vi.fn()} getAllTeamHostsQuery={vi.fn()} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox', { name: 'Host Name' })
+    fireEvent.change(input, { target: { value: '   ' } })
     fireEvent.submit(input)
-    await waitFor(() => {
-      expect(mockCreateResult).toHaveBeenCalled()
-    })
+
+    await waitFor(() =>
+      expect(screen.getByText('Please enter a host name')).toBeInTheDocument()
+    )
+    expect(mockCreateResult).not.toHaveBeenCalled()
   })
 })

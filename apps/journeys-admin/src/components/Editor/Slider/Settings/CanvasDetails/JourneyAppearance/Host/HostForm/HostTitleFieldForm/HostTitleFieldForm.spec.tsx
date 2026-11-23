@@ -56,4 +56,40 @@ describe('HostTitleFieldForm', () => {
       expect(screen.getByText('new error message')).toBeInTheDocument()
     })
   })
+
+  it('should trim the host name before calling on change', async () => {
+    const onChange = vi.fn()
+    render(<HostTitleFieldForm value="" onChange={onChange} />)
+    const input = screen.getByRole('textbox', { name: 'Host Name' })
+    fireEvent.change(input, { target: { value: '  Someone  ' } })
+    fireEvent.submit(input)
+
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith('Someone'))
+  })
+
+  it('should require a host name', async () => {
+    const onChange = vi.fn()
+    render(<HostTitleFieldForm value="" onChange={onChange} />)
+    const input = screen.getByRole('textbox', { name: 'Host Name' })
+    fireEvent.change(input, { target: { value: '' } })
+    fireEvent.submit(input)
+
+    await waitFor(() =>
+      expect(screen.getByText('Please enter a host name')).toBeInTheDocument()
+    )
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('should reject a whitespace-only host name', async () => {
+    const onChange = vi.fn()
+    render(<HostTitleFieldForm value="" onChange={onChange} />)
+    const input = screen.getByRole('textbox', { name: 'Host Name' })
+    fireEvent.change(input, { target: { value: '   ' } })
+    fireEvent.submit(input)
+
+    await waitFor(() =>
+      expect(screen.getByText('Please enter a host name')).toBeInTheDocument()
+    )
+    expect(onChange).not.toHaveBeenCalled()
+  })
 })
