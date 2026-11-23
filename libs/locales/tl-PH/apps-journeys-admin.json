@@ -893,7 +893,7 @@
   "DNS Config": "Config ng DNS",
   "Valid Configuration": "Valid na Configuration",
   "Invalid Configuration": "Invalid na Configuration",
-  "Pending Verfication": "Naka-pending ang pag-verify",
+  "Pending Verification": "Naka-pending ang pag-verify",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Ang domain na {{ customDomainName }} ay naidagdag sa ibang team. Pakikumpleto ang pag-verify para maidaragdag ito sa team na ito sa halip.",
   "Domain name is a required field": "Kinakailangan ang pangalan ng domain",
   "Must be a valid URL": "Dapat ay wastong URL",
