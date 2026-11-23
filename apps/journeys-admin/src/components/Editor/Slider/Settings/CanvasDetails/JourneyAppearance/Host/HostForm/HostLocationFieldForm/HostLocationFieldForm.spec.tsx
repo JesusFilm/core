@@ -37,9 +37,8 @@ describe('HostLocationFieldForm', () => {
     fireEvent.submit(input)
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith(''))
-    expect(screen.getByRole('textbox', { name: 'Location' })).not.toHaveAttribute(
-      'aria-invalid',
-      'true'
-    )
+    expect(
+      screen.getByRole('textbox', { name: 'Location' })
+    ).not.toHaveAttribute('aria-invalid', 'true')
   })
 })

@@ -24,9 +24,7 @@ export function HostTitleFieldForm({
   const titleSchema = object({
     hostTitle: string()
       .trim()
-      .required(
-      hostTitleRequiredErrorMessage ?? t('Please enter a host name')
-    )
+      .required(hostTitleRequiredErrorMessage ?? t('Please enter a host name'))
   })
 
   const handleSubmit = async (value: string): Promise<void> => {
