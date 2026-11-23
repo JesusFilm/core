@@ -8,6 +8,11 @@ import {
 } from '@core/prisma/media/client'
 
 const MUX_STREAM_BASE_URL = 'https://stream.mux.com/'
+const DISTRO_DOWNLOAD_QUALITIES: VideoVariantDownloadQuality[] = [
+  VideoVariantDownloadQuality.distroLow,
+  VideoVariantDownloadQuality.distroSd,
+  VideoVariantDownloadQuality.distroHigh
+]
 
 function hasMissingDownloadMetadata(download: {
   size?: number | null
@@ -357,6 +362,9 @@ export async function createDownloadsFromMuxAsset({
     return 0
   }
 
+  // buildMuxDownloadRows only returns rows when the asset has a playback ID.
+  const currentAssetUrlPrefix = `${MUX_STREAM_BASE_URL}${muxVideoAsset.playback_ids?.[0]?.id}/`
+
   // Create downloads individually to handle duplicates gracefully
   let createdCount = 0
   for (const download of data) {
@@ -378,9 +386,16 @@ export async function createDownloadsFromMuxAsset({
         continue
       }
 
+      const isMuxDownload = existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
+      // A Mux download on another playback ID is a file of the asset this
+      // variant had before a re-upload, not of the video it streams now.
+      const isPreviousAssetDownload =
+        isMuxDownload && !existingDownload.url.startsWith(currentAssetUrlPrefix)
+
       if (
-        existingDownload.url.startsWith(MUX_STREAM_BASE_URL) &&
-        hasMissingDownloadMetadata(existingDownload)
+        isMuxDownload &&
+        (hasMissingDownloadMetadata(existingDownload) ||
+          isPreviousAssetDownload)
       ) {
         await prisma.videoVariantDownload.update({
           where: { id: existingDownload.id },
@@ -415,6 +430,37 @@ export async function createDownloadsFromMuxAsset({
         'Failed to create or update individual download'
       )
     }
+  }
+
+  // A quality the previous asset had but the current one does not produce
+  // would otherwise keep serving the previous asset's file. Only Mux rows on
+  // another playback ID are removed; non-Mux and distro downloads are kept.
+  try {
+    const { count } = await prisma.videoVariantDownload.deleteMany({
+      where: {
+        videoVariantId: variantId,
+        quality: {
+          notIn: [
+            ...data.map((download) => download.quality),
+            ...DISTRO_DOWNLOAD_QUALITIES
+          ]
+        },
+        url: { startsWith: MUX_STREAM_BASE_URL },
+        NOT: { url: { startsWith: currentAssetUrlPrefix } }
+      }
+    })
+    if (count > 0) {
+      logger?.info(
+        { videoVariantId: variantId, count },
+        'Removed downloads left from a previous Mux asset'
+      )
+      createdCount += count
+    }
+  } catch (error) {
+    logger?.error(
+      { error, videoVariantId: variantId },
+      'Failed to remove downloads left from a previous Mux asset'
+    )
   }
 
   return createdCount
