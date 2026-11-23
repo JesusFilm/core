@@ -387,15 +387,16 @@ export async function createDownloadsFromMuxAsset({
       }
 
       const isMuxDownload = existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
-      // A Mux download on another playback ID is a file of the asset this
-      // variant had before a re-upload, not of the video it streams now.
-      const isPreviousAssetDownload =
-        isMuxDownload && !existingDownload.url.startsWith(currentAssetUrlPrefix)
 
+      // A stored URL that differs from the one the current asset would
+      // produce is stale, whether because it is on a previous playback ID
+      // (re-upload) or because the selected rendition for this quality has
+      // changed (e.g. a fallback resolution was replaced once its target
+      // resolution's metadata became valid).
       if (
         isMuxDownload &&
         (hasMissingDownloadMetadata(existingDownload) ||
-          isPreviousAssetDownload)
+          existingDownload.url !== download.url)
       ) {
         await prisma.videoVariantDownload.update({
           where: { id: existingDownload.id },
@@ -432,35 +433,57 @@ export async function createDownloadsFromMuxAsset({
     }
   }
 
-  // A quality the previous asset had but the current one does not produce
-  // would otherwise keep serving the previous asset's file. Only Mux rows on
-  // another playback ID are removed; non-Mux and distro downloads are kept.
-  try {
-    const { count } = await prisma.videoVariantDownload.deleteMany({
-      where: {
-        videoVariantId: variantId,
-        quality: {
-          notIn: [
-            ...data.map((download) => download.quality),
-            ...DISTRO_DOWNLOAD_QUALITIES
-          ]
-        },
-        url: { startsWith: MUX_STREAM_BASE_URL },
-        NOT: { url: { startsWith: currentAssetUrlPrefix } }
-      }
-    })
-    if (count > 0) {
-      logger?.info(
-        { videoVariantId: variantId, count },
-        'Removed downloads left from a previous Mux asset'
-      )
-      createdCount += count
-    }
-  } catch (error) {
-    logger?.error(
-      { error, videoVariantId: variantId },
-      'Failed to remove downloads left from a previous Mux asset'
+  // A quality missing from `data` is only genuinely absent from the current
+  // asset once every rendition has a terminal, usable outcome. A `ready`
+  // rendition whose filesize/bitrate hasn't propagated yet (see
+  // hasValidRenditionMetadata) would otherwise look absent this call and
+  // have its previous-asset row deleted, only for a later call to recreate
+  // it with version reset to 1 once the metadata arrives.
+  const hasPendingRenditionMetadata =
+    muxVideoAsset.static_renditions?.files?.some(
+      (file) =>
+        file != null &&
+        file.status === 'ready' &&
+        !hasValidRenditionMetadata(file)
+    ) ?? false
+
+  if (hasPendingRenditionMetadata) {
+    logger?.info(
+      { videoVariantId: variantId },
+      'Deferring removal of previous-asset downloads until rendition metadata is complete'
     )
+  } else {
+    // A quality the previous asset had but the current one does not produce
+    // would otherwise keep serving the previous asset's file. Only Mux rows
+    // on another playback ID are removed; non-Mux and distro downloads are
+    // kept.
+    try {
+      const { count } = await prisma.videoVariantDownload.deleteMany({
+        where: {
+          videoVariantId: variantId,
+          quality: {
+            notIn: [
+              ...data.map((download) => download.quality),
+              ...DISTRO_DOWNLOAD_QUALITIES
+            ]
+          },
+          url: { startsWith: MUX_STREAM_BASE_URL },
+          NOT: { url: { startsWith: currentAssetUrlPrefix } }
+        }
+      })
+      if (count > 0) {
+        logger?.info(
+          { videoVariantId: variantId, count },
+          'Removed downloads left from a previous Mux asset'
+        )
+        createdCount += count
+      }
+    } catch (error) {
+      logger?.error(
+        { error, videoVariantId: variantId },
+        'Failed to remove downloads left from a previous Mux asset'
+      )
+    }
   }
 
   return createdCount
