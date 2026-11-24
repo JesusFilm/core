@@ -1,6 +1,8 @@
 import { mockDeep } from 'vitest-mock-extended'
 
 import { Prisma } from '@core/prisma/journeys/client'
+import { editInput } from '@core/yoga/mcp/editContract'
+import { mediaSourceKey } from '@core/yoga/mcp/mediaContract'
 
 import { planStructure } from './mcpStructure'
 import { planStructureHistory } from './mcpStructureHistory'
@@ -88,6 +90,66 @@ describe('owning structure planner', () => {
     vi.clearAllMocks()
     tx.block.findFirst.mockResolvedValue(null)
     readRows(base(), [action('yes', 'b'), action('no', 'c')])
+  })
+
+  it('attaches media to a poll option created in the same form batch', async () => {
+    const source = { source: 'unsplash' as const, id: 'poll-image' }
+    const { commands } = editInput.parse({
+      journeyId: journey.id,
+      expectedRevision: '0',
+      idempotencyKey: 'combined-form-media-edit',
+      commands: [
+        {
+          type: 'poll_option_add',
+          question: { id: 'poll' },
+          key: 'maybe',
+          label: 'Maybe',
+          placement: end
+        },
+        {
+          type: 'media_slot_set',
+          target: { slot: 'poll', owner: { local: 'maybe' } },
+          media: { kind: 'image', source, alt: 'A new option image' }
+        }
+      ]
+    })
+    const result = await planStructure(tx, journey, commands, {
+      website: false,
+      websiteMode: false,
+      sources: new Map([
+        [
+          mediaSourceKey(source),
+          {
+            kind: 'image',
+            src: 'https://images.unsplash.com/poll-image',
+            width: 1200,
+            height: 800,
+            blurhash: 'trusted-blurhash'
+          }
+        ]
+      ])
+    })
+    const option = result.blockWrites.find(
+      (write) => write.id === result.idMap.maybe
+    )?.create
+    expect(option).toMatchObject({
+      typename: 'RadioOptionBlock',
+      parentBlockId: 'poll',
+      parentOrder: 2,
+      label: 'Maybe',
+      pollOptionImageBlockId: expect.any(String)
+    })
+    expect(
+      result.blockWrites.find(
+        (write) => write.id === option?.pollOptionImageBlockId
+      )?.create
+    ).toMatchObject({
+      typename: 'ImageBlock',
+      parentBlockId: result.idMap.maybe,
+      src: 'https://images.unsplash.com/poll-image',
+      alt: 'A new option image'
+    })
+    expect(result.changes[0].media).toBe(true)
   })
 
   it('resolves forward placement anchors and rejects cyclic placement dependencies', async () => {
