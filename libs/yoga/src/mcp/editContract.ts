@@ -2,7 +2,6 @@ import { createHash } from 'node:crypto'
 
 import { z } from 'zod'
 
-import { formChangedFields, formCommand } from './formContract'
 import {
   type AppearanceCommand,
   appearanceChangedFields,
@@ -10,6 +9,7 @@ import {
   appearanceCommandRegistry,
   isAppearanceCommand
 } from './appearanceContract'
+import { formChangedFields, formCommand } from './formContract'
 import {
   type MediaCommand,
   mediaCommand,

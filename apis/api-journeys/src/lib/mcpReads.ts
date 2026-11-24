@@ -6,8 +6,8 @@ import { z } from 'zod'
 
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
-import { formCommandNames } from '@core/yoga/mcp/formContract'
 import { appearanceCommandNames } from '@core/yoga/mcp/appearanceContract'
+import { formCommandNames } from '@core/yoga/mcp/formContract'
 import { mediaCommandNames } from '@core/yoga/mcp/mediaContract'
 import {
   type ReadCredential,
