@@ -10,7 +10,6 @@ import { queue } from '../../../workers/processImageBlurhash/queue'
 
 import {
   createImageByDirectUpload,
-  createImageFromResponse,
   createImageFromText,
   createImageFromUrl,
   deleteImage
@@ -29,10 +28,6 @@ const mockCreateImageByDirectUpload =
 const mockCreateImageFromText = createImageFromText as MockedFunction<
   typeof createImageFromText
 >
-const mockCreateImageFromResponse = createImageFromResponse as MockedFunction<
-  typeof createImageFromResponse
->
-
 const mockCreateImageFromUrl = createImageFromUrl as MockedFunction<
   typeof createImageFromUrl
 >
@@ -42,7 +37,6 @@ const mockDeleteImage = deleteImage as MockedFunction<typeof deleteImage>
 vi.mock('./service', () => ({
   __esModule: true,
   createImageByDirectUpload: vi.fn(),
-  createImageFromResponse: vi.fn(),
   createImageFromText: vi.fn(),
   createImageFromUrl: vi.fn(),
   deleteImage: vi.fn()
@@ -59,6 +53,10 @@ describe('cloudflareImage', () => {
         id: 'userId'
       }
     }
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   describe('queries', () => {
@@ -604,6 +602,61 @@ describe('cloudflareImage', () => {
           })
         )
       })
+
+      describe('with teamId', () => {
+        const CREATE_BY_FILE_WITH_TEAM_MUTATION = graphql(`
+          mutation createCloudflareUploadByFileWithTeam($teamId: ID) {
+            createCloudflareUploadByFile(teamId: $teamId) {
+              id
+            }
+          }
+        `)
+
+        it('stores the team on the image', async () => {
+          mockCreateImageByDirectUpload.mockResolvedValue({
+            id: 'id',
+            uploadURL: 'testUrl'
+          })
+          journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
+            id: 'userTeamId'
+          } as never)
+          prismaMock.cloudflareImage.create.mockResolvedValue({
+            id: 'id'
+          } as unknown as CloudflareImage)
+
+          const result = (await authClient({
+            document: CREATE_BY_FILE_WITH_TEAM_MUTATION,
+            variables: { teamId: 'teamId' }
+          })) as { errors?: unknown }
+
+          expect(result.errors).toBeUndefined()
+          expect(journeysPrismaMock.userTeam.findUnique).toHaveBeenCalledWith({
+            where: { teamId_userId: { teamId: 'teamId', userId: 'testUserId' } }
+          })
+          expect(journeysPrismaMock.journey.findUnique).not.toHaveBeenCalled()
+          expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining({
+                teamId: 'teamId',
+                userId: 'testUserId'
+              })
+            })
+          )
+        })
+
+        it('refuses a non-member', async () => {
+          journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
+
+          const result = (await authClient({
+            document: CREATE_BY_FILE_WITH_TEAM_MUTATION,
+            variables: { teamId: 'teamId' }
+          })) as { errors?: { extensions?: { code?: string } }[] }
+
+          expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+          expect(mockCreateImageByDirectUpload).not.toHaveBeenCalled()
+          expect(prismaMock.cloudflareImage.create).not.toHaveBeenCalled()
+        })
+      })
     })
 
     describe('createCloudflareUploadByUrl', () => {
@@ -735,6 +788,69 @@ describe('cloudflareImage', () => {
           })
         )
       })
+
+      describe('with teamId', () => {
+        const CREATE_BY_URL_WITH_TEAM_MUTATION = graphql(`
+          mutation createCloudflareUploadByUrlWithTeam(
+            $url: String!
+            $teamId: ID
+          ) {
+            createCloudflareUploadByUrl(url: $url, teamId: $teamId) {
+              id
+            }
+          }
+        `)
+
+        it('stores the team on the image', async () => {
+          mockCreateImageFromUrl.mockResolvedValue({ id: 'id' })
+          journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
+            id: 'userTeamId'
+          } as never)
+          prismaMock.cloudflareImage.create.mockResolvedValue({
+            id: 'id'
+          } as unknown as CloudflareImage)
+
+          const result = (await authClient({
+            document: CREATE_BY_URL_WITH_TEAM_MUTATION,
+            variables: {
+              url: 'https://example.com/picture.jpg',
+              teamId: 'teamId'
+            }
+          })) as { errors?: unknown }
+
+          expect(result.errors).toBeUndefined()
+          expect(journeysPrismaMock.userTeam.findUnique).toHaveBeenCalledWith({
+            where: { teamId_userId: { teamId: 'teamId', userId: 'testUserId' } }
+          })
+          expect(mockCreateImageFromUrl).toHaveBeenCalledWith(
+            'https://example.com/picture.jpg'
+          )
+          expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining({
+                teamId: 'teamId',
+                userId: 'testUserId'
+              })
+            })
+          )
+        })
+
+        it('refuses a non-member', async () => {
+          journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
+
+          const result = (await authClient({
+            document: CREATE_BY_URL_WITH_TEAM_MUTATION,
+            variables: {
+              url: 'https://example.com/picture.jpg',
+              teamId: 'teamId'
+            }
+          })) as { errors?: { extensions?: { code?: string } }[] }
+
+          expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')
+          expect(mockCreateImageFromUrl).not.toHaveBeenCalled()
+          expect(prismaMock.cloudflareImage.create).not.toHaveBeenCalled()
+        })
+      })
     })
 
     describe('createCloudflareImageFromPrompt', () => {
@@ -754,9 +870,7 @@ describe('cloudflareImage', () => {
       `)
 
       it('should return cloudflare image and queue blurhash job', async () => {
-        const response = new Response()
-        mockCreateImageFromText.mockResolvedValue(response)
-        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        mockCreateImageFromText.mockResolvedValue({ id: 'id' })
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id',
           uploaded: true,
@@ -824,8 +938,7 @@ describe('cloudflareImage', () => {
       `)
 
       it('should persist teamId from the journey when journeyId is provided', async () => {
-        mockCreateImageFromText.mockResolvedValue(new Response())
-        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        mockCreateImageFromText.mockResolvedValue({ id: 'id' })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [{ id: 'userTeamId' }] }
@@ -847,8 +960,7 @@ describe('cloudflareImage', () => {
       })
 
       it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
-        mockCreateImageFromText.mockResolvedValue(new Response())
-        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        mockCreateImageFromText.mockResolvedValue({ id: 'id' })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [] }

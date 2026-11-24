@@ -1,0 +1,1 @@
+export { apolloCampaignReader } from './getCampaignPublic'

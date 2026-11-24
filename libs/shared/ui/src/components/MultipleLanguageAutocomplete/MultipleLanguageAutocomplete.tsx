@@ -10,6 +10,7 @@ import { FormEvent, ReactElement, useMemo, useState } from 'react'
 
 import { extractLanguageNames } from '../../libs/extractLanguageNames'
 import type { Translation } from '../../libs/extractLanguageNames'
+import { sortLanguageOptions } from '../../libs/sortLanguageOptions'
 
 export interface Language {
   id: string
@@ -50,14 +51,7 @@ export function MultipleLanguageAutocomplete({
   }, [languages])
 
   const sortedOptions = useMemo(() => {
-    if (options.length > 0) {
-      return options.sort((a, b) => {
-        return (a.localName ?? a.nativeName ?? '').localeCompare(
-          b.localName ?? b.nativeName ?? ''
-        )
-      })
-    }
-    return []
+    return sortLanguageOptions(options)
   }, [options])
 
   const filteredOptions = (

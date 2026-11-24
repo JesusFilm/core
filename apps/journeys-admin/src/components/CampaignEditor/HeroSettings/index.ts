@@ -1,0 +1,1 @@
+export { HeroSettings } from './HeroSettings'

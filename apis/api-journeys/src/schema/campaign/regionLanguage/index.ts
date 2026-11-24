@@ -1,0 +1,5 @@
+import './inputs'
+import './campaignRegionLanguageCreate.mutation'
+import './campaignRegionLanguageUpdate.mutation'
+import './campaignRegionLanguageSnapshotRefresh.mutation'
+import './campaignRegionLanguageDelete.mutation'

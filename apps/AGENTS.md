@@ -11,6 +11,8 @@ Applies to the React/Next.js apps. `apps/video-importer` is a Node/tsx CLI, not 
 - Apollo Client
 - Gql.tada
 
+Exception: apps/short-links-admin uses Coss UI (see its AGENTS.md).
+
 ## Code Guidelines
 
 - Always use MUI components over raw HTML elements; avoid writing custom CSS or bare HTML tags. Use `styled()` for custom styling rather than Tailwind or shadcn/ui.
@@ -18,7 +20,7 @@ Applies to the React/Next.js apps. `apps/video-importer` is a Node/tsx CLI, not 
 - Prefer dynamic imports for heavy or below-the-fold components.
 - Name event handler functions with a `handle` prefix (e.g. `handleClick`, `handleKeyDown`).
 - Components return `ReactElement`.
-- Implement accessibility on all interactive elements: `tabIndex`, `aria-label`, `onClick`, `onKeyDown`.
+- Make interactive elements work by keyboard and screen reader. MUI and native interactive components already handle focus and key activation; add `tabIndex`, `role`, `aria-label` and `onKeyDown` yourself only on a non-interactive element made clickable.
 
 ## Testing Guidelines
 

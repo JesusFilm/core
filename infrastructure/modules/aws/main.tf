@@ -1,7 +1,8 @@
 module "vpc" {
-  source = "./vpc"
-  env    = var.env
-  cidr   = var.cidr
+  source              = "./vpc"
+  env                 = var.env
+  cidr                = var.cidr
+  s3_gateway_endpoint = var.s3_gateway_endpoint
 }
 
 module "internal_alb_security_group" {

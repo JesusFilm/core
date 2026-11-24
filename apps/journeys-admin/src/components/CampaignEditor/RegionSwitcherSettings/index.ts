@@ -1,0 +1,1 @@
+export { RegionSwitcherSettings } from './RegionSwitcherSettings'

@@ -5,13 +5,16 @@ import slugify from 'slugify'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+import { logger } from '../../logger'
 import { queue as revalidateQueue } from '../../workers/revalidate/queue'
-import { updateJourneyShortlink } from '../../workers/shortlinkUpdater/service'
+import { updateJourneyShortLink } from '../../workers/shortlinkUpdater/service'
 import { builder } from '../builder'
+import { TEAM_DOMAINS_WHERE } from '../customDomain/teamDomainsWhere'
 
 import { JourneyUpdateInput } from './inputs'
 import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
+import { isReservedJourneySlug } from './reservedJourneySlugs/reservedJourneySlugs'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -21,6 +24,7 @@ builder.mutationField('journeyUpdate', (t) =>
     .prismaField({
       type: JourneyRef,
       nullable: false,
+      grantScopes: (_parent, args) => [`journey:update-labels:${args.id}`],
       args: {
         id: t.arg({ type: 'ID', required: true }),
         input: t.arg({ type: JourneyUpdateInput, required: true })
@@ -45,8 +49,37 @@ builder.mutationField('journeyUpdate', (t) =>
           })
 
         const input = { ...args.input }
+        for (const field of [
+          'custom1Label',
+          'custom2Label',
+          'custom3Label'
+        ] as const) {
+          if (input[field] === undefined) continue
+          if (journey.template !== true)
+            throw new GraphQLError(
+              'custom tracking display labels require a template',
+              {
+                extensions: { code: 'BAD_USER_INPUT', field }
+              }
+            )
+
+          const label = input[field]?.trim() || null
+          if (label != null && Array.from(label).length > 100)
+            throw new GraphQLError(
+              'custom tracking display labels must be at most 100 characters',
+              {
+                extensions: { code: 'BAD_USER_INPUT', field }
+              }
+            )
+          input[field] = label
+        }
+
         if (input.slug != null)
           input.slug = slugify(input.slug, { lower: true, strict: true })
+        if (input.slug != null && isReservedJourneySlug(input.slug))
+          throw new GraphQLError('slug is reserved', {
+            extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
+          })
 
         if (input.hostId != null) {
           const host = await prisma.host.findUnique({
@@ -76,7 +109,12 @@ builder.mutationField('journeyUpdate', (t) =>
               where: { id: journeyId },
               include: {
                 ...query.include,
-                team: { include: { customDomains: true } }
+                team: {
+                  include: {
+                    userTeams: true,
+                    customDomains: { where: TEAM_DOMAINS_WHERE }
+                  }
+                }
               },
               data: {
                 ...(omit(input, ['tagIds']) as any),
@@ -94,12 +132,19 @@ builder.mutationField('journeyUpdate', (t) =>
               }
             })
 
-            if (input.slug != null) {
-              await updateJourneyShortlink(updated.id, input.slug)
-            }
-
             return updated
           })
+
+          if (input.slug != null) {
+            try {
+              await updateJourneyShortLink(result.id)
+            } catch (error) {
+              logger.error(
+                { journeyId: result.id, error },
+                'Failed to update journey QR code short links'
+              )
+            }
+          }
 
           if (
             input.seoTitle != null ||

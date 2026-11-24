@@ -11,7 +11,7 @@ GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 
 ### Prisma
 
-- ORM for all database access — **no raw SQL** (except `prisma.$queryRaw` when necessary).
+- ORM for all database access — **no raw SQL** (except `prisma.$queryRaw` when necessary, or `$executeRaw` for a statement that returns nothing a query can read, such as `pg_advisory_xact_lock`: `$queryRaw` throws on its void column).
 - Schema: `libs/prisma/journeys/db/schema.prisma`
 - Migrations: `libs/prisma/journeys/db/migrations/` — timestamped SQL files, one atomic change each.
 - Soft deletes via `deletedAt` field on blocks, journeys, and other entities. Always filter `where: { deletedAt: null }` in queries.
@@ -27,7 +27,7 @@ GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 | Domain    | Nx Project         | Schema Path                              | DB URL Env Var              | APIs Using This Domain                                                        |
 | --------- | ------------------ | ---------------------------------------- | --------------------------- | ----------------------------------------------------------------------------- |
 | journeys  | `prisma-journeys`  | `libs/prisma/journeys/db/schema.prisma`  | `PG_DATABASE_URL_JOURNEYS`  | `api-journeys`                                                                |
-| users     | `prisma-users`     | `libs/prisma/users/db/schema.prisma`     | `PG_DATABASE_URL_USERS`     | `api-users`                                                                   |
+| users     | `prisma-users`     | `libs/prisma/users/db/schema.prisma`     | `PG_DATABASE_URL_USERS`     | `api-users`, `api-journeys`, `api-media` (read-only: superAdmin)              |
 | analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` | `api-analytics` (uses `prisma-introspect`, not `prisma-migrate` — see Step 3) |
 | languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` | `api-languages`                                                               |
 | media     | `prisma-media`     | `libs/prisma/media/db/schema.prisma`     | `PG_DATABASE_URL_MEDIA`     | `api-media`                                                                   |
@@ -110,7 +110,9 @@ This uses Hive to compose all subgraph schemas into `apis/api-gateway/schema.gra
 nx run-many -t codegen
 ```
 
-This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `watch`, `resources`, `journeys-ui`, and `shared-gql`.
+This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `resources`, `journeys-ui`, and `shared-gql`.
+
+Outside this repo, `jesusfilm/forge` (where `watch` now lives) queries the production gateway at runtime, and nothing in this repo checks those queries. Before removing or renaming a gateway field, argument or type, search forge for it.
 
 #### Troubleshooting
 
@@ -125,15 +127,15 @@ Error: Prisma Migrate has detected that the environment is non-interactive, whic
 Run the migration manually by combining the database URL env var with the prisma command:
 
 ```bash
-PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/<domain>/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
+PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@localhost:5432/<domain>?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/<domain>/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
 ```
 
-The `--name` flag is required to avoid an interactive prompt for the migration name. The database URL above uses the default devcontainer values (`db` hostname, `postgres`/`postgres` credentials) — substitute your actual values if your local setup differs.
+The `--name` flag is required to avoid an interactive prompt for the migration name. The database URL above uses the default local values (`localhost` hostname, `postgres`/`postgres` credentials) — substitute your actual values if your local setup differs.
 
 For example, for the journeys domain:
 
 ```bash
-PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
+PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@localhost:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
 ```
 
 ##### `P3006`: a historical migration fails to apply to the shadow database
@@ -142,7 +144,7 @@ If `nx prisma-migrate prisma-<domain>` fails with `P3006` on a migration **unrel
 
 ```bash
 cd libs/prisma/<domain>
-export PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public
+export PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@localhost:5432/<domain>?schema=public
 pnpm exec prisma migrate diff --from-config-datasource prisma.config.ts --to-schema db/schema.prisma --script
 ```
 
@@ -168,9 +170,20 @@ See `docs/solutions/workflow-issues/prisma7-migrate-and-nx-codegen-schema-change
 
 ##### `codegen` fails at schema load: `Directive "deprecated" may not be used on INPUT_FIELD_DEFINITION`
 
-The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`, `watch`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
+The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`journeys`, `journeys-admin`, `journeys-ui`, `resources`) reject `@deprecated` on input fields and arguments — their bundled validator predates graphql-js 15.5, and the failure is all-or-nothing at schema load. `generate-graphql` and the gateway compose (Steps 5–6) pass; only Step 7 fails. Do not add `deprecationReason` to Pothos **input** fields — express the deprecation in the field `description` text instead, and keep `@deprecated` on output fields (legal in every consumer).
 
 See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field-2026-06-08.md`.
+
+##### `codegen` fails at schema load: `Syntax Error: Unexpected Name "implements"`
+
+The same legacy `apollo client:codegen` consumers bundle graphql-js 14, whose parser does not know `interface X implements Y`. Codegen prints:
+
+```text
+Error: Error initializing Apollo GraphQL project "...": Error:
+Error in "Loading schema for ...": Syntax Error: Unexpected Name "implements"
+```
+
+with a caret under the `implements` of an `interface … implements …` line in `apis/api-gateway/schema.graphql`. As with the directive error above, Steps 5–6 pass and only Step 7 fails, after `nx run-many -t codegen` has already deleted those projects' `__generated__` folders. Remove `interfaces: [...]` from the Pothos interface type and repeat the parent's fields on it instead; object types may still implement both interfaces (`CampaignSectionBlock` is the worked example).
 
 #### Common Mistakes to Avoid
 
@@ -180,6 +193,7 @@ See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field
 - **Do NOT skip generating for all APIs that share a prisma domain** — when multiple APIs share one Prisma schema, regenerate GraphQL for each of them.
 - **Do NOT trust a `codegen` cache hit after a gateway-schema change** — `nx run-many -t codegen` can replay stale output; run with `--skip-nx-cache` or grep the generated artifacts for the new field.
 - **Do NOT add `deprecationReason` to Pothos input fields** — the legacy apollo CLI codegen consumers fail at schema load; put the deprecation in the field description instead (see Troubleshooting).
+- **Do NOT declare a GraphQL interface that `implements` another interface** (Pothos `interfaces: [...]` on an interface type) — the same legacy apollo CLI consumers fail at schema load on `interface X implements Y` (graphql-js 14 syntax; see Troubleshooting), and `nx run-many -t codegen` then deletes their `__generated__` folders before failing. Repeat the parent's fields on the child interface instead; object types may still implement both (`CampaignSectionBlock` is the worked example).
 
 ### GraphQL Federation
 

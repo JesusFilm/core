@@ -17,6 +17,7 @@ import { builder } from '../builder'
 
 import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
+import { isReservedJourneySlug } from './reservedJourneySlugs/reservedJourneySlugs'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -243,6 +244,11 @@ builder.mutationField('journeyDuplicate', (t) =>
         )
 
         let slug = slugify(duplicateTitle, { lower: true, strict: true })
+        if (isReservedJourneySlug(slug))
+          slug = slugify(`${slug}-${duplicateJourneyId}`, {
+            lower: true,
+            strict: true
+          })
 
         const duplicateCustomizationFields =
           journey.journeyCustomizationFields.map((field) => ({
@@ -297,6 +303,16 @@ builder.mutationField('journeyDuplicate', (t) =>
                   trashedAt: null,
                   deletedAt: null,
                   template: duplicateAsTemplate,
+                  // Only template duplicates retain their own snapshot of definitions.
+                  custom1Label: duplicateAsTemplate
+                    ? journey.custom1Label
+                    : null,
+                  custom2Label: duplicateAsTemplate
+                    ? journey.custom2Label
+                    : null,
+                  custom3Label: duplicateAsTemplate
+                    ? journey.custom3Label
+                    : null,
                   customizable: duplicateAsTemplate
                     ? (journey.customizable ?? false)
                     : false,

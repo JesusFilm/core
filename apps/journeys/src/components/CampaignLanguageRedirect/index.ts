@@ -1,0 +1,1 @@
+export { CampaignLanguageRedirect } from './CampaignLanguageRedirect'

@@ -1,3 +1,4 @@
+import { extractLanguageNames } from '@core/shared/ui/extractLanguageNames'
 import {
   Language,
   LanguageOption
@@ -9,8 +10,7 @@ export function convertLanguagesToOptions(
   return languages != null
     ? languages.map((language) => ({
         id: language.id,
-        localName: language?.name?.find(({ primary }) => !primary)?.value,
-        nativeName: language?.name?.find(({ primary }) => primary)?.value
+        ...extractLanguageNames(language?.name ?? [])
       }))
     : []
 }

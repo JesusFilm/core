@@ -37,7 +37,7 @@ const StatsOverlay = styled(Stack)(({ theme }) => ({
 
 function formatTime(totalSeconds: number): string {
   const roundedTotal = Math.round(totalSeconds + Number.EPSILON)
-  const minutes = Math.round(roundedTotal / 60 + Number.EPSILON)
+  const minutes = Math.floor(roundedTotal / 60)
   const seconds = roundedTotal % 60
 
   return minutes > 0 ? `${minutes}m${seconds}s` : `${seconds}s`

@@ -1,0 +1,1 @@
+export { LanguageFallbackRedirect } from './LanguageFallbackRedirect'

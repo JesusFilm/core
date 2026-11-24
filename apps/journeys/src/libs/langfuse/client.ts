@@ -1,11 +1,23 @@
-import { Langfuse } from 'langfuse'
+import { LangfuseClient } from '@langfuse/client'
+import { LangfuseSpanProcessor } from '@langfuse/otel'
+import {
+  LangfuseGeneration,
+  type LangfuseGenerationAttributes,
+  LangfuseSpan
+} from '@langfuse/tracing'
+import { ROOT_CONTEXT, trace } from '@opentelemetry/api'
+import { BasicTracerProvider } from '@opentelemetry/sdk-trace-base'
 
-let cached: Langfuse | null | undefined
+import { QueuedSpanProcessor } from './queuedSpanProcessor'
+
+let cached: LangfuseClient | null | undefined
+let provider: BasicTracerProvider | undefined
 let warned = false
 
 export const APOLOGIST_PROMPT_NAME = 'apologist-world-cup-chat'
+const FLUSH_TIMEOUT_MS = 5000
 
-export function getLangfuse(): Langfuse | null {
+export function getLangfuse(): LangfuseClient | null {
   if (cached !== undefined) return cached
 
   const publicKey = process.env.LANGFUSE_PUBLIC_KEY
@@ -30,13 +42,84 @@ export function getLangfuse(): Langfuse | null {
     return cached
   }
 
-  cached = new Langfuse({
-    publicKey,
-    secretKey,
-    baseUrl,
-    environment: resolveTracingEnvironment()
+  // Keep Langfuse export isolated from Next.js/Datadog's global provider.
+  provider = new BasicTracerProvider({
+    // Includes processor work before HTTP export, so a stalled flush is bounded.
+    forceFlushTimeoutMillis: FLUSH_TIMEOUT_MS,
+    spanProcessors: [
+      new QueuedSpanProcessor(
+        new LangfuseSpanProcessor({
+          publicKey,
+          secretKey,
+          baseUrl,
+          environment: resolveTracingEnvironment(),
+          // SimpleSpanProcessor tracks in-flight deliveries in forceFlush(); a
+          // batch processor can already have drained its queue on an auto-flush.
+          exportMode: 'immediate',
+          timeout: FLUSH_TIMEOUT_MS / 1000,
+          additionalHeaders: { 'x-langfuse-ingestion-version': '4' }
+        })
+      )
+    ]
   })
+  cached = new LangfuseClient({ publicKey, secretKey, baseUrl })
   return cached
+}
+
+export function startChatGeneration({
+  sessionId,
+  metadata,
+  ...attributes
+}: LangfuseGenerationAttributes & {
+  sessionId?: string
+  metadata: Record<string, unknown>
+}): { end: (attributes: LangfuseGenerationAttributes) => void } | null {
+  if (getLangfuse() == null || provider == null) return null
+  const tracer = provider.getTracer('langfuse-sdk')
+  const contextAttributes = {
+    'langfuse.trace.name': 'apologist-chat',
+    ...(sessionId != null && { 'session.id': sessionId })
+  }
+  const root = new LangfuseSpan({
+    otelSpan: tracer.startSpan(
+      'apologist-chat',
+      { attributes: contextAttributes },
+      ROOT_CONTEXT
+    ),
+    attributes: { input: attributes.input, metadata }
+  })
+  const generation = new LangfuseGeneration({
+    otelSpan: tracer.startSpan(
+      'apologist-generation',
+      { attributes: contextAttributes },
+      trace.setSpan(ROOT_CONTEXT, root.otelSpan)
+    ),
+    attributes: { ...attributes, metadata }
+  })
+  let ended = false
+  return {
+    end(finalAttributes) {
+      if (ended) return
+      ended = true
+      generation.update(finalAttributes)
+      root.update({
+        output: finalAttributes.output,
+        level: finalAttributes.level,
+        statusMessage: finalAttributes.statusMessage
+      })
+      generation.end()
+      root.end()
+    }
+  }
+}
+
+export async function flushLangfuse(): Promise<void> {
+  try {
+    await provider?.forceFlush()
+  } catch {
+    // Telemetry delivery must not turn a completed chat into an HTTP error.
+    console.warn('[langfuse] trace export failed')
+  }
 }
 
 export function getActivePromptLabel(): string {

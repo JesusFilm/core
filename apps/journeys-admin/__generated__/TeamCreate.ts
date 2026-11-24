@@ -44,6 +44,9 @@ export interface TeamCreate_teamCreate {
   title: string;
   publicTitle: string | null;
   userTeams: TeamCreate_teamCreate_userTeams[];
+  /**
+   * The team's own domains; a Campaign Domain belongs to its campaign and is left out.
+   */
   customDomains: TeamCreate_teamCreate_customDomains[];
 }
 

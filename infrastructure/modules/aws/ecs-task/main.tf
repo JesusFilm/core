@@ -49,11 +49,22 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   memory                   = var.service_config.memory
   cpu                      = var.service_config.cpu
 
+  # Only rendered for ARM64 (Graviton). Omitting the block for X86_64 keeps
+  # every existing task definition byte-identical to before this input existed.
+  dynamic "runtime_platform" {
+    for_each = var.cpu_architecture == "ARM64" ? [1] : []
+    content {
+      operating_system_family = "LINUX"
+      cpu_architecture        = var.cpu_architecture
+    }
+  }
+
   container_definitions = jsonencode([
-    # app container
-    {
+    # app container. `command` is merged in only when set, so the definition
+    # has no "command" key (and the image's CMD applies) by default.
+    merge({
       name      = "${local.ecs_task_definition_family}-app"
-      image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
+      image     = coalesce(var.image, "${aws_ecr_repository.ecr_repository.repository_url}:latest")
       essential = true
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
@@ -135,7 +146,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       ] : [])
       mountPoints = []
       volumesFrom = []
-    },
+    }, var.command == null ? {} : { command = var.command }),
     # datadog agent container
     {
       name              = "${local.ecs_task_definition_family}-datadog-agent"
@@ -277,12 +288,6 @@ resource "aws_alb_target_group" "alb_target_group" {
     protocol            = var.service_config.alb_target_group.protocol
     matcher             = var.service_config.alb_target_group.health_check_matcher
   }
-
-  lifecycle {
-    ignore_changes = [
-      health_check,
-    ]
-  }
 }
 
 resource "aws_alb_listener_rule" "alb_listener_rule" {
@@ -305,13 +310,32 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
 
 #Create services for app services
 resource "aws_ecs_service" "ecs_service" {
-  name                              = "${local.service_config_name_env}-service"
-  cluster                           = var.ecs_config.cluster.id
-  task_definition                   = aws_ecs_task_definition.ecs_task_definition.arn
-  launch_type                       = "FARGATE"
+  name            = "${local.service_config_name_env}-service"
+  cluster         = var.ecs_config.cluster.id
+  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
+  # One or the other: ECS rejects a launch type alongside a capacity
+  # provider strategy. The provider moves a launch-type service onto a
+  # strategy in place, but only as a forced deployment; going back to a
+  # launch type replaces the service.
+  launch_type                       = var.capacity_provider == null ? "FARGATE" : null
+  force_new_deployment              = var.capacity_provider != null
   desired_count                     = var.service_config.desired_count
   enable_execute_command            = true
   health_check_grace_period_seconds = var.service_config.health_check_grace_period_seconds
+
+  # null = the provider's defaults (100 / 200), which is what every existing
+  # service already has in state.
+  deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
+  deployment_maximum_percent         = var.deployment_maximum_percent
+
+  dynamic "capacity_provider_strategy" {
+    for_each = var.capacity_provider == null ? [] : [var.capacity_provider]
+    content {
+      capacity_provider = capacity_provider_strategy.value
+      weight            = 1
+      base              = 0
+    }
+  }
 
   network_configuration {
     subnets          = var.ecs_config.subnets

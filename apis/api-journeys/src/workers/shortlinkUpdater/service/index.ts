@@ -1,2 +1,6 @@
 export { service } from './service'
-export { updateAllShortlinks, updateJourneyShortlink } from './service'
+export {
+  rewriteQrCodeShortLinks,
+  updateAllShortLinks,
+  updateJourneyShortLink
+} from './service'

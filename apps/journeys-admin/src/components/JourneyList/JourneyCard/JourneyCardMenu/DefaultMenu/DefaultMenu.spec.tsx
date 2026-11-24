@@ -23,6 +23,7 @@ import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { InCollectionContext } from '../../../../TemplateGalleryPageList/InCollectionContext'
 import { ThemeProvider } from '../../../../ThemeProvider'
+import { nonCustomizableLocalTemplateJourney } from '../../../journeyListData'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
@@ -354,6 +355,9 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Use This Template' })
+    ).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
@@ -365,9 +369,6 @@ describe('DefaultMenu', () => {
     ).not.toBeInTheDocument()
     expect(
       queryByRole('menuitem', { name: 'Translate' })
-    ).not.toBeInTheDocument()
-    expect(
-      queryByRole('menuitem', { name: 'Use This Template' })
     ).not.toBeInTheDocument()
     expect(
       queryByRole('menuitem', { name: 'Make Template' })
@@ -1143,6 +1144,11 @@ describe('DefaultMenu', () => {
           slug="journey-slug"
           status={JourneyStatus.draft}
           journeyId="journey-id"
+          journey={
+            template
+              ? { ...nonCustomizableLocalTemplateJourney, id: 'journey-id' }
+              : undefined
+          }
           published={false}
           template={template}
           setOpenAccessDialog={noop}
@@ -1187,7 +1193,7 @@ describe('DefaultMenu', () => {
     }
 
     it('renders "Remove from collection" when flag is on, template is true and the card is in a collection', async () => {
-      const { getByTestId, getByRole } = renderWithFlagAndTemplate({
+      const { getByTestId, getByRole, findByRole } = renderWithFlagAndTemplate({
         flag: true,
         template: true,
         inCollection: true
@@ -1199,6 +1205,11 @@ describe('DefaultMenu', () => {
       )
       expect(
         getByRole('menuitem', { name: 'Remove from collection' })
+      ).toBeInTheDocument()
+      expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
+      fireEvent.click(getByRole('menuitem', { name: 'Use This Template' }))
+      expect(
+        await findByRole('dialog', { name: 'Add Journey to Team' })
       ).toBeInTheDocument()
     })
 

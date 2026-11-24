@@ -1,0 +1,280 @@
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next/pages'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
+
+import { GetCampaign_campaign as Campaign } from '../../../__generated__/GetCampaign'
+import { hasPendingDebouncedWrites } from '../../libs/apolloClient'
+import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
+
+import { AddPanel } from './AddPanel'
+import { CampaignPanel, useCampaignEditor } from './CampaignEditorProvider'
+import { CampaignEditorProviders } from './CampaignEditorProviders'
+import { CANVAS_GUTTER, Canvas, MIN_STAGE_WIDTH } from './Canvas'
+import type { CanvasView } from './Canvas'
+import { CanvasBanner } from './CanvasBanner'
+import { Hotkeys } from './Hotkeys'
+import { INSPECTOR_WIDTH, Inspector } from './Inspector'
+import { LEFT_PANEL_WIDTH, LeftPanel } from './LeftPanel'
+import { LEFT_RAIL_WIDTH, LeftRail, PANELS } from './LeftRail'
+import type { LocalizeTab } from './LocalizePanel'
+import { PagesPanel } from './PagesPanel'
+import { useTranslationRun } from './TranslationRunProvider'
+import { CampaignRole, campaignRoleOf } from './utils/campaignRole'
+import { useCampaignLeaveGuard } from './utils/useCampaignLeaveGuard'
+
+// The tree (`@dnd-kit`, `@mui/x-tree-view`) and the Localize panel load when
+// their panel first opens.
+const Navigator = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/Navigator" */ './Navigator/Navigator'
+    ).then((mod) => mod.Navigator),
+  { ssr: false }
+)
+
+const LocalizePanel = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CampaignEditor/LocalizePanel" */ './LocalizePanel/LocalizePanel'
+    ).then((mod) => mod.LocalizePanel),
+  { ssr: false }
+)
+
+/**
+ * The editor shell is desktop only: narrower viewports get a message, no
+ * canvas. The minimum is the row at its narrowest: the Left Rail (56 px), the
+ * docked left panel (300 px), the Inspector (328 px) and the canvas gutters
+ * (2 × 16 px), plus the 600 px stage the Desktop frame needs at its 0.5 floor
+ * scale, so the frame never paints under the panel or the Inspector. 1316 px.
+ */
+export const EDITOR_MIN_WIDTH =
+  LEFT_RAIL_WIDTH +
+  LEFT_PANEL_WIDTH +
+  INSPECTOR_WIDTH +
+  2 * CANVAS_GUTTER +
+  MIN_STAGE_WIDTH
+
+interface CampaignEditorProps {
+  campaign?: Campaign
+}
+
+interface CampaignEditorViewportProps {
+  campaign: Campaign
+  role: CampaignRole
+  /** Asks for the role again after it could not be read. */
+  onRoleRetry: () => void
+}
+
+interface CampaignEditorShellProps extends CampaignEditorViewportProps {
+  localizeTab: LocalizeTab
+  onLocalizeTabChange: (tab: LocalizeTab) => void
+  promotionNotice: boolean
+  onPromotionNoticeClose: () => void
+  onDefaultLanguageChanged: () => void
+}
+
+/** Everything inside the providers: the rail, the docked panel (always one open, ahead of the canvas in Tab order), the canvas with its banner, and the Inspector. */
+function CampaignEditorShell({
+  campaign,
+  role,
+  onRoleRetry,
+  localizeTab,
+  onLocalizeTabChange,
+  promotionNotice,
+  onPromotionNoticeClose,
+  onDefaultLanguageChanged
+}: CampaignEditorShellProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { pageKind, panel }
+  } = useCampaignEditor()
+  const [view, setView] = useState<CanvasView>('desktop')
+
+  const panelBodies: Record<CampaignPanel, ReactElement> = {
+    add: <AddPanel />,
+    pages: <PagesPanel />,
+    navigator: <Navigator />,
+    localize: (
+      <LocalizePanel
+        tab={localizeTab}
+        onTabChange={onLocalizeTabChange}
+        promotionNotice={promotionNotice}
+        onPromotionNoticeClose={onPromotionNoticeClose}
+      />
+    )
+  }
+  const openPanel = PANELS.find((entry) => entry.panel === panel)
+  const leftPanel = (
+    <LeftPanel label={openPanel?.label(t) ?? ''}>
+      {panelBodies[panel]}
+    </LeftPanel>
+  )
+
+  return (
+    <Stack
+      direction="row"
+      data-testid="CampaignEditor"
+      sx={{ height: '100vh' }}
+    >
+      <Hotkeys />
+      <LeftRail view={view} onViewChange={setView} />
+      {leftPanel}
+      <Stack sx={{ flexGrow: 1, minWidth: 0 }}>
+        <Box
+          sx={{
+            position: 'relative',
+            flexGrow: 1,
+            minHeight: 0,
+            display: 'flex'
+          }}
+        >
+          <CanvasBanner />
+          <Canvas campaign={campaign} pageKind={pageKind} view={view} />
+        </Box>
+      </Stack>
+      <Inspector
+        role={role}
+        onRoleRetry={onRoleRetry}
+        onDefaultLanguageChanged={onDefaultLanguageChanged}
+      />
+    </Stack>
+  )
+}
+
+/** Narrower than {@link EDITOR_MIN_WIDTH}: a message in place of the shell. */
+function CampaignEditorLargerScreen(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  return (
+    <Stack
+      data-testid="CampaignEditorLargerScreen"
+      sx={{
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        p: 6
+      }}
+    >
+      <Typography variant="h5" gutterBottom>
+        {t('Open this on a larger screen')}
+      </Typography>
+      <Typography color="text.secondary">
+        {t(
+          'The campaign editor needs a window at least {{width}} pixels wide.',
+          { width: EDITOR_MIN_WIDTH }
+        )}
+      </Typography>
+    </Stack>
+  )
+}
+
+/**
+ * Inside the providers, so crossing the minimum width swaps only the shell
+ * for the larger-screen message: the Command history and a run in flight
+ * survive it. Leaving the page while a run is in flight, or with a text edit
+ * still inside its debounce, asks first.
+ */
+function CampaignEditorViewport({
+  campaign,
+  role,
+  onRoleRetry
+}: CampaignEditorViewportProps): ReactElement {
+  const isDesktop = useMediaQuery(`(min-width:${EDITOR_MIN_WIDTH}px)`)
+  const { run } = useTranslationRun()
+  const { dispatch } = useCampaignEditor()
+  const [localizeTab, setLocalizeTab] = useState<LocalizeTab>('languages')
+  const [promotionNotice, setPromotionNotice] = useState(false)
+
+  /** A default-language swap opens Localize even if the shell remounted during the run. */
+  function handleDefaultLanguageChanged(): void {
+    setLocalizeTab('translations')
+    setPromotionNotice(true)
+    dispatch({ type: 'SetPanelAction', panel: 'localize' })
+  }
+
+  function handlePromotionNoticeClose(): void {
+    setPromotionNotice(false)
+  }
+
+  useCampaignLeaveGuard([run != null, hasPendingDebouncedWrites])
+
+  if (!isDesktop) return <CampaignEditorLargerScreen />
+  return (
+    <CampaignEditorShell
+      campaign={campaign}
+      role={role}
+      onRoleRetry={onRoleRetry}
+      localizeTab={localizeTab}
+      onLocalizeTabChange={setLocalizeTab}
+      promotionNotice={promotionNotice}
+      onPromotionNoticeClose={handlePromotionNoticeClose}
+      onDefaultLanguageChanged={handleDefaultLanguageChanged}
+    />
+  )
+}
+
+/**
+ * The full-screen campaign editor: the editor's providers (see
+ * {@link CampaignEditorProviders}), the Left Rail with its panels, the canvas
+ * with its banner and the Inspector.
+ * The providers stay mounted below the minimum width, which swaps only the
+ * shell for a message. First open after create shows the landing page,
+ * nothing selected, Desktop view, the default language as the Preview
+ * Language. Nothing replaces Save.
+ */
+export function CampaignEditor({
+  campaign
+}: CampaignEditorProps): ReactElement {
+  const {
+    loadUser,
+    data: currentUser,
+    loading: currentUserLoading,
+    error: currentUserError
+  } = useCurrentUserLazyQuery()
+
+  /** A failure shows as the `error` role; nothing retries on its own. */
+  const handleLoadUser = useCallback((): void => {
+    loadUser().catch(() => undefined)
+  }, [loadUser])
+
+  useEffect(() => {
+    handleLoadUser()
+  }, [handleLoadUser])
+
+  if (campaign == null)
+    return (
+      <Box
+        data-testid="CampaignEditorLoading"
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    )
+
+  const role = campaignRoleOf({
+    campaign,
+    currentUser,
+    loading: currentUserLoading,
+    error: currentUserError
+  })
+
+  return (
+    <CampaignEditorProviders campaign={campaign}>
+      <CampaignEditorViewport
+        campaign={campaign}
+        role={role}
+        onRoleRetry={handleLoadUser}
+      />
+    </CampaignEditorProviders>
+  )
+}

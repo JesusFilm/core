@@ -1,2 +1,5 @@
 import './siteCreate.mutation'
+import './sitesDelete.mutation'
+import './sites.query'
+import './sitesAllowEventProps.mutation'
 import './site.type'

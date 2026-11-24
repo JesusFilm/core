@@ -2,7 +2,8 @@ import { Prisma, prisma } from '@core/prisma/media/client'
 
 import {
   assertTeamMembership,
-  maybeResolveTeamId
+  resolveJourneyUploadTeamId,
+  resolveUploadTeamId
 } from '../../../lib/journeysAccess/journeysAccess'
 import { jobName as processImageBlurhashJobName } from '../../../workers/processImageBlurhash/config'
 import { queue as processImageBlurhashQueue } from '../../../workers/processImageBlurhash/queue'
@@ -12,12 +13,14 @@ import { ImageAspectRatio } from './enums'
 import { ImageInput, VideoImagesFilter } from './inputs'
 import {
   createImageByDirectUpload,
-  createImageFromResponse,
   createImageFromText,
   createImageFromUrl,
   deleteImage
 } from './service'
 import { baseUrl } from './utils/baseUrl'
+
+const TEAM_ID_ARG_DESCRIPTION =
+  'The team the upload belongs to when no journey is given; the caller must be a member. Takes precedence over journeyId.'
 
 builder.prismaObject('CloudflareImage', {
   fields: (t) => ({
@@ -184,10 +187,23 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: {
         input: t.arg({ type: ImageInput, required: false }),
-        journeyId: t.arg.id({ required: false })
+        journeyId: t.arg.id({ required: false }),
+        teamId: t.arg.id({
+          required: false,
+          description: TEAM_ID_ARG_DESCRIPTION
+        })
       },
-      resolve: async (query, _root, { input, journeyId }, { user }) => {
-        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
+      resolve: async (
+        query,
+        _root,
+        { input, journeyId, teamId: requestedTeamId },
+        { user }
+      ) => {
+        const teamId = await resolveUploadTeamId({
+          journeyId,
+          teamId: requestedTeamId,
+          userId: user.id
+        })
 
         const { id, uploadURL } = await createImageByDirectUpload()
 
@@ -213,13 +229,23 @@ builder.mutationFields((t) => ({
       args: {
         url: t.arg.string({ required: true }),
         input: t.arg({ type: ImageInput, required: false }),
-        journeyId: t.arg.id({ required: false })
+        journeyId: t.arg.id({ required: false }),
+        teamId: t.arg.id({
+          required: false,
+          description: TEAM_ID_ARG_DESCRIPTION
+        })
       },
-      resolve: async (query, _root, { url, input, journeyId }, context) => {
+      resolve: async (
+        query,
+        _root,
+        { url, input, journeyId, teamId: requestedTeamId },
+        context
+      ) => {
         const user = context.type === 'authenticated' ? context.user : undefined
 
-        const teamId = await maybeResolveTeamId({
+        const teamId = await resolveUploadTeamId({
           journeyId,
+          teamId: requestedTeamId,
           userId: user?.id
         })
 
@@ -255,11 +281,12 @@ builder.mutationFields((t) => ({
         journeyId: t.arg.id({ required: false })
       },
       resolve: async (query, _root, { prompt, input, journeyId }, { user }) => {
-        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
+        const teamId = await resolveJourneyUploadTeamId({
+          journeyId,
+          userId: user.id
+        })
 
-        const image = await createImageFromResponse(
-          await createImageFromText(prompt)
-        )
+        const image = await createImageFromText(prompt)
 
         const createdImage = await prisma.cloudflareImage.create({
           ...query,

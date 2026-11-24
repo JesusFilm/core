@@ -15,6 +15,13 @@ terraform {
     doppler = {
       source = "DopplerHQ/doppler"
     }
+    # Declared here so the import block in imports.tf resolves
+    # `clickhouse_service` to this provider; it is configured inside
+    # modules/clickhouse/service.
+    clickhouse = {
+      source  = "ClickHouse/clickhouse"
+      version = "~> 3.34"
+    }
   }
   required_version = ">= 1.11.0"
 }

@@ -1,0 +1,1 @@
+export { TranslationsView } from './TranslationsView'

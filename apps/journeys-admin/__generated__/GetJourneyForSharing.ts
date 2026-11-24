@@ -31,6 +31,9 @@ export interface GetJourneyForSharing_journey_team_customDomains {
 export interface GetJourneyForSharing_journey_team {
   __typename: "Team";
   id: string;
+  /**
+   * The team's own domains; a Campaign Domain belongs to its campaign and is left out.
+   */
   customDomains: GetJourneyForSharing_journey_team_customDomains[];
 }
 

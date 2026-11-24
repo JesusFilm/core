@@ -1,0 +1,1 @@
+export { CampaignRegionLanguageUpdateInput } from './campaignRegionLanguageUpdateInput'

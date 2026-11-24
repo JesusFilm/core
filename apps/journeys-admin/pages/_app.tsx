@@ -18,6 +18,7 @@ import { SnackbarKey, SnackbarProvider, closeSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import XCircleContainedIcon from '@core/shared/ui/icons/XCircleContained'
 
@@ -30,6 +31,9 @@ import { getFirebaseAuth } from '../src/libs/auth/firebase'
 import './globals.css'
 
 getFirebaseAuth()
+
+// Created once so client re-renders reuse it; the server passes its own cache from _document.
+const clientSideEmotionCache = createEmotionCache({})
 
 const SnackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
   <IconButton
@@ -54,7 +58,7 @@ type JourneysAdminAppProps = NextJsAppProps<{
 function JourneysAdminApp({
   Component,
   pageProps,
-  emotionCache
+  emotionCache = clientSideEmotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 

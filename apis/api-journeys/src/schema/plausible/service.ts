@@ -59,13 +59,21 @@ interface GetJourneyStatsBreakdownOptions {
    * single bounded request (e.g. per-journey analytics) keep their behavior.
    */
   paginate?: boolean
+  /**
+   * Per-request timeout in milliseconds. Defaults to 30s; callers serving
+   * anonymous visitors pass a shorter one so a hung connection cannot pin them.
+   */
+  timeoutMs?: number
 }
 
 export async function getJourneyStatsBreakdown(
   journeyId: string,
   params: PlausibleBreakdownParams,
   siteId?: string,
-  { paginate = false }: GetJourneyStatsBreakdownOptions = {}
+  {
+    paginate = false,
+    timeoutMs = PLAUSIBLE_REQUEST_TIMEOUT_MS
+  }: GetJourneyStatsBreakdownOptions = {}
 ): Promise<PlausibleStatsResponse[]> {
   const { baseUrl, headers } = getPlausibleConfig()
   const endpoint = `${baseUrl}/api/v1/stats/breakdown`
@@ -79,7 +87,7 @@ export async function getJourneyStatsBreakdown(
       endpoint,
       {
         headers,
-        timeout: PLAUSIBLE_REQUEST_TIMEOUT_MS,
+        timeout: timeoutMs,
         params: {
           site_id: resolvedSiteId,
           ...params,

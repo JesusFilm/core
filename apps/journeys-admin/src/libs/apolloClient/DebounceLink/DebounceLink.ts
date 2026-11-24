@@ -10,10 +10,15 @@ import { Observable, Observer, Subscription } from 'rxjs'
  * `ApolloLink` through a `_super.call(this)` shim. Apollo Client 4's
  * `ApolloLink` is a real class, so that shim throws "Class constructor
  * ApolloLink cannot be invoked without 'new'" the moment the link is
- * constructed. Behaviour is otherwise unchanged from upstream.
+ * constructed.
  *
  * Pass `{ context: { debounceKey, debounceTimeout? } }` to debounce an
  * operation; operations without a `debounceKey` are forwarded untouched.
+ * Unlike upstream, an operation may also pass `debounceFlushPrefix`, one key
+ * prefix or a list of them: every pending request whose key starts with any
+ * of them is forwarded before the operation itself, so it cannot overtake
+ * them. A structural write flushes the pending text of a whole block subtree
+ * this way, one prefix per block.
  */
 
 type ResultObserver = Observer<ApolloLink.Result>
@@ -45,7 +50,11 @@ export class DebounceLink extends ApolloLink {
     operation: ApolloLink.Operation,
     forward: ApolloLink.ForwardFunction
   ): Observable<ApolloLink.Result> {
-    const { debounceKey, debounceTimeout } = operation.getContext()
+    const { debounceKey, debounceTimeout, debounceFlushPrefix } =
+      operation.getContext()
+
+    if (debounceFlushPrefix != null)
+      this.flushPrefixes(debounceFlushPrefix as string | string[])
 
     if (debounceKey == null) return forward(operation)
 
@@ -59,6 +68,15 @@ export class DebounceLink extends ApolloLink {
         this.unsubscribe(debounceKey as string, groupId, observer)
       }
     })
+  }
+
+  /** Whether any debounced request is queued or still waiting for a response. */
+  public hasPending(): boolean {
+    return Object.values(this.debounceInfo).some(
+      (info) =>
+        info.queuedObservers.length > 0 ||
+        Object.keys(info.runningSubscriptions).length > 0
+    )
   }
 
   /**
@@ -121,35 +139,50 @@ export class DebounceLink extends ApolloLink {
     }
   }
 
+  private flushPrefixes(prefix: string | string[]): void {
+    const prefixes = Array.isArray(prefix) ? prefix : [prefix]
+    Object.keys(this.debounceInfo)
+      .filter((debounceKey) =>
+        prefixes.some((candidate) => debounceKey.startsWith(candidate))
+      )
+      .forEach((debounceKey) => this.flush(debounceKey))
+  }
+
   /** Forwards the last queued request and fans its result out to the queue. */
   private flush(debounceKey: string): void {
     const info = this.debounceInfo[debounceKey]
+    if (info == null) return
+    if (info.timeout != null) clearTimeout(info.timeout)
     if (info.queuedObservers.length === 0 || info.lastRequest == null) return
 
     const { operation, forward } = info.lastRequest
     const currentObservers = [...info.queuedObservers]
     const groupId = info.currentGroupId
 
-    const subscription = forward(operation).subscribe({
-      next: (value) => {
-        currentObservers.forEach((observer) => observer.next?.(value))
-      },
-      error: (error) => {
-        currentObservers.forEach((observer) => observer.error?.(error))
-        this.cleanup(debounceKey, groupId)
-      },
-      complete: () => {
-        currentObservers.forEach((observer) => observer.complete?.())
-        this.cleanup(debounceKey, groupId)
-      }
-    })
-
+    // Register before subscribing: a downstream link may complete synchronously.
+    const subscription = new Subscription()
     info.runningSubscriptions[groupId] = {
       subscription,
       observers: currentObservers
     }
     info.queuedObservers = []
     info.currentGroupId++
+
+    subscription.add(
+      forward(operation).subscribe({
+        next: (value) => {
+          currentObservers.forEach((observer) => observer.next?.(value))
+        },
+        error: (error) => {
+          currentObservers.forEach((observer) => observer.error?.(error))
+          this.cleanup(debounceKey, groupId)
+        },
+        complete: () => {
+          currentObservers.forEach((observer) => observer.complete?.())
+          this.cleanup(debounceKey, groupId)
+        }
+      })
+    )
   }
 
   private readonly unsubscribe = (

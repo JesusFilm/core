@@ -175,6 +175,54 @@ describe('SSELink', () => {
     })
   })
 
+  it('creates the client with the retry attempts the operation context sets', () => {
+    const link = new SSELink('http://localhost:4000')
+
+    link
+      .request(
+        mockOperation({
+          query: gql`
+            subscription CampaignAiTranslateSubscription {
+              ping
+            }
+          `,
+          variables: {},
+          operationName: 'CampaignAiTranslateSubscription',
+          getContext: () => ({ retryAttempts: 0 })
+        }),
+        () => EMPTY
+      )
+      .subscribe({})
+
+    expect(mockCreateClient).toHaveBeenLastCalledWith(
+      expect.objectContaining({ retryAttempts: 0 })
+    )
+  })
+
+  it('keeps the library retry default when the context sets none', () => {
+    const link = new SSELink('http://localhost:4000')
+
+    link
+      .request(
+        mockOperation({
+          query: gql`
+            subscription JourneyAiTranslateSubscription {
+              ping
+            }
+          `,
+          variables: {},
+          operationName: 'JourneyAiTranslateSubscription',
+          getContext: () => ({})
+        }),
+        () => EMPTY
+      )
+      .subscribe({})
+
+    expect(mockCreateClient.mock.lastCall?.[0]).not.toHaveProperty(
+      'retryAttempts'
+    )
+  })
+
   it('propagates errors from graphql-sse sink to the observer', async () => {
     const sseError = new Error('SSE connection failed')
     mockSubscribe.mockImplementation((_op, sink) => {

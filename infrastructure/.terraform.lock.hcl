@@ -1,6 +1,40 @@
 # This file is maintained automatically by "tofu init".
 # Manual edits may be lost in future updates.
 
+provider "registry.opentofu.org/clickhouse/clickhouse" {
+  version     = "3.34.0"
+  constraints = "~> 3.34"
+  hashes = [
+    "h1:0e7oWD3CnKzBw92rw7CJcgvzAC/qCpk8ft0jKvWQKpA=",
+    "h1:EfO+ykQIu5AFlb2luV+vhNqt+W2FeaIXHKaP7Up6ufE=",
+    "h1:KLC4sn6btX9ododVvCK9SAhbUV4rN/2wixWQHb58olc=",
+    "h1:NVboLs7eJHNxjGVV/tIxyVOb4Cx3PcvtxCWsKK1YUK4=",
+    "h1:OObjOnv80g63SPH447QCZX6Zup0e7TnH8oCRMU8RKX0=",
+    "h1:Od10vfvi9YHDMEil2+dDijXOX0Op83bcWSdAPkwDZuE=",
+    "h1:R3GrwOfyFta81Wsy8azUbA8HLLQdefE5Smn8BW7OwXI=",
+    "h1:SmcsD5Rl5Gdu4DBhJN8C6Mp5XjG8powhtJVRpl79lHo=",
+    "h1:WwiNWUPkVfyJJmA4V9+CyXSw9uYDcYiaPgLeWTSp5Ds=",
+    "h1:m1P5yNcG2z+JdacJXQK3psmwn1QtCHoHxB8+gGbB+VA=",
+    "h1:rJ7Q3PUnKFFhQ/dSboTR5BGQcHn2JHeAScIXFs91SJs=",
+    "h1:wVrBaqV88Rzsc+ghNAie4TwN9ZVqsH1ydqKBUe9Ybi8=",
+    "h1:x+mfkuaLiVeATzmmrVfXkE0TIChqIV/a0v+z4tDYnCc=",
+    "zh:03cbfdc977be3fbb695e6407a01874d514c4b9cb35785f35c091c4eccdce6a55",
+    "zh:2e1b4b5ed8d1714543aa1bba91c40bd9862358024694ad04ec198ead9c016af1",
+    "zh:2e58632a39a8c56f98f979bf9fe53fb8a7e8ee11bc634ff25450bc1b7eec6c8f",
+    "zh:57441064f7b833cd71f26db2ac3865d6948ae4626f4caa79e2fbb0a4627b8dca",
+    "zh:59f2c0e11bea20f6069593f75d8bf47ef6b49ff1a61e26d17171ab9e8db78ee4",
+    "zh:70ed62ad6d41308e451b1d73d4ecd252a04219033c65fd7f503d3a87283f324b",
+    "zh:7d7409bac0d81ffd18abace42be9b8992f4110236c0f5f083455917cec7e5108",
+    "zh:89af0a25ad31b937f5e565e0c20c8df7f5da1daf97ec1bc85f933f2671139ff3",
+    "zh:8e055e0159f97719d2c609c361d3469243affc8bd1e663934582dc530b3316e7",
+    "zh:9c7ed160a54db7d86dc0079605b1955975a727c1453ba0c1a5584f08a0b8af29",
+    "zh:a2985e3724c59543b83d6c9d9ed1c0d0bf0315f6cd1adba556fc9086d8227755",
+    "zh:ece569d103daf720e12fd0ce7c11f1f3b9d2c01568f20daecd864cafc653d787",
+    "zh:f26e0763dbe6a6b2195c94b44696f2110f7f55433dc142839be16b9697fa5597",
+    "zh:fc57585cc7df26907a9eac81bf02cc6fa38d94ce0683da54e08ddb6524684f09",
+  ]
+}
+
 provider "registry.opentofu.org/datadog/datadog" {
   version     = "3.91.0"
   constraints = "~> 3.72"

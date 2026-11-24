@@ -21,6 +21,20 @@ interface Language {
   languageCode: string
   localName: string
   nativeName?: string
+  sortName: string
+}
+
+const englishLanguageNames = new Intl.DisplayNames(['en'], {
+  type: 'language'
+})
+
+/**
+ * Sorts by English name so the order is the same whichever UI language is
+ * active. The Chinese variants share a "Chinese" prefix to stay adjacent.
+ */
+function getSortName(languageCode: string): string {
+  const englishName = englishLanguageNames.of(languageCode) ?? languageCode
+  return languageCode.startsWith('zh') ? `Chinese ${englishName}` : englishName
 }
 
 export function LanguageSwitcher({
@@ -73,8 +87,14 @@ export function LanguageSwitcher({
         return {
           languageCode,
           nativeName: nativeName === localName ? undefined : nativeName,
-          localName: localName ?? ''
+          localName: localName ?? '',
+          sortName: getSortName(languageCode)
         }
+      })
+      .sort((a, b) => {
+        if (a.languageCode === currentLanguageCode) return -1
+        if (b.languageCode === currentLanguageCode) return 1
+        return a.sortName.localeCompare(b.sortName)
       })
     setLanguages(formattedLanguages)
     // eslint-disable-next-line react-hooks/exhaustive-deps

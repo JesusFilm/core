@@ -1,0 +1,43 @@
+import { builder } from '../../../../builder'
+import { VideoBlockSource } from '../../../../enums'
+import { TEXT_CAPS } from '../../../validation'
+
+export const CampaignVideoBlockCreateInput = builder.inputType(
+  'CampaignVideoBlockCreateInput',
+  {
+    description:
+      'A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`), replacing the block the slot held with `parentOrder: null`, or the next explicit item of a Video Carousel. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.',
+    fields: (t) => ({
+      id: t.id({ required: false }),
+      campaignId: t.id({ required: true }),
+      parentBlockId: t.id({
+        required: true,
+        description:
+          'The hero or Featured Media section whose Media Slot this fills, or the Video Carousel this is an item of.'
+      }),
+      source: t.field({
+        type: VideoBlockSource,
+        required: true,
+        description: '`internal` (Watch), `youTube` or `mux`.'
+      }),
+      videoId: t.id({
+        required: false,
+        description:
+          'The YouTube or Mux video id (zod-validated, then fetched once); for `internal`, a known Watch Video id instead of `url`.'
+      }),
+      url: t.string({
+        required: false,
+        description:
+          '`internal` only: a Watch address, resolved by the server through its variant slug.'
+      }),
+      title: t.string({
+        required: false,
+        description: `Title override, at most ${TEXT_CAPS.videoTitle} characters; omitted or null shows the source title.`
+      }),
+      description: t.string({
+        required: false,
+        description: `Description override, at most ${TEXT_CAPS.videoDescription} characters; omitted or null shows the source text.`
+      })
+    })
+  }
+)

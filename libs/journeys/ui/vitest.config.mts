@@ -62,7 +62,8 @@ export default defineConfig({
         'coverage/**',
         'dist/**',
         '**/node_modules/**',
-        '**/[.]**',
+        // Keep hidden repo files out without excluding checkouts under .codex.
+        resolve(__dirname, '../../..', '**/[.]**'),
         '**/*.d.ts',
         'test?(s)/**',
         '**/__tests__/**',

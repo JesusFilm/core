@@ -377,6 +377,112 @@ describe('siteCreateMutation', () => {
     })
   })
 
+  describe('allowedEventProps', () => {
+    const duplicateDomain = new Prisma.PrismaClientKnownRequestError(
+      'Unique constraint failed on the fields: (`domain`)',
+      { code: 'P2002', clientVersion: 'prismaVersion' }
+    )
+    const existingSite = (allowedEventProps: string[] | null): sites =>
+      ({
+        id: 'siteId',
+        domain: 'https://test-site.com',
+        allowed_event_props: allowedEventProps,
+        site_memberships: [{ id: 'membershipId', role: 'owner' }],
+        goals: [],
+        shared_links: []
+      }) as unknown as sites
+
+    it('should allow the given props on a new site', async () => {
+      prismaMock.sites.create.mockResolvedValue(existingSite(['region']))
+
+      await client({
+        document: SITE_CREATE_MUTATION,
+        variables: {
+          input: {
+            domain: 'https://test-site.com',
+            allowedEventProps: ['region', 'language']
+          }
+        }
+      })
+
+      expect(prismaMock.sites.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            allowed_event_props: ['region', 'language']
+          })
+        })
+      )
+    })
+
+    it('should add the missing props to a site the user already owns', async () => {
+      prismaMock.sites.create.mockRejectedValue(duplicateDomain)
+      prismaMock.sites.findUnique.mockResolvedValue(existingSite(['source']))
+      prismaMock.sites.update.mockResolvedValue(
+        existingSite(['source', 'region'])
+      )
+
+      const data = await client({
+        document: SITE_CREATE_MUTATION,
+        variables: {
+          input: {
+            domain: 'https://test-site.com',
+            allowedEventProps: ['region', 'source']
+          }
+        }
+      })
+
+      expect(prismaMock.sites.update).toHaveBeenCalledWith({
+        include: { goals: true, shared_links: true, site_memberships: true },
+        where: { id: 'siteId' },
+        data: { allowed_event_props: ['source', 'region'], updated_at: date }
+      })
+      expect(data).toMatchObject({
+        data: { siteCreate: { data: { id: 'siteId' } } }
+      })
+    })
+
+    it('should allow every prop on an existing site that never set any', async () => {
+      prismaMock.sites.create.mockRejectedValue(duplicateDomain)
+      prismaMock.sites.findUnique.mockResolvedValue(existingSite(null))
+      prismaMock.sites.update.mockResolvedValue(existingSite(['region']))
+
+      await client({
+        document: SITE_CREATE_MUTATION,
+        variables: {
+          input: {
+            domain: 'https://test-site.com',
+            allowedEventProps: ['region']
+          }
+        }
+      })
+
+      expect(prismaMock.sites.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { allowed_event_props: ['region'], updated_at: date }
+        })
+      )
+    })
+
+    it('should leave an existing site alone when every prop is already allowed', async () => {
+      prismaMock.sites.create.mockRejectedValue(duplicateDomain)
+      prismaMock.sites.findUnique.mockResolvedValue(
+        existingSite(['region', 'language'])
+      )
+
+      await client({
+        document: SITE_CREATE_MUTATION,
+        variables: {
+          input: {
+            domain: 'https://test-site.com',
+            allowedEventProps: ['region']
+          }
+        }
+      })
+
+      expect(prismaMock.sites.update).not.toHaveBeenCalled()
+    })
+  })
+
   it('should create a site without shared links when disableSharedLinks is true', async () => {
     const site = {
       id: 'siteId',

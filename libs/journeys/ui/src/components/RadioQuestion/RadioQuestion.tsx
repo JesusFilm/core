@@ -6,7 +6,10 @@ import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
+import {
+  CaptureEventTrigger,
+  RadioQuestionSubmissionEventCreateInput
+} from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import {
   getStepHeading,
@@ -22,6 +25,7 @@ import {
 } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { useCaptureEvent } from '../../libs/useCaptureEvent/useCaptureEvent'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
@@ -89,6 +93,7 @@ export function RadioQuestion({
     RadioQuestionSubmissionEventCreateVariables
   >(RADIO_QUESTION_SUBMISSION_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
+  const captureEventCreate = useCaptureEvent()
   const { renderMode, journey } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { blockHistory, treeBlocks } = useBlocks()
@@ -105,6 +110,7 @@ export function RadioQuestion({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
+  /** Records the selection, attributing captures to the selected RadioOption. */
   const handleClick = (
     radioOptionBlockId: string,
     radioOptionLabel: string
@@ -155,6 +161,10 @@ export function RadioQuestion({
           }
         })
         fireCaptureEvent(plausible, radioOptionBlock.eventLabel, {
+          capture: {
+            send: captureEventCreate,
+            trigger: CaptureEventTrigger.radioQuestionSubmit
+          },
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           input,
           stepId: input.stepId ?? '',

@@ -49,6 +49,7 @@ describe('customDomains', () => {
     teamId: 'teamId',
     routeAllTeamJourneys: true,
     journeyCollectionId: null,
+    campaignId: null,
     createdAt: new Date()
   }
 
@@ -92,7 +93,7 @@ describe('customDomains', () => {
                 })
               ])
             }),
-            { teamId: 'teamId' }
+            { teamId: 'teamId', campaignId: null }
           ]
         }
       })

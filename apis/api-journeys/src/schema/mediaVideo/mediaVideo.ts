@@ -55,7 +55,7 @@ YouTube.implement({
   })
 })
 
-const Video = builder.externalRef(
+export const Video = builder.externalRef(
   'Video',
   builder.selection<{
     id: string

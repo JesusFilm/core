@@ -10,6 +10,7 @@ import {
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { useCloudflareTeamUploadByFileMutation } from '../useCloudflareTeamUploadByFileMutation'
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 
 /**
@@ -22,6 +23,11 @@ export type ImageUploadErrorCode = ErrorCode | number | 'unknown-error'
 
 export interface UseImageUploadOptions {
   onUploadComplete: (url: string) => void
+  /**
+   * The team the upload belongs to when there is no journey (a campaign
+   * edit). Given, the team upload mutation runs instead of the journey one.
+   */
+  teamId?: string
   onUploadStart?: () => void
   onUploadError?: (
     errorCode: ImageUploadErrorCode,
@@ -56,7 +62,10 @@ const DEFAULT_ACCEPT: Accept = {
   'image/jpeg': [],
   'image/gif': [],
   'image/svg+xml': [],
-  'image/heic': []
+  // Extensions keep .heic/.heif visible in the file picker where the OS doesn't know these types
+  'image/heic': ['.heic'],
+  'image/heif': ['.heif'],
+  'image/webp': []
 }
 
 export function useImageUpload(
@@ -66,6 +75,7 @@ export function useImageUpload(
   const { journey } = useJourney()
   const {
     onUploadComplete,
+    teamId,
     onUploadStart,
     onUploadError,
     maxSize = DEFAULT_MAX_SIZE,
@@ -76,6 +86,8 @@ export function useImageUpload(
     noKeyboard = false
   } = useImageUploadOptions
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
+  const [createCloudflareTeamUploadByFile] =
+    useCloudflareTeamUploadByFileMutation()
   const [loading, setLoading] = useState(false)
   const loadingRef = useRef(false)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
@@ -101,7 +113,7 @@ export function useImageUpload(
       }
       case ErrorCode.FileInvalidType: {
         return t(
-          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
         )
       }
       default: {
@@ -139,9 +151,12 @@ export function useImageUpload(
     onUploadStart?.()
 
     try {
-      const { data } = await createCloudflareUploadByFile({
-        variables: { journeyId: journey?.id }
-      })
+      const { data } =
+        teamId != null
+          ? await createCloudflareTeamUploadByFile({ variables: { teamId } })
+          : await createCloudflareUploadByFile({
+              variables: { journeyId: journey?.id }
+            })
 
       if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
         const file = acceptedFiles[0]

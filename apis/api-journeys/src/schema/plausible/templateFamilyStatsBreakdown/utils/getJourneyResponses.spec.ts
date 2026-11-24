@@ -148,4 +148,38 @@ describe('getJourneysResponses', () => {
       { journeyId: 'journey-3', visitors: 2 }
     ])
   })
+
+  it('counts each visitor once only when a response event falls within the inclusive UTC dates', async () => {
+    vi.mocked(prismaMock.journeyVisitor.groupBy).mockResolvedValue([])
+    await expect(
+      getJourneysResponses(['journey-1'], '2025-12-01,2025-12-10')
+    ).resolves.toEqual([])
+    expect(prismaMock.journeyVisitor.groupBy).toHaveBeenCalledWith({
+      by: ['journeyId'],
+      where: {
+        journeyId: { in: ['journey-1'] },
+        lastTextResponse: { not: null },
+        events: {
+          some: {
+            typename: 'TextResponseSubmissionEvent',
+            createdAt: {
+              gte: new Date('2025-12-01T00:00:00.000Z'),
+              lt: new Date('2025-12-11T00:00:00.000Z')
+            }
+          }
+        }
+      },
+      _count: { journeyId: true }
+    })
+  })
+
+  it.each(['2025-12-10,2025-12-01', '2025-02-30,2025-03-01', 'invalid'])(
+    'rejects invalid custom date range %s',
+    async (range) => {
+      await expect(getJourneysResponses(['journey-1'], range)).rejects.toThrow(
+        'Invalid custom date range'
+      )
+      expect(prismaMock.journeyVisitor.groupBy).not.toHaveBeenCalled()
+    }
+  )
 })

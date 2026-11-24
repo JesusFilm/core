@@ -3,14 +3,16 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
+import { logger } from '../../logger'
 import { builder } from '../builder'
+import {
+  queuePageSetChange,
+  snapshotCampaignAddress
+} from '../campaign/revalidateCampaign'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
-import {
-  deleteVercelDomain,
-  updateTeamShortLinks
-} from './customDomain.service'
+import { deleteVercelDomain, updateTeamShortLinks } from './service'
 
 builder.mutationField('customDomainDelete', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
@@ -39,11 +41,37 @@ builder.mutationField('customDomainDelete', (t) =>
         })
       }
 
-      await prisma.$transaction(async (tx) => {
-        await updateTeamShortLinks(customDomain.teamId, customDomain.name)
+      const { campaignId } = customDomain
+      const { before, after } = await prisma.$transaction(async (tx) => {
+        const before =
+          campaignId == null
+            ? null
+            : await snapshotCampaignAddress(tx, campaignId)
         await tx.customDomain.delete({ where: { id } })
-        await deleteVercelDomain(customDomain)
+        const after =
+          campaignId == null
+            ? null
+            : await snapshotCampaignAddress(tx, campaignId)
+        await deleteVercelDomain(customDomain.name)
+        return { before, after }
       })
+
+      // A Campaign Domain's pages stop resolving and the Campaign Address
+      // is back on the Root Domain. It routed no team journey, so no short
+      // link moves.
+      if (campaignId != null) {
+        await queuePageSetChange(before, after)
+        return customDomain
+      }
+
+      try {
+        await updateTeamShortLinks(customDomain.teamId)
+      } catch (error) {
+        logger.error(
+          { teamId: customDomain.teamId, error },
+          'Failed to update team QR code short links'
+        )
+      }
 
       return customDomain
     }

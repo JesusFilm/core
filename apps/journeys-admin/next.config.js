@@ -67,6 +67,12 @@ const nextConfig = {
         permanent: true
       },
       {
+        // Campaigns moved into the dashboard's Team Campaigns tab
+        source: '/campaigns',
+        destination: '/?type=campaigns',
+        permanent: false
+      },
+      {
         source: '/reports',
         destination: '/reports/journeys',
         permanent: true

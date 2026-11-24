@@ -4,6 +4,9 @@ import { Logger } from 'pino'
 import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
 import { prisma as prismaUsers } from '@core/prisma/users/client'
 
+import { findJourneyShortLinkIds } from '../../shortlinkDelete/findJourneyShortLinkIds'
+import { enqueueShortLinkDeletes } from '../../shortlinkDelete/queue'
+
 import { collectMediaFromJourneys, deleteUnusedMedia } from './mediaCleanup'
 
 const CLEANUP_DAYS = 5
@@ -57,7 +60,10 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
       const deletedJourneyIds: string[] = []
       for (const journey of journeys) {
         try {
+          // Its QR rows cascade with it; their short links go once it is gone.
+          const shortLinkIds = await findJourneyShortLinkIds([journey.id])
           await prisma.journey.delete({ where: { id: journey.id } })
+          await enqueueShortLinkDeletes(shortLinkIds)
           deletedJourneyCount++
           deletedJourneyIds.push(journey.id)
           logger?.info(

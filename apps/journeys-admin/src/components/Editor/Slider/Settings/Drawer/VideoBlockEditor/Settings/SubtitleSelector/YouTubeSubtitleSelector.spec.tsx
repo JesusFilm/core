@@ -161,6 +161,21 @@ describe('YouTubeSubtitleSelector', () => {
     ).toBeInTheDocument()
   })
 
+  it('hides the no subtitles message when disabled', () => {
+    render(
+      <YouTubeSubtitleSelector
+        selectedSubtitleId={null}
+        availableLanguages={[]}
+        onChange={vi.fn()}
+        disabled
+      />
+    )
+
+    expect(
+      screen.queryByText('This video does not have any subtitles')
+    ).not.toBeInTheDocument()
+  })
+
   it('disables select when disabled prop is true', () => {
     render(
       <YouTubeSubtitleSelector

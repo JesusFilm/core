@@ -1,5 +1,0 @@
-kubernetes-dashboard:
-  app:
-    ingress:
-      # Do NOT expose publicly. Access via Kong proxy service only (e.g. kubectl port-forward).
-      enabled: false

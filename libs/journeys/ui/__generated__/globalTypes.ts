@@ -56,6 +56,143 @@ export enum ButtonVariant {
   text = "text",
 }
 
+/**
+ * What a machine-translation run writes: `missing` fills only the texts the language has no entry for; `all` also replaces the machine’s earlier translations. A person’s are never replaced.
+ */
+export enum CampaignAiTranslateMode {
+  all = "all",
+  missing = "missing",
+}
+
+/**
+ * What a Campaign Section sits on. Named kinds are theme-slot references; `custom` reads the section backgroundColor; `image` reads the owned cover block.
+ */
+export enum CampaignBackgroundKind {
+  contrast = "contrast",
+  custom = "custom",
+  image = "image",
+  none = "none",
+  primary = "primary",
+  surface = "surface",
+}
+
+/**
+ * Overlay strength over an image Section Background: light 0.3, medium 0.55, heavy 0.75. Null means medium.
+ */
+export enum CampaignBackgroundOverlay {
+  heavy = "heavy",
+  light = "light",
+  medium = "medium",
+}
+
+/**
+ * Which side of the Section Body an Extra renders on.
+ */
+export enum CampaignChildPlacement {
+  above = "above",
+  below = "below",
+}
+
+/**
+ * The width ratio of the two Column Slots of a Columns section.
+ */
+export enum CampaignColumnsRatio {
+  equal = "equal",
+  wideLeft = "wideLeft",
+  wideRight = "wideRight",
+}
+
+/**
+ * How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+ */
+export enum CampaignFeaturedMediaLayout {
+  sideBySide = "sideBySide",
+  stacked = "stacked",
+}
+
+/**
+ * How a Journey List renders its items: a card grid or a list.
+ */
+export enum CampaignJourneyListDisplay {
+  grid = "grid",
+  list = "list",
+}
+
+/**
+ * Which side of a Featured Media section the Media Slot renders on.
+ */
+export enum CampaignMediaSide {
+  left = "left",
+  right = "right",
+}
+
+/**
+ * One of the two pages every Campaign has: the landing page, or the Region Page that every Campaign Region renders.
+ */
+export enum CampaignPageKind {
+  landing = "landing",
+  regionTemplate = "regionTemplate",
+}
+
+/**
+ * Corner radius of the Campaign Theme: square 0, slight 6, rounded 14, veryRounded 24 px.
+ */
+export enum CampaignRadius {
+  rounded = "rounded",
+  slight = "slight",
+  square = "square",
+  veryRounded = "veryRounded",
+}
+
+/**
+ * The fixed interface phrases every Campaign carries as Campaign Strings.
+ */
+export enum CampaignStringKey {
+  allRegions = "allRegions",
+  copied = "copied",
+  copy = "copy",
+  downloadQr = "downloadQr",
+  noJourneys = "noJourneys",
+  open = "open",
+  openTemplate = "openTemplate",
+  seeAllOnWatch = "seeAllOnWatch",
+  step1 = "step1",
+  step2 = "step2",
+  step2help = "step2help",
+  step3 = "step3",
+  step4 = "step4",
+  topCountry = "topCountry",
+  totalVisitors = "totalVisitors",
+  videos = "videos",
+  watch = "watch",
+  youtube = "youtube",
+}
+
+/**
+ * How a Region Switcher lists the regions: cards, a list, or pills.
+ */
+export enum CampaignSwitcherVariant {
+  cards = "cards",
+  list = "list",
+  pills = "pills",
+}
+
+/**
+ * Who wrote a translation: a person or the machine-translation sweep.
+ */
+export enum CampaignTextSource {
+  human = "human",
+  machine = "machine",
+}
+
+export enum CaptureEventTrigger {
+  buttonClick = "buttonClick",
+  radioQuestionSubmit = "radioQuestionSubmit",
+  stepView = "stepView",
+  videoComplete = "videoComplete",
+  videoStart = "videoStart",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
@@ -255,6 +392,17 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
+export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
+  collection = "collection",
+  episode = "episode",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
+  trailer = "trailer",
+}
+
 export interface ButtonClickEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -272,9 +420,51 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface ChristDecisionCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface Custom1CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface Custom2CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface Custom3CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface DateTimeFilter {
   gte?: any | null;
   lte?: any | null;
+}
+
+export interface GospelCompleteCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface GospelStartCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
 }
 
 export interface JourneyCustomizationDescriptionTranslateInput {
@@ -325,6 +515,13 @@ export interface MultiselectSubmissionEventCreateInput {
   values: string[];
 }
 
+export interface PrayerRequestCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -334,12 +531,33 @@ export interface RadioQuestionSubmissionEventCreateInput {
   value?: string | null;
 }
 
+export interface RsvpCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface SignUpSubmissionEventCreateInput {
   id?: string | null;
   blockId: string;
   stepId?: string | null;
   name: string;
   email: string;
+}
+
+export interface SpecialVideoCompleteCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface SpecialVideoStartCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
 }
 
 export interface StepNextEventCreateInput {

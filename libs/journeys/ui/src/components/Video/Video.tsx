@@ -34,8 +34,10 @@ import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFi
 
 import { VideoFields } from './__generated__/VideoFields'
 import { InitAndPlay } from './InitAndPlay'
+import type { SubtitleTrack } from './InitAndPlay'
 import VideoJsPlayer from './utils/videoJsTypes'
 import { VideoControls } from './VideoControls'
+import { CAPTIONS_ABOVE_CONTROLS_CLASS } from './VideoControls/useCaptionOffset'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
@@ -44,6 +46,13 @@ const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
 
 const StyledVideo = styled('video')(() => ({}))
+
+export type VideoProps = TreeBlock<VideoFields> & {
+  /** Subtitle files to offer as text tracks beside the stream's own; none by default. */
+  subtitleTracks?: SubtitleTrack[]
+  /** Re-set a server-rendered source once the player is ready (the campaign page); off by default. */
+  reapplyServerSource?: boolean
+}
 
 export function Video({
   id: blockId,
@@ -64,8 +73,10 @@ export function Video({
   subtitleLanguage,
   showGeneratedSubtitles,
   eventLabel,
-  endEventLabel
-}: TreeBlock<VideoFields>): ReactElement {
+  endEventLabel,
+  subtitleTracks,
+  reapplyServerSource
+}: VideoProps): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
 
@@ -202,6 +213,8 @@ export function Video({
         videoVariantLanguageId={videoVariantLanguageId}
         subtitleLanguage={subtitleLanguage}
         showGeneratedSubtitles={showGeneratedSubtitles}
+        subtitleTracks={subtitleTracks}
+        reapplyServerSource={reapplyServerSource}
       />
       {activeStep &&
         player != null &&
@@ -258,7 +271,24 @@ export function Video({
                   backgroundColor: VIDEO_BACKGROUND_COLOR,
                   backgroundSize: 'cover',
                   transform: 'scale(1.1)'
-                }
+                },
+                // Keep captions clear of the mobile controls (see
+                // useCaptionOffset). !important beats the inset video.js
+                // writes inline when it fits captions to the video.
+                [`&.${CAPTIONS_ABOVE_CONTROLS_CLASS} > .vjs-text-track-display`]:
+                  {
+                    insetBlockEnd: 'var(--caption-bottom) !important',
+                    insetInline: 'var(--caption-inline) !important'
+                  },
+                // Safari draws captions natively, e.g. on iOS. Narrowing the
+                // container (padding is ignored) makes long captions wrap.
+                [`&.${CAPTIONS_ABOVE_CONTROLS_CLASS} > .vjs-tech::-webkit-media-text-track-container`]:
+                  {
+                    transform: 'translateY(calc(-1 * var(--caption-bottom)))',
+                    insetInline: 0,
+                    width: 'calc(100% - 2 * var(--caption-inline))',
+                    marginInline: 'auto'
+                  }
               }}
             >
               {mediaVideo?.__typename == 'Video' &&

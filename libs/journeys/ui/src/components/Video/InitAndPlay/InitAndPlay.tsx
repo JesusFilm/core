@@ -23,9 +23,21 @@ import {
 import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
 import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
+import { reapplyUnhandledSource } from '../utils/reapplyUnhandledSource'
+import { removeAllRemoteTextTracks } from '../utils/removeAllRemoteTextTracks'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import 'videojs-mux'
+
+/** A subtitle file to offer in the player's subtitle menu. */
+export interface SubtitleTrack {
+  id: string
+  /** The VTT file. */
+  src: string
+  /** BCP 47 tag, what the track reports as its language. */
+  language: string
+  label: string
+}
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement | null>
@@ -50,6 +62,10 @@ interface InitAndPlayProps {
   videoVariantLanguageId: string | null
   subtitleLanguage: VideoFields_subtitleLanguage | null
   showGeneratedSubtitles?: boolean | null
+  /** Subtitle files added as hidden text tracks beside the stream's own. */
+  subtitleTracks?: SubtitleTrack[]
+  /** Re-set a server-rendered source once the player is ready; off for journey videos. */
+  reapplyServerSource?: boolean
 }
 
 export function InitAndPlay({
@@ -74,7 +90,9 @@ export function InitAndPlay({
   mediaVideo,
   videoVariantLanguageId,
   subtitleLanguage,
-  showGeneratedSubtitles
+  showGeneratedSubtitles,
+  subtitleTracks,
+  reapplyServerSource = false
 }: InitAndPlayProps): ReactElement {
   const { journey, renderMode } = useJourney()
   const { blockHistory } = useBlocks()
@@ -105,30 +123,33 @@ export function InitAndPlay({
   // Initiate video player
   useEffect(() => {
     if (videoRef.current != null && !playerInitializedRef.current) {
-      setPlayer(
-        videojs(videoRef.current, {
-          ...defaultVideoJsOptions,
-          controls: false,
-          controlBar: false,
-          bigPlayButton: false,
-          loadingSpinner: false,
-          // Make video fill container instead of set aspect ratio
-          fill: true,
-          userActions: {
-            hotkeys: true,
-            doubleClick: true
-          },
-          responsive: true,
-          muted: muted === true,
-          autoplay: autoplay === true && source === VideoBlockSource.youTube,
-          plugins: {
-            mux: {
-              debug: false,
-              data: muxMetadata
-            }
+      const created = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
+        controls: false,
+        controlBar: false,
+        bigPlayButton: false,
+        loadingSpinner: false,
+        // Make video fill container instead of set aspect ratio
+        fill: true,
+        userActions: {
+          hotkeys: true,
+          doubleClick: true
+        },
+        responsive: true,
+        muted: muted === true,
+        autoplay: autoplay === true && source === VideoBlockSource.youTube,
+        plugins: {
+          mux: {
+            debug: false,
+            data: muxMetadata
           }
-        }) as VideoJsPlayer
-      )
+        }
+      }) as VideoJsPlayer
+      // A server-rendered <video> is already on its <source> natively, which
+      // makes video.js skip its source handlers; feed them once ready.
+      if (reapplyServerSource)
+        created.ready(() => reapplyUnhandledSource(created))
+      setPlayer(created)
       playerInitializedRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once unless videoRef.current is null
@@ -265,6 +286,26 @@ export function InitAndPlay({
       player.pause()
     }
   }, [activeStep, player, selectedBlock])
+
+  // Offer the given subtitle files as text tracks, hidden until chosen.
+  useEffect(() => {
+    if (player == null || subtitleTracks == null || subtitleTracks.length === 0)
+      return
+    removeAllRemoteTextTracks(player)
+    subtitleTracks.forEach((track) => {
+      player.addRemoteTextTrack(
+        {
+          id: track.id,
+          kind: 'subtitles',
+          src: track.src,
+          srclang: track.language,
+          label: track.label,
+          mode: 'hidden'
+        },
+        true
+      )
+    })
+  }, [player, subtitleTracks])
 
   // Set subtitles and closed captions when loaded
   useEffect(() => {

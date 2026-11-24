@@ -34,6 +34,36 @@ describe('StepBlockNodeAnalytics', () => {
     )
   })
 
+  it.each([
+    [30, '30s'],
+    [59, '59s'],
+    [90, '1m30s'],
+    [119, '1m59s'],
+    [335, '5m35s']
+  ])('should format %i seconds as %s', (timeOnPage, expected) => {
+    const initialState = {
+      analytics: {
+        stepsStats: [
+          {
+            stepId: 'step.id',
+            visitors: 1000,
+            visitorsExitAtStep: 100,
+            timeOnPage
+          }
+        ],
+        totalVisitors: 1000
+      }
+    } as unknown as EditorState
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeAnalytics stepId="step.id" />
+      </EditorProvider>
+    )
+
+    expect(screen.getByText(expected)).toBeInTheDocument()
+  })
+
   it('should render fallback visitors', () => {
     const initialState = {
       analytics: {

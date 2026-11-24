@@ -1,5 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 
+import { CAMPAIGN_POSSIBLE_TYPES } from '@core/journeys/ui/Campaign/libs/campaignPossibleTypes'
+
 export const cache = (): InMemoryCache =>
   new InMemoryCache({
     /* https://www.apollographql.com/docs/react/data/fragments/#defining-possibletypes-manually
@@ -9,6 +11,7 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     possibleTypes: {
+      ...CAMPAIGN_POSSIBLE_TYPES,
       Action: [
         'NavigateToBlockAction',
         'LinkAction',

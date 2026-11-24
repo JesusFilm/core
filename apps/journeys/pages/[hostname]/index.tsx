@@ -1,4 +1,5 @@
-import { GetStaticPaths, GetStaticProps } from 'next'
+import { GetStaticProps } from 'next'
+import dynamic from 'next/dynamic'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { ReactElement } from 'react'
 
@@ -15,26 +16,45 @@ import i18nConfig from '../../next-i18next.config'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
+import {
+  CampaignRouteProps,
+  campaignStaticPropsFor,
+  getBlockingStaticPaths,
+  readCampaignPage
+} from '../../src/libs/resolveCampaignPage'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
-import HostJourneyPage from './[journeySlug]'
+import { HostedJourney } from './[journeySlug]'
 
-interface HostJourneysPageProps {
+// The campaign branch only renders for a Campaign Domain; collection and
+// single-journey domains never download it.
+const CampaignRoute = dynamic(
+  async () =>
+    (
+      await import(
+        /* webpackChunkName: "CampaignRoute" */ '../../src/components/CampaignRoute'
+      )
+    ).CampaignRoute
+)
+
+interface HostCollectionProps {
   host?: string
-  journeys: GetJourneysSummary['journeys']
+  journeys?: GetJourneysSummary['journeys']
   journey?: GetJourney['journey']
 }
 
-function HostJourneysPage({
-  journeys,
-  journey,
-  host
-}: HostJourneysPageProps): ReactElement {
-  if (journey == null) return <JourneysPage journeys={journeys} />
+type HostRootPageProps = HostCollectionProps | CampaignRouteProps
+
+// `/` on a custom domain: its campaign's landing page, else its only
+// journey, else its journey collection.
+function HostRootPage(props: HostRootPageProps): ReactElement {
+  if ('kind' in props) return <CampaignRoute {...props} />
+  const { journeys, journey, host } = props
+  if (journey == null) return <JourneysPage journeys={journeys ?? []} />
 
   const { rtl, locale } = getJourneyRTL(journey)
   return (
-    <HostJourneyPage
+    <HostedJourney
       journey={journey}
       host={host ?? ''}
       locale={locale}
@@ -43,7 +63,8 @@ function HostJourneysPage({
   )
 }
 
-export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
+/** The domain's journey collection, or its only journey, or not found. */
+const hostRootStaticProps: GetStaticProps<HostCollectionProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
@@ -139,11 +160,16 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   }
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: 'blocking'
-  }
+// Campaign Domain first: its published campaign owns `/`. Also the route of
+// `_lang/[lang]`: the collection and a journey ignore the tag.
+export const getStaticProps: GetStaticProps<HostRootPageProps> = async (
+  context
+) => {
+  const result = await readCampaignPage(context)
+  if (result.kind === 'notACampaign') return await hostRootStaticProps(context)
+  return await campaignStaticPropsFor(result, context.locale)
 }
 
-export default HostJourneysPage
+export const getStaticPaths = getBlockingStaticPaths
+
+export default HostRootPage

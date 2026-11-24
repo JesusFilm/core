@@ -79,6 +79,24 @@ describe('extractLanguageNames', () => {
     ).toEqual({ localName: 'Anglais', nativeName: 'English' })
   })
 
+  it('swaps all-primary entries when the English name comes first', () => {
+    expect(
+      extractLanguageNames([
+        { value: 'Bulgarian', primary: true },
+        { value: 'български', primary: true }
+      ])
+    ).toEqual({ localName: 'Bulgarian', nativeName: 'български' })
+  })
+
+  it('does not swap all-primary entries that are both Latin script', () => {
+    expect(
+      extractLanguageNames([
+        { value: 'Italiano', primary: true },
+        { value: 'Italian', primary: true }
+      ])
+    ).toEqual({ localName: 'Italian', nativeName: 'Italiano' })
+  })
+
   it('returns localName (no nativeName) for a single non-primary entry', () => {
     expect(extractLanguageNames([{ value: 'French', primary: false }])).toEqual(
       { localName: 'French', nativeName: undefined }

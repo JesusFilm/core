@@ -1,0 +1,166 @@
+{
+  "name": "short-links-admin",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/short-links-admin",
+  "projectType": "application",
+  "tags": ["doppler_config:stg_dev"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["nx _build short-links-admin"],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": ["CI=true nx _build short-links-admin --prod"],
+          "parallel": false
+        }
+      }
+    },
+    "_build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/short-links-admin"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
+          "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
+          "pnpm exec vercel build",
+          "VERCEL_PROJECT_ID=$SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/short-links-admin/.vercel-url"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
+            "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
+            "pnpm exec vercel build --prod",
+            "VERCEL_PROJECT_ID=$SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/short-links-admin/.vercel-url"
+          ]
+        }
+      }
+    },
+    "upload-sourcemaps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm dlx @datadog/datadog-ci@5.8.0 sourcemaps upload dist/apps/short-links-admin/.next/static --service=short-links-admin --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+        ],
+        "parallel": false
+      }
+    },
+    "vercel-alias": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm exec vercel alias set $(cat apps/short-links-admin/.vercel-url) short-links-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://short-links-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/short-links-admin/.vercel-url"
+        ],
+        "parallel": false
+      }
+    },
+    "_serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "short-links-admin:_build",
+        "dev": true,
+        "hostname": "0.0.0.0",
+        "port": 4800,
+        "turbo": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "short-links-admin:build:production",
+          "dev": false
+        },
+        "development": {
+          "buildTarget": "short-links-admin:_build:development",
+          "dev": true
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["nx _serve short-links-admin"],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": ["nx _serve short-links-admin --prod"]
+        }
+      }
+    },
+    "serve-all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nf start"
+          },
+          {
+            "command": "nx serve short-links-admin"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "export": {
+      "executor": "@nx/next:export",
+      "options": {
+        "buildTarget": "short-links-admin:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{workspaceRoot}/coverage/apps/short-links-admin"],
+      "options": {
+        "configFile": "apps/short-links-admin/vitest.config.mts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/short-links-admin/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm tsc7 -p apps/short-links-admin/tsconfig.ts7.json"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_SHORT_LINKS_ADMIN_TOKEN doppler secrets download --no-file --format=env --project short-links-admin > apps/short-links-admin/.env"
+          }
+        ]
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apps/short-links-admin/cobertura-coverage.xml -F apps.short-links-admin"
+      }
+    }
+  }
+}

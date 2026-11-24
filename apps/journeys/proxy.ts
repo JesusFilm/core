@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// The module by its deep path: the `@core/journeys/ui/Campaign` barrel would
+// pull React and MUI into this edge middleware.
+import {
+  LANGUAGE_PAGE_SEGMENT,
+  languagePagePath,
+  pageLanguageTag
+} from '@core/journeys/ui/Campaign/libs/campaignAddress'
 import { isDevHost } from '@core/shared/dev-hosts'
 
 export const config = {
@@ -16,12 +23,41 @@ export const config = {
   ]
 }
 
+/**
+ * The campaign pages are statically generated, so the Page Language the URL
+ * names (`?lang=`) is part of the path they are generated at: `_lang/<tag>`
+ * ahead of the optional region (`languagePagePath`), the query kept.
+ * `segments` are the public path's segments after the campaign prefix; the
+ * route answers a tag that is not one of the campaign's languages with a
+ * redirect to the plain page.
+ */
+function rewriteToLanguage(
+  req: NextRequest,
+  prefix: string,
+  segments: string[],
+  languageTag: string
+): NextResponse {
+  return NextResponse.rewrite(
+    new URL(
+      `${languagePagePath(prefix, segments, languageTag)}${req.nextUrl.search}`,
+      req.url
+    )
+  )
+}
+
 export default async function proxy(
   req: NextRequest
 ): Promise<NextResponse | undefined> {
   const url = req.nextUrl
 
   if (url.pathname.startsWith('/plausible')) return
+
+  // A `_lang` page is reached only through the `?lang=` rewrite below; a
+  // public path naming one is not found, on any host. Answered here, so the
+  // status does not depend on how Next handles a rewrite to `/404`.
+  const segments = url.pathname.split('/').filter((segment) => segment !== '')
+  if (segments.includes(LANGUAGE_PAGE_SEGMENT))
+    return NextResponse.rewrite(new URL('/404', req.url), { status: 404 })
 
   // Get hostname of request
   // (e.g. your.nextstep.is, localhost:4100, example.com)
@@ -71,15 +107,46 @@ export default async function proxy(
     return NextResponse.rewrite(new URL(`/home${path}`, req.url))
   }
 
-  // rewrite root application to `/home` folder
-  if (
+  const isRootDomain =
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
-  ) {
+
+  // The root-domain Campaign Address `/campaign/<slug>…` resolves on the root
+  // domain only (dev hosts and Vercel previews count as root, above). A
+  // Campaign Domain serves only its own campaign, at its root (#10026), so on
+  // any other host the path falls through to the hostname routes and is not
+  // found. On the root domain it serves only a campaign with no Campaign
+  // Domain. A `lang` value worth a page of its own is a bcp47-shaped tag
+  // (`pageLanguageTag`); anything else is served the plain page. Each
+  // distinct tag does mint a `_lang/<tag>` page path: a server render, an
+  // uncached `campaignPublic` read and a 60 s ISR entry (a language fallback
+  // is cached too). That is what requesting a random journey slug costs, so
+  // tags are not limited.
+  const languageTag = pageLanguageTag(url.searchParams.get('lang'))
+
+  if (isRootDomain && url.pathname.startsWith('/campaign/')) {
+    const [, slug, ...region] = segments
+    if (languageTag != null && slug != null && region.length <= 1)
+      return rewriteToLanguage(
+        req,
+        `/home/campaign/${slug}`,
+        region,
+        languageTag
+      )
+    return NextResponse.rewrite(new URL(`/home${path}`, req.url))
+  }
+
+  // rewrite root application to `/home` folder
+  if (isRootDomain) {
     return NextResponse.rewrite(
       new URL(`/home${path === '/' ? '' : path}`, req.url)
     )
   }
+
+  // a Campaign Domain's landing page or region (or a journey slug, which the
+  // route sends back to the plain path) in the Page Language the URL names
+  if (languageTag != null && segments.length <= 1)
+    return rewriteToLanguage(req, `/${hostname}`, segments, languageTag)
 
   // rewrite everything else to `/[hostname]/[slug] dynamic route
   return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url))

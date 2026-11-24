@@ -91,4 +91,21 @@ describe('DateRangePicker', () => {
     expect(dialog).toBeInTheDocument()
     expect(within(dialog).getAllByRole('grid').length).toBeGreaterThan(0)
   })
+
+  it('disables end dates before From while allowing the same date and later dates', () => {
+    render(
+      <DateRangePicker
+        startDate={new Date(2024, 5, 15)}
+        endDate={new Date(2024, 5, 20)}
+        onStartDateChange={mockStartDateChange}
+        onEndDateChange={mockEndDateChange}
+        minDate={new Date(2024, 5, 1)}
+      />
+    )
+    fireEvent.click(screen.getAllByRole('button', { name: /Choose date/ })[1])
+    const calendar = within(screen.getByRole('dialog'))
+    expect(calendar.getByRole('gridcell', { name: '14' })).toBeDisabled()
+    expect(calendar.getByRole('gridcell', { name: '15' })).not.toBeDisabled()
+    expect(calendar.getByRole('gridcell', { name: '16' })).not.toBeDisabled()
+  })
 })

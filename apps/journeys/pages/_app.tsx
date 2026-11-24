@@ -17,15 +17,15 @@ import { DefaultSeo } from 'next-seo'
 import { SnackbarKey, SnackbarProvider, closeSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import XCircleContainedIcon from '@core/shared/ui/icons/XCircleContained'
 
-import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
 import i18nConfig from '../next-i18next.config'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseAuth } from '../src/libs/firebaseClient'
+import { getPageRTL } from '../src/libs/getPageRTL'
+import type { PageRTLProps } from '../src/libs/getPageRTL'
 
 import './globals.css'
 
@@ -40,10 +40,11 @@ const SnackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
   </IconButton>
 )
 
-type JourneysAppProps = NextJsAppProps<{
-  journey?: Journey
-  flags?: { [key: string]: boolean }
-}> & {
+type JourneysAppProps = NextJsAppProps<
+  PageRTLProps & {
+    flags?: { [key: string]: boolean }
+  }
+> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
 }
@@ -52,7 +53,7 @@ function JourneysApp({
   Component,
   pageProps,
   emotionCache = createEmotionCache({
-    rtl: getJourneyRTL(pageProps.journey).rtl
+    rtl: getPageRTL(pageProps)
   })
 }: JourneysAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys')

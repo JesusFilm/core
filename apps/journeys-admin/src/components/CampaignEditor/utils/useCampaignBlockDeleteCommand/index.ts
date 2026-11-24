@@ -1,0 +1,1 @@
+export { useCampaignBlockDeleteCommand } from './useCampaignBlockDeleteCommand'

@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ComponentType, ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -18,9 +19,32 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { TEMPLATE_LABELS } from '../../../../../../../../libs/useTemplateLabelsQuery'
 import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Card } from '.'
+
+// Resolve Next's browser-only dynamic imports in the Vitest component environment.
+vi.mock('next/dynamic', async () => {
+  const { lazy, Suspense } = await import(
+    /* webpackChunkName: "react" */ 'react'
+  )
+  type LoadedComponent = ComponentType<Record<string, unknown>>
+  return {
+    default: (loader: () => Promise<LoadedComponent>) => {
+      const Component = lazy(async () => ({ default: await loader() }))
+      return function DynamicComponent(
+        props: Record<string, unknown>
+      ): ReactElement {
+        return (
+          <Suspense fallback={null}>
+            <Component {...props} />
+          </Suspense>
+        )
+      }
+    }
+  }
+})
 
 // Helper function to create a basic card
 const createCard = (
@@ -72,7 +96,27 @@ const renderWithProviders = (
 ) => {
   const defaultJourney = createJourney(journey)
   return render(
-    <MockedProvider>
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: TEMPLATE_LABELS,
+            variables: { id: defaultJourney.id }
+          },
+          result: {
+            data: {
+              adminJourney: {
+                __typename: 'Journey',
+                id: defaultJourney.id,
+                custom1Label: null,
+                custom2Label: null,
+                custom3Label: null
+              }
+            }
+          }
+        }
+      ]}
+    >
       <SnackbarProvider>
         <FlagsProvider flags={flags}>
           <JourneyProvider
@@ -91,6 +135,13 @@ const renderWithProviders = (
 }
 
 describe('Card', () => {
+  afterEach(async () => {
+    // Let the lazy accordion controls settle before Vitest tears down the worker.
+    await act(async () => {
+      await vi.dynamicImportSettled()
+    })
+  })
+
   describe('Basic Rendering', () => {
     it('renders card properties container', () => {
       const card = createCard()

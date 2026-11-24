@@ -19,7 +19,7 @@ const logger = parentLogger.child({ module: 'redis' })
  */
 
 export const connection = {
-  host: process.env.REDIS_URL ?? 'redis',
+  host: process.env.REDIS_URL ?? 'localhost',
   port: process.env.REDIS_PORT != null ? Number(process.env.REDIS_PORT) : 6379,
   connectTimeout: 5000, // 5 second connection timeout
   maxRetriesPerRequest: 2,

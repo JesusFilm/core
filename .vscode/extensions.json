@@ -1,3 +1,16 @@
 {
-  "recommendations": ["TypeScriptTeam.native-preview"]
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "nrwl.angular-console",
+    "eamodio.gitlens",
+    "graphql.vscode-graphql",
+    "esbenp.prettier-vscode",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg",
+    "prisma.prisma",
+    "vitest.explorer",
+    "redhat.vscode-yaml",
+    "anthropic.claude-code",
+    "TypeScriptTeam.native-preview"
+  ]
 }

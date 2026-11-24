@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "esnext",
+    "target": "es2021",
+    "lib": ["es2021"],
+    "moduleResolution": "bundler",
+    "strict": true,
+    "types": [
+      "vitest/globals",
+      "vitest/importMeta",
+      "vite/client",
+      "node",
+      "vitest",
+      "@cloudflare/workers-types/experimental",
+      "@cloudflare/vitest-pool-workers/types"
+    ]
+  },
+  "include": [
+    "vite.config.ts",
+    "vitest.config.mts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "test/**/*.ts",
+    "src/**/*.d.ts"
+  ]
+}

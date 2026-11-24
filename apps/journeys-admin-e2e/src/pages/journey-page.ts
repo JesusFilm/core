@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 import { expect } from '@playwright/test'
-import type { Page } from 'playwright-core'
+import type { Locator, Page } from 'playwright-core'
 
 import { generateRandomNumber, getBaseUrl } from '../framework/helpers'
 import testData from '../utils/testData.json'
@@ -1251,22 +1251,33 @@ export class JourneyPage {
       .click()
   }
   async verifyUpdatedUrlSlugIsLoaded(linkToCheck: string) {
-    const copiedLinkPage = await this.context.newPage()
-    const clipBoardText = await this.page.evaluate(
-      'navigator.clipboard.readText()'
-    )
-    await copiedLinkPage.goto(clipBoardText)
-    await copiedLinkPage.waitForLoadState()
-    const tabName: string = await copiedLinkPage.title()
-    expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
-    const loadedLink: string = copiedLinkPage.url()
+    // Opens the saved link directly: the clipboard reads back empty in headless CI
+    const updatedLinkPage = await this.context.newPage()
+    await updatedLinkPage.goto(linkToCheck)
+    await updatedLinkPage.waitForLoadState()
+    // The tab title starts with the card heading, which the test sets to the journey's unique name
+    await expect(updatedLinkPage).toHaveTitle(new RegExp(journeyName))
+    const loadedLink: string = updatedLinkPage.url()
     expect(loadedLink).toStrictEqual(linkToCheck)
   }
 
+  /**
+   * The Share dialog's address field. It has no label to find it by (adding
+   * one is a product change), and the slug field sits beside it.
+   */
+  private get shareDialogUrlField(): Locator {
+    return this.page.locator('div.MuiDialogContent-root input:not(#slug)')
+  }
+
   async getUrlfromShareDialogPopup() {
-    return await this.page
-      .locator('div.MuiDialogContent-root input:not(#slug)')
-      .inputValue()
+    return await this.shareDialogUrlField.inputValue()
+  }
+
+  /** Opens the Share dialog of the journey open in the editor and returns its public address. */
+  async getPublicUrlFromShareDialog(): Promise<string> {
+    await this.clickShareButtonInJourneyPage()
+    await expect(this.shareDialogUrlField).toHaveValue(/^https?:\/\/[^/]+\/\S+/)
+    return await this.shareDialogUrlField.inputValue()
   }
   async validateUrlInEmbedCodeFieldAndReturnEmbedCode() {
     const embedUrlFieldValue = await this.page
@@ -1295,9 +1306,7 @@ export class JourneyPage {
     return updatedUrlSlug
   }
   async validateUrlUpdatedUrl(valueToCheck: string) {
-    await expect(
-      this.page.locator('div.MuiDialogContent-root input:not(#slug)')
-    ).toHaveValue(new RegExp(valueToCheck))
+    await expect(this.shareDialogUrlField).toHaveValue(new RegExp(valueToCheck))
   }
 
   async validateQRCodeGenerated() {
