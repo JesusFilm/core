@@ -1,10 +1,10 @@
-import { expandCardStarter } from '@core/yoga/mcp/cardStarterContract'
 import { randomUUID } from 'node:crypto'
 
 import slugify from 'slugify'
 
 import { Prisma } from '@core/prisma/journeys/client'
 import { isAppearanceCommand } from '@core/yoga/mcp/appearanceContract'
+import { expandCardStarter } from '@core/yoga/mcp/cardStarterContract'
 import {
   type EditInput,
   commandRegistry,
