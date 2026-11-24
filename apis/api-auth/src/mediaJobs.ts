@@ -14,6 +14,13 @@ import {
 import { reconcileConnectionChanges } from './withdrawal'
 
 const id = z.string().min(1).max(200)
+const mediaAuditAction = z.enum([
+  'media_admit',
+  'media_transfer',
+  'media_dispatch',
+  'media_cancel',
+  'media_release'
+])
 const gatesSchema = z.array(
   z.object({ id: z.string(), generation: z.number().int() })
 )
@@ -135,10 +142,21 @@ export function createMediaJobAuthority(
       await reconcileConnectionChanges(db)
       return { settled: true }
     }
-    if (!path.endsWith('/accept')) throw new Error('Access denied')
+    if (!path.endsWith('/accept') && !path.endsWith('/deny'))
+      throw new Error('Access denied')
+    const action = mediaAuditAction.parse(permit.stage)
     const connection = await db.agentConnection.findUniqueOrThrow({
       where: { id: permit.connectionId }
     })
+    if (path.endsWith('/deny')) {
+      await audit(db, action, 'denied', {
+        userId: connection.userId,
+        clientId: connection.clientId,
+        journeyIds: permit.journeyIds
+      })
+      // Reporting a denial does not establish that an accepted executor stopped.
+      return { recorded: true }
+    }
     await identity.check({
       userId: connection.userId,
       authTime: connection.firebaseAuthTime,
@@ -165,24 +183,11 @@ export function createMediaJobAuthority(
         data: { status: 'accepted', acceptedAt: now }
       })
       if (accepted.count !== 1) throw new Error('Access denied')
-      await audit(
-        tx,
-        z
-          .enum([
-            'media_admit',
-            'media_transfer',
-            'media_dispatch',
-            'media_cancel',
-            'media_release'
-          ])
-          .parse(permit.stage),
-        'allowed',
-        {
-          userId: current.userId,
-          clientId: current.clientId,
-          journeyIds: permit.journeyIds
-        }
-      )
+      await audit(tx, action, 'allowed', {
+        userId: current.userId,
+        clientId: current.clientId,
+        journeyIds: permit.journeyIds
+      })
       return { accepted: true }
     })
   }

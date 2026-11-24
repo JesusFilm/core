@@ -848,6 +848,96 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(dispatchCount).toBe(1)
   })
 
+  it.each(['journey', 'team'] as const)(
+    'audits denied Admin status after %s role removal with verified redacted identifiers',
+    async (role) => {
+      const membership = await f.journeys.userTeam.findUniqueOrThrow({
+        where: {
+          teamId_userId: { teamId: 'structure-team-alice', userId: 'alice' }
+        }
+      })
+      if (role === 'journey') {
+        await f.journeys.userJourney.create({
+          data: { journeyId: f.journeyId, userId: 'alice', role: 'editor' }
+        })
+        await f.journeys.userTeam.delete({ where: { id: membership.id } })
+      }
+      const sentinel = 'journey-prompt-file-token-raw-error-sentinel.png'
+      const job = await start(manifest(await fileBytes(), { name: sentinel }))
+      const id = String(job.jobId)
+      const connection = await connectionFor(id)
+      const before = await f.auth.securityAudit.findMany()
+      const existingIds = before.map((event) => event.id)
+      if (role === 'journey')
+        await f.journeys.userJourney.deleteMany({
+          where: { journeyId: f.journeyId, userId: 'alice' }
+        })
+      else await f.journeys.userTeam.delete({ where: { id: membership.id } })
+
+      expect((await browser(id)).status).toBe(403)
+      const events = await f.auth.securityAudit.findMany({
+        where: { id: { notIn: existingIds } }
+      })
+      expect(events).toHaveLength(1)
+      expect(events[0]).toEqual({
+        id: expect.any(String),
+        action: 'media_release',
+        outcome: 'denied',
+        userId: connection.userId,
+        clientId: connection.clientId,
+        journeyIds: [f.journeyId],
+        occurredAt: expect.any(Date),
+        expiresAt: expect.any(Date)
+      })
+      expect(
+        events[0].expiresAt.getTime() - events[0].occurredAt.getTime()
+      ).toBe(90 * 86400000)
+      expect(JSON.stringify(events)).not.toContain(sentinel)
+      expect(JSON.stringify(events)).not.toContain(String(job.ingressTicket))
+      expect(await connectionFor(id)).toEqual(connection)
+      const permit = await f.auth.readPermit.findFirstOrThrow({
+        where: { connectionId: connection.id, stage: 'media_release' },
+        orderBy: { preparedAt: 'desc' }
+      })
+      expect(permit.status).toBe('settled')
+      expect(permit.acceptedAt).toBeNull()
+      expect(dispatchCount).toBe(0)
+      expect(await media.mcpMediaJob.count({ where: { active: true } })).toBe(1)
+    }
+  )
+
+  it('rejects untrusted or caller-supplied denial audit identifiers', async () => {
+    const job = await start()
+    const connection = await connectionFor(String(job.jobId))
+    const permit = await f.auth.readPermit.findFirstOrThrow({
+      where: { connectionId: connection.id, executor: 'media' }
+    })
+    const foreignPermit = await f.auth.readPermit.findFirstOrThrow({
+      where: { executor: { not: 'media' } }
+    })
+    const mediaAudits = { where: { action: { startsWith: 'media_' } } }
+    const before = await f.auth.securityAudit.count(mediaAudits)
+    for (const [secret, body] of [
+      ['untrusted', { permitId: permit.id }],
+      [mediaSecret, { permitId: permit.id, userId: 'forged-user' }],
+      [mediaSecret, { permitId: foreignPermit.id }]
+    ] as const) {
+      const response = await fetch(
+        authorityUrl + '/internal/reads/media-jobs/deny',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + secret,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        }
+      )
+      expect(response.status).toBe(403)
+    }
+    expect(await f.auth.securityAudit.count(mediaAudits)).toBe(before)
+  })
+
   it('denies another signed-in user and a broader Admin owner with a reduced, expired or disconnected origin grant', async () => {
     const job = await start()
     const id = String(job.jobId)

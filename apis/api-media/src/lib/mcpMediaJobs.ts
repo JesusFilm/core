@@ -242,8 +242,10 @@ export function createMediaJobs(
             !journey ||
             (action !== 'release' && journey.status !== 'draft') ||
             !['draft', 'published'].includes(journey.status)
-          )
+          ) {
+            await authority('deny', { permitId: prepared.permitId })
             denied()
+          }
           return media.$transaction(
             async (tx) => {
               await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${prepared.permitId} FOR UPDATE`
