@@ -112,7 +112,8 @@ jobs:
           fail_ci_if_error: true
   saved-edits:
     runs-on: jfp-proxmox-core
-    timeout-minutes: 30
+    # Edit, structure and form coverage suites run serially in this job.
+    timeout-minutes: 60
     services:
       postgres:
         image: postgres:16
