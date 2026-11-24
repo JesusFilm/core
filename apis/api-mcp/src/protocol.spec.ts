@@ -34,6 +34,11 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
     )
     expect(response.result.tools).toEqual([
       expect.objectContaining({
+        name: 'journey_media_search',
+        annotations: expect.objectContaining({ readOnlyHint: true }),
+        inputSchema: expect.objectContaining({ oneOf: expect.any(Array) })
+      }),
+      expect.objectContaining({
         name: 'journeys_list',
         inputSchema: expect.objectContaining({
           type: 'object',
@@ -108,7 +113,13 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
         })
       })
     ])
-    expect(JSON.stringify(response.result.tools[0])).not.toContain('"required"')
+    expect(
+      JSON.stringify(
+        response.result.tools.find(
+          (tool: { name: string }) => tool.name === 'journeys_list'
+        )
+      )
+    ).not.toContain('"required"')
   })
 
   it.each(['journeys_list', 'journey_read'])(

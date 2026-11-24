@@ -8,7 +8,7 @@ import { journeysPrismaMock } from '../../../../test/journeysPrismaMock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 
-import { enableDownload, getUpload, getVideo } from './service'
+import { deleteVideo, enableDownload, getUpload, getVideo } from './service'
 
 // Mock the processVideoDownloads queue
 
@@ -1059,6 +1059,9 @@ describe('mux/video', () => {
       `)
 
       it('should return true IF publisher', async () => {
+        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
+          assetId: 'assetId'
+        } as MuxVideo)
         ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -1092,9 +1095,13 @@ describe('mux/video', () => {
           where: { id: 'videoId' }
         })
         expect(result).toHaveProperty('data.deleteMuxVideo', true)
+        expect(deleteVideo).toHaveBeenCalledWith('assetId', false)
       })
 
       it('should return true if not publisher', async () => {
+        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
+          assetId: 'assetId'
+        } as MuxVideo)
         ;(prismaMock.userMediaRole.findUnique as Mock).mockResolvedValue({
           id: 'testUserId',
           userId: 'userId',
@@ -1128,6 +1135,7 @@ describe('mux/video', () => {
           where: { id: 'videoId' }
         })
         expect(result).toHaveProperty('data.deleteMuxVideo', true)
+        expect(deleteVideo).toHaveBeenCalledWith('assetId', true)
       })
     })
 

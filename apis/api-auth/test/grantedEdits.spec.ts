@@ -428,10 +428,10 @@ describe('saved edit integration', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_(10553|10556|10557|10562)(_|$)/.test(
+          !/^\/auth_issue_(10553|10556|10557|10559|10562)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_(10553|10556|10557|10562)(_|$)/.test(
+          !/^\/journeys_issue_(10553|10556|10557|10559|10562)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )

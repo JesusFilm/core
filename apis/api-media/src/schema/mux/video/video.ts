@@ -630,11 +630,12 @@ builder.mutationFields((t) => ({
       if (!currentRoles.includes('publisher')) {
         where.userId = user.id
       }
-      await prisma.muxVideo.findUniqueOrThrow({
+      const video = await prisma.muxVideo.findUniqueOrThrow({
         where
       })
 
-      await deleteVideo(id, isUserGenerated)
+      if (video.assetId != null)
+        await deleteVideo(video.assetId, isUserGenerated)
 
       await prisma.muxVideo.delete({ where: { id } })
 
