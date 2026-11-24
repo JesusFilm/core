@@ -7,7 +7,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { MenuItem } from '../../../../../../MenuItem'
-import { useBlockDeleteCommand } from '../../../../../utils/useBlockDeleteCommand'
+import { useBlockDelete } from '../../../../../BlockDeleteProvider'
 
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
@@ -28,14 +28,14 @@ export function DeleteBlock({
     state: { selectedBlock }
   } = useEditor()
   const currentBlock = block ?? selectedBlock
-  const { addBlockDelete } = useBlockDeleteCommand()
+  const { requestBlockDelete } = useBlockDelete()
 
   const blockType = currentBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
 
   const disableAction = currentBlock == null || disabled
 
   function handleDeleteBlock(): void {
-    if (currentBlock != null) addBlockDelete(currentBlock)
+    if (currentBlock != null) requestBlockDelete(currentBlock)
     closeMenu?.()
   }
 
