@@ -1298,12 +1298,15 @@ describe('form integration', () => {
             routeId: 'route-a'
           }
         ])
+        calls.length = 0
         revokeAfterRouteRead = true
         const result = await f.call('journey_read', {
           journeyId: f.journeyId,
           view: 'steps'
         })
-        expect(result.json.result?.isError, result.text).toBe(true)
+        expect(result.status).toBe(500)
+        expect(result.json).toEqual({ error: 'Request failed' })
+        expect(calls).toEqual(['GET /routes', 'GET /routes'])
         expect(result.text).not.toContain(integrationId)
         expect(result.text).not.toContain('route-a')
       })
