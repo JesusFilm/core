@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
+import { appearanceCommandNames } from '@core/yoga/mcp/appearanceContract'
 import { mediaCommandNames } from '@core/yoga/mcp/mediaContract'
 import { mediaJobTools } from '@core/yoga/mcp/mediaJobContract'
 import {
@@ -660,6 +661,7 @@ async function snapshot(
         ? [
             'typography_set',
             ...structureCommandNames,
+            ...appearanceCommandNames,
             ...(config.media ? mediaCommandNames : [])
           ]
         : [],

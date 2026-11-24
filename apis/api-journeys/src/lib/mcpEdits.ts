@@ -41,13 +41,14 @@ import {
   lockDraftJourneyRevision,
   readJourneyRevision
 } from './journeyRevision/journeyRevision'
+import { type FeatureCheck, requireEditorFeature } from './mcpAppearance'
 import {
   type ContentInverse,
   type ContentPlan,
   createdState,
   planContent
 } from './mcpContent'
-import { prepareCardChatGate } from './mcpContentFeatures'
+import { prepareEditorFeatureGate } from './mcpContentFeatures'
 import {
   cleanupJourneyEdits,
   editDatabaseTime,
@@ -88,6 +89,10 @@ export interface JourneyEditHooks {
   checkpoint?: (point: EditCheckpoint, context: EditContext) => Promise<void>
   now?: () => Date
   canEditChat?: (userId: string) => Promise<boolean>
+  canUseFeature?: (
+    userId: string,
+    feature: Parameters<FeatureCheck>[0]
+  ) => Promise<boolean>
 }
 
 function json(value: unknown): Prisma.InputJsonValue {
@@ -241,11 +246,33 @@ export function createJourneyEditHandler(
             )
           : operation.tool === 'journey_undo' ||
             operation.tool === 'journey_redo'
+      const featureGate =
+        body.stage === 'read' &&
+        ((operation.tool === 'journey_edit' &&
+          !hooks.canUseFeature &&
+          operation.input.commands.some((command) =>
+            [
+              'journey_appearance_set',
+              'menu_create',
+              'menu_remove',
+              'tracking_set',
+              'card_slug_set',
+              'step_remove'
+            ].includes(command.type)
+          )) ||
+          (requiresChat && (!hooks.canEditChat || !hooks.canUseFeature)))
+          ? await prepareEditorFeatureGate(claims.subject)
+          : async () => false
+      const canUseFeature: FeatureCheck = (feature) =>
+        hooks.canUseFeature
+          ? hooks.canUseFeature(claims.subject, feature)
+          : featureGate(feature)
+      let requiredFeatures: Parameters<FeatureCheck>[0][] = []
+      let requiredLanguageId: string | undefined
+      let validatedLanguageId: string | undefined
       const canEditChat = hooks.canEditChat
         ? () => hooks.canEditChat!(claims.subject)
-        : requiresChat && body.stage === 'read'
-          ? await prepareCardChatGate(claims.subject)
-          : async () => false
+        : () => featureGate('aiChatEditor')
       const authorizedJourney = async (tx: Prisma.TransactionClient) => {
         const profile = await tx.journeyProfile.findUnique({
           where: { userId: claims.subject }
@@ -544,7 +571,8 @@ export function createJourneyEditHandler(
                     journey,
                     restoredEntry.changes,
                     direction,
-                    canEditChat
+                    canEditChat,
+                    canUseFeature
                   )
                 } else {
                   plans.push(
@@ -592,7 +620,8 @@ export function createJourneyEditHandler(
                     journey,
                     commands,
                     mediaProjection,
-                    canEditChat
+                    canEditChat,
+                    { actorId: claims.subject, check: canUseFeature }
                   )
                 } catch (error) {
                   if (
@@ -610,7 +639,22 @@ export function createJourneyEditHandler(
                 operation.tool === 'journey_undo' ||
                 operation.tool === 'journey_redo'
               )
-                await validateMediaPlan(tx, structuralPlan, mediaProjection)
+                await validateMediaPlan(
+                  tx,
+                  structuralPlan,
+                  mediaProjection
+                    ? {
+                        ...mediaProjection,
+                        website: Object.prototype.hasOwnProperty.call(
+                          structuralPlan.journeyPatch,
+                          'website'
+                        )
+                          ? structuralPlan.journeyPatch.website === true
+                          : journey.website === true
+                      }
+                    : undefined,
+                  journey.website === true
+                )
               // Make room for the fixed receipt envelope before accepting a
               // plan that may report many incoming links and copied IDs.
               try {
@@ -632,12 +676,33 @@ export function createJourneyEditHandler(
                 throw error
               }
             }
+            requiredFeatures = structuralPlan?.requiredFeatures ?? []
+            const requestedLanguage =
+              operation.tool === 'journey_edit'
+                ? operation.input.commands.find(
+                    (command) =>
+                      command.type === 'journey_details_set' &&
+                      command.languageId !== undefined
+                  )
+                : undefined
+            const languageId =
+              structuralPlan?.journeyPatch.languageId ??
+              (requestedLanguage?.type === 'journey_details_set'
+                ? requestedLanguage.languageId
+                : undefined)
+            if (languageId !== undefined && typeof languageId !== 'string')
+              throw new Error('VALIDATION_FAILED')
+            if (preflight) requiredLanguageId = languageId
+            else if (languageId !== validatedLanguageId)
+              throw new Error('VALIDATION_FAILED')
             needsChatGate =
               structuralPlan?.requiresChat === true ||
               plans.some((plan) => plan.gate === 'aiChatEditor') ||
               (operation.tool === 'journey_edit' && requiresChat)
             context.operationId ??= randomUUID()
             if (preflight) return null
+            for (const feature of requiredFeatures)
+              await requireEditorFeature(canUseFeature, feature)
             if (needsChatGate && !(await canEditChat()))
               throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
             if (structuralPlan) {
@@ -834,6 +899,24 @@ export function createJourneyEditHandler(
       let result = await execute(true)
       if (body.stage !== 'read' || result?.kind !== 'operation_failure') {
         await hooks.checkpoint?.('before_accept', context)
+        // Resolve catalog references outside owning locks. Execution below binds
+        // the final locked plan to this exact validated target, including history.
+        if (requiredLanguageId !== undefined) {
+          let language: { id: string } | null
+          try {
+            const { fetchLanguage } = await import(
+              /* webpackChunkName: "mcp-language-catalog" */ '../schema/campaign/gatewayClient'
+            )
+            language = await fetchLanguage(requiredLanguageId)
+          } catch {
+            throw new Error('DEPENDENCY_UNAVAILABLE')
+          }
+          if (language?.id !== requiredLanguageId)
+            throw new Error('VALIDATION_FAILED')
+          validatedLanguageId = requiredLanguageId
+        }
+        for (const feature of requiredFeatures)
+          await requireEditorFeature(canUseFeature, feature)
         if (needsChatGate && !(await canEditChat()))
           throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
         await authority('accept', { credential, permitId })

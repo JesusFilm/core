@@ -4,7 +4,9 @@ import { spawnSync } from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
-const issue = '10559'
+const issue = process.env.MCP_MEDIA_TEST_ISSUE ?? '10559'
+if (!/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue))
+  throw new Error('Use an issue-specific isolated database name')
 const source = new URL(
   process.env.MCP_MEDIA_TEST_POSTGRES_URL ??
     'postgresql://postgres:postgres@localhost:5432/postgres'
@@ -107,6 +109,7 @@ run(
     'apis/api-auth/vitest.media.config.mts'
   ],
   {
+    MEDIA_TEST_ISSUE: issue,
     MEDIA_TEST_AUTH_DATABASE_URL: runtime.href,
     MEDIA_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`),
     MEDIA_TEST_MEDIA_DATABASE_URL: connection(`media_issue_${issue}`),

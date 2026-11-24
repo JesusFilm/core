@@ -24,7 +24,8 @@ export default defineConfig({
       '**/test/grantedEdits.spec.ts',
       '**/test/grantedStructure.spec.ts',
       '**/test/grantedMedia.spec.ts',
-      '**/test/grantedImageUpload.spec.ts'
+      '**/test/grantedImageUpload.spec.ts',
+      '**/test/grantedAppearance.spec.ts'
     ],
     globals: true,
     environment: 'node',

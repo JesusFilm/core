@@ -16,12 +16,57 @@ on:
       - 'tools/scripts/test-mcp-structure.mjs'
       - 'tools/scripts/test-mcp-media.mjs'
       - 'tools/scripts/test-mcp-image-upload.mjs'
+      - 'tools/scripts/test-mcp-appearance.mjs'
       - '.github/workflows/mcp-edits.yml'
 
 permissions:
   contents: read
 
 jobs:
+  appearance:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: appearance-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Exercise metadata, appearance, menu and reversible history
+        run: node tools/scripts/test-mcp-appearance.mjs
+        env:
+          MCP_STRUCTURE_TEST_POSTGRES_URL: postgresql://postgres:appearance-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Preserve appearance coverage and executed test counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-appearance-coverage
+          path: coverage/integration/mcp-appearance
+          if-no-files-found: error
+      - name: Upload owning appearance coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-appearance/cobertura-coverage.xml
+          flags: integration.mcp-appearance
+          disable_search: true
+          fail_ci_if_error: true
   media:
     runs-on: jfp-proxmox-core
     timeout-minutes: 20
