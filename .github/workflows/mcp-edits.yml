@@ -7,17 +7,64 @@ on:
       - 'apis/api-mcp/**'
       - 'apis/api-gateway/**'
       - 'apis/api-journeys/**'
+      - 'apis/api-media/**'
       - 'libs/yoga/src/mcp/**'
       - 'libs/prisma/auth/**'
       - 'libs/prisma/journeys/**'
+      - 'libs/prisma/media/**'
       - 'tools/scripts/test-mcp-edits.mjs'
       - 'tools/scripts/test-mcp-structure.mjs'
+      - 'tools/scripts/test-mcp-media.mjs'
       - '.github/workflows/mcp-edits.yml'
 
 permissions:
   contents: read
 
 jobs:
+  media:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: media-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Exercise source discovery, atomic attachment and media inverses
+        run: node tools/scripts/test-mcp-media.mjs
+        env:
+          MCP_MEDIA_TEST_POSTGRES_URL: postgresql://postgres:media-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Preserve media coverage and executed test counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-media-coverage
+          path: coverage/integration/mcp-media
+          if-no-files-found: error
+      - name: Upload owning media coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-media/cobertura-coverage.xml
+          flags: integration.mcp-media
+          disable_search: true
+          fail_ci_if_error: true
   saved-edits:
     runs-on: jfp-proxmox-core
     timeout-minutes: 30

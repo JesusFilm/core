@@ -17,6 +17,20 @@ datasource db {
   provider = "postgresql"
 }
 
+// Source mutations close new MCP admission and drain accepted attachments.
+// This receipt and the source write commit in the same owning transaction.
+model McpMediaMutation {
+  id          String   @id @default(uuid())
+  intentHash  String
+  status      String   @default("prepared")
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+  reportedAt  DateTime?
+
+  @@index([intentHash, status])
+  @@index([reportedAt])
+}
+
 enum ImageAspectRatio {
   hd // 16:9
   banner // 2.13:1

@@ -222,7 +222,17 @@ export async function deleteVideo(
   videoId: string,
   userGenerated: boolean
 ): Promise<void> {
-  await getClient(userGenerated).video.assets.delete(videoId)
+  try {
+    await getClient(userGenerated).video.assets.delete(videoId)
+  } catch (error) {
+    if (
+      !error ||
+      typeof error !== 'object' ||
+      !('status' in error) ||
+      error.status !== 404
+    )
+      throw error
+  }
 }
 
 export async function enableDownload(

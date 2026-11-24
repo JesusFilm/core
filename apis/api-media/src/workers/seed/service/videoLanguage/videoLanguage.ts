@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma/media/client'
+import { prisma, sourceTransaction } from '@core/prisma/media/client'
 
 const BATCH_SIZE = 100
 const MAX_RETRIES = 3
@@ -8,14 +8,13 @@ async function updateBatch(
   retries = 0
 ): Promise<void> {
   try {
-    await prisma.$transaction(
-      videos.map(({ id, availableLanguages }) =>
-        prisma.video.update({
+    await sourceTransaction(prisma, async (tx) => {
+      for (const { id, availableLanguages } of videos)
+        await tx.video.update({
           where: { id },
           data: { availableLanguages }
         })
-      )
-    )
+    })
   } catch (error) {
     if (retries < MAX_RETRIES) {
       await new Promise((resolve) => setTimeout(resolve, 1000))

@@ -115,7 +115,9 @@ export const actionFields = [
 export const journeyFields = [
   'menuStepBlockId',
   'socialNodeX',
-  'socialNodeY'
+  'socialNodeY',
+  'logoImageBlockId',
+  'primaryImageBlockId'
 ] as const
 export type BlockField = (typeof blockFields)[number]
 export type BlockChangeField =
@@ -207,6 +209,7 @@ const actionChangeSchema = z
 export const structureInverseSchema = z
   .object({
     type: z.literal('structure_restore'),
+    media: z.literal(true).optional(),
     owners: z
       .array(
         z
@@ -230,7 +233,7 @@ export const structureInverseSchema = z
           })
           .strict()
       )
-      .max(3),
+      .max(5),
     siblings: z
       .array(
         z
@@ -379,6 +382,8 @@ export async function loadStructure(
     menuStepBlockId: string | null
     socialNodeX: number | null
     socialNodeY: number | null
+    logoImageBlockId?: string | null
+    primaryImageBlockId?: string | null
   },
   includeDeleted = false
 ): Promise<StructureState> {
@@ -401,7 +406,9 @@ export async function loadStructure(
     id: journey.id,
     menuStepBlockId: journey.menuStepBlockId,
     socialNodeX: journey.socialNodeX,
-    socialNodeY: journey.socialNodeY
+    socialNodeY: journey.socialNodeY,
+    logoImageBlockId: journey.logoImageBlockId ?? null,
+    primaryImageBlockId: journey.primaryImageBlockId ?? null
   }
   return {
     destinationChecks: new Set(),

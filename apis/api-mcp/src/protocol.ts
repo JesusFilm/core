@@ -16,6 +16,10 @@ import {
   privateOperationErrorCodes
 } from '@core/yoga/mcp/editContract'
 import {
+  mediaCommandNames,
+  mediaSearchInput
+} from '@core/yoga/mcp/mediaContract'
+import {
   InputLimitExceeded,
   type ReadRequest,
   type ReadResult,
@@ -128,6 +132,16 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
   }
   const tools = [
     {
+      name: 'journey_media_search',
+      description:
+        'Discover ready authorized image library/history/Unsplash or catalog videos, languages and existing Mux media for this granted journey. Source IDs do not grant access. Preserve public file delivery; source metadata and search results require current rights and this grant. Follow nextCursor with identical filters. Use canonical YouTube IDs directly with video_source_set. Upload and generation are separate unavailable capabilities.',
+      inputSchema: {
+        ...z.toJSONSchema(mediaSearchInput, { io: 'input' }),
+        type: 'object' as const
+      },
+      annotations: { readOnlyHint: true, destructiveHint: false }
+    },
+    {
       name: 'journeys_list',
       description:
         'List only ordinary journeys covered by current Admin rights and this connection grant. Use returned IDs. A public URL does not grant access.',
@@ -140,7 +154,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_read',
       description:
-        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read affected content, routes and dependencies before editing; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported structure, routing, content and presentation commands, and journey_history for retained batches. Media acquisition and source attachment are unavailable.',
+        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read affected content, routes and dependencies before editing; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported structure, routing, content and presentation commands, and journey_history for retained batches. Discover permitted ready sources with journey_media_search and attach through typed journey_edit media commands. Upload and generation remain unavailable.',
       inputSchema: {
         ...z.toJSONSchema(journeyInput, { io: 'input' }),
         type: 'object' as const
@@ -157,7 +171,10 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         structureCommandNames.join(', ') +
         '. Existing references are {id}; new objects have unique lowercase keys and references {local}, including forward references. step_add creates a complete Step/Card and ordered typed content. Structural block_add uses card and content; an Image/Video is an empty placeholder. Placement is before/after an owned sibling anchor or end. Reorder supplies the complete sibling set; Step order determines the start. A Card slug is the Step website slug. Actions configure navigation only. Step duplication clears default continuation, remaps owned references and preserves authorized action destinations. Standalone Video duplication is unavailable. Deleting a requested Step preserves and reports incoming routes. Repair only routes the user requested or accepted; a proposal makes no write. Explicit delete and repair can share the atomic batch. ' +
         'Form content kinds are poll, multiselect and response. Options have globally unique local keys and labels. Multiselect creation requires at least two initial options and creates a shared submit Button with two Icons when absent. response_set uses responseType and optional Admin locale for default labels; omitted fields are preserved and nullable fields reset on null. poll_set edits gridView. poll_option_add/set/remove, multiselect_set, multiselect_option_add/set/remove and options_reorder edit complete option sets. Final-option removal is allowed and clamps set bounds atomically. signup_set and signup_icon_set edit existing legacy SignUp only. form_destination_set selects an existing integrationId and optional routeId or clears with null; read form_destinations first. Only name/email fields support destinations. Switching integration clears an omitted route. No visitor responses, credentials, delivery or sync operations are available. ' +
-        'Omitted and legacy fields and unrelated Host state are preserved. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL, whole-journey replacement, journey-wide font/theme creation and media source attachment are unavailable.',
+        'Media commands: ' +
+        mediaCommandNames.join(', ') +
+        '. image_set preserves omitted metadata and focal fields. image_source_clear retains an ordinary Image. video_source_clear retains an ordinary Video and its playback preferences and layout while clearing the source and owned poster. media_slot_set and media_slot_clear own cover/poster/poll/logo/social references and their children, retaining shared provider assets. video_source_set accepts catalog video plus language, canonical YouTube IDs or ready authorized Mux IDs and optional nested settings for atomic source and playback configuration. video_settings_set enforces fit, timing, captions and background restrictions. ' +
+        'Omitted and legacy fields and unrelated Host state are preserved. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL, whole-journey replacement, journey-wide font/theme creation, uploads and generation are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
         type: 'object' as const
@@ -263,13 +280,15 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
           ),
         tool.name === 'journeys_list'
           ? 'Returned the currently authorized journeys.'
-          : tool.name === 'journey_history'
-            ? 'Returned retained batches and current undo/redo availability for this connection.'
-            : tool.name === 'journey_read'
-              ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
-              : tool.name === 'journey_preview'
-                ? 'Returned the authorized private playback handoff. Open it with your Admin identity. Publish from the normal Admin editor.'
-                : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
+          : tool.name === 'journey_media_search'
+            ? 'Returned currently authorized ready media and source-specific configuration availability. Follow nextCursor with identical filters.'
+            : tool.name === 'journey_history'
+              ? 'Returned retained batches and current undo/redo availability for this connection.'
+              : tool.name === 'journey_read'
+                ? 'Read the authorized journey page. Preserve omitted content and follow nextCursor.'
+                : tool.name === 'journey_preview'
+                  ? 'Returned the authorized private playback handoff. Open it with your Admin identity. Publish from the normal Admin editor.'
+                  : 'Returned the authorized historical operation receipt. Its revision describes the saved operation.',
         tool.inputSchema
       )
       return server.server.projectCallToolResult(response, undefined)

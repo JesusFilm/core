@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
 import { formCommandNames } from '@core/yoga/mcp/formContract'
+import { mediaCommandNames } from '@core/yoga/mcp/mediaContract'
 import {
   type ReadCredential,
   type ReadRequest,
@@ -36,6 +37,7 @@ import {
   type DestinationRoutes,
   eligibleDestinations
 } from './mcpFormDestinations'
+import { type MediaClientConfig, mediaRequest } from './mcpMediaClient'
 import { boundedReadPage } from './mcpReadPage'
 import { reconcileJourneyReads } from './mcpReadSettlement'
 
@@ -45,6 +47,7 @@ export interface JourneyReadsConfig extends ReadTrust {
   authoritySecret: string
   adminOrigin: string
   editsEnabled?: boolean
+  media?: MediaClientConfig
 }
 
 export function journeyReadsEnvironment(
@@ -59,7 +62,7 @@ export function journeyReadsEnvironment(
     !['true', 'false'].includes(env.MCP_EDITS_ENABLED)
   )
     throw new Error('Invalid edit configuration')
-  return readTrustSchema
+  const config: JourneyReadsConfig = readTrustSchema
     .extend({
       internalSecret: z.string().min(32),
       authorityUrl: serviceUrl,
@@ -78,6 +81,16 @@ export function journeyReadsEnvironment(
       adminOrigin,
       editsEnabled: env.MCP_EDITS_ENABLED === 'true'
     })
+  if (env.MCP_MEDIA_ENABLED === 'true')
+    config.media = z
+      .object({ url: serviceUrl, internalSecret: z.string().min(32) })
+      .parse({
+        url: env.MCP_MEDIA_OWNER_URL,
+        internalSecret: env.MEDIA_MCP_INTERNAL_SECRET
+      })
+  else if (env.MCP_MEDIA_ENABLED && env.MCP_MEDIA_ENABLED !== 'false')
+    throw new Error('Invalid media configuration')
+  return config
 }
 
 const permitSchema = z.object({ permitId: z.string().uuid() })
@@ -263,6 +276,8 @@ export function createJourneyReadHandler(
           })
         )
       const dataRequest = body.request
+      if (dataRequest.tool === 'journey_media_search' && !config.media)
+        throw new Error('Access denied')
       if (
         !sameSecret(
           request.headers.get('x-mcp-signature') ?? '',
@@ -291,6 +306,7 @@ export function createJourneyReadHandler(
           credential,
           executorId: body.stage === 'read' ? executorId : claims.executorId,
           stage: body.stage,
+          media: dataRequest.tool === 'journey_media_search',
           resources: resources.map(({ id, teamId }) => ({
             journeyId: id,
             teamId
@@ -310,6 +326,14 @@ export function createJourneyReadHandler(
         })
         readPermit = permitId
       }
+      const mediaSearch =
+        dataRequest.tool === 'journey_media_search'
+          ? await mediaRequest(config.media!, credential, {
+              permitId,
+              request: dataRequest,
+              search: dataRequest.input
+            })
+          : undefined
       const result = await db.$transaction(
         async (tx) => {
           if (readPermit) {
@@ -375,14 +399,22 @@ export function createJourneyReadHandler(
             })
           } else {
             try {
-              data = await snapshot(
-                tx,
-                dataRequest,
-                claims,
-                allowed,
-                config,
-                editHooks?.destinationRoutes
-              )
+              data =
+                dataRequest.tool === 'journey_media_search'
+                  ? {
+                      contractVersion: resultContractVersion,
+                      kind: 'media_sources',
+                      journeyId: dataRequest.input.journeyId,
+                      ...z.record(z.string(), z.unknown()).parse(mediaSearch)
+                    }
+                  : await snapshot(
+                      tx,
+                      dataRequest,
+                      claims,
+                      allowed,
+                      config,
+                      editHooks?.destinationRoutes
+                    )
             } catch (error) {
               const failure = z
                 .enum(['REVISION_CONFLICT', 'LIMIT_EXCEEDED'])
@@ -476,6 +508,7 @@ async function snapshot(
     'journey_read',
     'journey_preview',
     'journey_operation_get',
+    ...(config.media ? ['journey_media_search'] : []),
     ...(journey.status === 'draft' ? ['journey_history'] : []),
     ...(config.editsEnabled &&
     claims.mode === 'edit' &&
@@ -615,7 +648,12 @@ async function snapshot(
       config.editsEnabled &&
       claims.mode === 'edit' &&
       journey.status === 'draft'
-        ? ['typography_set', ...structureCommandNames, ...formCommandNames]
+        ? [
+            'typography_set',
+            ...structureCommandNames,
+            ...formCommandNames,
+            ...(config.media ? mediaCommandNames : [])
+          ]
         : [],
     adminLink: link(journey.id),
     warnings

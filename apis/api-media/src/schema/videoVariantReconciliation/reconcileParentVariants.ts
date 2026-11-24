@@ -1,4 +1,8 @@
-import { type VideoLabel, prisma } from '@core/prisma/media/client'
+import {
+  type VideoLabel,
+  prisma,
+  sourceTransaction
+} from '@core/prisma/media/client'
 
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
@@ -291,7 +295,7 @@ async function createGeneratedParentVariant({
   const parentVariantId = `${variant.languageId}_${parentVideo.id}`
   const languageSlug =
     variant.slug?.split('/').filter(Boolean).at(-1) ?? variant.languageId
-  await prisma.$transaction(async (transaction) => {
+  await sourceTransaction(prisma, async (transaction) => {
     await transaction.videoVariant.create({
       data: {
         id: parentVariantId,

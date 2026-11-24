@@ -377,6 +377,17 @@ describe('MuxVideoService', () => {
   })
 
   describe('deleteVideo', () => {
+    it('accepts a confirmed missing provider asset but preserves uncertain failures', async () => {
+      mockMux.video.assets.delete.mockRejectedValueOnce({ status: 404 })
+      await expect(deleteVideo('already-gone', false)).resolves.toBeUndefined()
+      mockMux.video.assets.delete.mockRejectedValueOnce(
+        new Error('controlled network uncertainty')
+      )
+      await expect(deleteVideo('unknown', false)).rejects.toThrow(
+        'controlled network uncertainty'
+      )
+    })
+
     it('should delete video asset for publisher', async () => {
       ;(mockMux.video.assets.delete as Mock).mockResolvedValueOnce(
         undefined as any

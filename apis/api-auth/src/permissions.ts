@@ -19,7 +19,7 @@ const beginInput = changeIdInput
           .string()
           .min(1)
           .max(512)
-          .regex(/^(account|journey|team|user-journey|user-team):.+$/)
+          .regex(/^(account|journey|team|user-journey|user-team|media):.+$/)
       )
       .min(1)
       .max(1000),
@@ -117,7 +117,12 @@ function result(change: Change) {
 
 /** The service identity may report only its own durable owner receipt or fence. */
 export function createPermissionAuthority(config: AuthConfig, db: Database) {
-  function ownerFor(authorization: string): 'journeys' | 'users' {
+  function ownerFor(authorization: string): 'journeys' | 'users' | 'media' {
+    if (
+      config.AUTH_PERMISSION_MEDIA_SECRET &&
+      sameSecret(authorization, `Bearer ${config.AUTH_PERMISSION_MEDIA_SECRET}`)
+    )
+      return 'media'
     if (
       config.AUTH_PERMISSION_JOURNEYS_SECRET &&
       sameSecret(
@@ -147,6 +152,10 @@ export function createPermissionAuthority(config: AuthConfig, db: Database) {
     if (path === '/internal/permissions/begin') {
       const input = beginInput.parse(body)
       const ids = [...new Set(input.gateIds)].sort()
+      if (owner === 'media' && (ids.length !== 1 || ids[0] !== 'media:sources'))
+        throw new Error('Access denied')
+      if (owner !== 'media' && ids.some((id) => id.startsWith('media:')))
+        throw new Error('Access denied')
       const page = input.page
       if (
         page &&
@@ -311,7 +320,7 @@ export function createPermissionAuthority(config: AuthConfig, db: Database) {
             where: { id: latest.id },
             data: { status: 'ready' }
           })
-        if (completion.outcome === 'cancelled')
+        if (completion.outcome === 'cancelled' && owner !== 'media')
           return tx.permissionChange.update({
             where: { id: latest.id },
             data: { status: 'failed', outcome: 'cancelled' }

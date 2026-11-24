@@ -23,7 +23,8 @@ export default defineConfig({
       '**/.git/**',
       '**/test/grantedEdits.spec.ts',
       '**/test/grantedStructure.spec.ts',
-      '**/test/grantedForms.spec.ts'
+      '**/test/grantedForms.spec.ts',
+      '**/test/grantedMedia.spec.ts'
     ],
     globals: true,
     environment: 'node',

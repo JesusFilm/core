@@ -228,6 +228,15 @@ export async function planStructureHistory(
     if (!live(row)) continue
     let current = row
     const visited = new Set<string>()
+    if (
+      current.typename === 'ImageBlock' &&
+      current.parentBlockId === null &&
+      [
+        state.journey.logoImageBlockId,
+        state.journey.primaryImageBlockId
+      ].includes(current.id)
+    )
+      continue
     while (current.typename !== 'StepBlock') {
       const parent = parentOf(current)
       if (parent === null || visited.has(parent)) conflict()
@@ -399,8 +408,14 @@ export async function planStructureHistory(
       )
         conflict()
     }
-    const menu = state.journey.menuStepBlockId
-    if (typeof menu === 'string' && createdIds.has(menu)) conflict()
+    const { menuStepBlockId, logoImageBlockId, primaryImageBlockId } =
+      state.journey
+    if (
+      [menuStepBlockId, logoImageBlockId, primaryImageBlockId].some(
+        (id) => typeof id === 'string' && createdIds.has(id)
+      )
+    )
+      conflict()
   }
   const legacyBounds = new Set(
     inverse.blocks
