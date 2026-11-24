@@ -12,7 +12,11 @@ if (!adminUrl) throw new Error('MCP_READS_TEST_POSTGRES_URL is required')
 const baseline = process.argv.includes('--baseline')
 const preview = process.argv.includes('--preview')
 const ready = process.argv.includes('--ready')
-const testIssue = preview ? '10563' : baseline ? '10573' : '10575'
+const testIssue =
+  process.env.MCP_READS_TEST_ISSUE ??
+  (preview ? '10563' : baseline ? '10573' : '10575')
+if (!/^\d+(?:_[a-z0-9]+)?$/.test(testIssue))
+  throw new Error('Use an issue-specific database name')
 const root = resolve(import.meta.dirname, '../../..')
 const suffix = randomBytes(8).toString('hex')
 const runtimeRole = `mcp_reads_${suffix}`
@@ -20,9 +24,9 @@ const password = randomBytes(24).toString('hex')
 const databases = {
   auth: `auth_issue_${testIssue}_${suffix}`,
   reads: `auth_issue_${testIssue}_reads_${suffix}`,
-  permissions: `auth_issue_10550_permissions_${suffix}`,
+  permissions: `auth_issue_${process.env.MCP_READS_TEST_ISSUE ? testIssue : '10550'}_permissions_${suffix}`,
   journeys: `journeys_issue_${testIssue}_${suffix}`,
-  users: `users_issue_10550_${suffix}`
+  users: `users_issue_${process.env.MCP_READS_TEST_ISSUE ? testIssue : '10550'}_${suffix}`
 }
 const created: string[] = []
 let roleCreated = false
@@ -127,6 +131,22 @@ try {
     })
     if (gate.error) throw gate.error
     if (gate.status !== 0) throw new Error(`ready gate failed: ${gate.status}`)
+    // --changed intentionally limits gate coverage to the branch diff. Collect
+    // the complete owning/protocol report before checking execution anchors.
+    run(
+      [
+        'exec',
+        'vitest',
+        'run',
+        '--testTimeout=20000',
+        '--root',
+        resolve(root, 'apis/api-auth'),
+        '--config',
+        resolve(root, 'apis/api-auth/vitest.config.mts'),
+        '--maxWorkers=1'
+      ],
+      testEnvironment
+    )
   }
   const selectedConfigs = configs.stdout
     .trim()

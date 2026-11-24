@@ -331,7 +331,8 @@ export async function boundedJson(
 export async function postJson(
   url: string,
   body: unknown,
-  authorization: string
+  authorization: string,
+  timeoutMs = 5000
 ): Promise<unknown> {
   return boundedJson(
     await fetch(url, {
@@ -341,7 +342,7 @@ export async function postJson(
         Authorization: authorization
       },
       redirect: 'error',
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(timeoutMs),
       body: JSON.stringify(body)
     })
   )

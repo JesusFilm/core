@@ -877,7 +877,7 @@ describe('structural integration', () => {
       it('clears and restores the owning menu reference as part of Step deletion', async () => {
         await f.journeys.journey.update({
           where: { id: f.journeyId },
-          data: { menuStepBlockId: f.id('b') }
+          data: { menuStepBlockId: f.id('b'), website: true }
         })
         const saved = await f.save([
           { type: 'step_remove', step: ref(f.id('b')) }
