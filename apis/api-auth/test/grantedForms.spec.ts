@@ -21,8 +21,10 @@ describe('form integration', () => {
       let available = true
       let revokeAfterRouteRead = false
       let routeIds = ['route-a', 'route-b']
+      let stalled = false
       const provider = createServer((req, res) => {
         calls.push(`${req.method} ${req.url}`)
+        if (stalled) return
         const authorized =
           req.headers['access-id'] === 'controlled-access-id' &&
           req.headers['access-secret'] === 'controlled-provider-secret'
@@ -110,6 +112,7 @@ describe('form integration', () => {
         available = true
         revokeAfterRouteRead = false
         routeIds = ['route-a', 'route-b']
+        stalled = false
         calls.length = 0
         await f.journeys.integration.deleteMany({
           where: { teamId: 'structure-team-alice' }
@@ -316,6 +319,71 @@ describe('form integration', () => {
         ])
         expect(removed.warnings.join(' ')).toContain('no options')
         expect(await options(f.id('poll'))).toEqual([])
+      })
+
+      it('bounds selected destination reads across five stalled integrations and skips outline lookups', async () => {
+        const configuration = await f.journeys.integration.findUniqueOrThrow({
+          where: { id: integrationId }
+        })
+        const responseIds: string[] = []
+        const integrationIds: string[] = []
+        for (let index = 0; index < 5; index++) {
+          const selectedIntegration = f.id(`stalled-integration-${index}`)
+          await f.journeys.integration.create({
+            data: { ...configuration, id: selectedIntegration }
+          })
+          const saved = await f.save([
+            add('field', { kind: 'response', responseType: 'email' }),
+            {
+              type: 'form_destination_set',
+              block: local('field'),
+              integrationId: selectedIntegration,
+              routeId: 'route-a'
+            }
+          ])
+          responseIds.push(saved.idMap.field)
+          integrationIds.push(selectedIntegration)
+        }
+        const revision = await f.revision()
+        calls.length = 0
+        stalled = true
+        const outline = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'outline',
+          revision
+        })
+        expect(outline.json.result?.isError, outline.text).not.toBe(true)
+        expect(outline.json.result?.structuredContent).toMatchObject({
+          revision
+        })
+        expect(calls).toEqual([])
+
+        const started = performance.now()
+        const result = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'steps',
+          revision
+        })
+        expect(result.json.result?.isError, result.text).not.toBe(true)
+        expect(result.json.result?.structuredContent).toMatchObject({
+          revision,
+          blocks: expect.arrayContaining(
+            responseIds.map((id) =>
+              expect.objectContaining({ id, typename: 'TextResponseBlock' })
+            )
+          )
+        })
+        expect(performance.now() - started).toBeLessThan(10000)
+        // One shared budget per protected read/output stage, not per field.
+        expect(calls).toEqual(['GET /routes', 'GET /routes'])
+        for (const selectedIntegration of integrationIds)
+          expect(result.text).not.toContain(selectedIntegration)
+        expect(result.text).not.toContain('route-a')
+        for (const [index, id] of responseIds.entries())
+          expect(await block(id)).toMatchObject({
+            integrationId: integrationIds[index],
+            routeId: 'route-a'
+          })
       })
 
       it.each([

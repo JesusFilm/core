@@ -796,12 +796,13 @@ async function snapshot(
   })
   const removedStepIds = new Set(removedDestinations.map(({ id }) => id))
   const routeIds = new Set([...owned, ...removedStepIds])
-  const destinations = await selectedFormDestinations(
-    tx,
-    journey,
-    page.slice(0, 100),
-    { userId: claims.subject, routes: destinationRoutes }
-  )
+  const destinations =
+    request.input.view === 'outline'
+      ? undefined
+      : await selectedFormDestinations(tx, journey, page.slice(0, 100), {
+          userId: claims.subject,
+          routes: destinationRoutes
+        })
   const blocks = page.slice(0, 100).map((block) => {
     for (const field of blockReferences)
       block[field] =
@@ -827,7 +828,7 @@ async function snapshot(
         }
       : {
           ...content,
-          ...destinations.get(block.id),
+          ...destinations?.get(block.id),
           ...(block.nextBlockId && removedStepIds.has(block.nextBlockId)
             ? { unresolvedDefaultRoute: true }
             : {}),

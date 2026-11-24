@@ -13,16 +13,21 @@ const routes = z
   .max(100)
 type Integration = Prisma.IntegrationGetPayload<Record<string, never>>
 export type DestinationRoutes = (
-  integration: Integration
+  integration: Integration,
+  signal?: AbortSignal
 ) => Promise<z.infer<typeof routes>>
 export interface DestinationAccess {
   userId: string
   routes?: DestinationRoutes
+  signal?: AbortSignal
 }
 
 /** Read existing provider configuration only. No submission, sync, credential
  * creation or response endpoint is reachable through this participant. */
-export const readDestinationRoutes: DestinationRoutes = async (integration) => {
+export const readDestinationRoutes: DestinationRoutes = async (
+  integration,
+  signal
+) => {
   try {
     if (
       !integration.accessId ||
@@ -44,6 +49,7 @@ export const readDestinationRoutes: DestinationRoutes = async (integration) => {
       {
         headers: { 'Access-Id': integration.accessId, 'Access-Secret': secret },
         timeout: 5000,
+        signal,
         maxContentLength: 262144,
         maxRedirects: 0
       }
@@ -89,7 +95,10 @@ export async function eligibleDestinations(
       integrationId: integration.id,
       name: 'Growth Spaces',
       routes: routes.parse(
-        await (access.routes ?? readDestinationRoutes)(integration)
+        await (access.routes ?? readDestinationRoutes)(
+          integration,
+          access.signal
+        )
       )
     })
   }
@@ -118,6 +127,8 @@ export async function selectedFormDestinations(
     string,
     Awaited<ReturnType<typeof eligibleDestinations>>
   >()
+  // Leave room for rights checks and settlement in the five-second output call.
+  const signal = AbortSignal.timeout(2000)
   for (const block of blocks) {
     if (
       block.typename !== 'TextResponseBlock' ||
@@ -129,10 +140,16 @@ export async function selectedFormDestinations(
       continue
     }
     if (!integrations.has(block.integrationId)) {
+      if (signal.aborted) continue
       try {
         integrations.set(
           block.integrationId,
-          await eligibleDestinations(tx, journey, access, block.integrationId)
+          await eligibleDestinations(
+            tx,
+            journey,
+            { ...access, signal },
+            block.integrationId
+          )
         )
       } catch (error) {
         if (
