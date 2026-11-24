@@ -288,7 +288,8 @@ export function createMediaJobs(
     }
   }
   async function lockJob(tx: Transaction, id: string) {
-    await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE`
+    // Serialize job writers while allowing status reads of committed progress.
+    await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR NO KEY UPDATE`
     return tx.mcpMediaJob.findUniqueOrThrow({ where: { id } })
   }
   async function terminalJob(tx: Transaction, job: McpMediaJob, state: string) {
@@ -493,51 +494,74 @@ export function createMediaJobs(
       return job.id
     })
   }
-  async function result(context: JobContext, jobId: string) {
-    await own(jobId, context)
-    return authorized(context, 'release', async (tx, { accept }) => {
-      const job = await lockJob(tx, jobId)
-      await accept()
-      const now = await clock(tx)
-      if (
-        job.privatePurgedAt ||
-        (job.resultExpiresAt && job.resultExpiresAt <= now)
-      )
-        return {
-          contractVersion: '1',
-          kind: 'media_job',
-          jobId,
-          code: 'RESULT_EXPIRED'
-        }
+  function describeJob(job: McpMediaJob, now: Date) {
+    const jobId = job.id
+    if (
+      job.privatePurgedAt ||
+      (job.resultExpiresAt && job.resultExpiresAt <= now)
+    )
       return {
         contractVersion: '1',
         kind: 'media_job',
         jobId,
-        state: job.state,
-        clientId: job.clientId,
-        journeyId: job.journeyId,
-        admittedAt: job.admittedAt.toISOString(),
-        transferDeadline: job.transferDeadline.toISOString(),
-        receivedBytes: job.receivedBytes,
-        file: job.file,
-        active: job.active,
-        ...(job.state === 'ready'
-          ? {
-              asset: { source: 'upload', jobId: job.id, id: job.providerId },
-              attachment:
-                'Separate current-revision journey_edit required. Successful library assets survive cancellation and content undo.'
-            }
-          : {}),
-        adminLink: new URL(`/mcp/uploads/${job.id}`, config.adminOrigin).href,
-        ingressUrl: new URL(`/mcp/uploads/${job.id}`, config.ingressOrigin)
-          .href,
-        ...(!terminal.includes(job.state) &&
-        !job.transferCompletedAt &&
-        job.transferDeadline > now
-          ? { ingressTicket: signTicket(job) }
-          : {})
+        code: 'RESULT_EXPIRED'
       }
-    })
+    return {
+      contractVersion: '1',
+      kind: 'media_job',
+      jobId,
+      state: job.state,
+      clientId: job.clientId,
+      journeyId: job.journeyId,
+      admittedAt: job.admittedAt.toISOString(),
+      transferDeadline: job.transferDeadline.toISOString(),
+      receivedBytes: job.receivedBytes,
+      file: job.file,
+      active: job.active,
+      ...(job.state === 'ready'
+        ? {
+            asset: { source: 'upload', jobId: job.id, id: job.providerId },
+            attachment:
+              'Separate current-revision journey_edit required. Successful library assets survive cancellation and content undo.'
+          }
+        : {}),
+      adminLink: new URL(`/mcp/uploads/${job.id}`, config.adminOrigin).href,
+      ingressUrl: new URL(`/mcp/uploads/${job.id}`, config.ingressOrigin).href,
+      ...(!terminal.includes(job.state) &&
+      !job.transferCompletedAt &&
+      job.transferDeadline > now
+        ? { ingressTicket: signTicket(job) }
+        : {})
+    }
+  }
+  async function readResult(
+    context: JobContext,
+    jobId: string,
+    output: boolean
+  ) {
+    await own(jobId, context)
+    return authorized(
+      context,
+      'release',
+      async (tx, { permitId, accept }) => {
+        // Protect the job's identity through final output admission. A key
+        // share still waits for deletion or a key change, while a worker
+        // holding a non-key write lock can finish independently.
+        await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${jobId} FOR KEY SHARE`
+        await accept()
+        const job = await tx.mcpMediaJob.findUniqueOrThrow({
+          where: { id: jobId }
+        })
+        return { data: describeJob(job, await clock(tx)), permitId }
+      },
+      output ? 'output' : false
+    )
+  }
+  async function result(context: JobContext, jobId: string) {
+    return (await readResult(context, jobId, false)).data
+  }
+  function resultForOutput(context: JobContext, jobId: string) {
+    return readResult(context, jobId, true)
   }
   async function bind(context: JobContext, jobId: string, input: MediaFile) {
     await own(jobId, context)
@@ -1091,9 +1115,40 @@ export function createMediaJobs(
       data: { outcome: Prisma.DbNull }
     })
   }
+  async function processCompletedTransfers() {
+    // A completed transfer is durable work. Reconstruct the originating
+    // authorization context on this or a replacement worker; validation and
+    // provider dispatch each acquire a fresh permit before they can act.
+    let after: string | undefined
+    while (true) {
+      const jobs: McpMediaJob[] = await media.mcpMediaJob.findMany({
+        where: {
+          active: true,
+          dispatchReceiptId: null,
+          state: { in: ['validating', 'dispatch_pending'] },
+          ...(after ? { id: { gt: after } } : {})
+        },
+        take: 100,
+        orderBy: { id: 'asc' }
+      })
+      if (!jobs.length) return
+      after = jobs[jobs.length - 1].id
+      for (const job of jobs) {
+        const context = {
+          userId: job.userId,
+          connectionId: job.connectionId,
+          journeyId: job.journeyId
+        }
+        await progress(context, job).catch(() => undefined)
+      }
+    }
+  }
   async function resume(context: JobContext, jobId: string) {
     await result(context, jobId)
-    const job = await own(jobId, context)
+    await progress(context, await own(jobId, context))
+  }
+  async function progress(context: JobContext, job: McpMediaJob) {
+    const jobId = job.id
     if (job.state === 'validating') await validate(context, jobId)
     const current = await own(jobId, context)
     if (current.state === 'dispatch_pending' && !current.dispatchReceiptId)
@@ -1115,17 +1170,7 @@ export function createMediaJobs(
     }
   }
   async function holdOutput(context: JobContext, jobId: string) {
-    await own(jobId, context)
-    return authorized(
-      context,
-      'release',
-      async (tx, { permitId, accept }) => {
-        await lockJob(tx, jobId)
-        await accept()
-        return permitId
-      },
-      'output'
-    )
+    return (await resultForOutput(context, jobId)).permitId
   }
   async function closeOutput(id: string) {
     await media.$transaction(async (tx) => {
@@ -1142,12 +1187,14 @@ export function createMediaJobs(
     closeOutput,
     admit,
     result,
+    resultForOutput,
     bind,
     chunk,
     validate,
     dispatch,
     cancel,
     recover,
+    processCompletedTransfers,
     recoverExecution,
     reconcileJob,
     resume,

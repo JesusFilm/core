@@ -58,6 +58,9 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let providerReady = true
   let providerUnknown = false
   let jobs: MediaJobs
+  let createWorker: () => MediaJobs
+  let processCompletedTransfers: () => Promise<void>
+  let duringProviderDispatch: (() => Promise<void>) | undefined
   let uploadOrigin = ''
   let authorityUrl = ''
   let afterPrepare: ((action: string) => Promise<void>) | undefined
@@ -87,6 +90,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   const provider: ImageUploadProvider = {
     async dispatch(id) {
       dispatchCount++
+      await duringProviderDispatch?.()
       if (rejectDispatch) return 'rejected'
       providerAssets.set(id, providerReady ? 'ready' : 'processing')
       if (loseDispatch)
@@ -100,6 +104,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   const internalSecret =
     'controlled-upload-internal-10560-at-least-32-characters'
   const mediaSecret = 'controlled-upload-authority-10560-at-least-32-characters'
+  function configureRuntime(...settings: Parameters<typeof mediaRuntime>) {
+    createWorker = () => mediaRuntime(...settings).jobs!
+    return mediaRuntime(...settings)
+  }
   const f = structureFixture({
     issue: '10560',
     authUrl,
@@ -115,7 +123,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       await media.mcpMediaChunk.deleteMany()
       await media.mcpMediaJob.deleteMany()
       await media.mcpMediaExecution.deleteMany()
-      const runtime = mediaRuntime(
+      const runtime = configureRuntime(
         {
           MCP_MEDIA_ENABLED: 'true',
           MCP_IMAGE_UPLOADS_ENABLED: 'true',
@@ -160,6 +168,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
             }
           },
           uploads: {
+            // Drive the production periodic work explicitly at race boundaries.
+            scheduleProcessing: (work) => {
+              processCompletedTransfers = work
+            },
             storage,
             provider,
             browserIdentity: async (token) => {
@@ -192,6 +204,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   })
 
   beforeEach(async () => {
+    duringProviderDispatch = undefined
     afterPrepare = undefined
     beforeAccept = undefined
     beforeSend = undefined
@@ -245,6 +258,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     content(
       await f.call('journey_media_status', { journeyId: f.journeyId, jobId })
     )
+  async function processedStatus(jobId: string) {
+    await processCompletedTransfers()
+    return status(jobId)
+  }
   async function browser(
     jobId: string,
     method = 'GET',
@@ -347,9 +364,30 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(new URL(String(job.adminLink)).search).toBe('')
     expect(String(job.adminLink)).not.toContain('Upload')
     await upload(id, await fileBytes())
-    expect((await status(id)).state).toBe('ready')
+    expect((await processedStatus(id)).state).toBe('ready')
     expect(dispatchCount).toBe(1)
     expect((await status(id)).state).toBe('ready')
+    expect(dispatchCount).toBe(1)
+  })
+
+  it('resumes a completed transfer from storage in a replacement worker without a connected client', async () => {
+    const job = await start()
+    const id = String(job.jobId)
+    await upload(id, await fileBytes())
+    expect(await status(id)).toMatchObject({ jobId: id, state: 'validating' })
+    await createWorker().processCompletedTransfers()
+    const receipt = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    expect(receipt.dispatchReceiptId).toEqual(expect.any(String))
+    await processCompletedTransfers()
+    expect(await status(id)).toMatchObject({
+      jobId: id,
+      state: 'ready',
+      transferDeadline: job.transferDeadline
+    })
+    expect(
+      (await media.mcpMediaJob.findUniqueOrThrow({ where: { id } }))
+        .dispatchReceiptId
+    ).toBe(receipt.dispatchReceiptId)
     expect(dispatchCount).toBe(1)
   })
 
@@ -358,7 +396,39 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     const id = String(job.jobId)
     const before = await f.snapshot()
     await upload(id, await fileBytes(10000000))
+    // Hold the provider call while a different client polls the committed
+    // state. The original five-second read budget applies to every request.
+    let started!: () => void
+    let release!: () => void
+    const dispatchStarted = new Promise<void>((resolve) => {
+      started = resolve
+    })
+    const providerCanReturn = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    duringProviderDispatch = () => {
+      started()
+      return providerCanReturn
+    }
+    const work = browser(id, 'POST', 'resume')
+    try {
+      await dispatchStarted
+      for (let poll = 0; poll < 2; poll++) {
+        expect(await status(id)).toMatchObject({
+          jobId: id,
+          state: 'processing',
+          active: true,
+          receivedBytes: 10000000,
+          transferDeadline: job.transferDeadline
+        })
+      }
+      expect(dispatchCount).toBe(1)
+    } finally {
+      release()
+      expect((await work).status).toBe(200)
+    }
     const ready = await status(id)
+    expect(dispatchCount).toBe(1)
     expect(ready.state).toBe('ready')
     expect(await f.snapshot()).toEqual(before)
     const asset = ready.asset as { id: string }
@@ -416,7 +486,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       if ('size' in override) expect(sent.status).toBe(403)
       else {
         expect(sent.status).toBe(200)
-        expect((await status(id)).state).toBe('failed')
+        expect((await processedStatus(id)).state).toBe('failed')
       }
       await jobs.cancel(
         {
@@ -468,7 +538,9 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     providerUnknown = true
     loseDispatch = true
     await upload(String(first.jobId), await fileBytes())
-    expect((await status(String(first.jobId))).state).toBe('reconciling')
+    expect((await processedStatus(String(first.jobId))).state).toBe(
+      'reconciling'
+    )
     expect(dispatchCount).toBe(1)
     expect((await status(String(first.jobId))).active).toBe(true)
     expect(dispatchCount).toBe(1)
@@ -546,7 +618,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       data: { transferDeadline: new Date(Date.now() - 1) }
     })
     await jobs.recover()
-    const ready = await status(id)
+    const ready = await processedStatus(id)
     expect(ready.state).toBe('ready')
     const asset = ready.asset as { id: string }
     await media.mcpMediaJob.update({
@@ -570,7 +642,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     afterPrepare = undefined
     await upload(id, await fileBytes())
     beforeSend = () => jobs.recover()
-    expect((await status(id)).state).toBe('ready')
+    expect((await processedStatus(id)).state).toBe('ready')
     expect(dispatchCount).toBe(1)
   })
 
@@ -602,7 +674,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(dispatchCount).toBe(0)
 
     beforeSend = undefined
-    expect((await status(id)).state).toBe('ready')
+    expect((await processedStatus(id)).state).toBe('ready')
     expect(dispatchCount).toBe(1)
   })
 
@@ -648,7 +720,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     loseDispatch = true
     f.loseNextResponse()
     await f.call('journey_media_status', { journeyId: f.journeyId, jobId: id })
-    const ready = await status(id)
+    const ready = await processedStatus(id)
     expect(ready.state).toBe('ready')
     expect(dispatchCount).toBe(1)
     const cancelled = content(
@@ -775,7 +847,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         ).toBe(403)
         expect(objects.size).toBe(0)
         await upload(id, bytes)
-        expect((await status(id)).state).toBe('ready')
+        expect((await processedStatus(id)).state).toBe('ready')
         expect(
           await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
         ).toMatchObject({
@@ -1007,7 +1079,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     providerReady = false
     providerUnknown = true
     loseDispatch = true
-    expect((await status(id)).state).toBe('reconciling')
+    expect((await processedStatus(id)).state).toBe('reconciling')
     expect((await browser(id, 'POST', 'cancel')).json.data.state).toBe(
       'cancel_requested'
     )
@@ -1248,7 +1320,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       where: { id: f.journeyId },
       data: { status: 'draft' }
     })
-    const ready = await status(id)
+    const ready = await processedStatus(id)
     await f.journeys.journey.update({
       where: { id: f.journeyId },
       data: {
@@ -1276,7 +1348,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     const job = await start()
     const id = String(job.jobId)
     await upload(id, await fileBytes())
-    const ready = await status(id)
+    const ready = await processedStatus(id)
     const asset = ready.asset as { id: string }
     const response = await fetch(
       new URL(

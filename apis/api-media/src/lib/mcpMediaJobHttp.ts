@@ -47,12 +47,12 @@ export function mediaJobHttp(
       const privateResponse = async (
         context: Parameters<MediaJobs['result']>[0],
         jobId: string,
-        data: unknown
+        cancellation?: unknown
       ) => {
         const response = (serverContext as { res?: ServerResponse }).res
         if (!response || response.destroyed || response.writableEnded)
           throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
-        const permitId = await jobs.holdOutput(context, jobId)
+        const { data, permitId } = await jobs.resultForOutput(context, jobId)
         if (response.closed || response.destroyed || response.writableEnded) {
           await jobs.closeOutput(permitId)
           throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
@@ -64,7 +64,12 @@ export function mediaJobHttp(
         }
         response.once('finish', close)
         response.once('close', close)
-        payload.endResponse(Response.json({ data }, { headers }))
+        payload.endResponse(
+          Response.json(
+            { data: { ...data, ...(cancellation ? { cancellation } : {}) } },
+            { headers }
+          )
+        )
       }
       try {
         if (url.search || url.hash) throw new Error('VALIDATION_FAILED')
@@ -119,12 +124,7 @@ export function mediaJobHttp(
             input.tool === 'journey_media_cancel'
               ? await jobs.cancel(context, jobId, input.input.idempotencyKey)
               : undefined
-          if (input.tool === 'journey_media_status')
-            await jobs.resume(context, jobId)
-          await privateResponse(context, jobId, {
-            ...(await jobs.result(context, jobId)),
-            ...(cancellation ? { cancellation } : {})
-          })
+          await privateResponse(context, jobId, cancellation)
           return
         }
         if (
@@ -192,7 +192,7 @@ export function mediaJobHttp(
           else throw new Error('VALIDATION_FAILED')
         } else if (request.method !== 'GET')
           throw new Error('VALIDATION_FAILED')
-        await privateResponse(context, jobId, await jobs.result(context, jobId))
+        await privateResponse(context, jobId)
       } catch (error) {
         payload.endResponse(
           Response.json(

@@ -64,6 +64,12 @@ Missing objects and expired leases are not positive stop evidence for a writing
 receipt, including legacy staging receipts. Temporary cleanup waits for unresolved
 writes and positively fenced executors.
 
+After the final chunk commits, the media worker advances the original job from
+PostgreSQL. A replacement worker can validate and dispatch with fresh rights even
+if the uploading client disconnects. MCP status reads return committed progress
+while storage or the provider is slow. Poll the same job until it reaches a
+terminal state before using its ready asset in a separate edit.
+
 Admin offers "Resume image processing" for `validating` and `dispatch_pending`,
 including after refresh or a lost final PUT response. It uses the same authorized
 resume route without rebinding the file or admitting another job.

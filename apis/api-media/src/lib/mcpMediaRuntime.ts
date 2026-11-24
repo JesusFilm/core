@@ -39,6 +39,7 @@ export function mediaRuntime(
       provider: ImageUploadProvider
       browserIdentity: (token: string) => Promise<string>
       hooks?: Parameters<typeof createMediaJobs>[5]
+      scheduleProcessing?: (work: () => Promise<void>) => void
     }
   } = {}
 ) {
@@ -161,9 +162,20 @@ export function mediaRuntime(
       mutations.plugin,
       {
         onPluginInit() {
+          let processing: Promise<void> | undefined
+          const runProcessing = () => {
+            if (!jobs) return Promise.resolve()
+            processing ??= jobs.processCompletedTransfers().finally(() => {
+              processing = undefined
+            })
+            return processing
+          }
+          dependencies.uploads?.scheduleProcessing?.(runProcessing)
           const timer = setInterval(() => {
             void mutations.recover().catch(() => undefined)
             void jobs?.recover().catch(() => undefined)
+            if (jobs && !dependencies.uploads?.scheduleProcessing)
+              void runProcessing().catch(() => undefined)
           }, 10000)
           timer.unref()
         }
