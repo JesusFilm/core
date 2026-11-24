@@ -4,6 +4,13 @@ import { z } from 'zod'
 
 import { formChangedFields, formCommand } from './formContract'
 import {
+  type AppearanceCommand,
+  appearanceChangedFields,
+  appearanceCommand,
+  appearanceCommandRegistry,
+  isAppearanceCommand
+} from './appearanceContract'
+import {
   type MediaCommand,
   mediaCommand,
   mediaCommandNames
@@ -57,12 +64,14 @@ const editCommand = z.union([
   presentationCommand,
   formCommand,
   structureCommand,
-  mediaCommand
+  mediaCommand,
+  appearanceCommand
 ])
 
 export function isStructureCommand(
   command: z.infer<typeof editCommand>
-): command is StructureCommand | MediaCommand {
+): command is StructureCommand | MediaCommand | AppearanceCommand {
+  if (isAppearanceCommand(command)) return true
   if (command.type === 'block_add') return 'card' in command
   return [...structureCommandNames, ...mediaCommandNames].some(
     (name) => name === command.type
@@ -166,6 +175,7 @@ export const operationReceipt = z
               .array(
                 z.enum([
                   ...changedField.options,
+                  ...appearanceChangedFields,
                   ...presentationFields,
                   ...formChangedFields,
                   'deleted'
@@ -176,7 +186,18 @@ export const operationReceipt = z
           .strict()
       )
       .max(200),
-    idMap: z.record(z.union([localKey, generatedLocalKey]), id),
+    idMap: z.record(
+      z.union([
+        localKey,
+        generatedLocalKey,
+        z
+          .string()
+          .regex(
+            /^(?!__proto__\.)[a-z0-9_]{1,32}\.(?:card|heading|subheading|button[123])$/
+          )
+      ]),
+      id
+    ),
     duplicateIdMap: z.record(id, id).optional(),
     duplicateMaps: z
       .record(
@@ -321,6 +342,7 @@ function applyTypography(
  * Adding a command requires an executable row and its positive/negative fixtures.
  */
 export const commandRegistry = {
+  ...appearanceCommandRegistry,
   ...presentationRegistry,
   typography_set: {
     schema: typographyCommand,

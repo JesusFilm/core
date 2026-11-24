@@ -4,12 +4,19 @@ import { isDeepStrictEqual } from 'node:util'
 import { z } from 'zod'
 
 import { Prisma } from '@core/prisma/journeys/client'
+import { appearanceJourneyFields } from '@core/yoga/mcp/appearanceContract'
 import type { OperationReceipt } from '@core/yoga/mcp/editContract'
 import { validSelectionBounds } from '@core/yoga/mcp/formContent'
 import {
   presentationFields,
   presentationInverse
 } from '@core/yoga/mcp/presentationContract'
+
+import {
+  type EntityWrite,
+  entityChange,
+  executeEntities
+} from './mcpAppearanceEntities'
 
 // These are owning-service scalar descriptors, never client-controlled patches.
 // Retaining every scalar makes complete subtree copies preserve unmounted data.
@@ -117,7 +124,8 @@ export const journeyFields = [
   'socialNodeX',
   'socialNodeY',
   'logoImageBlockId',
-  'primaryImageBlockId'
+  'primaryImageBlockId',
+  ...appearanceJourneyFields
 ] as const
 export type BlockField = (typeof blockFields)[number]
 export type BlockChangeField =
@@ -209,6 +217,7 @@ const actionChangeSchema = z
 export const structureInverseSchema = z
   .object({
     type: z.literal('structure_restore'),
+    entities: z.array(entityChange).max(50).optional(),
     media: z.literal(true).optional(),
     owners: z
       .array(
@@ -233,7 +242,7 @@ export const structureInverseSchema = z
           })
           .strict()
       )
-      .max(5),
+      .max(journeyFields.length),
     siblings: z
       .array(
         z
@@ -249,6 +258,8 @@ export const structureInverseSchema = z
   .strict()
 export type StructureInverse = z.infer<typeof structureInverseSchema>
 export interface StructurePlan {
+  requiredFeatures?: import('./mcpAppearance').EditorFeature[]
+  entityWrites?: EntityWrite[]
   requiresChat?: boolean
   journeyId: string
   changes: StructureInverse[]
@@ -384,7 +395,7 @@ export async function loadStructure(
     socialNodeY: number | null
     logoImageBlockId?: string | null
     primaryImageBlockId?: string | null
-  },
+  } & Partial<Record<(typeof appearanceJourneyFields)[number], Scalar>>,
   includeDeleted = false
 ): Promise<StructureState> {
   const rows = await tx.block.findMany({
@@ -403,13 +414,16 @@ export async function loadStructure(
       .map((row) => [row.id, actionState(row.action!)])
   )
   const journeyState: JourneyState = {
+    ...Object.fromEntries(
+      appearanceJourneyFields.map((field) => [field, journey[field] ?? null])
+    ),
     id: journey.id,
     menuStepBlockId: journey.menuStepBlockId,
     socialNodeX: journey.socialNodeX,
     socialNodeY: journey.socialNodeY,
     logoImageBlockId: journey.logoImageBlockId ?? null,
     primaryImageBlockId: journey.primaryImageBlockId ?? null
-  }
+  } as JourneyState
   return {
     destinationChecks: new Set(),
     boundChecks: new Set(),
@@ -687,7 +701,7 @@ export async function executeStructure(
       where: { id: write.id },
       data: blockInput(write.create ?? write.patch)
     })
-    if (write.create?.typename === 'IconBlock') await afterChild?.()
+    if (write.create) await afterChild?.()
   }
   for (const write of plan.actionWrites) {
     if (write.value === null) {
@@ -706,6 +720,7 @@ export async function executeStructure(
       update: patch
     })
   }
+  await executeEntities(tx, plan.entityWrites ?? [], afterChild)
   if (Object.keys(plan.journeyPatch).length)
     await tx.journey.update({
       where: { id: plan.journeyId },

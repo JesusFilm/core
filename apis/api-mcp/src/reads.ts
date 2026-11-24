@@ -39,15 +39,15 @@ export function createReadSession(
           )
         )
       if (outputClosed) throw new Error('Sender closed')
-      const response = z
-        .object({ data: readResult })
-        .parse(
-          await postJson(
-            new URL('/mcp/reads', config.gatewayUrl).href,
-            { request, stage: 'read' },
-            `MCP ${credential}`
-          )
+      const response = z.object({ data: readResult }).parse(
+        await postJson(
+          new URL('/mcp/reads', config.gatewayUrl).href,
+          { request, stage: 'read' },
+          `MCP ${credential}`,
+          // Owning writes plan and execute within the gateway's 15s budget.
+          15000
         )
+      )
       if (outputClosed) throw new Error('Sender closed')
       assertStructuredResultSize(response.data)
       if (

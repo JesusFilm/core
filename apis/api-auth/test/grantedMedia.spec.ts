@@ -19,6 +19,7 @@ import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
 /* eslint-enable @nx/enforce-module-boundaries */
 import { structureFixture } from './grantedStructureFixture'
 
+const issue = process.env.MEDIA_TEST_ISSUE ?? '10559'
 const authUrl = process.env.MEDIA_TEST_AUTH_DATABASE_URL
 const journeysUrl = process.env.MEDIA_TEST_JOURNEYS_DATABASE_URL
 const mediaUrl = process.env.MEDIA_TEST_MEDIA_DATABASE_URL
@@ -30,8 +31,12 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       'Run node tools/scripts/test-mcp-media.mjs with isolated issue 10559 databases'
     )
   if (
-    !/^\/media_issue_10559(_|$)/.test(new URL(mediaUrl!).pathname) ||
-    !/^\/languages_issue_10559(_|$)/.test(new URL(languagesUrl!).pathname)
+    !new RegExp(`^/media_issue_${issue}(_|$)`).test(
+      new URL(mediaUrl!).pathname
+    ) ||
+    !new RegExp(`^/languages_issue_${issue}(_|$)`).test(
+      new URL(languagesUrl!).pathname
+    )
   )
     throw new Error('Use isolated issue 10559 media and languages databases')
   const media = new MediaDatabase({
@@ -92,7 +97,7 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
   const internalSecret =
     'controlled-media-internal-10559-at-least-32-characters'
   const f = structureFixture({
-    issue: '10559',
+    issue,
     startupTimeoutMs: 120000,
     authUrl,
     journeysUrl,
@@ -346,6 +351,148 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect(
       await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
     ).not.toBeNull()
+  })
+
+  it('composes website, menu, theme and social metadata with owned media and the same reversible IDs', async () => {
+    const input = await f.input([
+      {
+        type: 'journey_appearance_set',
+        website: true,
+        menuButtonIcon: 'grid1',
+        displayTitle: 'Website title'
+      },
+      {
+        type: 'journey_social_set',
+        seoTitle: 'Social title',
+        seoDescription: 'Social description'
+      },
+      { type: 'journey_fonts_set', headerFont: 'Oswald', bodyFont: 'Inter' },
+      { type: 'menu_create', key: 'menu' },
+      ...(['logo', 'social'] as const).map((slot) => ({
+        type: 'media_slot_set',
+        target: { slot },
+        media: {
+          kind: 'image',
+          source: { source: 'library', id: f.id('asset') },
+          alt: `${slot} image`
+        }
+      }))
+    ])
+    const receipt = f.receipt(await f.edit(input))
+    const current = await f.journeys.journey.findUniqueOrThrow({
+      where: { id: f.journeyId }
+    })
+    expect(current).toMatchObject({
+      website: true,
+      menuButtonIcon: 'grid1',
+      menuStepBlockId: receipt.idMap.menu,
+      seoTitle: 'Social title'
+    })
+    expect(current.logoImageBlockId).toBeTruthy()
+    expect(current.primaryImageBlockId).toBeTruthy()
+    expect(f.receipt(await f.edit(input))).toEqual(receipt)
+    f.receipt(await f.historyAction('undo', receipt.historyId!))
+    expect(
+      await f.journeys.journey.findUniqueOrThrow({ where: { id: f.journeyId } })
+    ).toMatchObject({
+      website: false,
+      menuStepBlockId: null,
+      logoImageBlockId: null,
+      primaryImageBlockId: null
+    })
+    f.receipt(await f.historyAction('redo', receipt.historyId!))
+    expect(
+      await f.journeys.journey.findUniqueOrThrow({ where: { id: f.journeyId } })
+    ).toMatchObject({
+      website: true,
+      menuStepBlockId: current.menuStepBlockId,
+      logoImageBlockId: current.logoImageBlockId,
+      primaryImageBlockId: current.primaryImageBlockId
+    })
+    expect(
+      await media.cloudflareImage.findUnique({ where: { id: f.id('asset') } })
+    ).not.toBeNull()
+  })
+
+  it('restores a retained website logo together with its recorded mode transition', async () => {
+    await f.save([
+      { type: 'journey_appearance_set', website: true },
+      {
+        type: 'media_slot_set',
+        target: { slot: 'logo' },
+        media: {
+          kind: 'image',
+          source: { source: 'library', id: f.id('asset') },
+          alt: 'Original logo'
+        }
+      }
+    ])
+    const logoId = (
+      await f.journeys.journey.findUniqueOrThrow({ where: { id: f.journeyId } })
+    ).logoImageBlockId!
+    await f.save([{ type: 'journey_appearance_set', website: false }])
+    const receipt = await f.save([
+      { type: 'journey_appearance_set', website: true },
+      {
+        type: 'media_slot_set',
+        target: { slot: 'logo' },
+        media: {
+          kind: 'image',
+          source: { source: 'library', id: f.id('asset') },
+          alt: 'Updated logo'
+        }
+      }
+    ])
+    f.receipt(await f.historyAction('undo', receipt.historyId!))
+    expect(
+      await f.journeys.journey.findUniqueOrThrow({ where: { id: f.journeyId } })
+    ).toMatchObject({ website: false, logoImageBlockId: logoId })
+    expect(
+      await f.journeys.block.findUniqueOrThrow({ where: { id: logoId } })
+    ).toMatchObject({ alt: 'Original logo' })
+    flags.websiteMode = false
+    const before = await f.snapshot()
+    expect(
+      (await f.historyAction('redo', receipt.historyId!)).json.result?.isError
+    ).toBe(true)
+    expect(await f.snapshot()).toEqual(before)
+    flags.websiteMode = true
+    f.receipt(await f.historyAction('redo', receipt.historyId!))
+    expect(
+      await f.journeys.journey.findUniqueOrThrow({ where: { id: f.journeyId } })
+    ).toMatchObject({ website: true, logoImageBlockId: logoId })
+    expect(
+      await f.journeys.block.findUniqueOrThrow({ where: { id: logoId } })
+    ).toMatchObject({ alt: 'Updated logo' })
+  })
+
+  it('restores a nullable legacy website mode and its recorded video fit atomically', async () => {
+    await f.save([selectVideo()])
+    expect(await image('video')).toMatchObject({ objectFit: 'fill' })
+    await f.journeys.journey.update({
+      where: { id: f.journeyId },
+      data: { website: null }
+    })
+    const receipt = await f.save([
+      { type: 'journey_appearance_set', website: true },
+      { type: 'video_settings_set', block: ref('video'), objectFit: 'fit' }
+    ])
+    f.receipt(await f.historyAction('undo', receipt.historyId!))
+    expect(
+      await f.journeys.journey.findUniqueOrThrow({ where: { id: f.journeyId } })
+    ).toMatchObject({ website: null })
+    expect(await image('video')).toMatchObject({
+      objectFit: 'fill',
+      videoId: f.id('mux')
+    })
+    f.receipt(await f.historyAction('redo', receipt.historyId!))
+    expect(
+      await f.journeys.journey.findUniqueOrThrow({ where: { id: f.journeyId } })
+    ).toMatchObject({ website: true })
+    expect(await image('video')).toMatchObject({
+      objectFit: 'fit',
+      videoId: f.id('mux')
+    })
   })
 
   it('saves media and presentation together with one reversible history entry', async () => {
@@ -1907,7 +2054,8 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
       } finally {
         resume()
       }
-      expect((await attaching).json.error).toBeDefined()
+      const attached = await attaching
+      expect(attached.json.error, attached.text).toBeDefined()
       expect(await image('video')).toMatchObject({ videoId: f.id('mux') })
       f.checkpoint = undefined
       await settleMedia()

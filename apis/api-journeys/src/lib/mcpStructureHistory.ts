@@ -5,6 +5,8 @@ import { z } from 'zod'
 import { Prisma } from '@core/prisma/journeys/client'
 import { deriveSubmitRole } from '@core/yoga/mcp/presentationContract'
 
+import { type FeatureCheck, checkAppearanceHistory } from './mcpAppearance'
+import { planEntityHistory } from './mcpAppearanceEntities'
 import { type ContentBlock, assertOwnedButtonIcon } from './mcpContent'
 import {
   type DestinationAccess,
@@ -88,11 +90,14 @@ export async function planStructureHistory(
     menuStepBlockId: string | null
     socialNodeX: number | null
     socialNodeY: number | null
-  },
+    logoImageBlockId?: string | null
+    primaryImageBlockId?: string | null
+  } & Partial<import('./mcpStructureState').JourneyState>,
   changes: unknown,
   direction: 'undo' | 'redo',
   canEditChat: () => Promise<boolean> = async () => false,
-  destinationAccess?: DestinationAccess
+  destinationAccess?: DestinationAccess,
+  canUseFeature: FeatureCheck = async () => false
 ) {
   const parsed = z.array(structureInverseSchema).length(1).safeParse(changes)
   if (!parsed.success) throw new Error('HISTORY_UNAVAILABLE')
@@ -109,6 +114,9 @@ export async function planStructureHistory(
     throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
   const expectedSide = direction === 'undo' ? 'after' : 'before',
     nextSide = direction === 'undo' ? 'before' : 'after'
+  const websiteChange = inverse.journey.find(
+    (change) => change.field === 'website'
+  )
   for (const dependency of inverse.owners) {
     const row = state.blocks.get(dependency.id)
     if (
@@ -148,7 +156,12 @@ export async function planStructureHistory(
       .map((change) => change.id)
   )
   for (const change of inverse.blocks) {
-    if (change.fields.includes('slug') && journey.website !== true) conflict()
+    if (
+      change.fields.includes('slug') &&
+      !websiteChange &&
+      journey.website !== true
+    )
+      conflict()
     const row = state.blocks.get(change.id),
       expected = change[expectedSide],
       next = change[nextSide]
@@ -450,7 +463,29 @@ export async function planStructureHistory(
   }
   await validateFormIcons(tx, state)
   await validateFormDestinations(tx, journey, state, destinationAccess)
+  const requiredFeatures = await checkAppearanceHistory(
+    state,
+    inverse,
+    canUseFeature
+  )
   const plan = finishStructure(state, new Date().toISOString())
+  plan.requiredFeatures = requiredFeatures
+  plan.entityWrites = await planEntityHistory(
+    tx,
+    journey.id,
+    inverse.entities ?? [],
+    direction
+  )
+  for (const entity of plan.entityWrites)
+    plan.changedFields.push({
+      blockId: entity.id,
+      fields: !entity.before
+        ? ['created']
+        : !entity.after
+          ? ['removed']
+          : entity.fields
+    })
+  plan.objectCount += plan.entityWrites.length
   plan.requiresChat = requiresChat
   plan.changes = []
   plan.warnings.push(

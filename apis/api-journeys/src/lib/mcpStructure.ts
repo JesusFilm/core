@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import slugify from 'slugify'
 
 import { Prisma } from '@core/prisma/journeys/client'
+import { isAppearanceCommand } from '@core/yoga/mcp/appearanceContract'
 import {
   type EditInput,
   commandRegistry,
@@ -30,6 +31,12 @@ import {
   normalizeActionUrl
 } from '@core/yoga/mcp/structureContract'
 
+import {
+  type FeatureCheck,
+  appearancePlanner,
+  requireEditorFeature
+} from './mcpAppearance'
+import { appearanceEntities } from './mcpAppearanceEntities'
 import { type ContentBlock, assertOwnedButtonIcon } from './mcpContent'
 import { validateFormDestinations } from './mcpFormDestinations'
 import { formLabel } from './mcpFormLabels'
@@ -69,7 +76,7 @@ type Journey = {
   socialNodeY: number | null
   logoImageBlockId?: string | null
   primaryImageBlockId?: string | null
-}
+} & Partial<import('./mcpStructureState').JourneyState>
 const contentTypes = new Set([
   'TypographyBlock',
   'ButtonBlock',
@@ -111,7 +118,11 @@ export async function planStructure(
   commands: EditInput['commands'],
   media?: MediaProjection,
   canEditChat: () => Promise<boolean> = async () => false,
-  destinationRoutes?: Parameters<typeof validateFormDestinations>[3]
+  destinationRoutes?: Parameters<typeof validateFormDestinations>[3],
+  appearance: { actorId: string; check: FeatureCheck } = {
+    actorId: '',
+    check: async () => false
+  }
 ) {
   const state = await loadStructure(tx, journey)
   const formLocales = new Map<string, Parameters<typeof formLabel>[1]>()
@@ -409,9 +420,36 @@ export async function planStructure(
       ])
     return row
   }
+  const entities = await appearanceEntities(tx, journey.id, appearance.actorId)
+  const appearancePlan = appearancePlanner(state, {
+    allocate,
+    claim,
+    check: appearance.check,
+    resolve,
+    stepFor,
+    removeMenu(id) {
+      const root = get(id, 'StepBlock')
+      stepFor(root)
+      for (const child of subtree(root)) {
+        const childId = idOf(child)
+        if (
+          state.created.has(childId) ||
+          destroyed.has(childId) ||
+          [...explicitWrites].some((key) => key.startsWith(childId + '\0'))
+        )
+          fail()
+        destroyed.add(childId)
+        child.deletedAt = now
+      }
+      state.siblingParents.add(null)
+      state.journey.menuStepBlockId = null
+    }
+  })
   // Allocate the complete local namespace before resolving any reference.
   for (const command of commands) {
-    if (command.type === 'step_add') {
+    if (command.type === 'menu_create') {
+      appearancePlan.declareMenu(command.key)
+    } else if (command.type === 'step_add') {
       allocate(command.key)
       allocate(command.cardKey)
       for (const child of command.content ?? []) allocate(child.key)
@@ -431,7 +469,9 @@ export async function planStructure(
   }
   const newSteps = commands.filter(
     (command) =>
-      command.type === 'step_add' || command.type === 'step_duplicate'
+      command.type === 'step_add' ||
+      command.type === 'step_duplicate' ||
+      command.type === 'menu_create'
   ).length
   for (const command of commands) {
     if ('key' in command && 'placement' in command)
@@ -779,13 +819,20 @@ export async function planStructure(
     }
   }
   for (const command of commands) {
+    if (isAppearanceCommand(command)) {
+      await appearancePlan.apply(command)
+      await entities.apply(command, allocate)
+      continue
+    }
     if ((mediaCommandNames as readonly string[]).includes(command.type)) {
       applyMedia(mediaCommand.parse(command), {
         state,
         resolve,
         claim,
         now,
-        media
+        media: media
+          ? { ...media, website: state.journey.website === true }
+          : undefined
       })
       continue
     }
@@ -806,6 +853,14 @@ export async function planStructure(
         command.type === 'step_remove'
           ? resolve(command.step, 'StepBlock')
           : resolve(command.block)
+      if (
+        command.type === 'step_remove' &&
+        state.journey.menuStepBlockId === row.id
+      ) {
+        await requireEditorFeature(appearance.check, 'websiteMode')
+        appearancePlan.features.add('websiteMode')
+        if (state.journey.website !== true) fail()
+      }
       if (command.type === 'step_remove') stepFor(row)
       else eligibleContent(row)
       removeContent(row)
@@ -882,7 +937,9 @@ export async function planStructure(
       state.journey.socialNodeX = -240
       state.journey.socialNodeY = -46
     } else if (command.type === 'card_slug_set') {
-      if (journey.website !== true) fail()
+      await requireEditorFeature(appearance.check, 'websiteMode')
+      appearancePlan.features.add('websiteMode')
+      if (state.journey.website !== true) fail()
       const row = resolve(command.step, 'StepBlock')
       stepFor(row)
       claim(idOf(row), 'slug')
@@ -1027,6 +1084,8 @@ export async function planStructure(
   await validateFormIcons(tx, state)
   await validateFormDestinations(tx, journey, state, destinationRoutes)
   const plan = finishStructure(state, now)
+  entities.finish(plan)
+  plan.requiredFeatures = [...appearancePlan.features]
   if (
     [...new Set([...changedForms, ...state.siblingParents])].some((id) => {
       if (id === null) return false

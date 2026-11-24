@@ -24,7 +24,8 @@ export default defineConfig({
       '**/test/grantedEdits.spec.ts',
       '**/test/grantedStructure.spec.ts',
       '**/test/grantedForms.spec.ts',
-      '**/test/grantedMedia.spec.ts'
+      '**/test/grantedMedia.spec.ts',
+      '**/test/grantedAppearance.spec.ts'
     ],
     globals: true,
     environment: 'node',
