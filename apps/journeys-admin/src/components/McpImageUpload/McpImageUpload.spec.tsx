@@ -27,6 +27,64 @@ const job = {
 describe('McpImageUpload', () => {
   afterEach(() => vi.unstubAllGlobals())
 
+  it.each([3, 1048579])(
+    'stops at an unacknowledged chunk and immediately retries the same %s-byte file',
+    async (size) => {
+      vi.stubGlobal('crypto', webcrypto)
+      const offsets: string[] = []
+      const actions: string[] = []
+      let receivedBytes = 0
+      let pending = true
+      vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+        const headers = init.headers as Record<string, string>
+        const action = headers['X-Upload-Action']
+        if (action) actions.push(action)
+        if (init.method === 'PUT') {
+          offsets.push(headers['X-Upload-Offset'])
+          if (!pending) receivedBytes += (init.body as ArrayBuffer).byteLength
+        }
+        return Response.json({
+          data: {
+            ...job,
+            state: action === 'resume' ? 'ready' : 'transferring',
+            receivedBytes
+          }
+        })
+      })
+      const { container } = render(<McpImageUpload endpoint={endpoint} />)
+      await screen.findByText(/synthetic-client/)
+      const bytes = new Uint8Array(size)
+      const file = new File([bytes], 'fixture.png', { type: 'image/png' })
+      Object.defineProperty(file, 'arrayBuffer', {
+        value: async () => bytes.buffer
+      })
+      const input =
+        container.querySelector<HTMLInputElement>('input[type=file]')!
+      Object.defineProperty(input, 'value', {
+        configurable: true,
+        writable: true,
+        value: 'fixture.png'
+      })
+      fireEvent.change(input, { target: { files: [file] } })
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'Your original job and deadline are preserved'
+      )
+      expect(offsets).toEqual(['0'])
+      expect(actions).not.toContain('resume')
+      expect(input.value).toBe('')
+      pending = false
+      fireEvent.change(input, { target: { files: [file] } })
+      expect(
+        await screen.findByText(/Ready in your media library/)
+      ).toBeInTheDocument()
+      expect(offsets).toEqual(
+        size > 1048576 ? ['0', '0', '1048576'] : ['0', '0']
+      )
+      expect(actions.filter((action) => action === 'resume')).toHaveLength(1)
+      expect(receivedBytes).toBe(size)
+    }
+  )
+
   it('shows the originating client and deadline and streams the same image separately from attachment', async () => {
     vi.stubGlobal('crypto', webcrypto)
     const calls: Array<{ url: string; init: RequestInit }> = []

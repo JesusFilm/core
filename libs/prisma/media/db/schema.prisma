@@ -50,6 +50,7 @@ model McpMediaJob {
   admittedAt DateTime @default(now())
   transferDeadline DateTime
   transferCompletedAt DateTime?
+  progressionGrantVersion Int?
   file Json?
   receivedBytes Int @default(0)
   metadata Json?

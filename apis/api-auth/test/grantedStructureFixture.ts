@@ -383,6 +383,7 @@ export function structureFixture(
         }
       ])
     })
+    const firebaseAuthTime = Math.floor(Date.now() / 1000) - 60
     issuer = await createRuntime(config, {
       db: auth,
       logger: pino({ enabled: false }),
@@ -391,7 +392,7 @@ export function structureFixture(
           if (userId !== 'alice') throw new Error('Controlled identity denied')
           return {
             userId,
-            authTime: Math.floor(Date.now() / 1000) - 60,
+            authTime: firebaseAuthTime,
             createdAt: '2026-01-01T00:00:00.000Z'
           }
         },

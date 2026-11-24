@@ -100,6 +100,7 @@ export function McpImageUpload({
   }
   const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
+    event.target.value = ''
     if (!file || busy) return
     setBusy(true)
     setError(false)
@@ -116,17 +117,16 @@ export function McpImageUpload({
       let status = await request('POST', 'bind', JSON.stringify(manifest), {
         'Content-Type': 'application/json'
       })
-      for (
-        let offset = status.receivedBytes;
-        offset < file.size;
-        offset += 1048576
-      ) {
+      while (status.receivedBytes < file.size) {
+        const offset = status.receivedBytes
         const chunk = bytes.slice(offset, Math.min(file.size, offset + 1048576))
         status = await request('PUT', undefined, chunk, {
           'Content-Type': 'application/octet-stream',
           'X-Upload-Offset': String(offset),
           'X-Upload-Sha256': await hash(chunk)
         })
+        if (status.receivedBytes <= offset)
+          throw new Error('Chunk acknowledgement pending')
       }
       await request('POST', 'resume')
     } catch {

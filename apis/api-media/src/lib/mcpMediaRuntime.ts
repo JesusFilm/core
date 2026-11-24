@@ -111,7 +111,7 @@ export function mediaRuntime(
             adminOrigin: serviceUrl,
             ingressOrigin: serviceUrl,
             ticketSecret: z.string().min(32),
-            uploadLimit: z.coerce.number().int().min(1).default(2)
+            uploadLimit: z.coerce.number().int().min(1).max(2).default(2)
           })
           .parse({
             adminOrigin: env.JOURNEYS_ADMIN_URL,

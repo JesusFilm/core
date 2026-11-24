@@ -58,7 +58,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let providerReady = true
   let providerUnknown = false
   let jobs: MediaJobs
-  let createWorker: () => MediaJobs
+  let createWorker: (uploadLimit?: string) => MediaJobs
   let processCompletedTransfers: () => Promise<void>
   let duringProviderDispatch: (() => Promise<void>) | undefined
   let uploadOrigin = ''
@@ -105,7 +105,11 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     'controlled-upload-internal-10560-at-least-32-characters'
   const mediaSecret = 'controlled-upload-authority-10560-at-least-32-characters'
   function configureRuntime(...settings: Parameters<typeof mediaRuntime>) {
-    createWorker = () => mediaRuntime(...settings).jobs!
+    createWorker = (uploadLimit) =>
+      mediaRuntime(
+        { ...settings[0], MCP_MEDIA_UPLOAD_LIMIT: uploadLimit },
+        settings[1]
+      ).jobs!
     return mediaRuntime(...settings)
   }
   const f = structureFixture({
@@ -390,6 +394,170 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     ).toBe(receipt.dispatchReceiptId)
     expect(dispatchCount).toBe(1)
   })
+
+  it.each([
+    ['validating', true],
+    ['dispatch_pending', true],
+    ['dispatch_pending', false]
+  ] as const)(
+    'requires explicit same-job resume in %s after real renewal, expired=%s',
+    async (state, expired) => {
+      const job = await start()
+      const id = String(job.jobId)
+      await upload(id, await fileBytes())
+      const connection = await connectionFor(id)
+      const context = {
+        userId: 'alice',
+        connectionId: connection.id,
+        journeyId: f.journeyId
+      }
+      if (state === 'dispatch_pending') await jobs.validate(context, id)
+      if (expired) {
+        await f.auth.agentConnection.update({
+          where: { id: connection.id },
+          data: { expiresAt: new Date(0) }
+        })
+        await createWorker().processCompletedTransfers()
+      }
+      expect(dispatchCount).toBe(0)
+      // Exercise the owner/CSRF/version-bound production renewal route.
+      const cookies = new Map<string, string>()
+      const manage = async (suffix: string, body: unknown) => {
+        const response = await fetch(authorityUrl + '/connections' + suffix, {
+          method: 'POST',
+          headers: {
+            Origin: 'http://127.0.0.1:4200',
+            Authorization: 'Bearer alice',
+            'Content-Type': 'application/json',
+            Cookie: [...cookies]
+              .map(([key, value]) => `${key}=${value}`)
+              .join('; ')
+          },
+          body: JSON.stringify(body)
+        })
+        for (const cookie of response.headers.getSetCookie()) {
+          const [pair] = cookie.split(';')
+          const split = pair.indexOf('=')
+          cookies.set(pair.slice(0, split), pair.slice(split + 1))
+        }
+        expect(response.status, await response.clone().text()).toBe(200)
+        return response.json()
+      }
+      const { csrf } = await manage('', {})
+      const bound = {
+        csrf,
+        expectedVersion: connection.version,
+        clientId: connection.clientId
+      }
+      const { reviewToken } = await manage(`/${connection.id}/review`, {
+        ...bound,
+        duration: 'week'
+      })
+      await manage(`/${connection.id}/approve`, { ...bound, reviewToken })
+      await createWorker().processCompletedTransfers()
+      await processCompletedTransfers()
+      expect(dispatchCount).toBe(0)
+      const opened = await browser(id)
+      expect(opened.status).toBe(200)
+      expect(opened.json.data).toMatchObject({
+        jobId: id,
+        state,
+        active: true,
+        transferDeadline: job.transferDeadline
+      })
+      expect(
+        (await browser(id, 'POST', 'resume', undefined, 'bob')).status
+      ).toBe(403)
+      expect(dispatchCount).toBe(0)
+      expect((await browser(id, 'POST', 'resume')).status).toBe(200)
+      await createWorker().processCompletedTransfers()
+      expect(dispatchCount).toBe(1)
+      expect((await browser(id)).json.data).toMatchObject({
+        jobId: id,
+        state: 'ready',
+        transferDeadline: job.transferDeadline
+      })
+      expect(await media.mcpMediaJob.count()).toBe(1)
+      expect(
+        await f.auth.readPermit.count({
+          where: {
+            connectionId: connection.id,
+            status: { in: ['prepared', 'accepted'] }
+          }
+        })
+      ).toBe(0)
+    }
+  )
+
+  it('requires explicit resume for a legacy job without a progression grant binding', async () => {
+    const job = await start()
+    const id = String(job.jobId)
+    await upload(id, await fileBytes())
+    await media.mcpMediaJob.update({
+      where: { id },
+      data: { progressionGrantVersion: null }
+    })
+    await createWorker().processCompletedTransfers()
+    expect(dispatchCount).toBe(0)
+    expect((await browser(id)).json.data).toMatchObject({
+      jobId: id,
+      state: 'validating',
+      transferDeadline: job.transferDeadline
+    })
+    expect((await browser(id, 'POST', 'resume')).status).toBe(200)
+    expect(dispatchCount).toBe(1)
+    expect((await browser(id)).json.data.state).toBe('ready')
+  })
+
+  it.each(['3', '0', '-1', '1.5', 'invalid'])(
+    'rejects invalid configured shared upload ceiling %s',
+    (limit) => {
+      expect(() => createWorker(limit)).toThrow()
+    }
+  )
+
+  it.each(['1', '2'])(
+    'enforces the configured shared ceiling of %s across connections',
+    async (limit) => {
+      const worker = createWorker(limit)
+      const secondToken = await f.consent()
+      // Both connections already have production-created grants.
+      const first = await start()
+      const firstConnection = await connectionFor(String(first.jobId))
+      const second = content(
+        await f.call(
+          'journey_media_start',
+          {
+            journeyId: f.journeyId,
+            idempotencyKey: randomUUID(),
+            kind: 'image_upload'
+          },
+          secondToken
+        )
+      )
+      const secondConnection = await connectionFor(String(second.jobId))
+      await media.mcpMediaJob.deleteMany()
+      const context = (connectionId: string) => ({
+        userId: 'alice',
+        journeyId: f.journeyId,
+        connectionId
+      })
+      for (let i = 0; i < Number(limit); i++)
+        await worker.admit(
+          context(i % 2 ? secondConnection.id : firstConnection.id),
+          { kind: 'image_upload', idempotencyKey: randomUUID() }
+        )
+      await expect(
+        worker.admit(context(secondConnection.id), {
+          kind: 'image_upload',
+          idempotencyKey: randomUUID()
+        })
+      ).rejects.toThrow('LIMIT_EXCEEDED')
+      expect(await media.mcpMediaJob.count({ where: { active: true } })).toBe(
+        Number(limit)
+      )
+    }
+  )
 
   it('accepts exactly 10,000,000 real bytes and requires a separate fresh revision save and undo', async () => {
     const job = await start()

@@ -13,8 +13,8 @@ Image dimensions and aggregate animation pixels follow the
 No remote source URL is accepted or followed.
 
 The Media database serializes admission through one user row across connections
-and replicas. Two active image/video upload or processing jobs are allowed by
-default. Admission sets a fixed one-hour transfer deadline. Polling, refreshing,
+and replicas. At most two active image/video upload or processing jobs are allowed.
+Configuration can lower this ceiling to one. Admission sets a fixed one-hour transfer deadline. Polling, refreshing,
 replaying, renewing consent and changing transports preserve the job and deadline.
 Ready assets release capacity independently of attachment. An uncertain input
 write or provider send keeps capacity occupied.
@@ -43,7 +43,9 @@ Both transports call the same Media HTTP route outside GraphQL body parsing:
 - `PUT`: at most 1,048,576 raw bytes, with `X-Upload-Offset` and
   `X-Upload-Sha256`. Chunks are consecutive, with a shorter final chunk. Exact
   partial-transfer retries reuse the stored checksum/object identity. After a
-  lost response, read status before resuming from `receivedBytes`.
+  lost response, read status before resuming from `receivedBytes`. HTTP success
+  alone does not acknowledge a chunk. If `receivedBytes` has not advanced, stop
+  sending and retry the same file or poll for reconciliation.
 - `POST`, `X-Upload-Action: resume`: validate completed input and request fresh
   dispatch authorization, or reconcile the existing provider identity.
 - `POST`, `X-Upload-Action: cancel`: request safe cancellation of the same job.
@@ -65,8 +67,12 @@ receipt, including legacy staging receipts. Temporary cleanup waits for unresolv
 writes and positively fenced executors.
 
 After the final chunk commits, the media worker advances the original job from
-PostgreSQL. A replacement worker can validate and dispatch with fresh rights even
-if the uploading client disconnects. MCP status reads return committed progress
+PostgreSQL. A replacement worker can validate and dispatch with fresh rights under
+the same grant version even if the uploading client disconnects. Consent renewal
+changes that version and cannot restart unfinished work. An explicit authorized
+same-job resume binds progression to the new version without changing the file,
+capacity or transfer deadline. Jobs predating this binding also require explicit
+resume. MCP status reads return committed progress
 while storage or the provider is slow. Poll the same job until it reaches a
 terminal state before using its ready asset in a separate edit.
 
@@ -145,7 +151,7 @@ participant and its Auth configuration. Media additionally requires:
 | `MCP_MEDIA_INGRESS_URL`                            | Public HTTPS Media ingress origin, localhost permitted for development |
 | `MCP_MEDIA_UPLOAD_TICKET_SECRET`                   | Separate secret, at least 32 characters                                |
 | `MCP_MEDIA_STAGING_BUCKET`                         | Encrypted private staging bucket, Media runtime access only            |
-| `MCP_MEDIA_UPLOAD_LIMIT`                           | Shared per-user image/video active cap, default 2                      |
+| `MCP_MEDIA_UPLOAD_LIMIT`                           | Shared per-user image/video active cap, 1 or 2, default 2              |
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_IMAGES_TOKEN` | Existing server-controlled Images configuration                        |
 
 Admin uses `MCP_MEDIA_INGRESS_URL` for its authenticated continuation page. Configure

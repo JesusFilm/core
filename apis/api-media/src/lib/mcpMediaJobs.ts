@@ -154,6 +154,7 @@ export function createMediaJobs(
       stage: {
         permitId: string
         clientId: string
+        grantVersion: number
         accept: () => Promise<void>
       }
     ) => Promise<T>,
@@ -258,6 +259,7 @@ export function createMediaJobs(
               const value = await operation(tx, {
                 permitId: prepared.permitId,
                 clientId: prepared.clientId,
+                grantVersion: prepared.grantVersion,
                 accept
               })
               if (!accepted) throw new Error('Permit was not accepted')
@@ -428,15 +430,28 @@ export function createMediaJobs(
     context: JobContext,
     input: { idempotencyKey: string; kind: 'image_upload'; file?: MediaFile }
   ) {
-    return authorized(context, 'admit', async (tx, { clientId, accept }) => {
-      await tx.mcpMediaUser.upsert({
-        where: { userId: context.userId },
-        create: { userId: context.userId },
-        update: {}
-      })
-      await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${context.userId} FOR UPDATE`
-      if (
-        await tx.mcpMediaCancellation.findUnique({
+    return authorized(
+      context,
+      'admit',
+      async (tx, { clientId, grantVersion, accept }) => {
+        await tx.mcpMediaUser.upsert({
+          where: { userId: context.userId },
+          create: { userId: context.userId },
+          update: {}
+        })
+        await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${context.userId} FOR UPDATE`
+        if (
+          await tx.mcpMediaCancellation.findUnique({
+            where: {
+              connectionId_key: {
+                connectionId: context.connectionId,
+                key: input.idempotencyKey
+              }
+            }
+          })
+        )
+          throw new Error('IDEMPOTENCY_KEY_REUSED')
+        const prior = await tx.mcpMediaJob.findUnique({
           where: {
             connectionId_key: {
               connectionId: context.connectionId,
@@ -444,55 +459,47 @@ export function createMediaJobs(
             }
           }
         })
-      )
-        throw new Error('IDEMPOTENCY_KEY_REUSED')
-      const prior = await tx.mcpMediaJob.findUnique({
-        where: {
-          connectionId_key: {
-            connectionId: context.connectionId,
-            key: input.idempotencyKey
+        const payloadHash = fingerprint([context.journeyId, input])
+        if (prior) {
+          if (prior.payloadHash !== payloadHash)
+            throw new Error('IDEMPOTENCY_KEY_REUSED')
+          await accept()
+          return prior.id
+        }
+        const active = await tx.mcpMediaJob.count({
+          where: {
+            userId: context.userId,
+            active: true,
+            kind: { in: ['image_upload', 'video_upload'] }
           }
-        }
-      })
-      const payloadHash = fingerprint([context.journeyId, input])
-      if (prior) {
-        if (prior.payloadHash !== payloadHash)
-          throw new Error('IDEMPOTENCY_KEY_REUSED')
+        })
+        if (active >= config.uploadLimit) throw new Error('LIMIT_EXCEEDED')
         await accept()
-        return prior.id
+        const now = await clock(tx)
+        const team = await journeys.journey.findUniqueOrThrow({
+          where: { id: context.journeyId },
+          select: { teamId: true }
+        })
+        const job = await tx.mcpMediaJob.create({
+          data: {
+            connectionId: context.connectionId,
+            userId: context.userId,
+            journeyId: context.journeyId,
+            clientId,
+            teamId: team.teamId,
+            key: input.idempotencyKey,
+            payloadHash,
+            kind: input.kind,
+            progressionGrantVersion: grantVersion,
+            file: input.file,
+            providerId: randomUUID(),
+            admittedAt: now,
+            transferDeadline: new Date(now.getTime() + transferLifetimeMs)
+          }
+        })
+        return job.id
       }
-      const active = await tx.mcpMediaJob.count({
-        where: {
-          userId: context.userId,
-          active: true,
-          kind: { in: ['image_upload', 'video_upload'] }
-        }
-      })
-      if (active >= config.uploadLimit) throw new Error('LIMIT_EXCEEDED')
-      await accept()
-      const now = await clock(tx)
-      const team = await journeys.journey.findUniqueOrThrow({
-        where: { id: context.journeyId },
-        select: { teamId: true }
-      })
-      const job = await tx.mcpMediaJob.create({
-        data: {
-          connectionId: context.connectionId,
-          userId: context.userId,
-          journeyId: context.journeyId,
-          clientId,
-          teamId: team.teamId,
-          key: input.idempotencyKey,
-          payloadHash,
-          kind: input.kind,
-          file: input.file,
-          providerId: randomUUID(),
-          admittedAt: now,
-          transferDeadline: new Date(now.getTime() + transferLifetimeMs)
-        }
-      })
-      return job.id
-    })
+    )
   }
   function describeJob(job: McpMediaJob, now: Date) {
     const jobId = job.id
@@ -778,32 +785,38 @@ export function createMediaJobs(
   }
   async function validate(context: JobContext, jobId: string) {
     await own(jobId, context)
-    await authorized(context, 'transfer', async (tx, { accept }) => {
-      const job = await lockJob(tx, jobId)
-      await accept()
-      if (job.state !== 'validating') return
-      const file = mediaFile.parse(job.file)
-      const bytes = await assembled(tx, job)
-      try {
-        const metadata = await validateImageInput(bytes, file)
-        await tx.mcpMediaJob.update({
-          where: { id: job.id },
-          data: { state: 'dispatch_pending', metadata }
-        })
-      } catch {
-        await terminalJob(tx, job, 'failed')
+    await authorized(
+      context,
+      'transfer',
+      async (tx, { accept, grantVersion }) => {
+        const job = await lockJob(tx, jobId)
+        if (job.progressionGrantVersion !== grantVersion) denied()
+        await accept()
+        if (job.state !== 'validating') return
+        const file = mediaFile.parse(job.file)
+        const bytes = await assembled(tx, job)
+        try {
+          const metadata = await validateImageInput(bytes, file)
+          await tx.mcpMediaJob.update({
+            where: { id: job.id },
+            data: { state: 'dispatch_pending', metadata }
+          })
+        } catch {
+          await terminalJob(tx, job, 'failed')
+        }
       }
-    })
+    )
   }
   async function dispatch(context: JobContext, jobId: string) {
     await own(jobId, context)
     const receiptId = await authorized(
       context,
       'dispatch',
-      async (tx, { permitId, accept }) => {
+      async (tx, { permitId, accept, grantVersion }) => {
         const job = await lockJob(tx, jobId)
         if (job.state !== 'dispatch_pending' || job.dispatchReceiptId)
           throw new Error('VALIDATION_FAILED')
+        if (job.progressionGrantVersion !== grantVersion) denied()
         await accept()
         await tx.mcpMediaExecution.update({
           where: { id: permitId },
@@ -1116,9 +1129,8 @@ export function createMediaJobs(
     })
   }
   async function processCompletedTransfers() {
-    // A completed transfer is durable work. Reconstruct the originating
-    // authorization context on this or a replacement worker; validation and
-    // provider dispatch each acquire a fresh permit before they can act.
+    // Recover durable work only within its authorized grant version. Renewal
+    // requires an explicit same-job resume before validation or dispatch.
     let after: string | undefined
     while (true) {
       const jobs: McpMediaJob[] = await media.mcpMediaJob.findMany({
@@ -1145,6 +1157,28 @@ export function createMediaJobs(
   }
   async function resume(context: JobContext, jobId: string) {
     await result(context, jobId)
+    const current = await own(jobId, context)
+    if (
+      ['validating', 'dispatch_pending'].includes(current.state) &&
+      !current.dispatchReceiptId
+    )
+      await authorized(
+        context,
+        'transfer',
+        async (tx, { accept, grantVersion }) => {
+          const job = await lockJob(tx, jobId)
+          await accept()
+          if (
+            !['validating', 'dispatch_pending'].includes(job.state) ||
+            job.dispatchReceiptId
+          )
+            return
+          await tx.mcpMediaJob.update({
+            where: { id: jobId },
+            data: { progressionGrantVersion: grantVersion }
+          })
+        }
+      )
     await progress(context, await own(jobId, context))
   }
   async function progress(context: JobContext, job: McpMediaJob) {
