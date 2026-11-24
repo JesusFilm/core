@@ -8,6 +8,48 @@ import { planStructure } from './mcpStructure'
 import { emptyBlock } from './mcpStructureState'
 
 describe('media edits', () => {
+  it('rejects a source replacement targeting an existing logo when website mode is disabled', async () => {
+    const tx = mockDeep<Prisma.TransactionClient>()
+    tx.block.findMany.mockResolvedValue([
+      {
+        ...emptyBlock('j', 'ImageBlock', 'logo'),
+        src: 'https://images.unsplash.com/original-logo',
+        action: null
+      }
+    ] as unknown as Prisma.BlockGetPayload<{ include: { action: true } }>[])
+    const source = { source: 'unsplash' as const, id: 'replacement-logo' }
+    await expect(
+      planStructure(
+        tx,
+        {
+          id: 'j',
+          website: true,
+          logoImageBlockId: 'logo',
+          menuStepBlockId: null,
+          socialNodeX: null,
+          socialNodeY: null
+        },
+        [{ type: 'image_set', block: { id: 'logo' }, source }],
+        {
+          website: true,
+          websiteMode: false,
+          sources: new Map([
+            [
+              mediaSourceKey(source),
+              {
+                kind: 'image',
+                src: 'https://images.unsplash.com/replacement-logo',
+                width: 1200,
+                height: 800,
+                blurhash: 'trusted-logo-blurhash'
+              }
+            ]
+          ])
+        }
+      )
+    ).rejects.toThrow('ACCESS_DENIED_OR_NOT_FOUND')
+  })
+
   it.each(['block_duplicate', 'step_duplicate'] as const)(
     'preserves authorized image metadata through chained %s local references',
     async (type) => {

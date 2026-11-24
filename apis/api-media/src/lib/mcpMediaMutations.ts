@@ -59,7 +59,8 @@ export function createMediaMutationGuard(
     intent: unknown,
     operation: () => Promise<T>,
     external = false,
-    transactionOptions?: MediaTransactionOptions
+    transactionOptions?: MediaTransactionOptions,
+    validateSource?: () => Promise<void>
   ): Promise<T> {
     if (active.getStore()) return operation()
     const intentHash = fingerprint(intent)
@@ -78,6 +79,7 @@ export function createMediaMutationGuard(
               extensions: { code: 'PERMISSION_CHANGE_PENDING' }
             }
           )
+        await validateSource?.()
         return runOwned(intentHash, operation, external, transactionOptions)
       },
       {
@@ -242,37 +244,42 @@ export function createMediaMutationGuard(
           const owner = context.currentRoles?.includes('publisher')
             ? {}
             : { userId: context.user.id }
-          const source =
-            name === 'deleteCloudflareImage'
-              ? await db.cloudflareImage.findFirst({
-                  where: { id: String(args.id), ...owner },
-                  select: { id: true }
-                })
-              : name === 'videoDelete'
-                ? await db.video.findUnique({
-                    where: { id: String(args.id) },
-                    select: { id: true, publishedAt: true }
+          const validateSource = async () => {
+            const source =
+              name === 'deleteCloudflareImage'
+                ? await db.cloudflareImage.findFirst({
+                    where: { id: String(args.id), ...owner },
+                    select: { id: true }
                   })
-                : name === 'videoVariantDelete'
-                  ? await db.videoVariant.findUnique({
+                : name === 'videoDelete'
+                  ? await db.video.findUnique({
                       where: { id: String(args.id) },
-                      select: { id: true }
+                      select: { id: true, publishedAt: true }
                     })
-                  : await db.muxVideo.findFirst({
-                      where: { id: String(args.id), ...owner },
-                      select: { id: true }
-                    })
-          if (!source) throw new GraphQLError('Access denied')
-          if (
-            name === 'videoDelete' &&
-            'publishedAt' in source &&
-            source.publishedAt !== null
-          )
-            throw new GraphQLError('Published video deletion is unavailable')
+                  : name === 'videoVariantDelete'
+                    ? await db.videoVariant.findUnique({
+                        where: { id: String(args.id) },
+                        select: { id: true }
+                      })
+                    : await db.muxVideo.findFirst({
+                        where: { id: String(args.id), ...owner },
+                        select: { id: true }
+                      })
+            if (!source) throw new GraphQLError('Access denied')
+            if (
+              name === 'videoDelete' &&
+              'publishedAt' in source &&
+              source.publishedAt !== null
+            )
+              throw new GraphQLError('Published video deletion is unavailable')
+          }
+          await validateSource()
           return run(
             { name, args, actorId: context.user.id },
             async () => original(parent, args, context, info),
-            true
+            true,
+            undefined,
+            validateSource
           )
         }
       }

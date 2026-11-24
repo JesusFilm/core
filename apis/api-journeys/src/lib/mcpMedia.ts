@@ -42,6 +42,9 @@ function invalid(): never {
 function denied(): never {
   throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
 }
+function checkLogo(projection?: MediaProjection): void {
+  if (!projection?.websiteMode || projection.website !== true) denied()
+}
 
 type PlaybackState = Partial<
   Pick<
@@ -141,6 +144,7 @@ export function applyMedia(
       seen.add(id)
       const parent = parentOf(current)
       if (parent === null) {
+        if (state.journey.logoImageBlockId === id) checkLogo(media)
         if (
           current.typename === 'ImageBlock' &&
           [
@@ -281,11 +285,7 @@ export function applyMedia(
   }
   const slot = (target: MediaSlot) => {
     if (target.slot === 'logo' || target.slot === 'social') {
-      if (
-        target.slot === 'logo' &&
-        (!media?.websiteMode || media.website !== true)
-      )
-        denied()
+      if (target.slot === 'logo') checkLogo(media)
       return {
         owner: null,
         field:
@@ -453,6 +453,20 @@ export async function validateMediaPlan(
 ): Promise<void> {
   for (const id of plan.blockWrites.map((write) => write.id).sort())
     await tx.$queryRaw`SELECT id FROM "Block" WHERE id = ${id} FOR UPDATE`
+  if (
+    Object.prototype.hasOwnProperty.call(
+      plan.journeyPatch,
+      'logoImageBlockId'
+    ) ||
+    (await tx.journey.findFirst({
+      where: {
+        id: plan.journeyId,
+        logoImageBlockId: { in: plan.blockWrites.map((write) => write.id) }
+      },
+      select: { id: true }
+    }))
+  )
+    checkLogo(projection)
   const get = async (id: string) => {
     const current = await tx.block.findUnique({
       where: { id, journeyId: plan.journeyId }
@@ -618,9 +632,4 @@ export async function validateMediaPlan(
       )
     })
   }
-  if (
-    plan.journeyPatch.logoImageBlockId &&
-    (!projection?.websiteMode || !projection.website)
-  )
-    denied()
 }

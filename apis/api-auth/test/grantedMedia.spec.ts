@@ -1,6 +1,6 @@
 import { createServer } from 'node:http'
 
-import { buildSchema, graphql } from 'graphql'
+import { GraphQLError, buildSchema, graphql } from 'graphql'
 import { createYoga } from 'graphql-yoga'
 
 import { PrismaClient as LanguagesDatabase } from '@core/prisma/languages/client'
@@ -950,6 +950,129 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     ])
   })
 
+  it.each([
+    { edit: 'source', disabled: 'websiteMode' },
+    { edit: 'focal', disabled: 'websiteMode' },
+    { edit: 'source', disabled: 'website' },
+    { edit: 'focal', disabled: 'website' }
+  ] as const)(
+    'gates existing logo $edit edits and undo/redo when $disabled is disabled',
+    async ({ edit, disabled }) => {
+      const where = { id: f.journeyId }
+      await f.journeys.journey.update({ where, data: { website: true } })
+      await f.save([
+        {
+          type: 'media_slot_set',
+          target: { slot: 'logo' },
+          media: {
+            kind: 'image',
+            source: { source: 'unsplash', id: 'original-logo' },
+            alt: 'Existing logo'
+          }
+        }
+      ])
+      const logoId = (await f.journeys.journey.findUniqueOrThrow({ where }))
+        .logoImageBlockId!
+      const before = await f.journeys.block.findUniqueOrThrow({
+        where: { id: logoId }
+      })
+      const command = {
+        type: 'image_set',
+        block: { id: logoId },
+        ...(edit === 'source'
+          ? { source: { source: 'unsplash', id: 'replacement-logo' } }
+          : { focalLeft: 25 })
+      }
+      const saved = await f.save([command])
+      const after = await f.journeys.block.findUniqueOrThrow({
+        where: { id: logoId }
+      })
+      expect(after).toMatchObject({
+        id: logoId,
+        alt: before.alt,
+        width: before.width,
+        height: before.height,
+        blurhash: before.blurhash,
+        ...(edit === 'source'
+          ? { src: 'https://images.unsplash.com/replacement-logo' }
+          : { focalLeft: 25 })
+      })
+      const enable = async (enabled: boolean) => {
+        if (disabled === 'websiteMode') flags.websiteMode = enabled
+        else
+          await f.journeys.journey.update({
+            where,
+            data: { website: enabled }
+          })
+      }
+      await enable(false)
+      const blocked = {
+        ...command,
+        ...(edit === 'source'
+          ? { source: { source: 'unsplash', id: 'blocked-logo' } }
+          : { focalLeft: 50 })
+      }
+      expect((await reject([renameButton(), blocked])).text).toContain(
+        'ACCESS_DENIED_OR_NOT_FOUND'
+      )
+      for (const direction of ['undo', 'redo'] as const) {
+        const snapshot = await f.snapshot()
+        expect(
+          (await f.historyAction(direction, saved.historyId!)).text
+        ).toContain('ACCESS_DENIED_OR_NOT_FOUND')
+        expect(await f.snapshot()).toEqual(snapshot)
+        await enable(true)
+        f.receipt(await f.historyAction(direction, saved.historyId!))
+        expect(
+          await f.journeys.block.findUniqueOrThrow({ where: { id: logoId } })
+        ).toEqual({
+          ...(direction === 'undo' ? before : after),
+          updatedAt: expect.any(Date)
+        })
+        expect(
+          (await f.journeys.journey.findUniqueOrThrow({ where }))
+            .logoImageBlockId
+        ).toBe(logoId)
+        await enable(false)
+      }
+    }
+  )
+
+  it.each(['creation', 'clearing'] as const)(
+    'gates undo/redo of logo %s when website mode is disabled',
+    async (operation) => {
+      await f.journeys.journey.update({
+        where: { id: f.journeyId },
+        data: { website: true }
+      })
+      let saved = await f.save([
+        {
+          type: 'media_slot_set',
+          target: { slot: 'logo' },
+          media: {
+            kind: 'image',
+            source: { source: 'unsplash', id: 'original-logo' }
+          }
+        }
+      ])
+      if (operation === 'clearing')
+        saved = await f.save([
+          { type: 'media_slot_clear', target: { slot: 'logo' } }
+        ])
+      flags.websiteMode = false
+      for (const direction of ['undo', 'redo'] as const) {
+        const before = await f.snapshot()
+        expect(
+          (await f.historyAction(direction, saved.historyId!)).text
+        ).toContain('ACCESS_DENIED_OR_NOT_FOUND')
+        expect(await f.snapshot()).toEqual(before)
+        flags.websiteMode = true
+        f.receipt(await f.historyAction(direction, saved.historyId!))
+        flags.websiteMode = false
+      }
+    }
+  )
+
   it('denies view-only grants, removed Admin rights, stale revisions and published writes', async () => {
     const view = await f.consent('view')
     expect(
@@ -1216,9 +1339,47 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect((await image()).src).toContain(f.id('asset'))
     f.checkpoint = undefined
     await settleMedia()
-    await protectedMedia.cloudflareImage.delete({
-      where: { id: f.id('asset') }
+    let recoveryReady!: () => void, finishRecovery!: () => void
+    const recoveryOwnsLock = new Promise<void>((resolve) => {
+      recoveryReady = resolve
     })
+    const releaseRecovery = new Promise<void>((resolve) => {
+      finishRecovery = resolve
+    })
+    // Hold the executor lock as a concurrent recovery sweep would.
+    const recovering = media.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended('media:sources:executor', 0))`
+      recoveryReady()
+      await releaseRecovery
+    })
+    await recoveryOwnsLock
+    let pendingAttempts = 0
+    try {
+      await vi.waitUntil(
+        async () => {
+          try {
+            await protectedMedia.cloudflareImage.delete({
+              where: { id: f.id('asset') }
+            })
+            return true
+          } catch (error) {
+            if (
+              !(error instanceof GraphQLError) ||
+              error.extensions.code !== 'PERMISSION_CHANGE_PENDING'
+            )
+              throw error
+            pendingAttempts++
+            finishRecovery()
+            return false
+          }
+        },
+        { timeout: 5000 }
+      )
+      expect(pendingAttempts).toBeGreaterThan(0)
+    } finally {
+      finishRecovery()
+      await recovering
+    }
     f.receipt(await f.edit(input))
     expect(await f.counts()).toEqual({ operations: 1, history: 1, effects: 1 })
   })
@@ -1534,6 +1695,84 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         where: { status: 'committed', reportedAt: null }
       })
     ).toBe(0)
+  })
+
+  it('rejects a stale second delete without provider dispatch or stranding the source gate', async () => {
+    const schema = buildSchema(
+      'type Query { ping: Boolean } type Mutation { deleteMuxVideo(id: ID!): Boolean! }'
+    )
+    let dispatches = 0
+    schema.getMutationType()!.getFields().deleteMuxVideo.resolve = async (
+      _parent: unknown,
+      args: { id: string }
+    ) => {
+      await protectedMedia.muxVideo.findUniqueOrThrow({
+        where: { id: args.id, userId: 'alice' }
+      })
+      dispatches++
+      await protectedMedia.muxVideo.delete({ where: { id: args.id } })
+      return true
+    }
+    guard.plugin.onSchemaChange!({ schema } as Parameters<
+      NonNullable<typeof guard.plugin.onSchemaChange>
+    >[0])
+    const remove = () =>
+      graphql({
+        schema,
+        source: 'mutation($id: ID!) { deleteMuxVideo(id: $id) }',
+        variableValues: { id: f.id('mux') },
+        contextValue: { user: { id: 'alice' }, currentRoles: [] }
+      })
+    let ready!: () => void, resume!: () => void
+    const paused = new Promise<void>((resolve) => {
+      ready = resolve
+    })
+    const continuation = new Promise<void>((resolve) => {
+      resume = resolve
+    })
+    const findSource = media.muxVideo.findFirst.bind(media.muxVideo)
+    const lookup = vi
+      .spyOn(media.muxVideo, 'findFirst')
+      .mockImplementationOnce((args) => {
+        const query = findSource(args)
+        const result = query.then(async (source) => {
+          ready()
+          await continuation
+          return source
+        })
+        return Object.assign(query, { then: result.then.bind(result) })
+      })
+    const stale = remove()
+    try {
+      await paused
+      expect((await remove()).errors).toBeUndefined()
+      expect(dispatches).toBe(1)
+      expect(
+        await media.muxVideo.findUnique({ where: { id: f.id('mux') } })
+      ).toBeNull()
+    } finally {
+      resume()
+      await stale
+      lookup.mockRestore()
+    }
+    expect((await stale).errors).toBeDefined()
+    expect(dispatches).toBe(1)
+    await guard.recover()
+    expect(
+      await media.mcpMediaMutation.count({
+        where: { status: 'external', reportedAt: null }
+      })
+    ).toBe(0)
+    expect((await search('library')).json.result?.isError).not.toBe(true)
+    await protectedMedia.cloudflareImage.update({
+      where: { id: f.id('asset') },
+      data: { blurhash: 'gate-reopened' }
+    })
+    expect(
+      await media.cloudflareImage.findUniqueOrThrow({
+        where: { id: f.id('asset') }
+      })
+    ).toMatchObject({ blurhash: 'gate-reopened' })
   })
 
   it('keeps uncertain external deletion closed and resumes its explicit authorized retry', async () => {
