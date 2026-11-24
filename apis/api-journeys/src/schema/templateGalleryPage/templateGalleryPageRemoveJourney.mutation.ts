@@ -67,29 +67,31 @@ builder.mutationField('templateGalleryPageRemoveJourney', (t) =>
         })
       }
 
-      // Remove from every page. Membership rows are read outside the
-      // transaction only to find the pages to authorize and lock; the
-      // deletion itself re-reads under the journey lock.
-      const rows = await prisma.templateGalleryPageTemplate.findMany({
-        where: { journeyId },
-        select: { templateGalleryPage: { select: { id: true, teamId: true } } }
-      })
-      if (rows.length === 0) return []
-      const teamIds = new Set(rows.map((row) => row.templateGalleryPage.teamId))
-      for (const teamId of teamIds) {
-        if (!(await isInTeam({ context, teamId }))) {
-          throw new GraphQLError(
-            'user is not allowed to modify template gallery page',
-            { extensions: { code: 'FORBIDDEN' } }
-          )
-        }
-      }
-      const pageIds = [
-        ...new Set(rows.map((row) => row.templateGalleryPage.id))
-      ].sort()
-
       return await prisma.$transaction(async (tx) => {
         await lockJourney(tx, journeyId)
+        // Read the complete membership set only after acquiring the journey
+        // lock, including links that committed while removal was waiting.
+        const rows = await tx.templateGalleryPageTemplate.findMany({
+          where: { journeyId },
+          select: {
+            templateGalleryPage: { select: { id: true, teamId: true } }
+          }
+        })
+        if (rows.length === 0) return []
+        const teamIds = new Set(
+          rows.map((row) => row.templateGalleryPage.teamId)
+        )
+        for (const teamId of teamIds) {
+          if (!(await isInTeam({ context, teamId }))) {
+            throw new GraphQLError(
+              'user is not allowed to modify template gallery page',
+              { extensions: { code: 'FORBIDDEN' } }
+            )
+          }
+        }
+        const pageIds = [
+          ...new Set(rows.map((row) => row.templateGalleryPage.id))
+        ].sort()
         for (const pageId of pageIds) {
           await lockPage(tx, pageId)
         }

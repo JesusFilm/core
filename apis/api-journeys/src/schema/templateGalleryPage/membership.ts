@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { Prisma } from '@core/prisma/journeys/client'
 
-import { applyContiguousOrder } from './applyContiguousOrder'
+import { applyContiguousOrder, lockPage } from './applyContiguousOrder'
 
 /**
  * Membership rules shared by the link / move / remove mutations, the
@@ -37,6 +37,45 @@ export async function lockJourney(
     WHERE id = ${journeyId}
     FOR UPDATE
   `
+}
+
+/**
+ * Locks every journey involved in replacing or deleting a page's memberships,
+ * then the page, preserving the shared journey-before-page lock order.
+ * Recheck the set after waiting for locks: a newly added journey was not locked,
+ * so changing that membership must retry rather than write from a stale set.
+ */
+export async function lockPageMemberships(
+  tx: Prisma.TransactionClient,
+  pageId: string,
+  additionalJourneyIds: readonly string[] = []
+): Promise<Array<{ id: string; journeyId: string; isHome: boolean }>> {
+  const beforeLock = await tx.templateGalleryPageTemplate.findMany({
+    where: { templateGalleryPageId: pageId },
+    select: { journeyId: true }
+  })
+  const journeyIds = new Set(beforeLock.map((row) => row.journeyId))
+  const lockIds = [...new Set([...journeyIds, ...additionalJourneyIds])].sort()
+  for (const journeyId of lockIds) {
+    await lockJourney(tx, journeyId)
+  }
+  await lockPage(tx, pageId)
+  const lockedRows = await tx.templateGalleryPageTemplate.findMany({
+    where: { templateGalleryPageId: pageId },
+    select: { id: true, journeyId: true, isHome: true }
+  })
+  if (
+    lockedRows.length !== journeyIds.size ||
+    lockedRows.some((row) => !journeyIds.has(row.journeyId))
+  ) {
+    throw new GraphQLError(
+      'collection membership changed concurrently; retry',
+      {
+        extensions: { code: 'CONFLICT', field: 'journeyIds' }
+      }
+    )
+  }
+  return lockedRows
 }
 
 /**

@@ -5,8 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
-import { lockPage } from './applyContiguousOrder'
-import { lockJourney, promoteOldestLink } from './membership'
+import { lockPageMemberships, promoteOldestLink } from './membership'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageDelete', (t) =>
@@ -42,21 +41,17 @@ builder.mutationField('templateGalleryPageDelete', (t) =>
       }
 
       return await prisma.$transaction(async (tx) => {
-        const homes = await tx.templateGalleryPageTemplate.findMany({
-          where: { templateGalleryPageId: id, isHome: true },
-          select: { journeyId: true },
-          orderBy: { journeyId: 'asc' }
-        })
-        for (const { journeyId } of homes) {
-          await lockJourney(tx, journeyId)
-        }
-        await lockPage(tx, id)
-        // The rows on this page are about to cascade away; hand each home
-        // to its journey's oldest link elsewhere so the journey keeps one.
-        // The row on this page is left as-is (it is deleted below), and a
-        // journey with no links simply ends up in no collection.
-        for (const { journeyId } of homes) {
-          await promoteOldestLink(tx, journeyId)
+        const memberships = await lockPageMemberships(tx, id)
+        const homes = memberships.filter((row) => row.isHome)
+        if (homes.length > 0) {
+          // Clear the departing homes before promotion so no intermediate
+          // write gives a journey two homes, even within this transaction.
+          await tx.templateGalleryPageTemplate.deleteMany({
+            where: { templateGalleryPageId: id, isHome: true }
+          })
+          for (const { journeyId } of homes) {
+            await promoteOldestLink(tx, journeyId)
+          }
         }
         // Cascade deletes TemplateGalleryPageTemplate join rows automatically.
         return await tx.templateGalleryPage.delete({

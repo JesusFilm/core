@@ -1,3 +1,4 @@
+import { CollisionDetection } from '@dnd-kit/core'
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
@@ -36,7 +37,10 @@ import {
 import { SortOrder } from '../JourneyList/JourneySort'
 import { ThemeProvider } from '../ThemeProvider'
 
-import { TemplateGalleryPageList } from './TemplateGalleryPageList'
+import {
+  collectionCollisionDetection,
+  TemplateGalleryPageList
+} from './TemplateGalleryPageList'
 
 import '../../../test/i18n'
 
@@ -1597,5 +1601,53 @@ describe('TemplateGalleryPageList', () => {
       )
       expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
     })
+  })
+})
+
+describe('collectionCollisionDetection', () => {
+  function collisionArgs(pointer: {
+    x: number
+    y: number
+  }): Parameters<CollisionDetection>[0] {
+    const rect = {
+      top: 100,
+      bottom: 200,
+      left: 100,
+      right: 200,
+      width: 100,
+      height: 100
+    }
+    return {
+      active: {
+        id: 'collection:source|journey-1',
+        data: { current: {} },
+        rect: { current: { initial: rect, translated: rect } }
+      },
+      collisionRect: rect,
+      pointerCoordinates: pointer,
+      droppableRects: new Map([['action:link:target', rect]]),
+      droppableContainers: [
+        {
+          id: 'action:link:target',
+          key: 'target',
+          data: { current: {} },
+          disabled: false,
+          node: { current: null },
+          rect: { current: rect }
+        }
+      ]
+    }
+  }
+
+  it('ignores the nearest action box when the pointer is outside every target', () => {
+    expect(
+      collectionCollisionDetection(collisionArgs({ x: 99, y: 150 }))
+    ).toEqual([])
+  })
+
+  it('accepts a link only when the pointer lands in its action box', () => {
+    expect(
+      collectionCollisionDetection(collisionArgs({ x: 150, y: 150 }))[0]?.id
+    ).toBe('action:link:target')
   })
 })
