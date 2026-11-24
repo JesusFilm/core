@@ -60,16 +60,16 @@ export function RemoveFromCollectionMenuItem({
         templateId: id,
         via: 'menu'
       })
-      const promoted = data?.templateGalleryPageRemoveJourney.find(
+      const home = data?.templateGalleryPageRemoveJourney.find(
         (page) =>
           page.id !== collectionId &&
           page.memberships.some((m) => m.journeyId === id && m.isHome)
       )
       enqueueSnackbar(
-        promoted != null
+        home != null
           ? t('Removed from {{collection}}. Its home is now {{home}}.', {
               collection: collectionTitle,
-              home: promoted.title
+              home: home.title
             })
           : t('Removed from {{collection}}', { collection: collectionTitle }),
         { variant: 'success', preventDuplicate: true }

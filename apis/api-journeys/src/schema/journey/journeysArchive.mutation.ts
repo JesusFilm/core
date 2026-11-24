@@ -1,6 +1,10 @@
 import { JourneyStatus, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
+import {
+  lockJourney,
+  removeMembershipsFromPages
+} from '../templateGalleryPage/membership'
 
 import { JourneyRef } from './journey'
 import { Action, journeyAcl, journeyReadAccessWhere } from './journey.acl'
@@ -40,14 +44,29 @@ builder.mutationField('journeysArchive', (t) =>
 
         return await Promise.all(
           manageableJourneys.map(async (journey) =>
-            prisma.journey.update({
-              ...query,
-              where: { id: journey.id, updatedAt: journey.updatedAt },
-              data: {
-                status: JourneyStatus.archived,
-                archivedAt: new Date(),
-                updatedAt: journey.updatedAt
-              }
+            prisma.$transaction(async (tx) => {
+              await lockJourney(tx, journey.id)
+              const updated = await tx.journey.update({
+                ...query,
+                where: { id: journey.id, updatedAt: journey.updatedAt },
+                data: {
+                  status: JourneyStatus.archived,
+                  archivedAt: new Date(),
+                  updatedAt: journey.updatedAt
+                }
+              })
+              const memberships = await tx.templateGalleryPageTemplate.findMany(
+                {
+                  where: { journeyId: journey.id },
+                  select: { templateGalleryPageId: true }
+                }
+              )
+              await removeMembershipsFromPages(
+                tx,
+                journey.id,
+                memberships.map((row) => row.templateGalleryPageId)
+              )
+              return updated
             })
           )
         )

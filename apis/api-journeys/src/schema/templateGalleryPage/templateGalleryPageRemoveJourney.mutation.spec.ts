@@ -83,7 +83,31 @@ describe('templateGalleryPageRemoveJourney', () => {
     })
     expect(
       prismaMock.templateGalleryPageTemplate.findFirst
-    ).not.toHaveBeenCalled()
+    ).toHaveBeenCalledWith({
+      where: { journeyId: 'journey-1', isHome: true },
+      select: { templateGalleryPageId: true }
+    })
+    expect(prismaMock.templateGalleryPageTemplate.update).not.toHaveBeenCalled()
+  })
+
+  it('returns the unchanged home when removing a link', async () => {
+    prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
+      id: 'tpt-link',
+      isHome: false
+    } as Prisma.TemplateGalleryPageTemplateGetPayload<Record<string, never>>)
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([])
+    prismaMock.templateGalleryPageTemplate.findFirst.mockResolvedValue({
+      templateGalleryPageId: 'page-B'
+    } as Prisma.TemplateGalleryPageTemplateGetPayload<Record<string, never>>)
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+      variables: { journeyId: 'journey-1', pageId: 'page-A' }
+    })
+    expect(result).toEqual({
+      data: {
+        templateGalleryPageRemoveJourney: [{ id: 'page-A' }, { id: 'page-B' }]
+      }
+    })
     expect(prismaMock.templateGalleryPageTemplate.update).not.toHaveBeenCalled()
   })
 

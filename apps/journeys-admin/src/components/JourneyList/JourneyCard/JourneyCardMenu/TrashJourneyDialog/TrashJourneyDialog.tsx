@@ -12,7 +12,6 @@ import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 import { evictFromTemplateGalleryPages } from '../../../../../libs/evictFromTemplateGalleryPages'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
-import { useTemplateGalleryPageRemoveJourneyMutation } from '../../../../../libs/useTemplateGalleryPageRemoveJourneyMutation'
 
 export const JOURNEY_TRASH = gql`
   mutation JourneyTrash($ids: [ID!]!) {
@@ -53,17 +52,9 @@ export function TrashJourneyDialog({
   const [loading, setLoading] = useState(false)
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
-  // Removes the journey from every TemplateGalleryPage it belongs to.
-  // Idempotent no-op when the journey isn't in any collection (the server
-  // resolver returns an empty list). Called after the trash mutation so
-  // that trashing implicitly severs collection membership — without
-  // this, restoring a trashed journey would put it back in its prior
-  // collection slot. Until journeysTrash is migrated to api-journeys-
-  // modern and can delete the join row in the same transaction, this
-  // pairing is the frontend-only way to honor the desired behavior.
-  const [removeFromCollections] = useTemplateGalleryPageRemoveJourneyMutation()
-
   const [trashJourney] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
+    // Membership removal is atomic on the server; refresh collection metadata.
+    refetchQueries: ['GetTemplateGalleryPages'],
     variables: {
       ids: [id]
     },
@@ -99,21 +90,6 @@ export function TrashJourneyDialog({
       if (templateIdToRefetch != null) {
         void refetchTemplateStats([templateIdToRefetch])
       }
-
-      // Fire-and-forget: remove the journey's TemplateGalleryPage join row
-      // so restoring later returns it to the flat template list rather
-      // than its prior collection slot. The trash mutation already
-      // succeeded (user's primary intent); do NOT await — the success
-      // snackbar should fire on this tick. Failure leaves a stale join
-      // row server-side (same as pre-fix behavior); log only.
-      void removeFromCollections({
-        variables: { journeyId: id }
-      }).catch((removeError) => {
-        console.warn(
-          '[TrashJourneyDialog] failed to remove trashed journey from its collections',
-          { journeyId: id, error: removeError }
-        )
-      })
 
       enqueueSnackbar(
         template === true ? t('Template trashed') : t('Journey trashed'),

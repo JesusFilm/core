@@ -7,9 +7,8 @@ import {
 } from '../../../__generated__/TemplateGalleryPageRemoveJourney'
 
 // Removes a template from one collection (`pageId`), or from every
-// collection when `pageId` is omitted (archive / trash). Returns every page
-// that changed, including the page whose link was promoted to home when
-// the removed membership was the home.
+// collection when `pageId` is omitted. Returns the removed-from page and
+// the surviving home so confirmations can name it, including after promotion.
 export const TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY = gql`
   mutation TemplateGalleryPageRemoveJourney($journeyId: ID!, $pageId: ID) {
     templateGalleryPageRemoveJourney(journeyId: $journeyId, pageId: $pageId) {

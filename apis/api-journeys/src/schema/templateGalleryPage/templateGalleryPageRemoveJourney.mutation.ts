@@ -6,13 +6,17 @@ import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
 import { lockPage } from './applyContiguousOrder'
-import { lockJourney, removeMembership, renumberPage } from './membership'
+import {
+  lockJourney,
+  removeMembership,
+  removeMembershipsFromPages
+} from './membership'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageRemoveJourney', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      "Remove a journey from a TemplateGalleryPage. When the removed membership was the journey's home and links remain on other pages, the oldest link becomes the new home. Returns every page that changed: the page removed from and, when a promotion happened, the page that now holds the home. Idempotent: an empty list when the journey was not on the page.\n\nWhen `pageId` is omitted the journey is removed from every page it belongs to (used when a template is archived or trashed). Returns the pages it was removed from.\n\nAuth: caller must be a member of each affected page's team.\n\nErrors:\n- NOT_FOUND: `pageId` does not resolve.\n- FORBIDDEN: caller is not in an affected page's team.",
+      "Remove a journey from a TemplateGalleryPage. When the removed membership was the journey's home and links remain on other pages, the oldest link becomes the new home. Returns the page removed from and the remaining home page, when one exists, so callers can identify where the template still belongs. Idempotent: an empty list when the journey was not on the page.\n\nWhen `pageId` is omitted the journey is removed from every page it belongs to (used when a template is archived or trashed). Returns the pages it was removed from.\n\nAuth: caller must be a member of each affected page's team.\n\nErrors:\n- NOT_FOUND: `pageId` does not resolve.\n- FORBIDDEN: caller is not in an affected page's team.",
     type: [TemplateGalleryPageRef],
     nullable: false,
     args: {
@@ -58,8 +62,16 @@ builder.mutationField('templateGalleryPageRemoveJourney', (t) =>
             journeyId
           )
           if (!removed) return []
+          const homePageId =
+            promotedPageId ??
+            (
+              await tx.templateGalleryPageTemplate.findFirst({
+                where: { journeyId, isHome: true },
+                select: { templateGalleryPageId: true }
+              })
+            )?.templateGalleryPageId
           const changedPageIds =
-            promotedPageId != null ? [pageId, promotedPageId] : [pageId]
+            homePageId != null ? [pageId, homePageId] : [pageId]
           return await tx.templateGalleryPage.findMany({
             ...query,
             where: { id: { in: changedPageIds } }
@@ -92,15 +104,7 @@ builder.mutationField('templateGalleryPageRemoveJourney', (t) =>
         const pageIds = [
           ...new Set(rows.map((row) => row.templateGalleryPage.id))
         ].sort()
-        for (const pageId of pageIds) {
-          await lockPage(tx, pageId)
-        }
-        await tx.templateGalleryPageTemplate.deleteMany({
-          where: { journeyId, templateGalleryPageId: { in: pageIds } }
-        })
-        for (const pageId of pageIds) {
-          await renumberPage(tx, pageId)
-        }
+        await removeMembershipsFromPages(tx, journeyId, pageIds)
         return await tx.templateGalleryPage.findMany({
           ...query,
           where: { id: { in: pageIds } }

@@ -17,10 +17,10 @@ import { applyContiguousOrder, lockPage } from './applyContiguousOrder'
  *  - a membership keeps its role when moved between pages;
  *  - removing the home promotes the oldest remaining link.
  *
- * Every helper below expects the caller to already be inside a
- * `prisma.$transaction` holding `lockJourney` for the journey (and
- * `lockPage` for each page it writes to) so concurrent mutations on the
- * same journey serialize and cannot produce two homes.
+ * Membership writes run inside a `prisma.$transaction` holding
+ * `lockJourney` for the journey and `lockPage` for each page they reorder.
+ * Each helper documents which locks it acquires or expects its caller to
+ * hold, so concurrent edits cannot produce two homes.
  */
 
 /**
@@ -92,6 +92,29 @@ export async function renumberPage(
     select: { id: true }
   })
   await applyContiguousOrder(tx, pageId, rows)
+}
+
+/**
+ * Removes a journey from its complete, already-read page set. Caller holds
+ * its journey lock, so no membership can be added while the pages are locked
+ * and renumbered. Clearing every membership needs no home promotion.
+ */
+export async function removeMembershipsFromPages(
+  tx: Prisma.TransactionClient,
+  journeyId: string,
+  currentPageIds: readonly string[]
+): Promise<void> {
+  const pageIds = [...new Set(currentPageIds)].sort()
+  if (pageIds.length === 0) return
+  for (const pageId of pageIds) {
+    await lockPage(tx, pageId)
+  }
+  await tx.templateGalleryPageTemplate.deleteMany({
+    where: { journeyId, templateGalleryPageId: { in: pageIds } }
+  })
+  for (const pageId of pageIds) {
+    await renumberPage(tx, pageId)
+  }
 }
 
 /**
