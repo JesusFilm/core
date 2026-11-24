@@ -35,7 +35,8 @@ import { Action, journeyAcl } from '../schema/journey/journey.acl'
 import { type JourneyEditHooks, createJourneyEditHandler } from './mcpEdits'
 import {
   type DestinationRoutes,
-  eligibleDestinations
+  eligibleDestinations,
+  selectedFormDestinations
 } from './mcpFormDestinations'
 import { type MediaClientConfig, mediaRequest } from './mcpMediaClient'
 import { boundedReadPage } from './mcpReadPage'
@@ -167,6 +168,8 @@ const blockSelect = {
   slug: true,
   min: true,
   max: true,
+  integrationId: true,
+  routeId: true,
   showAssistant: true,
   expandChatByDefault: true,
   settings: true,
@@ -637,7 +640,7 @@ async function snapshot(
   )
   const warnings = [
     'Preserve omitted content. Host changes and publication are unavailable.',
-    'Form destinations, source metadata and unmodeled block settings are preserved but omitted. The outline is not a lossless replacement document.'
+    'Inaccessible form destinations, source metadata and unmodeled block settings are preserved but omitted. The outline is not a lossless replacement document.'
   ]
   const base = {
     journeyId: journey.id,
@@ -791,6 +794,12 @@ async function snapshot(
   })
   const removedStepIds = new Set(removedDestinations.map(({ id }) => id))
   const routeIds = new Set([...owned, ...removedStepIds])
+  const destinations = await selectedFormDestinations(
+    tx,
+    journey,
+    page.slice(0, 100),
+    { userId: claims.subject, routes: destinationRoutes }
+  )
   const blocks = page.slice(0, 100).map((block) => {
     for (const field of blockReferences)
       block[field] =
@@ -799,6 +808,7 @@ async function snapshot(
         removedStepIds.has(block[field])
           ? block[field]
           : safeReference(block[field])
+    const { integrationId, routeId, ...content } = block
     return request.input.view === 'outline'
       ? {
           id: block.id,
@@ -814,7 +824,8 @@ async function snapshot(
           locked: block.locked
         }
       : {
-          ...block,
+          ...content,
+          ...destinations.get(block.id),
           ...(block.nextBlockId && removedStepIds.has(block.nextBlockId)
             ? { unresolvedDefaultRoute: true }
             : {}),

@@ -19,6 +19,7 @@ describe('form integration', () => {
     () => {
       const calls: string[] = []
       let available = true
+      let revokeAfterRouteRead = false
       let routeIds = ['route-a', 'route-b']
       const provider = createServer((req, res) => {
         calls.push(`${req.method} ${req.url}`)
@@ -37,6 +38,7 @@ describe('form integration', () => {
             }))
           )
         )
+        if (revokeAfterRouteRead) available = false
       })
 
       beforeAll(async () => {
@@ -106,6 +108,7 @@ describe('form integration', () => {
 
       beforeEach(async () => {
         available = true
+        revokeAfterRouteRead = false
         routeIds = ['route-a', 'route-b']
         calls.length = 0
         await f.journeys.integration.deleteMany({
@@ -1103,6 +1106,206 @@ describe('form integration', () => {
         ])
           expect(result.text).not.toContain(value)
         expect(result.text).toContain('response_set')
+      })
+
+      it('reads each saved destination at its revision and distinguishes fields using different routes', async () => {
+        const saved = await f.save([
+          add('second', { kind: 'response', responseType: 'email' }),
+          add('default', { kind: 'response', responseType: 'name' }),
+          add('unset', { kind: 'response', responseType: 'email' }),
+          {
+            type: 'form_destination_set',
+            block: ref(f.id('response')),
+            integrationId,
+            routeId: 'route-a'
+          },
+          {
+            type: 'form_destination_set',
+            block: local('second'),
+            integrationId,
+            routeId: 'route-b'
+          },
+          {
+            type: 'form_destination_set',
+            block: local('default'),
+            integrationId
+          }
+        ])
+        const revision = await f.revision()
+        calls.length = 0
+        const result = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'steps',
+          revision
+        })
+        expect(result.json.result?.isError, result.text).not.toBe(true)
+        expect(result.json.result?.structuredContent).toMatchObject({
+          revision,
+          blocks: expect.arrayContaining([
+            expect.objectContaining({
+              id: f.id('response'),
+              integrationId,
+              routeId: 'route-a'
+            }),
+            expect.objectContaining({
+              id: saved.idMap.second,
+              integrationId,
+              routeId: 'route-b'
+            }),
+            expect.objectContaining({
+              id: saved.idMap.default,
+              integrationId,
+              routeId: null
+            }),
+            expect.objectContaining({
+              id: saved.idMap.unset,
+              integrationId: null,
+              routeId: null
+            })
+          ])
+        })
+        // Each protected read/output stage checks the shared integration once.
+        expect(calls).toEqual(['GET /routes', 'GET /routes'])
+        for (const secret of [
+          'controlled-access-id',
+          'controlled-provider-secret',
+          'privateResponse',
+          'accessSecret',
+          'visitorResponse'
+        ])
+          expect(result.text).not.toContain(secret)
+        await f.save([
+          {
+            type: 'form_destination_set',
+            block: ref(f.id('response')),
+            integrationId,
+            routeId: 'route-b'
+          }
+        ])
+        const stale = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'steps',
+          revision
+        })
+        expect(stale.text).toContain('REVISION_CONFLICT')
+        expect(stale.text).not.toContain('route-a')
+        const updated = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'steps'
+        })
+        expect(updated.json.result?.structuredContent).toMatchObject({
+          revision: await f.revision(),
+          blocks: expect.arrayContaining([
+            expect.objectContaining({
+              id: f.id('response'),
+              integrationId,
+              routeId: 'route-b'
+            })
+          ])
+        })
+      })
+
+      it.each([
+        'foreign',
+        'unavailable',
+        'credentials',
+        'revoked',
+        'stale',
+        'route',
+        'wrong-type',
+        'team-membership'
+      ] as const)(
+        'omits a %s saved destination while preserving readable content',
+        async (reason) => {
+          await f.save([
+            {
+              type: 'form_destination_set',
+              block: ref(f.id('response')),
+              integrationId,
+              routeId: 'route-a'
+            }
+          ])
+          if (reason === 'foreign') {
+            await f.journeys.team.create({
+              data: { id: f.id('foreign-team'), title: 'Foreign team' }
+            })
+            await f.journeys.integration.update({
+              where: { id: integrationId },
+              data: { teamId: f.id('foreign-team') }
+            })
+          }
+          if (reason === 'unavailable') available = false
+          if (reason === 'credentials')
+            await f.journeys.integration.update({
+              where: { id: integrationId },
+              data: { accessSecretCipherText: null }
+            })
+          if (reason === 'revoked')
+            await f.journeys.integration.update({
+              where: { id: integrationId },
+              data: { accessId: null }
+            })
+          if (reason === 'stale')
+            await f.journeys.integration.update({
+              where: { id: integrationId },
+              data: { oauthStale: true }
+            })
+          if (reason === 'route') routeIds = ['route-b']
+          if (reason === 'wrong-type')
+            await f.journeys.block.update({
+              where: { id: f.id('response') },
+              data: { type: 'phone' }
+            })
+          if (reason === 'team-membership') {
+            await f.journeys.userJourney.create({
+              data: { journeyId: f.journeyId, userId: 'alice', role: 'editor' }
+            })
+            await f.journeys.userTeam.delete({
+              where: {
+                teamId_userId: {
+                  teamId: 'structure-team-alice',
+                  userId: 'alice'
+                }
+              }
+            })
+          }
+          const result = await f.call('journey_read', {
+            journeyId: f.journeyId,
+            view: 'steps'
+          })
+          expect(result.json.result?.isError, result.text).not.toBe(true)
+          expect(result.json.result?.structuredContent).toMatchObject({
+            revision: await f.revision(),
+            blocks: expect.arrayContaining([
+              expect.objectContaining({ id: f.id('response') })
+            ])
+          })
+          expect(result.text).not.toContain(integrationId)
+          expect(result.text).not.toContain('route-a')
+          expect(await block(f.id('response'))).toMatchObject({
+            integrationId,
+            routeId: 'route-a'
+          })
+        }
+      )
+
+      it('withholds saved destinations revoked between the read and protected output', async () => {
+        await f.save([
+          {
+            type: 'form_destination_set',
+            block: ref(f.id('response')),
+            integrationId,
+            routeId: 'route-a'
+          }
+        ])
+        revokeAfterRouteRead = true
+        const result = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'steps'
+        })
+        expect(result.json.result?.isError, result.text).toBe(true)
+        expect(result.text).not.toContain(integrationId)
+        expect(result.text).not.toContain('route-a')
       })
 
       it('rechecks a repeated destination assignment after provider revocation', async () => {
