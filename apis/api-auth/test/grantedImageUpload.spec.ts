@@ -478,14 +478,16 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         transferDeadline: job.transferDeadline
       })
       expect(await media.mcpMediaJob.count()).toBe(1)
-      expect(
-        await f.auth.readPermit.count({
-          where: {
-            connectionId: connection.id,
-            status: { in: ['prepared', 'accepted'] }
-          }
-        })
-      ).toBe(0)
+      await expect
+        .poll(() =>
+          f.auth.readPermit.count({
+            where: {
+              connectionId: connection.id,
+              status: { in: ['prepared', 'accepted'] }
+            }
+          })
+        )
+        .toBe(0)
     }
   )
 
