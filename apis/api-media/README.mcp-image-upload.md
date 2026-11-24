@@ -68,10 +68,14 @@ writes and positively fenced executors.
 
 After the final chunk commits, the media worker advances the original job from
 PostgreSQL. A replacement worker can validate and dispatch with fresh rights under
-the same grant version even if the uploading client disconnects. Consent renewal
-changes that version and cannot restart unfinished work. An explicit authorized
-same-job resume binds progression to the new version without changing the file,
-capacity or transfer deadline. Jobs predating this binding also require explicit
+the same grant version and permission-gate generations even if the uploading
+client disconnects. Admission persists a hash of the account, connection,
+journey, team and user-membership gate generations captured before rights reads
+and checked again at final acceptance. Consent renewal or a permission change
+cannot restart unfinished work, including role removal and restoration while
+the worker is offline. An explicit authorized same-job resume binds progression
+to the current version and generations without changing the file, capacity or
+transfer deadline. Jobs predating either binding also require explicit
 resume. MCP status reads return committed progress
 while storage or the provider is slow. Poll the same job until it reaches a
 terminal state before using its ready asset in a separate edit.

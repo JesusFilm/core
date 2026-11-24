@@ -491,25 +491,157 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     }
   )
 
-  it('requires explicit resume for a legacy job without a progression grant binding', async () => {
-    const job = await start()
-    const id = String(job.jobId)
-    await upload(id, await fileBytes())
-    await media.mcpMediaJob.update({
-      where: { id },
-      data: { progressionGrantVersion: null }
-    })
-    await createWorker().processCompletedTransfers()
-    expect(dispatchCount).toBe(0)
-    expect((await browser(id)).json.data).toMatchObject({
-      jobId: id,
-      state: 'validating',
-      transferDeadline: job.transferDeadline
-    })
-    expect((await browser(id, 'POST', 'resume')).status).toBe(200)
-    expect(dispatchCount).toBe(1)
-    expect((await browser(id)).json.data.state).toBe('ready')
-  })
+  it.each(
+    (['journey', 'team'] as const).flatMap((role) =>
+      (['validating', 'dispatch_pending'] as const).flatMap((state) =>
+        [true, false].map((observeRemoval) => ({ role, state, observeRemoval }))
+      )
+    )
+  )(
+    'requires same-job resume after $role role restoration in $state, worker observed removal=$observeRemoval',
+    async ({ role, state, observeRemoval }) => {
+      const membership = await f.journeys.userTeam.findUniqueOrThrow({
+        where: {
+          teamId_userId: { teamId: 'structure-team-alice', userId: 'alice' }
+        }
+      })
+      const collaboration =
+        role === 'journey'
+          ? await f.journeys.userJourney.create({
+              data: { journeyId: f.journeyId, userId: 'alice', role: 'editor' }
+            })
+          : undefined
+      if (collaboration)
+        await f.journeys.userTeam.delete({ where: { id: membership.id } })
+      const job = await start()
+      const id = String(job.jobId)
+      await upload(id, await fileBytes())
+      const connection = await connectionFor(id)
+      if (state === 'dispatch_pending')
+        await jobs.validate(
+          {
+            userId: 'alice',
+            connectionId: connection.id,
+            journeyId: f.journeyId
+          },
+          id
+        )
+      const original = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id }
+      })
+      const gateIds = collaboration
+        ? [`user-journey:alice:${f.journeyId}`]
+        : [`user-team:alice:${membership.teamId}`]
+      // Exercise the production permission close/drain/reopen protocol around
+      // real owning membership changes, without a consent version change.
+      async function changeRole(restore: boolean) {
+        const changeId = randomUUID()
+        const request = async (action: string, body: unknown) => {
+          const response = await fetch(
+            authorityUrl + '/internal/permissions/' + action,
+            {
+              method: 'POST',
+              headers: {
+                Authorization:
+                  'Bearer controlled-structure-permission-10557-at-least-32-characters',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(body)
+            }
+          )
+          expect(response.status, await response.clone().text()).toBe(200)
+          return response.json()
+        }
+        await expect
+          .poll(
+            async () =>
+              (
+                await request('begin', {
+                  changeId,
+                  gateIds,
+                  intentHash: imageHash(Buffer.from(String(restore)))
+                })
+              ).status
+          )
+          .toBe('ready')
+        if (collaboration) {
+          if (restore)
+            await f.journeys.userJourney.create({ data: collaboration })
+          else
+            await f.journeys.userJourney.delete({
+              where: { id: collaboration.id }
+            })
+        } else {
+          if (restore) await f.journeys.userTeam.create({ data: membership })
+          else
+            await f.journeys.userTeam.delete({ where: { id: membership.id } })
+        }
+        expect(
+          await request('complete', { changeId, outcome: 'committed' })
+        ).toMatchObject({ status: 'complete' })
+      }
+      await changeRole(false)
+      if (observeRemoval) {
+        await createWorker().processCompletedTransfers()
+        expect((await browser(id, 'POST', 'resume')).status).toBe(403)
+      }
+      expect(dispatchCount).toBe(0)
+      await changeRole(true)
+      expect((await connectionFor(id)).version).toBe(connection.version)
+      await createWorker().processCompletedTransfers()
+      await processCompletedTransfers()
+      expect(dispatchCount).toBe(0)
+      expect((await browser(id)).json.data).toMatchObject({
+        jobId: id,
+        state,
+        active: true,
+        transferDeadline: job.transferDeadline
+      })
+      expect(
+        (await browser(id, 'POST', 'resume', undefined, 'bob')).status
+      ).toBe(403)
+      expect((await browser(id, 'POST', 'resume')).status).toBe(200)
+      await createWorker().processCompletedTransfers()
+      expect(dispatchCount).toBe(1)
+      const resumed = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id }
+      })
+      expect(resumed).toMatchObject({
+        id,
+        state: 'ready',
+        file: original.file,
+        providerId: original.providerId,
+        admittedAt: original.admittedAt,
+        transferDeadline: original.transferDeadline,
+        transferCompletedAt: original.transferCompletedAt,
+        receivedBytes: original.receivedBytes
+      })
+      expect(await media.mcpMediaJob.count()).toBe(1)
+    }
+  )
+
+  it.each(['progressionGrantVersion', 'progressionPermissionHash'] as const)(
+    'requires explicit resume for a legacy job without %s',
+    async (binding) => {
+      const job = await start()
+      const id = String(job.jobId)
+      await upload(id, await fileBytes())
+      await media.mcpMediaJob.update({
+        where: { id },
+        data: { [binding]: null }
+      })
+      await createWorker().processCompletedTransfers()
+      expect(dispatchCount).toBe(0)
+      expect((await browser(id)).json.data).toMatchObject({
+        jobId: id,
+        state: 'validating',
+        transferDeadline: job.transferDeadline
+      })
+      expect((await browser(id, 'POST', 'resume')).status).toBe(200)
+      expect(dispatchCount).toBe(1)
+      expect((await browser(id)).json.data.state).toBe('ready')
+    }
+  )
 
   it.each(['3', '0', '-1', '1.5', 'invalid'])(
     'rejects invalid configured shared upload ceiling %s',

@@ -155,6 +155,7 @@ export function createMediaJobs(
         permitId: string
         clientId: string
         grantVersion: number
+        permissionHash: string
         accept: () => Promise<void>
       }
     ) => Promise<T>,
@@ -170,7 +171,8 @@ export function createMediaJobs(
       .object({
         permitId: z.string().uuid(),
         clientId: z.string(),
-        grantVersion: z.number()
+        grantVersion: z.number(),
+        permissionHash: z.string().regex(/^[a-f0-9]{64}$/)
       })
       .parse(
         await authority('prepare', {
@@ -260,6 +262,7 @@ export function createMediaJobs(
                 permitId: prepared.permitId,
                 clientId: prepared.clientId,
                 grantVersion: prepared.grantVersion,
+                permissionHash: prepared.permissionHash,
                 accept
               })
               if (!accepted) throw new Error('Permit was not accepted')
@@ -433,7 +436,7 @@ export function createMediaJobs(
     return authorized(
       context,
       'admit',
-      async (tx, { clientId, grantVersion, accept }) => {
+      async (tx, { clientId, grantVersion, permissionHash, accept }) => {
         await tx.mcpMediaUser.upsert({
           where: { userId: context.userId },
           create: { userId: context.userId },
@@ -491,6 +494,7 @@ export function createMediaJobs(
             payloadHash,
             kind: input.kind,
             progressionGrantVersion: grantVersion,
+            progressionPermissionHash: permissionHash,
             file: input.file,
             providerId: randomUUID(),
             admittedAt: now,
@@ -788,9 +792,13 @@ export function createMediaJobs(
     await authorized(
       context,
       'transfer',
-      async (tx, { accept, grantVersion }) => {
+      async (tx, { accept, grantVersion, permissionHash }) => {
         const job = await lockJob(tx, jobId)
-        if (job.progressionGrantVersion !== grantVersion) denied()
+        if (
+          job.progressionGrantVersion !== grantVersion ||
+          job.progressionPermissionHash !== permissionHash
+        )
+          denied()
         await accept()
         if (job.state !== 'validating') return
         const file = mediaFile.parse(job.file)
@@ -812,11 +820,15 @@ export function createMediaJobs(
     const receiptId = await authorized(
       context,
       'dispatch',
-      async (tx, { permitId, accept, grantVersion }) => {
+      async (tx, { permitId, accept, grantVersion, permissionHash }) => {
         const job = await lockJob(tx, jobId)
         if (job.state !== 'dispatch_pending' || job.dispatchReceiptId)
           throw new Error('VALIDATION_FAILED')
-        if (job.progressionGrantVersion !== grantVersion) denied()
+        if (
+          job.progressionGrantVersion !== grantVersion ||
+          job.progressionPermissionHash !== permissionHash
+        )
+          denied()
         await accept()
         await tx.mcpMediaExecution.update({
           where: { id: permitId },
@@ -1129,8 +1141,8 @@ export function createMediaJobs(
     })
   }
   async function processCompletedTransfers() {
-    // Recover durable work only within its authorized grant version. Renewal
-    // requires an explicit same-job resume before validation or dispatch.
+    // Recover only within the authorized grant and permission generations.
+    // An interruption requires explicit same-job resume, even if no worker ran.
     let after: string | undefined
     while (true) {
       const jobs: McpMediaJob[] = await media.mcpMediaJob.findMany({
@@ -1165,7 +1177,7 @@ export function createMediaJobs(
       await authorized(
         context,
         'transfer',
-        async (tx, { accept, grantVersion }) => {
+        async (tx, { accept, grantVersion, permissionHash }) => {
           const job = await lockJob(tx, jobId)
           await accept()
           if (
@@ -1175,7 +1187,10 @@ export function createMediaJobs(
             return
           await tx.mcpMediaJob.update({
             where: { id: jobId },
-            data: { progressionGrantVersion: grantVersion }
+            data: {
+              progressionGrantVersion: grantVersion,
+              progressionPermissionHash: permissionHash
+            }
           })
         }
       )

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { sameSecret } from '@core/yoga/mcp/readContract'
+import { fingerprint, sameSecret } from '@core/yoga/mcp/readContract'
 
 import type { AuthConfig } from './config'
 import type { Identity } from './identity'
@@ -117,7 +117,8 @@ export function createMediaJobAuthority(
         return {
           permitId: permit.id,
           clientId: connection.clientId,
-          grantVersion: connection.version
+          grantVersion: connection.version,
+          permissionHash: fingerprint(gates)
         }
       })
     }

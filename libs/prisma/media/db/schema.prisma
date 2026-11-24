@@ -51,6 +51,7 @@ model McpMediaJob {
   transferDeadline DateTime
   transferCompletedAt DateTime?
   progressionGrantVersion Int?
+  progressionPermissionHash String?
   file Json?
   receivedBytes Int @default(0)
   metadata Json?
