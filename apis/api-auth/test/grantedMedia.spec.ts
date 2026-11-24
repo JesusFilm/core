@@ -369,6 +369,50 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect(await image('button')).toMatchObject({ label: 'Updated button' })
   })
 
+  it('adds a poll option and its selected image in one reversible save', async () => {
+    const saved = await f.save([
+      {
+        type: 'poll_option_add',
+        question: ref('poll'),
+        key: 'maybe',
+        label: 'Maybe',
+        placement: { position: 'end' }
+      },
+      {
+        type: 'media_slot_set',
+        target: { slot: 'poll', owner: { local: 'maybe' } },
+        media: {
+          kind: 'image',
+          source: { source: 'library', id: f.id('asset') },
+          alt: 'Maybe'
+        }
+      }
+    ])
+    const block = (id: string) =>
+      f.journeys.block.findUniqueOrThrow({ where: { id } })
+    const optionId = saved.idMap.maybe
+    const option = await block(optionId)
+    expect(option).toMatchObject({
+      parentBlockId: f.id('poll'),
+      label: 'Maybe'
+    })
+    const imageId = option.pollOptionImageBlockId!
+    expect(await block(imageId)).toMatchObject({
+      parentBlockId: optionId,
+      deletedAt: null,
+      alt: 'Maybe'
+    })
+    f.receipt(await f.historyAction('undo', saved.historyId!))
+    expect((await block(optionId)).deletedAt).not.toBeNull()
+    expect((await block(imageId)).deletedAt).not.toBeNull()
+    f.receipt(await f.historyAction('redo', saved.historyId!))
+    expect(await block(optionId)).toMatchObject({
+      deletedAt: null,
+      pollOptionImageBlockId: imageId
+    })
+    expect((await block(imageId)).deletedAt).toBeNull()
+  })
+
   it.each(['cover', 'poster', 'poll', 'logo', 'social'] as const)(
     'creates, clears, undoes and redoes a complete owned %s slot without deleting the asset',
     async (slot) => {
