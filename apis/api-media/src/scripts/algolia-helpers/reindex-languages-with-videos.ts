@@ -1,21 +1,25 @@
 /**
  * Reconciles the Algolia languages index with the languages database.
  *
- * Two passes:
+ * Two passes, removal first:
  *
- * 1. Push every publicly visible language (hasVideos && searchable). Languages
- *    default to hasVideos: true in the schema, so the incremental sync (which
- *    only fired on a false -> true transition) never pushed them and they are
- *    missing from search.
- * 2. Remove languages that are not publicly visible: every language hidden by
+ * 1. Remove languages that are not publicly visible: every language hidden by
  *    an operator (searchable: false), plus languages that have video content
  *    but are flagged hasVideos: false. The sync is otherwise upsert-only, so
  *    anything indexed while it was visible stays searchable after being turned
  *    off.
+ * 2. Push every publicly visible language (hasVideos && searchable). Languages
+ *    default to hasVideos: true in the schema, so the incremental sync (which
+ *    only fired on a false -> true transition) never pushed them and they are
+ *    missing from search.
+ *
+ * Removal runs first so a stale hidden-id list can never delete a language
+ * that became visible mid-run: the push reads current state after the delete
+ * has finished, so anything promoted before it is re-indexed.
  *
  * The api-media Algolia key cannot browse the index, so there is no way to ask
- * which objectIDs are really in it; the second pass has to delete a candidate
- * set instead. searchable: false is included unconditionally because pass 1
+ * which objectIDs are really in it; the removal pass has to delete a candidate
+ * set instead. searchable: false is included unconditionally because the push
  * indexes visible languages whether or not they have variants, so a hidden
  * language may be in the index with no variants at all. The hasVideos: false
  * half is scoped to languages with variants: languages that were never indexed
@@ -67,10 +71,10 @@ export async function findHiddenLanguageIds(): Promise<string[]> {
 export async function main(): Promise<void> {
   logger.info('reindexing languages with videos in algolia')
 
-  const { count } = await reindexLanguagesWithVideosInAlgolia(logger)
-
   const hiddenIds = await findHiddenLanguageIds()
   const { removed } = await removeLanguagesFromAlgolia(hiddenIds, logger)
+
+  const { count } = await reindexLanguagesWithVideosInAlgolia(logger)
 
   logger.info(
     `reindexed ${count} languages and removed ${removed} hidden languages in algolia`

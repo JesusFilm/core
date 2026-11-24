@@ -90,7 +90,7 @@ describe('main', () => {
     mockedRemove.mockReset()
   })
 
-  it('reindexes publicly visible languages and removes the hidden ones', async () => {
+  it('removes the hidden languages before reindexing the visible ones', async () => {
     mockedReindex.mockResolvedValue({ count: 3 })
     vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([
       { languageId: '1234' }
@@ -102,8 +102,11 @@ describe('main', () => {
 
     await main()
 
-    expect(mockedReindex).toHaveBeenCalled()
     expect(mockedRemove).toHaveBeenCalledWith(['1234'], expect.anything())
+    expect(mockedReindex).toHaveBeenCalled()
+    expect(mockedRemove.mock.invocationCallOrder[0]).toBeLessThan(
+      mockedReindex.mock.invocationCallOrder[0]
+    )
   })
 
   it('reports zero removed when nothing is hidden', async () => {
