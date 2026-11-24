@@ -659,21 +659,6 @@ export function TemplateGalleryPageList({
     return map
   }, [allTemplates])
 
-  // Every collection a template renders in (a template can be in many).
-  // Built from `templates` — the status-filtered list the cards come from —
-  // so the unsectioned pool below stays consistent with what is drawn.
-  const collectionsByJourneyId = useMemo(() => {
-    const map = new Map<string, TemplateGalleryPage[]>()
-    for (const collection of collections) {
-      for (const template of collection.templates) {
-        const list = map.get(template.id)
-        if (list != null) list.push(collection)
-        else map.set(template.id, [collection])
-      }
-    }
-    return map
-  }, [collections])
-
   // Where each template's home is and which collections hold it, from the
   // unfiltered `memberships` — the source of truth for home vs link.
   const membershipsByJourneyId = useMemo(() => {
@@ -762,8 +747,8 @@ export function TemplateGalleryPageList({
 
   const unsectioned = useMemo<readonly Journey[]>(
     () =>
-      allTemplates.filter((journey) => !collectionsByJourneyId.has(journey.id)),
-    [allTemplates, collectionsByJourneyId]
+      allTemplates.filter((journey) => !membershipsByJourneyId.has(journey.id)),
+    [allTemplates, membershipsByJourneyId]
   )
 
   // All Templates header (NES-1872): sort and bulk actions are scoped to

@@ -1,5 +1,7 @@
 import { type MockedFunction, vi } from 'vitest'
+import { mockDeep } from 'vitest-mock-extended'
 
+import { Journey, TemplateGalleryPage } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -59,6 +61,78 @@ describe('templateGalleryPageBySlug', () => {
     expect(prismaMock.templateGalleryPage.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { slug: 'hello', status: 'published' }
+      })
+    )
+  })
+
+  it('returns only published templates to an unauthenticated visitor', async () => {
+    const journeys = [
+      { id: 'draft-template', status: 'draft' as const },
+      { id: 'published-template', status: 'published' as const }
+    ].map((journey) => ({
+      ...mockDeep<Journey>(),
+      teamId: 'team-1',
+      template: true,
+      deletedAt: null,
+      ...journey
+    }))
+    prismaMock.templateGalleryPage.findFirst.mockImplementation((args) => {
+      const selection = args?.include?.templates
+      const where = typeof selection === 'object' ? selection.where : undefined
+      const journeyWhere = where?.journey
+      const status =
+        journeyWhere != null && 'status' in journeyWhere
+          ? journeyWhere.status
+          : undefined
+      const templates = journeys.filter((journey) => {
+        if (typeof status === 'string') return journey.status === status
+        return Array.isArray(status?.in)
+          ? status.in.includes(journey.status)
+          : true
+      })
+      return Promise.resolve({
+        ...mockDeep<TemplateGalleryPage>(),
+        id: 'p1',
+        teamId: 'team-1',
+        templates: templates.map((journey) => ({ journey }))
+      }) as unknown as ReturnType<
+        typeof prismaMock.templateGalleryPage.findFirst
+      >
+    })
+
+    const result = await publicClient({
+      document: graphql(`
+        query PublicTemplateGalleryPageAssignedTemplates($slug: String!) {
+          templateGalleryPageBySlug(slug: $slug) {
+            templates {
+              id
+            }
+          }
+        }
+      `),
+      variables: { slug: 'hello' }
+    })
+
+    expect(result).toEqual({
+      data: {
+        templateGalleryPageBySlug: {
+          templates: [{ id: 'published-template' }]
+        }
+      }
+    })
+    expect(prismaMock.templateGalleryPage.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        include: expect.objectContaining({
+          templates: expect.objectContaining({
+            where: {
+              journey: {
+                template: true,
+                status: 'published',
+                deletedAt: null
+              }
+            }
+          })
+        })
       })
     )
   })

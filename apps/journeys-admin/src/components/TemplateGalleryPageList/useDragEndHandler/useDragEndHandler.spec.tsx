@@ -397,6 +397,25 @@ describe('useDragEndHandler', () => {
     expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
   })
 
+  it('does not suggest Move or Link when dropping on an existing membership', async () => {
+    const pageA = makeCollection('page-A', [j1])
+    const pageB = makeCollection('page-B', [j1], { links: ['j1'] })
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1]
+    })
+    const { handle } = renderHandler(indexes, [])
+    await act(async () => {
+      await handle(
+        dropEvent(inCollection('page-A', 'j1'), collectionZone('page-B'))
+      )
+    })
+    expect(
+      screen.queryByText('Drop on “Move here” or “Link here”.')
+    ).not.toBeInTheDocument()
+    expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
+  })
+
   it('drop onto a card in another collection is treated like the collection background', async () => {
     const pageA = makeCollection('page-A', [j1])
     const pageB = makeCollection('page-B', [j2])

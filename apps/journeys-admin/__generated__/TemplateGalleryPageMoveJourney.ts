@@ -106,7 +106,7 @@ export interface TemplateGalleryPageMoveJourney_templateGalleryPageMoveJourney {
   createdAt: any;
   updatedAt: any;
   /**
-   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
+   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, draft or published, template-flagged journeys only. A journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
   templates: TemplateGalleryPageMoveJourney_templateGalleryPageMoveJourney_templates[];
   /**

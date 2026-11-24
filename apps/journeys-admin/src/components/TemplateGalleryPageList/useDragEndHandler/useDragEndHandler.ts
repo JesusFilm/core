@@ -418,6 +418,12 @@ export function useDragEndHandler(
           return
         }
         case 'collection': {
+          if (
+            membershipsByJourneyId
+              .get(journeyId)
+              ?.collectionIds.includes(target.collectionId)
+          )
+            return
           // Landed on another collection but between its Move / Link boxes.
           // Never guess: say what to aim for.
           enqueueSnackbar(t('Drop on “Move here” or “Link here”.'), {
