@@ -9,6 +9,7 @@ import {
   sourceTransaction,
   transactionScopedMediaClient
 } from '@core/prisma/media/client'
+import type { ImageSource, VideoSource } from '@core/yoga/mcp/mediaContract'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Exercise the real separately deployed media participant. */
@@ -514,6 +515,126 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     f.receipt(await f.historyAction('redo', saved.historyId!))
     expect((await image()).src).not.toBeNull()
     expect(await image('button')).toMatchObject({ label: 'Updated button' })
+  })
+
+  describe('atomic Card starters', () => {
+    const placement = { position: 'end' }
+    const card = { local: 'starter_card' }
+    const setup = {
+      type: 'step_add',
+      key: 'starter_step',
+      cardKey: card.local,
+      placement
+    }
+    const apply = (kind: string, source: ImageSource | VideoSource) => ({
+      type: 'card_starter_apply',
+      key: 'starter',
+      card,
+      starter: { kind, source }
+    })
+    const readChildren = (parentBlockId: string) =>
+      f.journeys.block.findMany({
+        where: { parentBlockId, deletedAt: null },
+        orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }]
+      })
+    const readCard = (id: string) =>
+      f.journeys.block.findUniqueOrThrow({ where: { id } })
+
+    it.each([
+      ['video', ['VideoBlock']],
+      [
+        'intro',
+        ['TypographyBlock', 'TypographyBlock', 'TypographyBlock', 'ButtonBlock']
+      ],
+      [
+        'poll',
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'RadioQuestionBlock',
+          'TypographyBlock'
+        ]
+      ],
+      [
+        'form',
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'TextResponseBlock',
+          'ButtonBlock',
+          'TypographyBlock'
+        ]
+      ],
+      ['quote', ['TypographyBlock', 'TypographyBlock', 'TypographyBlock']],
+      [
+        'cta',
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'ButtonBlock',
+          'ButtonBlock',
+          'ButtonBlock'
+        ]
+      ]
+    ] as const)(
+      'saves, replays, undoes, and restores the %s starter with the same IDs',
+      async (kind, types) => {
+        const source: ImageSource | VideoSource =
+          kind === 'video' || kind === 'intro'
+            ? { source: 'mux', videoId: f.id('mux') }
+            : { source: 'library', id: f.id('asset') }
+        const input = await f.input([setup, apply(kind, source)])
+        const originalHeading = await image('heading')
+        f.loseNextResponse()
+        expect((await f.edit(input)).json.result?.isError).toBe(true)
+        const receipt = f.receipt(await f.edit(input))
+        expect(await f.counts()).toEqual({
+          operations: 1,
+          history: 1,
+          effects: 1
+        })
+        const target = await readCard(receipt.idMap.starter_card)
+        const content = await readChildren(target.id)
+        expect(
+          content
+            .filter((block) => block.parentOrder !== null)
+            .map((block) => block.typename)
+        ).toEqual(types)
+        if (kind !== 'video') {
+          expect(
+            content.find((block) => block.id === target.coverBlockId)
+          ).toMatchObject({
+            typename: kind === 'intro' ? 'VideoBlock' : 'ImageBlock',
+            parentOrder: null
+          })
+        }
+        expect(await image('heading')).toMatchObject({
+          content: originalHeading.content
+        })
+        f.receipt(await f.historyAction('undo', receipt.historyId!))
+        expect((await readCard(target.id)).deletedAt).toBeInstanceOf(Date)
+        expect(await readChildren(target.id)).toEqual([])
+        f.receipt(await f.historyAction('redo', receipt.historyId!))
+        expect((await readCard(target.id)).coverBlockId).toBe(
+          target.coverBlockId
+        )
+        expect(
+          (await readChildren(target.id)).map((block) => block.id)
+        ).toEqual(content.map((block) => block.id))
+      }
+    )
+
+    it('leaves no recipe content, history, or receipt when the owning source denies the edit', async () => {
+      await reject([
+        setup,
+        apply('quote', { source: 'library', id: f.id('foreign-asset') })
+      ])
+      expect(await f.counts()).toEqual({
+        operations: 0,
+        history: 0,
+        effects: 0
+      })
+    })
   })
 
   it('adds a poll option and its selected image in one reversible save', async () => {

@@ -1,3 +1,4 @@
+import { expandCardStarter } from '@core/yoga/mcp/cardStarterContract'
 import { randomUUID } from 'node:crypto'
 
 import slugify from 'slugify'
@@ -115,7 +116,7 @@ function missing(): never {
 export async function planStructure(
   tx: Prisma.TransactionClient,
   journey: Journey,
-  commands: EditInput['commands'],
+  requestedCommands: EditInput['commands'],
   media?: MediaProjection,
   canEditChat: () => Promise<boolean> = async () => false,
   destinationRoutes?: Parameters<typeof validateFormDestinations>[3],
@@ -125,6 +126,14 @@ export async function planStructure(
   }
 ) {
   const state = await loadStructure(tx, journey)
+  const starters = requestedCommands.filter(
+    (command) => command.type === 'card_starter_apply'
+  )
+  const commands = requestedCommands.flatMap((command) =>
+    command.type === 'card_starter_apply'
+      ? expandCardStarter(command)
+      : [command]
+  )
   const formLocales = new Map<string, Parameters<typeof formLabel>[1]>()
   const locals = new Map<string, string>()
   const duplicateIdMap: Record<string, string> = Object.create(null)
@@ -504,6 +513,19 @@ export async function planStructure(
         child.content
       ).parentOrder = index
     }
+  }
+  const starterCardIds = new Set<string>()
+  for (const { card } of starters) {
+    const target = resolve(card, 'CardBlock')
+    const targetId = idOf(target)
+    stepFor(target)
+    if (
+      starterCardIds.has(targetId) ||
+      target.coverBlockId !== null ||
+      children(state, targetId).length !== 0
+    )
+      fail()
+    starterCardIds.add(targetId)
   }
   for (const command of commands) {
     if (command.type !== 'block_add') continue

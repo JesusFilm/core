@@ -64,8 +64,10 @@ export async function mediaRequest(
 export function hasMediaCommands(request: ReadRequest): boolean {
   return (
     request.tool === 'journey_edit' &&
-    request.input.commands.some((command) =>
-      (mediaCommandNames as readonly string[]).includes(command.type)
+    request.input.commands.some(
+      (command) =>
+        command.type === 'card_starter_apply' ||
+        (mediaCommandNames as readonly string[]).includes(command.type)
     )
   )
 }
@@ -134,6 +136,7 @@ export async function resolveEditMedia(
       if (command.type === 'image_set' && command.source) add(command.source)
       if (command.type === 'video_source_set') add(command.source)
       if (command.type === 'media_slot_set') add(command.media.source)
+      if (command.type === 'card_starter_apply') add(command.starter.source)
       if (command.type === 'video_settings_set') {
         const previous = request.input.commands.find(
           (candidate) =>

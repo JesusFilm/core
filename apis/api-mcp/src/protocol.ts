@@ -174,6 +174,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         'Media commands: ' +
         mediaCommandNames.join(', ') +
         '. image_set preserves omitted metadata and focal fields. image_source_clear retains an ordinary Image. video_source_clear retains an ordinary Video and its playback preferences and layout while clearing the source and owned poster. media_slot_set and media_slot_clear own cover/poster/poll/logo/social references and their children, retaining shared provider assets. video_source_set accepts catalog video plus language, canonical YouTube IDs or ready authorized Mux IDs and optional nested settings for atomic source and playback configuration. video_settings_set enforces fit, timing, captions and background restrictions. ' +
+        'card_starter_apply fills an empty existing Card or a Card created by step_add in the same batch. Supply a unique key prefix and one of video, intro, poll, form, quote or cta with an authorized ready source. Use the recipe’s named text fields to replace sample text. Button and poll routes start empty. The entire starter is one saved edit. ' +
         'Omitted and legacy fields and unrelated Host state are preserved. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL, whole-journey replacement, journey-wide font/theme creation, uploads and generation are unavailable.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
