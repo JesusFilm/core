@@ -5,6 +5,7 @@ import { fingerprint, sameSecret } from '@core/yoga/mcp/readContract'
 import type { AuthConfig } from './config'
 import type { Identity } from './identity'
 import {
+  AuthorizationChanged,
   type Database,
   audit,
   captureGates,
@@ -25,6 +26,8 @@ const gatesSchema = z.array(
   z.object({ id: z.string(), generation: z.number().int() })
 )
 
+export class AuditedMediaDenial extends Error {}
+
 /** Media owns executor receipts. Only a committed bounded action or a positive
  * owning fence settles its permit. Provider absence and elapsed time do not.
  */
@@ -33,6 +36,21 @@ export function createMediaJobAuthority(
   db: Database,
   identity: Identity
 ) {
+  async function auditGrantDenial<T>(
+    action: z.infer<typeof mediaAuditAction>,
+    identifiers: { userId: string; clientId: string; journeyIds: string[] },
+    operation: () => Promise<T>
+  ): Promise<T> {
+    try {
+      return await operation()
+    } catch (error) {
+      if (!(error instanceof AuthorizationChanged)) throw error
+      // The authorization transaction has rolled back before this audit commits.
+      await audit(db, action, 'denied', identifiers)
+      throw new AuditedMediaDenial('Access denied')
+    }
+  }
+
   return async (path: string, authorization: string, body: unknown) => {
     if (
       !config.AUTH_READ_MEDIA_SECRET ||
@@ -80,54 +98,72 @@ export function createMediaJobAuthority(
         })
         .strict()
         .parse(body)
-      const gates = await captureGates(db, [
-        `account:${input.userId}`,
-        `connection:${input.connectionId}`,
-        `journey:${input.journeyId}`,
-        `team:${input.teamId}`,
-        `user-journey:${input.userId}:${input.journeyId}`,
-        `user-team:${input.userId}:${input.teamId}`
-      ])
-      return db.$transaction(async (tx) => {
-        await lockGates(tx, gates)
-        await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${input.connectionId} FOR SHARE`
-        const connection = await tx.agentConnection.findUniqueOrThrow({
-          where: { id: input.connectionId }
-        })
-        const now = await databaseTime(tx)
-        if (
-          connection.userId !== input.userId ||
-          connection.environment !== config.AUTH_ENVIRONMENT ||
-          connection.revokedAt ||
-          connection.expiresAt <= now ||
-          connection.mode !== 'edit' ||
-          !connection.journeyIds.includes(input.journeyId)
-        )
-          throw new Error('Access denied')
-        await tx.readExecutor.create({
-          data: { id: input.executorId, executor: 'media' }
-        })
-        const permit = await tx.readPermit.create({
-          data: {
-            connectionId: connection.id,
-            grantVersion: connection.version,
-            requestId: input.executorId,
-            requestHash: input.requestHash,
-            stage: `media_${input.action}`,
-            executor: 'media',
-            executorId: input.executorId,
-            journeyIds: [input.journeyId],
-            gates,
-            preparedAt: now
-          }
-        })
-        return {
-          permitId: permit.id,
-          clientId: connection.clientId,
-          grantVersion: connection.version,
-          permissionHash: fingerprint(gates)
-        }
+      const verified = await db.agentConnection.findUniqueOrThrow({
+        where: { id: input.connectionId }
       })
+      if (
+        verified.userId !== input.userId ||
+        verified.environment !== config.AUTH_ENVIRONMENT
+      )
+        throw new Error('Access denied')
+      return auditGrantDenial(
+        mediaAuditAction.parse(`media_${input.action}`),
+        {
+          userId: verified.userId,
+          clientId: verified.clientId,
+          journeyIds: verified.journeyIds.filter((id) => id === input.journeyId)
+        },
+        async () => {
+          const gates = await captureGates(db, [
+            `account:${input.userId}`,
+            `connection:${input.connectionId}`,
+            `journey:${input.journeyId}`,
+            `team:${input.teamId}`,
+            `user-journey:${input.userId}:${input.journeyId}`,
+            `user-team:${input.userId}:${input.teamId}`
+          ])
+          return db.$transaction(async (tx) => {
+            await lockGates(tx, gates)
+            await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${input.connectionId} FOR SHARE`
+            const connection = await tx.agentConnection.findUniqueOrThrow({
+              where: { id: input.connectionId }
+            })
+            const now = await databaseTime(tx)
+            if (
+              connection.userId !== input.userId ||
+              connection.environment !== config.AUTH_ENVIRONMENT ||
+              connection.revokedAt ||
+              connection.expiresAt <= now ||
+              connection.mode !== 'edit' ||
+              !connection.journeyIds.includes(input.journeyId)
+            )
+              throw new AuthorizationChanged('Access denied')
+            await tx.readExecutor.create({
+              data: { id: input.executorId, executor: 'media' }
+            })
+            const permit = await tx.readPermit.create({
+              data: {
+                connectionId: connection.id,
+                grantVersion: connection.version,
+                requestId: input.executorId,
+                requestHash: input.requestHash,
+                stage: `media_${input.action}`,
+                executor: 'media',
+                executorId: input.executorId,
+                journeyIds: [input.journeyId],
+                gates,
+                preparedAt: now
+              }
+            })
+            return {
+              permitId: permit.id,
+              clientId: connection.clientId,
+              grantVersion: connection.version,
+              permissionHash: fingerprint(gates)
+            }
+          })
+        }
+      )
     }
     const input = z.object({ permitId: z.string().uuid() }).strict().parse(body)
     const permit = await db.readPermit.findUniqueOrThrow({
@@ -162,33 +198,42 @@ export function createMediaJobAuthority(
       authTime: connection.firebaseAuthTime,
       createdAt: connection.firebaseCreatedAt
     })
-    return db.$transaction(async (tx) => {
-      await lockGates(tx, gatesSchema.parse(permit.gates))
-      await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`
-      await tx.$queryRaw`SELECT id FROM "ReadPermit" WHERE id = ${permit.id} FOR UPDATE`
-      const current = await tx.agentConnection.findUniqueOrThrow({
-        where: { id: connection.id }
-      })
-      const now = await databaseTime(tx)
-      if (
-        current.version !== permit.grantVersion ||
-        current.revokedAt ||
-        current.expiresAt <= now ||
-        current.mode !== 'edit' ||
-        permit.journeyIds.some((id) => !current.journeyIds.includes(id))
-      )
-        throw new Error('Access denied')
-      const accepted = await tx.readPermit.updateMany({
-        where: { id: permit.id, status: 'prepared' },
-        data: { status: 'accepted', acceptedAt: now }
-      })
-      if (accepted.count !== 1) throw new Error('Access denied')
-      await audit(tx, action, 'allowed', {
-        userId: current.userId,
-        clientId: current.clientId,
+    return auditGrantDenial(
+      action,
+      {
+        userId: connection.userId,
+        clientId: connection.clientId,
         journeyIds: permit.journeyIds
-      })
-      return { accepted: true }
-    })
+      },
+      () =>
+        db.$transaction(async (tx) => {
+          await lockGates(tx, gatesSchema.parse(permit.gates))
+          await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`
+          await tx.$queryRaw`SELECT id FROM "ReadPermit" WHERE id = ${permit.id} FOR UPDATE`
+          const current = await tx.agentConnection.findUniqueOrThrow({
+            where: { id: connection.id }
+          })
+          const now = await databaseTime(tx)
+          if (
+            current.version !== permit.grantVersion ||
+            current.revokedAt ||
+            current.expiresAt <= now ||
+            current.mode !== 'edit' ||
+            permit.journeyIds.some((id) => !current.journeyIds.includes(id))
+          )
+            throw new AuthorizationChanged('Access denied')
+          const accepted = await tx.readPermit.updateMany({
+            where: { id: permit.id, status: 'prepared' },
+            data: { status: 'accepted', acceptedAt: now }
+          })
+          if (accepted.count !== 1) throw new Error('Access denied')
+          await audit(tx, action, 'allowed', {
+            userId: current.userId,
+            clientId: current.clientId,
+            journeyIds: permit.journeyIds
+          })
+          return { accepted: true }
+        })
+    )
   }
 }

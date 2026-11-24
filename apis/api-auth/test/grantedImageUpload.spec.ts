@@ -906,6 +906,98 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     }
   )
 
+  it.each(
+    (['preparation', 'acceptance'] as const).flatMap((stage) =>
+      (
+        [
+          'expired',
+          'view-only',
+          'revoked',
+          'out-of-scope',
+          'withdrawn'
+        ] as const
+      ).map((reason) => [stage, reason] as const)
+    )
+  )(
+    'audits denied Admin status at %s for originating grant %s',
+    async (stage, reason) => {
+      const sentinel = 'journey-prompt-file-token-raw-error-sentinel.png'
+      const job = await start(manifest(await fileBytes(), { name: sentinel }))
+      const id = String(job.jobId)
+      const connection = await connectionFor(id)
+      const stored = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id }
+      })
+      const existingIds = (await f.auth.securityAudit.findMany()).map(
+        (event) => event.id
+      )
+      const existingPermitIds = (await f.auth.readPermit.findMany()).map(
+        (permit) => permit.id
+      )
+      const interrupt = async () => {
+        if (reason === 'withdrawn') {
+          await withdraw(id)
+          return
+        }
+        await f.auth.agentConnection.update({
+          where: { id: connection.id },
+          data:
+            reason === 'expired'
+              ? { expiresAt: new Date(Date.now() - 1) }
+              : reason === 'view-only'
+                ? { mode: 'view', version: { increment: 1 } }
+                : reason === 'revoked'
+                  ? { revokedAt: new Date(), version: { increment: 1 } }
+                  : { journeyIds: [], version: { increment: 1 } }
+        })
+      }
+      if (stage === 'preparation') await interrupt()
+      else beforeAccept = interrupt
+
+      expect((await browser(id)).status).toBe(403)
+      const events = await f.auth.securityAudit.findMany({
+        where: { id: { notIn: existingIds }, outcome: 'denied' }
+      })
+      expect(events).toHaveLength(1)
+      expect(events[0]).toEqual({
+        id: expect.any(String),
+        action: 'media_release',
+        outcome: 'denied',
+        userId: connection.userId,
+        clientId: connection.clientId,
+        journeyIds:
+          stage === 'preparation' && reason === 'out-of-scope'
+            ? []
+            : [f.journeyId],
+        occurredAt: expect.any(Date),
+        expiresAt: expect.any(Date)
+      })
+      expect(
+        events[0].expiresAt.getTime() - events[0].occurredAt.getTime()
+      ).toBe(90 * 86400000)
+      expect(JSON.stringify(events)).not.toContain(sentinel)
+      expect(JSON.stringify(events)).not.toContain(String(job.ingressTicket))
+      expect(
+        await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      ).toEqual(stored)
+      expect(dispatchCount).toBe(0)
+      const permits = await f.auth.readPermit.findMany({
+        where: {
+          connectionId: connection.id,
+          stage: 'media_release',
+          id: { notIn: existingPermitIds }
+        }
+      })
+      expect(permits).toHaveLength(stage === 'preparation' ? 0 : 1)
+      for (const permit of permits) {
+        expect(permit.acceptedAt).toBeNull()
+        expect(permit.status).toBe(
+          reason === 'withdrawn' ? 'cancelled' : 'settled'
+        )
+      }
+    }
+  )
+
   it('rejects untrusted or caller-supplied denial audit identifiers', async () => {
     const job = await start()
     const connection = await connectionFor(String(job.jobId))
@@ -917,13 +1009,24 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     })
     const mediaAudits = { where: { action: { startsWith: 'media_' } } }
     const before = await f.auth.securityAudit.count(mediaAudits)
-    for (const [secret, body] of [
-      ['untrusted', { permitId: permit.id }],
-      [mediaSecret, { permitId: permit.id, userId: 'forged-user' }],
-      [mediaSecret, { permitId: foreignPermit.id }]
+    const prepare = {
+      connectionId: connection.id,
+      userId: connection.userId,
+      journeyId: f.journeyId,
+      teamId: 'structure-team-alice',
+      executorId: randomUUID(),
+      action: 'release',
+      requestHash: imageHash(Buffer.from('controlled-audit-request'))
+    }
+    for (const [action, secret, body] of [
+      ['deny', 'untrusted', { permitId: permit.id }],
+      ['deny', mediaSecret, { permitId: permit.id, userId: 'forged-user' }],
+      ['deny', mediaSecret, { permitId: foreignPermit.id }],
+      ['prepare', 'untrusted', prepare],
+      ['prepare', mediaSecret, { ...prepare, userId: 'forged-user' }]
     ] as const) {
       const response = await fetch(
-        authorityUrl + '/internal/reads/media-jobs/deny',
+        authorityUrl + '/internal/reads/media-jobs/' + action,
         {
           method: 'POST',
           headers: {
@@ -1516,6 +1619,9 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       const before = await media.mcpMediaJob.findUniqueOrThrow({
         where: { id }
       })
+      const existingAuditIds = (await f.auth.securityAudit.findMany()).map(
+        (event) => event.id
+      )
       let unlock!: () => void
       let locked!: () => void
       const acquired = new Promise<void>((resolve) => {
@@ -1552,7 +1658,9 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
                 )
               : action === 'cancel'
                 ? jobs.cancel(context, id, randomUUID())
-                : jobs.result(context, id)
+                : browser(id).then((response) => {
+                    if (response.status !== 200) throw new Error('Denied')
+                  })
       ).then(
         () => 'accepted',
         () => 'denied'
@@ -1589,6 +1697,19 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       })
       expect(permits[0].acceptedAt).toBeNull()
       expect(permits[0].status).toBe('settled')
+      expect(
+        await f.auth.securityAudit.findMany({
+          where: { id: { notIn: existingAuditIds } }
+        })
+      ).toEqual([
+        expect.objectContaining({
+          action: 'media_' + action,
+          outcome: 'denied',
+          userId: stored.userId,
+          clientId: (await connectionFor(id)).clientId,
+          journeyIds: [stored.journeyId]
+        })
+      ])
     }
   )
 
