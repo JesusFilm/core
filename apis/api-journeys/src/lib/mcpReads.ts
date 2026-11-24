@@ -670,7 +670,10 @@ async function snapshot(
       ...base,
       destinations: await eligibleDestinations(tx, journey, {
         userId: claims.subject,
-        routes: destinationRoutes
+        routes: destinationRoutes,
+        // Reserve time for fresh acceptance and settlement before output's
+        // five-second deadline, regardless of the integration count.
+        signal: AbortSignal.timeout(2000)
       }),
       complete: true,
       nextCursor: null

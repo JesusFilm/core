@@ -22,25 +22,30 @@ describe('form integration', () => {
       let revokeAfterRouteRead = false
       let routeIds = ['route-a', 'route-b']
       let stalled = false
+      let routeDelayMs = 0
       const provider = createServer((req, res) => {
         calls.push(`${req.method} ${req.url}`)
         if (stalled) return
         const authorized =
           req.headers['access-id'] === 'controlled-access-id' &&
           req.headers['access-secret'] === 'controlled-provider-secret'
-        res.writeHead(available && authorized ? 200 : 401, {
-          'Content-Type': 'application/json'
-        })
-        res.end(
-          JSON.stringify(
-            routeIds.map((id) => ({
-              id,
-              name: `Synthetic ${id}`,
-              privateResponse: 'never expose'
-            }))
+        const respond = () => {
+          res.writeHead(available && authorized ? 200 : 401, {
+            'Content-Type': 'application/json'
+          })
+          res.end(
+            JSON.stringify(
+              routeIds.map((id) => ({
+                id,
+                name: `Synthetic ${id}`,
+                privateResponse: 'never expose'
+              }))
+            )
           )
-        )
-        if (revokeAfterRouteRead) available = false
+          if (revokeAfterRouteRead) available = false
+        }
+        if (routeDelayMs) setTimeout(respond, routeDelayMs)
+        else respond()
       })
 
       beforeAll(async () => {
@@ -113,6 +118,7 @@ describe('form integration', () => {
         revokeAfterRouteRead = false
         routeIds = ['route-a', 'route-b']
         stalled = false
+        routeDelayMs = 0
         calls.length = 0
         await f.journeys.integration.deleteMany({
           where: { teamId: 'structure-team-alice' }
@@ -1174,6 +1180,85 @@ describe('form integration', () => {
         ])
           expect(result.text).not.toContain(value)
         expect(result.text).toContain('response_set')
+      })
+
+      it('returns all six slow successful destination lookups through protected MCP output', async () => {
+        const configuration = await f.journeys.integration.findUniqueOrThrow({
+          where: { id: integrationId }
+        })
+        const integrationIds = [integrationId]
+        for (let index = 0; index < 5; index++) {
+          const id = f.id(`catalog-integration-${index}`)
+          await f.journeys.integration.create({
+            data: { ...configuration, id }
+          })
+          integrationIds.push(id)
+        }
+        routeDelayMs = 1000
+        const revision = await f.revision()
+        const started = performance.now()
+        const result = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'form_destinations',
+          revision
+        })
+        expect(result.status, result.text).toBe(200)
+        expect(result.json.result?.isError, result.text).not.toBe(true)
+        expect(result.json.result?.structuredContent).toMatchObject({
+          revision,
+          complete: true,
+          nextCursor: null,
+          destinations: integrationIds
+            .map((id) => ({
+              integrationId: id,
+              name: 'Growth Spaces',
+              routes: [
+                { id: 'route-a', name: 'Synthetic route-a' },
+                { id: 'route-b', name: 'Synthetic route-b' }
+              ]
+            }))
+            .sort((a, b) => a.integrationId.localeCompare(b.integrationId))
+        })
+        expect(performance.now() - started).toBeLessThan(5000)
+        // Fresh provider checks run for both initial read and protected output.
+        expect(calls).toHaveLength(12)
+        expect(result.text).not.toContain('controlled-provider-secret')
+        expect(result.text).not.toContain('privateResponse')
+      })
+
+      it('cancels stalled catalog lookups within one shared budget and releases no choices', async () => {
+        const configuration = await f.journeys.integration.findUniqueOrThrow({
+          where: { id: integrationId }
+        })
+        for (let index = 0; index < 5; index++)
+          await f.journeys.integration.create({
+            data: { ...configuration, id: f.id(`catalog-integration-${index}`) }
+          })
+        stalled = true
+        const started = performance.now()
+        const result = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'form_destinations'
+        })
+        expect(result.status).toBe(200)
+        expect(result.json.result?.isError, result.text).toBe(true)
+        expect(performance.now() - started).toBeLessThan(5000)
+        expect(calls).toHaveLength(6)
+        expect(result.text).not.toContain(integrationId)
+        expect(result.text).not.toContain('route-a')
+      })
+
+      it('withholds the catalog when provider access is revoked before protected output', async () => {
+        revokeAfterRouteRead = true
+        const result = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'form_destinations'
+        })
+        expect(result.status).toBe(500)
+        expect(result.json).toEqual({ error: 'Request failed' })
+        expect(calls).toEqual(['GET /routes', 'GET /routes'])
+        expect(result.text).not.toContain(integrationId)
+        expect(result.text).not.toContain('route-a')
       })
 
       it('reads each saved destination at its revision and distinguishes fields using different routes', async () => {

@@ -81,28 +81,26 @@ export async function eligibleDestinations(
       type: 'growthSpaces',
       ...(integrationId ? { id: integrationId } : {})
     },
-    take: 101
+    take: 101,
+    orderBy: { id: 'asc' }
   })
   if (integrations.length > 100) throw new Error('LIMIT_EXCEEDED')
-  const result: Array<{
-    integrationId: string
-    name: string
-    routes: z.infer<typeof routes>
-  }> = []
-  for (const integration of integrations) {
-    if (!integration.accessId || integration.oauthStale) continue
-    result.push({
-      integrationId: integration.id,
-      name: 'Growth Spaces',
-      routes: routes.parse(
-        await (access.routes ?? readDestinationRoutes)(
-          integration,
-          access.signal
+  // The catalog is capped above. Parallel reads share the caller's deadline,
+  // and Promise.all preserves the same order during protected output checks.
+  return await Promise.all(
+    integrations
+      .filter((integration) => integration.accessId && !integration.oauthStale)
+      .map(async (integration) => ({
+        integrationId: integration.id,
+        name: 'Growth Spaces',
+        routes: routes.parse(
+          await (access.routes ?? readDestinationRoutes)(
+            integration,
+            access.signal
+          )
         )
-      )
-    })
-  }
-  return result
+      }))
+  )
 }
 
 /** Return only currently usable saved pairs, without hiding the rest of a draft
