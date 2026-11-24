@@ -7,17 +7,21 @@
  *    default to hasVideos: true in the schema, so the incremental sync (which
  *    only fired on a false -> true transition) never pushed them and they are
  *    missing from search.
- * 2. Remove languages that have video content but are not publicly visible,
- *    either hidden by an operator (searchable: false) or not yet promoted
- *    (hasVideos: false). The sync is otherwise upsert-only, so anything indexed
- *    while it was visible stays searchable after being turned off.
+ * 2. Remove languages that are not publicly visible: every language hidden by
+ *    an operator (searchable: false), plus languages that have video content
+ *    but are flagged hasVideos: false. The sync is otherwise upsert-only, so
+ *    anything indexed while it was visible stays searchable after being turned
+ *    off.
  *
- * The second pass is scoped to languages that actually have variants because
- * the api-media Algolia key cannot browse the index, so there is no way to ask
- * which objectIDs are really in it. Languages that were never indexed are the
- * overwhelming majority and deleting them would be ~90k pointless operations;
- * deleting an absent objectID is a harmless no-op, so the smaller candidate set
- * costs nothing in correctness.
+ * The api-media Algolia key cannot browse the index, so there is no way to ask
+ * which objectIDs are really in it; the second pass has to delete a candidate
+ * set instead. searchable: false is included unconditionally because pass 1
+ * indexes visible languages whether or not they have variants, so a hidden
+ * language may be in the index with no variants at all. The hasVideos: false
+ * half is scoped to languages with variants: languages that were never indexed
+ * are the overwhelming majority and deleting them would be ~90k pointless
+ * operations. Deleting an absent objectID is a harmless no-op, so the smaller
+ * candidate set costs nothing in correctness.
  *
  * Errors are not caught: the run stops on the first failing batch and exits
  * non-zero. Re-running is safe, because saveObjects upserts derived data and
@@ -36,22 +40,23 @@ import {
 import { logger } from '../../logger'
 
 /**
- * Languages that have at least one video variant but must not be publicly
- * visible -- either hidden by an operator (searchable: false) or not yet
- * promoted (hasVideos: false).
+ * Languages that may be in the index but must not be publicly visible: every
+ * language hidden by an operator (searchable: false), whether or not it has
+ * variants, plus languages that have at least one video variant but are
+ * flagged hasVideos: false.
  */
 export async function findHiddenLanguageIds(): Promise<string[]> {
   const withVariants = await mediaPrisma.videoVariant.groupBy({
     by: ['languageId']
   })
-  const candidateIds = withVariants.map(({ languageId }) => languageId)
-
-  if (candidateIds.length === 0) return []
+  const idsWithVariants = withVariants.map(({ languageId }) => languageId)
 
   const hidden = await languagesPrisma.language.findMany({
     where: {
-      id: { in: candidateIds },
-      OR: [{ hasVideos: false }, { searchable: false }]
+      OR: [
+        { searchable: false },
+        { id: { in: idsWithVariants }, hasVideos: false }
+      ]
     },
     select: { id: true }
   })

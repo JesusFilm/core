@@ -8,10 +8,13 @@
  *
  * This preserves current behaviour exactly. A language that has video content
  * but is flagged hasVideos: false is hidden today, so it gets searchable: false
- * and stays hidden once hasVideos is corrected by the normal path.
+ * and stays hidden.
  *
- * hasVideos is deliberately left alone -- the variant hook will set it to true
- * on its own, and searchable: false keeps the language hidden either way.
+ * hasVideos is corrected to true in the same write. The variant hook only sets
+ * it when a language gets its first variant, and these languages already have
+ * variants, so nothing else would ever fix it. Correcting it here makes
+ * searchable the single switch: to un-hide a backfilled language later, set
+ * searchable = true and run reindex-languages-algolia.
  *
  * Languages with no variants are not touched: hasVideos: false is simply
  * accurate for them, and they should become visible if they ever gain content.
@@ -55,7 +58,7 @@ async function main(): Promise<void> {
 
   for (const language of hidden) {
     logger.info(
-      `${apply ? 'marking' : 'would mark'} language ${language.id} (${language.iso3 ?? 'no iso3'}) searchable: false`
+      `${apply ? 'marking' : 'would mark'} language ${language.id} (${language.iso3 ?? 'no iso3'}) searchable: false, hasVideos: true`
     )
   }
 
@@ -68,10 +71,10 @@ async function main(): Promise<void> {
 
   const { count } = await languagesPrisma.language.updateMany({
     where: { id: { in: hidden.map(({ id }) => id) } },
-    data: { searchable: false }
+    data: { searchable: false, hasVideos: true }
   })
 
-  logger.info(`marked ${count} languages searchable: false`)
+  logger.info(`marked ${count} languages searchable: false, hasVideos: true`)
 }
 
 if (require.main === module) {

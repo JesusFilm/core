@@ -76,7 +76,7 @@ describe('backfill-language-searchable', () => {
     expect(languagesPrismaMock.language.updateMany).not.toHaveBeenCalled()
   })
 
-  it('--apply marks the hidden languages searchable: false', async () => {
+  it('--apply marks the hidden languages searchable: false and corrects hasVideos', async () => {
     process.argv.push('--apply')
     vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([
       { languageId: '1234' }
@@ -90,7 +90,7 @@ describe('backfill-language-searchable', () => {
 
     expect(languagesPrismaMock.language.updateMany).toHaveBeenCalledWith({
       where: { id: { in: ['1234'] } },
-      data: { searchable: false }
+      data: { searchable: false, hasVideos: true }
     })
   })
 })

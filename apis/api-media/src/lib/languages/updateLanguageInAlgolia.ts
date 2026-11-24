@@ -108,10 +108,11 @@ export function buildAlgoliaLanguageRecord(
   return {
     objectID: language.id,
     // Numeric to match every other record in the index and the `languageId:
-    // number` contract arclight declares in _resources/index.ts. Prisma types
-    // Language.id as a String, so it needs coercing here. Every id in the index
-    // is a numeric string, and arclight already relies on that via
-    // `Number(hit.objectID)`, so this cannot produce NaN in practice.
+    // number` type arclight declares for hits in _resources/index.ts (arclight
+    // itself reads Number(hit.objectID), not this field). Prisma types
+    // Language.id as a String, so it needs coercing here. Language ids are
+    // numeric strings by convention; a non-numeric id would serialise as
+    // `languageId: null`.
     languageId: Number(language.id),
     bcp47: language.bcp47,
     iso3: language.iso3,

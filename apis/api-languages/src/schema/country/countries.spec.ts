@@ -1,10 +1,6 @@
 import omit from 'lodash/omit'
 
-import {
-  Country,
-  CountryLanguage,
-  LanguageRole
-} from '@core/prisma/languages/client'
+import { Country, LanguageRole } from '@core/prisma/languages/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
