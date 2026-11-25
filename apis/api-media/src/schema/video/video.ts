@@ -918,6 +918,7 @@ builder.mutationFields((t) => ({
       // that recompute actually changed this container's value, cascade the
       // change upward through its own parents to the root of the container
       // hierarchy.
+      let languageSyncFailed = false
       if (input.childIds !== undefined) {
         try {
           const { before, after } = await updateVideoAvailableLanguages(
@@ -933,12 +934,12 @@ builder.mutationFields((t) => ({
             'availableLanguages recompute error'
           )
           // The children relation is already updated, so the stored value is
-          // stale until this recompute succeeds. Surface that to the caller
-          // rather than reporting success; re-running the same update
-          // retries the recompute.
-          throw new GraphQLError(
-            `Video ${video.id} was updated but its availableLanguages could not be recomputed; retry the update`
-          )
+          // stale until this recompute succeeds. Remember the failure and
+          // report it once the rest of the mutation has run: throwing here
+          // would skip the parent-variant, Algolia and cache work below for
+          // an update that has already committed, and a retry would not
+          // redo it (the published flag no longer differs).
+          languageSyncFailed = true
         }
       }
 
@@ -1004,6 +1005,12 @@ builder.mutationFields((t) => ({
       try {
         await videoCacheReset(video.id)
       } catch {}
+
+      if (languageSyncFailed) {
+        throw new GraphQLError(
+          `Video ${video.id} was updated but its availableLanguages could not be recomputed; retry the update`
+        )
+      }
 
       return video
     }

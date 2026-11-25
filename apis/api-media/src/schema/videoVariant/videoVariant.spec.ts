@@ -3389,10 +3389,11 @@ describe('videoVariant', () => {
           'jesus-series',
           '19372'
         )
-        // The sync is skipped for the parent that already lists the language,
-        // and a placeholder create whose recompute leaves the parent's value
-        // unchanged does not cascade: only the series' sync does.
-        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledTimes(1)
+        // The sync is skipped for the parent that already lists the language
+        // (one cascade, from the series' sync). Each placeholder create still
+        // cascades even though its recompute leaves the parent's own value
+        // unchanged, so a failed earlier cascade is always repaired here.
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledTimes(3)
         expect(prismaMock.videoVariant.create).toHaveBeenCalledTimes(2)
       })
 

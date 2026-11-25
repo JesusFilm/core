@@ -3309,6 +3309,9 @@ describe('video', () => {
 
         expect(result).toHaveProperty('errors')
         expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
+        // The update itself committed, so the rest of the mutation (Algolia
+        // sync) still ran instead of being skipped by the language failure.
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalled()
       })
 
       it('does not cascade when childIds changes but the recomputed value is unchanged', async () => {

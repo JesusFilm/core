@@ -132,7 +132,7 @@ export async function createEmptyParentVariant(
   // values) rather than hand-rolling the union here. Both happen in one
   // transaction: a recompute that throws must not leave the variant row
   // committed with the parent's availableLanguages stale and no retry.
-  const { value: newVariant, changed } = await withAvailableLanguagesRecompute(
+  const { value: newVariant } = await withAvailableLanguagesRecompute(
     parentVideoId,
     async (tx) =>
       await tx.videoVariant.create({
@@ -159,10 +159,12 @@ export async function createEmptyParentVariant(
   // regardless of caller. The variant and the parent's own recompute already
   // committed above, so a cascade failure here must not make this function -
   // and by extension variant creation - appear to have failed.
-  // Skipped when the parent's own value did not change: nothing above it can
-  // differ, so the cascade (and its Algolia and cache work) would be wasted.
+  // Always cascade here, even when the recompute left the parent's own value
+  // unchanged: handleParentVariantCreation may already have written the
+  // language onto the parent (syncParentLanguage), and if that call's own
+  // cascade failed, this is the only place left that repairs the ancestors.
   try {
-    if (changed) await updateParentCollectionLanguages(parentVideoId)
+    await updateParentCollectionLanguages(parentVideoId)
   } catch (error) {
     logger.error(
       { error, parentVideoId, languageId },
