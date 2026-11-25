@@ -65,6 +65,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let mediaLibrary = true
   let providerReady = true
   let providerUnknown = false
+  let providerStatusUnavailable = false
   let jobs: MediaJobs
   let createWorker: (
     uploadLimit?: string,
@@ -110,6 +111,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       return providerReady ? 'ready' : 'processing'
     },
     async status(id) {
+      if (providerStatusUnavailable)
+        throw new Error('Controlled provider status outage')
       return providerUnknown ? 'unknown' : (providerAssets.get(id) ?? 'unknown')
     }
   }
@@ -130,11 +133,16 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   const internalSecret =
     'controlled-upload-internal-10560-at-least-32-characters'
   const mediaSecret = 'controlled-upload-authority-10560-at-least-32-characters'
-  function configureRuntime(...settings: Parameters<typeof mediaRuntime>) {
+  function configureRuntime(
+    env: Parameters<typeof mediaRuntime>[0],
+    dependencies: Parameters<typeof mediaRuntime>[1]
+  ) {
+    const uploads = dependencies?.uploads
+    if (!uploads) throw new Error('Missing upload dependencies for the fixture')
     createWorker = (uploadLimit, adapter = 'controlled') =>
       mediaRuntime(
         {
-          ...settings[0],
+          ...env,
           CLOUDFLARE_ACCOUNT_ID: 'controlled-account',
           CLOUDFLARE_IMAGES_TOKEN: 'images-credential-sentinel',
           CLOUDFLARE_WORKERS_AI_TOKEN: 'ai-credential-sentinel',
@@ -142,14 +150,14 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
           MCP_IMAGE_GENERATION_ENABLED: String(generationEnabled)
         },
         {
-          ...settings[1],
+          ...dependencies,
           uploads: {
-            ...settings[1]?.uploads,
+            ...uploads,
             generation: adapter === 'cloudflare' ? undefined : generation
           }
         }
       ).jobs!
-    return mediaRuntime(...settings)
+    return mediaRuntime(env, dependencies)
   }
   const f = structureFixture({
     issue: process.env.MCP_MEDIA_TEST_ISSUE ?? '10560',
@@ -273,6 +281,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     providerReady = true
     mediaLibrary = true
     providerUnknown = false
+    providerStatusUnavailable = false
     objects.clear()
     providerAssets.clear()
     await f.journeys.block.create({
@@ -734,7 +743,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       const key = randomUUID()
       const id = String((await generate(key)).jobId)
       loseDispatch = true
-      providerUnknown = true
+      providerStatusUnavailable = true
       await processCompletedTransfers()
       expect((await status(id)).state).toBe('reconciling')
       expect((await generate(key)).jobId).toBe(id)
@@ -759,7 +768,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         })
       ).toMatchObject({ status: 'pending' })
       expect((await browser(id)).status).toBe(403)
-      providerUnknown = false
+      providerStatusUnavailable = false
       await media.mcpMediaJob.update({
         where: { id },
         data: { metadata: { attempt: 1, nextAt: 0 } }
@@ -2142,9 +2151,15 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     const id = String(job.jobId)
     await upload(id, await fileBytes())
     loseDispatch = true
+    providerStatusUnavailable = true
     f.loseNextResponse()
     await f.call('journey_media_status', { journeyId: f.journeyId, jobId: id })
-    const ready = await processedStatus(id)
+    expect((await processedStatus(id)).state).toBe('reconciling')
+    expect((await browser(id, 'POST', 'resume')).status).toBe(200)
+    expect((await status(id)).state).toBe('reconciling')
+    providerStatusUnavailable = false
+    expect((await browser(id, 'POST', 'resume')).status).toBe(200)
+    const ready = await status(id)
     expect(ready.state).toBe('ready')
     expect(dispatchCount).toBe(1)
     const cancelled = content(
