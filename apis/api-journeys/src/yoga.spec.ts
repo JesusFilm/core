@@ -64,4 +64,13 @@ describe('yoga response cache', () => {
     for (const coordinate of campaignQueryCoordinates)
       expect(ttlPerSchemaCoordinate).toHaveProperty([coordinate], 0)
   })
+
+  it("never caches a Campaign's Plausible token", () => {
+    // The shared-link token opens the Campaign Report's dashboard; any
+    // response carrying it must come from the resolver's campaign Read.
+    expect(ttlPerSchemaCoordinate).toHaveProperty(
+      ['Campaign.plausibleToken'],
+      0
+    )
+  })
 })

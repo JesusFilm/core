@@ -9,9 +9,13 @@ import {
   campaignImageSource,
   focalImageSx
 } from '@core/journeys/ui/Campaign'
+import { videoCountLabel } from '@core/journeys/ui/Campaign/CampaignVideo'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
+import { CampaignStringKey } from '../../../../../__generated__/globalTypes'
+import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { campaignStringText } from '../../utils/campaignStringText'
 import { EditorNote } from '../EditorNote'
 
 /** The title a Media Slot video shows: the override (or text captured at pick), else the Watch video's own. */
@@ -33,13 +37,17 @@ interface CanvasMediaProps {
 /**
  * A Media Slot as the editor previews it: an image, a video's poster with
  * its title (and "<n> videos" for a Watch video with children), or a dashed
- * placeholder pointing at Edit when the slot is empty.
+ * placeholder pointing at Settings when the slot is empty.
  */
 export function CanvasMedia({
   media,
   stacked = false
 }: CanvasMediaProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    campaign,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
 
   if (media?.__typename === 'CampaignImageBlock') {
     const picture = campaignImageSource(media)
@@ -72,6 +80,12 @@ export function CanvasMedia({
       media.mediaVideo?.__typename === 'Video'
         ? media.mediaVideo.childrenCount
         : 0
+    const videosWord = campaignStringText(
+      campaign,
+      CampaignStringKey.videos,
+      previewLanguageId,
+      ''
+    )
     return (
       <Box
         data-testid="CanvasMediaVideo"
@@ -119,7 +133,7 @@ export function CanvasMedia({
           </Typography>
           {childrenCount > 0 && (
             <Typography variant="caption">
-              {t('{{count}} videos', { count: childrenCount })}
+              {videoCountLabel(childrenCount, videosWord, t)}
             </Typography>
           )}
         </Stack>
@@ -141,7 +155,7 @@ export function CanvasMedia({
         color: 'var(--campaign-band-muted)'
       }}
     >
-      <EditorNote>{t('Add media from Edit')}</EditorNote>
+      <EditorNote>{t('Add media in Settings')}</EditorNote>
     </Box>
   )
 }

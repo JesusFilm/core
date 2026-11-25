@@ -1,4 +1,8 @@
 import {
+  CAMPAIGN_STRING_KEYS,
+  campaignStringWording
+} from '@core/journeys/ui/Campaign/libs/campaignStrings'
+import {
   CAMPAIGN_ID,
   LANDING_PAGE_ID,
   REGION_PAGE_ID,
@@ -23,65 +27,38 @@ import {
   CampaignPageKind,
   CampaignStatus,
   CampaignStringKey,
+  CampaignTextSource,
   JourneyStatus,
   UserTeamRole
 } from '../../../__generated__/globalTypes'
-import { CAMPAIGN_TEXT_FIELDS } from '../../libs/useCampaignBlockTextMutation'
+import { translatedBlockFields } from '../../libs/useCampaignBlockTextMutation'
 
 export const CURRENT_USER_ID = 'userId'
-
-/** The translatable fields of the blocks that have no inline text on the canvas. */
-const MEDIA_TRANSLATED_FIELDS: Record<string, readonly string[]> = {
-  CampaignImageBlock: ['alt'],
-  CampaignVideoBlock: ['title', 'description']
-}
 
 /** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field, and a journey card's unset edited flag. */
 export function withEmptyTranslations(block: {
   __typename: string
 }): CampaignBlock {
-  const fields: readonly string[] =
-    block.__typename in CAMPAIGN_TEXT_FIELDS
-      ? CAMPAIGN_TEXT_FIELDS[
-          block.__typename as keyof typeof CAMPAIGN_TEXT_FIELDS
-        ]
-      : (MEDIA_TRANSLATED_FIELDS[block.__typename] ?? [])
   const translations = Object.fromEntries(
-    fields.map((field) => [`${field}Translations`, []])
+    translatedBlockFields(block.__typename).map((field) => [
+      `${field}Translations`,
+      []
+    ])
   )
   const snapshot =
     block.__typename === 'CampaignJourneyBlock' ? { snapshotEdited: false } : {}
   return { ...block, ...translations, ...snapshot } as CampaignBlock
 }
 
-const STRING_SEED: Array<[CampaignStringKey, string]> = [
-  [CampaignStringKey.allRegions, 'All regions'],
-  [CampaignStringKey.step1, 'Pick a language your friend understands.'],
-  [CampaignStringKey.step2, 'Preview what they will see.'],
-  [CampaignStringKey.step2help, 'Tap through the preview like they would.'],
-  [CampaignStringKey.step3, 'Share this link with them.'],
-  [CampaignStringKey.step4, 'Or download a QR code for print.'],
-  [CampaignStringKey.copy, 'Copy link'],
-  [CampaignStringKey.copied, 'Link copied'],
-  [CampaignStringKey.downloadQr, 'Download QR code'],
-  [CampaignStringKey.open, 'Open'],
-  [CampaignStringKey.watch, 'Watch'],
-  [CampaignStringKey.openTemplate, 'Open journey'],
-  [CampaignStringKey.youtube, 'Watch on YouTube'],
-  [CampaignStringKey.totalVisitors, 'Total visitors'],
-  [CampaignStringKey.topCountry, 'Top country'],
-  [CampaignStringKey.seeAllOnWatch, 'See all on Watch'],
-  [CampaignStringKey.videos, 'videos'],
-  [CampaignStringKey.noJourneys, 'Journeys for this region are coming soon']
-]
+const STRING_WORDING = campaignStringWording((english) => english)
 
-/** The eighteen seeded Campaign Strings, untranslated. */
-export const campaignStrings: CampaignString[] = STRING_SEED.map(
-  ([key, value]) => ({
+/** The eighteen seeded Campaign Strings in seed order, in the registry's English, untranslated. */
+export const campaignStrings: CampaignString[] = CAMPAIGN_STRING_KEYS.map(
+  (key) => ({
     __typename: 'CampaignString',
     id: `string-${key}`,
-    key,
-    value,
+    key: CampaignStringKey[key],
+    value: STRING_WORDING[key],
     valueTranslations: []
   })
 )
@@ -300,6 +277,25 @@ export const campaignWithRegions: Campaign = {
   ...campaign,
   blocks: [...campaign.blocks, eurLine],
   regions: [eurRegion, afrRegion]
+}
+
+/** `campaignWithRegions` with Europe named "L’Europe" in French (`496`); Africa has no French name. */
+export const campaignWithFrenchRegionName: Campaign = {
+  ...campaignWithRegions,
+  regions: [
+    {
+      ...eurRegion,
+      nameTranslations: [
+        {
+          __typename: 'TranslatedValue',
+          languageId: '496',
+          value: 'L’Europe',
+          source: CampaignTextSource.human
+        }
+      ]
+    },
+    afrRegion
+  ]
 }
 
 export const publishedCampaign: Campaign = {

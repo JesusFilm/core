@@ -17,8 +17,8 @@ import {
 } from 'react'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
-import { campaignString } from '../CampaignProvider/campaignString'
-import { hasText } from '../types'
+import { campaignStringOr } from '../CampaignProvider/campaignString'
+import { campaignCardSx } from '../libs/campaignSx'
 import type { CampaignRegion } from '../types'
 
 import type {
@@ -35,13 +35,18 @@ import {
 } from './campaignStatsScope'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
 import { MOTION_MS, REDUCED_MOTION } from './motion'
-import { WorldMap, WorldMapShapes } from './WorldMap'
+import { WORLD_MAP_HEIGHT, WORLD_MAP_WIDTH, WorldMap } from './WorldMap'
+import type { WorldMapState } from './WorldMap'
 
 /** Chips and rows keep a near-square 4px corner regardless of the theme radius. */
+const CHIP_AND_ROW_RADIUS = '4px'
+
 const ROW_HEIGHT = 36
 /** The gap between ranked rows, in px. */
 const ROW_GAP = 6
 const ROW_PITCH = ROW_HEIGHT + ROW_GAP
+
+const NO_WORLD_MAP: WorldMapState = { shapes: null, error: null }
 
 const rowEnter = keyframes`
   from { opacity: 0; }
@@ -67,19 +72,12 @@ interface CampaignAnalyticsPanelProps {
   strings: ReadonlyArray<{ key: CampaignStringKey; value: string }>
   /** The Analytics block's `showMap`: draw the world map under the tiles. */
   showMap?: boolean
-  /** The projected map; the map is skipped until it is known. */
-  worldMap?: WorldMapShapes | null
+  /** `useWorldMap`'s answer: a box of the map's size holds its place until the shapes load; on an error the map is skipped. */
+  worldMap?: WorldMapState
   /** The theme accent (`#RRGGBB`) the map shades in. */
   accentColor?: string
-}
-
-function stringValue(
-  strings: CampaignAnalyticsPanelProps['strings'],
-  key: CampaignStringKey,
-  fallback: string
-): string {
-  const value = campaignString(strings, key)
-  return hasText(value) ? value : fallback
+  /** The locale numbers, dates and country names format in: the Page Language on the public page; the UI locale when unset. */
+  locale?: string
 }
 
 interface TileProps {
@@ -91,16 +89,7 @@ interface TileProps {
 
 function Tile({ testId, label, value, caption }: TileProps): ReactElement {
   return (
-    <Stack
-      data-testid={testId}
-      spacing={0.5}
-      sx={{
-        p: 3,
-        borderRadius: 1,
-        backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)'
-      }}
-    >
+    <Stack data-testid={testId} spacing={0.5} sx={{ p: 3, ...campaignCardSx }}>
       <Typography
         variant="overline"
         component="p"
@@ -186,7 +175,7 @@ function RankedList({ view, locale, columns }: RankedListProps): ReactElement {
               width: '100%',
               height: ROW_HEIGHT,
               px: 1.5,
-              borderRadius: '4px',
+              borderRadius: CHIP_AND_ROW_RADIUS,
               border: '1px solid var(--campaign-band-border)',
               backgroundColor: 'var(--campaign-band-card)',
               display: 'grid',
@@ -240,6 +229,26 @@ function RankedList({ view, locale, columns }: RankedListProps): ReactElement {
   )
 }
 
+/**
+ * The tab an arrow, Home or End key moves to from `current` of `count`
+ * tabs, wrapping at the ends; the arrows follow the reading direction. Null
+ * for any other key.
+ */
+function nextTabIndex(
+  key: string,
+  current: number,
+  count: number,
+  rtl: boolean
+): number | null {
+  const forwardKey = rtl ? 'ArrowLeft' : 'ArrowRight'
+  const backwardKey = rtl ? 'ArrowRight' : 'ArrowLeft'
+  if (key === forwardKey) return (current + 1) % count
+  if (key === backwardKey) return (current - 1 + count) % count
+  if (key === 'Home') return 0
+  if (key === 'End') return count - 1
+  return null
+}
+
 function LoadingState(): ReactElement {
   return (
     <Box
@@ -277,11 +286,12 @@ export function CampaignAnalyticsPanel({
   fixedRegion = null,
   strings,
   showMap = false,
-  worldMap = null,
-  accentColor = '#000000'
+  worldMap = NO_WORLD_MAP,
+  accentColor = '#000000',
+  locale: localeProp
 }: CampaignAnalyticsPanelProps): ReactElement {
   const { t, i18n } = useTranslation('libs-journeys-ui')
-  const locale = i18n?.language ?? 'en'
+  const locale = localeProp ?? i18n?.language ?? 'en'
   const theme = useTheme()
   const idPrefix = useId()
   const tabRefs = useRef(new Map<string, HTMLElement>())
@@ -310,32 +320,24 @@ export function CampaignAnalyticsPanel({
 
   /** Arrow keys, Home and End move the selection and focus; Left and Right swap in a right-to-left layout. */
   function handleTabKeyDown(event: KeyboardEvent<HTMLElement>): void {
-    const forwardKey = theme.direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight'
-    const backwardKey = theme.direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft'
-    const current = tabValues.indexOf(activeTab)
-    const next =
-      event.key === forwardKey
-        ? (current + 1) % tabValues.length
-        : event.key === backwardKey
-          ? (current - 1 + tabValues.length) % tabValues.length
-          : event.key === 'Home'
-            ? 0
-            : event.key === 'End'
-              ? tabValues.length - 1
-              : null
+    const next = nextTabIndex(
+      event.key,
+      tabValues.indexOf(activeTab),
+      tabValues.length,
+      theme.direction === 'rtl'
+    )
     if (next == null) return
     event.preventDefault()
     setSelectedTab(tabValues[next])
     tabRefs.current.get(tabValues[next])?.focus()
   }
 
-  /** A region tab shows the region's code (its slug, upper-cased) and is named by it; the full name is its description. */
-  const tabFor = (
-    value: string,
-    label: string,
-    description?: string
-  ): ReactElement => {
+  /** A tab shows and is named by its label (a region's name); a label cut short by the ellipsis stays whole in the tooltip. */
+  const tabFor = (value: string, label: string): ReactElement => {
     const selected = activeTab === value
+    function handleTabClick(): void {
+      setSelectedTab(value)
+    }
     return (
       <ButtonBase
         key={value}
@@ -348,19 +350,20 @@ export function CampaignAnalyticsPanel({
         aria-selected={selected}
         aria-controls={panelId}
         tabIndex={selected ? 0 : -1}
-        title={description}
-        onClick={() => setSelectedTab(value)}
+        title={label}
+        onClick={handleTabClick}
         onKeyDown={handleTabKeyDown}
         data-testid={`CampaignAnalyticsChip-${value}`}
         sx={{
           px: 1,
           py: 0.5,
           minHeight: 30,
-          borderRadius: '4px',
+          borderRadius: CHIP_AND_ROW_RADIUS,
           typography: 'overline',
           fontSize: '0.6875rem',
           lineHeight: 1.3,
           textAlign: 'center',
+          minWidth: 0,
           border: '1px solid',
           borderColor: selected
             ? 'var(--campaign-band-accent)'
@@ -378,7 +381,17 @@ export function CampaignAnalyticsPanel({
           ...REDUCED_MOTION
         }}
       >
-        {label}
+        <Box
+          component="span"
+          sx={{
+            display: 'block',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {label}
+        </Box>
       </ButtonBase>
     )
   }
@@ -394,27 +407,30 @@ export function CampaignAnalyticsPanel({
         display: 'flex',
         flexWrap: 'wrap',
         gap: 1,
-        // Each tab is at least as wide as its code and shares the rest of
-        // the row, so a long code never spills past its tab.
+        // Each tab starts at 72px and shares the rest of the row; a region
+        // name too long for its tab stays on one line, cut by an ellipsis.
         '& > *': { flex: '1 1 72px', whiteSpace: 'nowrap' }
       }}
     >
-      {tabRegions.map((region) =>
-        tabFor(region.id, region.slug.toUpperCase(), region.name)
-      )}
+      {tabRegions.map((region) => tabFor(region.id, region.name))}
       {tabFor(
         ALL_REGIONS,
-        stringValue(strings, CampaignStringKey.allRegions, t('All'))
+        campaignStringOr(strings, CampaignStringKey.allRegions, t('All'))
       )}
     </Box>
   )
 
-  /** The ranked list, labelled by the selected tab; it is the panel the tabs control. */
-  const panel = (content: ReactNode): ReactElement => (
+  /**
+   * The ranked list, labelled by the selected tab; it is the panel the tabs
+   * control. Always mounted, so `aria-controls` never dangles: busy while
+   * the stats load.
+   */
+  const panel = (content: ReactNode, busy: boolean): ReactElement => (
     <Box
       id={panelId}
       role={tabsShown ? 'tabpanel' : undefined}
       aria-labelledby={tabsShown ? tabId(activeTab) : undefined}
+      aria-busy={busy ? 'true' : undefined}
     >
       {content}
     </Box>
@@ -424,95 +440,103 @@ export function CampaignAnalyticsPanel({
   const highlightedCodes = mapRegions.flatMap((region) =>
     (region.countries ?? []).map((country) => country.countryId)
   )
-  const mapFor = (
-    visitors?: CampaignAnalyticsCountries
-  ): ReactElement | null =>
-    showMap && worldMap != null ? (
+  const mapFor = (visitors?: CampaignAnalyticsCountries): ReactElement =>
+    worldMap.shapes == null ? (
+      <Box
+        data-testid="WorldMapPlaceholder"
+        sx={{
+          width: '100%',
+          aspectRatio: `${WORLD_MAP_WIDTH} / ${WORLD_MAP_HEIGHT}`
+        }}
+      />
+    ) : (
       <WorldMap
-        shapes={worldMap}
+        shapes={worldMap.shapes}
         highlightedCodes={highlightedCodes}
         zoomToHighlighted={activeRegion != null}
         visitors={visitors}
         accentColor={accentColor}
         locale={locale}
       />
-    ) : null
+    )
 
-  const layout = showMap && worldMap != null ? 'map' : 'stacked'
+  const layout = showMap && worldMap.error == null ? 'map' : 'stacked'
 
   /**
    * One frame for the loading and loaded states, so the chips keep their
    * DOM nodes while the stats arrive. With the map: tiles and map on the
    * left, the region chips and a single column of ranks on the right
    * (stacked below `md`). Without it: chips, tiles, then the ranks in two
-   * columns under their heading.
+   * columns under their heading. Loading (no `ranks`), the map layout's
+   * panel is empty and the stacked layout's holds the skeleton.
    */
   const frame = (
     top: ReactNode,
     ranks: ReactNode,
     mapVisitors?: CampaignAnalyticsCountries
-  ): ReactElement => (
-    <Box
-      data-testid="CampaignAnalyticsStats"
-      data-layout={layout}
-      sx={{
-        p: { xs: 2, md: 3 },
-        borderRadius: 2,
-        border: '1px solid var(--campaign-band-border)',
-        display: 'grid',
-        gap: 3,
-        alignItems: 'stretch',
-        gridTemplateColumns:
-          layout === 'map' ? { xs: '1fr', md: '3fr 2fr' } : '1fr'
-      }}
-    >
-      {layout === 'map' ? (
-        <>
-          <Stack spacing={2} sx={{ height: '100%' }}>
-            {top}
-            <Box
-              data-testid="CampaignAnalyticsMap"
-              sx={{
-                flex: 1,
-                minHeight: 240,
-                display: 'flex',
-                alignItems: 'center',
-                p: 2,
-                borderRadius: 1,
-                border: '1px solid var(--campaign-band-border)',
-                backgroundColor: 'var(--campaign-band-card)',
-                // The map fits whatever height the ranks leave beside it.
-                '& svg': { height: '100%', maxHeight: '100%' }
-              }}
-            >
-              {mapFor(mapVisitors)}
-            </Box>
-          </Stack>
-          <Stack spacing={2}>
-            {tabs}
-            {panel(ranks)}
-          </Stack>
-        </>
-      ) : (
-        <>
-          {tabs}
-          {top}
-          {ranks != null && (
-            <Stack spacing={1.5}>
-              <Typography
-                variant="overline"
-                component="p"
-                sx={{ color: 'var(--campaign-band-muted)' }}
+  ): ReactElement => {
+    const busy = ranks == null
+    return (
+      <Box
+        data-testid="CampaignAnalyticsStats"
+        data-layout={layout}
+        sx={{
+          p: { xs: 2, md: 3 },
+          borderRadius: 2,
+          border: '1px solid var(--campaign-band-border)',
+          display: 'grid',
+          gap: 3,
+          alignItems: 'stretch',
+          gridTemplateColumns:
+            layout === 'map' ? { xs: '1fr', md: '3fr 2fr' } : '1fr'
+        }}
+      >
+        {layout === 'map' ? (
+          <>
+            <Stack spacing={2} sx={{ height: '100%' }}>
+              {top}
+              <Box
+                data-testid="CampaignAnalyticsMap"
+                sx={{
+                  flex: 1,
+                  minHeight: 240,
+                  display: 'flex',
+                  alignItems: 'center',
+                  p: 2,
+                  ...campaignCardSx,
+                  // The map fits whatever height the ranks leave beside it.
+                  '& svg': { height: '100%', maxHeight: '100%' }
+                }}
               >
-                {t('Top countries by views')}
-              </Typography>
-              {panel(ranks)}
+                {mapFor(mapVisitors)}
+              </Box>
             </Stack>
-          )}
-        </>
-      )}
-    </Box>
-  )
+            <Stack spacing={2}>
+              {tabs}
+              {panel(ranks, busy)}
+            </Stack>
+          </>
+        ) : (
+          <>
+            {tabs}
+            {busy ? panel(top, busy) : top}
+            {!busy && (
+              <Stack spacing={1.5}>
+                <Typography
+                  variant="overline"
+                  component="p"
+                  sx={{ color: 'var(--campaign-band-muted)' }}
+                >
+                  {t('Top countries by views')}
+                </Typography>
+                {panel(ranks, busy)}
+              </Stack>
+            )}
+          </>
+        )}
+      </Box>
+    )
+  }
 
   if (data == null && loading) return frame(<LoadingState />, null)
 
@@ -533,7 +557,7 @@ export function CampaignAnalyticsPanel({
   const topCountry = view.countries[0]
   const visitorsLabel =
     activeRegion == null
-      ? stringValue(
+      ? campaignStringOr(
           strings,
           CampaignStringKey.totalVisitors,
           t('Total visitors')
@@ -550,7 +574,7 @@ export function CampaignAnalyticsPanel({
     >
       <Tile
         testId="CampaignAnalyticsTopCountry"
-        label={stringValue(
+        label={campaignStringOr(
           strings,
           CampaignStringKey.topCountry,
           t('Top country')

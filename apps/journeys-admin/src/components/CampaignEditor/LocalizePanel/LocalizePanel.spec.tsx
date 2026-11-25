@@ -1,6 +1,6 @@
 import { ApolloLink } from '@apollo/client'
 import { MockLink, MockSubscriptionLink } from '@apollo/client/testing'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
@@ -9,7 +9,7 @@ import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuer
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
 import { LeftRail } from '../LeftRail'
-import { StaticEditor } from '../testing'
+import { StaticEditor, emitSubscription } from '../testing'
 
 import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
@@ -137,7 +137,7 @@ describe('LocalizePanel', () => {
     }
     render(
       <StaticEditor
-        campaignProp={{
+        campaign={{
           ...campaign,
           languages: [...campaign.languages, spanish]
         }}
@@ -192,17 +192,6 @@ describe('LocalizePanel machine translation run', () => {
     }
   }
 
-  async function emit(
-    link: MockSubscriptionLink,
-    result: MockSubscriptionLink.Result,
-    complete = false
-  ): Promise<void> {
-    await act(async () => {
-      link.simulateResult(result, complete)
-      await new Promise((resolve) => setTimeout(resolve, 0))
-    })
-  }
-
   /** The rail and a closable Localize panel on Translations, as the editor lays them out. */
   function PanelHarness({ link }: { link: ApolloLink }): ReactElement {
     const [open, setOpen] = useState(true)
@@ -234,7 +223,7 @@ describe('LocalizePanel machine translation run', () => {
         translationsMock,
         translationsMock,
         translationsMock
-      ] as never)
+      ])
     )
     render(<PanelHarness link={link} />)
     return subscriptionLink
@@ -244,7 +233,7 @@ describe('LocalizePanel machine translation run', () => {
     fireEvent.click(
       await screen.findByRole('button', { name: 'Machine-translate missing' })
     )
-    await emit(link, report(40, 'Translated 2 of 5 parts', 7))
+    await emitSubscription(link, report(40, 'Translated 2 of 5 parts', 7))
   }
 
   it('keeps the run and its progress through a tab switch and a closed panel, on the rail button and in the Translations tab', async () => {
@@ -264,7 +253,7 @@ describe('LocalizePanel machine translation run', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Toggle panel' }))
     expect(screen.queryByTestId('CampaignLocalizePanel')).toBeNull()
     expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
-    await emit(link, report(70, 'Translated 3 of 5 parts', 9))
+    await emitSubscription(link, report(70, 'Translated 3 of 5 parts', 9))
 
     fireEvent.click(screen.getByRole('button', { name: 'Toggle panel' }))
     fireEvent.click(screen.getByRole('tab', { name: 'Translations' }))
@@ -296,7 +285,11 @@ describe('LocalizePanel machine translation run', () => {
     const link = renderRunning()
     await startRun(link)
 
-    await emit(link, report(100, 'Translation completed!', 12, true), true)
+    await emitSubscription(
+      link,
+      report(100, 'Translation completed!', 12, true),
+      true
+    )
 
     expect(
       screen.getByText('Translated 12 strings into Français')

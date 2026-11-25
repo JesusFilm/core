@@ -20,6 +20,10 @@ export interface YoutubeCaptionLanguages {
 export interface YoutubeTech extends Tech {
   ytPlayer: {
     getOption?: (category: string, name: string) => YoutubeCaptionLanguages[]
+    // Names of the modules currently loaded, e.g. ['captions']
+    getOptions?: () => string[]
+    addEventListener?: (event: string, listener: () => void) => void
+    removeEventListener?: (event: string, listener: () => void) => void
     getPlaybackQuality: () => string
     getAvailableQualityLevels: () => string[]
     getVideoLoadedFraction: () => number

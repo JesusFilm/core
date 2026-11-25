@@ -6,7 +6,7 @@ import {
   CampaignRegionCreateVariables
 } from '../../../__generated__/CampaignRegionCreate'
 import { campaignRegionsAdd } from '../campaignRegionCache'
-import { CAMPAIGN_REGION_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_REGION_FIELDS } from '../useCampaignQuery'
 
 export const CAMPAIGN_REGION_CREATE = gql`
   ${CAMPAIGN_REGION_FIELDS}

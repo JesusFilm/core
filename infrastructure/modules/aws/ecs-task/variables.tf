@@ -177,3 +177,14 @@ variable "deployment_maximum_percent" {
     error_message = "deployment_maximum_percent must be between 100 and 200."
   }
 }
+
+variable "capacity_provider" {
+  type        = string
+  default     = null
+  description = "Fargate capacity provider for the service. FARGATE_SPOT runs it on interruptible capacity (about 70% cheaper; ECS replaces an interrupted task after a two-minute warning). null keeps the FARGATE launch type the existing services were created with. Setting it on an existing service updates the service in place as a forced deployment; clearing it again replaces the service. The cluster must have the provider associated (see modules/aws/ecs)."
+
+  validation {
+    condition     = var.capacity_provider == null || contains(["FARGATE", "FARGATE_SPOT"], var.capacity_provider)
+    error_message = "capacity_provider must be FARGATE, FARGATE_SPOT or null."
+  }
+}

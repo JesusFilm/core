@@ -1,6 +1,5 @@
 export {
   duplicateBlocks,
-  subtreeOf,
   useCampaignBlockDuplicateCommand
 } from './useCampaignBlockDuplicateCommand'
 export type {

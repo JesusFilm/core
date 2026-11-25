@@ -4,22 +4,23 @@ import { render, screen, within } from '@testing-library/react'
 import {
   CampaignBackgroundKind,
   CampaignColumnsRatio,
+  CampaignJourneyListDisplay,
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
 import { shouldRenderSection } from '../CampaignPage/shouldRenderSection'
 import { CampaignProvider } from '../CampaignProvider'
+import { CampaignRenderer } from '../CampaignRenderer'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
-import { cssRulesFor } from '../libs/cssRulesFor'
 import { transformCampaignBlocks } from '../libs/transformer'
 import {
   LANDING_PAGE_ID,
   campaignPublic,
   columnSlot,
+  richTextSectionBlock,
   section
 } from '../testData'
 import type { CampaignTreeOf } from '../types'
-
-import { CampaignColumns } from './CampaignColumns'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
 
@@ -63,15 +64,13 @@ function blocksFor({
     }),
     ...(left
       ? [
-          section('CampaignRichTextBlock', {
+          {
+            ...richTextSectionBlock,
             id: 'leftRichTextId',
-            pageId: LANDING_PAGE_ID,
             parentBlockId: 'slotLeftId',
             parentOrder: 0,
-            title: 'Left title',
-            richTextContent: 'Left text',
             backgroundKind: leftBackground
-          })
+          }
         ]
       : []),
     ...(right
@@ -111,7 +110,7 @@ function renderColumns(block: CampaignTreeOf<'CampaignColumnsBlock'>) {
           region: null
         }}
       >
-        <CampaignColumns block={block} />
+        <CampaignRenderer block={block} />
       </CampaignProvider>
     </ThemeProvider>
   )
@@ -123,7 +122,7 @@ describe('CampaignColumns', () => {
 
     const left = screen.getByTestId('CampaignColumnSlot-slotLeftId')
     const right = screen.getByTestId('CampaignColumnSlot-slotRightId')
-    expect(within(left).getByText('Left title')).toBeInTheDocument()
+    expect(within(left).getByText('Our story')).toBeInTheDocument()
     expect(within(right).getByText('Right title')).toBeInTheDocument()
     expect(
       left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING
@@ -167,11 +166,13 @@ describe('CampaignColumns', () => {
     renderColumns(columnsTree())
 
     const left = screen.getByTestId('CampaignColumnSlot-slotLeftId')
-    expect(left.querySelector('.MuiContainer-root')).toBeNull()
     expect(
-      screen
-        .getByTestId('CampaignSectionBand-columnsId')
-        .querySelectorAll('.MuiContainer-root')
+      within(left).queryByTestId('CampaignSectionBandContainer')
+    ).not.toBeInTheDocument()
+    expect(
+      within(
+        screen.getByTestId('CampaignSectionBand-columnsId')
+      ).getAllByTestId('CampaignSectionBandContainer')
     ).toHaveLength(1)
   })
 
@@ -198,11 +199,34 @@ describe('CampaignColumns', () => {
     expect(rules).not.toContain('border-radius')
   })
 
+  it('renders a slot whose Journey List has only the noJourneys line', () => {
+    const tree = transformCampaignBlocks([
+      ...blocksFor({ left: false }),
+      section('CampaignJourneyListBlock', {
+        id: 'slotJourneyListId',
+        pageId: LANDING_PAGE_ID,
+        parentBlockId: 'slotLeftId',
+        parentOrder: 0,
+        eyebrow: null,
+        title: null,
+        description: null,
+        display: CampaignJourneyListDisplay.grid
+      })
+    ])[0] as CampaignTreeOf<'CampaignColumnsBlock'>
+    renderColumns(tree)
+
+    const left = screen.getByTestId('CampaignColumnSlot-slotLeftId')
+    expect(
+      within(left).getByTestId('CampaignJourneyListEmpty')
+    ).toHaveTextContent('Journeys for this region are coming soon')
+  })
+
   describe('shouldRenderSection', () => {
     const context = {
       pageKind: CampaignPageKind.landing,
       region: null,
-      regions: campaignPublic.regions
+      regions: campaignPublic.regions,
+      strings: campaignPublic.strings
     }
 
     it('renders when either slot holds a section that renders', () => {
@@ -223,14 +247,14 @@ describe('CampaignColumns', () => {
     it('is skipped when the only sections in its slots would be skipped', () => {
       const tree = transformCampaignBlocks([
         ...blocksFor({ left: false, right: false }),
-        section('CampaignRichTextBlock', {
+        {
+          ...richTextSectionBlock,
           id: 'blankId',
-          pageId: LANDING_PAGE_ID,
           parentBlockId: 'slotLeftId',
           parentOrder: 0,
           title: null,
           richTextContent: ''
-        })
+        }
       ])[0] as CampaignTreeOf<'CampaignColumnsBlock'>
 
       expect(shouldRenderSection(tree, context)).toBe(false)

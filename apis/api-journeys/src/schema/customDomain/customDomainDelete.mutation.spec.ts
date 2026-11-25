@@ -4,6 +4,7 @@ import { UserTeamRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../test/campaignAddressSnapshot'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -13,6 +14,11 @@ import { deleteVercelDomain, updateTeamShortLinks } from './service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('../campaign/gatewayClient', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../campaign/gatewayClient')>()),
+  fetchLanguage: vi.fn()
 }))
 
 vi.mock('./service', () => ({
@@ -151,25 +157,21 @@ describe('customDomainDelete', () => {
     const attached = {
       ...mockCustomDomain,
       name: 'outreach.example.org',
-      campaignId: campaign.id,
-      campaign
+      campaignId: campaign.id
     }
     prismaMock.customDomain.findUnique.mockResolvedValue(attached)
     prismaMock.customDomain.delete.mockResolvedValue(attached)
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([])
+    mockAddressSnapshots({ ...campaign, customDomains: [attached] }, campaign)
 
     await authClient({
       document: CUSTOM_DOMAIN_DELETE_MUTATION,
       variables: { id: 'customDomainId' }
     })
 
-    expect(prismaMock.customDomain.findUnique).toHaveBeenCalledWith(
-      expect.objectContaining({
-        include: expect.objectContaining({
-          campaign: { include: { regions: true } }
-        })
-      })
-    )
+    expect(prismaMock.customDomain.findUnique).toHaveBeenCalledWith({
+      where: { id: 'customDomainId' },
+      include: { team: { include: { userTeams: true } } }
+    })
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
       '/home/campaign/outreach-2026',
       '/home/campaign/outreach-2026/eur',
@@ -182,9 +184,10 @@ describe('customDomainDelete', () => {
 
   it('should queue nothing when the Campaign Domain’s campaign is a draft', async () => {
     const campaign = campaignFactory().build()
-    const attached = { ...mockCustomDomain, campaignId: campaign.id, campaign }
+    const attached = { ...mockCustomDomain, campaignId: campaign.id }
     prismaMock.customDomain.findUnique.mockResolvedValue(attached)
     prismaMock.customDomain.delete.mockResolvedValue(attached)
+    mockAddressSnapshots({ ...campaign, customDomains: [attached] }, campaign)
 
     await authClient({
       document: CUSTOM_DOMAIN_DELETE_MUTATION,
@@ -195,7 +198,7 @@ describe('customDomainDelete', () => {
   })
 
   it('should queue nothing for a team domain', async () => {
-    const unattached = { ...mockCustomDomain, campaign: null }
+    const unattached = { ...mockCustomDomain, campaignId: null }
     prismaMock.customDomain.findUnique.mockResolvedValue(unattached)
     prismaMock.customDomain.delete.mockResolvedValue(mockCustomDomain)
 
@@ -205,6 +208,7 @@ describe('customDomainDelete', () => {
     })
 
     expect(prismaMock.customDomain.delete).toHaveBeenCalled()
+    expect(prismaMock.campaign.findUnique).not.toHaveBeenCalled()
     expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 

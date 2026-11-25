@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   auto-merge:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     timeout-minutes: 10
     permissions:
       pull-requests: write

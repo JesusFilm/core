@@ -13,6 +13,8 @@ interface CampaignMediaSplitProps {
   mediaSide?: CampaignMediaSide
   /** One column at every width: the text, then the media full width. */
   stacked?: boolean
+  /** Load the media at once with high priority (the Hero's); lazy by default. */
+  eager?: boolean
 }
 
 /**
@@ -26,13 +28,14 @@ export function CampaignMediaSplit({
   text,
   media,
   mediaSide = CampaignMediaSide.right,
-  stacked = false
+  stacked = false,
+  eager = false
 }: CampaignMediaSplitProps): ReactElement | null {
   if (!hasCampaignMedia(media)) return <>{text}</>
 
   const mediaColumn = (
     <Box data-testid="CampaignMediaSlot" sx={{ minWidth: 0 }}>
-      <CampaignMediaSlot media={media} stacked={stacked} />
+      <CampaignMediaSlot media={media} stacked={stacked} eager={eager} />
     </Box>
   )
   if (text == null) return mediaColumn

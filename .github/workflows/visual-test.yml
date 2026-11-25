@@ -11,7 +11,7 @@ on:
   #   branches: [main]
 jobs:
   visual-test:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,7 +24,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 22.23.5
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

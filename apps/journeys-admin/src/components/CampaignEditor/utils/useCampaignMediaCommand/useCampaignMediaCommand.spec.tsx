@@ -1,3 +1,4 @@
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -6,24 +7,19 @@ import {
   CampaignImageSlot,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
+import { CampaignMediaOwner } from '../../../../libs/useCampaignBlockUpdateMutation'
 import {
   CAMPAIGN_IMAGE_BLOCK_CREATE,
   newOwnedImageBlock
 } from '../../../../libs/useCampaignImageBlockCreateMutation'
 import {
-  CAMPAIGN_HERO_BLOCK_UPDATE_MEDIA,
-  CampaignMediaOwner
-} from '../../../../libs/useCampaignMediaSlotMutation'
-import {
   CAMPAIGN_VIDEO_BLOCK_CREATE,
   CampaignVideoPick,
   newOwnedVideoBlock
 } from '../../../../libs/useCampaignVideoBlockCreateMutation'
-import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { blockOf } from '../../styleTesting'
-import { CommandProbe, QueriedEditor } from '../../testing'
+import { blockOf, blockUpdateMock } from '../../styleTesting'
+import { CommandProbe, QueriedEditor, UndoRedo } from '../../testing'
 
 import { useCampaignMediaCommand } from './useCampaignMediaCommand'
 
@@ -93,21 +89,7 @@ function imageCreateMock(id: string) {
 }
 
 function heroMediaMock(mediaBlockId: string | null) {
-  return {
-    request: {
-      query: CAMPAIGN_HERO_BLOCK_UPDATE_MEDIA,
-      variables: { id: 'heroId', input: { mediaBlockId } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignHeroBlockUpdate: {
-          __typename: 'CampaignHeroBlock',
-          id: 'heroId',
-          mediaBlockId
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(hero, { mediaBlockId })
 }
 
 /** Picks into the hero's Media Slot and shows what the slot holds as the cache has it. */
@@ -133,11 +115,10 @@ function HeroMedia(): ReactElement {
   )
 }
 
-function renderHook(mocks: Array<Record<string, unknown>>): void {
+function renderHook(mocks: MockLink.MockedResponse[]): void {
   render(
     <QueriedEditor mocks={mocks}>
-      <CommandUndoItem variant="button" />
-      <CommandRedoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <HeroMedia />
     </QueriedEditor>

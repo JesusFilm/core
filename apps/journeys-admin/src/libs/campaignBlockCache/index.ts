@@ -11,6 +11,7 @@ export {
 } from './campaignBlockCache'
 export type {
   CampaignBlockOrder,
+  CampaignBlockOwnerRef,
   CampaignBlockRef,
   CampaignBlockScopeRef,
   CampaignSlotColumn

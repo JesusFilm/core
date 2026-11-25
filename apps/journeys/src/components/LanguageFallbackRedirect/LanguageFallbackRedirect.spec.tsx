@@ -1,15 +1,13 @@
-import { render, screen } from '@testing-library/react'
-import { ReactElement } from 'react'
+import { render } from '@testing-library/react'
 
-import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign'
+import { campaignLanguageCookie } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
 import { campaignPublic } from '@core/journeys/ui/Campaign/testData'
 
 import { CampaignLanguageRedirect } from '../CampaignLanguageRedirect'
 
-import {
-  LanguageFallbackRedirect,
-  withLanguageFallback
-} from './LanguageFallbackRedirect'
+import { LanguageFallbackRedirect } from './LanguageFallbackRedirect'
+
+const COOKIE = campaignLanguageCookie(campaignPublic.id)
 
 describe('LanguageFallbackRedirect', () => {
   const replace = vi.fn()
@@ -32,13 +30,19 @@ describe('LanguageFallbackRedirect', () => {
       configurable: true,
       value: originalLocation
     })
-    document.cookie = `${CAMPAIGN_LANGUAGE_COOKIE}=; max-age=0`
+    document.cookie = `${COOKIE}=; max-age=0`
+    document.cookie = `${campaignLanguageCookie('otherCampaignId')}=; max-age=0`
     vi.restoreAllMocks()
   })
 
   it('goes to the plain page with the query it arrived with and an empty lang', () => {
     visit('https://custom.org/my-journey?lang=en&utm_source=newsletter')
-    render(<LanguageFallbackRedirect destination="/my-journey" />)
+    render(
+      <LanguageFallbackRedirect
+        destination="/my-journey"
+        campaignId="campaignId"
+      />
+    )
     expect(replace).toHaveBeenCalledWith(
       '/my-journey?utm_source=newsletter&lang='
     )
@@ -46,44 +50,55 @@ describe('LanguageFallbackRedirect', () => {
 
   it('goes to the plain page with an empty lang when lang was the only param', () => {
     visit('https://custom.org/?lang=xx')
-    render(<LanguageFallbackRedirect destination="/" />)
+    render(<LanguageFallbackRedirect destination="/" campaignId="campaignId" />)
     expect(replace).toHaveBeenCalledWith('/?lang=')
   })
 
+  it("clears the campaign's language cookie before it redirects, and no other campaign's", () => {
+    document.cookie = `${COOKIE}=fr`
+    document.cookie = `${campaignLanguageCookie('otherCampaignId')}=es`
+    const cookieSetter = vi.spyOn(document, 'cookie', 'set')
+    replace.mockImplementation(() => {
+      expect(document.cookie).not.toContain(`${COOKIE}=`)
+    })
+    visit('https://example.org/campaign/outreach-2026?lang=fr')
+    render(
+      <LanguageFallbackRedirect
+        destination="/campaign/outreach-2026"
+        campaignId={campaignPublic.id}
+      />
+    )
+    expect(cookieSetter).toHaveBeenCalledWith(`${COOKIE}=; max-age=0; path=/`)
+    expect(cookieSetter).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledTimes(1)
+    expect(document.cookie).toContain(
+      `${campaignLanguageCookie('otherCampaignId')}=es`
+    )
+  })
+
   it('does not bounce back from a stale plain page still listing the removed language', () => {
-    document.cookie = `${CAMPAIGN_LANGUAGE_COOKIE}=fr`
+    document.cookie = `${COOKIE}=fr`
     vi.spyOn(window.navigator, 'languages', 'get').mockReturnValue(['fr'])
     visit('https://example.org/campaign/christmas-2026?lang=fr&utm_source=a')
     const fallback = render(
-      <LanguageFallbackRedirect destination="/campaign/christmas-2026" />
+      <LanguageFallbackRedirect
+        destination="/campaign/christmas-2026"
+        campaignId={campaignPublic.id}
+      />
     )
     expect(replace).toHaveBeenCalledWith(
       '/campaign/christmas-2026?utm_source=a&lang='
     )
     fallback.unmount()
 
+    const replaceState = vi
+      .spyOn(window.history, 'replaceState')
+      .mockImplementation(() => undefined)
     visit(`https://example.org${replace.mock.calls[0][0] as string}`)
     render(<CampaignLanguageRedirect campaign={campaignPublic} />)
     expect(replace).toHaveBeenCalledTimes(1)
-  })
-
-  describe('withLanguageFallback', () => {
-    function Page({ title }: { title: string }): ReactElement {
-      return <p>{title}</p>
-    }
-    const Wrapped = withLanguageFallback(Page)
-
-    it('renders the page when static props resolved one', () => {
-      visit('https://custom.org/eur?lang=fr')
-      render(<Wrapped title="Campaign page" />)
-      expect(screen.getByText('Campaign page')).toBeInTheDocument()
-      expect(replace).not.toHaveBeenCalled()
-    })
-
-    it('redirects when static props resolved a fallback', () => {
-      visit('https://custom.org/eur?lang=xx&utm_source=a')
-      render(<Wrapped languageFallback="/eur" />)
-      expect(replace).toHaveBeenCalledWith('/eur?utm_source=a&lang=')
-    })
+    expect(replaceState.mock.calls[0][2]).toBe(
+      'https://example.org/campaign/christmas-2026?utm_source=a'
+    )
   })
 })

@@ -22,6 +22,7 @@ import {
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 import { ThemeProvider } from '../../../../ThemeProvider'
+import { nonCustomizableLocalTemplateJourney } from '../../../journeyListData'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
@@ -353,6 +354,9 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Use This Template' })
+    ).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
@@ -364,9 +368,6 @@ describe('DefaultMenu', () => {
     ).not.toBeInTheDocument()
     expect(
       queryByRole('menuitem', { name: 'Translate' })
-    ).not.toBeInTheDocument()
-    expect(
-      queryByRole('menuitem', { name: 'Use This Template' })
     ).not.toBeInTheDocument()
     expect(
       queryByRole('menuitem', { name: 'Make Template' })
@@ -1152,6 +1153,14 @@ describe('DefaultMenu', () => {
                     slug="journey-slug"
                     status={JourneyStatus.draft}
                     journeyId="journey-id"
+                    journey={
+                      template
+                        ? {
+                            ...nonCustomizableLocalTemplateJourney,
+                            id: 'journey-id'
+                          }
+                        : undefined
+                    }
                     published={false}
                     template={template}
                     setOpenAccessDialog={noop}
@@ -1169,17 +1178,19 @@ describe('DefaultMenu', () => {
       )
     }
 
-    it('renders "Copy to collection..." when flag is on AND template is true', async () => {
-      const { getByTestId, getByRole } = renderWithFlagAndTemplate({
+    it('renders all three template actions when collections are enabled', async () => {
+      const { getByRole, findByRole } = renderWithFlagAndTemplate({
         flag: true,
         template: true
       })
-      await waitFor(() =>
-        expect(
-          getByTestId('JourneysAdminMenuItemCopyToCollection')
-        ).toBeInTheDocument()
-      )
+      expect(
+        await findByRole('menuitem', { name: 'Copy to collection...' })
+      ).toBeInTheDocument()
       expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
+      fireEvent.click(getByRole('menuitem', { name: 'Use This Template' }))
+      expect(
+        await findByRole('dialog', { name: 'Add Journey to Team' })
+      ).toBeInTheDocument()
     })
 
     it('does NOT render "Copy to collection..." when flag is off but template is true', async () => {

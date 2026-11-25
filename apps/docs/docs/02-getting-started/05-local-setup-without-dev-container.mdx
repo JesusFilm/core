@@ -83,6 +83,5 @@ Set these yourself where they matter:
 
 - `TZ=UTC` — the container runs in UTC; date-formatting tests (e.g. in journeys-admin) fail in other timezones.
 - `NODE_OPTIONS=--max-old-space-size=8192` — needed for `nx run journeys-admin:lint`.
-- `KUBECONFIG=<repo>/.kube/config` — infrastructure work only.
 - `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium` and `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true` — optional; only
   if you would rather use a system chromium than let puppeteer download its own.

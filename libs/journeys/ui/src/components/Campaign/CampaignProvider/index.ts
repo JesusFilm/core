@@ -1,10 +1,11 @@
 export {
   CampaignProvider,
-  campaignBasePath,
+  campaignAddressInput,
   campaignLandingHref,
   campaignPageHref,
+  campaignRegionHref,
   useCampaign,
   useOptionalCampaign
 } from './CampaignProvider'
-export { campaignString } from './campaignString'
+export { campaignString, campaignStringOr } from './campaignString'
 export type { CampaignContextValue } from './CampaignProvider'

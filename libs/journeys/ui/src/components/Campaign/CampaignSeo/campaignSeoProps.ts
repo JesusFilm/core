@@ -1,18 +1,22 @@
 import type { NextSeoProps } from 'next-seo'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
-import { campaignBasePath } from '../CampaignProvider'
+import { campaignAddressInput } from '../CampaignProvider'
+import {
+  campaignAbsoluteAddress,
+  campaignLanguageAddress
+} from '../libs/campaignAddress'
+import type { CampaignAddressInput } from '../libs/campaignAddress'
 import { campaignImageSource } from '../libs/campaignImageSource'
 import type { CampaignImageSource } from '../libs/campaignImageSource'
-import { CAMPAIGN_LANGUAGE_PARAM } from '../libs/resolvePageLanguage'
 import { hasText } from '../types'
 import type { CampaignBlockOf, CampaignPublic, CampaignRegion } from '../types'
 
 export interface CampaignSeoOptions {
-  /** The canonical origin: the root domain, or the Campaign Domain. */
-  origin: string
-  /** Where the landing page is served under it: `/campaign/<slug>`, or `` on a Campaign Domain. */
-  basePath: string
+  /** The campaign's slug and Campaign Domain, which decide the address form. */
+  address: CampaignAddressInput
+  /** The root domain's origin, where a campaign with no Campaign Domain is served. */
+  rootOrigin: string
 }
 
 interface CampaignPreferredLocationOptions {
@@ -22,20 +26,17 @@ interface CampaignPreferredLocationOptions {
 
 /**
  * Where a campaign's preferred public address lives: the root of its
- * Campaign Domain when it has one, else the root-domain `/campaign/<slug>`
- * path. A campaign with a domain is served only there, so the canonical names
- * the one form that serves.
+ * Campaign Domain when it has one (an empty name is none), else the
+ * root-domain `/campaign/<slug>` path. A campaign with a domain is served
+ * only there, so the canonical names the one form that serves.
  */
 export function campaignPreferredLocation({
   campaign,
   rootDomain
 }: CampaignPreferredLocationOptions): CampaignSeoOptions {
-  const customDomain = campaign.customDomainNames[0]
-  if (customDomain != null)
-    return { origin: `https://${customDomain}`, basePath: '' }
   return {
-    origin: `https://${rootDomain}`,
-    basePath: campaignBasePath(campaign.slug)
+    address: campaignAddressInput(campaign),
+    rootOrigin: `https://${rootDomain}`
   }
 }
 
@@ -81,7 +82,7 @@ function headerLogo(campaign: CampaignPublic): CampaignImageSource | null {
 }
 
 /**
- * The social image chain (PRD §11): the page's hero media poster (a video's
+ * The social image chain (glossary: **Campaign Public Page**): the page's hero media poster (a video's
  * image or an image's `src`), a Region Page inheriting the landing hero's
  * when its own has none, else the header logo, else none.
  */
@@ -96,31 +97,6 @@ export function campaignSocialImage(
       : null) ??
     headerLogo(campaign)
   )
-}
-
-/** The page's path under the origin: `/` on a Campaign Domain landing page. */
-export function campaignPagePath(
-  basePath: string,
-  region: CampaignRegion | null
-): string {
-  if (region != null) return `${basePath}/${region.slug}`
-  return basePath === '' ? '/' : basePath
-}
-
-/**
- * The address a campaign page is served at in one language: the bare
- * canonical for the campaign default (and for a language with no bcp47 tag
- * to name), else `<canonical>?lang=<bcp47>`. Each language has exactly one
- * address, so a page's canonical and the `hreflang` alternate naming its
- * language are the same URL.
- */
-function campaignLanguageUrl(
-  canonical: string,
-  defaultLanguageId: string,
-  { languageId, bcp47 }: { languageId: string; bcp47: string | null }
-): string {
-  if (bcp47 == null || languageId === defaultLanguageId) return canonical
-  return `${canonical}?${CAMPAIGN_LANGUAGE_PARAM}=${bcp47}`
 }
 
 /**
@@ -139,10 +115,11 @@ function campaignLanguageAlternates(
       : [
           {
             hrefLang: language.bcp47,
-            href: campaignLanguageUrl(canonical, campaign.defaultLanguageId, {
-              languageId,
-              bcp47: language.bcp47
-            })
+            href: campaignLanguageAddress(
+              canonical,
+              campaign.defaultLanguageId,
+              { languageId, bcp47: language.bcp47 }
+            )
           }
         ]
   )
@@ -150,7 +127,7 @@ function campaignLanguageAlternates(
 }
 
 /**
- * The `NextSeo` props for a public campaign page (PRD §11): title from the
+ * The `NextSeo` props for a public campaign page (glossary: **Campaign Public Page**): title from the
  * translated campaign title ("<region> · <title>" on a Region Page);
  * description from the page's hero description, else its title, else none;
  * canonical in the preferred form, with `?lang=<bcp47>` when the page is
@@ -158,7 +135,7 @@ function campaignLanguageAlternates(
  * Open Graph and Twitter as a `website` with the social image chain and `site_name` = the campaign
  * title.
  *
- * `hreflang` alternates (PRD §2): one per language at the address that
+ * `hreflang` alternates (glossary: **Campaign Address**): one per language at the address that
  * language canonicalises to, plus `x-default` at the bare canonical, so no
  * alternate points at a URL whose canonical names another. None when the
  * campaign has fewer than two languages.
@@ -167,13 +144,17 @@ export function campaignSeoProps(
   campaign: CampaignPublic,
   pageKind: CampaignPageKind,
   region: CampaignRegion | null,
-  { origin, basePath }: CampaignSeoOptions
+  { address, rootOrigin }: CampaignSeoOptions
 ): NextSeoProps {
   const title =
     region == null ? campaign.title : `${region.name} · ${campaign.title}`
   const description = heroDescription(campaign, pageKind)
-  const bareCanonical = `${origin}${campaignPagePath(basePath, region)}`
-  const canonical = campaignLanguageUrl(
+  const bareCanonical = campaignAbsoluteAddress(
+    address,
+    { rootOrigin },
+    region?.slug
+  )
+  const canonical = campaignLanguageAddress(
     bareCanonical,
     campaign.defaultLanguageId,
     { languageId: campaign.languageId, bcp47: campaign.language.bcp47 }

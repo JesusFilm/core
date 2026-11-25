@@ -21,11 +21,11 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import XCircleContainedIcon from '@core/shared/ui/icons/XCircleContained'
 
-import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
 import i18nConfig from '../next-i18next.config'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseAuth } from '../src/libs/firebaseClient'
 import { getPageRTL } from '../src/libs/getPageRTL'
+import type { PageRTLProps } from '../src/libs/getPageRTL'
 
 import './globals.css'
 
@@ -40,11 +40,11 @@ const SnackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
   </IconButton>
 )
 
-type JourneysAppProps = NextJsAppProps<{
-  journey?: Journey
-  campaign?: { language?: { bcp47?: string | null } | null } | null
-  flags?: { [key: string]: boolean }
-}> & {
+type JourneysAppProps = NextJsAppProps<
+  PageRTLProps & {
+    flags?: { [key: string]: boolean }
+  }
+> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
 }

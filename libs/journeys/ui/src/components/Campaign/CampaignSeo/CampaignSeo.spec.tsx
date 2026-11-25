@@ -26,10 +26,13 @@ vi.mock('next-seo', () => ({
 }))
 
 const ROOT = {
-  origin: 'https://your.nextstep.is',
-  basePath: '/campaign/outreach-2026'
+  address: { slug: 'outreach-2026', domainName: null },
+  rootOrigin: 'https://your.nextstep.is'
 }
-const CAMPAIGN_ROOT = { origin: 'https://outreach.example.org', basePath: '' }
+const CAMPAIGN_ROOT = {
+  address: { slug: 'outreach-2026', domainName: 'outreach.example.org' },
+  rootOrigin: 'https://your.nextstep.is'
+}
 
 const landingPoster = {
   __typename: 'CampaignVideoBlock',
@@ -478,6 +481,117 @@ describe('CampaignSeo', () => {
     )
     expect(seoCalls[0].canonical).toBe('https://outreach.example.org/eur')
   })
+
+  it('canonicalises to the root-domain form when the first domain name is empty', () => {
+    render(
+      <CampaignSeo
+        campaign={{ ...campaignPublic, customDomainNames: [''] }}
+        pageKind={CampaignPageKind.regionTemplate}
+        region={eurRegion}
+        rootDomain="your.nextstep.is"
+      />
+    )
+    expect(seoCalls[0].canonical).toBe(
+      'https://your.nextstep.is/campaign/outreach-2026/eur'
+    )
+  })
+
+  // Captured from `main` before the pages moved onto the Campaign Address
+  // module, and unchanged by it: a campaign with two languages and a region,
+  // on the root domain and on a Campaign Domain.
+  describe('canonical and hreflang', () => {
+    const onDomain: CampaignPublic = {
+      ...campaignPublic,
+      customDomainNames: ['outreach.example.org']
+    }
+
+    function inFrench(campaign: CampaignPublic): CampaignPublic {
+      return {
+        ...campaign,
+        languageId: '496',
+        language: campaignPublic.languages[1].language
+      }
+    }
+
+    function seoLinks(
+      campaign: CampaignPublic,
+      region: typeof eurRegion | null
+    ): Pick<NextSeoProps, 'canonical' | 'languageAlternates'> {
+      render(
+        <CampaignSeo
+          campaign={campaign}
+          pageKind={
+            region == null
+              ? CampaignPageKind.landing
+              : CampaignPageKind.regionTemplate
+          }
+          region={region}
+          rootDomain="your.nextstep.is"
+        />
+      )
+      const { canonical, languageAlternates } = seoCalls[0]
+      return { canonical, languageAlternates }
+    }
+
+    it('names the root-domain landing and region pages', () => {
+      expect(seoLinks(campaignPublic, null)).toEqual({
+        canonical: 'https://your.nextstep.is/campaign/outreach-2026',
+        languageAlternates: [
+          {
+            hrefLang: 'en',
+            href: 'https://your.nextstep.is/campaign/outreach-2026'
+          },
+          {
+            hrefLang: 'fr',
+            href: 'https://your.nextstep.is/campaign/outreach-2026?lang=fr'
+          },
+          {
+            hrefLang: 'x-default',
+            href: 'https://your.nextstep.is/campaign/outreach-2026'
+          }
+        ]
+      })
+      seoCalls.length = 0
+      expect(seoLinks(inFrench(campaignPublic), eurRegion)).toEqual({
+        canonical:
+          'https://your.nextstep.is/campaign/outreach-2026/eur?lang=fr',
+        languageAlternates: [
+          {
+            hrefLang: 'en',
+            href: 'https://your.nextstep.is/campaign/outreach-2026/eur'
+          },
+          {
+            hrefLang: 'fr',
+            href: 'https://your.nextstep.is/campaign/outreach-2026/eur?lang=fr'
+          },
+          {
+            hrefLang: 'x-default',
+            href: 'https://your.nextstep.is/campaign/outreach-2026/eur'
+          }
+        ]
+      })
+    })
+
+    it('names the Campaign Domain landing and region pages', () => {
+      expect(seoLinks(onDomain, null)).toEqual({
+        canonical: 'https://outreach.example.org/',
+        languageAlternates: [
+          { hrefLang: 'en', href: 'https://outreach.example.org/' },
+          { hrefLang: 'fr', href: 'https://outreach.example.org/?lang=fr' },
+          { hrefLang: 'x-default', href: 'https://outreach.example.org/' }
+        ]
+      })
+      seoCalls.length = 0
+      expect(seoLinks(inFrench(onDomain), eurRegion)).toEqual({
+        canonical: 'https://outreach.example.org/eur?lang=fr',
+        languageAlternates: [
+          { hrefLang: 'en', href: 'https://outreach.example.org/eur' },
+          { hrefLang: 'fr', href: 'https://outreach.example.org/eur?lang=fr' },
+          { hrefLang: 'x-default', href: 'https://outreach.example.org/eur' }
+        ]
+      })
+    })
+  })
 })
 
 describe('campaignPreferredLocation', () => {
@@ -499,5 +613,14 @@ describe('campaignPreferredLocation', () => {
         rootDomain
       })
     ).toEqual(CAMPAIGN_ROOT)
+  })
+
+  it('treats an empty domain name as no Campaign Domain', () => {
+    expect(
+      campaignPreferredLocation({
+        campaign: { ...campaignPublic, customDomainNames: [''] },
+        rootDomain
+      })
+    ).toEqual(ROOT)
   })
 })

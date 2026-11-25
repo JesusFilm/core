@@ -10,11 +10,15 @@ import { ReactElement, ReactNode, useMemo, useState } from 'react'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
-import { useCampaign } from '../CampaignProvider'
+import { campaignStringOr, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
-import { CampaignVideo, videoCountLabel } from '../CampaignVideo'
-import { hasText } from '../types'
+import {
+  CampaignVideo,
+  CampaignVideoFrame,
+  videoCountLabel
+} from '../CampaignVideo'
+import { campaignCardSx } from '../libs/campaignSx'
 import type { CampaignTreeOf } from '../types'
 
 import {
@@ -40,11 +44,9 @@ const cardSx = {
   flex: '0 0 auto',
   width: CARD_WIDTH,
   overflow: 'hidden',
-  borderRadius: 1,
-  textAlign: 'left',
-  scrollSnapAlign: 'start',
-  backgroundColor: 'var(--campaign-band-card)',
-  border: '1px solid var(--campaign-band-border)'
+  ...campaignCardSx,
+  textAlign: 'start',
+  scrollSnapAlign: 'start'
 } as const
 
 interface CardFrameProps {
@@ -111,6 +113,10 @@ function VideoCard({
     return string(CampaignStringKey.watch)
   }
 
+  function handlePlay(): void {
+    onPlay(card)
+  }
+
   const action = cardAction()
   const showDuration =
     card.childrenCount === 0 && card.duration != null && card.duration > 0
@@ -119,29 +125,9 @@ function VideoCard({
     <CardFrame
       testId={`CampaignVideoCarouselCard-${card.id}`}
       href={card.href}
-      onClick={card.block != null ? () => onPlay(card) : undefined}
+      onClick={card.block != null ? handlePlay : undefined}
     >
-      <Box
-        sx={{
-          position: 'relative',
-          aspectRatio: '16 / 9',
-          backgroundColor: 'var(--campaign-band-border)'
-        }}
-      >
-        {card.poster != null && (
-          <Box
-            component="img"
-            src={card.poster}
-            alt=""
-            loading="lazy"
-            sx={{
-              display: 'block',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
-          />
-        )}
+      <CampaignVideoFrame poster={card.poster}>
         {showDuration && (
           <Typography
             variant="caption"
@@ -160,7 +146,7 @@ function VideoCard({
             {secondsToTimeFormat(card.duration ?? 0, { trimZeroes: true })}
           </Typography>
         )}
-      </Box>
+      </CampaignVideoFrame>
       <Stack spacing={0.5} sx={{ p: 2, flexGrow: 1 }}>
         {card.title != null && (
           <Typography
@@ -201,12 +187,16 @@ function SeeAllCard({
   card: CampaignCarouselSeeAllCard
 }): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { string } = useCampaign()
+  const { campaign, string } = useCampaign()
   const label = string(CampaignStringKey.seeAllOnWatch)
   return (
     <CardFrame
       testId="CampaignVideoCarouselSeeAll"
-      ariaLabel={hasText(label) ? undefined : t('See all')}
+      ariaLabel={campaignStringOr(
+        campaign.strings,
+        CampaignStringKey.seeAllOnWatch,
+        t('See all')
+      )}
       href={card.href}
     >
       <Box
@@ -257,6 +247,10 @@ export function CampaignVideoCarousel({
   const [playing, setPlaying] = useState<CampaignCarouselVideoCard>()
   const { rowRef, ...scroll } = useCarouselScroll(cards.length)
 
+  function handleDialogClose(): void {
+    setPlaying(undefined)
+  }
+
   return (
     <CampaignSectionBand block={block}>
       <CampaignSectionHeading
@@ -302,7 +296,7 @@ export function CampaignVideoCarousel({
         slotProps={{
           paper: { 'aria-label': playing?.title ?? t('Video player') }
         }}
-        onClose={() => setPlaying(undefined)}
+        onClose={handleDialogClose}
         maxWidth="md"
         fullWidth
       >

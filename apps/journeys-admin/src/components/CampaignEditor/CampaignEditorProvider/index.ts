@@ -8,11 +8,11 @@ export {
   useCampaignEditor
 } from './CampaignEditorProvider'
 export type {
-  CampaignAddPreset,
   CampaignEditorAction,
   CampaignEditorState,
   CampaignInspectorTab,
   CampaignPanel,
   CampaignSelection,
-  CampaignSelectionKind
+  CampaignSelectionKind,
+  SectionInsert
 } from './CampaignEditorProvider'

@@ -21,6 +21,8 @@ interface CampaignPictureProps {
   image: CampaignImageSource
   /** The frame the picture fills; `wide` by default. */
   ratio?: CampaignPictureRatio
+  /** Load at once with high fetch priority (the Hero's media, the page's largest paint); lazy by default. */
+  eager?: boolean
 }
 
 /**
@@ -28,10 +30,12 @@ interface CampaignPictureProps {
  * text) with its focal point kept in view and any zoom applied around it, so
  * the page never shifts as it loads, and its translated alt text. The Image
  * section's body, and an image in a Media Slot. The frame clips the zoom.
+ * Lazy unless `eager`, which the Hero sets on its Media Slot.
  */
 export function CampaignPicture({
   image,
-  ratio = 'wide'
+  ratio = 'wide',
+  eager = false
 }: CampaignPictureProps): ReactElement {
   const aspectRatio = CAMPAIGN_PICTURE_RATIOS[ratio]
 
@@ -43,7 +47,8 @@ export function CampaignPicture({
         alt={image.alt ?? ''}
         width={image.width ?? undefined}
         height={image.height ?? undefined}
-        loading="lazy"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchPriority={eager ? 'high' : undefined}
         data-testid="CampaignImage"
         data-ratio={ratio}
         sx={{

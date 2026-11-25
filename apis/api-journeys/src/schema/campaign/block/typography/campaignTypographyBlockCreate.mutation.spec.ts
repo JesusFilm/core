@@ -126,7 +126,7 @@ describe('campaignTypographyBlockCreate', () => {
   it('caps content at 2000 characters (BAD_USER_INPUT, content)', async () => {
     const result = await create({ content: 'x'.repeat(2001) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'content'
     })
@@ -138,7 +138,7 @@ describe('campaignTypographyBlockCreate', () => {
 
     const result = await create({ parentBlockId: 'missing' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'parentBlockId'
     })
@@ -151,7 +151,7 @@ describe('campaignTypographyBlockCreate', () => {
 
     const result = await create({})
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 
@@ -160,7 +160,7 @@ describe('campaignTypographyBlockCreate', () => {
 
     const result = await create({ campaignId: 'missing' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   describe('Region Lines', () => {
@@ -226,7 +226,7 @@ describe('campaignTypographyBlockCreate', () => {
 
       const result = await createLine({ regionId: 'otherRegionId' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'regionId'
       })
@@ -239,14 +239,14 @@ describe('campaignTypographyBlockCreate', () => {
         placement: 'above'
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'placement'
       })
     })
 
     it('rejects neither or both of parentBlockId and regionId (BAD_USER_INPUT, parentBlockId)', async () => {
-      expect((await createLine({})).errors[0].extensions).toMatchObject({
+      expect((await createLine({})).errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
       })
@@ -256,7 +256,7 @@ describe('campaignTypographyBlockCreate', () => {
             parentBlockId: 'heroId',
             regionId: 'eurRegionId'
           })
-        ).errors[0].extensions
+        ).errors?.[0].extensions
       ).toMatchObject({ code: 'BAD_USER_INPUT', field: 'parentBlockId' })
       expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
     })

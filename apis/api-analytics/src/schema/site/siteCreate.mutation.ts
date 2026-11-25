@@ -8,7 +8,11 @@ const SiteCreateInput = builder.inputType('SiteCreateInput', {
   fields: (t) => ({
     domain: t.string({ required: true }),
     goals: t.stringList(),
-    disableSharedLinks: t.boolean({ required: false })
+    disableSharedLinks: t.boolean({ required: false }),
+    allowedEventProps: t.stringList({
+      description:
+        'Custom properties the dashboard shows; Plausible hides any not listed. Called again for a site the caller owns, missing ones are added and none removed.'
+    })
   })
 })
 
@@ -31,6 +35,7 @@ builder.mutationType({
             data: {
               domain: input.domain,
               timezone: 'Etc/UTC',
+              allowed_event_props: input.allowedEventProps ?? undefined,
               inserted_at: new Date(),
               updated_at: new Date(),
               site_memberships: {
@@ -92,11 +97,26 @@ builder.mutationType({
               }
             })
             if (
-              site?.site_memberships != null &&
-              site?.site_memberships.length > 0
+              site?.site_memberships == null ||
+              site.site_memberships.length === 0
             )
-              return site
-            throw new Error('domain already exists', { cause: error })
+              throw new Error('domain already exists', { cause: error })
+
+            // Plausible leaves the column NULL on a site that never set one.
+            const allowedProps: string[] = site.allowed_event_props ?? []
+            const missingProps = (input.allowedEventProps ?? []).filter(
+              (prop) => !allowedProps.includes(prop)
+            )
+            if (missingProps.length === 0) return site
+
+            return await prisma.sites.update({
+              ...query,
+              where: { id: site.id },
+              data: {
+                allowed_event_props: [...allowedProps, ...missingProps],
+                updated_at: new Date()
+              }
+            })
           }
 
           throw error

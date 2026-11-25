@@ -1,1 +1,0 @@
-export { useChangeTypeCommand } from './useChangeTypeCommand'

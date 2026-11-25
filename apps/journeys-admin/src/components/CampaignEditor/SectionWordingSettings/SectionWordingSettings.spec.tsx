@@ -1,4 +1,12 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MockLink } from '@apollo/client/testing'
+import {
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor
+} from '@testing-library/react'
+import { useTranslation } from 'next-i18next/pages'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_STRING_UPDATE } from '../../../libs/useCampaignStringUpdateMutation'
@@ -10,14 +18,16 @@ import {
   stringKeyLabel
 } from './SectionWordingSettings'
 
-const journeyList = campaign.blocks.find(
-  (block) => block.id === 'landingJourneyListId'
-)!
+function blockById(id: string): (typeof campaign.blocks)[number] {
+  return campaign.blocks.find((block) => block.id === id)!
+}
+
+const journeyList = blockById('landingJourneyListId')
 const noJourneys = campaign.strings.find(
   (string) => string.key === CampaignStringKey.noJourneys
 )!
 
-function stringMock(value: string): Record<string, unknown> {
+function stringMock(value: string): MockLink.MockedResponse {
   return {
     request: {
       query: CAMPAIGN_STRING_UPDATE,
@@ -83,19 +93,64 @@ describe('SectionWordingSettings', () => {
     await waitFor(() => expect(mock.result).toHaveBeenCalled())
   })
 
-  it('renders nothing for a section that reads no wording', () => {
-    const hero = campaign.blocks.find((block) => block.id === 'heroId')!
+  it('shows the All regions label on the header', () => {
+    render(
+      <StaticEditor initialState={{ previewLanguageId: '529' }}>
+        <SectionWordingSettings block={blockById('headerId')} />
+      </StaticEditor>
+    )
+
+    expect(
+      screen.getByRole('textbox', { name: 'All regions label' })
+    ).toHaveValue('All regions')
+  })
+
+  it('shows the All regions label on an Analytics section', () => {
+    render(
+      <StaticEditor initialState={{ previewLanguageId: '529' }}>
+        <SectionWordingSettings block={blockById('regionAnalyticsId')} />
+      </StaticEditor>
+    )
+
+    expect(
+      screen.getByRole('textbox', { name: 'All regions label' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', { name: 'Total visitors tile' })
+    ).toBeInTheDocument()
+  })
+
+  it('renders nothing for the Region Header, which reads no wording', () => {
     render(
       <StaticEditor>
-        <SectionWordingSettings block={hero} />
+        <SectionWordingSettings block={blockById('regionHeaderId')} />
       </StaticEditor>
     )
 
     expect(screen.queryByTestId('SectionWordingSettings')).toBeNull()
   })
 
+  it.each(['CampaignHeroBlock', 'CampaignFeaturedMediaBlock'] as const)(
+    'shows the video count word on a %s',
+    (__typename) => {
+      render(
+        <StaticEditor initialState={{ previewLanguageId: '529' }}>
+          <SectionWordingSettings block={{ __typename }} />
+        </StaticEditor>
+      )
+
+      expect(
+        screen.getByRole('textbox', { name: 'Video count word' })
+      ).toHaveValue('videos')
+    }
+  )
+
   it('names every key', () => {
-    const t = (key: string): string => key
+    const {
+      result: {
+        current: { t }
+      }
+    } = renderHook(() => useTranslation('apps-journeys-admin'))
     for (const key of Object.values(CampaignStringKey)) {
       expect(stringKeyLabel(t, key)).not.toBe(key)
     }

@@ -41,7 +41,7 @@ ComponentName/
 
 - Always use MUI components (`Box`, `Typography`, `Button`, etc.) — never bare HTML tags.
 - Use `styled()` from `@mui/material/styles` for custom styling.
-- Accessibility is mandatory: `tabIndex`, `aria-label`, `onClick`, `onKeyDown` on interactive elements.
+- Accessibility is mandatory: interactive elements must work by keyboard and screen reader. MUI and native interactive components already handle focus and key activation; add `tabIndex`, `role`, `aria-label` and `onKeyDown` yourself only on a non-interactive element made clickable.
 - Early returns to reduce nesting.
 
 ## Provider stack
@@ -55,6 +55,8 @@ Page-level wrapping order (from `_app.tsx` and `JourneyPageWrapper`):
 5. `PlausibleProvider` — analytics (per journey)
 6. `JourneyProvider` — journey data context (`useJourney()`)
 7. `ThemeProvider` — per-step theming with custom fonts
+
+Campaign pages use `CampaignPageWrapper` (`src/components/CampaignPageWrapper/`) in place of `JourneyPageWrapper`: its own `PlausibleProvider` (the team's site, `api-journeys-team-<teamId>`) and a `ThemeProvider` built from the campaign's theme and Page Language direction, around `CampaignPage`.
 
 Tests must wrap components in the required providers:
 
@@ -107,6 +109,11 @@ Pages Router with static generation:
 - `pages/[hostname]/[journeySlug]/[stepSlug].tsx` — step-specific
 - `pages/[hostname]/embed/[journeySlug].tsx` — embedded view
 - `pages/home/[journeySlug].tsx` — home-hosted journeys
+- `pages/home/campaign/**` — root-domain campaign pages (`/campaign/<slug>` landing page and `/campaign/<slug>/<region slug>`), with `_lang/[lang]/` variants
+- `pages/[hostname]/index.tsx` — a Campaign Domain's landing page (a team domain's journey list otherwise); `pages/[hostname]/[journeySlug].tsx` also serves a Campaign Domain's region pages
+- `pages/[hostname]/_lang/[lang]/**` — a Campaign Domain's pages in the Page Language the URL names
+- `proxy.ts` rewrites a campaign URL's `?lang=<tag>` (a bcp47-shaped tag) to the `_lang/<tag>` path, since the pages are statically generated per language
+- `public/countries-110m.json` — the world atlas for the campaign Analytics world map (`getWorldMap`); served with CORS open so the journeys-admin canvas can fetch it
 - `getStaticProps` with `revalidate: 60`, `getStaticPaths` with `fallback: 'blocking'`
 
 ## RTL and locale
@@ -114,6 +121,9 @@ Pages Router with static generation:
 - `getJourneyRTL(journey)` utility returns `{ locale, rtl }` based on journey language
 - RTL affects layout direction (e.g., `NavigationButton` reverses positions)
 - Emotion cache created with `createEmotionCache({ rtl })` when needed
+- `getPageRTL(pageProps)` (`src/libs/getPageRTL`) decides the Emotion cache direction in `_app`: a campaign page follows its resolved Page Language, a journey page its journey's language
+- The document `lang`/`dir` follow the Page Language on campaign pages only (`documentLanguage` in `pages/_document.tsx`); every other page, a journey page included, keeps the app default
+- `createRtlEmotionPlugin()` (`src/libs/rtlEmotionPlugin`) is the `_document` plugin that swaps in a right-to-left Emotion cache for a campaign page whose Page Language is RTL
 
 ## Testing
 
@@ -142,3 +152,13 @@ pnpm dlx nx run journeys-e2e:e2e          # end-to-end tests
 - MUI: `@mui/material/*`
 - Apollo: `@apollo/client`
 - i18n: `next-i18next`
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

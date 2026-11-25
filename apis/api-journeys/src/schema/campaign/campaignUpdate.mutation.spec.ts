@@ -3,12 +3,14 @@ import { type MockedFunction, vi } from 'vitest'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../test/campaignAddressSnapshot'
 import {
   CampaignSpecResult,
   authClient,
   mockUser
 } from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
+import { mockTransaction } from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import {
   UNIQUE_VIOLATION_SHAPES,
@@ -25,6 +27,11 @@ import {
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('./gatewayClient', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./gatewayClient')>()),
+  fetchLanguage: vi.fn()
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -57,6 +64,7 @@ describe('campaignUpdate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
+    mockTransaction(prismaMock)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
       userId: mockUser.id,
@@ -120,11 +128,11 @@ describe('campaignUpdate', () => {
       .published()
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    mockAddressSnapshots(campaign, { ...campaign, slug: 'xmas-2026' })
     prismaMock.campaign.update.mockResolvedValue({
       ...campaign,
       slug: 'xmas-2026'
     })
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([])
 
     await update({ slug: 'xmas-2026' })
 
@@ -134,6 +142,46 @@ describe('campaignUpdate', () => {
       '/home/campaign/xmas-2026',
       '/home/campaign/xmas-2026/eur'
     ])
+  })
+
+  it('also queues the domain form on a slug change of a campaign with a Campaign Domain', async () => {
+    const published = campaignFactory({ role: 'manager' })
+      .withRegion('EUR')
+      .published()
+      .build()
+    const campaign = {
+      ...published,
+      customDomains: [{ name: 'outreach.example.org' }]
+    }
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    mockAddressSnapshots(campaign, { ...campaign, slug: 'xmas-2026' })
+    prismaMock.campaign.update.mockResolvedValue({
+      ...published,
+      slug: 'xmas-2026'
+    })
+
+    await update({ slug: 'xmas-2026' })
+
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/outreach.example.org',
+      '/outreach.example.org/eur',
+      '/home/campaign/xmas-2026',
+      '/home/campaign/xmas-2026/eur'
+    ])
+  })
+
+  it('queues nothing when the slug write fails', async () => {
+    const campaign = campaignFactory({ role: 'manager' }).published().build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    mockAddressSnapshots(campaign, { ...campaign, slug: 'xmas-2026' })
+    prismaMock.campaign.update.mockRejectedValue(new Error('write failed'))
+
+    const result = await update({ slug: 'xmas-2026' })
+
+    expect(result.errors?.[0]?.message).toBe('write failed')
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
   it('queues nothing for a title-only change on a published campaign', async () => {
@@ -166,7 +214,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ title: '   ' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
@@ -180,7 +228,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ title: 'x'.repeat(101) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
@@ -201,7 +249,7 @@ describe('campaignUpdate', () => {
 
       const result = await update({ slug })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slug'
       })
@@ -217,7 +265,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ slug: 'taken' })
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'slug already in use',
       extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
     })
@@ -236,7 +284,7 @@ describe('campaignUpdate', () => {
 
       const result = await update({ slug: 'raced' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slug'
       })
@@ -305,7 +353,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ palette: ['#AABBCC', 'red'] })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'palette'
     })
@@ -413,12 +461,6 @@ describe('campaignUpdate', () => {
       }
     }
 
-    beforeEach(() => {
-      prismaMock.$transaction.mockImplementation(
-        async (callback: any) => await callback(prismaMock)
-      )
-    })
-
     it('rejects a language that is not one of the campaign languages (BAD_USER_INPUT, field defaultLanguageId)', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(
         campaignFactory({ role: 'member' }).withLanguage(FRENCH).build()
@@ -426,7 +468,7 @@ describe('campaignUpdate', () => {
 
       const result = await setDefault(SPANISH)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'defaultLanguageId'
       })
@@ -449,7 +491,7 @@ describe('campaignUpdate', () => {
       const result = await setDefault(FRENCH)
 
       expect(missing).toBeGreaterThan(0)
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'defaultLanguageId',
         count: missing
@@ -470,7 +512,7 @@ describe('campaignUpdate', () => {
 
       const result = await setDefault(FRENCH)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'defaultLanguageId',
         count: 1
@@ -674,7 +716,7 @@ describe('campaignUpdate', () => {
         }
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'title'
       })
@@ -696,7 +738,7 @@ describe('campaignUpdate', () => {
 
       const result = await setDefault(FRENCH)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'defaultLanguageId'
       })
@@ -723,7 +765,8 @@ describe('campaignUpdate', () => {
       const result = await setDefault(campaign.defaultLanguageId)
 
       expect(result.errors).toBeUndefined()
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      // The plain write: no swap, so none of its row locks.
+      expect(prismaMock.$queryRaw).not.toHaveBeenCalled()
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
 
@@ -734,7 +777,7 @@ describe('campaignUpdate', () => {
 
       const result = await setDefault(FRENCH)
 
-      expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+      expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
   })

@@ -91,7 +91,7 @@ describe('campaignBlockUpdateNavigateToRegionAction', () => {
 
     const result = await update('otherRegionId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'regionId'
     })
@@ -105,7 +105,7 @@ describe('campaignBlockUpdateNavigateToRegionAction', () => {
 
     const result = await update('eurRegionId', 'heroId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'id'
     })
@@ -123,7 +123,7 @@ describe('campaignBlockUpdateNavigateToRegionAction', () => {
 
     const result = await update('eurRegionId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignAction.upsert).not.toHaveBeenCalled()
   })
 })

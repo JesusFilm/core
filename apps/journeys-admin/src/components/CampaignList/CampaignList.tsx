@@ -2,6 +2,7 @@ import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
+import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
@@ -11,6 +12,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { CampaignStatus } from '../../../__generated__/globalTypes'
@@ -26,8 +28,8 @@ import { CreateCampaignDialog } from './CreateCampaignDialog'
  * team picked the list asks for one and Create stays disabled. Each row
  * opens the editor and shows the campaign's public address as Settings
  * does: its Campaign Domain when it has one (the root-domain address then
- * 404s), else `/campaign/<slug>` on the root domain. Create campaign opens
- * the dialog.
+ * 404s), else `/campaign/<slug>` on the root domain, with a Report link to
+ * its Campaign Report. Create campaign opens the dialog.
  */
 export function CampaignList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -122,6 +124,17 @@ export function CampaignList(): ReactElement {
                   </Typography>
                 </CardContent>
               </CardActionArea>
+              <CardActions sx={{ pt: 0 }}>
+                <Button
+                  component={NextLink}
+                  href={`/campaigns/${campaign.id}/reports`}
+                  size="small"
+                  startIcon={<BarGroup3Icon />}
+                  data-testid={`CampaignListReport-${campaign.id}`}
+                >
+                  {t('Report')}
+                </Button>
+              </CardActions>
             </Card>
           )
         })}

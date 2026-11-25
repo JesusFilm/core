@@ -62,7 +62,7 @@ const BORDER_ALPHA = 0.12
 
 export type CampaignBandOverlay = 'light' | 'medium' | 'heavy'
 
-/** `backgroundOverlay` → the dark overlay's alpha over an `image` cover (PRD §4); null ⇒ medium. */
+/** `backgroundOverlay` → the dark overlay's alpha over an `image` cover (glossary: **Section Background**); null ⇒ medium. */
 export const CAMPAIGN_OVERLAY_ALPHA: Record<CampaignBandOverlay, number> = {
   light: 0.3,
   medium: 0.55,
@@ -163,7 +163,7 @@ function tableRow(
 }
 
 /**
- * The band resolution table (PRD §4): `backgroundKind` × theme → the colours
+ * The band resolution table (glossary: **Section Background**): `backgroundKind` × theme → the colours
  * a section band paints with, then the section's five overrides layered on
  * top of every row. The button fallback chain's last two links live here
  * (section `buttonColor` → table); a button's own hex is applied by the

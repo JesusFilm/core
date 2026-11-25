@@ -150,7 +150,7 @@ describe('campaignColumnsBlockCreate', () => {
     async (slotIds) => {
       const result = await create({ slotIds })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slotIds'
       })
@@ -160,7 +160,7 @@ describe('campaignColumnsBlockCreate', () => {
   it('rejects a ratio outside the enum', async () => {
     const result = await create({ ratio: 'tall' })
 
-    expect(result.errors[0].message).toContain(
+    expect(result.errors?.[0].message).toContain(
       'Value "tall" does not exist in "CampaignColumnsRatio" enum'
     )
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
@@ -176,7 +176,7 @@ describe('campaignColumnsBlockCreate', () => {
 
     const result = await create({ parentBlockId: 'slotId' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'parentBlockId'
     })
@@ -190,7 +190,7 @@ describe('campaignColumnsBlockCreate', () => {
 
     const result = await create({})
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 
@@ -200,7 +200,7 @@ describe('campaignColumnsBlockCreate', () => {
     it('refuses the same slot id twice (BAD_USER_INPUT, slotIds)', async () => {
       const result = await create({ slotIds: [LEFT_SLOT_ID, LEFT_SLOT_ID] })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slotIds'
       })
@@ -213,7 +213,7 @@ describe('campaignColumnsBlockCreate', () => {
         slotIds: [SECTION_ID, RIGHT_SLOT_ID]
       })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slotIds'
       })
@@ -223,7 +223,7 @@ describe('campaignColumnsBlockCreate', () => {
     it('refuses a slot id that is not a UUID (BAD_USER_INPUT, slotIds)', async () => {
       const result = await create({ slotIds: [LEFT_SLOT_ID, 'rightId'] })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slotIds'
       })
@@ -250,7 +250,7 @@ describe('campaignColumnsBlockCreate', () => {
         slotIds: [LEFT_SLOT_ID, RIGHT_SLOT_ID]
       })
 
-      expect(result.errors[0]).toMatchObject({
+      expect(result.errors?.[0]).toMatchObject({
         message: 'slotIds is already taken',
         extensions: { code: 'BAD_USER_INPUT', field: 'slotIds' }
       })

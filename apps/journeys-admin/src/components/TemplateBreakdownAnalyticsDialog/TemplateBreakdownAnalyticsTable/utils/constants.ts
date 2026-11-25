@@ -1,5 +1,11 @@
 import { SortableColumn } from './types'
 
+export interface CustomTrackingLabels {
+  custom1Label: string | null
+  custom2Label: string | null
+  custom3Label: string | null
+}
+
 export const UNKNOWN_JOURNEYS_AGGREGATE_ID = '__unknown_journeys__'
 
 export const NUMERIC_COLUMNS: SortableColumn[] = [
@@ -19,7 +25,10 @@ export const NUMERIC_COLUMNS: SortableColumn[] = [
 
 type TranslationFunction = (key: string) => string
 
-export const getColumnHeaders = (t: TranslationFunction) => [
+export const getColumnHeaders = (
+  t: TranslationFunction,
+  customTrackingLabels?: CustomTrackingLabels | null
+) => [
   {
     id: 'journeyName' as SortableColumn,
     label: t('Team'),
@@ -49,7 +58,16 @@ export const getColumnHeaders = (t: TranslationFunction) => [
     label: t('Gospel Presentation Completed')
   },
   { id: 'rsvpCapture' as SortableColumn, label: t('RSVP') },
-  { id: 'custom1Capture' as SortableColumn, label: t('Custom Tracking 1') },
-  { id: 'custom2Capture' as SortableColumn, label: t('Custom Tracking 2') },
-  { id: 'custom3Capture' as SortableColumn, label: t('Custom Tracking 3') }
+  {
+    id: 'custom1Capture' as SortableColumn,
+    label: customTrackingLabels?.custom1Label ?? t('Custom Tracking 1')
+  },
+  {
+    id: 'custom2Capture' as SortableColumn,
+    label: customTrackingLabels?.custom2Label ?? t('Custom Tracking 2')
+  },
+  {
+    id: 'custom3Capture' as SortableColumn,
+    label: customTrackingLabels?.custom3Label ?? t('Custom Tracking 3')
+  }
 ]

@@ -12,13 +12,6 @@ export const CAMPAIGN_FEATURED_MEDIA_LAYOUTS = Object.values(
   CampaignFeaturedMediaLayout
 )
 
-export const FEATURED_MEDIA_TEXT_FIELDS = [
-  'eyebrow',
-  'title',
-  'description',
-  'bullets'
-] as const
-
 export interface FeaturedMediaInput {
   eyebrow?: string | null
   title?: string | null
@@ -43,7 +36,7 @@ export function validateFeaturedMediaInput(input: FeaturedMediaInput): {
   layout?: CampaignFeaturedMediaLayout
 } {
   const data: ReturnType<typeof validateFeaturedMediaInput> =
-    validateSectionText(input, FEATURED_MEDIA_TEXT_FIELDS)
+    validateSectionText('CampaignFeaturedMediaBlock', input)
   const mediaSide = assertNotNull(input.mediaSide, 'mediaSide')
   if (mediaSide !== undefined)
     data.mediaSide = assertEnum(mediaSide, 'mediaSide', CAMPAIGN_MEDIA_SIDES)

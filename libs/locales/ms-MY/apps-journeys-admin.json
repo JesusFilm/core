@@ -893,7 +893,7 @@
   "DNS Config": "Konfigurasi DNS",
   "Valid Configuration": "Konfigurasi Sah",
   "Invalid Configuration": "Konfigurasi Tidak Sah",
-  "Pending Verfication": "Menunggu Pengesahan",
+  "Pending Verification": "Menunggu Pengesahan",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Domain {{ customDomainName }} telah ditambahkan pada pasukan lain. Sila lengkapkan pengesahan untuk menambahkannya pada pasukan ini.",
   "Domain name is a required field": "Nama domain ialah medan yang diperlukan",
   "Must be a valid URL": "Mestilah URL yang sah",

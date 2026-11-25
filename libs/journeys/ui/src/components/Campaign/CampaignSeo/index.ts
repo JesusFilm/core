@@ -1,6 +1,5 @@
 export { CampaignSeo } from './CampaignSeo'
 export {
-  campaignPagePath,
   campaignPreferredLocation,
   campaignSeoProps,
   campaignSocialImage

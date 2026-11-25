@@ -52,9 +52,13 @@ function AddCommand(): ReactElement {
   )
 }
 
+const frames: HTMLIFrameElement[] = []
+
+/** A frame document like the canvas's; removed again after each test. */
 function frameDocument(): Document {
   const iframe = document.createElement('iframe')
   document.body.appendChild(iframe)
+  frames.push(iframe)
   return iframe.contentDocument as Document
 }
 
@@ -79,6 +83,10 @@ function pressInFrame(
 }
 
 describe('Hotkeys', () => {
+  afterEach(() => {
+    frames.splice(0).forEach((iframe) => iframe.remove())
+  })
+
   describe('inside the canvas frame', () => {
     beforeEach(() => vi.clearAllMocks())
 

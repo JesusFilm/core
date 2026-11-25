@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { type Mock, type MockedFunction } from 'vitest'
 
@@ -52,8 +53,15 @@ import {
   COVER_IMAGE_BLOCK_CREATE,
   COVER_IMAGE_BLOCK_UPDATE
 } from './BackgroundMediaImage'
+import { calculatePoint } from './FocalPoint/utils/calculatePoint'
 
 import { BackgroundMediaImage } from '.'
+
+vi.mock('./FocalPoint/utils/calculatePoint')
+
+const mockedCalculatePoint = calculatePoint as MockedFunction<
+  typeof calculatePoint
+>
 
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -66,6 +74,16 @@ vi.mock('uuid', () => ({
 }))
 
 const mockUuidv4 = uuidv4 as MockedFunction<typeof uuidv4>
+
+// jsdom has no PointerEvent, so fireEvent would drop the mouse fields
+class PointerEventPolyfill extends MouseEvent {
+  pointerId: number
+
+  constructor(type: string, init: PointerEventInit = {}) {
+    super(type, init)
+    this.pointerId = init.pointerId ?? 0
+  }
+}
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -496,6 +514,169 @@ describe('BackgroundMediaImage', () => {
           { __ref: `CardBlock:${card.id}` }
         ])
       )
+    })
+
+    describe('focal point drag', () => {
+      const { children: _children, ...priorImage } = existingCoverBlock
+        .children[0] as TreeBlock<ImageBlock>
+
+      function focalPointInput(
+        focalLeft: number,
+        focalTop: number
+      ): CoverImageBlockUpdateVariables['input'] {
+        return {
+          src: priorImage.src,
+          alt: priorImage.alt,
+          blurhash: priorImage.blurhash,
+          width: priorImage.width,
+          height: priorImage.height,
+          focalTop,
+          focalLeft
+        }
+      }
+
+      // what the canvas shows: saved data plus optimistic layers
+      function shownFocalPoint(cache: InMemoryCache): unknown {
+        return cache.extract(true)[`ImageBlock:${priorImage.id}`]
+      }
+
+      function Editor({
+        cardBlock
+      }: {
+        cardBlock: TreeBlock<CardBlock>
+      }): ReactElement {
+        return (
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
+            <SnackbarProvider>
+              <CommandProvider>
+                <BackgroundMediaImage cardBlock={cardBlock} />
+                <CommandUndoItem variant="button" />
+              </CommandProvider>
+            </SnackbarProvider>
+          </JourneyProvider>
+        )
+      }
+
+      // Drags the dot to 75%/25% and releases it, re-rendering mid-drag with
+      // the previewed block the way the editor does.
+      async function dragFocalPoint(
+        mocks: MockLink.MockedResponse[]
+      ): Promise<InMemoryCache> {
+        window.PointerEvent = PointerEventPolyfill as typeof PointerEvent
+        // jsdom does not implement pointer capture
+        HTMLElement.prototype.setPointerCapture = vi.fn()
+        mockedCalculatePoint
+          .mockReturnValueOnce({ x: 60, y: 60 })
+          .mockReturnValueOnce({ x: 75, y: 25 })
+        const cache = new InMemoryCache()
+        cache.restore({ [`ImageBlock:${priorImage.id}`]: { ...priorImage } })
+        const { rerender } = render(
+          <MockedProvider cache={cache} mocks={mocks}>
+            <Editor cardBlock={existingCoverBlock} />
+          </MockedProvider>
+        )
+
+        const dot = screen.getByTestId('focal-point-dot')
+        fireEvent.pointerDown(dot, { button: 0, pointerId: 1 })
+        fireEvent.pointerMove(dot, { pointerId: 1 })
+
+        // previews are written on the next animation frame
+        await waitFor(() =>
+          expect(shownFocalPoint(cache)).toMatchObject({
+            focalLeft: 75,
+            focalTop: 25
+          })
+        )
+        // the preview is an optimistic layer; saved data is untouched
+        expect(cache.extract()[`ImageBlock:${priorImage.id}`]).toMatchObject({
+          focalLeft: 50,
+          focalTop: 50
+        })
+
+        rerender(
+          <MockedProvider cache={cache}>
+            <Editor
+              cardBlock={{
+                ...existingCoverBlock,
+                children: [
+                  { ...priorImage, children: [], focalLeft: 75, focalTop: 25 }
+                ]
+              }}
+            />
+          </MockedProvider>
+        )
+        fireEvent.pointerUp(screen.getByTestId('focal-point-dot'), {
+          pointerId: 1
+        })
+        return cache
+      }
+
+      it('previews the point and saves it once on release', async () => {
+        const updateResult = vi.fn(() => ({
+          data: {
+            imageBlockUpdate: { ...priorImage, focalLeft: 75, focalTop: 25 }
+          }
+        }))
+        const undoResult = vi.fn(() => ({
+          data: { imageBlockUpdate: priorImage }
+        }))
+
+        const cache = await dragFocalPoint([
+          {
+            request: {
+              query: COVER_IMAGE_BLOCK_UPDATE,
+              variables: { id: priorImage.id, input: focalPointInput(75, 25) }
+            },
+            result: updateResult
+          },
+          {
+            request: {
+              query: COVER_IMAGE_BLOCK_UPDATE,
+              variables: { id: priorImage.id, input: focalPointInput(50, 50) }
+            },
+            result: undoResult
+          }
+        ])
+
+        // the save's optimistic response takes over from the preview with no
+        // flash back to the old point
+        expect(shownFocalPoint(cache)).toMatchObject({
+          focalLeft: 75,
+          focalTop: 25
+        })
+        await waitFor(() => expect(updateResult).toHaveBeenCalledTimes(1))
+        expect(cache.extract()[`ImageBlock:${priorImage.id}`]).toMatchObject({
+          focalLeft: 75,
+          focalTop: 25
+        })
+
+        // undo restores the position from before the drag, not the preview
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+        await waitFor(() => expect(undoResult).toHaveBeenCalled())
+        expect(shownFocalPoint(cache)).toMatchObject({
+          focalLeft: 50,
+          focalTop: 50
+        })
+      })
+
+      it('falls back to the saved point when the save fails', async () => {
+        const cache = await dragFocalPoint([
+          {
+            request: {
+              query: COVER_IMAGE_BLOCK_UPDATE,
+              variables: { id: priorImage.id, input: focalPointInput(75, 25) }
+            },
+            error: new Error('network error')
+          }
+        ])
+
+        await waitFor(() =>
+          expect(shownFocalPoint(cache)).toMatchObject({
+            focalLeft: 50,
+            focalTop: 50
+          })
+        )
+      })
     })
   })
 })

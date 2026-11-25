@@ -1,1 +1,1 @@
-export { ALIGNS, AlignRow, StyleRow } from './StyleRow'
+export { StyleRow } from './StyleRow'

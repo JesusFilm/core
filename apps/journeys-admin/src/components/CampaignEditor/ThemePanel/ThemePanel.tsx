@@ -197,6 +197,7 @@ export function ThemePanel(): ReactElement {
           }))}
           rowTestId="ThemeColour"
           pickerTestId="ThemeColourPicker"
+          showIndicator={false}
           onCommit={(column, hex) => addTheme({ [column]: hex })}
         />
       </Stack>

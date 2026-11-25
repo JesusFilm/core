@@ -113,7 +113,7 @@ describe('campaignJourneyListBlockCreate', () => {
   it('caps description at 500 characters (BAD_USER_INPUT, description)', async () => {
     const result = await create({ description: 'x'.repeat(501) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'description'
     })
@@ -124,7 +124,7 @@ describe('campaignJourneyListBlockCreate', () => {
 
     const result = await create({ pageId: 'missing' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'pageId'
     })
@@ -138,7 +138,7 @@ describe('campaignJourneyListBlockCreate', () => {
 
     const result = await create({})
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 })

@@ -150,7 +150,14 @@ export function Logo(): ReactElement {
     })
   }
 
-  function updateImageBlock(input: ImageBlockUpdateInput): void {
+  // undoBlock defaults to the current block; pass the pre-preview block when
+  // the cache already holds previewed values.
+  // Logo changes never move editor focus, so shouldFocus is unused.
+  function updateImageBlock(
+    input: ImageBlockUpdateInput,
+    _shouldFocus?: boolean,
+    undoBlock?: ImageBlock
+  ): void {
     if (imageBlock == null) return
 
     const block: ImageBlock = {
@@ -166,7 +173,7 @@ export function Logo(): ReactElement {
     add({
       parameters: {
         execute: block,
-        undo: imageBlock
+        undo: undoBlock ?? imageBlock
       },
       execute(block) {
         void imageBlockUpdate({

@@ -181,7 +181,7 @@ describe('campaignBlockOrderUpdate', () => {
 
     const result = await move('heroId', 1, 'above')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'placement'
     })
@@ -202,7 +202,7 @@ describe('campaignBlockOrderUpdate', () => {
 
     const result = await move('lineId', 1, 'above')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'placement'
     })
@@ -216,7 +216,7 @@ describe('campaignBlockOrderUpdate', () => {
 
     const result = await move('heroId', -1)
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'parentOrder'
     })
@@ -231,7 +231,7 @@ describe('campaignBlockOrderUpdate', () => {
 
       const result = await move(id, 1)
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })
@@ -347,7 +347,7 @@ describe('campaignBlockOrderUpdate', () => {
 
     const result = await move('landingPageId', 1)
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'CONFLICT',
       field: 'id'
     })
@@ -358,7 +358,7 @@ describe('campaignBlockOrderUpdate', () => {
 
     const result = await move('gone', 1)
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -371,7 +371,7 @@ describe('campaignBlockOrderUpdate', () => {
 
     const result = await move('heroId', 1)
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

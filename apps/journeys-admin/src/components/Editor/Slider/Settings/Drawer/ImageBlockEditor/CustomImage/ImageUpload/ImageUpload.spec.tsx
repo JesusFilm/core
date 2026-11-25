@@ -126,6 +126,53 @@ describe('ImageUpload', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it.each([
+    ['webp', 'testFile.webp', 'image/webp'],
+    ['heif', 'testFile.heif', 'image/heif'],
+    ['heif with no reported type', 'testFile.heif', '']
+  ])('should accept %s files', async (_label, fileName, fileType) => {
+    const result = vi.fn(() => ({
+      data: {
+        createCloudflareUploadByFile: {
+          id: 'uploadId',
+          uploadUrl: 'uploadUrl',
+          __typename: 'CloudflareImage'
+        }
+      }
+    }))
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={vi.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    window.URL.createObjectURL = vi.fn().mockImplementation(() => 'url')
+    const input = screen.getByTestId('drop zone')
+    const file = new File(['file'], fileName, { type: fileType })
+    Object.defineProperty(input, 'files', {
+      value: [file]
+    })
+    fireEvent.drop(input)
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(
+      screen.queryByText(
+        'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
+      )
+    ).not.toBeInTheDocument()
+  })
+
   it('should thread the active journeyId into the upload mutation', async () => {
     const result = vi.fn(() => ({
       data: {
@@ -287,6 +334,25 @@ describe('ImageUpload', () => {
       </MockedProvider>
     )
     expect(screen.getByText('Drop an image here')).toBeInTheDocument()
+    expect(screen.getByText('Maximum file size: 10 MB')).toBeInTheDocument()
+  })
+
+  it('should list heic and heif extensions in the file picker filter', () => {
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={vi.fn()}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+    const accept = screen
+      .getByTestId('ImageUpload')
+      .querySelector('input[type="file"]')
+      ?.getAttribute('accept')
+    expect(accept).toContain('.heic')
+    expect(accept).toContain('.heif')
   })
 
   it('should render loading state', () => {
@@ -534,7 +600,7 @@ describe('ImageUpload', () => {
       expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
       expect(
         screen.getByText(
-          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
         )
       ).toBeInTheDocument()
       expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)

@@ -5,7 +5,7 @@ on:
     - cron: '0 0 * * *'
 jobs:
   remove-stale-branches:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     permissions:
       contents: write
       pull-requests: read
@@ -23,7 +23,7 @@ jobs:
           days-before-branch-stale: 90
           days-before-branch-delete: 7
   remove-stale-prs:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: jfp-proxmox-core
     permissions:
       pull-requests: write
     steps:

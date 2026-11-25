@@ -1,4 +1,9 @@
 import {
+  entrySource,
+  isTranslated,
+  isUncertain
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+import {
   CampaignBlock,
   CampaignRegion,
   CampaignString,
@@ -13,11 +18,8 @@ import {
 } from '../enums'
 import { parseTranslations } from '../translatedValue'
 
+import { forEachTextTarget } from './forEachTextTarget'
 import {
-  CAMPAIGN_BLOCK_TEXT_FIELDS,
-  CAMPAIGN_REGION_TEXT_FIELDS,
-  CAMPAIGN_STRING_TEXT_FIELDS,
-  CAMPAIGN_TITLE_TEXT_FIELDS,
   CampaignTextFieldCaps,
   CampaignTextFieldName,
   translationsColumn
@@ -68,12 +70,11 @@ function entryOf(
   uncertain: boolean
 } | null {
   const entry = parseTranslations(translations)[languageId]
-  if (entry == null || typeof entry.value !== 'string' || entry.value === '')
-    return null
+  if (!isTranslated(entry)) return null
   return {
     value: entry.value,
-    source: entry.source,
-    uncertain: entry.source === 'machine' && entry.uncertain === true
+    source: entrySource(entry),
+    uncertain: isUncertain(entry)
   }
 }
 
@@ -146,35 +147,12 @@ function inReadingOrder(blocks: CampaignBlock[]): CampaignBlock[] {
     .flatMap(withDescendants)
 }
 
-function blockSource(
-  block: CampaignBlock,
-  group: CampaignTranslationGroupValue
-): RowSource {
-  return {
-    target: { typename: block.typename, kind: 'block', id: block.id },
-    group,
-    caps: CAMPAIGN_BLOCK_TEXT_FIELDS[block.typename] ?? {},
-    record: block
-  }
-}
-
-function stringSource(string: CampaignString): RowSource {
-  return {
-    target: { typename: 'CampaignString', kind: 'string', id: string.id },
-    group: 'interface',
-    caps: CAMPAIGN_STRING_TEXT_FIELDS,
-    record: string
-  }
-}
-
-function regionSource(region: CampaignRegion): RowSource {
-  return {
-    target: { typename: 'CampaignRegion', kind: 'region', id: region.id },
-    group: 'regions',
-    caps: CAMPAIGN_REGION_TEXT_FIELDS,
-    record: region
-  }
-}
+/** The typename the Translations view shows for a target that is not a block. */
+const TARGET_TYPENAMES = {
+  campaign: 'Campaign',
+  string: 'CampaignString',
+  region: 'CampaignRegion'
+} as const
 
 /**
  * Every Translated Field of the campaign with its default-language text, in
@@ -182,7 +160,8 @@ function regionSource(region: CampaignRegion): RowSource {
  * Strings, then header and footer text), Landing page, Region page, then each
  * Region's name followed by its Region Lines. Blocks are read in section
  * order, each section followed by everything nested in it (extras, and the
- * sections in a Columns section's slots with their own extras).
+ * sections in a Columns section's slots with their own extras). The targets
+ * and their fields come from `forEachTextTarget`; this places each one.
  */
 export function campaignTranslationRows(
   campaign: Pick<TranslationsCampaign, 'id' | 'pages'> & {
@@ -212,26 +191,46 @@ export function campaignTranslationRows(
     (a, b) => stringKeys.indexOf(a.key) - stringKeys.indexOf(b.key)
   )
 
-  const sources: RowSource[] = [
-    {
-      target: { typename: 'Campaign', kind: 'campaign', id: campaign.id },
-      group: 'interface',
-      caps: CAMPAIGN_TITLE_TEXT_FIELDS,
-      record: campaign
-    },
-    ...strings.map(stringSource),
-    ...chrome.map((block) => blockSource(block, 'interface')),
-    ...pageBlocks('landing').map((block) => blockSource(block, 'landing')),
-    ...pageBlocks('regionTemplate').map((block) =>
-      blockSource(block, 'region')
-    ),
+  const placed: Array<readonly [object, CampaignTranslationGroupValue]> = [
+    [campaign, 'interface'],
+    ...strings.map((string) => [string, 'interface'] as const),
+    ...chrome.map((block) => [block, 'interface'] as const),
+    ...pageBlocks('landing').map((block) => [block, 'landing'] as const),
+    ...pageBlocks('regionTemplate').map((block) => [block, 'region'] as const),
     ...campaign.regions.flatMap((region) => [
-      regionSource(region),
+      [region, 'regions'] as const,
       ...campaign.blocks
         .filter((block) => block.regionId === region.id)
         .sort(byParentOrder)
-        .map((block) => blockSource(block, 'regions'))
+        .map((block) => [block, 'regions'] as const)
     ])
   ]
-  return sources.flatMap((source) => rowsOf(source, languageId))
+  const placementOf = new Map(
+    placed.map(([record, group], order) => [record, { group, order }])
+  )
+
+  const sources: Array<{ order: number; source: RowSource }> = []
+  forEachTextTarget(campaign, (target) => {
+    const placement = placementOf.get(target.record)
+    if (placement == null) return
+    sources.push({
+      order: placement.order,
+      source: {
+        target: {
+          typename:
+            target.kind === 'block'
+              ? target.record.typename
+              : TARGET_TYPENAMES[target.kind],
+          kind: target.kind,
+          id: target.record.id
+        },
+        group: placement.group,
+        caps: target.fields,
+        record: target.record
+      }
+    })
+  })
+  return sources
+    .sort((a, b) => a.order - b.order)
+    .flatMap(({ source }) => rowsOf(source, languageId))
 }

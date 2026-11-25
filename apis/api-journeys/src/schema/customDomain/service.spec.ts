@@ -1,14 +1,29 @@
 import { vi } from 'vitest'
 
 import { prismaMock } from '../../../test/prismaMock'
-import {
-  journeyRow,
-  mockMutate,
-  mockQuery,
-  qrCodeRow
-} from '../../../test/qrCodeFixtures'
+import { journeyRow, qrCodeRow } from '../../../test/qrCodeFixtures'
 
 import { updateTeamShortLinks } from './service'
+
+// The short-link rewrite talks to the gateway through an Apollo client: its
+// `shortLink` query and `shortLinkUpdate` mutation run through these mocks.
+const { mockQuery, mockMutate, mockApolloClient } = vi.hoisted(() => {
+  const query = vi.fn()
+  const mutate = vi.fn()
+  return {
+    mockQuery: query,
+    mockMutate: mutate,
+    mockApolloClient: vi.fn(function () {
+      return { query, mutate }
+    })
+  }
+})
+
+vi.mock('@apollo/client', () => ({
+  ApolloClient: mockApolloClient,
+  InMemoryCache: vi.fn(),
+  HttpLink: vi.fn()
+}))
 
 describe('customDomain service', () => {
   describe('updateTeamShortLinks', () => {
@@ -77,7 +92,9 @@ describe('customDomain service', () => {
           campaignRegionLanguages: [{ id: 'regionLanguageId' }]
         })
       ])
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
 
       await updateTeamShortLinks('teamId')
 
@@ -98,7 +115,7 @@ describe('customDomain service', () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
         journeyRow({
           customDomains: [{ name: 'christmas.org', routeAllTeamJourneys: true }]
-        })
+        }) as never
       )
 
       await updateTeamShortLinks('teamId')
@@ -122,7 +139,7 @@ describe('customDomain service', () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
         journeyRow({
           customDomains: [{ name: 'christmas.org', routeAllTeamJourneys: true }]
-        })
+        }) as never
       )
 
       await updateTeamShortLinks('teamId')
@@ -142,7 +159,9 @@ describe('customDomain service', () => {
 
     it('points back at the root domain once the custom domain is gone', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([qrCodeRow()])
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
 
       await updateTeamShortLinks('teamId')
 
@@ -163,7 +182,9 @@ describe('customDomain service', () => {
       prismaMock.qrCode.findMany.mockResolvedValue([
         qrCodeRow({ toJourneyId: 'otherJourneyId' })
       ])
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
 
       await updateTeamShortLinks('teamId')
 
@@ -180,7 +201,7 @@ describe('customDomain service', () => {
       ])
       prismaMock.journey.findUniqueOrThrow
         .mockRejectedValueOnce(new Error('No Journey found'))
-        .mockResolvedValueOnce(journeyRow())
+        .mockResolvedValueOnce(journeyRow() as never)
 
       await expect(updateTeamShortLinks('teamId')).resolves.toBeUndefined()
 
@@ -196,7 +217,9 @@ describe('customDomain service', () => {
 
     it('logs a ZodError result and does not throw', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([qrCodeRow()])
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
       mockMutate.mockResolvedValue({
         data: { shortLinkUpdate: { __typename: 'ZodError', message: 'bad' } }
       })
@@ -208,7 +231,9 @@ describe('customDomain service', () => {
 
     it('skips a short link whose stored target is unchanged', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([qrCodeRow()])
-      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
+        journeyRow() as never
+      )
       mockQuery.mockResolvedValue({
         data: {
           shortLink: {

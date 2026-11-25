@@ -84,7 +84,7 @@ describe('campaignColumnsBlockUpdate', () => {
   it('rejects a ratio outside the enum at the schema', async () => {
     const result = await update({ ratio: 'tall' })
 
-    expect(result.errors[0].message).toContain(
+    expect(result.errors?.[0].message).toContain(
       'Value "tall" does not exist in "CampaignColumnsRatio" enum'
     )
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
@@ -97,7 +97,7 @@ describe('campaignColumnsBlockUpdate', () => {
 
     const result = await update({ ratio: 'wideLeft' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -115,7 +115,7 @@ describe('campaignColumnsBlockUpdate', () => {
 
     const result = await update({ ratio: 'wideLeft' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 

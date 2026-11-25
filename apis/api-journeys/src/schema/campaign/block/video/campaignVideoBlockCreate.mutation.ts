@@ -40,10 +40,14 @@ builder.mutationField('campaignVideoBlockCreate', (t) =>
         title: overrides.title ?? video.title,
         description: overrides.description ?? video.description
       }
-      return await createWithClientIds({ id: [id] }, async (tx) =>
-        isCarouselItem
-          ? await createChildBlock(tx, owner, data)
-          : await createOwnedBlock(tx, owner, 'mediaBlockId', data)
+      return await createWithClientIds(
+        { id: [id] },
+        owner.campaignId,
+        { structure: true },
+        async ({ tx }) =>
+          isCarouselItem
+            ? await createChildBlock(tx, owner, data)
+            : await createOwnedBlock(tx, owner, 'mediaBlockId', data)
       )
     }
   })

@@ -1,7 +1,11 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
-import { campaign, campaignWithRegions } from '../data'
+import {
+  campaign,
+  campaignWithFrenchRegionName,
+  campaignWithRegions
+} from '../data'
 import { SelectionProbe, StaticEditor } from '../testing'
 
 import { PagesPanel } from './PagesPanel'
@@ -11,7 +15,7 @@ function renderPanel(
   initialState = {}
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor campaignProp={campaignProp} initialState={initialState}>
+    <StaticEditor campaign={campaignProp} initialState={initialState}>
       <SelectionProbe />
       <PagesPanel />
     </StaticEditor>
@@ -39,7 +43,7 @@ describe('PagesPanel', () => {
     expect(pageNames()).toEqual(['Landing page', 'Region page'])
   })
 
-  it('lists each region as the Region Page rendered for it, with " · not listed" for orphans, the Needs journey chip and no " · custom"', () => {
+  it('lists each region as the Region Page rendered for it, with " · not listed" for orphans and the Needs journey chip', () => {
     renderPanel(campaignWithRegions)
 
     expect(pageNames()).toEqual([
@@ -47,7 +51,16 @@ describe('PagesPanel', () => {
       'EuropeNeeds journey',
       'Africa · not listedNeeds journey'
     ])
-    expect(screen.queryByText(/custom/)).not.toBeInTheDocument()
+  })
+
+  it('names each region in the Preview Language, by the default name where there is no translation', () => {
+    renderPanel(campaignWithFrenchRegionName, { previewLanguageId: '496' })
+
+    expect(pageNames()).toEqual([
+      'Landing page',
+      'L’EuropeNeeds journey',
+      'Africa · not listedNeeds journey'
+    ])
   })
 
   it('drops the Needs journey chip once every language of a region is linked', () => {
@@ -107,5 +120,19 @@ describe('PagesPanel', () => {
     expect(
       screen.getByRole('combobox', { name: 'Preview language' })
     ).toHaveTextContent('Français')
+  })
+
+  it('lists the Preview Languages by their order', () => {
+    renderPanel({
+      ...campaign,
+      languages: [...campaign.languages].reverse()
+    })
+
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Preview language' })
+    )
+    expect(
+      screen.getAllByRole('option').map((option) => option.textContent)
+    ).toEqual(['English', 'Français'])
   })
 })
