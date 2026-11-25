@@ -121,6 +121,11 @@ export function LocalDetails({
     languageId: string
     unpublished: boolean
   } | null>(null)
+  // Tracks the language whose lookup most recently failed, so the UI can
+  // offer a retry instead of leaving Select/Apply disabled with no way out.
+  const [lookupErrorLanguageId, setLookupErrorLanguageId] = useState<
+    string | null
+  >(null)
   const pickedLanguageId = selectedLanguage?.id
   const isLoadedLanguagePicked =
     pickedLanguageId == null || pickedLanguageId === languageId
@@ -130,34 +135,49 @@ export function LocalDetails({
   const isUnpublished = isLoadedLanguagePicked
     ? loadedUnpublished
     : lookup?.languageId === pickedLanguageId && lookup.unpublished
+  const hasLookupError =
+    !isLoadedLanguagePicked && lookupErrorLanguageId === pickedLanguageId
 
-  useEffect(() => {
-    if (open !== true || isLoadedLanguagePicked || data == null) return
-    let isStale = false
+  // requestId guards against a retry (or a fresh language pick) racing an
+  // in-flight lookup: only the most recently issued request is allowed to
+  // write its result into state.
+  const lookupRequestIdRef = useRef(0)
+
+  const checkPublished = (forLanguageId: string): void => {
+    const requestId = ++lookupRequestIdRef.current
+    setLookupErrorLanguageId(null)
     client
       .query<GetVideo>({
         query: GET_VIDEO,
-        variables: { id, languageId: pickedLanguageId }
+        variables: { id, languageId: forLanguageId }
       })
       .then(({ data: pickedData }) => {
-        if (isStale) return
+        if (lookupRequestIdRef.current !== requestId) return
         setLookup({
-          languageId: pickedLanguageId,
+          languageId: forLanguageId,
           unpublished: pickedData?.video?.variant?.published === false
         })
       })
       .catch(() => {
-        if (isStale) return
+        if (lookupRequestIdRef.current !== requestId) return
+        setLookupErrorLanguageId(forLanguageId)
         enqueueSnackbar(t('Could not check whether this video is published'), {
           variant: 'error',
           preventDuplicate: true
         })
       })
-    return () => {
-      isStale = true
-    }
+  }
+
+  useEffect(() => {
+    if (open !== true || isLoadedLanguagePicked || data == null) return
+    checkPublished(pickedLanguageId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, id, pickedLanguageId, languageId, data])
+
+  const handleRetryPublishedCheck = (): void => {
+    if (pickedLanguageId == null) return
+    checkPublished(pickedLanguageId)
+  }
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -361,6 +381,20 @@ export function LocalDetails({
           {t('Select')}
         </Button>
       </Stack>
+      {hasLookupError && (
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <Typography variant="caption" color="error.main">
+            {t("Couldn't verify this language's publish status")}
+          </Typography>
+          <Button size="small" onClick={handleRetryPublishedCheck}>
+            {t('Retry')}
+          </Button>
+        </Stack>
+      )}
       <VideoLanguage
         open={openLanguage}
         onClose={() => setOpenLanguage(false)}

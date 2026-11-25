@@ -587,6 +587,55 @@ describe('LocalDetails', () => {
         )
         expect(screen.queryByText('Unpublished Video')).not.toBeInTheDocument()
       })
+
+      it('should offer a retry when the published lookup for the picked language fails', async () => {
+        const erroredLookup = {
+          request: {
+            query: GET_VIDEO,
+            variables: { id: '2_Acts7302-0-0', languageId: '496' }
+          },
+          error: new Error('Network error')
+        }
+        render(
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[
+                withVariant(true, '529'),
+                erroredLookup,
+                withVariant(false, '496')
+              ]}
+            >
+              <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+            </MockedProvider>
+          </SnackbarProvider>
+        )
+        fireEvent.click(await screen.findByRole('button', { name: 'English' }))
+        const combobox = screen.getByRole('combobox')
+        fireEvent.focus(combobox)
+        fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+        fireEvent.click(
+          await screen.findByRole('option', { name: 'French Français' })
+        )
+
+        // the lookup failed: Select stays disabled rather than resolving to
+        // either published or unpublished, and a retry affordance appears
+        // instead of leaving the user stuck with only a one-shot snackbar
+        const retryButton = await screen.findByRole('button', {
+          name: 'Retry'
+        })
+        expect(
+          screen.getByText("Couldn't verify this language's publish status")
+        ).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Select' })).toBeDisabled()
+
+        fireEvent.click(retryButton)
+        await waitFor(() =>
+          expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
+        )
+        expect(
+          screen.queryByText("Couldn't verify this language's publish status")
+        ).not.toBeInTheDocument()
+      })
     })
   })
 })
