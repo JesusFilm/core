@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { skipToken, useApolloClient, useQuery } from '@apollo/client/react'
+import { skipToken, useQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import { useTranslation } from 'next-i18next/pages'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -109,80 +108,7 @@ export function LocalDetails({
   const [pendingLanguage, setPendingLanguage] = useState<LanguageOption | null>(
     null
   )
-  const client = useApolloClient()
-  const { enqueueSnackbar } = useSnackbar()
-
-  // `published` is per variant, and the query above only loads the variant for
-  // the block's saved (or default) language. When the user picks another
-  // language, look up that language's variant (uncached) so
-  // the banner, the dialog and the commit all reflect the language actually
-  // being selected. Select/Apply stay disabled until the lookup resolves.
-  const [lookup, setLookup] = useState<{
-    languageId: string
-    unpublished: boolean
-  } | null>(null)
-  // Tracks the language whose lookup most recently failed, so the UI can
-  // offer a retry instead of leaving Select/Apply disabled with no way out.
-  const [lookupErrorLanguageId, setLookupErrorLanguageId] = useState<
-    string | null
-  >(null)
-  const pickedLanguageId = selectedLanguage?.id
-  const isLoadedLanguagePicked =
-    pickedLanguageId == null || pickedLanguageId === languageId
-  const loadedUnpublished = data?.video?.variant?.published === false
-  const isCheckingPublished =
-    !isLoadedLanguagePicked && lookup?.languageId !== pickedLanguageId
-  const isUnpublished = isLoadedLanguagePicked
-    ? loadedUnpublished
-    : lookup?.languageId === pickedLanguageId && lookup.unpublished
-  const hasLookupError =
-    !isLoadedLanguagePicked && lookupErrorLanguageId === pickedLanguageId
-
-  // requestId guards against a retry (or a fresh language pick) racing an
-  // in-flight lookup: only the most recently issued request is allowed to
-  // write its result into state.
-  const lookupRequestIdRef = useRef(0)
-
-  const checkPublished = (forLanguageId: string): void => {
-    const requestId = ++lookupRequestIdRef.current
-    setLookup(null)
-    setLookupErrorLanguageId(null)
-    client
-      .query<GetVideo>({
-        query: GET_VIDEO,
-        variables: { id, languageId: forLanguageId },
-        // Keep this lookup out of the cache: writing it re-emits the screen's
-        // own `data`, which resets the picked language and re-initialises the
-        // video.js player.
-        fetchPolicy: 'no-cache'
-      })
-      .then(({ data: pickedData }) => {
-        if (lookupRequestIdRef.current !== requestId) return
-        setLookup({
-          languageId: forLanguageId,
-          unpublished: pickedData?.video?.variant?.published === false
-        })
-      })
-      .catch(() => {
-        if (lookupRequestIdRef.current !== requestId) return
-        setLookupErrorLanguageId(forLanguageId)
-        enqueueSnackbar(t('Could not check whether this video is published'), {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      })
-  }
-
-  useEffect(() => {
-    if (open !== true || isLoadedLanguagePicked || data == null) return
-    checkPublished(pickedLanguageId)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, id, pickedLanguageId, languageId, data])
-
-  const handleRetryPublishedCheck = (): void => {
-    if (pickedLanguageId == null) return
-    checkPublished(pickedLanguageId)
-  }
+  const isUnpublished = data?.video?.variant?.published === false
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -200,7 +126,6 @@ export function LocalDetails({
   }
 
   const attemptSelection = (language: LanguageOption): void => {
-    if (isCheckingPublished) return
     if (isUnpublished) {
       setPendingLanguage(language)
     } else {
@@ -218,7 +143,6 @@ export function LocalDetails({
     // Details drawer and the outer Video Library drawer, returning the user
     // to the video properties panel — fixing the QA-221 / NES-1568 trap where
     // Apply only dismissed the picker.
-    if (isCheckingPublished) return
     attemptSelection(selectedLanguage)
     setOpenLanguage(false)
   }
@@ -381,25 +305,11 @@ export function LocalDetails({
           // lines — visible in CJK locales, where text can break between
           // characters.
           sx={{ backgroundColor: 'secondary.dark', flexShrink: 0 }}
-          disabled={(loading && !isPreselected) || isCheckingPublished}
+          disabled={loading && !isPreselected}
         >
           {t('Select')}
         </Button>
       </Stack>
-      {hasLookupError && !openLanguage && (
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-        >
-          <Typography variant="caption" color="error.main">
-            {t("Couldn't verify this language's publish status")}
-          </Typography>
-          <Button size="small" onClick={handleRetryPublishedCheck}>
-            {t('Retry')}
-          </Button>
-        </Stack>
-      )}
       <VideoLanguage
         open={openLanguage}
         onClose={() => setOpenLanguage(false)}
@@ -408,9 +318,6 @@ export function LocalDetails({
         language={selectedLanguage}
         languages={data?.video?.variantLanguages}
         loading={loading}
-        applyDisabled={isCheckingPublished}
-        lookupError={hasLookupError}
-        onRetry={handleRetryPublishedCheck}
       />
       <UnpublishedVideoDialog
         open={pendingLanguage != null}

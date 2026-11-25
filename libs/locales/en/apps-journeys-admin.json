@@ -1788,6 +1788,7 @@
   "{{label}} hex": "{{label}} hex",
   "Focal point: {{left}}% from the left, {{top}}% from the top": "Focal point: {{left}}% from the left, {{top}}% from the top",
   "We couldn't check your role.": "We couldn't check your role.",
+  "Retry": "Retry",
   "Open page": "Open page",
   "The page goes live when you publish.": "The page goes live when you publish.",
   "Add a picture in Settings": "Add a picture in Settings",
@@ -1803,10 +1804,8 @@
   "The translation into {{language}} stops.": "The translation into {{language}} stops.",
   "Delete content with tracking?": "Delete content with tracking?",
   "This content has tracking configured. Deleting it will stop those events from being recorded here.": "This content has tracking configured. Deleting it will stop those events from being recorded here.",
-  "Could not check whether this video is published": "Could not check whether this video is published",
   "Unpublished Video": "Unpublished Video",
   "Use Anyway": "Use Anyway",
   "This video has not been published yet. It can still be added to a journey, but visitors will not be able to watch it until it is published.": "This video has not been published yet. It can still be added to a journey, but visitors will not be able to watch it until it is published.",
-  "Unpublished": "Unpublished",
-  "Couldn't verify this language's publish status": "Couldn't verify this language's publish status"
+  "Unpublished": "Unpublished"
 }
