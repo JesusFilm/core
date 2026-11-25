@@ -515,7 +515,9 @@ describe('LocalDetails', () => {
         const combobox = screen.getByRole('combobox')
         fireEvent.focus(combobox)
         fireEvent.keyDown(combobox, { key: 'ArrowDown' })
-        fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+        fireEvent.click(
+          await screen.findByRole('option', { name: 'French Français' })
+        )
         // Select is disabled while the picked language's variant is looked up
         expect(screen.getByRole('button', { name: 'Select' })).toBeDisabled()
         await waitFor(() =>
@@ -560,7 +562,9 @@ describe('LocalDetails', () => {
         const combobox = screen.getByRole('combobox')
         fireEvent.focus(combobox)
         fireEvent.keyDown(combobox, { key: 'ArrowDown' })
-        fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+        fireEvent.click(
+          await screen.findByRole('option', { name: 'French Français' })
+        )
         expect(await screen.findByText('Unpublished')).toBeInTheDocument()
       })
 
