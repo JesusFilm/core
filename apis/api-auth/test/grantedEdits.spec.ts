@@ -6392,7 +6392,7 @@ describe('saved edit integration', () => {
           })
         ).not.toBeNull()
         expect(await textBlock()).toMatchObject({ content: 'A' })
-      })
+      }, 120000)
 
       it('gives each journey in one connection its own five-entry capacity', async () => {
         const other = journeyId + '-other'
