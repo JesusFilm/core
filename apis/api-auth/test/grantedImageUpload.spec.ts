@@ -548,13 +548,14 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       })
       const historicalTime = new Date(Date.now() - 3600000)
       const historicalIds = Array.from({ length: 9 }, () => randomUUID())
+      const otherUserIds = Array.from({ length: 10 }, () => randomUUID())
       // Persist historical usage in real SQL. New attempts below execute the
       // production admission, provider handoff and failed-job settlement path.
       await media.mcpMediaJob.createMany({
-        data: historicalIds.map((id) => ({
+        data: [...historicalIds, ...otherUserIds].map((id, index) => ({
           id,
-          connectionId: connection.id,
-          userId: 'alice',
+          connectionId: index < 9 ? connection.id : 'other-user-connection',
+          userId: index < 9 ? 'alice' : 'bob',
           clientId: connection.clientId,
           journeyId: f.journeyId,
           teamId: journey.teamId,
@@ -617,6 +618,11 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       await denied()
       expect((await generate(key)).jobId).toBe(id)
       expect(generationCount).toBe(3)
+      expect(
+        await media.mcpMediaJob.count({
+          where: { userId: 'bob', dispatchedAt: { not: null } }
+        })
+      ).toBe(10)
     })
 
     it('consumes no dispatch allowance for a denied or positively fenced unsent intent and recovers the same job', async () => {
