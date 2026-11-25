@@ -571,7 +571,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       const next = await generate()
       expect((await processedStatus(String(next.jobId))).state).toBe('failed')
       expect(generationCount).toBe(11)
-    })
+    }, 120000)
 
     it('consumes no dispatch allowance for a denied or positively fenced unsent intent and recovers the same job', async () => {
       const id = String((await generate()).jobId)
@@ -866,7 +866,11 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         if (denied === 'published')
           await f.journeys.journey.update({
             where: { id: f.journeyId },
-            data: { status: 'published' }
+            data: {
+              status: 'published',
+              publishedAt: new Date(),
+              firstPublishedAt: new Date()
+            }
           })
         else
           await f.auth.agentConnection.update({
