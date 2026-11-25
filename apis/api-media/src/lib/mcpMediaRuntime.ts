@@ -38,6 +38,7 @@ export function mediaRuntime(
     languages?: Parameters<typeof createMediaSourceHandler>[3]
     providers?: Parameters<typeof createMediaSourceHandler>[4]
     flags?: MediaSourcesConfig['flags']
+    scheduleBackgroundWork?: (work: () => void) => void
     uploads?: {
       storage: UploadStorage
       provider: ImageUploadProvider
@@ -194,13 +195,15 @@ export function mediaRuntime(
             return processing
           }
           dependencies.uploads?.scheduleProcessing?.(runProcessing)
-          const timer = setInterval(() => {
+          const runBackgroundWork = () => {
             void mutations.recover().catch(() => undefined)
             void jobs?.recover().catch(() => undefined)
             if (jobs && !dependencies.uploads?.scheduleProcessing)
               void runProcessing().catch(() => undefined)
-          }, 10000)
-          timer.unref()
+          }
+          if (dependencies.scheduleBackgroundWork)
+            dependencies.scheduleBackgroundWork(runBackgroundWork)
+          else setInterval(runBackgroundWork, 10000).unref()
         }
       }
     ]

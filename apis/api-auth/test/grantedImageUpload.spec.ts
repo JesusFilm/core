@@ -201,6 +201,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
           media,
           journeys,
           languages,
+          // Recovery runs explicitly at each lifecycle/race boundary below.
+          scheduleBackgroundWork: () => undefined,
           flags: async () => ({ mediaLibrary, websiteMode: true }),
           providers: {
             async image(src) {
