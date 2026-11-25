@@ -424,7 +424,7 @@ builder.queryFields((t) => ({
       const batchSize = normalizeBatchSize(input.batchSize)
       const languages = await getVariantIndexLanguages()
       const client = getAlgoliaClient()
-      const algoliaConfig = getAlgoliaConfig()
+      const { videoVariantsIndex } = getAlgoliaConfig()
       const issues: VariantIndexIssue[] = []
 
       if (scanType === 'core') {
@@ -450,7 +450,7 @@ builder.queryFields((t) => ({
               // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
               (client as AlgoliaClientWithVariantBatch).getObjects({
                 requests: variants.map((variant) => ({
-                  indexName: algoliaConfig.videoVariantsIndex,
+                  indexName: videoVariantsIndex,
                   objectID: variant.id,
                   attributesToRetrieve: VARIANT_INDEX_STALE_ATTRIBUTES
                 }))
