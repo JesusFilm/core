@@ -532,46 +532,86 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       expect(await media.mcpMediaJob.count({ where: { active: true } })).toBe(3)
     })
 
-    it('counts ten actual failed dispatches, rejects the eleventh and checks both sides of the rolling window', async () => {
+    it('counts failed dispatch usage, exact replay and each side of the rolling window independently', async () => {
       rejectDispatch = true
-      const ids: string[] = []
-      for (let i = 0; i < 10; i++) {
-        const key = randomUUID()
-        const id = String((await generate(key)).jobId)
-        ids.push(id)
-        expect((await processedStatus(id)).state).toBe('failed')
-        expect((await generate(key)).jobId).toBe(id)
+      const connection = await f.auth.agentConnection.findFirstOrThrow({
+        where: { userId: 'alice', journeyIds: { has: f.journeyId } }
+      })
+      const journey = await f.journeys.journey.findUniqueOrThrow({
+        where: { id: f.journeyId }
+      })
+      const historicalTime = new Date(Date.now() - 3600000)
+      const historicalIds = Array.from({ length: 9 }, () => randomUUID())
+      // Persist historical usage in real SQL. New attempts below execute the
+      // production admission, provider handoff and failed-job settlement path.
+      await media.mcpMediaJob.createMany({
+        data: historicalIds.map((id) => ({
+          id,
+          connectionId: connection.id,
+          userId: 'alice',
+          clientId: connection.clientId,
+          journeyId: f.journeyId,
+          teamId: journey.teamId,
+          key: randomUUID(),
+          payloadHash: imageHash(Buffer.from(id)),
+          kind: 'image_generation',
+          state: 'failed',
+          active: false,
+          admittedAt: historicalTime,
+          transferCompletedAt: historicalTime,
+          transferDeadline: historicalTime,
+          providerId: randomUUID(),
+          dispatchedAt: historicalTime,
+          completedAt: historicalTime,
+          resultExpiresAt: new Date(historicalTime.getTime() + 30 * 86400000)
+        }))
+      })
+      const key = randomUUID()
+      const id = String((await generate(key)).jobId)
+      expect((await processedStatus(id)).state).toBe('failed')
+      expect((await generate(key)).jobId).toBe(id)
+      expect(generationCount).toBe(1)
+      expect(
+        await media.mcpMediaJob.count({
+          where: { kind: 'image_generation', active: true }
+        })
+      ).toBe(0)
+      const denied = async (token?: string) => {
+        const response = await f.call(
+          'journey_media_start',
+          generateInput(),
+          token
+        )
+        expect(response.json.result?.isError).toBe(true)
       }
-      expect(generationCount).toBe(10)
-      expect(
-        (await f.call('journey_media_start', generateInput())).json.result
-          ?.isError
-      ).toBe(true)
-      const second = await f.consent()
-      expect(
-        (await f.call('journey_media_start', generateInput(), second)).json
-          .result?.isError
-      ).toBe(true)
+      await denied()
+      await denied(await f.consent())
       await media.mcpMediaJob.update({
-        where: { id: ids[0] },
+        where: { id: historicalIds[0] },
         data: { dispatchedAt: new Date(Date.now() - 86400000 + 60000) }
       })
-      expect(
-        (await f.call('journey_media_start', generateInput())).json.result
-          ?.isError
-      ).toBe(true)
+      await denied()
       await media.mcpMediaJob.update({
-        where: { id: ids[0] },
+        where: { id: historicalIds[0] },
         data: { dispatchedAt: new Date(Date.now() - 86400000 - 1000) }
       })
+      expect(
+        (await processedStatus(String((await generate()).jobId))).state
+      ).toBe('failed')
+      expect(generationCount).toBe(2)
+      await denied()
       await media.mcpMediaJob.update({
-        where: { id: ids[1] },
+        where: { id: historicalIds[1] },
         data: { dispatchedAt: new Date(Date.now() + 86400000) }
       })
-      const next = await generate()
-      expect((await processedStatus(String(next.jobId))).state).toBe('failed')
-      expect(generationCount).toBe(11)
-    }, 120000)
+      expect(
+        (await processedStatus(String((await generate()).jobId))).state
+      ).toBe('failed')
+      expect(generationCount).toBe(3)
+      await denied()
+      expect((await generate(key)).jobId).toBe(id)
+      expect(generationCount).toBe(3)
+    })
 
     it('consumes no dispatch allowance for a denied or positively fenced unsent intent and recovers the same job', async () => {
       const id = String((await generate()).jobId)
