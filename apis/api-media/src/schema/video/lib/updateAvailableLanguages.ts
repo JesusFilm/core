@@ -23,6 +23,17 @@ export const CONTAINER_VIDEO_LABELS: VideoLabel[] = [
 
 type PrismaClientOrTx = typeof prisma | Prisma.TransactionClient
 
+// A container's empty placeholder Variant (no hls, no Mux asset) only mirrors a
+// language that one of its children already provides, so it must not count as
+// the container's *own* variant: counting it would keep a language on the
+// container after the last child providing it is removed. Written as an
+// explicit OR rather than NOT { hls: '', muxVideoId: null }: in SQL, NOT over a
+// NULL hls evaluates to NULL and would silently drop real variants whose hls is
+// NULL.
+const REAL_VARIANT_FILTER = {
+  OR: [{ hls: null }, { hls: { not: '' } }, { muxVideoId: { not: null } }]
+}
+
 // Calculates what availableLanguages should be for a given video, and
 // returns it alongside the value currently stored on the row. Both come off
 // a single `findUnique` - the caller (e.g. the cascade walker) needs the
@@ -43,7 +54,7 @@ export async function calculateAvailableLanguages(
       label: true,
       availableLanguages: true,
       variants: {
-        where: { published: true },
+        where: { published: true, ...REAL_VARIANT_FILTER },
         select: { languageId: true }
       },
       children: {

@@ -9,6 +9,7 @@ import { logger } from '../../logger'
 
 import {
   addLanguageToVideo,
+  calculateAvailableLanguages,
   findContainerParentIds,
   removeLanguageFromVideoIfUnused,
   sameLanguageSet,
@@ -378,6 +379,41 @@ describe('updateParentCollectionLanguages', () => {
         deletedVariantIds: []
       },
       expect.anything()
+    )
+  })
+})
+
+describe('calculateAvailableLanguages placeholder handling', () => {
+  it("does not count a container's empty placeholder Variant as its own, but still counts real Variants (including ones with a NULL hls)", async () => {
+    vi.clearAllMocks()
+    mockCalculateAvailableLanguagesQuery({
+      label: 'series',
+      availableLanguages: [],
+      variants: [],
+      children: []
+    })
+
+    await calculateAvailableLanguages('series-id')
+
+    // The placeholder is the Variant with hls '' and no Mux asset. A real
+    // Variant with a NULL hls must still match (an SQL NOT over NULL would
+    // silently drop it), so the filter is an explicit OR.
+    expect(prismaMock.video.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          variants: {
+            where: {
+              published: true,
+              OR: [
+                { hls: null },
+                { hls: { not: '' } },
+                { muxVideoId: { not: null } }
+              ]
+            },
+            select: { languageId: true }
+          }
+        })
+      })
     )
   })
 })
