@@ -43,7 +43,9 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
           additionalProperties: false,
           required: ['journeyId', 'idempotencyKey', 'kind'],
           properties: expect.objectContaining({
-            kind: expect.objectContaining({ enum: ['image_upload', 'video_upload'] })
+            kind: expect.objectContaining({
+              enum: ['image_upload', 'video_upload']
+            })
           })
         })
       }),

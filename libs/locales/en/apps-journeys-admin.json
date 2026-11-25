@@ -1873,5 +1873,11 @@
   "This upload has ended.": "This upload has ended.",
   "Choose the same image to upload or resume": "Choose the same image to upload or resume",
   "Cancel upload": "Cancel upload",
-  "Resume image processing": "Resume image processing"
+  "Resume image processing": "Resume image processing",
+  "Upload a video": "Upload a video",
+  "Provider processing or reconciliation is pending. No media is attached.": "Provider processing or reconciliation is pending. No media is attached.",
+  "Uploading your file": "Uploading your file",
+  "Waiting for one file": "Waiting for one file",
+  "Choose the same file to upload or resume": "Choose the same file to upload or resume",
+  "Resume video processing": "Resume video processing"
 }
