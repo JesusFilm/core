@@ -29,12 +29,18 @@ describe('video provider authentication and input', () => {
     ).toThrow()
   })
 
-  it.each(['video/mp4', 'video/quicktime'] as const)(
-    'validates immutable streamed %s input and rejects spoofed content, sizes and hashes',
-    async (mime) => {
+  it.each([
+    ['video/mp4', 'isom'],
+    ['video/mp4', 'iso4'],
+    ['video/mp4', 'iso5'],
+    ['video/mp4', 'iso6'],
+    ['video/quicktime', 'qt  ']
+  ] as const)(
+    'validates immutable streamed %s %s input and rejects spoofed content, sizes and hashes',
+    async (mime, brand) => {
       const bytes = Buffer.alloc(128)
       bytes.writeUInt32BE(24)
-      bytes.write(mime === 'video/mp4' ? 'ftypisom' : 'ftypqt  ', 4)
+      bytes.write('ftyp' + brand, 4)
       const file = {
         name: mime === 'video/mp4' ? 'one.mp4' : 'one.mov',
         mime,

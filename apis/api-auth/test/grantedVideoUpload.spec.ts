@@ -495,6 +495,48 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     3600000
   )
 
+  it.each(['iso4', 'iso5', 'iso6'])(
+    'dispatches MP4 with the %s brand and waits for authenticated playable readiness',
+    async (brand) => {
+      const data = partAt(0, 128)
+      data.write(brand, 8)
+      data.write('iso6mp41', 16)
+      const job = await start()
+      const id = String(job.jobId)
+      expect(
+        (
+          await browser(
+            id,
+            'POST',
+            'bind',
+            JSON.stringify({ ...manifest(), sha256: hash(data) })
+          )
+        ).status
+      ).toBe(200)
+      expect(
+        (
+          await browser(id, 'PUT', undefined, data, 'alice', {
+            'X-Upload-Offset': '0',
+            'X-Upload-Sha256': hash(data)
+          })
+        ).status
+      ).toBe(200)
+      await process()
+      expect(await status(id)).toMatchObject({
+        state: 'processing',
+        active: true,
+        receivedBytes: data.length,
+        transferDeadline: job.transferDeadline
+      })
+      expect(creates).toBe(1)
+      expect(puts).toBe(1)
+      expect(transferred).toBe(data.length)
+      muxState = 'ready'
+      await jobs.recover()
+      expect(await status(id)).toMatchObject({ state: 'ready', active: false })
+    }
+  )
+
   it('shares the two-job ceiling across image/video and replicas without changing exact replay', async () => {
     const key = randomUUID()
     const job = await start(undefined, 'video_upload', key)

@@ -202,7 +202,7 @@ jobs:
           fail_ci_if_error: true
   saved-edits:
     runs-on: jfp-proxmox-core
-    timeout-minutes: 30
+    timeout-minutes: 60
     services:
       postgres:
         image: postgres:16

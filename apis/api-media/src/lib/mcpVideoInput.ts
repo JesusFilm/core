@@ -29,7 +29,17 @@ export async function validateVideoInput(
     header.readUInt32BE(0) < 16 ||
     !(file.mime === 'video/quicktime'
       ? brand === 'qt  '
-      : ['isom', 'iso2', 'mp41', 'mp42', 'avc1', 'M4V '].includes(brand))
+      : [
+          'isom',
+          'iso2',
+          'iso4',
+          'iso5',
+          'iso6',
+          'mp41',
+          'mp42',
+          'avc1',
+          'M4V '
+        ].includes(brand))
   )
     throw new InvalidVideoInput('VALIDATION_FAILED')
 }
