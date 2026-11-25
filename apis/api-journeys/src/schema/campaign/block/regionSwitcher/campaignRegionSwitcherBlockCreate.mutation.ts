@@ -12,7 +12,7 @@ builder.mutationField('campaignRegionSwitcherBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: CampaignRegionSwitcherBlock,
     nullable: false,
-    description: `Add a region switcher section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title and variant.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`title\` / \`variant\`): the value fails its rule.`,
+    description: `Add a region switcher section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title, variant and whether country names show.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`title\` / \`variant\`): the value fails its rule.`,
     args: {
       input: t.arg({
         type: CampaignRegionSwitcherBlockCreateInput,
@@ -25,14 +25,15 @@ builder.mutationField('campaignRegionSwitcherBlockCreate', (t) =>
         'CampaignRegionSwitcherBlock',
         context.user,
         () => ({
-          ...validateSectionText(input, ['title']),
+          ...validateSectionText('CampaignRegionSwitcherBlock', input),
           ...(input.variant != null && {
             switcherVariant: assertEnum(
               input.variant,
               'variant',
               CAMPAIGN_SWITCHER_VARIANTS
             )
-          })
+          }),
+          showCountryNames: input.showCountryNames ?? undefined
         })
       )
   })

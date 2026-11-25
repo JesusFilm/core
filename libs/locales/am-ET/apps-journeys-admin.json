@@ -893,7 +893,7 @@
   "DNS Config": "የ DNS ውቅር",
   "Valid Configuration": "ትክክለኛ ውቅር",
   "Invalid Configuration": "ልክ ያልሆነ ውቅር",
-  "Pending Verfication": "ማረጋገጫ በመጠባበቅ ላይ",
+  "Pending Verification": "ማረጋገጫ በመጠባበቅ ላይ",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "ዶሜን {{ customDomainName }} ወደ ሌላ ቡድን ተጨምሯል። በምትኩ ወደዚህ ቡድን ለማከል እባክዎ ማረጋገጫውን ያጠናቅቁ።",
   "Domain name is a required field": "የዶሜን ስም አስፈላጊ መስክ ነው",
   "Must be a valid URL": "ትክክለኛ ዩአርኤል መሆን አለበት",

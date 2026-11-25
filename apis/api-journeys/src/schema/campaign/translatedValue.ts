@@ -1,6 +1,15 @@
+import {
+  type TranslatedFieldJson,
+  entrySource,
+  isTranslated,
+  parseTranslations
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+
 import { builder } from '../builder'
 
 import { CampaignTextSource, type CampaignTextSourceValue } from './enums'
+
+export { parseTranslations }
 
 export interface TranslatedValueShape {
   languageId: string
@@ -12,12 +21,10 @@ export interface TranslatedValueShape {
  * The stored shape of every `<field>Translations` JSON column:
  * `{ "<languageId>": { "value": string, "source": "human" | "machine", "uncertain"?: true } }`.
  * `uncertain` is set only on a machine entry the model flagged as a guess;
- * a person's rewrite drops it.
+ * a person's rewrite drops it. The rules over it live in the shared
+ * `translatedField` module.
  */
-export type TranslationsJson = Record<
-  string,
-  { value: string; source: CampaignTextSourceValue; uncertain?: boolean }
->
+export type TranslationsJson = TranslatedFieldJson
 
 export const TranslatedValueRef =
   builder.objectRef<TranslatedValueShape>('TranslatedValue')
@@ -40,23 +47,15 @@ builder.objectType(TranslatedValueRef, {
 })
 
 /**
- * Read a `<field>Translations` JSON column as a fresh object the caller may
- * change. Anything but a JSON object (null, an array, a string, a number)
- * reads as no translations; entries are returned as stored, so each reader
- * still checks the entry it uses.
+ * Turn a `<field>Translations` JSON column into the GraphQL list shape: one
+ * item per translated language. An empty or non-string value counts as
+ * missing and is left out; a source other than `machine` reads as `human`.
  */
-export function parseTranslations(json: unknown): TranslationsJson {
-  if (json == null || typeof json !== 'object' || Array.isArray(json)) return {}
-  return { ...(json as TranslationsJson) }
-}
-
-/** Turn a `<field>Translations` JSON column into the GraphQL list shape. */
 export function toTranslatedValues(json: unknown): TranslatedValueShape[] {
-  return Object.entries(parseTranslations(json))
-    .filter(([, entry]) => entry != null && typeof entry.value === 'string')
-    .map(([languageId, entry]) => ({
-      languageId,
-      value: entry.value,
-      source: entry.source === 'machine' ? 'machine' : 'human'
-    }))
+  return Object.entries(parseTranslations(json)).flatMap(
+    ([languageId, entry]) =>
+      isTranslated(entry)
+        ? [{ languageId, value: entry.value, source: entrySource(entry) }]
+        : []
+  )
 }

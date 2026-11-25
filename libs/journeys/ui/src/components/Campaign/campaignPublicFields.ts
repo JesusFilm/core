@@ -42,6 +42,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     ... on CampaignRegionSwitcherBlock {
       title
       switcherVariant: variant
+      showCountryNames
     }
     ... on CampaignVideoCarouselBlock {
       eyebrow

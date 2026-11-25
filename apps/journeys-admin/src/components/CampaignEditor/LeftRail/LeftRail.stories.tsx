@@ -8,6 +8,7 @@ import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { CampaignAiTranslateMode } from '../../../../__generated__/globalTypes'
 import {
   CampaignEditorProvider,
   CampaignEditorState
@@ -16,6 +17,7 @@ import type { CanvasView } from '../Canvas'
 import { campaign, publishedCampaign } from '../data'
 import { TranslationRunContext } from '../TranslationRunProvider'
 import type { TranslationRun } from '../TranslationRunProvider'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 import { LeftRail } from '.'
 
@@ -41,17 +43,19 @@ function LeftRailStory({
             campaign={campaignProp}
             initialState={initialState}
           >
-            <TranslationRunContext.Provider
-              value={{
-                run,
-                start: () => undefined,
-                cancel: () => undefined
-              }}
-            >
-              <Box sx={{ display: 'flex', height: 560 }}>
-                <LeftRail view={view} onViewChange={setView} />
-              </Box>
-            </TranslationRunContext.Provider>
+            <CampaignCommandProvider>
+              <TranslationRunContext.Provider
+                value={{
+                  run,
+                  start: () => undefined,
+                  cancel: () => undefined
+                }}
+              >
+                <Box sx={{ display: 'flex', height: 560 }}>
+                  <LeftRail view={view} onViewChange={setView} />
+                </Box>
+              </TranslationRunContext.Provider>
+            </CampaignCommandProvider>
           </CampaignEditorProvider>
         </CommandProvider>
       </SnackbarProvider>
@@ -98,7 +102,7 @@ export const LocalizeTranslating: Story = {
     run: {
       campaignId: campaign.id,
       languageId: '496',
-      mode: 'missing',
+      mode: CampaignAiTranslateMode.missing,
       languageName: 'Français',
       progress: 45,
       message: 'Translated 2 of 5 parts',

@@ -1,132 +1,106 @@
-import sortBy from 'lodash/sortBy'
+import { useApolloClient } from '@apollo/client/react'
+import { useRef } from 'react'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
-import { CampaignBlockOrderUpdate } from '../../../../../__generated__/CampaignBlockOrderUpdate'
-import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign_blocks as CampaignBlock,
+  GetCampaign
+} from '../../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../../__generated__/globalTypes'
 import { useCampaignBlockOrderUpdateMutation } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
+import { GET_CAMPAIGN } from '../../../../libs/useCampaignQuery'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { reorderedSiblings } from '../reorderedSiblings'
+import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
-type OrderRows = CampaignBlockOrderUpdate['campaignBlockOrderUpdate']
-
-interface OrderRow {
-  __typename: CampaignBlock['__typename']
-  id: string
-  parentOrder: number
-  placement?: CampaignChildPlacement | null
-}
-
-function orderRow(block: CampaignBlock, parentOrder: number): OrderRow {
-  return {
-    __typename: block.__typename,
-    id: block.id,
-    parentOrder,
-    ...('placement' in block ? { placement: block.placement } : {})
-  }
-}
-
-/** A block's siblings and itself in their current order, as the order mutation returns them. */
-export function currentSiblings(
-  blocks: CampaignBlock[],
-  block: CampaignBlock
-): OrderRows {
-  return sortBy([...siblingsOf(blocks, block), block], 'parentOrder').map(
-    (sibling) => orderRow(sibling, sibling.parentOrder ?? 0)
-  ) as unknown as OrderRows
-}
-
 /**
- * The rows the move produces, computed from the cached siblings: the block
- * at `parentOrder` (clamped to the end) with its new placement, everyone
- * renumbered contiguously.
- */
-export function reorderedSiblings(
-  blocks: CampaignBlock[],
-  block: CampaignBlock,
-  parentOrder: number,
-  placement?: CampaignChildPlacement | null
-): OrderRows {
-  const others = siblingsOf(blocks, block)
-  const moved =
-    placement != null && 'placement' in block ? { ...block, placement } : block
-  others.splice(Math.min(parentOrder, others.length), 0, moved)
-  return others.map((sibling, index) =>
-    orderRow(sibling, index)
-  ) as unknown as OrderRows
-}
-
-interface OrderParameters {
-  parentOrder: number
-  placement?: CampaignChildPlacement | null
-  rows: OrderRows
-}
-
-/**
- * Moving a block is one Command: execute focuses the block and writes the
- * new position (and, for an Extra crossing the Section Body, its placement)
- * with the renumbered siblings shown at once; undo writes the position and
- * placement it had back through the same mutation.
+ * Moving a block is one Command: execute writes the new position (and, for
+ * an Extra crossing the Section Body, its placement) with the renumbered
+ * siblings shown at once; undo restores the position and placement held at
+ * first execution. Each step reads the current siblings for its optimistic
+ * rows. Every step selects the block, or `focusBlockId`
+ * when given (a Column Slot swap keeps the section in the slot selected).
  */
 export function useCampaignBlockOrderCommand(): {
   addBlockOrder: (
     block: CampaignBlock,
     parentOrder: number,
-    placement?: CampaignChildPlacement | null
+    placement?: CampaignChildPlacement | null,
+    focusBlockId?: string
   ) => void
 } {
-  const { add } = useCommand()
-  const {
-    campaign,
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
+  const { addCampaignCommand } = useCampaignCommand()
+  const { campaign } = useCampaignEditor()
+  const campaignRef = useRef(campaign)
+  campaignRef.current = campaign
+  const { cache } = useApolloClient()
   const [orderUpdate] = useCampaignBlockOrderUpdateMutation()
   const reportFailure = useCommandFailure()
 
   function addBlockOrder(
     block: CampaignBlock,
     parentOrder: number,
-    placement?: CampaignChildPlacement | null
+    placement?: CampaignChildPlacement | null,
+    focusBlockId: string = block.id
   ): void {
     if (block.parentOrder == null) return
-    const blockPageKind = pageKindOf(block) ?? pageKind
-    const before: OrderParameters = {
-      parentOrder: block.parentOrder,
-      placement: 'placement' in block ? block.placement : undefined,
-      rows: currentSiblings(campaign.blocks, block)
-    }
-    const after: OrderParameters = {
-      parentOrder,
-      placement,
-      rows: reorderedSiblings(campaign.blocks, block, parentOrder, placement)
+    let before:
+      | { parentOrder: number; placement?: CampaignChildPlacement | null }
+      | undefined
+
+    function currentBlocks(): CampaignBlock[] {
+      return (
+        cache.readQuery<GetCampaign>({
+          query: GET_CAMPAIGN,
+          variables: { id: campaign.id },
+          optimistic: true
+        })?.campaign ?? campaignRef.current
+      ).blocks
     }
 
-    add<OrderParameters>({
-      parameters: { execute: after, undo: before },
-      execute({
-        parentOrder: nextParentOrder,
-        placement: nextPlacement,
-        rows
-      }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          pageKind: blockPageKind,
-          selectedBlockId: block.id
-        })
-        void orderUpdate({
-          variables: {
-            id: block.id,
-            parentOrder: nextParentOrder,
-            ...(nextPlacement != null ? { placement: nextPlacement } : {})
-          },
-          optimisticResponse: { campaignBlockOrderUpdate: rows }
-        }).catch(reportFailure)
+    async function write(
+      nextParentOrder: number,
+      nextPlacement?: CampaignChildPlacement | null
+    ): Promise<unknown> {
+      const blocks = currentBlocks()
+      const current =
+        blocks.find((candidate) => candidate.id === block.id) ?? block
+      return await orderUpdate({
+        variables: {
+          id: block.id,
+          parentOrder: nextParentOrder,
+          ...(nextPlacement != null ? { placement: nextPlacement } : {})
+        },
+        optimisticResponse: {
+          campaignBlockOrderUpdate: reorderedSiblings(
+            blocks,
+            current,
+            nextParentOrder,
+            nextPlacement
+          )
+        }
+      })
+    }
+
+    const focus = { selectedBlockId: focusBlockId, selectedRegionId: undefined }
+    addCampaignCommand({
+      focus: { execute: focus, undo: focus, redo: focus },
+      async execute() {
+        const current =
+          currentBlocks().find((candidate) => candidate.id === block.id) ??
+          block
+        if (current.parentOrder == null) return
+        before ??= {
+          parentOrder: current.parentOrder,
+          placement: 'placement' in current ? current.placement : undefined
+        }
+        return await write(parentOrder, placement)
+      },
+      async undo() {
+        if (before == null) return
+        return await write(before.parentOrder, before.placement)
       }
-    })
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   return { addBlockOrder }

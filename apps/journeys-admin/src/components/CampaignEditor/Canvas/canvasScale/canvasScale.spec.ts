@@ -24,11 +24,11 @@ describe('canvasScale', () => {
   })
 
   // The editor width minus the 56 px rail, the 300 px docked panel (one is
-  // always open), the 328 px Inspector and the 64 px canvas padding.
+  // always open), the 328 px Inspector and the 32 px canvas padding.
   it.each([
-    ['1348 px, the minimum', 1348 - 56 - 300 - 328 - 64, 0.5],
-    ['1440 px', 1440 - 56 - 300 - 328 - 64, 692 / 1200],
-    ['1920 px', 1920 - 56 - 300 - 328 - 64, 1172 / 1200]
+    ['1316 px, the minimum', 1316 - 56 - 300 - 328 - 32, 0.5],
+    ['1440 px', 1440 - 56 - 300 - 328 - 32, 724 / 1200],
+    ['1920 px', 1920 - 56 - 300 - 328 - 32, 1]
   ])('scales the Desktop frame at %s', (_name, available, expected) => {
     const scale = canvasScale(available, DESKTOP_FRAME_WIDTH)
     expect(scale).toBeCloseTo(expected)
@@ -48,7 +48,7 @@ describe('canvasScale', () => {
 
   it('leaves the Phone frame unscaled at every supported editor width', () => {
     expect(canvasScale(MIN_STAGE_WIDTH, PHONE_FRAME_WIDTH)).toBe(1)
-    expect(canvasScale(1440 - 56 - 300 - 328 - 64, PHONE_FRAME_WIDTH)).toBe(1)
+    expect(canvasScale(1440 - 56 - 300 - 328 - 32, PHONE_FRAME_WIDTH)).toBe(1)
   })
 })
 

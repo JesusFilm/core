@@ -185,14 +185,12 @@ export enum CampaignTextSource {
   machine = "machine",
 }
 
-/**
- * The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
- */
-export enum CampaignTranslationGroup {
-  interface = "interface",
-  landing = "landing",
-  region = "region",
-  regions = "regions",
+export enum CaptureEventTrigger {
+  buttonClick = "buttonClick",
+  radioQuestionSubmit = "radioQuestionSubmit",
+  stepView = "stepView",
+  videoComplete = "videoComplete",
+  videoStart = "videoStart",
 }
 
 export enum ContactActionType {
@@ -435,9 +433,51 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface ChristDecisionCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface Custom1CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface Custom2CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface Custom3CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface DateTimeFilter {
   gte?: any | null;
   lte?: any | null;
+}
+
+export interface GospelCompleteCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface GospelStartCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
 }
 
 export interface JourneyCustomizationDescriptionTranslateInput {
@@ -488,6 +528,13 @@ export interface MultiselectSubmissionEventCreateInput {
   values: string[];
 }
 
+export interface PrayerRequestCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
   id?: string | null;
   blockId: string;
@@ -497,12 +544,33 @@ export interface RadioQuestionSubmissionEventCreateInput {
   value?: string | null;
 }
 
+export interface RsvpCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface SignUpSubmissionEventCreateInput {
   id?: string | null;
   blockId: string;
   stepId?: string | null;
   name: string;
   email: string;
+}
+
+export interface SpecialVideoCompleteCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface SpecialVideoStartCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
 }
 
 export interface StepNextEventCreateInput {

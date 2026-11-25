@@ -1,1 +1,0 @@
-kubectl create token admin-user -n kubernetes-dashboard

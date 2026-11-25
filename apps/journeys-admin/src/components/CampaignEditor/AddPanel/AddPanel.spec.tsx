@@ -16,8 +16,8 @@ import {
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../libs/useCampaignTypographyBlockCreateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
-import { newSectionBlock } from '../sectionTypes'
 import { SelectionProbe, StaticEditor } from '../testing'
+import { newSectionBlock } from '../utils/sectionTypes'
 
 import { AddPanel } from './AddPanel'
 
@@ -213,7 +213,7 @@ function renderPanel(
   return render(
     <StaticEditor
       initialState={initialState}
-      campaignProp={campaignProp}
+      campaign={campaignProp}
       mocks={[
         extraBelowMock,
         extraAboveMock,

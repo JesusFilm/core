@@ -41,8 +41,9 @@
           "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
           "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
-          "pnpm exec vercel build",
-          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url"
+          "pnpm exec vercel build --local-config apps/journeys/vercel.json",
+          "pnpm exec tsx apps/journeys/verifyChatFunction.ts",
+          "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --local-config apps/journeys/vercel.json --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url"
         ],
         "parallel": false
       },
@@ -52,8 +53,9 @@
             "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
             "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
             "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
-            "pnpm exec vercel build --prod",
-            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url"
+            "pnpm exec vercel build --local-config apps/journeys/vercel.json --prod",
+            "pnpm exec tsx apps/journeys/verifyChatFunction.ts",
+            "VERCEL_PROJECT_ID=$JOURNEYS_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --local-config apps/journeys/vercel.json --prod --token=$VERCEL_TOKEN --archive=tgz > apps/journeys/.vercel-url"
           ]
         }
       }
@@ -153,13 +155,18 @@
     },
     "codegen": {
       "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/__generated__"],
       "options": {
+        "parallel": false,
         "commands": [
           {
             "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
           },
           {
             "command": "rm -rf apps/journeys/__generated__"
+          },
+          {
+            "command": "find apps/journeys/pages -type d -name __generated__ -prune -exec rm -rf {} +"
           },
           {
             "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"

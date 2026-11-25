@@ -10,7 +10,7 @@ import { builder } from '../builder'
 
 import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
 import { CampaignThemeRef } from './campaignTheme'
-import { touchCampaign } from './campaignWrite'
+import { campaignWrite } from './campaignWrite'
 import { forbidden, notFound } from './errors'
 import { CampaignThemeUpdateInput } from './inputs'
 import { PRESET_COLOR_COLUMNS } from './seed/presets'
@@ -97,15 +97,12 @@ builder.mutationField('campaignThemeUpdate', (t) =>
         throw forbidden('user is not allowed to update campaign theme')
 
       const data = validateCampaignThemeInput(input)
-      return await prisma.$transaction(async (tx) => {
-        const updated = await tx.campaignTheme.update({
-          ...query,
-          where: { id },
-          data
-        })
-        await touchCampaign(tx, theme.campaignId)
-        return updated
-      })
+      return await campaignWrite(
+        theme.campaignId,
+        {},
+        async ({ tx }) =>
+          await tx.campaignTheme.update({ ...query, where: { id }, data })
+      )
     }
   })
 )

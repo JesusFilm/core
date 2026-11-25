@@ -1,13 +1,11 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../builder'
 import { snapshotOf } from '../block/journey/snapshot'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
-import { touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { badUserInput, conflict } from '../errors'
 import { resolveJourneyId } from '../journeyLink'
 
-import { authorizeRegionLanguageUpdate, lockRegionLanguage } from './service'
+import { authorizeRegionLanguageUpdate } from './service'
 
 builder.mutationField('campaignRegionLanguageSnapshotRefresh', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -28,32 +26,33 @@ builder.mutationField('campaignRegionLanguageSnapshotRefresh', (t) =>
         throw badUserInput('No journey is linked', 'journeyId')
       const journey = await resolveJourneyId(regionLanguage.journeyId, 'url')
 
-      return await prisma.$transaction(async (tx) => {
-        // Decide from the row as locked, not as authorised: a concurrent
-        // unlink or swap may have changed the journey since.
-        await lockRegionLanguage(tx, id)
-        const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
-          where: { id },
-          select: { journeyId: true }
-        })
-        if (current.journeyId == null)
-          throw badUserInput('No journey is linked', 'journeyId')
-        if (current.journeyId !== journey.id)
-          throw conflict(
-            'another journey was just linked; try again',
-            'journeyId'
-          )
-        const updated = await tx.campaignRegionLanguage.update({
-          ...query,
-          where: { id },
-          data: {
-            ...snapshotOf(journey),
-            snapshotEdited: false
-          }
-        })
-        await touchCampaign(tx, regionLanguage.region.campaign.id)
-        return updated
-      })
+      // Decide from the row as locked, not as authorised: a concurrent
+      // unlink or swap may have changed the journey since.
+      return await campaignWrite(
+        regionLanguage.region.campaign.id,
+        { shareLanguage: id },
+        async ({ tx }) => {
+          const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
+            where: { id },
+            select: { journeyId: true }
+          })
+          if (current.journeyId == null)
+            throw badUserInput('No journey is linked', 'journeyId')
+          if (current.journeyId !== journey.id)
+            throw conflict(
+              'another journey was just linked; try again',
+              'journeyId'
+            )
+          return await tx.campaignRegionLanguage.update({
+            ...query,
+            where: { id },
+            data: {
+              ...snapshotOf(journey),
+              snapshotEdited: false
+            }
+          })
+        }
+      )
     }
   })
 )

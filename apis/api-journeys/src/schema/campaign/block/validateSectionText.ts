@@ -1,37 +1,30 @@
-import { TEXT_CAPS, assertLengthOrNull } from '../validation'
+import {
+  TRANSLATED_FIELDS,
+  type TranslatedBlockField,
+  type TranslatedBlockTypename,
+  type TranslatedFieldName
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 
-export type SectionTextField =
-  | 'eyebrow'
-  | 'title'
-  | 'description'
-  | 'intro'
-  | 'content'
-  | 'bullets'
-
-export const SECTION_TEXT_CAPS: Record<SectionTextField, number> = {
-  eyebrow: TEXT_CAPS.eyebrow,
-  title: TEXT_CAPS.title,
-  description: TEXT_CAPS.description,
-  intro: TEXT_CAPS.intro,
-  content: TEXT_CAPS.richTextContent,
-  bullets: TEXT_CAPS.bullets
-}
+import { assertLengthOrNull } from '../validation'
 
 /**
- * The typed body text of a section: each given field trimmed and capped
- * (eyebrow 80, title 150, description and intro 500, rich text content 5000, bullets
- * 1000); empty is allowed everywhere;
- * omitted fields are left untouched. `BAD_USER_INPUT` names the field.
+ * The typed body text of a section, read from its typename's field
+ * declaration (`TRANSLATED_FIELDS`): each declared field the input gives is
+ * trimmed and capped; empty is allowed everywhere; omitted fields are left
+ * untouched. `BAD_USER_INPUT` names the field.
  */
-export function validateSectionText<F extends SectionTextField>(
-  input: Partial<Record<F, string | null | undefined>>,
-  fields: readonly F[]
-): Partial<Record<F, string | null>> {
-  const data: Partial<Record<F, string | null>> = {}
-  for (const field of fields) {
+export function validateSectionText<T extends TranslatedBlockTypename>(
+  typename: T,
+  input: Partial<Record<TranslatedBlockField<T>, string | null | undefined>>
+): Partial<Record<TranslatedBlockField<T>, string | null>> {
+  const caps: Partial<Record<TranslatedFieldName, number>> =
+    TRANSLATED_FIELDS.block[typename]
+  const data: Partial<Record<TranslatedBlockField<T>, string | null>> = {}
+  for (const field of Object.keys(caps) as Array<TranslatedBlockField<T>>) {
     const value = input[field]
-    if (value === undefined) continue
-    data[field] = assertLengthOrNull(value, field, SECTION_TEXT_CAPS[field])
+    const cap = caps[field]
+    if (value === undefined || cap == null) continue
+    data[field] = assertLengthOrNull(value, field, cap)
   }
   return data
 }

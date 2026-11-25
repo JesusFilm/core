@@ -1,11 +1,12 @@
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
+import { CampaignMutedText } from '../CampaignMutedText'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignTypography } from '../CampaignTypography'
 import { hasText } from '../types'
-import type { CampaignTreeOf } from '../types'
+import type { CampaignRegion, CampaignTreeOf } from '../types'
 
 interface CampaignRegionHeaderProps {
   block: CampaignTreeOf<'CampaignRegionHeaderBlock'>
@@ -28,6 +29,17 @@ export function CampaignRegionName({
   )
 }
 
+/** A region's Region Lines as text, in order: its Typography lines; any other block is left out. */
+export function regionLineTexts(
+  lines: CampaignRegion['lines']
+): ReactElement[] {
+  return lines.flatMap((line) =>
+    line.__typename === 'CampaignTypographyBlock'
+      ? [<CampaignTypography key={line.id} block={line} />]
+      : []
+  )
+}
+
 /**
  * Region Page only: the rendered region's name, its Region Lines and the
  * intro. Renders nothing without a region.
@@ -41,19 +53,11 @@ export function CampaignRegionHeader({
   return (
     <CampaignSectionBand block={block}>
       <CampaignRegionName>{region.name}</CampaignRegionName>
-      {region.lines.map((line) =>
-        line.__typename === 'CampaignTypographyBlock' ? (
-          <CampaignTypography key={line.id} block={line} />
-        ) : null
-      )}
+      {regionLineTexts(region.lines)}
       {hasText(block.intro) && (
-        <Typography
-          variant="body1"
-          data-testid="CampaignRegionIntro"
-          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
-        >
+        <CampaignMutedText data-testid="CampaignRegionIntro">
           {block.intro}
-        </Typography>
+        </CampaignMutedText>
       )}
     </CampaignSectionBand>
   )

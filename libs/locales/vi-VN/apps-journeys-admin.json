@@ -893,7 +893,7 @@
   "DNS Config": "Cấu hình DNS",
   "Valid Configuration": "Cấu hình hợp lệ",
   "Invalid Configuration": "Cấu hình không hợp lệ",
-  "Pending Verfication": "Đang chờ xác minh",
+  "Pending Verification": "Đang chờ xác minh",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "Tên miền {{ customDomainName }} đã được thêm vào một nhóm khác. Vui lòng hoàn tất xác minh để thêm tên miền này vào nhóm này.",
   "Domain name is a required field": "Tên miền là trường bắt buộc",
   "Must be a valid URL": "Phải là một URL hợp lệ",

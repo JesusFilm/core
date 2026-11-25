@@ -5,7 +5,7 @@ import {
   CampaignRegionLanguageUpdate,
   CampaignRegionLanguageUpdateVariables
 } from '../../../__generated__/CampaignRegionLanguageUpdate'
-import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../useCampaignQuery'
 
 export const CAMPAIGN_REGION_LANGUAGE_UPDATE = gql`
   ${CAMPAIGN_REGION_LANGUAGE_FIELDS}

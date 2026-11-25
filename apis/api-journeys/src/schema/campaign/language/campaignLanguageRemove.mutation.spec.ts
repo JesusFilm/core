@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import { mockQueueAdd } from '../../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../../test/campaignAddressSnapshot'
 import {
   CampaignSpecResult,
   authClient,
@@ -96,10 +97,11 @@ describe('campaignLanguageRemove', () => {
       .published()
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    mockAddressSnapshots(campaign, {
+      ...campaign,
+      languages: [campaign.languages[0]]
+    })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(campaign)
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      campaign.languages[0]
-    ])
 
     await remove(FRENCH)
 
@@ -134,7 +136,7 @@ describe('campaignLanguageRemove', () => {
 
     const result = await remove('529')
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId is the default language and cannot be removed',
       extensions: { code: 'CONFLICT', field: 'languageId' }
     })
@@ -153,7 +155,7 @@ describe('campaignLanguageRemove', () => {
 
     const result = await remove('529')
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId is the last language and cannot be removed',
       extensions: { code: 'CONFLICT', field: 'languageId' }
     })
@@ -164,13 +166,15 @@ describe('campaignLanguageRemove', () => {
     const campaign = campaignFactory({ role: 'member' })
       .withLanguage(FRENCH)
       .build()
+    // Every read inside the transaction, the address snapshot included,
+    // sees the concurrent swap.
     prismaMock.campaign.findUnique
       .mockResolvedValueOnce(campaign)
-      .mockResolvedValueOnce({ ...campaign, defaultLanguageId: FRENCH })
+      .mockResolvedValue({ ...campaign, defaultLanguageId: FRENCH })
 
     const result = await remove(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'languageId is the default language and cannot be removed',
       extensions: { code: 'CONFLICT', field: 'languageId' }
     })
@@ -192,7 +196,7 @@ describe('campaignLanguageRemove', () => {
 
     const result = await remove(SPANISH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'language not found',
       extensions: expect.objectContaining({ code: 'NOT_FOUND' })
     })
@@ -205,7 +209,7 @@ describe('campaignLanguageRemove', () => {
 
     const result = await remove(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'user is not allowed to update campaign',
       extensions: expect.objectContaining({ code: 'FORBIDDEN' })
     })
@@ -217,7 +221,7 @@ describe('campaignLanguageRemove', () => {
 
     const result = await remove(FRENCH)
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'campaign not found',
       extensions: expect.objectContaining({ code: 'NOT_FOUND' })
     })

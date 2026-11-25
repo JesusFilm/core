@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import {
   CAMPAIGN_BLOCK_DELETE_ACTION,
   CAMPAIGN_BLOCK_UPDATE_LINK_ACTION,
@@ -10,17 +11,23 @@ import {
   CAMPAIGN_BLOCK_UPDATE_SCROLL_TO_BLOCK_ACTION,
   CampaignButtonAction
 } from '../../../libs/useCampaignBlockActionMutation'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { campaignWithRegions as campaign } from '../data'
+import {
+  campaignWithRegions as campaign,
+  campaignWithFrenchRegionName
+} from '../data'
 import {
   BlocksProbe,
   CommandProbe,
   QueriedEditor,
-  StaticEditor
+  StaticEditor,
+  UndoRedo,
+  holdRequests,
+  landRequests
 } from '../testing'
+import { isHttpsUrl } from '../utils/isHttpsUrl'
 
-import { LinkSettings, isHttpsUrl } from './LinkSettings'
+import { LinkSettings } from './LinkSettings'
 
 /** The link settings over the button as the editor currently holds it. */
 function SettingsFor({ blockId }: { blockId: string }): ReactElement | null {
@@ -44,17 +51,20 @@ function withHeroButtonAction(action: CampaignButtonAction | null): Campaign {
 
 function renderStatic(
   campaignProp: Campaign,
-  blockId = 'heroButtonId'
+  blockId = 'heroButtonId',
+  previewLanguageId?: string
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor campaignProp={campaignProp}>
+    <StaticEditor
+      campaign={campaignProp}
+      initialState={previewLanguageId == null ? {} : { previewLanguageId }}
+    >
       <SettingsFor blockId={blockId} />
     </StaticEditor>
   )
 }
 
 const scrollToCarouselMock = {
-  delay: 200,
   request: {
     query: CAMPAIGN_BLOCK_UPDATE_SCROLL_TO_BLOCK_ACTION,
     variables: { id: 'heroButtonId', input: { blockId: 'carouselId' } }
@@ -71,7 +81,6 @@ const scrollToCarouselMock = {
 }
 
 const scrollToSwitcherMock = {
-  delay: 200,
   request: {
     query: CAMPAIGN_BLOCK_UPDATE_SCROLL_TO_BLOCK_ACTION,
     variables: { id: 'heroButtonId', input: { blockId: 'landingSwitcherId' } }
@@ -88,7 +97,6 @@ const scrollToSwitcherMock = {
 }
 
 const regionMock = {
-  delay: 200,
   request: {
     query: CAMPAIGN_BLOCK_UPDATE_NAVIGATE_TO_REGION_ACTION,
     variables: { id: 'heroButtonId', input: { regionId: 'afrRegionId' } }
@@ -105,7 +113,6 @@ const regionMock = {
 }
 
 const linkMock = {
-  delay: 200,
   request: {
     query: CAMPAIGN_BLOCK_UPDATE_LINK_ACTION,
     variables: {
@@ -143,7 +150,6 @@ const badLinkMock = {
 }
 
 const deleteMock = {
-  delay: 200,
   request: {
     query: CAMPAIGN_BLOCK_DELETE_ACTION,
     variables: { id: 'heroButtonId' }
@@ -162,7 +168,7 @@ const deleteMock = {
 function renderQueried(): ReturnType<typeof render> {
   return render(
     <QueriedEditor
-      campaignProp={campaign}
+      campaign={campaign}
       initialState={{ selectedBlockId: 'heroButtonId' }}
       mocks={[
         scrollToCarouselMock,
@@ -173,7 +179,7 @@ function renderQueried(): ReturnType<typeof render> {
         deleteMock
       ]}
     >
-      <CommandUndoItem variant="button" />
+      <UndoRedo />
       <CommandProbe />
       <BlocksProbe />
       <SettingsFor blockId="heroButtonId" />
@@ -229,6 +235,15 @@ describe('LinkSettings', () => {
       expect(current()).toHaveTextContent('Europe')
     })
 
+    it('reads the region name in the Preview Language', () => {
+      renderStatic(
+        campaignWithFrenchRegionName,
+        'switcherEuropeButtonId',
+        '496'
+      )
+      expect(current()).toHaveTextContent('L’Europe')
+    })
+
     it.each([
       ['regionId null (the region was deleted)', null],
       ['a region the campaign no longer has', 'ghostRegionId']
@@ -246,6 +261,14 @@ describe('LinkSettings', () => {
   })
 
   describe('kinds', () => {
+    it('lists the regions in the Preview Language, by the default name where there is no translation', () => {
+      renderStatic(campaignWithFrenchRegionName, 'heroButtonId', '496')
+
+      fireEvent.click(screen.getByRole('button', { name: 'Region' }))
+
+      expect(listItems()).toEqual(['L’Europe', 'Africa'])
+    })
+
     it('counts the web address against its cap', () => {
       renderStatic(campaign)
 
@@ -257,6 +280,17 @@ describe('LinkSettings', () => {
       })
 
       expect(screen.getByText('12 / 2048')).toBeInTheDocument()
+    })
+
+    it('counts an address in UTF-16 units, as the API caps it', () => {
+      renderStatic(campaign)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Web address' }))
+      fireEvent.change(screen.getByRole('textbox', { name: 'Web address' }), {
+        target: { value: ' https://a.co/😀 ' }
+      })
+
+      expect(screen.getByText('15 / 2048')).toBeInTheDocument()
     })
 
     it('offers a web address, the sections on this page by title or type, and the regions', () => {
@@ -292,8 +326,8 @@ describe('LinkSettings', () => {
     it('lists the sections of the page the canvas shows for a chrome button', () => {
       render(
         <StaticEditor
-          campaignProp={campaign}
-          initialState={{ pageKind: 'regionTemplate' as never }}
+          campaign={campaign}
+          initialState={{ pageKind: CampaignPageKind.regionTemplate }}
         >
           <SettingsFor blockId="navHomeId" />
         </StaticEditor>
@@ -312,16 +346,17 @@ describe('LinkSettings', () => {
       renderQueried()
       await screen.findByTestId('LinkSettings')
 
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Films for the season' })
-      )
+      await holdRequests(() => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Films for the season' })
+        )
+      })
 
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
       // Optimistic: the link reads the new target before the request returns.
-      await waitFor(() =>
-        expect(current()).toHaveTextContent('Films for the season')
-      )
+      expect(current()).toHaveTextContent('Films for the season')
       expect(scrollToCarouselMock.result).not.toHaveBeenCalled()
+      await landRequests()
       await waitFor(() =>
         expect(scrollToCarouselMock.result).toHaveBeenCalled()
       )
@@ -422,13 +457,16 @@ describe('LinkSettings', () => {
       renderQueried()
       await screen.findByTestId('LinkSettings')
 
-      fireEvent.click(screen.getByRole('button', { name: 'Remove link' }))
+      await holdRequests(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Remove link' }))
+      })
 
-      await waitFor(() => expect(current()).toHaveTextContent('No link'))
+      expect(current()).toHaveTextContent('No link')
       expect(screen.getByTestId('Block-heroButtonId')).toHaveTextContent(
         '|null'
       )
       expect(deleteMock.result).not.toHaveBeenCalled()
+      await landRequests()
       await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
 
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))

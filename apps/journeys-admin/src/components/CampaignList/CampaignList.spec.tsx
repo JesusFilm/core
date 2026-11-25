@@ -99,11 +99,11 @@ const noLastActiveTeamMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams>
   }
 
 function renderList(
-  mocks: unknown[] = [campaignsMock],
-  teamsMock: unknown = getLastActiveTeamIdAndTeamsMock
+  mocks: MockLink.MockedResponse[] = [campaignsMock],
+  teamsMock: MockLink.MockedResponse = getLastActiveTeamIdAndTeamsMock
 ): void {
   render(
-    <MockedProvider mocks={[teamsMock, ...mocks] as never}>
+    <MockedProvider mocks={[teamsMock, ...mocks]}>
       <SnackbarProvider>
         <TeamProvider>
           <CampaignList />
@@ -135,6 +135,16 @@ describe('CampaignList', () => {
     expect(screen.getByTestId('CampaignListItem-campaignId')).toHaveAttribute(
       'href',
       '/campaigns/campaignId'
+    )
+  })
+
+  it('links each campaign to its Campaign Report', async () => {
+    renderList()
+
+    expect(await screen.findByText('Outreach 2026')).toBeInTheDocument()
+    expect(screen.getByTestId('CampaignListReport-campaignId')).toHaveAttribute(
+      'href',
+      '/campaigns/campaignId/reports'
     )
   })
 

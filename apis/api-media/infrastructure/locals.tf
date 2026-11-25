@@ -74,6 +74,13 @@ locals {
     health_check_grace_period_seconds = 60
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
+      # Stage fails fast, like api-gateway: these were set by hand on the
+      # stage target groups while ecs-task ignored health_check drift.
+      # null = the module defaults, which is what prod has.
+      health_check_interval            = var.env == "stage" ? 5 : null
+      health_check_timeout             = var.env == "stage" ? 3 : null
+      health_check_healthy_threshold   = var.env == "stage" ? 2 : null
+      health_check_unhealthy_threshold = var.env == "stage" ? 2 : null
     })
     auto_scaling = {
       max_capacity = var.env == "stage" ? 1 : 3

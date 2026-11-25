@@ -747,6 +747,81 @@ describe('YouTubeDetails', () => {
     })
   })
 
+  it('should not show captions in the preview of a background video', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [
+        { id: '529', bcp47: 'en', name: { value: 'English', primary: true } }
+      ],
+      loading: false,
+      error: undefined
+    })
+    const onSelect = vi.fn()
+    // A card's background video has no parent order
+    const activeVideoBlock = {
+      id: 'video1',
+      __typename: 'VideoBlock' as const,
+      parentBlockId: 'card1',
+      parentOrder: null,
+      muted: true,
+      autoplay: true,
+      startAt: 10,
+      endAt: 100,
+      posterBlockId: null,
+      fullsize: false,
+      videoId: 'jQaeIJOA6J0',
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.youTube,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      subtitleLanguage: {
+        __typename: 'Language' as const,
+        id: '529',
+        bcp47: 'en'
+      },
+      showGeneratedSubtitles: null,
+      mediaVideo: null,
+      action: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
+      notes: null,
+      children: []
+    }
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails
+            id="jQaeIJOA6J0"
+            open
+            onSelect={onSelect}
+            activeVideoBlock={activeVideoBlock}
+          />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+    expect(mockVideoJs).toHaveBeenCalledWith(
+      expect.any(HTMLVideoElement),
+      expect.objectContaining({ youtube: { cc_load_policy: 0 } })
+    )
+    expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
+    // The saved language is kept when the video is selected again
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    expect(onSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ subtitleLanguageId: '529' })
+    )
+  })
+
   it('should preserve startAt and endAt when re-selecting same video', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const activeVideoBlock = {

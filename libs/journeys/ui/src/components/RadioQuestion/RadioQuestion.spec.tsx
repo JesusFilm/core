@@ -15,6 +15,8 @@ import {
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
+import { CUSTOM1_CAPTURE_EVENT_CREATE } from '../../libs/useCaptureEvent/useCaptureEvent'
+import { createEventRequestLink } from '../../test/createEventRequestLink'
 
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -400,9 +402,26 @@ describe('RadioQuestion', () => {
       ]
     }
 
+    const captureVariables = vi.fn(() => true)
+    const captureResult = vi.fn(() => ({
+      data: {
+        custom1CaptureEventCreate: {
+          id: 'capture-uuid',
+          __typename: 'Custom1CaptureEvent'
+        }
+      }
+    }))
+    const captureMock = {
+      request: {
+        query: CUSTOM1_CAPTURE_EVENT_CREATE,
+        variables: captureVariables
+      },
+      result: captureResult
+    }
     const { getAllByRole } = render(
       <MockedProvider
         mocks={[
+          captureMock,
           {
             request: {
               query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
@@ -469,6 +488,16 @@ describe('RadioQuestion', () => {
         })
       }
     })
+
+    await waitFor(() => expect(captureResult).toHaveBeenCalledTimes(1))
+    expect(captureVariables).toHaveBeenCalledWith({
+      input: {
+        id: expect.any(String),
+        blockId: 'RadioOption1',
+        stepId: 'step.id',
+        trigger: 'radioQuestionSubmit'
+      }
+    })
   })
 
   it('should set selectedId to null when  is false', () => {
@@ -506,4 +535,51 @@ describe('RadioQuestion', () => {
       expect(button).not.toBeDisabled()
     })
   })
+
+  it.each([
+    ['default', BlockEventLabel.custom1, 1],
+    ['embed', BlockEventLabel.custom1, 1],
+    ['admin', BlockEventLabel.custom1, 0],
+    ['customize', BlockEventLabel.custom1, 0],
+    ['default', null, 0],
+    ['default', BlockEventLabel.share, 0],
+    ['default', BlockEventLabel.inviteFriend, 0]
+  ] as const)(
+    'captures only the selected option in %s with tag %s',
+    async (renderMode, eventLabel, count) => {
+      mockUsePlausible.mockReturnValue(vi.fn())
+      blockHistoryVar([activeBlock])
+      const { link, requests } = createEventRequestLink()
+      const selected = { ...block.children[0], eventLabel }
+      const unselected = {
+        ...block.children[1],
+        eventLabel: BlockEventLabel.custom2
+      }
+      render(
+        <MockedProvider link={link}>
+          <JourneyProvider value={{ journey, renderMode }}>
+            <RadioQuestion {...block} children={[selected, unselected]} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(screen.getAllByRole('button')[0])
+      await waitFor(() =>
+        expect(
+          requests.filter(({ name }) => name.includes('Capture'))
+        ).toHaveLength(count)
+      )
+      if (count === 1)
+        expect(
+          requests.find(({ name }) => name.includes('Capture'))?.input
+        ).toEqual({
+          id: expect.any(String),
+          blockId: 'RadioOption1',
+          stepId: 'step.id',
+          trigger: 'radioQuestionSubmit'
+        })
+      expect(
+        requests.some(({ name }) => name === 'Custom2CaptureEventCreate')
+      ).toBe(false)
+    }
+  )
 })

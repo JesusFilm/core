@@ -25,6 +25,9 @@ export interface WorldMapShapes {
 
 export const WORLD_MAP_WIDTH = 960
 
+/** The height `buildWorldMap` projects the bundled atlas to at `WORLD_MAP_WIDTH`, so a placeholder can hold the map's place before it loads. */
+export const WORLD_MAP_HEIGHT = 418
+
 const ANTARCTICA_ID = '010'
 const PATH_DIGITS = 1
 

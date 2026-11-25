@@ -17,7 +17,11 @@ export const CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH = gql`
   }
 `
 
-/** Replace a journey card's default-language title and description with the journey's own; translations are kept. */
+/**
+ * Replace a journey card's default-language title and description with the
+ * journey's own; translations are kept.
+ * Uses the app-wide mutation queue so earlier edits land before the refresh.
+ */
 export function useCampaignJourneyBlockSnapshotRefreshMutation(
   options?: useMutation.Options<
     CampaignJourneyBlockSnapshotRefresh,

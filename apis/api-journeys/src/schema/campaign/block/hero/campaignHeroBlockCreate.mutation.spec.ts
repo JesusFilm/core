@@ -130,10 +130,9 @@ describe('campaignHeroBlockCreate', () => {
     })
     expect(
       sortBy(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => [
-          call.where.id,
-          call.data.parentOrder
-        ]),
+        vi
+          .mocked(prismaMock.campaignBlock.update)
+          .mock.calls.map(([call]) => [call.where.id, call.data.parentOrder]),
         ([, parentOrder]) => parentOrder
       )
     ).toEqual([
@@ -156,7 +155,7 @@ describe('campaignHeroBlockCreate', () => {
   it('rejects a negative position (BAD_USER_INPUT, parentOrder)', async () => {
     const result = await create({ parentOrder: -1 })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'parentOrder'
     })
@@ -172,7 +171,7 @@ describe('campaignHeroBlockCreate', () => {
     async (field, max) => {
       const result = await create({ [field]: 'x'.repeat(max + 1) })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -185,7 +184,7 @@ describe('campaignHeroBlockCreate', () => {
 
     const result = await create({ pageId: 'missing' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'pageId'
     })
@@ -199,7 +198,7 @@ describe('campaignHeroBlockCreate', () => {
 
     const result = await create({})
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 
@@ -208,6 +207,6 @@ describe('campaignHeroBlockCreate', () => {
 
     const result = await create({ campaignId: 'missing' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 })

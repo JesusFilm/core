@@ -2,7 +2,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { CampaignRegionRef } from '../campaignRegion'
-import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
+import { campaignWrite } from '../campaignWrite'
 import { badUserInput, conflict } from '../errors'
 import { generateUniqueRegionSlug } from '../slug'
 import {
@@ -38,36 +38,39 @@ builder.mutationField('campaignRegionCreate', (t) =>
       const clientId = assertClientId(id)
 
       try {
-        return await prisma.$transaction(async (tx) => {
-          await lockCampaignStructure(tx, campaignId)
-          const order = await tx.campaignRegion.count({ where: { campaignId } })
-          if (order >= CAMPAIGN_REGIONS_MAX)
-            throw badUserInput(
-              `a campaign has at most ${CAMPAIGN_REGIONS_MAX} regions`,
-              'campaignId'
+        return await campaignWrite(
+          campaignId,
+          { structure: true },
+          async ({ tx }) => {
+            const order = await tx.campaignRegion.count({
+              where: { campaignId }
+            })
+            if (order >= CAMPAIGN_REGIONS_MAX)
+              throw badUserInput(
+                `a campaign has at most ${CAMPAIGN_REGIONS_MAX} regions`,
+                'campaignId'
+              )
+            const slug = await generateUniqueRegionSlug(
+              campaign,
+              NEW_REGION_NAME,
+              tx
             )
-          const slug = await generateUniqueRegionSlug(
-            campaign,
-            NEW_REGION_NAME,
-            tx
-          )
-          const region = await tx.campaignRegion.create({
-            ...query,
-            data: {
-              id: clientId,
-              campaignId,
-              name: NEW_REGION_NAME,
-              slug,
-              order,
-              listed: true,
-              languages: {
-                create: { languageId: campaign.defaultLanguageId, order: 0 }
+            return await tx.campaignRegion.create({
+              ...query,
+              data: {
+                id: clientId,
+                campaignId,
+                name: NEW_REGION_NAME,
+                slug,
+                order,
+                listed: true,
+                languages: {
+                  create: { languageId: campaign.defaultLanguageId, order: 0 }
+                }
               }
-            }
-          })
-          await touchCampaign(tx, campaignId)
-          return region
-        })
+            })
+          }
+        )
       } catch (error) {
         const idTaken = clientId != null && isUniqueViolation(error, 'id')
         if (!idTaken && !isUniqueViolation(error, 'slug')) throw error

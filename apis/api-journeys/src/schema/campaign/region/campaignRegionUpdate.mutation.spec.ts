@@ -1,4 +1,5 @@
 import { mockQueueAdd } from '../../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../../test/campaignAddressSnapshot'
 import {
   CampaignSpecResult,
   authClient,
@@ -6,6 +7,7 @@ import {
 } from '../../../../test/campaignBlockSetup'
 import {
   CampaignFixture,
+  CampaignRegionRow,
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
@@ -18,6 +20,11 @@ import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('../gatewayClient', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../gatewayClient')>()),
+  fetchLanguage: vi.fn()
 }))
 
 describe('campaignRegionUpdate', () => {
@@ -85,12 +92,13 @@ describe('campaignRegionUpdate', () => {
       where: { id: 'campaignId' },
       data: { updatedAt: expect.any(Date) }
     })
+    expect(prismaMock.campaign.findUnique).not.toHaveBeenCalled()
   })
 
   it('requires a name (BAD_USER_INPUT, field name)', async () => {
     const result = await update({ name: '   ' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'name'
     })
@@ -100,7 +108,7 @@ describe('campaignRegionUpdate', () => {
   it('caps the name at 60 characters (BAD_USER_INPUT, field name)', async () => {
     const result = await update({ name: 'x'.repeat(61) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'name'
     })
@@ -134,30 +142,33 @@ describe('campaignRegionUpdate', () => {
   ])('rejects the reserved slug %s (%s)', async (slug) => {
     const result = await update({ slug })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'slug'
     })
   })
 
   it('rejects a malformed or over-long slug (BAD_USER_INPUT, field slug)', async () => {
-    expect((await update({ slug: '---' })).errors[0].extensions).toMatchObject({
+    expect(
+      (await update({ slug: '---' })).errors?.[0].extensions
+    ).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'slug'
     })
     expect(
-      (await update({ slug: 'x'.repeat(201) })).errors[0].extensions
+      (await update({ slug: 'x'.repeat(201) })).errors?.[0].extensions
     ).toMatchObject({ code: 'BAD_USER_INPUT', field: 'slug' })
   })
 
   it('rejects a slug another region of the campaign already has', async () => {
     prismaMock.campaignRegion.findFirst.mockResolvedValue({
+      ...fixture.regions[1],
       id: 'afrRegionId'
-    } as never)
+    })
 
     const result = await update({ slug: 'afr' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'slug'
     })
@@ -165,14 +176,16 @@ describe('campaignRegionUpdate', () => {
   })
 
   it('rejects the slug of a journey in the campaign’s team, naming the journey', async () => {
-    prismaMock.journey.findFirst.mockResolvedValue({
+    vi.mocked(prismaMock.journey.findFirst, {
+      partial: true
+    }).mockResolvedValue({
       id: 'journeyId',
       title: 'Outreach Europe'
-    } as never)
+    })
 
     const result = await update({ slug: 'outreach-europe' })
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: expect.stringContaining('Outreach Europe'),
       extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
     })
@@ -188,7 +201,7 @@ describe('campaignRegionUpdate', () => {
 
       const result = await update({ slug: 'lac' })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'slug'
       })
@@ -214,7 +227,7 @@ describe('campaignRegionUpdate', () => {
 
     const result = await update({ name: 'Europe' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 
   it('throws NOT_FOUND for an unknown region', async () => {
@@ -222,78 +235,95 @@ describe('campaignRegionUpdate', () => {
 
     const result = await update({ name: 'Europe' }, 'missing')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   describe('revalidation', () => {
-    function publishedFixture(): void {
-      const published = campaignFactory()
-        .withRegion('EUR')
-        .withRegion('AFR')
-        .published()
-        .build()
-      prismaMock.campaignRegion.findUnique.mockResolvedValue(
-        campaignRegionWithAcl(published, 'eurRegionId')
-      )
+    const published = campaignFactory()
+      .withRegion('EUR')
+      .withRegion('AFR')
+      .published()
+      .build()
+
+    /** `campaign` with the EUR region changed by `change`. */
+    function changeEur(
+      campaign: CampaignFixture,
+      change: Partial<CampaignRegionRow>
+    ): CampaignFixture {
+      return {
+        ...campaign,
+        regions: campaign.regions.map((region) =>
+          region.id === 'eurRegionId' ? { ...region, ...change } : region
+        )
+      }
     }
 
-    it('revalidates the previous and new region paths when the slug of a published campaign moves', async () => {
-      publishedFixture()
+    function queuedPaths(): string[] {
+      return mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
+    }
+
+    it('queues the pages before and after when the slug of a published campaign moves', async () => {
+      mockAddressSnapshots(published, changeEur(published, { slug: 'europe' }))
 
       await update({ slug: 'europe' })
 
-      const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
-      expect(paths).toEqual(
-        expect.arrayContaining([
-          '/home/campaign/outreach-2026',
-          '/home/campaign/outreach-2026/eur',
-          '/home/campaign/outreach-2026/afr'
-        ])
-      )
+      expect(queuedPaths()).toEqual([
+        '/home/campaign/outreach-2026',
+        '/home/campaign/outreach-2026/eur',
+        '/home/campaign/outreach-2026/afr',
+        '/home/campaign/outreach-2026/europe'
+      ])
     })
 
-    it('revalidates the domain form of each path for its Campaign Domain', async () => {
-      const published = campaignFactory()
-        .withRegion('EUR')
-        .withRegion('AFR')
-        .published()
-        .build()
-      prismaMock.campaignRegion.findUnique.mockResolvedValue(
-        campaignRegionWithAcl(
-          { ...published, customDomains: [{ name: 'gifts.org' } as never] },
-          'eurRegionId'
-        )
+    it('queues the domain form of each path for its Campaign Domain', async () => {
+      const withDomain = {
+        ...published,
+        customDomains: [{ name: 'gifts.org' } as never]
+      }
+      mockAddressSnapshots(
+        withDomain,
+        changeEur(withDomain, { slug: 'europe' })
       )
 
       await update({ slug: 'europe' })
 
-      const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
-      expect(paths).toEqual(
-        expect.arrayContaining([
-          '/gifts.org',
-          '/gifts.org/eur',
-          '/gifts.org/afr'
-        ])
-      )
+      expect(queuedPaths()).toEqual([
+        '/home/campaign/outreach-2026',
+        '/home/campaign/outreach-2026/eur',
+        '/home/campaign/outreach-2026/afr',
+        '/gifts.org',
+        '/gifts.org/eur',
+        '/gifts.org/afr',
+        '/home/campaign/outreach-2026/europe',
+        '/gifts.org/europe'
+      ])
     })
 
-    it('revalidates when listing changes on a published campaign', async () => {
-      publishedFixture()
+    it('queues every page when listing changes on a published campaign', async () => {
+      mockAddressSnapshots(published, changeEur(published, { listed: false }))
 
       await update({ listed: false })
 
-      expect(mockQueueAdd).toHaveBeenCalled()
+      expect(queuedPaths()).toEqual([
+        '/home/campaign/outreach-2026',
+        '/home/campaign/outreach-2026/eur',
+        '/home/campaign/outreach-2026/afr'
+      ])
     })
 
-    it('queues nothing for a rename, an unchanged slug or a draft campaign', async () => {
-      publishedFixture()
-      await update({ name: 'Europe', slug: 'eur', listed: true })
-      expect(mockQueueAdd).not.toHaveBeenCalled()
+    it('queues nothing for a rename: region names are not part of the address', async () => {
+      mockAddressSnapshots(published, changeEur(published, { name: 'Europe' }))
 
-      prismaMock.campaignRegion.findUnique.mockResolvedValue(
-        campaignRegionWithAcl(fixture, 'eurRegionId')
-      )
+      await update({ name: 'Europe' })
+
+      expect(mockQueueAdd).not.toHaveBeenCalled()
+    })
+
+    it('queues nothing for a slug move on a draft campaign', async () => {
+      mockAddressSnapshots(fixture, changeEur(fixture, { slug: 'europe' }))
+
       await update({ slug: 'europe' })
+
       expect(mockQueueAdd).not.toHaveBeenCalled()
     })
   })

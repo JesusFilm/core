@@ -73,7 +73,7 @@ describe('campaignBlockDeleteAction', () => {
 
     const result = await remove('footerCopyrightId')
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'id'
     })
@@ -85,7 +85,7 @@ describe('campaignBlockDeleteAction', () => {
 
     const result = await remove('ghostId')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
@@ -98,7 +98,7 @@ describe('campaignBlockDeleteAction', () => {
 
     const result = await remove()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignAction.deleteMany).not.toHaveBeenCalled()
   })
 })

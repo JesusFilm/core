@@ -9,15 +9,17 @@ state**. This replaces Linear for the AI workflow trial (Linear ENG-3688).
 
 One Status per ticket, moving left to right:
 
-| Status          | Meaning                                                                                             |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| **Triage**      | New or unevaluated; also covers "waiting on more info"                                              |
-| **Ready**       | Fully specified, up for grabs (by a human or the AI workflow)                                       |
-| **In progress** | Being worked, human or AI                                                                           |
-| **In review**   | PR up, awaiting review                                                                              |
-| **QA**          | Review passed, awaiting **human QA team** approval                                                  |
-| **Needs Human** | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4) |
-| **Done**        | Closed — shipped, or rejected as not planned                                                        |
+| Status                | Meaning                                                                                             |
+| --------------------- | --------------------------------------------------------------------------------------------------- |
+| **Triage**            | New or unevaluated; also covers "waiting on more info"                                              |
+| **Ready**             | Fully specified, up for grabs (by a human or the AI workflow)                                       |
+| **In progress**       | Being worked, human or AI                                                                           |
+| **In review**         | PR up, awaiting review                                                                              |
+| **Changes requested** | A reviewer requested changes and has not been requested to review again                             |
+| **Approved**          | At least one reviewer has approved the current PR head                                              |
+| **QA**                | Review passed, awaiting **human QA team** approval                                                  |
+| **Needs Human**       | The AI workflow bailed out — a human must decide/unblock before the ticket can proceed (see step 4) |
+| **Done**              | PR merged, or manually marked complete                                                              |
 
 **QA always means the human QA team.** The AI pipeline's own automated verification (the
 Vera QA harness) is _not_ this column — it runs inside **In progress**, before a PR is
@@ -29,8 +31,162 @@ State transitions:
 - **Humans** drag cards on the board or set Status in the issue sidebar.
 - **Agents/scripts** use the `gh project` commands (see below). The token needs the
   `project` scope (`gh auth refresh -s project`).
-- **Automatic**: new `JesusFilm/core` issues enter the project in Triage; closing an
-  issue moves it to Done and archives it (project built-in workflows).
+- **Automatic**: open Core issue cards already on Next Steps start in Triage when
+  their Status is unset. PR events update eligible existing cards on this board.
+  This workflow does not enroll issues, move cards on other boards, or mark an
+  issue Done just because it was closed.
+
+## Automatic PR and issue statuses
+
+The `Project status` workflow updates **existing issue cards on Next Steps only**.
+Board membership is the scope boundary; no extra classification label is needed.
+An issue that is also on QA, Engineering, or Video Management can have its Next
+Steps card updated, but its other project cards are untouched. Issues absent
+from Next Steps are ignored, even when a trusted PR explicitly links them.
+The workflow never adds project cards, creates GitHub issues, or updates PR cards.
+PRs supply evidence only. It accepts PRs whose
+author is an OWNER, MEMBER, or COLLABORATOR, or whose head repository is
+`JesusFilm/core`. Author/origin metadata is read from GitHub, not an event
+artifact. Other fork PRs neither move issues nor count toward the multiple-PR
+guard. Triage initialization applies to all authors of open issues already on
+Next Steps.
+
+Every target/base branch is supported, including child PRs targeting a parent
+stack branch. The head is the source branch; the base is the merge destination.
+GitHub loads [`pull_request_target`](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target)
+from Core's default branch and this workflow
+checks out `main`, regardless of the PR's target. Older stack branches do not
+need this workflow copied into them. The statuses below describe the linked
+issue, not an additional PR card.
+
+| Event or current condition                                                                    | Status                                                           |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Open issue already on Next Steps with unset Status                                            | Triage                                                           |
+| PR opened, including drafts and ready-for-review PRs                                          | In progress                                                      |
+| Reviewer requested and no current approval exists                                             | In review                                                        |
+| Formal Request changes review, with no current approval and that reviewer not requested again | Changes requested                                                |
+| At least one current approval of the PR head                                                  | Approved, even if other reviewers are pending or request changes |
+| New commits, or dismissal of the last approval                                                | In progress                                                      |
+| Re-review requested after approval dismissal                                                  | In review                                                        |
+| PR merged                                                                                     | Done                                                             |
+| PR closed without merging                                                                     | No change to the issue                                           |
+| PR reopened                                                                                   | Recalculate from current reviews and requests                    |
+
+If reviewers are already requested when a PR opens, it immediately enters In
+review. Approval dismissal leaves Approved intact when another approval remains.
+New commits invalidate approvals of earlier commits even if GitHub has not yet
+dismissed those reviews. Comment-only reviews and resolving discussion threads
+do not change status. QA is assigned manually; later PR events can move an item
+out of QA. Delayed reset events do not override newer reviews or review requests.
+If a dismissal's timeline event is not visible yet, the writer reads it at most
+three times, waiting one and two seconds between attempts. Exhaustion fails the
+run without changing status; it does not guess what was dismissed.
+
+Closing declarations are literal `Closes`, `Fixes`, or `Resolves` keywords next
+to an issue reference, including in prose. There is no agent or interpretation
+of intent: negated or partial phrases still contain the keyword. Use `Related
+to #123` for discussion, and code/quotes for examples.
+
+An issue receives a status update only when all these conditions hold:
+
+- Its issue card already exists on Next Steps. Membership is checked again
+  immediately before writing, and no card is added if it has been removed.
+
+- The PR has exactly one linked issue, using GitHub's Development relationship
+  or an explicit `Closes`, `Fixes`, or `Resolves` declaration in its body. Closing
+  declarations support stacked PRs whose non-default base prevents GitHub from
+  exposing the native closing relationship. Ordinary mentions, quoted/code
+  examples, and ancestor issues are ignored. Markdown is parsed structurally so
+  quotes and code nested inside lists remain examples, while real list prose
+  still counts. Declared PR numbers and nonexistent issues are ignored; other
+  API errors still fail the run.
+- The issue belongs to `JesusFilm/core`. It must be open for review/progress
+  updates. A merged PR can set Done even when GitHub already closed the issue.
+- This PR is the issue's only open or merged linked PR. Other PRs closed without
+  merging are ignored. A second open or merged PR disables issue updates.
+
+Merging a child PR into its parent stack branch completes the child issue; it
+need not reach `main` first. This is a board completion rule, not a statement
+that dependent work is safe to run or that the parent issue is complete. Issues
+with multiple open or merged implementation PRs remain manual, including on
+merge. Ordinary mentions from other PRs do not count as implementation links.
+
+Closing an additional PR leaves the issue untouched. Automation resumes on the
+remaining PR's next qualifying event. The workflow never closes or reopens
+issues. Merge completion can update an existing archived issue card without
+unarchiving it; other updates leave archived cards alone.
+
+Dragging an issue to QA or another board position does not protect it from
+subsequent PR events. The explicit `status:manual` label is the opt-out: it pauses
+updates to that issue. Removing it does not immediately change status; the next
+qualifying PR event resumes automation. Triage initialization does not overwrite
+an assigned status. The issue-created event initializes an existing card when
+possible; a five-minute scheduled scan handles cards added later or after the
+creation event was processed. It reads only open, non-archived Core issue cards
+on Next Steps with an unset Status, and rechecks membership and Status before
+writing. Each run handles at most 25 cards so an intake backlog cannot hold up
+PR events. No live board intake filters or existing memberships are changed by
+this PR; the board's own auto-add/manual intake decides which cards appear.
+
+### External workers
+
+This workflow writes project status only. External workers still own their
+metadata/dependency registries, scheduling, ownership/holds, and review
+requests. A Done status is not dependency evidence. Keep metadata refresh
+running when transferring board-writing ownership; operational cutover notes
+are in [PR #10522](https://github.com/JesusFilm/core/pull/10522).
+
+### Workflow setup and verification
+
+The writer uses the existing `CI_BOT_APP_ID` and `CI_BOT_PRIVATE_KEY` secrets.
+There is no new App to install. Its installation needs access to `JesusFilm/core`
+and these GitHub App permissions:
+
+| Permission                   | Purpose                                                 |
+| ---------------------------- | ------------------------------------------------------- |
+| Issues: read                 | Read the linked issue, labels, and implementation links |
+| Pull requests: read          | Read authors, branches, reviews, and merge state        |
+| Organization Projects: write | Change Status on existing Next Steps issue cards        |
+
+Status belongs to the organization project, not the GitHub issue itself. That
+is why issue read access alone is insufficient, and why the ordinary repository
+`GITHUB_TOKEN` cannot perform this update. Issue write access is not needed.
+These API permissions are separate from the trusted-PR rule, which determines
+which PRs may supply evidence.
+
+Before merging, an App/organization administrator should verify these permissions
+on the existing installation; the PR cannot grant them. Missing permissions fail
+token creation or project access. Provision `status:manual` if needed, and avoid
+a second writer for the same status transitions. Closing a PR without merging,
+or manually closing an issue, does not itself set Done or archive a card.
+
+PR and issue events run trusted code from `main`. Review events, including fork
+reviews, first upload their event JSON in the unprivileged `Project status
+reviews` workflow. The writer validates the artifact against its source run and
+GitHub's PR/review APIs before creating the App token. It never executes code
+from the PR. The writer serializes runs and reads current reviews, labels, and
+fully paginated links before updating project items. It does not post comments.
+
+Run the behavior tests in a Python virtual environment without installing the
+monorepo dependencies. The pinned CommonMark parser is also installed by the
+writer and test workflows. Both require the pinned wheel hashes and reject
+unverified artifacts:
+
+```bash
+python3 -m pip install --require-hashes --only-binary=:all: -r .github/scripts/project_status_requirements.txt
+python3 -m unittest discover -s .github/scripts -p 'project_status_test.py' -v
+```
+
+For read-only validation against a saved GitHub event payload:
+
+```bash
+python3 .github/scripts/project_status.py --dry-run \
+  --event-name pull_request_target --event-path /path/to/event.json
+```
+
+These workflows take effect after merging to `main`. They do not replay past PR
+events; existing eligible PRs move their issue cards on the next
+qualifying event. The Triage scan can initialize an existing unset card.
 
 Rejecting a ticket ("wontfix"): add the `Won't do` label, then close the issue as
 **not planned**. No dedicated column — the close reason is the record.
@@ -148,17 +304,19 @@ Ready. The agent then:
 
 ### Stable IDs
 
-| Thing                | ID                               |
-| -------------------- | -------------------------------- |
-| Project (Next Steps) | `PVT_kwDOBNwqhs4BeMYJ`           |
-| Status field         | `PVTSSF_lADOBNwqhs4BeMYJzhYobGA` |
-| Status: Triage       | `e5a2c514`                       |
-| Status: Ready        | `3c63150a`                       |
-| Status: In progress  | `b9c41da0`                       |
-| Status: In review    | `ab210038`                       |
-| Status: QA           | `12a20fe3`                       |
-| Status: Needs Human  | `f3e5a000`                       |
-| Status: Done         | `5243b071`                       |
+| Thing                     | ID                               |
+| ------------------------- | -------------------------------- |
+| Project (Next Steps)      | `PVT_kwDOBNwqhs4BeMYJ`           |
+| Status field              | `PVTSSF_lADOBNwqhs4BeMYJzhYobGA` |
+| Status: Triage            | `e5a2c514`                       |
+| Status: Ready             | `3c63150a`                       |
+| Status: In progress       | `b9c41da0`                       |
+| Status: In review         | `ab210038`                       |
+| Status: Changes requested | `bd91d0f2`                       |
+| Status: Approved          | `8ea90e2e`                       |
+| Status: QA                | `12a20fe3`                       |
+| Status: Needs Human       | `f3e5a000`                       |
+| Status: Done              | `5243b071`                       |
 
 (If the Status options are ever edited in the project settings, these option IDs change —
 re-read them with `gh project field-list 8 --owner JesusFilm --format json`.)

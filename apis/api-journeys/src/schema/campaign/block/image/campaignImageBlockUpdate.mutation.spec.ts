@@ -115,7 +115,7 @@ describe('campaignImageBlockUpdate', () => {
     async (field) => {
       const result = await update({ [field]: 101 })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
       })
@@ -143,7 +143,7 @@ describe('campaignImageBlockUpdate', () => {
     async (scale) => {
       const result = await update({ scale })
 
-      expect(result.errors[0].extensions).toMatchObject({
+      expect(result.errors?.[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'scale'
       })
@@ -154,7 +154,7 @@ describe('campaignImageBlockUpdate', () => {
   it('rejects alt over 500 characters (BAD_USER_INPUT, alt)', async () => {
     const result = await update({ alt: 'x'.repeat(501) })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'alt'
     })
@@ -193,7 +193,7 @@ describe('campaignImageBlockUpdate', () => {
   it('rejects a src that is not an https imagedelivery.net address (BAD_USER_INPUT, src)', async () => {
     const result = await update({ src: 'https://example.com/picture.jpg' })
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'src'
     })
@@ -219,7 +219,7 @@ describe('campaignImageBlockUpdate', () => {
 
     const result = await update({ alt: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -234,7 +234,7 @@ describe('campaignImageBlockUpdate', () => {
 
     const result = await update({ alt: 'x' })
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

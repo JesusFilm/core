@@ -1,3 +1,4 @@
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   CampaignSpecResult,
   authClient,
@@ -8,13 +9,18 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
-import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 describe('campaignRegionOrderUpdate', () => {
   const ORDER_UPDATE = graphql(`
@@ -27,9 +33,11 @@ describe('campaignRegionOrderUpdate', () => {
   `)
 
   let fixture: CampaignFixture
+  let writes: CampaignWriteCall[]
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     fixture = campaignFactory()
       .withRegion('EUR')
       .withRegion('AFR')
@@ -74,19 +82,23 @@ describe('campaignRegionOrderUpdate', () => {
       where: { campaignId: 'campaignId' },
       orderBy: { order: 'asc' }
     })
-    expect(prismaMock.campaign.update).toHaveBeenCalledWith({
-      where: { id: 'campaignId' },
-      data: { updatedAt: expect.any(Date) }
-    })
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { structure: true },
+        jobs: [],
+        touched: true
+      }
+    ])
   })
 
-  it('takes the structure lock before it reads the regions', async () => {
+  it('reads the regions under the structure lock', async () => {
     await move(2)
 
-    expectStructureLockFirst()
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignRegion.findMany.mock.invocationCallOrder[0]
-    )
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { structure: true }
+    ])
+    expect(prismaMock.campaignRegion.findMany).toHaveBeenCalledTimes(1)
   })
 
   it('clamps a position past the end to last', async () => {
@@ -100,7 +112,7 @@ describe('campaignRegionOrderUpdate', () => {
   it('rejects a negative order (BAD_USER_INPUT, field order)', async () => {
     const result = await move(-1)
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'order'
     })
@@ -117,7 +129,7 @@ describe('campaignRegionOrderUpdate', () => {
 
     const result = await move(1)
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
   })
 
   it('throws NOT_FOUND for an unknown region', async () => {
@@ -125,6 +137,24 @@ describe('campaignRegionOrderUpdate', () => {
 
     const result = await move(1, 'missing')
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+  })
+
+  it('queues no revalidation on a published campaign: a reorder waits for the ISR window', async () => {
+    const published = campaignFactory()
+      .withRegion('EUR')
+      .withRegion('AFR')
+      .withRegion('LAC')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(published)
+    prismaMock.campaignRegion.findUnique.mockResolvedValue(
+      campaignRegionWithAcl(published, 'eurRegionId')
+    )
+
+    const result = await move(2)
+
+    expect(result.errors).toBeUndefined()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 })

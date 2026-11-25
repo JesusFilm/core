@@ -1,7 +1,7 @@
 ---
 title: 'feat: Run Plausible on ECS Fargate (Graviton) instead of the EKS Platform Cluster'
 type: feat
-status: active
+status: done
 date: 2026-10-14
 ---
 

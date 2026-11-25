@@ -23,16 +23,18 @@ import { CAMPAIGN_REGION_LANGUAGE_CREATE } from '../../../libs/useCampaignRegion
 import { CAMPAIGN_REGION_LANGUAGE_DELETE } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH } from '../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
-import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../data'
-import { CommandProbe, QueriedEditor } from '../testing'
-
 import {
-  ShareSectionEdit,
-  addLanguageOptions,
-  shareLanguageState
-} from './ShareSectionEdit'
+  CommandProbe,
+  QueriedEditor,
+  SelectionProbe,
+  UndoRedo,
+  holdRequests,
+  landRequests
+} from '../testing'
+
+import { shareLanguageState } from './shareLanguage'
+import { ShareSectionEdit, addLanguageOptions } from './ShareSectionEdit'
 
 const languagesMock = {
   request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
@@ -115,7 +117,7 @@ const deleteMock = {
 }
 
 const journey = {
-  __typename: 'Journey',
+  __typename: 'Journey' as const,
   id: 'frJourneyId',
   title: 'Campagne en Europe',
   description: null,
@@ -168,39 +170,64 @@ const resolveMock = {
   result: vi.fn(() => ({ data: { journey } }))
 }
 
+const linkedFrench: typeof eurFrench = {
+  ...eurFrench,
+  journeyId: 'frJourneyId',
+  title: 'Campagne en Europe',
+  description: null,
+  snapshotEdited: false,
+  qrCodeId: 'frQrCodeId',
+  journey,
+  qrCode: {
+    __typename: 'QrCode',
+    id: 'frQrCodeId',
+    shortLink: {
+      __typename: 'ShortLink',
+      id: 'frShortLinkId',
+      pathname: 'eur-fr',
+      domain: { __typename: 'ShortLinkDomain', hostname: 'short.nextstep.is' }
+    }
+  }
+}
+
 const linkMock = {
   request: {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
     variables: {
-      id: 'eurRegionId-496',
+      id: eurFrench.id,
       input: { url: 'https://admin.nextstep.is/journeys/frJourneyId' }
     }
   },
   result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
+  }))
+}
+
+const firstUnlinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: eurFrench.id, input: { journeyId: null } }
+  },
+  result: vi.fn(() => ({
     data: {
       campaignRegionLanguageUpdate: {
-        ...eurFrench,
-        journeyId: 'frJourneyId',
-        title: 'Campagne en Europe',
-        description: null,
-        snapshotEdited: false,
-        qrCodeId: 'frQrCodeId',
-        journey,
-        qrCode: {
-          __typename: 'QrCode',
-          id: 'frQrCodeId',
-          shortLink: {
-            __typename: 'ShortLink',
-            id: 'frShortLinkId',
-            pathname: 'eur-fr',
-            domain: {
-              __typename: 'ShortLinkDomain',
-              hostname: 'short.nextstep.is'
-            }
-          }
-        }
+        ...linkedFrench,
+        journeyId: null,
+        journey: null,
+        title: null,
+        description: null
       }
     }
+  }))
+}
+
+const firstRelinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: eurFrench.id, input: { journeyId: 'frJourneyId' } }
+  },
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
   }))
 }
 
@@ -322,6 +349,17 @@ const unlinkMock = {
   }))
 }
 
+/** English after an unlink: no journey, the Campaign QR Code kept. */
+const unlinkedEnglish = {
+  ...eurEnglish,
+  journeyId: null,
+  journeyUrl: null,
+  title: null,
+  description: null,
+  snapshotEdited: false,
+  journey: null
+}
+
 /** The English snapshot reworded by the author; the journey reads differently now. */
 const editedEnglish = {
   ...eurEnglish,
@@ -369,16 +407,17 @@ function withEnglish(english: typeof eurEnglish): typeof campaignWithRegions {
 
 function renderShare(
   campaignProp = campaignWithRegions,
-  previewLanguageId?: string
+  previewLanguageId?: string,
+  selectedBlockId = 'regionShareId'
 ): ReturnType<typeof render> {
   return render(
     <SnackbarProvider>
       <QueriedEditor
-        campaignProp={campaignProp}
+        campaign={campaignProp}
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
-          selectedBlockId: 'regionShareId',
+          selectedBlockId,
           ...(previewLanguageId != null && { previewLanguageId })
         }}
         mocks={[
@@ -390,6 +429,8 @@ function renderShare(
           accessibleJourneysMock,
           resolveBySlugMock,
           linkMock,
+          firstUnlinkMock,
+          firstRelinkMock,
           linkFailureMock,
           unlinkMock,
           swapMock,
@@ -399,9 +440,9 @@ function renderShare(
           refreshMock
         ]}
       >
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
+        <UndoRedo />
         <CommandProbe />
+        <SelectionProbe />
         <ShareSectionEdit block={{ id: 'regionShareId' }} />
       </QueriedEditor>
     </SnackbarProvider>
@@ -488,6 +529,41 @@ describe('ShareSectionEdit', () => {
       'ShareLanguageRow-496'
     ])
   })
+
+  it.each(['Enter', ' '])(
+    'selects a labelled Share Language container on %j without hiding its controls',
+    async (key) => {
+      renderShare(undefined, undefined, 'regionFooterId')
+      const row = await screen.findByTestId('ShareLanguageRow-496')
+      expect(row).not.toHaveAttribute('role', 'button')
+      expect(row).toHaveAttribute('tabindex', '0')
+      expect(row).toHaveAttribute(
+        'aria-label',
+        'Share language: Français (French)'
+      )
+      expect(screen.getByTestId('SelectedBlockId')).not.toHaveTextContent(
+        'regionShareId'
+      )
+
+      const pick = within(row).getByRole('button', { name: 'Pick a journey' })
+      expect(pick.closest('[role="button"]')).toBeNull()
+      fireEvent.click(pick)
+      const field = within(row).getByRole('textbox', {
+        name: 'or paste a link'
+      })
+      expect(field.closest('[role="button"], button')).toBeNull()
+      fireEvent.keyDown(field, { key })
+      expect(screen.getByTestId('SelectedBlockId')).not.toHaveTextContent(
+        'regionShareId'
+      )
+
+      row.focus()
+      fireEvent.keyDown(row, { key })
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'regionShareId'
+      )
+    }
+  )
 
   describe('Campaign Strings', () => {
     function withStrings(
@@ -588,7 +664,7 @@ describe('ShareSectionEdit', () => {
     ).toBeInTheDocument()
   })
 
-  it('disables the bin on a Share Language with a QR code, pointing at Unlink, and sends nothing', async () => {
+  it('disables the bin on a linked Share Language, pointing at Unlink, and sends nothing', async () => {
     renderShare()
 
     const english = await screen.findByTestId('ShareLanguageRow-529')
@@ -598,12 +674,12 @@ describe('ShareSectionEdit', () => {
     fireEvent.mouseOver(bin.parentElement as HTMLElement)
     expect(
       await screen.findByRole('tooltip', {
-        name: 'This language has a QR code. Unlink it instead.'
+        name: 'Unlink the journey before removing this language.'
       })
     ).toBeInTheDocument()
 
-    fireEvent.click(bin)
-    await new Promise((resolve) => setTimeout(resolve, 0))
+    await holdRequests(() => fireEvent.click(bin))
+    await landRequests()
     expect(englishDeleteMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('ShareLanguageRow-529')).toBeInTheDocument()
   })
@@ -623,6 +699,51 @@ describe('ShareSectionEdit', () => {
         screen.queryByTestId('ShareLanguageRow-496')
       ).not.toBeInTheDocument()
     )
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('confirms before removing an unlinked Share Language that kept its QR code, then removes it outside undo', async () => {
+    renderShare(withEnglish(unlinkedEnglish))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Remove language' })
+    )
+
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('Delete English?')).toBeInTheDocument()
+    expect(dialog).toHaveTextContent(
+      'This permanently removes the language with its campaign QR code and Share Link. Copies of the QR code already printed or shared will stop redirecting once the link is cleaned up.'
+    )
+    expect(dialog).toHaveTextContent('This cannot be undone.')
+    expect(englishDeleteMock.result).not.toHaveBeenCalled()
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+    await waitFor(() => expect(englishDeleteMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('ShareLanguageRow-529')
+      ).not.toBeInTheDocument()
+    )
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('cancelling the removal of a Share Language with a QR code changes nothing', async () => {
+    renderShare(withEnglish(unlinkedEnglish))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Remove language' })
+    )
+    const dialog = await screen.findByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(englishDeleteMock.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('ShareLanguageRow-529')).toBeInTheDocument()
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
   it('links a pasted journey from the "Pick a journey" call to action, showing the resolved journey first, then the snapshot', async () => {
@@ -714,7 +835,7 @@ describe('ShareSectionEdit', () => {
     ).toBeNull()
   })
 
-  it('links the first journey as a plain save, so there is nothing to undo', async () => {
+  it('links the first journey as one Command: undo unlinks it and redo links the same journey by id', async () => {
     renderShare()
 
     const french = await screen.findByTestId('ShareLanguageRow-496')
@@ -736,7 +857,29 @@ describe('ShareSectionEdit', () => {
       ).toHaveTextContent('Campagne en Europe')
     )
     expect(linkMock.result).toHaveBeenCalledTimes(1)
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(firstUnlinkMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).queryByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toBeNull()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(firstRelinkMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toHaveTextContent('Campagne en Europe')
+    )
   })
 
   it('swaps as one Command: undo links the previous journey again and puts back the snapshot the author edited', async () => {
@@ -877,7 +1020,7 @@ describe('ShareSectionEdit', () => {
     ).toBeNull()
   })
 
-  it('unlinks a journey with no dialog, keeping the QR code so the bin stays disabled', async () => {
+  it('unlinks a journey with no dialog, keeping the QR code, after which the bin confirms the removal', async () => {
     renderShare()
 
     const english = await screen.findByTestId('ShareLanguageRow-529')
@@ -892,11 +1035,16 @@ describe('ShareSectionEdit', () => {
         )
       ).toBeInTheDocument()
     )
-    expect(
-      within(screen.getByTestId('ShareLanguageRow-529')).getByRole('button', {
-        name: 'Remove language'
-      })
-    ).toBeDisabled()
+    const bin = within(screen.getByTestId('ShareLanguageRow-529')).getByRole(
+      'button',
+      { name: 'Remove language' }
+    )
+    expect(bin).toBeEnabled()
+
+    fireEvent.click(bin)
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    expect(englishDeleteMock.result).not.toHaveBeenCalled()
   })
 
   it('shows the "journey unpublished" warning in the frame instead of the pick call to action, copy and download disabled', async () => {
@@ -981,11 +1129,24 @@ describe('ShareSectionEdit', () => {
     expect(await screen.findByText('Link copied')).toBeInTheDocument()
 
     fireEvent.click(within(english).getByTestId('ShareLanguageDownload'))
-    expect(toDataURL).toHaveBeenCalledWith('image/png')
+    await waitFor(() => expect(toDataURL).toHaveBeenCalledWith('image/png'))
     const clicked = click.mock.contexts[0] as HTMLAnchorElement
     expect(clicked.download).toBe('outreach-2026-eur-en.png')
     toDataURL.mockRestore()
     click.mockRestore()
+  })
+
+  it('says the link could not be copied when the clipboard refuses it', async () => {
+    vi.mocked(navigator.clipboard.writeText).mockRejectedValue(
+      new Error('Write permission denied')
+    )
+    renderShare()
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(within(english).getByTestId('ShareLanguageCopy'))
+
+    expect(await screen.findByText("Couldn't copy link")).toBeInTheDocument()
+    expect(screen.queryByText('Link copied')).not.toBeInTheDocument()
   })
 
   it('marks an Unlinked Language hidden in the selector preview and disables its copy and download', async () => {
@@ -1050,7 +1211,7 @@ describe('ShareSectionEdit', () => {
     render(
       <SnackbarProvider>
         <QueriedEditor
-          campaignProp={campaignWithRegions}
+          campaign={campaignWithRegions}
           initialState={{ pageKind: CampaignPageKind.landing }}
           mocks={[languagesMock]}
         >

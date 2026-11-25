@@ -1,10 +1,13 @@
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { Prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { SlugTakenError } from '../../templateGalleryPage/generateUniqueSlug'
 import { CampaignRegionRef } from '../campaignRegion'
-import { touchCampaign } from '../campaignWrite'
-import { enqueueRegionRevalidation } from '../revalidateCampaign'
+import { campaignWrite } from '../campaignWrite'
+import {
+  queuePageSetChange,
+  snapshotCampaignAddress
+} from '../revalidateCampaign'
 import { assertRegionSlugFreeOfJourneys, validateRegionSlug } from '../slug'
 import {
   NULL_FIELD_ERROR,
@@ -49,34 +52,28 @@ builder.mutationField('campaignRegionUpdate', (t) =>
       }
       if (listed !== undefined) data.listed = listed
 
+      const updatesAddress = rawSlug !== undefined || listed !== undefined
+
       try {
-        const { updated, regionSlugs } = await prisma.$transaction(
-          async (tx) => {
+        return await campaignWrite(
+          region.campaignId,
+          {},
+          async ({ tx, afterCommit }) => {
+            const before = updatesAddress
+              ? await snapshotCampaignAddress(tx, region.campaignId)
+              : null
             const updated = await tx.campaignRegion.update({
               ...query,
               where: { id },
               data
             })
-            await touchCampaign(tx, region.campaignId)
-            const regions = await tx.campaignRegion.findMany({
-              where: { campaignId: region.campaignId },
-              orderBy: { order: 'asc' }
-            })
-            return {
-              updated,
-              regionSlugs: [
-                region.slug,
-                ...regions.map((candidate) => candidate.slug)
-              ]
+            if (updatesAddress) {
+              const after = await snapshotCampaignAddress(tx, region.campaignId)
+              afterCommit(async () => await queuePageSetChange(before, after))
             }
+            return updated
           }
         )
-        const pathsChanged =
-          (data.slug != null && data.slug !== region.slug) ||
-          (data.listed != null && data.listed !== region.listed)
-        if (pathsChanged)
-          await enqueueRegionRevalidation(region.campaign, regionSlugs)
-        return updated
       } catch (error) {
         if (isUniqueViolation(error, 'slug')) throw new SlugTakenError()
         throw error

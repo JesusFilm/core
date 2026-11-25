@@ -126,6 +126,7 @@ const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {
   mediaBlockId: null,
   logoBlockId: null,
   switcherVariant: null,
+  showCountryNames: null,
   display: null,
   showMap: null,
   ratio: null,
@@ -593,6 +594,7 @@ export function campaignFactory(
     defaultLanguageId,
     palette: LIGHT_PALETTE,
     publishedAt: null,
+    plausibleToken: null,
     createdAt,
     updatedAt: createdAt,
     team: {

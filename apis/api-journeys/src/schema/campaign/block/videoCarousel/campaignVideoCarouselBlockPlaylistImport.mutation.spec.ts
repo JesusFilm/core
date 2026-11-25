@@ -8,7 +8,10 @@ import {
   CampaignFixture,
   campaignFactory
 } from '../../../../../test/campaignFactory'
-import { expectStructureLockFirst } from '../../../../../test/campaignStructureLock'
+import {
+  CampaignWriteCall,
+  fakeCampaignWrite
+} from '../../../../../test/campaignWrite'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
 import { CAMPAIGN_BLOCKS_MAX } from '../../validation'
@@ -18,6 +21,8 @@ import { parsePlaylistUrl } from './youTubePlaylist'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('../../campaignWrite', () => ({ campaignWrite: vi.fn() }))
 
 const PLAYLIST_ID = 'PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG'
 const PLAYLIST_URL = `https://www.youtube.com/playlist?list=${PLAYLIST_ID}`
@@ -78,6 +83,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
   let fixture: CampaignFixture
   let fetchSpy: ReturnType<typeof vi.spyOn>
+  let writes: CampaignWriteCall[]
 
   /** The playlist's items, then the videos request answering for whichever ids it names. */
   function mockYouTube(
@@ -115,6 +121,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
+    writes = fakeCampaignWrite(prismaMock)
     fetchSpy = vi.spyOn(globalThis, 'fetch')
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'carouselId')
@@ -189,30 +196,37 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
       source: 'youTube',
       duration: 125
     })
-    expect(prismaMock.campaign.update).toHaveBeenCalled()
+    expect(writes.map(({ touched }) => touched)).toEqual([true])
   })
 
-  it('takes the structure lock as its first statement', async () => {
+  it('declares the structure lock and no other', async () => {
     mockYouTube(3)
 
     const result = await importPlaylist()
 
     expect(result.errors).toBeUndefined()
-    expectStructureLockFirst()
-    expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { structure: true }
+    ])
   })
 
-  it('locks before it reads the carousel’s children and creates the videos', async () => {
+  it('reads the carousel’s children and creates the videos in one touching write, with nothing after the commit', async () => {
     mockYouTube(3)
 
     const result = await importPlaylist()
 
     expect(result.errors).toBeUndefined()
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignBlock.findMany.mock.invocationCallOrder[0]
-    )
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignBlock.createManyAndReturn.mock.invocationCallOrder[0]
+    expect(writes).toEqual([
+      {
+        campaignId: 'campaignId',
+        declaration: { structure: true },
+        jobs: [],
+        touched: true
+      }
+    ])
+    expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledTimes(1)
+    expect(prismaMock.campaignBlock.createManyAndReturn).toHaveBeenCalledTimes(
+      1
     )
   })
 
@@ -224,18 +238,18 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'block not found',
       extensions: { code: 'NOT_FOUND' }
     })
     expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
       where: { id: 'carouselId', deletedAt: null }
     })
-    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignBlock.findFirst.mock.invocationCallOrder[1]
-    )
+    expect(writes.map(({ declaration }) => declaration)).toEqual([
+      { structure: true }
+    ])
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
-    expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    expect(writes[0].touched).toBe(false)
   })
 
   it('asks the Data API for 12 playlist items, then their videos in one request', async () => {
@@ -281,7 +295,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
       'https://www.youtube.com/watch?v=jQaN9DvFTbw'
     )
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: "That link isn't a YouTube playlist",
       extensions: { code: 'BAD_USER_INPUT', field: 'url' }
     })
@@ -295,7 +309,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: `a campaign has at most ${CAMPAIGN_BLOCKS_MAX} blocks`,
       extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' }
     })
@@ -320,7 +334,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0].extensions).toMatchObject({
+    expect(result.errors?.[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'url'
     })
@@ -334,7 +348,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'playlist cannot be found on YouTube',
       extensions: { code: 'BAD_USER_INPUT', field: 'url' }
     })
@@ -348,7 +362,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'YouTube API request failed: quotaExceeded',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
     })
@@ -375,7 +389,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message:
         'YouTube API request failed: The operation was aborted due to timeout',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
@@ -388,7 +402,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'YouTube API request failed: status 503',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
     })
@@ -400,7 +414,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.[0]).toMatchObject({
       message: 'YouTube API request failed: the response is not JSON',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
     })
@@ -414,7 +428,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 
@@ -428,7 +442,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     const result = await importPlaylist()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(result.errors?.[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
   })

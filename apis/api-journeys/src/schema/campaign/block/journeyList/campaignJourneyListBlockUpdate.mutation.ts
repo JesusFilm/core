@@ -32,7 +32,7 @@ builder.mutationField('campaignJourneyListBlockUpdate', (t) =>
       )
       const display = assertNotNull(input.display, 'display')
       return await updateBlock(block, {
-        ...validateSectionText(input, ['eyebrow', 'title', 'description']),
+        ...validateSectionText('CampaignJourneyListBlock', input),
         ...(display !== undefined
           ? {
               display: assertEnum(

@@ -15,13 +15,13 @@ import {
 import { getJourneyStatsBreakdown } from '../service'
 
 import {
-  TransformedResult,
   UNKNOWN_JOURNEYS_AGGREGATE_ID,
   addPermissionsAndNames,
   filterPageVisitors,
   getJourneysResponses,
   transformBreakdownResults
 } from './utils'
+import { resolveStatsDateRange } from './utils/resolveStatsDateRange'
 
 const PlausibleEventEnum = builder.enumType('PlausibleEvent', {
   values: [
@@ -34,13 +34,15 @@ const PlausibleEventEnum = builder.enumType('PlausibleEvent', {
 })
 
 export type JourneyWithAcl = Prisma.JourneyGetPayload<{
-  include: {
+  select: {
+    id: true
+    slug: true
+    title: true
+    teamId: true
+    status: true
+    template: true
     userJourneys: true
-    team: {
-      include: {
-        userTeams: true
-      }
-    }
+    team: { include: { userTeams: true } }
   }
 }>
 
@@ -68,7 +70,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         type: [JourneyStatus],
         required: false,
         description:
-          'Filter results to only include the specified status. If null or empty, all statuses are returned.'
+          'Filter results to the specified statuses. If null or empty, all statuses except trashed and deleted are returned. Soft-deleted projects are always excluded.'
       })
     },
     resolve: async (
@@ -80,6 +82,11 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         id,
         normalizeIdType(idType)
       )
+      if (templateJourney.deletedAt != null) {
+        throw new GraphQLError('Journey not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
       if (
         !ability(
           Action.Update,
@@ -92,98 +99,62 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         })
       }
 
-      const templateSiteId = `api-journeys-template-${templateJourney.id}`
-
-      // This report aggregates every journey in the family, so it must read the
-      // full breakdown. paginate: true pages through all rows (and ignores any
-      // client-supplied limit/page) instead of collapsing to a single top-100 page.
-      const breakdownResults = await getJourneyStatsBreakdown(
-        templateJourney.id,
-        {
-          ...where,
-          property: 'event:props:templateKey',
-          metrics: 'visitors'
-        },
-        templateSiteId,
-        { paginate: true }
-      )
-
-      const transformedResults = transformBreakdownResults(
-        breakdownResults,
-        events
-      )
-
-      const journeyIdsFromPlausible = [
-        ...new Set(
-          transformedResults.map(
-            (result: TransformedResult) => result.journeyId
-          )
-        )
-      ]
-
+      const dateRange = resolveStatsDateRange(where, templateJourney.createdAt)
+      const plausibleFilter = {
+        ...where,
+        period: 'custom',
+        date: dateRange.date
+      }
       const allowedEvents =
-        events != null && events.length > 0
-          ? new Set(events.map((e) => String(e)))
-          : null
-
+        events != null && events.length > 0 ? new Set(events) : null
       const shouldIncludeJourneyVisitors =
         allowedEvents == null || allowedEvents.has('journeyVisitors')
       const shouldIncludeJourneyResponses =
         allowedEvents == null || allowedEvents.has('journeyResponses')
 
-      // Fetch all child journeys from the template to check for responses
-      const allChildJourneys = await prisma.journey.findMany({
+      // Only the caller's memberships are needed for ACL checks. Avoid fetching full journey content.
+      const journeys = await prisma.journey.findMany({
         where: {
           fromTemplateId: templateJourney.id,
+          deletedAt: null,
           ...(status != null && status.length > 0
             ? { status: { in: status } }
-            : {})
+            : { status: { notIn: ['trashed', 'deleted'] } })
         },
         select: {
-          id: true
-        }
-      })
-
-      const allChildJourneyIds = allChildJourneys.map((journey) => journey.id)
-
-      // Get responses for all child journeys
-      const allChildJourneysResponses = shouldIncludeJourneyResponses
-        ? await getJourneysResponses(allChildJourneyIds)
-        : []
-
-      // Include journey IDs that have responses but no Plausible stats
-      const journeyIdsWithResponses = new Set(
-        allChildJourneysResponses.map((result) => result.journeyId)
-      )
-      const journeyIds = [
-        ...new Set([
-          ...journeyIdsFromPlausible,
-          ...Array.from(journeyIdsWithResponses)
-        ])
-      ]
-
-      const [journeys, pageVisitors] = await Promise.all([
-        prisma.journey.findMany({
-          where: {
-            id: { in: journeyIds },
-            ...(status != null && status.length > 0
-              ? { status: { in: status } }
-              : {})
-          },
-          include: {
-            userJourneys: true,
-            team: {
-              include: {
-                userTeams: true
-              }
-            }
+          id: true,
+          slug: true,
+          title: true,
+          teamId: true,
+          status: true,
+          template: true,
+          userJourneys: { where: { userId: context.user.id } },
+          team: {
+            include: { userTeams: { where: { userId: context.user.id } } }
           }
-        }),
+        },
+        orderBy: { id: 'asc' }
+      })
+      if (journeys.length === 0) return []
+
+      const templateSiteId = `api-journeys-template-${templateJourney.id}`
+      // Page through both breakdowns so global totals include the whole family.
+      const [breakdownResults, pageVisitors] = await Promise.all([
+        getJourneyStatsBreakdown(
+          templateJourney.id,
+          {
+            ...plausibleFilter,
+            property: 'event:props:templateKey',
+            metrics: 'visitors'
+          },
+          templateSiteId,
+          { paginate: true }
+        ),
         shouldIncludeJourneyVisitors
           ? getJourneyStatsBreakdown(
               templateJourney.id,
               {
-                ...where,
+                ...plausibleFilter,
                 property: 'event:page',
                 metrics: 'visitors'
               },
@@ -192,12 +163,16 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
             )
           : Promise.resolve([])
       ])
+      const transformedResults = transformBreakdownResults(
+        breakdownResults,
+        events
+      )
 
       const filteredPageVisitors = shouldIncludeJourneyVisitors
         ? filterPageVisitors(pageVisitors, journeys)
         : []
       const journeysResponses = shouldIncludeJourneyResponses
-        ? await getJourneysResponses(journeys)
+        ? await getJourneysResponses(journeys, dateRange.responseDateRange)
         : []
 
       const visitorsByJourneyId = new Map(
@@ -217,14 +192,22 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
           .map((journey) => journey.id)
       )
 
+      // Include the full family even when Plausible has no activity in this range.
+      const resultsByJourneyId = new Map(
+        transformedResults.map((result) => [result.journeyId, result])
+      )
+      const familyResults = journeys.map(
+        (journey) =>
+          resultsByJourneyId.get(journey.id) ?? {
+            journeyId: journey.id,
+            stats: []
+          }
+      )
+
       const resultsWithPermissions = addPermissionsAndNames(
-        transformedResults,
+        familyResults,
         journeys,
-        context.user,
-        {
-          responsesByJourneyId,
-          allowedEvents
-        }
+        context.user
       )
 
       return resultsWithPermissions.map((result) => {

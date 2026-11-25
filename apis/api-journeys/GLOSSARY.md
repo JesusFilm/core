@@ -176,12 +176,16 @@ One of the two pages a Campaign has: the landing page, or the **Region Page** th
 _Avoid_: screen, view, region's page (a region has no page of its own)
 
 **Campaign Status**:
-Whether a Campaign is `draft` or `published`, the only public gate: a draft is never served, and nothing on a Campaign is locked by its status. `publishedAt` records the first publish and unpublishing never clears it, so it means "first went live"; publish and unpublish are explicit actions any member or manager of the Team takes, never undo steps.
+Whether a Campaign is `draft` or `published`, the only public gate: a draft is never served, and nothing on a Campaign is locked by its status. `publishedAt` means "last published; kept after unpublish": every move from draft to published stamps it and unpublishing never clears it; publish and unpublish are explicit actions any member or manager of the Team takes, never undo steps.
 _Avoid_: live/offline (use published/draft), visibility, state
 
 **Live Editing**:
 How a Campaign is edited: every edit saves in place as its own change, with no working copy, snapshot or Save step, so a published Campaign changes under its visitors as the author works. Undo is the Editor's in-memory **Command** history, not a saved version.
 _Avoid_: autosave (as a feature name — it is the only mode), draft mode, preview mode, versioning
+
+**Campaign Write**:
+One edit of one Campaign, saved as one transaction: it locks what it will write in the one order every edit shares (so two edits never deadlock), ends by bumping the Campaign's `updatedAt` (the touch), and runs what lives outside the database (short-link deletes, revalidation, Vercel removals) only after the commit, or undoes its one gateway call when the commit fails. Every change to an existing Campaign is one, publish, settings and delete included; creating a Campaign is not, as there is nothing to lock yet.
+_Avoid_: transaction (the mechanism, not the edit), save, mutation (a mutation may make one, or none)
 
 **Campaign Settings**:
 The parts of a Campaign that are not content: the default-language title, the slug, the default language (changed by a **Default-language swap**) and the **Palette**, all saved outside the Editor's Command history. The slug never follows a title change.
@@ -207,14 +211,14 @@ _Avoid_: block (bare, where a Journey Block could be meant), element, widget
 
 **Campaign Section**:
 A top-level Campaign Block on a Campaign Page: one full-width band of one of eleven kinds (Hero, Region Switcher, Region Header, Region Share, Featured Media, Journey List, Video Carousel, Analytics, Rich Text, Columns, Image). Each has a **Section Background** and optional colour overrides and may hold **Extras**, but never a built-in call to action — a button is always an Extra.
-_Avoid_: block (for a section), row, band, panel, module
+_Avoid_: block (for a section), row, band (outside the renderer), panel, module
 
 **Section Body**:
 The typed, fixed part of a Campaign Section that lives on the section's own row (its eyebrow, title, description, media slot, and so on) rather than as child blocks. Extras render above or below it.
 _Avoid_: content, fields, inner blocks
 
 **Section Background**:
-What a Campaign Section sits on: nothing, the theme surface, the contrast band, the primary colour, a custom colour, or an image. An image background is an owned cover block with a light / medium / heavy overlay, as a Card owns its **Cover**.
+What a Campaign Section sits on: nothing, the theme surface, the contrast band, the primary colour, a custom colour, or an image. An image background is an owned cover block with a light / medium / heavy overlay, as a Card owns its **Cover**. In the renderer the painted section is the **Section Band** (`CampaignSectionBand`, `resolveBand`, `--campaign-band-*`), so "band" is the renderer's name for it.
 _Avoid_: backdrop, cover (reserve for the owned image itself)
 
 **Column Slot**:
@@ -254,7 +258,7 @@ What a Campaign Button does when pressed: open a web link, scroll to a block on 
 _Avoid_: link (bare), href, navigation
 
 **Campaign Chrome**:
-The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. Both take the same Extras as any section; the header's nav links are Button Extras.
+The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. The header accepts the same Extras as any section, but for now the editor offers and the public header shows only its Button Extras (its nav links); the footer takes and shows both kinds. The **Campaign Block grammar** records both facts (`acceptsChild`, `shownExtras`).
 _Avoid_: nav bar, site header/footer, layout, shell
 
 **Brand Mark**:
@@ -282,8 +286,8 @@ How a Campaign shows a Watch Video that has children: the Video Carousel (or a *
 _Avoid_: collection mode (any Video expands, not only collections), playlist (that is YouTube's word)
 
 **Media paste**:
-The only way media and Journeys enter a Campaign: paste a Watch, YouTube or Journey link, or upload an image or video. There is no browsing or searching; the editor shows what a link resolved to before it is kept, and the server resolves it again on save.
-_Avoid_: picker (implies browsing), library, search
+How media and Journeys enter a Campaign: paste a Watch, YouTube or Journey link, or upload an image or video. Media enter only by paste or upload, with no browsing or searching; a Journey can also be found by search in the editor's Journey Picker, which offers the published or archived Journeys the author can open and links the one picked by its admin link. The editor shows what a link resolved to before it is kept, and the server resolves it again on save.
+_Avoid_: picker (for media: there is no media browsing), library
 
 ### Campaign theme
 
@@ -330,7 +334,7 @@ The one link a Campaign Region hands out per language: a **short link** that red
 _Avoid_: journey link (the long address nobody hands out), campaign link (that is the Campaign Address), deep link
 
 **Campaign QR Code**:
-A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working; a Share Language that holds one cannot be removed. It is deleted with its Campaign Region or Campaign, with its target Journey (`QrCode.journey` cascades), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
+A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language, or later from the editor's `Create QR code` on a linked language that has none. It survives an unlink, so printed codes keep working, and a linked Share Language cannot be removed: the author unlinks it first. It is deleted with its Share Language when that language, unlinked, is removed (the editor confirms first, as printed copies stop redirecting; a re-added language mints a new one on its next link), with its Campaign Region or Campaign, with its target Journey when that Journey is hard-deleted (`QrCode.journey` cascades; deleting a Journey from the app is a soft delete and keeps it), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:
@@ -348,11 +352,11 @@ The language a visitor reads a Campaign in: one of the Campaign's own languages,
 _Avoid_: locale (that is the admin chrome's word), display language, UI language
 
 **Translated Field**:
-A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty.
+A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty. A length is counted in Unicode code points after trimming. An empty entry (or one whose value is not text) counts as missing everywhere, and an entry that does not say the machine wrote it counts as a person's. These rules, with each target's fields and caps, live in one shared module in `libs/journeys/ui` (`translatedField`) that the API reads. The editor keeps its own copies until it adopts the module.
 _Avoid_: localised string, i18n key, label
 
 **Campaign String**:
-One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Distinct from the editor's own chrome, which is admin i18n.
+One of the Campaign's fixed interface phrases (such as "Copy link" or "All regions"): a Translated Field keyed by a fixed name, seeded with every Campaign, edited and translated like any other text, and shown in the Page Language. Each string names the sections that show it; the wording, keys and hosts live in one registry in `libs/journeys/ui`, which the API seed reads. Distinct from the editor's own chrome, which is admin i18n.
 _Avoid_: UI string, i18n string, interface key
 
 **Machine Translation**:
@@ -366,19 +370,23 @@ _Avoid_: translation report, review queue
 ### Campaign delivery & stats
 
 **Campaign Address**:
-Where a Campaign is served: its permanent address on the **Root Domain** (`/campaign/<slug>`, region pages one segment deeper) until it has a **Campaign Domain**, and from then on that domain's root and `/<region slug>` only — the root-domain address is not found, as a journey on a route-all team domain is. Its linked Journeys keep opening on their team's domain or the Root Domain, never on the Campaign Domain.
+Where a Campaign is served: its permanent address on the **Root Domain** (`/campaign/<slug>`, region pages one segment deeper) until it has a **Campaign Domain**, and from then on that domain's root and `/<region slug>` only — the root-domain address is not found, as a journey on a route-all team domain is. A page in a **Page Language** other than the campaign default adds `?lang=<bcp47>` to either form; `_lang/<tag>` is the viewer's internal page path the proxy rewrites that to, never an address. Its linked Journeys keep opening on their team's domain or the Root Domain, never on the Campaign Domain.
 _Avoid_: campaign URL (ambiguous between the two forms), vanity link, permalink
 
 **Campaign Domain**:
 A Custom Domain that belongs to one Campaign (`campaignId` in code), added and removed from the Campaign's Settings by a team manager. It serves only that Campaign's landing page at `/` and its Region Pages at `/<region slug>`; `/<journey slug>` on it is not found, and team journey URLs, QR short links and stats links never use it. One per Campaign, never route-all and never a Journey Collection's; it may be added to a draft (serving nothing until published), and deleting the Campaign deletes it and its Vercel registration. To move one, remove it and add it again.
 _Avoid_: Campaign Root (the retired name), home page, default campaign, primary campaign
 
+**Campaign page set**:
+Every page path a **Campaign Public Page** is served from, or that the system retains to purge: the landing page and each region, listed or not, on the Root Domain and on its **Campaign Domain**, each also under every **Page Language** tag. It follows from the Campaign's status, slug, region slugs and listing, domain and Page Languages alone, and a draft or deleted Campaign has none. An edit that changes one of these purges every page of the set before and after it at once: publish, unpublish, delete, a slug change, a Campaign Domain add or remove, a Page Language add or remove, and a region slug, listing or delete change. Everything else, adding, reordering and renaming regions included, waits for the 60 s window; "Refresh and open page" refreshes every page at once for the author.
+_Avoid_: revalidation paths, affected pages
+
 **Campaign Public**:
-The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate and nothing on it leads to the Team, its members or linked-Journey internals. It is read by Campaign slug (only while it has no Campaign Domain) or by the hostname of its Campaign Domain, a draft or unknown key is not found, and every Translated Field arrives already resolved to the requested language.
+The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate, and only the opaque Team id is exposed, for the Team's Plausible site: the Team itself, its members and linked-Journey internals are not reachable. It is read by Campaign slug (only while it has no Campaign Domain) or by the hostname of its Campaign Domain, a draft or unknown key is not found, and every Translated Field arrives already resolved to the requested language.
 _Avoid_: public campaign (as a status), published view, visitor API
 
 **Campaign Public Page**:
-How a Campaign reaches visitors: the two pages served on the Root Domain or, once it has one, on its Campaign Domain, built from the published Campaign in the visitor's Page Language and refreshed within a minute of an edit, sooner when the author publishes or unpublishes. A draft is never served, and empty text or an empty section renders nothing.
+How a Campaign reaches visitors: the two pages served on the Root Domain or, once it has one, on its Campaign Domain, built from the published Campaign in the visitor's Page Language and refreshed within a minute of an edit, at once when the author publishes, unpublishes or deletes it, or, while it is published, changes its slug, adds or removes a Page Language, changes a Campaign Region's slug or listing, deletes a Campaign Region, or adds or removes its Campaign Domain. These edits purge its **Campaign page set**. A draft is never served, and empty text or an empty section renders nothing.
 _Avoid_: viewer page (the viewer is the app), preview (that is the editor's)
 
 **Campaign Renderer**:
@@ -387,7 +395,11 @@ _Avoid_: block renderer (that is the Journey one), template, layout engine
 
 **Campaign Stats**:
 The visitor numbers a Campaign shows: for each Share Language Journey that is not trashed (published, archived and draft alike), its unique visitors by country over all time (the sweep starts at a fixed early date, and the public tile says "all time"), read from that Journey's own **Plausible** site and summed along the Campaign's region and language structure into landing, region and country totals. One cached sweep serves anyone once the Campaign is published and its team while a draft, and a visitor who opens two Share Language Journeys counts in both.
-_Avoid_: analytics (too broad; the section is the Analytics section, the data is Campaign Stats), views (the metric is visitors), per-region stats (there is one sweep, scoped on read)
+_Avoid_: analytics (too broad; the section is the Analytics section, the data is Campaign Stats), views (the metric is visitors), per-region stats (there is one sweep, scoped on read), site traffic (that is the Campaign's own Plausible site)
+
+**Campaign Plausible site**:
+The Plausible site a Campaign reports to on its own, `api-journeys-campaign-<campaignId>`, created by the plausible worker once `campaignCreate` commits. Its id, page props and events are defined once in journeys-ui (`campaignPlausibleSite`), from which its goals (every campaign event plus `Outbound Link: Click`) and the props its dashboard may show (`campaignAllowedProps`; Plausible stores every prop but shows only allowed ones) are derived. The startup backfill creates the site of every Campaign that has none, then brings every existing campaign site's allowed props up to date in one api-analytics call (`sitesAllowEventProps`), which finds the sites lacking one in a single query; its shared-link token is `Campaign.plausibleToken`, readable with campaign Read and never on Campaign Public. The Campaign Public Page reports every view and event to it and to its Team's site; the admin's Campaign Report embeds its dashboard, so no query of this API reads its numbers. It counts from its creation and outlives the Campaign, as a Journey's site does.
+_Avoid_: campaign stats (those are the Share Language Journeys' visitors), team site (the Team's own roll-up site, which also gets these views)
 
 ### Account deletion
 

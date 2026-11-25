@@ -33,13 +33,19 @@ interface MuxSubtitleSwitchProps {
   muxVideoId: string | null
   journeyLanguageBcp47: string | null | undefined
   onChange: (showGeneratedSubtitles: boolean) => Promise<void>
+  // Locks the switch off, e.g. for background videos that never show subtitles
+  disabled?: boolean
+  // Shown under the Subtitles title to say why the switch is locked
+  disabledReason?: string
 }
 
 export function MuxSubtitleSwitch({
   videoBlockId,
   muxVideoId,
   journeyLanguageBcp47: journeyLanguageCode,
-  onChange
+  onChange,
+  disabled = false,
+  disabledReason
 }: MuxSubtitleSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -70,6 +76,7 @@ export function MuxSubtitleSwitch({
         bcp47: journeyLanguageCode ?? ''
       },
       skip:
+        disabled ||
         !isValidLanguage ||
         muxVideoId == null ||
         journeyLanguageCode == null ||
@@ -104,6 +111,7 @@ export function MuxSubtitleSwitch({
 
   // Programmatically turn off switch when language becomes invalid
   useEffect(() => {
+    if (disabled) return
     if (!isValidLanguage && toggleChecked && !updating) {
       setToggleChecked(false)
       if (videoBlockId != null) {
@@ -113,7 +121,14 @@ export function MuxSubtitleSwitch({
         })
       }
     }
-  }, [isValidLanguage, toggleChecked, updating, videoBlockId, onChange])
+  }, [
+    disabled,
+    isValidLanguage,
+    toggleChecked,
+    updating,
+    videoBlockId,
+    onChange
+  ])
 
   const handleToggleChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -143,6 +158,7 @@ export function MuxSubtitleSwitch({
   const isSubtitlesReady = videoBlock?.showGeneratedSubtitles != null
 
   const isToggleDisabled =
+    disabled ||
     !isValidLanguage ||
     updating ||
     (!isSubtitlesReady &&
@@ -151,9 +167,10 @@ export function MuxSubtitleSwitch({
         isProcessing ||
         isErrored))
 
-  let labelText = !isValidLanguage
-    ? t('Subtitles not available for this video language')
-    : ''
+  let labelText =
+    !disabled && !isValidLanguage
+      ? t('Subtitles not available for this video language')
+      : ''
   // Only show processing message when showGeneratedSubtitles is null (still waiting)
   if (isValidLanguage && !isSubtitlesReady && isProcessing) {
     labelText = t(
@@ -170,10 +187,22 @@ export function MuxSubtitleSwitch({
           alignItems: 'center'
         }}
       >
-        <Typography variant="subtitle2">{t('Subtitles')}</Typography>
+        <Stack>
+          <Typography
+            variant="subtitle2"
+            sx={{ color: disabled ? 'action.disabled' : undefined }}
+          >
+            {t('Subtitles')}
+          </Typography>
+          {disabled && disabledReason != null && (
+            <Typography variant="caption" sx={{ color: 'action.disabled' }}>
+              {disabledReason}
+            </Typography>
+          )}
+        </Stack>
         <Switch
           data-testid="MuxSubtitleSwitch"
-          checked={toggleChecked}
+          checked={!disabled && toggleChecked}
           onChange={handleToggleChange}
           disabled={isToggleDisabled}
           slotProps={{
