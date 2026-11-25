@@ -40,43 +40,29 @@ describe('findHiddenLanguageIds', () => {
     languagesPrismaMock.language.findMany.mockReset()
   })
 
-  it('still returns searchable: false languages when no languages have variants', async () => {
+  it('returns no ids when no languages have variants', async () => {
     vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([])
-    languagesPrismaMock.language.findMany.mockResolvedValue([
-      { id: '9999' }
-    ] as never)
 
     const result = await findHiddenLanguageIds()
 
-    expect(result).toEqual(['9999'])
-    expect(languagesPrismaMock.language.findMany).toHaveBeenCalledWith({
-      where: {
-        OR: [{ searchable: false }, { id: { in: [] }, hasVideos: false }]
-      },
-      select: { id: true }
-    })
+    expect(result).toEqual([])
+    expect(languagesPrismaMock.language.findMany).not.toHaveBeenCalled()
   })
 
-  it('returns every searchable: false language plus hasVideos: false languages with variants', async () => {
+  it('returns hasVideos: false languages that have variants', async () => {
     vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([
       { languageId: '1234' },
       { languageId: '5678' }
     ] as never)
     languagesPrismaMock.language.findMany.mockResolvedValue([
-      { id: '1234' },
-      { id: '9999' }
+      { id: '1234' }
     ] as never)
 
     const result = await findHiddenLanguageIds()
 
-    expect(result).toEqual(['1234', '9999'])
+    expect(result).toEqual(['1234'])
     expect(languagesPrismaMock.language.findMany).toHaveBeenCalledWith({
-      where: {
-        OR: [
-          { searchable: false },
-          { id: { in: ['1234', '5678'] }, hasVideos: false }
-        ]
-      },
+      where: { id: { in: ['1234', '5678'] }, hasVideos: false },
       select: { id: true }
     })
   })

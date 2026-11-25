@@ -41,16 +41,14 @@ type AlgoliaLanguageInput = Parameters<typeof buildAlgoliaLanguageRecord>[0]
 // comes back is the narrower AlgoliaLanguageInput. These two helpers keep that
 // one unavoidable widening in a single named place instead of `any` at every
 // fixture.
-// updateLanguageInAlgoliaFromMedia additionally selects the two visibility
-// flags, both of which default to true in the schema, so fixtures opt out
-// rather than opt in.
+// updateLanguageInAlgoliaFromMedia additionally selects hasVideos, which
+// defaults to true in the schema, so fixtures opt out rather than opt in.
 function mockFindUnique(
   language: AlgoliaLanguageInput | null,
-  visibility: { hasVideos?: boolean; searchable?: boolean } = {}
+  { hasVideos = true }: { hasVideos?: boolean } = {}
 ): void {
-  const { hasVideos = true, searchable = true } = visibility
   languagesPrismaMock.language.findUnique.mockResolvedValue(
-    (language == null ? null : { ...language, hasVideos, searchable }) as never
+    (language == null ? null : { ...language, hasVideos }) as never
   )
 }
 
@@ -197,22 +195,8 @@ describe('updateLanguageInAlgolia', () => {
       })
     })
 
-    it('removes the record when an operator has hidden the language', async () => {
-      // searchable: false is the operator's decision and outranks content:
-      // the language has videos, but must not be publicly visible.
-      mockFindUnique(createLanguage(), { searchable: false })
-
-      await updateLanguageInAlgoliaFromMedia('1234')
-
-      expect(saveObjectsSpy).not.toHaveBeenCalled()
-      expect(deleteObjectSpy).toHaveBeenCalledWith({
-        indexName: 'languages-index',
-        objectID: '1234'
-      })
-    })
-
-    it('saves when both flags are true', async () => {
-      mockFindUnique(createLanguage(), { hasVideos: true, searchable: true })
+    it('saves when hasVideos is true', async () => {
+      mockFindUnique(createLanguage(), { hasVideos: true })
 
       await updateLanguageInAlgoliaFromMedia('1234')
 
@@ -237,7 +221,7 @@ describe('updateLanguageInAlgolia', () => {
       expect(languagesPrismaMock.language.findMany).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
-          where: { hasVideos: true, searchable: true },
+          where: { hasVideos: true },
           take: 1000
         })
       )

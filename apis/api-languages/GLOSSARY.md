@@ -11,16 +11,8 @@ A spoken language in the catalog, identified by a stable external id (a numeric 
 _Avoid_: locale, tongue, dialect
 
 **has videos**:
-Whether the Language has at least one published video in the media catalog. A derived, denormalized flag written upstream by the api-media variant hook and the WESS import (never by this API). One half of **publicly visible**.
+Whether the Language has at least one published video in the media catalog. A denormalized flag set upstream (never written by this API); it is the **public-visibility gate** — the public `languages`/`languagesCount` queries force `hasVideos: true`, while `adminLanguages` sees every Language.
 _Avoid_: published, active, visible, enabled
-
-**searchable**:
-The operator-owned switch for hiding a Language from the public. Defaults to `true`; nothing automated (variant hook, WESS import) may write it, so a deliberate hide survives imports and variant edits. One half of **publicly visible**. Changing it does not update Algolia on its own — run `nx run api-media:reindex-languages-algolia` afterwards.
-_Avoid_: hidden, enabled, active
-
-**publicly visible**:
-A Language is publicly visible when `hasVideos && searchable`. This is the public-visibility gate: the public `languages`/`languagesCount` queries and public Country language lists filter on both flags, and only publicly visible Languages are kept in the Algolia languages index. `adminLanguages` sees every Language.
-_Avoid_: visible, published, active
 
 **bcp47**:
 The Language's IETF BCP-47 tag (e.g. `en`, `zh-Hans`). One of the few fields editable here (`languageUpdate`).

@@ -123,21 +123,9 @@ export function buildAlgoliaLanguageRecord(
   }
 }
 
-/**
- * A language is publicly visible only when it has content *and* an operator has
- * not hidden it. `hasVideos` is derived and written automatically; `searchable`
- * is operator-owned and nothing automated may write it.
- */
-function isPubliclyVisible(language: {
-  hasVideos: boolean
-  searchable: boolean
-}): boolean {
-  return language.hasVideos && language.searchable
-}
-
+/** A language is publicly visible when it has video content. */
 export const publiclyVisibleLanguageWhere = {
-  hasVideos: true,
-  searchable: true
+  hasVideos: true
 } satisfies Prisma.LanguageWhereInput
 
 export async function updateLanguageInAlgoliaFromMedia(
@@ -148,14 +136,13 @@ export async function updateLanguageInAlgoliaFromMedia(
     const { client, languagesIndex } = getAlgoliaLanguagesClient()
     const language = await languagesPrisma.language.findUnique({
       where: { id: languageId },
-      select: { ...languageAlgoliaSelect, hasVideos: true, searchable: true }
+      select: { ...languageAlgoliaSelect, hasVideos: true }
     })
 
-    // A language that is gone, has no content, or has been hidden by an
-    // operator has to be removed rather than skipped. The sync is otherwise
-    // upsert-only, so anything indexed while it was visible would stay
-    // searchable forever after being turned off.
-    if (language == null || !isPubliclyVisible(language)) {
+    // A language that is gone or has no content has to be removed rather than
+    // skipped. The sync is otherwise upsert-only, so anything indexed while it
+    // was visible would stay in search forever after being turned off.
+    if (language == null || !language.hasVideos) {
       logger?.info(
         `removing language ${languageId} from algolia (${language == null ? 'not found' : 'not publicly visible'})`
       )

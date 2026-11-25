@@ -136,7 +136,7 @@ describe('language', () => {
       }
     })
     expect(data).toHaveProperty('data.language', {
-      ...omit(language, ['createdAt', 'hasVideos', 'searchable']),
+      ...omit(language, ['createdAt', 'hasVideos']),
       updatedAt: language.updatedAt.toISOString(),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
@@ -185,7 +185,7 @@ describe('language', () => {
       }
     })
     expect(data).toHaveProperty('data.language', {
-      ...omit(language, ['createdAt', 'hasVideos', 'searchable']),
+      ...omit(language, ['createdAt', 'hasVideos']),
       updatedAt: language.updatedAt.toISOString(),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
@@ -405,7 +405,6 @@ describe('languages', () => {
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
       where: {
         hasVideos: true,
-        searchable: true,
         updatedAt: undefined
       }
     })
@@ -425,13 +424,12 @@ describe('languages', () => {
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
       where: {
         hasVideos: true,
-        searchable: true,
         updatedAt: { gte: new Date(updatedSince) }
       }
     })
     expect(data).toHaveProperty('data.languages', [
       {
-        ...omit(language, ['createdAt', 'hasVideos', 'searchable']),
+        ...omit(language, ['createdAt', 'hasVideos']),
         updatedAt: language.updatedAt.toISOString()
       }
     ])
@@ -457,7 +455,6 @@ describe('languages', () => {
         bcp47: { in: ['en'] },
         iso3: { in: ['eng'] },
         hasVideos: true,
-        searchable: true,
         updatedAt: undefined
       }
     })
@@ -474,7 +471,6 @@ describe('languages', () => {
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
       where: {
         hasVideos: true,
-        searchable: true,
         updatedAt: undefined,
         name: {
           some: {
@@ -507,7 +503,6 @@ describe('languagesCount', () => {
     expect(prismaMock.language.count).toHaveBeenCalledWith({
       where: {
         hasVideos: true,
-        searchable: true,
         updatedAt: { gte: new Date(updatedSince) }
       }
     })
@@ -525,7 +520,6 @@ describe('languagesCount', () => {
     expect(prismaMock.language.count).toHaveBeenCalledWith({
       where: {
         hasVideos: true,
-        searchable: true,
         updatedAt: undefined,
         name: {
           some: {

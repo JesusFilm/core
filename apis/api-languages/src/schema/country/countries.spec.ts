@@ -1,6 +1,10 @@
 import omit from 'lodash/omit'
 
-import { Country, LanguageRole } from '@core/prisma/languages/client'
+import {
+  Country,
+  CountryLanguage,
+  LanguageRole
+} from '@core/prisma/languages/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -144,7 +148,7 @@ describe('countries', () => {
           include: {
             language: true
           },
-          where: { language: { hasVideos: true, searchable: true } }
+          where: { language: { hasVideos: true } }
         },
         name: {
           include: {
@@ -181,12 +185,7 @@ describe('countries', () => {
         },
         countryLanguages: [
           {
-            language: omit(language, [
-              'createdAt',
-              'updatedAt',
-              'hasVideos',
-              'searchable'
-            ]),
+            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
             speakers: 100,
             displaySpeakers: 100,
             primary: true,
@@ -285,7 +284,7 @@ describe('countries', () => {
           include: {
             language: true
           },
-          where: { language: { hasVideos: true, searchable: true } }
+          where: { language: { hasVideos: true } }
         },
         name: {
           include: {
@@ -331,12 +330,7 @@ describe('countries', () => {
         },
         countryLanguages: [
           {
-            language: omit(language, [
-              'createdAt',
-              'updatedAt',
-              'hasVideos',
-              'searchable'
-            ]),
+            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
             speakers: 100,
             displaySpeakers: 100,
             primary: true,
