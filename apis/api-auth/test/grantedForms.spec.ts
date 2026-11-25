@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
 
@@ -226,7 +227,8 @@ describe('form integration', () => {
           endIconId: expect.any(String)
         })
         expect(submits[0].startIconId).not.toBe(submits[0].endIconId)
-        expect(await block(submits[0].endIconId!)).toMatchObject({
+        assert(submits[0].endIconId != null)
+        expect(await block(submits[0].endIconId)).toMatchObject({
           name: 'SendRounded',
           color: 'secondary'
         })
@@ -872,7 +874,8 @@ describe('form integration', () => {
           }
         ])
         const signup = await block(f.id('legacy'))
-        expect(await block(signup.submitIconId!)).toMatchObject({
+        assert(signup.submitIconId != null)
+        expect(await block(signup.submitIconId)).toMatchObject({
           name: 'SendRounded',
           color: 'secondary'
         })
