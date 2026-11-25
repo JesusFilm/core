@@ -20,6 +20,8 @@ import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetVideo } from '../../../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { UnpublishedVideoBanner } from '../../UnpublishedVideoBanner'
+import { UnpublishedVideoDialog } from '../../UnpublishedVideoDialog'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import { VideoLanguage } from '../../VideoLanguage'
@@ -46,6 +48,7 @@ export const GET_VIDEO = gql`
         id
         duration
         hls
+        published
       }
       variantLanguages {
         id
@@ -72,6 +75,7 @@ export function LocalDetails({
   id,
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
@@ -97,6 +101,21 @@ export function LocalDetails({
     open === true ? { variables: { id, languageId } } : skipToken
   )
 
+  // Gates the Select/Apply commit behind a confirmation dialog when the
+  // fetched variant is unpublished. Holds the language the user was trying to
+  // commit while the dialog is open; commitSelection only runs once the
+  // warning has been acknowledged.
+  const [pendingLanguage, setPendingLanguage] = useState<LanguageOption | null>(
+    null
+  )
+  const isUnpublished = data?.video?.variant?.published === false
+  // variantLanguages only ever lists published languages (the resolver
+  // filters on published: true), so a selectedLanguage that differs from the
+  // fetched languageId is guaranteed published — isUnpublished above only
+  // describes the language GET_VIDEO was queried with.
+  const isSelectionUnpublished =
+    selectedLanguage.id === languageId && isUnpublished
+
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
   }
@@ -112,8 +131,16 @@ export function LocalDetails({
     })
   }
 
+  const attemptSelection = (language: LanguageOption): void => {
+    if (isSelectionUnpublished) {
+      setPendingLanguage(language)
+    } else {
+      commitSelection(language)
+    }
+  }
+
   const handleSelect = (): void => {
-    commitSelection(selectedLanguage)
+    attemptSelection(selectedLanguage)
   }
 
   const handleApplyLanguage = (): void => {
@@ -122,8 +149,17 @@ export function LocalDetails({
     // Details drawer and the outer Video Library drawer, returning the user
     // to the video properties panel — fixing the QA-221 / NES-1568 trap where
     // Apply only dismissed the picker.
-    commitSelection(selectedLanguage)
+    attemptSelection(selectedLanguage)
     setOpenLanguage(false)
+  }
+
+  const handleConfirmUnpublished = (): void => {
+    if (pendingLanguage != null) commitSelection(pendingLanguage)
+    setPendingLanguage(null)
+  }
+
+  const handleCancelUnpublished = (): void => {
+    setPendingLanguage(null)
   }
 
   const time = data?.video?.variant?.duration ?? 0
@@ -180,7 +216,6 @@ export function LocalDetails({
     }
   }, [open, data])
 
-  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack spacing={4} sx={{ p: 6 }}>
       {loading ? (
@@ -201,6 +236,7 @@ export function LocalDetails({
         </>
       ) : (
         <>
+          {isUnpublished && <UnpublishedVideoBanner />}
           <Box
             sx={{
               borderRadius: 3,
@@ -288,6 +324,11 @@ export function LocalDetails({
         language={selectedLanguage}
         languages={data?.video?.variantLanguages}
         loading={loading}
+      />
+      <UnpublishedVideoDialog
+        open={pendingLanguage != null}
+        onClose={handleCancelUnpublished}
+        onConfirm={handleConfirmUnpublished}
       />
     </Stack>
   )

@@ -211,6 +211,7 @@ const getVideoMock: MockLink.MockedResponse<GetVideo, GetVideoVariables> = {
           id: 'variantA',
           duration: 144,
           hls: 'https://arc.gt/opsgn',
+          published: true,
           __typename: 'VideoVariant'
         },
         variantLanguages: [
@@ -268,6 +269,7 @@ const getExistingCoverVideoMock: MockLink.MockedResponse<
           id: '2_0-FallingPlates-529',
           duration: 144,
           hls: 'https://arc.gt/zbrvj',
+          published: true,
           __typename: 'VideoVariant'
         },
         variantLanguages: [
