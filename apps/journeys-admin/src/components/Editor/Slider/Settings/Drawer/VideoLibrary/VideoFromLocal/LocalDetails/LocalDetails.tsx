@@ -113,7 +113,8 @@ export function LocalDetails({
   // filters on published: true), so a selectedLanguage that differs from the
   // fetched languageId is guaranteed published — isUnpublished above only
   // describes the language GET_VIDEO was queried with.
-  const isSelectionUnpublished = selectedLanguage.id === languageId && isUnpublished
+  const isSelectionUnpublished =
+    selectedLanguage.id === languageId && isUnpublished
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
