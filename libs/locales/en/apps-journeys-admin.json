@@ -1860,5 +1860,18 @@
   "Open in Admin": "Open in Admin",
   "Private preview of saved content. Visitor events, submissions and external actions are disabled. Publish from the Admin editor.": "Private preview of saved content. Visitor events, submissions and external actions are disabled. Publish from the Admin editor.",
   "Journey published": "Journey published",
-  "Unable to publish. Check your current access and try again.": "Unable to publish. Check your current access and try again."
+  "Unable to publish. Check your current access and try again.": "Unable to publish. Check your current access and try again.",
+  "Upload an image": "Upload an image",
+  "Upload unavailable. Your original job and deadline are preserved. Check your connection access before trying again.": "Upload unavailable. Your original job and deadline are preserved. Check your connection access before trying again.",
+  "Requested by {{client}} for journey {{journey}}": "Requested by {{client}} for journey {{journey}}",
+  "Transfer deadline: {{deadline}}": "Transfer deadline: {{deadline}}",
+  "Ready in your media library. Return to your chat to attach it with a separate draft save.": "Ready in your media library. Return to your chat to attach it with a separate draft save.",
+  "Provider processing or reconciliation is pending. No image is attached.": "Provider processing or reconciliation is pending. No image is attached.",
+  "Transfer complete. Validation and provider dispatch are pending.": "Transfer complete. Validation and provider dispatch are pending.",
+  "Uploading your image": "Uploading your image",
+  "Waiting for one image": "Waiting for one image",
+  "This upload has ended.": "This upload has ended.",
+  "Choose the same image to upload or resume": "Choose the same image to upload or resume",
+  "Cancel upload": "Cancel upload",
+  "Resume image processing": "Resume image processing"
 }

@@ -34,6 +34,36 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
     )
     expect(response.result.tools).toEqual([
       expect.objectContaining({
+        name: 'journey_media_start',
+        annotations: expect.objectContaining({
+          readOnlyHint: false,
+          idempotentHint: true
+        }),
+        inputSchema: expect.objectContaining({
+          additionalProperties: false,
+          required: ['journeyId', 'idempotencyKey', 'kind'],
+          properties: expect.objectContaining({
+            kind: expect.objectContaining({ const: 'image_upload' })
+          })
+        })
+      }),
+      ...[
+        ['journey_media_status', ['journeyId', 'jobId']],
+        ['journey_media_cancel', ['journeyId', 'jobId', 'idempotencyKey']]
+      ].map(([name, required]) =>
+        expect.objectContaining({
+          name,
+          annotations: expect.objectContaining({
+            readOnlyHint: false,
+            idempotentHint: true
+          }),
+          inputSchema: expect.objectContaining({
+            additionalProperties: false,
+            required
+          })
+        })
+      ),
+      expect.objectContaining({
         name: 'journey_media_search',
         annotations: expect.objectContaining({ readOnlyHint: true }),
         inputSchema: expect.objectContaining({ oneOf: expect.any(Array) })

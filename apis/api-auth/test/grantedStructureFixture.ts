@@ -32,6 +32,7 @@ import { createRuntime as createMcpRuntime } from '../../api-mcp/src/runtime'
 import { message } from '../../api-mcp/test/helpers'
 /* eslint-enable @nx/enforce-module-boundaries */
 import { type AuthConfig, readConfig } from '../src/config'
+import type { Identity } from '../src/identity'
 import { createRuntime } from '../src/runtime'
 import { digest } from '../src/store'
 
@@ -57,6 +58,7 @@ export function structureFixture(
     authUrl?: string
     journeysUrl?: string
     authEnv?: NodeJS.ProcessEnv
+    checkIdentity?: Identity['check']
     media?: (context: {
       config: AuthConfig
       journeys: PrismaClient
@@ -383,6 +385,7 @@ export function structureFixture(
         }
       ])
     })
+    const firebaseAuthTime = Math.floor(Date.now() / 1000) - 60
     issuer = await createRuntime(config, {
       db: auth,
       logger: pino({ enabled: false }),
@@ -391,13 +394,14 @@ export function structureFixture(
           if (userId !== 'alice') throw new Error('Controlled identity denied')
           return {
             userId,
-            authTime: Math.floor(Date.now() / 1000) - 60,
+            authTime: firebaseAuthTime,
             createdAt: '2026-01-01T00:00:00.000Z'
           }
         },
         async check(evidence) {
           if (evidence.userId !== 'alice')
             throw new Error('Controlled identity denied')
+          await options.checkIdentity?.(evidence)
         }
       },
       eligibility: async (_token, userId) =>

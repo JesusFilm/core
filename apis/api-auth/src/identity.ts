@@ -5,6 +5,8 @@ import { z } from 'zod'
 import type { AuthConfig } from './config'
 import type { IdentityEvidence } from './store'
 
+export class IdentityIneligible extends Error {}
+
 export interface Identity {
   authenticate(token: string): Promise<IdentityEvidence>
   check(evidence: IdentityEvidence): Promise<void>
@@ -34,7 +36,14 @@ export function firebaseIdentity(
   )
   const auth = getAuth(app)
   async function check(evidence: IdentityEvidence): Promise<void> {
-    const user = await auth.getUser(evidence.userId)
+    const user = await auth.getUser(evidence.userId).catch((error: unknown) => {
+      if (
+        z.object({ code: z.literal('auth/user-not-found') }).safeParse(error)
+          .success
+      )
+        throw new IdentityIneligible('Identity ineligible')
+      throw error
+    })
     const revokedAfter =
       Date.parse(user.tokensValidAfterTime ?? user.metadata.creationTime) / 1000
     if (
@@ -44,7 +53,7 @@ export function firebaseIdentity(
       user.metadata.creationTime !== evidence.createdAt ||
       evidence.authTime < revokedAfter
     ) {
-      throw new Error('Identity ineligible')
+      throw new IdentityIneligible('Identity ineligible')
     }
   }
   return {
@@ -55,7 +64,7 @@ export function firebaseIdentity(
         decoded.firebase.sign_in_provider === 'anonymous' ||
         !decoded.email_verified
       )
-        throw new Error('Identity ineligible')
+        throw new IdentityIneligible('Identity ineligible')
       const user = await auth.getUser(decoded.uid)
       const evidence = {
         userId: decoded.uid,
