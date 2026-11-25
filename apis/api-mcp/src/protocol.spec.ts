@@ -40,13 +40,21 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
           idempotentHint: true
         }),
         inputSchema: expect.objectContaining({
-          additionalProperties: false,
-          required: ['journeyId', 'idempotencyKey', 'kind'],
-          properties: expect.objectContaining({
-            kind: expect.objectContaining({
-              enum: ['image_upload', 'video_upload']
+          oneOf: expect.arrayContaining([
+            expect.objectContaining({
+              additionalProperties: false,
+              properties: expect.objectContaining({
+                kind: { type: 'string', enum: ['image_upload', 'video_upload'] }
+              })
+            }),
+            expect.objectContaining({
+              additionalProperties: false,
+              required: ['journeyId', 'idempotencyKey', 'kind', 'prompt'],
+              properties: expect.objectContaining({
+                kind: { type: 'string', const: 'image_generation' }
+              })
             })
-          })
+          ])
         })
       }),
       ...[
