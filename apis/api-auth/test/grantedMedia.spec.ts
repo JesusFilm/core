@@ -2578,9 +2578,13 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect((await search('library')).json.result?.isError).not.toBe(true)
   })
 
-  it.each(['videoDelete', 'videoVariantDelete'] as const)(
-    'drains accepted attachments before dispatching %s provider effects',
-    async (name) => {
+  it.each(
+    (['videoDelete', 'videoVariantDelete'] as const).flatMap((name) =>
+      [false, true].map((expireReport) => ({ name, expireReport }))
+    )
+  )(
+    'drains accepted attachments before dispatching $name, expired report=$expireReport',
+    async ({ name, expireReport }) => {
       const schema = buildSchema(
         `type Query { ping: Boolean } type Mutation { ${name}(id: ID!): Boolean! }`
       )
@@ -2614,8 +2618,12 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
           await continuation
         }
       }
+      const input = await f.input([selectVideo()])
       let changeId: string | undefined
       let reportReached = false
+      let reportExpired = false
+      let recoveryError: unknown
+      const expectedReportTimeouts = new Set<unknown>()
       let releaseReport!: () => void
       const reportBarrier = new Promise<void>((resolve) => {
         releaseReport = resolve
@@ -2637,22 +2645,42 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
             if (body.changeId === changeId && body.outcome === 'cancelled') {
               reportReached = true
               await reportBarrier
+              const signal = options.signal
+              const expiredWhileHeld =
+                signal?.aborted === true &&
+                signal.reason instanceof Error &&
+                signal.reason.name === 'TimeoutError'
+              try {
+                return await originalFetch(input, options)
+              } catch (error: unknown) {
+                if (expiredWhileHeld && error === signal?.reason) {
+                  expectedReportTimeouts.add(error)
+                  reportExpired = true
+                }
+                throw error
+              }
             }
           }
           return originalFetch(input, options)
         }
       )
-      const input = await f.input([selectVideo()])
       const attaching = f.edit(input)
       let recovering: Promise<void> | undefined
       try {
-        await paused
+        await Promise.race([
+          paused,
+          attaching.then(() => {
+            throw new Error('Attachment ended before its acceptance checkpoint')
+          })
+        ])
         const blocked = await remove()
         expect(blocked.errors?.[0].message).toContain('pending accepted work')
         expect(dispatches).toBe(0)
         changeId = String(blocked.errors![0].extensions.changeId)
         // Hold the request before the authority can reopen the fenced source gate.
-        recovering = guard.recover()
+        recovering = guard.recover().catch((error: unknown) => {
+          recoveryError = error
+        })
         await vi.waitFor(() => expect(reportReached).toBe(true), {
           timeout: 5000
         })
@@ -2667,6 +2695,8 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
             where: { id: 'media:sources' }
           })
         ).toMatchObject({ open: false })
+        if (expireReport)
+          await new Promise((resolve) => setTimeout(resolve, 5100))
         resume()
         const attached = await attaching
         expect(attached.json.error, attached.text).toBeDefined()
@@ -2675,16 +2705,16 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         resume()
         releaseReport()
         vi.unstubAllGlobals()
-        await attaching
-        await recovering
+        await Promise.allSettled([attaching, recovering])
       }
       f.checkpoint = undefined
       await settleMedia()
       await vi.waitFor(
         async () => {
+          await guard.recover()
           expect(
             await media.mcpMediaMutation.findUniqueOrThrow({
-              where: { id: changeId! }
+              where: { id: changeId }
             })
           ).toMatchObject({ status: 'fenced', reportedAt: expect.any(Date) })
           expect(
@@ -2695,6 +2725,12 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         },
         { timeout: 5000 }
       )
+      if (expireReport) expect(reportExpired).toBe(true)
+      if (
+        recoveryError !== undefined &&
+        !expectedReportTimeouts.has(recoveryError)
+      )
+        throw recoveryError
       expect((await remove()).errors).toBeUndefined()
       expect(dispatches).toBe(1)
       f.receipt(await f.edit(input))
