@@ -1,5 +1,10 @@
 import { algoliasearch } from 'algoliasearch'
 
+/**
+ * Index names are lazy getters: reading one throws if its env var is unset.
+ * Never spread, stringify or log the whole config - that evaluates every
+ * getter. Destructure only the index you need.
+ */
 export type AlgoliaConfig = {
   appId: string
   apiKey: string

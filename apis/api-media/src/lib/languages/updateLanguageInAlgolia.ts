@@ -208,7 +208,8 @@ export async function removeLanguagesFromAlgolia(
 ): Promise<RemoveLanguagesResult> {
   if (languageIds.length === 0) return { removed: 0 }
 
-  const { client, languagesIndex } = getAlgoliaLanguagesClient()
+  const client = getAlgoliaClient()
+  const { languagesIndex } = getAlgoliaConfig()
 
   for (let i = 0; i < languageIds.length; i += REINDEX_BATCH_SIZE) {
     const batch = languageIds.slice(i, i + REINDEX_BATCH_SIZE)

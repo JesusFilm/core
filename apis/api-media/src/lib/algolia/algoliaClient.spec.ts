@@ -38,6 +38,19 @@ describe('algoliaClient', () => {
       expect(config.languagesIndex).toBe('value-for-ALGOLIA_INDEX_LANGUAGES')
     })
 
+    it('should not require other indexes when reading one', () => {
+      delete process.env.ALGOLIA_INDEX_LANGUAGES
+
+      const { videosIndex, videoVariantsIndex } = getAlgoliaConfig()
+      expect(videosIndex).toBe('value-for-ALGOLIA_INDEX_VIDEOS')
+      expect(videoVariantsIndex).toBe('value-for-ALGOLIA_INDEX_VIDEO_VARIANTS')
+
+      delete process.env.ALGOLIA_INDEX_VIDEOS
+      delete process.env.ALGOLIA_INDEX_VIDEO_VARIANTS
+      process.env.ALGOLIA_INDEX_LANGUAGES = 'languages'
+      expect(getAlgoliaConfig().languagesIndex).toBe('languages')
+    })
+
     it.each(ALGOLIA_ENV_VARS)('should throw when %s is unset', (name) => {
       delete process.env[name]
 
