@@ -432,6 +432,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     })
 
     it('generates only through an explicit operation, replays once and saves attachment in a separate revision/history step', async () => {
+      mediaLibrary = false
       const before = await f.snapshot()
       const text = await f.save([
         {
@@ -493,7 +494,6 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       expect((await f.edit(stale)).json.result?.structuredContent?.code).toBe(
         'REVISION_CONFLICT'
       )
-      mediaLibrary = false
       const fresh = {
         ...stale,
         expectedRevision: await f.revision(),
