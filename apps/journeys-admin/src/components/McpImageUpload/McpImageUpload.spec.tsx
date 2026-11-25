@@ -1,3 +1,4 @@
+import { File } from 'node:buffer'
 import { webcrypto } from 'node:crypto'
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -250,7 +251,45 @@ describe('McpImageUpload', () => {
     )
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1))
     expect(
-      screen.queryByText('Choose the same image to upload or resume')
+      screen.queryByText('Choose the same file to upload or resume')
     ).not.toBeInTheDocument()
+  })
+
+  it('streams a video larger than the image limit using bounded file slices and the existing job', async () => {
+    vi.stubGlobal('crypto', webcrypto)
+    let receivedBytes = 0
+    const calls: string[] = []
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      const action = (init.headers as Record<string, string>)['X-Upload-Action']
+      if (action) calls.push(action)
+      if (init.method === 'PUT')
+        receivedBytes += (init.body as ArrayBuffer).byteLength
+      return Response.json({
+        data: {
+          ...job,
+          mediaKind: 'video_upload',
+          receivedBytes,
+          state: action === 'resume' ? 'processing' : 'transferring'
+        }
+      })
+    })
+    const { container } = render(<McpImageUpload endpoint={endpoint} />)
+    await screen.findByText('Upload a video')
+    const file = new File([Buffer.alloc(10_000_001)], 'synthetic.mp4', {
+      type: 'video/mp4'
+    })
+    Object.defineProperty(file, 'arrayBuffer', {
+      value: () => {
+        throw new Error('Whole-file buffering is forbidden')
+      }
+    })
+    fireEvent.change(container.querySelector('input[type=file]')!, {
+      target: { files: [file] }
+    })
+    await waitFor(() => expect(calls).toContain('resume'), { timeout: 10000 })
+    expect(receivedBytes).toBe(10_000_001)
+    expect(calls.filter((action) => action === 'bind')).toHaveLength(1)
+    expect(await screen.findByText(/No media is attached/)).toBeInTheDocument()
+    vi.unstubAllGlobals()
   })
 })

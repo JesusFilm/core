@@ -10,10 +10,12 @@ import {
 } from '@core/prisma/media/client'
 import {
   type MediaFile,
+  fileMatchesKind,
   imageByteLimit,
   mediaFile,
   transferLifetimeMs,
-  uploadChunkBytes
+  uploadChunkBytes,
+  videoByteLimit
 } from '@core/yoga/mcp/mediaJobContract'
 import {
   type ReadCredential,
@@ -26,6 +28,8 @@ import { imageHash, validateImageInput } from './mcpImageInput'
 import type { ImageUploadProvider } from './mcpImageProvider'
 import { mediaExecutorIdentity, mediaExecutorStopped } from './mcpMediaExecutor'
 import type { UploadStorage } from './mcpUploadStorage'
+import { InvalidVideoInput, validateVideoInput } from './mcpVideoInput'
+import type { VideoUploadProvider, VideoUploadStatus } from './mcpVideoProvider'
 
 interface JobContext {
   userId: string
@@ -76,7 +80,8 @@ export function createMediaJobs(
     beforeSend?: () => Promise<void>
     afterSend?: () => Promise<void>
     beforeStagingWrite?: () => Promise<void>
-  } = {}
+  } = {},
+  videoProvider?: VideoUploadProvider
 ) {
   const authority = (action: string, body: unknown) =>
     postJson(
@@ -433,8 +438,16 @@ export function createMediaJobs(
   }
   async function admit(
     context: JobContext,
-    input: { idempotencyKey: string; kind: 'image_upload'; file?: MediaFile }
+    input: {
+      idempotencyKey: string
+      kind: 'image_upload' | 'video_upload'
+      file?: MediaFile
+    }
   ) {
+    if (input.kind === 'video_upload' && !videoProvider)
+      throw new Error('VALIDATION_FAILED')
+    if (input.file && !fileMatchesKind(mediaFile.parse(input.file), input.kind))
+      throw new Error('VALIDATION_FAILED')
     return authorized(
       context,
       'admit',
@@ -524,6 +537,8 @@ export function createMediaJobs(
       kind: 'media_job',
       jobId,
       state: job.state,
+      mediaKind: job.kind,
+      transferCompletedAt: job.transferCompletedAt?.toISOString() ?? null,
       clientId: job.clientId,
       journeyId: job.journeyId,
       admittedAt: job.admittedAt.toISOString(),
@@ -533,7 +548,10 @@ export function createMediaJobs(
       active: job.active,
       ...(job.state === 'ready'
         ? {
-            asset: { source: 'upload', jobId: job.id, id: job.providerId },
+            asset:
+              job.kind === 'video_upload'
+                ? { source: 'mux', videoId: job.providerId }
+                : { source: 'upload', jobId: job.id, id: job.providerId },
             attachment:
               'Separate current-revision journey_edit required. Successful library assets survive cancellation and content undo.'
           }
@@ -581,6 +599,7 @@ export function createMediaJobs(
     const file = mediaFile.parse(input)
     await authorized(context, 'transfer', async (tx, { accept }) => {
       const job = await lockJob(tx, jobId)
+      if (!fileMatchesKind(file, job.kind)) throw new Error('VALIDATION_FAILED')
       if (job.file) {
         if (fingerprint(mediaFile.parse(job.file)) !== fingerprint(file))
           throw new Error('IDEMPOTENCY_KEY_REUSED')
@@ -642,7 +661,11 @@ export function createMediaJobs(
             if (Date.now() >= deadline) throw new Error('VALIDATION_FAILED')
             if (next.done) break
             bytes += next.value.length
-            if (bytes > expectedBytes || offset + bytes > imageByteLimit)
+            if (
+              bytes > expectedBytes ||
+              offset + bytes >
+                (job.kind === 'video_upload' ? videoByteLimit : imageByteLimit)
+            )
               throw new Error('LIMIT_EXCEEDED')
             parts.push(next.value)
           }
@@ -789,6 +812,30 @@ export function createMediaJobs(
     }
     return Buffer.concat(parts)
   }
+  async function* stagedInput(
+    chunks: Array<{ objectKey: string; bytes: number; sha256: string }>
+  ) {
+    for (const chunk of chunks) {
+      const bytes = await storage.get(chunk.objectKey)
+      if (bytes.length !== chunk.bytes || imageHash(bytes) !== chunk.sha256)
+        throw new Error('VALIDATION_FAILED')
+      yield bytes
+    }
+  }
+  async function videoChunks(tx: Transaction, job: McpMediaJob) {
+    const chunks = await tx.mcpMediaChunk.findMany({
+      where: { jobId: job.id, stored: true },
+      orderBy: { offset: 'asc' }
+    })
+    let offset = 0
+    for (const chunk of chunks) {
+      if (chunk.offset !== offset) throw new Error('VALIDATION_FAILED')
+      offset += chunk.bytes
+    }
+    if (offset !== mediaFile.parse(job.file).size)
+      throw new Error('VALIDATION_FAILED')
+    return chunks
+  }
   async function validate(context: JobContext, jobId: string) {
     await own(jobId, context)
     await authorized(
@@ -804,14 +851,27 @@ export function createMediaJobs(
         await accept()
         if (job.state !== 'validating') return
         const file = mediaFile.parse(job.file)
-        const bytes = await assembled(tx, job)
+        const bytes =
+          job.kind === 'video_upload' ? undefined : await assembled(tx, job)
         try {
-          const metadata = await validateImageInput(bytes, file)
+          const metadata =
+            job.kind === 'video_upload'
+              ? (await validateVideoInput(
+                  stagedInput(await videoChunks(tx, job)),
+                  file
+                ),
+                { kind: 'video' })
+              : await validateImageInput(bytes!, file)
           await tx.mcpMediaJob.update({
             where: { id: job.id },
             data: { state: 'dispatch_pending', metadata }
           })
-        } catch {
+        } catch (error) {
+          if (
+            job.kind === 'video_upload' &&
+            !(error instanceof InvalidVideoInput)
+          )
+            throw error
           await terminalJob(tx, job, 'failed')
         }
       }
@@ -822,7 +882,10 @@ export function createMediaJobs(
     const {
       permitId: receiptId,
       bytes,
-      mime
+      mime,
+      chunks,
+      size,
+      video
     } = await authorized(
       context,
       'dispatch',
@@ -838,8 +901,21 @@ export function createMediaJobs(
         // Input reads cannot send provider work. Finish them while recovery can
         // still fence this receipt, then check current authority after the I/O.
         const file = mediaFile.parse(job.file)
-        const bytes = await assembled(tx, job)
+        const video = job.kind === 'video_upload'
+        const chunks = video ? await videoChunks(tx, job) : []
+        const bytes = video ? undefined : await assembled(tx, job)
+        if (video) await validateVideoInput(stagedInput(chunks), file)
         await accept()
+        if (video)
+          await tx.muxVideo.upsert({
+            where: { id: job.providerId },
+            create: {
+              id: job.providerId,
+              userId: job.userId,
+              teamId: job.teamId
+            },
+            update: {}
+          })
         await tx.mcpMediaExecution.update({
           where: { id: permitId },
           data: { jobId }
@@ -848,7 +924,14 @@ export function createMediaJobs(
           where: { id: jobId },
           data: { dispatchReceiptId: permitId }
         })
-        return { permitId, bytes, mime: file.mime }
+        return {
+          permitId,
+          bytes,
+          mime: file.mime,
+          chunks,
+          size: file.size,
+          video
+        }
       }
     )
     await hooks.beforeSend?.()
@@ -866,7 +949,7 @@ export function createMediaJobs(
       })
       await tx.mcpMediaJob.update({
         where: { id: jobId },
-        data: { state: 'processing' }
+        data: { state: video ? 'reconciling' : 'processing' }
       })
     })
     try {
@@ -878,12 +961,21 @@ export function createMediaJobs(
           })
           if (receipt.status !== 'sending') denied()
           const job = await lockJob(tx, jobId)
-          const outcome = await provider.dispatch(job.providerId, bytes, mime)
+          const outcome = video
+            ? (await videoProvider!.dispatch(
+                job.providerId,
+                stagedInput(chunks),
+                size
+              )) === 'rejected'
+              ? 'rejected'
+              : 'processing'
+            : await provider.dispatch(job.providerId, bytes!, mime)
           await hooks.afterSend?.()
           await tx.mcpMediaJob.update({
             where: { id: jobId },
             data: {
-              state: outcome === 'rejected' ? 'reconciling' : 'processing'
+              state:
+                video || outcome === 'rejected' ? 'reconciling' : 'processing'
             }
           })
           await tx.mcpMediaExecution.update({
@@ -908,7 +1000,7 @@ export function createMediaJobs(
     }
     await reconcileJob(jobId)
   }
-  async function reconcileJob(jobId: string) {
+  async function reconcileJob(jobId: string, cancel = false) {
     const known = await media.mcpMediaJob.findUniqueOrThrow({
       where: { id: jobId }
     })
@@ -916,13 +1008,38 @@ export function createMediaJobs(
     const execution = await media.mcpMediaExecution.findUniqueOrThrow({
       where: { id: known.dispatchReceiptId }
     })
+    const videoStatus: VideoUploadStatus | undefined =
+      known.kind === 'video_upload' && execution.status !== 'rejected'
+        ? await videoProvider
+            ?.status(
+              known.providerId,
+              cancel || known.state === 'cancel_requested'
+            )
+            .catch(() => ({ state: 'unknown' as const }))
+        : undefined
     const status =
       execution.status === 'rejected'
         ? 'rejected'
-        : await provider
-            .status(known.providerId)
-            .catch(() => 'unknown' as const)
-    if (status === 'unknown') return
+        : known.kind === 'video_upload'
+          ? (videoStatus?.state ?? 'unknown')
+          : await provider
+              .status(known.providerId)
+              .catch(() => 'unknown' as const)
+    if (status === 'unknown') {
+      if (
+        known.kind === 'video_upload' &&
+        execution.createdAt.getTime() + 6 * 3600000 <= Date.now()
+      )
+        await media.mcpMediaJob.updateMany({
+          where: {
+            id: jobId,
+            active: true,
+            state: { in: ['processing', 'provider_allocated'] }
+          },
+          data: { state: 'reconciling' }
+        })
+      return
+    }
     const settled = await media.$transaction(
       async (tx) => {
         await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${known.dispatchReceiptId} FOR UPDATE`
@@ -944,6 +1061,22 @@ export function createMediaJobs(
           })
           return true
         }
+        if (status === 'allocated') {
+          if (job.state !== 'cancel_requested')
+            await tx.mcpMediaJob.update({
+              where: { id: jobId },
+              data: { state: 'provider_allocated' }
+            })
+          return false
+        }
+        if (status === 'failed' || status === 'cancelled') {
+          if (!(await terminalJob(tx, job, status))) return false
+          await tx.mcpMediaExecution.update({
+            where: { id: receipt.id },
+            data: { status: 'settled', completedAt: await clock(tx) }
+          })
+          return true
+        }
         await tx.mcpMediaExecution.update({
           where: { id: receipt.id },
           data: { status: 'settled', completedAt: await clock(tx) }
@@ -952,8 +1085,27 @@ export function createMediaJobs(
           if (job.state !== 'cancel_requested')
             await tx.mcpMediaJob.update({
               where: { id: jobId },
-              data: { state: 'processing' }
+              data: {
+                state:
+                  job.kind === 'video_upload' &&
+                  execution.createdAt.getTime() + 6 * 3600000 <= Date.now()
+                    ? 'reconciling'
+                    : 'processing'
+              }
             })
+          return true
+        }
+        if (videoStatus?.state === 'ready') {
+          await tx.muxVideo.update({
+            where: { id: job.providerId },
+            data: {
+              assetId: videoStatus.assetId,
+              playbackId: videoStatus.playbackId,
+              duration: videoStatus.duration,
+              readyToStream: true
+            }
+          })
+          await terminalJob(tx, job, 'ready')
           return true
         }
         const metadata = z
@@ -1092,7 +1244,7 @@ export function createMediaJobs(
         // Revocation cancels only unsent work. Uncertain writes and dispatch
         // receipts still prevent cleanup until positively reconciled or fenced.
         if (job.dispatchReceiptId)
-          await reconcileJob(job.id).catch(() => undefined)
+          await reconcileJob(job.id, retired || revoked).catch(() => undefined)
         else if (
           job.active &&
           (retired ||
@@ -1244,6 +1396,11 @@ export function createMediaJobs(
     await recoverExecution(id)
   }
   return {
+    async callback(providerId: string) {
+      const job = await media.mcpMediaJob.findUnique({ where: { providerId } })
+      if (job?.kind === 'video_upload' && job.dispatchReceiptId)
+        await reconcileJob(job.id)
+    },
     holdOutput,
     closeOutput,
     admit,

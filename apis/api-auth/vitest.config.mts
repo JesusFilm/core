@@ -25,6 +25,7 @@ export default defineConfig({
       '**/test/grantedStructure.spec.ts',
       '**/test/grantedMedia.spec.ts',
       '**/test/grantedImageUpload.spec.ts',
+      '**/test/grantedVideoUpload.spec.ts',
       '**/test/grantedAppearance.spec.ts'
     ],
     globals: true,

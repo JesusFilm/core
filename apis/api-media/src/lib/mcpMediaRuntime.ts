@@ -25,6 +25,7 @@ import {
   useMcpMediaSources
 } from './mcpMediaSources'
 import { type UploadStorage, s3UploadStorage } from './mcpUploadStorage'
+import { type VideoUploadProvider, muxUploadProvider } from './mcpVideoProvider'
 
 export function mediaRuntime(
   env: NodeJS.ProcessEnv,
@@ -37,6 +38,7 @@ export function mediaRuntime(
     uploads?: {
       storage: UploadStorage
       provider: ImageUploadProvider
+      videoProvider?: VideoUploadProvider
       browserIdentity: (token: string) => Promise<string>
       hooks?: Parameters<typeof createMediaJobs>[5]
       scheduleProcessing?: (work: () => Promise<void>) => void
@@ -134,7 +136,11 @@ export function mediaRuntime(
             z.string().min(1).parse(env.MCP_MEDIA_STAGING_BUCKET)
           ),
         dependencies.uploads?.provider ?? cloudflareUploadProvider(env),
-        dependencies.uploads?.hooks
+        dependencies.uploads?.hooks,
+        env.MCP_VIDEO_UPLOADS_ENABLED === 'true'
+          ? (dependencies.uploads?.videoProvider ??
+              muxUploadProvider(env, dependencies.media ?? mediaRootClient))
+          : undefined
       )
     : undefined
   return {
@@ -147,6 +153,10 @@ export function mediaRuntime(
               {
                 ...config,
                 ...uploads,
+                muxWebhookSecret:
+                  env.MCP_VIDEO_UPLOADS_ENABLED === 'true'
+                    ? z.string().min(32).parse(env.MCP_MUX_WEBHOOK_SECRET)
+                    : undefined,
                 flags:
                   dependencies.flags ??
                   (async () => ({ mediaLibrary: true, websiteMode: false }))

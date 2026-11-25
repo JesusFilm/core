@@ -141,17 +141,17 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         [
           'journey_media_start',
           mediaStartInput,
-          'Admit one image upload with an immutable file identity, a shared per-user slot and an absolute one-hour transfer deadline. Reuse the exact key and payload after lost responses. Use the authenticated Admin link or stream bounded chunks with the separately returned ingress credential. URLs are locators only. Never fetch arbitrary source URLs or expose ingress credentials. No attachment occurs.'
+          'Admit one image up to 10,000,000 bytes or one MP4/MOV video up to 1,000,000,000 bytes with an immutable file identity, a shared per-user slot and an absolute one-hour transfer deadline. Reuse the exact key and payload after lost responses. Use the authenticated Admin link or stream bounded chunks with the separately returned ingress credential. URLs are locators only. Never fetch arbitrary source URLs or expose ingress credentials. No attachment occurs.'
         ],
         [
           'journey_media_status',
           mediaJobInput,
-          'Resume the same image job under fresh current rights and its originating grant. Waiting, transfer, processing, uncertain and ready states differ. Unknown outcomes retain capacity and never repeat provider creation. A ready asset needs a separate current-revision journey_edit image_set or media_slot_set save.'
+          'Inspect the same image or video job under fresh current rights and its originating grant. Waiting, transfer, provider allocation, processing, uncertain and ready states differ. Use the same Admin link for explicit resume after an authority interruption. Unknown outcomes retain capacity and never repeat provider creation. A ready asset needs a separate current-revision journey_edit image_set, video_source_set or media_slot_set save.'
         ],
         [
           'journey_media_cancel',
           mediaCancelInput,
-          'Request safe cancellation of this job. An uncertain provider send stays unresolved and keeps capacity until authoritative reconciliation. Successful library images survive cancellation, disconnect, result expiry, account deletion and content undo.'
+          'Request safe cancellation of this job. An uncertain provider send stays unresolved and keeps capacity until authoritative reconciliation. Successful library images and videos survive cancellation, disconnect, result expiry, account deletion and content undo.'
         ]
       ] as const
     ).map(([name, schema, description]) => ({
@@ -209,7 +209,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         'Media commands: ' +
         mediaCommandNames.join(', ') +
         '. image_set preserves omitted metadata and focal fields. image_source_clear retains an ordinary Image. video_source_clear retains an ordinary Video and its playback preferences and layout while clearing the source and owned poster. media_slot_set and media_slot_clear own cover/poster/poll/logo/social references and their children, retaining shared provider assets. video_source_set accepts catalog video plus language, canonical YouTube IDs or ready authorized Mux IDs and optional nested settings for atomic source and playback configuration. video_settings_set enforces fit, timing, captions and background restrictions. ' +
-        'Omitted and legacy fields and unrelated Host state are preserved. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL, whole-journey replacement, journey-wide font/theme creation, form creation, video uploads and generation are unavailable. Image uploads use journey_media_start.',
+        'Omitted and legacy fields and unrelated Host state are preserved. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL, whole-journey replacement, journey-wide font/theme creation, form creation, generation is unavailable. Image and video uploads use journey_media_start with a separate checked attachment after playable readiness.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
         type: 'object' as const

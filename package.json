@@ -53,6 +53,7 @@
     "@apollo/client": "^4.2.12",
     "@apollo/client-integration-nextjs": "^0.14.5",
     "@apollo/subgraph": "~2.14.4",
+    "@aws-crypto/sha256-js": "5.2.0",
     "@aws-sdk/client-ecs": "^3.752.0",
     "@aws-sdk/client-s3": "^3.679.0",
     "@aws-sdk/lib-storage": "^3.825.0",

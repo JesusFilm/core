@@ -4,7 +4,10 @@ import { spawnSync } from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
-const issue = '10560'
+const video = process.env.MCP_UPLOAD_TEST_KIND === 'video'
+const issue = process.env.MCP_UPLOAD_TEST_ISSUE ?? (video ? '10554' : '10560')
+if (!/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue))
+  throw new Error('Invalid isolated test issue')
 const source = new URL(
   process.env.MCP_UPLOAD_TEST_POSTGRES_URL ??
     'postgresql://postgres:postgres@localhost:5432/postgres'
@@ -104,9 +107,12 @@ run(
     'vitest',
     'run',
     '--config',
-    'apis/api-auth/vitest.image-upload.config.mts'
+    video
+      ? 'apis/api-auth/vitest.video-upload.config.mts'
+      : 'apis/api-auth/vitest.image-upload.config.mts'
   ],
   {
+    UPLOAD_TEST_ISSUE: issue,
     UPLOAD_TEST_AUTH_DATABASE_URL: runtime.href,
     UPLOAD_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`),
     UPLOAD_TEST_MEDIA_DATABASE_URL: connection(`media_issue_${issue}`),
@@ -116,7 +122,7 @@ run(
   }
 )
 
-const reportDirectory = 'coverage/integration/mcp-image-upload'
+const reportDirectory = `coverage/integration/mcp-${video ? 'video' : 'image'}-upload`
 const tests = JSON.parse(
   readFileSync(`${reportDirectory}/test-results.json`, 'utf8')
 )
@@ -134,7 +140,12 @@ for (const module of [
   'apis/api-media/src/lib/mcpMediaJobs.ts',
   'apis/api-media/src/lib/mcpMediaExecutor.ts',
   'apis/api-media/src/lib/mcpMediaJobHttp.ts',
-  'apis/api-media/src/lib/mcpImageInput.ts',
+  ...(video
+    ? [
+        'apis/api-media/src/lib/mcpVideoInput.ts',
+        'apis/api-media/src/lib/mcpVideoProvider.ts'
+      ]
+    : ['apis/api-media/src/lib/mcpImageInput.ts']),
   'apis/api-journeys/src/lib/mcpMediaClient.ts',
   'apis/api-journeys/src/lib/mcpEdits.ts',
   'apis/api-journeys/src/lib/mcpStructureHistory.ts',

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 export const imageByteLimit = 10_000_000
+export const videoByteLimit = 1_000_000_000
 export const uploadChunkBytes = 1_048_576
 export const transferLifetimeMs = 3_600_000
 export const mediaFile = z
@@ -10,21 +11,49 @@ export const mediaFile = z
       .min(1)
       .max(255)
       // eslint-disable-next-line no-control-regex -- Upload filenames must reject ASCII control characters.
-      .regex(/^[^/\\\u0000-\u001f]+\.(png|jpe?g|webp|gif)$/i),
-    mime: z.enum(['image/png', 'image/jpeg', 'image/webp', 'image/gif']),
-    size: z.number().int().positive().max(imageByteLimit),
+      .regex(/^[^/\\\u0000-\u001f]+\.(png|jpe?g|webp|gif|mp4|mov)$/i),
+    mime: z.enum([
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+      'image/gif',
+      'video/mp4',
+      'video/quicktime'
+    ]),
+    size: z.number().int().positive().max(videoByteLimit),
     sha256: z.string().regex(/^[a-f0-9]{64}$/)
   })
   .strict()
+  .refine((file) => {
+    const extension = file.name.split('.').pop()!.toLowerCase()
+    const extensions: Record<string, string[]> = {
+      'image/png': ['png'],
+      'image/jpeg': ['jpg', 'jpeg'],
+      'image/webp': ['webp'],
+      'image/gif': ['gif'],
+      'video/mp4': ['mp4'],
+      'video/quicktime': ['mov']
+    }
+    return (
+      (file.mime.startsWith('video/')
+        ? extensions[file.mime].includes(extension)
+        : ['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(extension)) &&
+      (file.mime.startsWith('video/') || file.size <= imageByteLimit)
+    )
+  })
+export function fileMatchesKind(file: MediaFile, kind: string): boolean {
+  return file.mime.startsWith(kind === 'video_upload' ? 'video/' : 'image/')
+}
 const journeyId = z.string().min(1).max(200)
 export const mediaStartInput = z
   .object({
     journeyId,
     idempotencyKey: z.string().min(1).max(200),
-    kind: z.literal('image_upload'),
+    kind: z.enum(['image_upload', 'video_upload']),
     file: mediaFile.optional()
   })
   .strict()
+  .refine((input) => !input.file || fileMatchesKind(input.file, input.kind))
 export const mediaJobInput = z
   .object({ journeyId, jobId: z.string().uuid() })
   .strict()
@@ -36,6 +65,7 @@ export const mediaJobState = z.enum([
   'transferring',
   'validating',
   'dispatch_pending',
+  'provider_allocated',
   'processing',
   'reconciling',
   'ready',
@@ -50,3 +80,5 @@ export const mediaJobTools = [
   'journey_media_status',
   'journey_media_cancel'
 ] as const
+
+export type MediaJobState = z.infer<typeof mediaJobState>

@@ -28,6 +28,7 @@ import {
 /* eslint-enable @nx/enforce-module-boundaries */
 import { structureFixture } from './grantedStructureFixture'
 
+const issue = process.env.UPLOAD_TEST_ISSUE ?? '10560'
 const authUrl = process.env.UPLOAD_TEST_AUTH_DATABASE_URL
 const journeysUrl = process.env.UPLOAD_TEST_JOURNEYS_DATABASE_URL
 const mediaUrl = process.env.UPLOAD_TEST_MEDIA_DATABASE_URL
@@ -36,7 +37,10 @@ const languagesUrl = process.env.UPLOAD_TEST_LANGUAGES_DATABASE_URL
 describe('same-job image upload through authenticated MCP and Admin HTTP', () => {
   if (![authUrl, journeysUrl, mediaUrl, languagesUrl].every(Boolean))
     throw new Error('Run node tools/scripts/test-mcp-image-upload.mjs')
-  if (!/^\/media_issue_10560(_|$)/.test(new URL(mediaUrl!).pathname))
+  if (
+    !/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue) ||
+    !new RegExp(`^/media_issue_${issue}(_|$)`).test(new URL(mediaUrl!).pathname)
+  )
     throw new Error('Use isolated issue 10560 databases')
   const media = new MediaDatabase({
     adapter: new PrismaPg({ connectionString: mediaUrl })
@@ -117,7 +121,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     return mediaRuntime(...settings)
   }
   const f = structureFixture({
-    issue: '10560',
+    issue,
     authUrl,
     journeysUrl,
     startupTimeoutMs: 120000,

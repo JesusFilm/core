@@ -6,7 +6,7 @@ import {
   S3Client
 } from '@aws-sdk/client-s3'
 
-import { imageByteLimit } from '@core/yoga/mcp/mediaJobContract'
+import { uploadChunkBytes } from '@core/yoga/mcp/mediaJobContract'
 
 export interface UploadStorage {
   put(key: string, bytes: Buffer): Promise<void | 'rejected'>
@@ -64,14 +64,14 @@ export function s3UploadStorage(bucket: string): UploadStorage {
       if (
         !response.Body ||
         !response.ContentLength ||
-        response.ContentLength > imageByteLimit
+        response.ContentLength > uploadChunkBytes
       )
         throw new Error('Invalid staging object')
       const parts: Uint8Array[] = []
       let size = 0
       for await (const part of response.Body as AsyncIterable<Uint8Array>) {
         size += part.length
-        if (size > imageByteLimit) throw new Error('Invalid staging object')
+        if (size > uploadChunkBytes) throw new Error('Invalid staging object')
         parts.push(part)
       }
       return Buffer.concat(parts)

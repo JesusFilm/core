@@ -13,13 +13,23 @@ import {
   useState
 } from 'react'
 
+import { Sha256 } from '@aws-crypto/sha256-js'
+
+import {
+  imageByteLimit,
+  videoByteLimit,
+  uploadChunkBytes,
+  type MediaJobState
+} from '@core/yoga/mcp/mediaJobContract'
+
 import { useAuth } from '../../libs/auth'
 
 interface UploadStatus {
   jobId: string
   journeyId: string
   clientId: string
-  state: string
+  mediaKind: string
+  state: MediaJobState
   transferDeadline: string
   receivedBytes: number
   code?: string
@@ -105,21 +115,38 @@ export function McpImageUpload({
     setBusy(true)
     setError(false)
     try {
-      if (file.size > 10000000 || file.size === 0)
+      if (
+        file.size >
+          (job?.mediaKind === 'video_upload'
+            ? videoByteLimit
+            : imageByteLimit) ||
+        file.size === 0
+      )
         throw new Error('Invalid file')
-      const bytes = await file.arrayBuffer()
+      const digest = new Sha256()
+      for (let offset = 0; offset < file.size; offset += uploadChunkBytes) {
+        digest.update(
+          new Uint8Array(
+            await file.slice(offset, offset + uploadChunkBytes).arrayBuffer()
+          )
+        )
+      }
       const manifest = {
         name: file.name,
         mime: file.type,
         size: file.size,
-        sha256: await hash(bytes)
+        sha256: Array.from(await digest.digest(), (value) =>
+          value.toString(16).padStart(2, '0')
+        ).join('')
       }
       let status = await request('POST', 'bind', JSON.stringify(manifest), {
         'Content-Type': 'application/json'
       })
       while (status.receivedBytes < file.size) {
         const offset = status.receivedBytes
-        const chunk = bytes.slice(offset, Math.min(file.size, offset + 1048576))
+        const chunk = await file
+          .slice(offset, Math.min(file.size, offset + uploadChunkBytes))
+          .arrayBuffer()
         status = await request('PUT', undefined, chunk, {
           'Content-Type': 'application/octet-stream',
           'X-Upload-Offset': String(offset),
@@ -137,7 +164,11 @@ export function McpImageUpload({
   }
   return (
     <Stack spacing={2} sx={{ maxWidth: 640, mx: 'auto', p: 3 }}>
-      <Typography variant="h4">{t('Upload an image')}</Typography>
+      <Typography variant="h4">
+        {job?.mediaKind === 'video_upload'
+          ? t('Upload a video')
+          : t('Upload an image')}
+      </Typography>
       {error && (
         <Alert severity="error">
           {t(
@@ -163,20 +194,21 @@ export function McpImageUpload({
               ? t(
                   'Ready in your media library. Return to your chat to attach it with a separate draft save.'
                 )
-              : job.state === 'processing' ||
+              : job.state === 'provider_allocated' ||
+                  job.state === 'processing' ||
                   job.state === 'reconciling' ||
                   job.state === 'cancel_requested'
                 ? t(
-                    'Provider processing or reconciliation is pending. No image is attached.'
+                    'Provider processing or reconciliation is pending. No media is attached.'
                   )
                 : job.state === 'validating' || job.state === 'dispatch_pending'
                   ? t(
                       'Transfer complete. Validation and provider dispatch are pending.'
                     )
                   : job.state === 'transferring'
-                    ? t('Uploading your image')
+                    ? t('Uploading your file')
                     : job.state === 'waiting_for_file'
-                      ? t('Waiting for one image')
+                      ? t('Waiting for one file')
                       : t('This upload has ended.')}
           </Typography>
           {busy && (
@@ -189,12 +221,16 @@ export function McpImageUpload({
           )}
           {['waiting_for_file', 'transferring'].includes(job.state) && (
             <Button component="label" disabled={busy} variant="contained">
-              {t('Choose the same image to upload or resume')}
+              {t('Choose the same file to upload or resume')}
               <Box
                 component="input"
                 type="file"
                 hidden
-                accept="image/png,image/jpeg,image/webp,image/gif"
+                accept={
+                  job.mediaKind === 'video_upload'
+                    ? 'video/mp4,video/quicktime'
+                    : 'image/png,image/jpeg,image/webp,image/gif'
+                }
                 onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   void handleFile(event)
                 }}
@@ -209,7 +245,9 @@ export function McpImageUpload({
                 void handleResume()
               }}
             >
-              {t('Resume image processing')}
+              {job.mediaKind === 'video_upload'
+                ? t('Resume video processing')
+                : t('Resume image processing')}
             </Button>
           )}
           {!['ready', 'cancelled', 'failed', 'transfer_expired'].includes(
