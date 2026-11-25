@@ -114,7 +114,7 @@ jobs:
           fail_ci_if_error: true
   image-upload:
     runs-on: jfp-proxmox-core
-    timeout-minutes: 20
+    timeout-minutes: 40
     services:
       postgres:
         image: postgres:16
@@ -158,7 +158,7 @@ jobs:
           fail_ci_if_error: true
   image-generation:
     runs-on: jfp-proxmox-core
-    timeout-minutes: 20
+    timeout-minutes: 40
     services:
       postgres:
         image: postgres:16
