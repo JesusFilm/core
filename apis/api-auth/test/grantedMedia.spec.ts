@@ -2614,28 +2614,87 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
           await continuation
         }
       }
+      let changeId: string | undefined
+      let reportReached = false
+      let releaseReport!: () => void
+      const reportBarrier = new Promise<void>((resolve) => {
+        releaseReport = resolve
+      })
+      const originalFetch = globalThis.fetch
+      vi.stubGlobal(
+        'fetch',
+        async (input: string | URL | Request, options?: RequestInit) => {
+          const url = input instanceof Request ? input.url : String(input)
+          if (
+            changeId &&
+            url.endsWith('/internal/permissions/complete') &&
+            typeof options?.body === 'string'
+          ) {
+            const body = JSON.parse(options.body) as {
+              changeId?: string
+              outcome?: string
+            }
+            if (body.changeId === changeId && body.outcome === 'cancelled') {
+              reportReached = true
+              await reportBarrier
+            }
+          }
+          return originalFetch(input, options)
+        }
+      )
       const input = await f.input([selectVideo()])
       const attaching = f.edit(input)
-      await paused
+      let recovering: Promise<void> | undefined
       try {
+        await paused
         const blocked = await remove()
         expect(blocked.errors?.[0].message).toContain('pending accepted work')
         expect(dispatches).toBe(0)
-        await guard.recover()
+        changeId = String(blocked.errors![0].extensions.changeId)
+        // Hold the request before the authority can reopen the fenced source gate.
+        recovering = guard.recover()
+        await vi.waitFor(() => expect(reportReached).toBe(true), {
+          timeout: 5000
+        })
         expect(
           await media.mcpMediaMutation.findUniqueOrThrow({
-            where: { id: String(blocked.errors![0].extensions.changeId) }
+            where: { id: changeId }
           })
         ).toMatchObject({ status: 'fenced', reportedAt: null })
         expect(dispatches).toBe(0)
+        expect(
+          await f.auth.authorizationGate.findUniqueOrThrow({
+            where: { id: 'media:sources' }
+          })
+        ).toMatchObject({ open: false })
+        resume()
+        const attached = await attaching
+        expect(attached.json.error, attached.text).toBeDefined()
+        expect(await image('video')).toMatchObject({ videoId: f.id('mux') })
       } finally {
         resume()
+        releaseReport()
+        vi.unstubAllGlobals()
+        await attaching
+        await recovering
       }
-      const attached = await attaching
-      expect(attached.json.error, attached.text).toBeDefined()
-      expect(await image('video')).toMatchObject({ videoId: f.id('mux') })
       f.checkpoint = undefined
       await settleMedia()
+      await vi.waitFor(
+        async () => {
+          expect(
+            await media.mcpMediaMutation.findUniqueOrThrow({
+              where: { id: changeId! }
+            })
+          ).toMatchObject({ status: 'fenced', reportedAt: expect.any(Date) })
+          expect(
+            await f.auth.authorizationGate.findUniqueOrThrow({
+              where: { id: 'media:sources' }
+            })
+          ).toMatchObject({ open: true })
+        },
+        { timeout: 5000 }
+      )
       expect((await remove()).errors).toBeUndefined()
       expect(dispatches).toBe(1)
       f.receipt(await f.edit(input))
