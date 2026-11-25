@@ -4,12 +4,15 @@ import { spawnSync } from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
-const suite = process.env.MCP_STRUCTURE_TEST_SUITE ?? 'structure'
-if (!['structure', 'appearance'].includes(suite))
+const requestedIssue = process.env.MCP_STRUCTURE_TEST_ISSUE
+const suite =
+  process.env.MCP_STRUCTURE_TEST_SUITE ??
+  (requestedIssue === '10558' ? 'forms' : 'structure')
+if (!['structure', 'appearance', 'forms'].includes(suite))
   throw new Error('Unknown MCP integration suite')
 const issue =
-  process.env.MCP_STRUCTURE_TEST_ISSUE ??
-  (suite === 'appearance' ? '10561' : '10557')
+  requestedIssue ??
+  { appearance: '10561', forms: '10558', structure: '10557' }[suite]
 if (!/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue))
   throw new Error('Use an issue-specific isolated database name')
 const source = new URL(
@@ -145,7 +148,14 @@ for (const module of suite === 'appearance'
       'apis/api-journeys/src/schema/block/service.ts',
       'apis/api-journeys/src/schema/block/blockDelete.mutation.ts',
       'apis/api-journeys/src/schema/block/blockRestore.mutation.ts',
-      'libs/yoga/src/mcp/structureContract.ts'
+      'libs/yoga/src/mcp/structureContract.ts',
+      ...(suite === 'forms'
+        ? [
+            'apis/api-journeys/src/lib/mcpForms.ts',
+            'apis/api-journeys/src/lib/mcpFormDestinations.ts',
+            'libs/yoga/src/mcp/formContract.ts'
+          ]
+        : [])
     ]) {
   const entry = Object.entries(coverage).find(([path]) =>
     path.endsWith('/' + module)

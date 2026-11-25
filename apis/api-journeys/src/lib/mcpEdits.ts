@@ -16,6 +16,7 @@ import {
   operationResult,
   privateOperationErrorCodes
 } from '@core/yoga/mcp/editContract'
+import { isFormCommand } from '@core/yoga/mcp/formContract'
 import {
   type PresentationCommand,
   createdInverse
@@ -54,6 +55,7 @@ import {
   editDatabaseTime,
   reconcileJourneyEdits
 } from './mcpEditsStore'
+import type { DestinationRoutes } from './mcpFormDestinations'
 import {
   describeHistory,
   hasStructureHistory,
@@ -89,6 +91,7 @@ export interface JourneyEditHooks {
   checkpoint?: (point: EditCheckpoint, context: EditContext) => Promise<void>
   now?: () => Date
   canEditChat?: (userId: string) => Promise<boolean>
+  destinationRoutes?: DestinationRoutes
   canUseFeature?: (
     userId: string,
     feature: Parameters<FeatureCheck>[0]
@@ -572,6 +575,7 @@ export function createJourneyEditHandler(
                     restoredEntry.changes,
                     direction,
                     canEditChat,
+                    { userId: claims.subject, routes: hooks.destinationRoutes },
                     canUseFeature
                   )
                 } else {
@@ -602,7 +606,7 @@ export function createJourneyEditHandler(
                   (
                     command
                   ): command is PresentationCommand | TypographyCommand =>
-                    !isStructureCommand(command)
+                    !isStructureCommand(command) && !isFormCommand(command)
                 )
               ) {
                 const planned = await planContent(
@@ -621,6 +625,7 @@ export function createJourneyEditHandler(
                     commands,
                     mediaProjection,
                     canEditChat,
+                    { userId: claims.subject, routes: hooks.destinationRoutes },
                     { actorId: claims.subject, check: canUseFeature }
                   )
                 } catch (error) {

@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { toAiChatSettings } from '@core/journeys/ui/aiChatSettings'
 import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
 import { appearanceCommandNames } from '@core/yoga/mcp/appearanceContract'
+import { formCommandNames } from '@core/yoga/mcp/formContract'
 import { mediaCommandNames } from '@core/yoga/mcp/mediaContract'
 import { mediaJobTools } from '@core/yoga/mcp/mediaJobContract'
 import {
@@ -34,6 +35,11 @@ import { structureCommandNames } from '@core/yoga/mcp/structureContract'
 import { Action, journeyAcl } from '../schema/journey/journey.acl'
 
 import { type JourneyEditHooks, createJourneyEditHandler } from './mcpEdits'
+import {
+  type DestinationRoutes,
+  eligibleDestinations,
+  selectedFormDestinations
+} from './mcpFormDestinations'
 import { type MediaClientConfig, mediaRequest } from './mcpMediaClient'
 import { boundedReadPage } from './mcpReadPage'
 import { reconcileJourneyReads } from './mcpReadSettlement'
@@ -164,6 +170,8 @@ const blockSelect = {
   slug: true,
   min: true,
   max: true,
+  integrationId: true,
+  routeId: true,
   showAssistant: true,
   expandChatByDefault: true,
   settings: true,
@@ -424,7 +432,8 @@ export function createJourneyReadHandler(
                       dataRequest as Parameters<typeof snapshot>[1],
                       claims,
                       allowed,
-                      config
+                      config,
+                      editHooks?.destinationRoutes
                     )
             } catch (error) {
               const failure = z
@@ -510,7 +519,8 @@ async function snapshot(
   >,
   claims: ReadCredential,
   journeys: ReadJourney[],
-  config: JourneyReadsConfig
+  config: JourneyReadsConfig,
+  destinationRoutes?: DestinationRoutes
 ): Promise<ReadResult> {
   const link = (id: string) =>
     new URL(`/journeys/${encodeURIComponent(id)}`, config.adminOrigin).href
@@ -647,7 +657,7 @@ async function snapshot(
   )
   const warnings = [
     'Preserve omitted content. Host changes and publication are unavailable.',
-    'Form destinations, source metadata and unmodeled block settings are preserved but omitted. The outline is not a lossless replacement document.'
+    'Inaccessible form destinations, source metadata and unmodeled block settings are preserved but omitted. The outline is not a lossless replacement document.'
   ]
   const base = {
     journeyId: journey.id,
@@ -661,12 +671,29 @@ async function snapshot(
         ? [
             'typography_set',
             ...structureCommandNames,
+            ...formCommandNames,
             ...appearanceCommandNames,
             ...(config.media ? mediaCommandNames : [])
           ]
         : [],
     adminLink: link(journey.id),
     warnings
+  }
+  if (request.input.view === 'form_destinations') {
+    if (offset !== 0 || request.input.stepIds)
+      throw new Error('VALIDATION_FAILED')
+    return boundedResult({
+      ...base,
+      destinations: await eligibleDestinations(tx, journey, {
+        userId: claims.subject,
+        routes: destinationRoutes,
+        // Reserve time for fresh acceptance and settlement before output's
+        // five-second deadline, regardless of the integration count.
+        signal: AbortSignal.timeout(2000)
+      }),
+      complete: true,
+      nextCursor: null
+    })
   }
   const ids = await tx.block.findMany({
     where: { journeyId: journey.id, deletedAt: null },
@@ -788,6 +815,13 @@ async function snapshot(
   })
   const removedStepIds = new Set(removedDestinations.map(({ id }) => id))
   const routeIds = new Set([...owned, ...removedStepIds])
+  const destinations =
+    request.input.view === 'outline'
+      ? undefined
+      : await selectedFormDestinations(tx, journey, page.slice(0, 100), {
+          userId: claims.subject,
+          routes: destinationRoutes
+        })
   const blocks = page.slice(0, 100).map((block) => {
     for (const field of blockReferences)
       block[field] =
@@ -796,6 +830,7 @@ async function snapshot(
         removedStepIds.has(block[field])
           ? block[field]
           : safeReference(block[field])
+    const { integrationId, routeId, ...content } = block
     return request.input.view === 'outline'
       ? {
           id: block.id,
@@ -811,7 +846,8 @@ async function snapshot(
           locked: block.locked
         }
       : {
-          ...block,
+          ...content,
+          ...destinations?.get(block.id),
           ...(block.nextBlockId && removedStepIds.has(block.nextBlockId)
             ? { unresolvedDefaultRoute: true }
             : {}),

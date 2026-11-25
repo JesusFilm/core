@@ -157,7 +157,8 @@ jobs:
           fail_ci_if_error: true
   saved-edits:
     runs-on: jfp-proxmox-core
-    timeout-minutes: 30
+    # Edit, structure and form coverage suites run serially in this job.
+    timeout-minutes: 60
     services:
       postgres:
         image: postgres:16
@@ -188,6 +189,10 @@ jobs:
         run: node tools/scripts/test-mcp-structure.mjs
         env:
           MCP_STRUCTURE_TEST_POSTGRES_URL: postgresql://postgres:edit-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Exercise complete forms and current destination configuration
+        run: MCP_STRUCTURE_TEST_ISSUE=10558 node tools/scripts/test-mcp-structure.mjs
+        env:
+          MCP_STRUCTURE_TEST_POSTGRES_URL: postgresql://postgres:edit-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
       - name: Preserve owning-service coverage and test counts
         if: always()
         uses: actions/upload-artifact@v4
@@ -216,5 +221,20 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/integration/mcp-structure/cobertura-coverage.xml
           flags: integration.mcp-structure
+          disable_search: true
+          fail_ci_if_error: true
+      - name: Preserve form coverage and test counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-form-coverage
+          path: coverage/integration/mcp-forms
+          if-no-files-found: error
+      - name: Upload form coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-forms/cobertura-coverage.xml
+          flags: integration.mcp-forms
           disable_search: true
           fail_ci_if_error: true
