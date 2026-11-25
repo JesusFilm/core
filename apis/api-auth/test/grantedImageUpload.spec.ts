@@ -66,7 +66,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let providerReady = true
   let providerUnknown = false
   let jobs: MediaJobs
-  let createWorker: (uploadLimit?: string) => MediaJobs
+  let createWorker: (
+    uploadLimit?: string,
+    adapter?: 'controlled' | 'cloudflare'
+  ) => MediaJobs
   let processCompletedTransfers: () => Promise<void>
   let duringProviderDispatch: (() => Promise<void>) | undefined
   let uploadOrigin = ''
@@ -128,14 +131,23 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     'controlled-upload-internal-10560-at-least-32-characters'
   const mediaSecret = 'controlled-upload-authority-10560-at-least-32-characters'
   function configureRuntime(...settings: Parameters<typeof mediaRuntime>) {
-    createWorker = (uploadLimit) =>
+    createWorker = (uploadLimit, adapter = 'controlled') =>
       mediaRuntime(
         {
           ...settings[0],
+          CLOUDFLARE_ACCOUNT_ID: 'controlled-account',
+          CLOUDFLARE_IMAGES_TOKEN: 'images-credential-sentinel',
+          CLOUDFLARE_WORKERS_AI_TOKEN: 'ai-credential-sentinel',
           MCP_MEDIA_UPLOAD_LIMIT: uploadLimit,
           MCP_IMAGE_GENERATION_ENABLED: String(generationEnabled)
         },
-        settings[1]
+        {
+          ...settings[1],
+          uploads: {
+            ...settings[1]?.uploads,
+            generation: adapter === 'cloudflare' ? undefined : generation
+          }
+        }
       ).jobs!
     return mediaRuntime(...settings)
   }
@@ -536,6 +548,68 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       ])
       expect(generationCount).toBe(1)
       expect(await media.mcpMediaJob.count({ where: { active: true } })).toBe(3)
+    })
+
+    it('dispatches through the configured Cloudflare adapter and recovers its real ready asset without a second creation', async () => {
+      const id = String((await generate()).jobId)
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      const bytes = await sharp({
+        create: { width: 4, height: 3, channels: 3, background: 'red' }
+      })
+        .jpeg()
+        .toBuffer()
+      const transport = globalThis.fetch
+      const calls: Array<{ url: string; method: string }> = []
+      const controlledCloudflare = vi
+        .spyOn(globalThis, 'fetch')
+        .mockImplementation(async (input, init) => {
+          const url =
+            typeof input === 'string'
+              ? input
+              : input instanceof URL
+                ? input.href
+                : input.url
+          if (!url.startsWith('https://api.cloudflare.com/'))
+            return transport(input, init)
+          calls.push({ url, method: init?.method ?? 'GET' })
+          if (url.includes('/ai/run/'))
+            return Response.json({
+              success: true,
+              result: { image: bytes.toString('base64') }
+            })
+          if (init?.method === 'POST') {
+            expect(init.body).toBeInstanceOf(FormData)
+            expect((init.body as FormData).get('id')).toBe(job.providerId)
+          }
+          if (url.endsWith('/blob')) return new Response(new Uint8Array(bytes))
+          return Response.json({
+            success: true,
+            result: { id: job.providerId, uploaded: new Date().toISOString() }
+          })
+        })
+      try {
+        const worker = createWorker(undefined, 'cloudflare')
+        await worker.processCompletedTransfers()
+        expect((await status(id)).state).toBe('ready')
+        await worker.recover()
+        expect(
+          calls.filter((call) => call.url.includes('/ai/run/'))
+        ).toHaveLength(1)
+        expect(calls.filter((call) => call.method === 'POST')).toHaveLength(2)
+        expect(
+          await media.cloudflareImage.findUnique({
+            where: { id: job.providerId }
+          })
+        ).toMatchObject({ uploaded: true, isAi: true })
+        expect(
+          await media.mcpMediaJob.findUnique({ where: { id } })
+        ).toMatchObject({ generationPrompt: null, active: false })
+        expect(JSON.stringify(await status(id))).not.toMatch(
+          /credential-sentinel|private-generation-prompt-sentinel/
+        )
+      } finally {
+        controlledCloudflare.mockRestore()
+      }
     })
 
     it('counts failed dispatch usage, exact replay and each side of the rolling window independently', async () => {
