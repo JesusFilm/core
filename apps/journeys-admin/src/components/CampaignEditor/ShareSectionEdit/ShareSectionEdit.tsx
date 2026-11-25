@@ -237,7 +237,7 @@ export function ShareSectionEdit({
             const state = shareLanguageState(regionLanguage)
             return (
               <Chip
-                key={regionLanguage.id}
+                key={`${region.id}-${regionLanguage.languageId}`}
                 size="small"
                 variant={state === 'live' ? 'filled' : 'outlined'}
                 data-testid={`ShareSelectorPreview-${regionLanguage.languageId}`}
@@ -249,7 +249,7 @@ export function ShareSectionEdit({
         </Stack>
         {regionLanguages.map((regionLanguage) => (
           <ShareLanguageRow
-            key={regionLanguage.id}
+            key={`${region.id}-${regionLanguage.languageId}`}
             hostBlockId={block.id}
             campaign={campaign}
             region={region}
