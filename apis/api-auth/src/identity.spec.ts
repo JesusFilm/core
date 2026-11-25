@@ -84,6 +84,31 @@ describe('fresh external account eligibility', () => {
     )
   })
 
+  it.each([
+    { aud: 'another-project' },
+    { firebase: { sign_in_provider: 'anonymous' } },
+    { email_verified: false }
+  ])(
+    'rejects ineligible sign-in evidence before reading the account',
+    async (changed) => {
+      const identity = firebaseIdentity({
+        AUTH_FIREBASE_PROJECT_ID: 'controlled'
+      })
+      controlled.verifyIdToken.mockResolvedValue({
+        uid: 'alice',
+        aud: 'controlled',
+        email_verified: true,
+        auth_time: 100,
+        firebase: { sign_in_provider: 'password' },
+        ...changed
+      })
+      await expect(identity.authenticate('controlled-token')).rejects.toThrow(
+        IdentityIneligible
+      )
+      expect(controlled.getUser).not.toHaveBeenCalled()
+    }
+  )
+
   it('binds authentication to verified non-anonymous sign-in and current revocation state', async () => {
     const identity = firebaseIdentity({
       AUTH_FIREBASE_PROJECT_ID: 'controlled'
