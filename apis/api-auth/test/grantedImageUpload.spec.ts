@@ -1248,6 +1248,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       ).toEqual(original)
       if (recovery === 'withdrawal') {
         const change = await withdraw(id)
+        cleanupUnavailable = true
         await restarted.recover()
         await reconcileConnectionChanges(f.auth)
         expect(
@@ -1255,6 +1256,40 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
             where: { id: change.id }
           })
         ).toMatchObject({ status: 'complete' })
+        expect(
+          await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+        ).toMatchObject({ active: true })
+        expect(objects.size).toBeGreaterThan(0)
+        cleanupUnavailable = false
+        await createWorker().recover()
+        expect(
+          await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+        ).toMatchObject({
+          active: false,
+          state: 'cancelled',
+          file: original.file,
+          transferDeadline: original.transferDeadline
+        })
+        expect(objects.size).toBe(0)
+        expect(dispatchCount).toBe(0)
+        const newConnectionToken = await f.consent()
+        for (let index = 0; index < 2; index++)
+          content(
+            await f.call(
+              'journey_media_start',
+              {
+                journeyId: f.journeyId,
+                idempotencyKey: randomUUID(),
+                kind: 'image_upload'
+              },
+              newConnectionToken
+            )
+          )
+        expect(
+          await media.mcpMediaJob.count({
+            where: { userId: 'alice', active: true }
+          })
+        ).toBe(2)
       } else if (recovery === 'cancel') {
         await restarted.cancel(context, id, randomUUID())
         expect(

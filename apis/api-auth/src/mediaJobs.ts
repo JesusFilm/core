@@ -77,6 +77,7 @@ export function createMediaJobAuthority(
       return {
         connections: connections.map((connection) => ({
           id: connection.id,
+          revoked: Boolean(connection.revokedAt),
           accountRetired: retired.some(
             (account) => account.userId === connection.userId
           )

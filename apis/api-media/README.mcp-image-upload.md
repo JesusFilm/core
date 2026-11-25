@@ -99,6 +99,10 @@ receipt remains a fenceable unsent intent. A failed staged read settles that
 intent without a provider call. A replacement worker can retry the original job,
 or cancellation can safely clean up its staging and release capacity. The final
 authority check follows input preparation and owning lock waits.
+After permanent connection revocation, recovery cleans up safely stopped,
+undispatched jobs and releases their slots. Expiry, consent renewal and temporary
+role loss retain same-job resume behavior. Unknown writes and sends still require
+positive settlement before cleanup, and successful assets remain in the library.
 Output receipts additionally persist the Linux boot ID, PID namespace, process ID
 and process start ticks. Recovery in that same boot and PID namespace can prove
 the original process exited or its PID was reused, then fence and settle it.

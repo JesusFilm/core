@@ -1071,7 +1071,11 @@ export function createMediaJobs(
       const lifecycle = z
         .object({
           connections: z.array(
-            z.object({ id: z.string(), accountRetired: z.boolean() })
+            z.object({
+              id: z.string(),
+              accountRetired: z.boolean(),
+              revoked: z.boolean().default(false)
+            })
           )
         })
         .parse(
@@ -1080,36 +1084,39 @@ export function createMediaJobs(
           })
         )
       for (const job of jobs) {
-        const retired = lifecycle.connections.some(
-          (connection) =>
-            connection.id === job.connectionId && connection.accountRetired
+        const connection = lifecycle.connections.find(
+          (connection) => connection.id === job.connectionId
         )
+        const retired = connection?.accountRetired === true
+        const revoked = connection?.revoked === true
+        // Revocation cancels only unsent work. Uncertain writes and dispatch
+        // receipts still prevent cleanup until positively reconciled or fenced.
         if (job.dispatchReceiptId)
           await reconcileJob(job.id).catch(() => undefined)
         else if (
           job.active &&
           (retired ||
+            revoked ||
             job.state === 'cancel_requested' ||
             (!job.transferCompletedAt && job.transferDeadline <= new Date()))
         )
           await media
             .$transaction(async (tx) => {
               const current = await lockJob(tx, job.id)
-              if (
-                current.active &&
-                !current.dispatchReceiptId &&
-                (retired ||
-                  current.state === 'cancel_requested' ||
-                  (!current.transferCompletedAt &&
-                    current.transferDeadline <= (await clock(tx))))
+              if (!current.active || current.dispatchReceiptId) return
+              const transferExpired =
+                !current.transferCompletedAt &&
+                current.transferDeadline <= (await clock(tx))
+              const cancelUnsent =
+                retired ||
+                current.state === 'cancel_requested' ||
+                (revoked && !transferExpired)
+              if (!cancelUnsent && !transferExpired) return
+              await terminalJob(
+                tx,
+                current,
+                cancelUnsent ? 'cancelled' : 'transfer_expired'
               )
-                await terminalJob(
-                  tx,
-                  current,
-                  retired || current.state === 'cancel_requested'
-                    ? 'cancelled'
-                    : 'transfer_expired'
-                )
             })
             .catch(() => undefined)
         if (retired)
