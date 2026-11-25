@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -19,6 +20,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_ACCESSIBLE_JOURNEYS } from '../../../libs/useCampaignAccessibleJourneysLazyQuery'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../libs/useCampaignJourneyByLinkLazyQuery'
+import { GET_CAMPAIGN } from '../../../libs/useCampaignQuery'
 import { CAMPAIGN_REGION_LANGUAGE_CREATE } from '../../../libs/useCampaignRegionLanguageCreateMutation'
 import { CAMPAIGN_REGION_LANGUAGE_DELETE } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH } from '../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
@@ -29,9 +31,11 @@ import {
   QueriedEditor,
   SelectionProbe,
   UndoRedo,
+  campaignCache,
   holdRequests,
   landRequests
 } from '../testing'
+import { newRegion } from '../utils/useCampaignRegionCommand/useCampaignRegionCommand'
 
 import { shareLanguageState } from './shareLanguage'
 import { ShareSectionEdit, addLanguageOptions } from './ShareSectionEdit'
@@ -789,6 +793,89 @@ describe('ShareSectionEdit', () => {
       'https://your.nextstep.is/embed/noel-europe?expand=false'
     )
     expect(within(linked).getByTestId('ShareLanguageCopy')).toBeEnabled()
+  })
+
+  it('keeps the picker, pasted link and pending lookup when a new region receives its saved language ID', async () => {
+    const optimisticRegion = newRegion(campaignWithRegions, 'newRegionId')
+    const optimisticCampaign = {
+      ...campaignWithRegions,
+      regions: [optimisticRegion]
+    }
+    const savedEnglish = {
+      ...optimisticRegion.languages[0],
+      id: 'd628e546-3667-4b7a-b180-952c8212866d'
+    }
+    const savedCampaign = {
+      ...optimisticCampaign,
+      regions: [{ ...optimisticRegion, languages: [savedEnglish] }]
+    }
+    const savedLinkMock = {
+      request: {
+        ...swapMock.request,
+        variables: { ...swapMock.request.variables, id: savedEnglish.id }
+      },
+      result: vi.fn(() => ({
+        data: {
+          campaignRegionLanguageUpdate: {
+            ...savedEnglish,
+            journeyId: journey.id,
+            journey,
+            title: journey.title
+          }
+        }
+      }))
+    }
+    const cache = campaignCache()
+    render(
+      <QueriedEditor
+        campaign={optimisticCampaign}
+        cache={cache}
+        initialState={{
+          pageKind: CampaignPageKind.regionTemplate,
+          regionId: savedEnglish.regionId
+        }}
+        mocks={[languagesMock, { ...resolveMock, delay: 50 }, savedLinkMock]}
+      >
+        <ShareSectionEdit block={{ id: 'regionShareId' }} />
+      </QueriedEditor>
+    )
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Pick a journey' })
+    )
+    const field = within(english).getByRole('textbox', {
+      name: 'or paste a link'
+    })
+    const url = 'https://admin.nextstep.is/journeys/frJourneyId'
+    fireEvent.change(field, { target: { value: url } })
+    await holdRequests(() => fireEvent.keyDown(field, { key: 'Enter' }))
+    expect(within(english).getByText('Looking up journey…')).toBeInTheDocument()
+
+    await act(async () => {
+      cache.writeQuery({
+        query: GET_CAMPAIGN,
+        variables: { id: savedCampaign.id },
+        data: { campaign: savedCampaign }
+      })
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    await landRequests()
+
+    const savedRow = screen.getByTestId('ShareLanguageRow-529')
+    expect(
+      within(savedRow).getByRole('textbox', { name: 'or paste a link' })
+    ).toHaveValue(url)
+    expect(
+      await within(savedRow).findByTestId('JourneyPasteResolved')
+    ).toHaveTextContent(journey.title)
+    fireEvent.click(
+      within(savedRow).getByRole('button', { name: 'Use this journey' })
+    )
+    await waitFor(() => expect(savedLinkMock.result).toHaveBeenCalled())
+    expect(
+      await within(savedRow).findByTestId('ShareLanguageJourney')
+    ).toHaveTextContent(journey.title)
   })
 
   it('links a journey picked from the search with the admin link built from its id', async () => {
