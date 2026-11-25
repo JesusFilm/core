@@ -18,7 +18,7 @@ The existing runtime suite checks two child processes, round-robin protocol requ
 
 ## Shared operational controls
 
-Provision a new random `AUTH_OPERATIONS_SECRET` only to auth and the operator's protected environment. It must differ from exchange, introspection, owning-service and permission credentials. Do not give it to MCP, Admin, agents or a browser. An ingress rule must restrict `/internal/operations` to the approved operator network. The endpoint additionally requires the configured issuer Host, no browser Origin and the operator credential. It offers aggregate counts only, without journey, connection, file or prompt data. It cannot grant access, accept work or report executor fences.
+Provision a new random `AUTH_OPERATIONS_SECRET` only to auth and the operator's protected environment. Auth refuses to enable nonlocal data access without it. It must differ from exchange, introspection, owning-service and permission credentials. Do not give it to MCP, Admin, agents or a browser. An ingress rule must restrict `/internal/operations` to the approved operator network. The endpoint additionally requires the configured issuer Host, no browser Origin and the operator credential. It offers aggregate counts only, without journey, connection, file or prompt data. It cannot grant access, accept work or report executor fences.
 
 Load `AUTH_ISSUER` and `AUTH_OPERATIONS_SECRET` from the approved secret manager into the operator environment. Keep shell tracing disabled. The command never accepts a secret on its command line or prints raw error bodies. Query status first:
 

@@ -88,6 +88,12 @@ export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
     throw new Error('Incomplete granted-read configuration')
   if (config.AUTH_READ_GATEWAY_AUDIENCE === config.AUTH_AUDIENCE)
     throw new Error('Separate gateway audience required')
+  if (
+    config.AUTH_ENVIRONMENT !== 'local' &&
+    config.AUTH_EXCHANGE_CLIENT_SECRET &&
+    !config.AUTH_OPERATIONS_SECRET
+  )
+    throw new Error('Operational controls required')
   const permissionSecrets = [
     config.AUTH_PERMISSION_JOURNEYS_SECRET,
     config.AUTH_PERMISSION_USERS_SECRET
