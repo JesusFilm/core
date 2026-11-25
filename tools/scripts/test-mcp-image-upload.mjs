@@ -11,7 +11,7 @@ const issue =
   (video ? '10554' : '10560')
 if (!/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue))
   throw new Error('Invalid isolated test issue')
-const generating = issue === '10548'
+const generating = process.env.MCP_MEDIA_TEST_ISSUE === '10548'
 const source = new URL(
   process.env.MCP_UPLOAD_TEST_POSTGRES_URL ??
     'postgresql://postgres:postgres@localhost:5432/postgres'
