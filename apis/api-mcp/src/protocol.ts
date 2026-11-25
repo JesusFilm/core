@@ -141,12 +141,12 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         [
           'journey_media_start',
           mediaStartInput,
-          'Admit one image upload with an immutable file identity, a shared per-user slot and an absolute one-hour transfer deadline. Reuse the exact key and payload after lost responses. Use the authenticated Admin link or stream bounded chunks with the separately returned ingress credential. URLs are locators only. Never fetch arbitrary source URLs or expose ingress credentials. No attachment occurs.'
+          'Start an image upload or explicitly requested image_generation under the ordinary editing grant, without an extra permission prompt. Generate ONLY when the user requests generation or accepts a generation suggestion. Ordinary text/layout editing, selecting existing media, and an unaccepted suggestion MUST NOT call image_generation. A model intent flag is not human consent. Generation takes a prompt, allows ten new dispatches per user per rolling 24 hours and one active generation across connections. Uploads bind one file and an absolute one-hour transfer deadline. Reuse the exact key and payload after lost responses; failed/uncertain dispatches count, replay does not. Never repeat an ambiguous creation with a new key. Use the authenticated Admin link or bounded ingress for uploads; never expose credentials or fetch arbitrary URLs. No attachment occurs.'
         ],
         [
           'journey_media_status',
           mediaJobInput,
-          'Resume the same image job under fresh current rights and its originating grant. Waiting, transfer, processing, uncertain and ready states differ. Unknown outcomes retain capacity and never repeat provider creation. A ready asset needs a separate current-revision journey_edit image_set or media_slot_set save.'
+          'Read the same image job under fresh current rights and its originating grant. Set resume: true only to explicitly queue the same unsent job after an authority interruption or request an immediate observation of an outstanding generation. Status alone does not renew dispatch authority. Resume acknowledges queued work; poll the same job for its outcome. Background generation observations use persistent backoff and return nextObservationAt; operationsRequired flags unresolved work after 24 hours. Waiting, transfer, processing, uncertain and ready states differ. Unknown generation outcomes may be unretrievable. Keep uncertainty and capacity and follow controlled recovery instructions; never repeat provider creation. A ready asset needs a separate current-revision journey_edit image_set or media_slot_set save and its own undo step. Prompts are private and are never returned.'
         ],
         [
           'journey_media_cancel',
@@ -170,7 +170,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_media_search',
       description:
-        'Discover ready authorized image library/history/Unsplash or catalog videos, languages and existing Mux media for this granted journey. Source IDs do not grant access. Preserve public file delivery; source metadata and search results require current rights and this grant. Follow nextCursor with identical filters. Use canonical YouTube IDs directly with video_source_set. Upload an image with journey_media_start; generation remains unavailable.',
+        'Discover ready authorized image library/history/Unsplash or catalog videos, languages and existing Mux media for this granted journey. Source IDs do not grant access. Preserve public file delivery; source metadata and search results require current rights and this grant. Follow nextCursor with identical filters. Use canonical YouTube IDs directly with video_source_set. Upload an image with journey_media_start; generate only when explicitly requested with journey_media_start.',
       inputSchema: {
         ...z.toJSONSchema(mediaSearchInput, { io: 'input' }),
         type: 'object' as const
@@ -190,7 +190,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
     {
       name: 'journey_read',
       description:
-        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read affected content, routes and dependencies before editing; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported structure, routing, content and presentation commands, and journey_history for retained batches. Discover permitted ready sources with journey_media_search and attach through typed journey_edit media commands. Upload images with journey_media_start; generation remains unavailable.',
+        'Read revision-bound outline, steps or settings of an authorized ordinary journey. Pages contain at most 100 objects and 512 KiB; select at most 20 Steps. Follow nextCursor without combining revisions. Read affected content, routes and dependencies before editing; preserve omitted content. Published journeys remain read-only. Use journey_edit for supported structure, routing, content and presentation commands, and journey_history for retained batches. Discover permitted ready sources with journey_media_search and attach through typed journey_edit media commands. Upload images with journey_media_start; generate only when explicitly requested with journey_media_start.',
       inputSchema: {
         ...z.toJSONSchema(journeyInput, { io: 'input' }),
         type: 'object' as const
@@ -210,7 +210,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         'Media commands: ' +
         mediaCommandNames.join(', ') +
         '. image_set preserves omitted metadata and focal fields. image_source_clear retains an ordinary Image. video_source_clear retains an ordinary Video and its playback preferences and layout while clearing the source and owned poster. media_slot_set and media_slot_clear own cover/poster/poll/logo/social references and their children, retaining shared provider assets. video_source_set accepts catalog video plus language, canonical YouTube IDs or ready authorized Mux IDs and optional nested settings for atomic source and playback configuration. video_settings_set enforces fit, timing, captions and background restrictions. ' +
-        'Omitted and legacy fields and unrelated Host state are preserved. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL, whole-journey replacement, journey-wide font/theme creation, video uploads and generation are unavailable. Image uploads use journey_media_start.',
+        'Omitted and legacy fields and unrelated Host state are preserved. idMap returns generated IDs; the receipt revision is historical. Host, publication, HTML/rich text, arbitrary settings, raw GraphQL, whole-journey replacement, journey-wide font/theme creation and video uploads are unavailable. Image uploads and explicitly requested generation use journey_media_start. Ordinary edits never generate.',
       inputSchema: {
         ...z.toJSONSchema(editInput, { io: 'input' }),
         type: 'object' as const
