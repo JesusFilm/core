@@ -97,14 +97,14 @@ export interface TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTe
   createdAt: any;
   updatedAt: any;
   /**
-   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
+   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, draft or published, template-flagged journeys only. A journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
   templates: TemplateGalleryPageReorderTemplate_templateGalleryPageReorderTemplate_templates[];
 }
 
 export interface TemplateGalleryPageReorderTemplate {
   /**
-   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageAssignJourney`).
+   * Reorder a single template within a TemplateGalleryPage by addressing the destination as a 0-based display index. The page is renumbered to contiguous orders 0..N-1 after the move so the next reorder sees a clean range. Allowed on both `draft` and `published` pages (the frontend gates the UX; the backend accepts unconditionally for symmetry with `templateGalleryPageUpdate` and `templateGalleryPageLinkJourney`).
    * 
    * Idempotent: when the journey is already at the requested display index, the call is a no-op.
    * 

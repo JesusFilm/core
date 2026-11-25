@@ -1,5 +1,7 @@
 import { type MockedFunction, vi } from 'vitest'
+import { mockDeep } from 'vitest-mock-extended'
 
+import { Journey, TemplateGalleryPage } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -110,6 +112,90 @@ describe('templateGalleryPage', () => {
         })
       ]
     })
+  })
+
+  it('returns assigned draft and published templates to a team member', async () => {
+    const page = {
+      ...mockDeep<TemplateGalleryPage>(),
+      id: 'p1',
+      teamId: 'team-1'
+    }
+    const journeys = [
+      { id: 'draft-template', status: 'draft' as const },
+      { id: 'published-template', status: 'published' as const },
+      { id: 'archived-template', status: 'archived' as const }
+    ].map((journey) => ({
+      ...mockDeep<Journey>(),
+      teamId: 'team-1',
+      template: true,
+      deletedAt: null,
+      ...journey
+    }))
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue(page)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockImplementation(
+      (args) => {
+        const selection = args.include?.templates
+        const where =
+          typeof selection === 'object' ? selection.where : undefined
+        const journeyWhere = where?.journey
+        const status =
+          journeyWhere != null && 'status' in journeyWhere
+            ? journeyWhere.status
+            : undefined
+        // Apply the resolver's database status filter so a published-only
+        // projection actually loses the saved draft, as it does in Prisma.
+        const templates = journeys.filter((journey) => {
+          if (typeof status === 'string') return journey.status === status
+          return Array.isArray(status?.in)
+            ? status.in.includes(journey.status)
+            : true
+        })
+        return Promise.resolve({
+          ...page,
+          templates: templates.map((journey) => ({ journey }))
+        }) as unknown as ReturnType<
+          typeof prismaMock.templateGalleryPage.findUniqueOrThrow
+        >
+      }
+    )
+
+    const result = await authClient({
+      document: graphql(`
+        query TemplateGalleryPageAssignedTemplates($id: ID!) {
+          templateGalleryPage(id: $id) {
+            templates {
+              id
+            }
+          }
+        }
+      `),
+      variables: { id: 'p1' }
+    })
+
+    expect(result).toEqual({
+      data: {
+        templateGalleryPage: {
+          templates: [{ id: 'draft-template' }, { id: 'published-template' }]
+        }
+      }
+    })
+    expect(
+      prismaMock.templateGalleryPage.findUniqueOrThrow
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        include: expect.objectContaining({
+          templates: expect.objectContaining({
+            where: {
+              journey: {
+                template: true,
+                status: { in: ['draft', 'published'] },
+                deletedAt: null
+              }
+            }
+          })
+        })
+      })
+    )
   })
 
   it('throws NOT_FOUND when the id does not resolve', async () => {

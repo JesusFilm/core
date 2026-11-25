@@ -57,5 +57,10 @@ export function useTemplateGalleryPageUpdateMutation(
   return useMutation<
     TemplateGalleryPageUpdate,
     TemplateGalleryPageUpdateVariables
-  >(TEMPLATE_GALLERY_PAGE_UPDATE, options)
+  >(TEMPLATE_GALLERY_PAGE_UPDATE, {
+    // A picker edit can also promote a home on another collection.
+    refetchQueries: ['GetTemplateGalleryPages'],
+    awaitRefetchQueries: true,
+    ...options
+  })
 }

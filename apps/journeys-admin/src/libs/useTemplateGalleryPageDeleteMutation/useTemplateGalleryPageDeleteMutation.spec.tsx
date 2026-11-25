@@ -24,6 +24,7 @@ function buildPage(id: string): {
   createdAt: string
   updatedAt: string
   templates: never[]
+  memberships: never[]
 } {
   return {
     __typename: 'TemplateGalleryPage' as const,
@@ -39,7 +40,8 @@ function buildPage(id: string): {
     publishedAt: null,
     createdAt: '2026-05-06T00:00:00Z',
     updatedAt: '2026-05-06T00:00:00Z',
-    templates: []
+    templates: [],
+    memberships: []
   }
 }
 

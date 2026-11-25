@@ -46,6 +46,10 @@ export const TEMPLATE_GALLERY_PAGE_CREATE = gql`
           alt
         }
       }
+      memberships {
+        journeyId
+        isHome
+      }
     }
   }
 `

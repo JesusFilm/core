@@ -80,6 +80,8 @@ describe('templateGalleryPageCreate', () => {
   it('creates a draft page with generated slug and validated journeyIds', async () => {
     prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
     prismaMock.journey.findMany.mockResolvedValue([{ id: 'j1' }] as any)
+    // j1 has no home anywhere yet, so this page becomes its home.
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([])
     const page = {
       id: 'p1',
       title: 'My Welcome',
@@ -134,12 +136,101 @@ describe('templateGalleryPageCreate', () => {
           templates: {
             createMany: {
               // cross-team journey was silently dropped
-              data: [{ journeyId: 'j1', order: 0 }]
+              data: [{ journeyId: 'j1', order: 0, isHome: true }]
             }
           }
         })
       })
     )
+  })
+
+  it('omits a template transferred away while creation waits for its journey lock', async () => {
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockImplementation(() => {
+      const journeyLocked = prismaMock.$queryRaw.mock.calls.some((call) =>
+        (call[0] as readonly string[]).join(' ').includes('FROM "Journey"')
+      )
+      return Promise.resolve(
+        (journeyLocked ? [] : [{ id: 'j1' }]) as Awaited<
+          ReturnType<typeof prismaMock.journey.findMany>
+        >
+      ) as ReturnType<typeof prismaMock.journey.findMany>
+    })
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([])
+    const page = {
+      id: 'p1',
+      title: 'T',
+      slug: 't',
+      status: 'draft',
+      description: '',
+      creatorName: 'Alice',
+      creatorImageSrc: null,
+      creatorImageAlt: null,
+      mediaUrl: null
+    } as Awaited<ReturnType<typeof prismaMock.templateGalleryPage.create>>
+    prismaMock.templateGalleryPage.create.mockResolvedValue(page)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue(page)
+
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_CREATE,
+      variables: {
+        input: {
+          teamId: 'team-1',
+          title: 'T',
+          creatorName: 'Alice',
+          journeyIds: ['j1']
+        }
+      }
+    })
+
+    expect(result).not.toHaveProperty('errors')
+    expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          templates: { createMany: { data: [] } }
+        })
+      })
+    )
+  })
+
+  it('adds an initial journey as a link when it already has a home elsewhere', async () => {
+    prismaMock.templateGalleryPage.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([{ id: 'j1' }] as any)
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([
+      { journeyId: 'j1' }
+    ] as any)
+    const page = { id: 'p1', title: 'T', slug: 't', status: 'draft' }
+    prismaMock.templateGalleryPage.create.mockResolvedValue(page as any)
+    prismaMock.templateGalleryPage.findUniqueOrThrow.mockResolvedValue(
+      page as any
+    )
+
+    await authClient({
+      document: TEMPLATE_GALLERY_PAGE_CREATE,
+      variables: {
+        input: {
+          teamId: 'team-1',
+          title: 'T',
+          creatorName: 'Alice',
+          journeyIds: ['j1']
+        }
+      }
+    })
+
+    expect(prismaMock.templateGalleryPage.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          templates: {
+            createMany: { data: [{ journeyId: 'j1', order: 0, isHome: false }] }
+          }
+        })
+      })
+    )
+    // The journey lock ran before the write.
+    const lockSql = (
+      prismaMock.$queryRaw.mock.calls[0][0] as readonly string[]
+    ).join(' ')
+    expect(lockSql).toContain('FROM "Journey"')
   })
 
   it('persists creatorImageSrc and creatorImageAlt as plain scalars', async () => {

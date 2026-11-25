@@ -2,30 +2,16 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import noop from 'lodash/noop'
 import { useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
 
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
-import { TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY } from '../../../../../../libs/useTemplateGalleryPageAssignJourneyMutation'
+import { TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY } from '../../../../../../libs/useTemplateGalleryPageRemoveJourneyMutation'
 
 import { JOURNEY_ARCHIVE, JOURNEY_UNARCHIVE } from './ArchiveJourney'
 
 import { ArchiveJourney } from '.'
-
-// After journeysArchive resolves, the dialog issues a best-effort
-// templateGalleryPageAssignJourney({ pageId: null }) to sever
-// collection membership. Success-path archive tests need this mock.
-function unassignMock(journeyId = 'journey-id') {
-  return {
-    request: {
-      query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-      variables: { journeyId, pageId: null }
-    },
-    result: { data: { templateGalleryPageAssignJourney: null } }
-  }
-}
 
 vi.mock('next/router', () => ({
   __esModule: true,
@@ -89,8 +75,7 @@ describe('ArchiveJourney', () => {
                 }
               },
               result
-            },
-            unassignMock()
+            }
           ]}
         >
           <SnackbarProvider>
@@ -159,8 +144,7 @@ describe('ArchiveJourney', () => {
                 variables: { ids: ['journey-id'] }
               },
               result
-            },
-            unassignMock()
+            }
           ]}
         >
           <SnackbarProvider>
@@ -190,7 +174,7 @@ describe('ArchiveJourney', () => {
       expect(finalSnapshot['TemplateGalleryPage:page-B']?.templates).toEqual([])
     })
 
-    it('unassigns the journey from its collection after archiving', async () => {
+    it('archives without a separate membership cleanup request', async () => {
       const archiveResult = vi.fn(() => ({
         data: {
           journeysArchive: [
@@ -203,7 +187,7 @@ describe('ArchiveJourney', () => {
         }
       }))
       const unassignResult = vi.fn(() => ({
-        data: { templateGalleryPageAssignJourney: null }
+        data: { templateGalleryPageRemoveJourney: [] }
       }))
 
       const { getByRole } = render(
@@ -218,8 +202,8 @@ describe('ArchiveJourney', () => {
             },
             {
               request: {
-                query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-                variables: { journeyId: 'journey-id', pageId: null }
+                query: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+                variables: { journeyId: 'journey-id' }
               },
               result: unassignResult
             }
@@ -239,129 +223,7 @@ describe('ArchiveJourney', () => {
 
       fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
       await waitFor(() => expect(archiveResult).toHaveBeenCalled())
-      await waitFor(() => expect(unassignResult).toHaveBeenCalled())
-    })
-
-    it('fires the success snackbar BEFORE the unassign mutation resolves (does not block UX)', async () => {
-      // Mike review (NES-1644): waitFor doesn't assert ordering. Hold
-      // the unassign mock indefinitely; the snackbar must still appear.
-      const archiveResult = vi.fn(() => ({
-        data: {
-          journeysArchive: [
-            {
-              id: 'journey-id',
-              __typename: 'Journey',
-              status: JourneyStatus.archived
-            }
-          ]
-        }
-      }))
-      let unassignCalled = false
-      const unassignNeverResolves = new Promise<{
-        data: { templateGalleryPageAssignJourney: null }
-      }>(() => {
-        // Intentionally never resolves.
-      })
-
-      const { getByRole, getByText } = render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: JOURNEY_ARCHIVE,
-                variables: { ids: ['journey-id'] }
-              },
-              result: archiveResult
-            },
-            {
-              request: {
-                query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-                variables: { journeyId: 'journey-id', pageId: null }
-              },
-              result: () => {
-                unassignCalled = true
-                return unassignNeverResolves as unknown as {
-                  data: { templateGalleryPageAssignJourney: null }
-                }
-              }
-            }
-          ]}
-        >
-          <SnackbarProvider>
-            <ArchiveJourney
-              status={JourneyStatus.draft}
-              id="journey-id"
-              published={false}
-              handleClose={handeClose}
-            />
-          </SnackbarProvider>
-        </MockedProvider>,
-        { wrapper: MenuList }
-      )
-
-      fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
-      await waitFor(() => expect(archiveResult).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(getByText('Journey Archived')).toBeInTheDocument()
-      )
-      expect(unassignCalled).toBe(true)
-    })
-
-    it('still surfaces success when the unassign mutation fails (best-effort)', async () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
-      const archiveResult = vi.fn(() => ({
-        data: {
-          journeysArchive: [
-            {
-              id: 'journey-id',
-              __typename: 'Journey',
-              status: JourneyStatus.archived
-            }
-          ]
-        }
-      }))
-
-      const { getByRole, getByText } = render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: JOURNEY_ARCHIVE,
-                variables: { ids: ['journey-id'] }
-              },
-              result: archiveResult
-            },
-            {
-              request: {
-                query: TEMPLATE_GALLERY_PAGE_ASSIGN_JOURNEY,
-                variables: { journeyId: 'journey-id', pageId: null }
-              },
-              error: new Error('unassign exploded')
-            }
-          ]}
-        >
-          <SnackbarProvider>
-            <ArchiveJourney
-              status={JourneyStatus.draft}
-              id="journey-id"
-              published={false}
-              handleClose={handeClose}
-            />
-          </SnackbarProvider>
-        </MockedProvider>,
-        { wrapper: MenuList }
-      )
-
-      fireEvent.click(getByRole('menuitem', { name: 'Archive' }))
-      await waitFor(() => expect(archiveResult).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(getByText('Journey Archived')).toBeInTheDocument()
-      )
-      expect(warn).toHaveBeenCalledWith(
-        '[ArchiveJourney] failed to unassign archived journey from its collection',
-        expect.objectContaining({ journeyId: 'journey-id' })
-      )
-      warn.mockRestore()
+      expect(unassignResult).not.toHaveBeenCalled()
     })
 
     it('should show error if archive fails', async () => {

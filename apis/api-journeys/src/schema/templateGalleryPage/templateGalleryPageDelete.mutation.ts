@@ -5,12 +5,13 @@ import { prisma } from '@core/prisma/journeys/client'
 import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
+import { lockPageMemberships, promoteOldestLink } from './membership'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      "Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Returns the deleted page (last canonical view).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.",
+      "Hard-delete a TemplateGalleryPage. Cascades through `TemplateGalleryPageTemplate` join rows automatically; the underlying `Journey` rows are NOT deleted. Any journey whose home was on this page and that is linked elsewhere has its oldest link promoted to home first. Returns the deleted page (last canonical view).\n\nAuth: caller must be a member of the page's team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the page's team.",
     type: TemplateGalleryPageRef,
     nullable: false,
     args: {
@@ -39,10 +40,24 @@ builder.mutationField('templateGalleryPageDelete', (t) =>
         )
       }
 
-      // Cascade deletes TemplateGalleryPageTemplate join rows automatically.
-      return await prisma.templateGalleryPage.delete({
-        ...query,
-        where: { id }
+      return await prisma.$transaction(async (tx) => {
+        const memberships = await lockPageMemberships(tx, id)
+        const homes = memberships.filter((row) => row.isHome)
+        if (homes.length > 0) {
+          // Clear the departing homes before promotion so no intermediate
+          // write gives a journey two homes, even within this transaction.
+          await tx.templateGalleryPageTemplate.deleteMany({
+            where: { templateGalleryPageId: id, isHome: true }
+          })
+          for (const { journeyId } of homes) {
+            await promoteOldestLink(tx, journeyId)
+          }
+        }
+        // Cascade deletes TemplateGalleryPageTemplate join rows automatically.
+        return await tx.templateGalleryPage.delete({
+          ...query,
+          where: { id }
+        })
       })
     }
   })

@@ -9,6 +9,7 @@ import { filterToTeamTemplates } from './filterToTeamTemplates'
 import { generateUniqueSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageCreateInput } from './inputs'
 import { mediaCreateData, resolveMediaInput } from './media/resolveMediaInput'
+import { lockJourney } from './membership'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 type CreateInput = typeof TemplateGalleryPageCreateInput.$inferInput
@@ -53,11 +54,25 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
           const slug = await generateUniqueSlug(title)
           try {
             return await prisma.$transaction(async (tx) => {
+              // Lock before validating: a template can be transferred,
+              // unflagged, or deleted while creation waits for its lock.
+              for (const journeyId of [...new Set(journeyIds ?? [])].sort()) {
+                await lockJourney(tx, journeyId)
+              }
               const { validIds } = await filterToTeamTemplates(
                 tx,
                 teamId,
                 journeyIds ?? []
               )
+              // Initial templates with an existing home become links.
+              const existingHomes =
+                validIds.length > 0
+                  ? await tx.templateGalleryPageTemplate.findMany({
+                      where: { journeyId: { in: validIds }, isHome: true },
+                      select: { journeyId: true }
+                    })
+                  : []
+              const hasHome = new Set(existingHomes.map((row) => row.journeyId))
               const page = await tx.templateGalleryPage.create({
                 data: {
                   team: { connect: { id: teamId } },
@@ -73,7 +88,8 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                     createMany: {
                       data: validIds.map((journeyId, order) => ({
                         journeyId,
-                        order
+                        order,
+                        isHome: !hasHome.has(journeyId)
                       }))
                     }
                   }
