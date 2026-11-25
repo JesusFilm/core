@@ -441,6 +441,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         }
       ])
       expect(generationCount).toBe(0)
+      const edited = await f.snapshot()
+      expect(edited.blocks).not.toEqual(before.blocks)
       const key = randomUUID()
       const job = await generate(key)
       const id = String(job.jobId)
@@ -476,7 +478,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         generationPrompt: null,
         dispatchedAt: expect.any(Date)
       })
-      expect((await f.snapshot()).blocks).not.toEqual(before.blocks)
+      expect((await f.snapshot()).blocks).toEqual(edited.blocks)
       const stale = await f.input([
         {
           type: 'image_set',
