@@ -53,6 +53,8 @@ model McpMediaJob {
   progressionGrantVersion Int?
   progressionPermissionHash String?
   file Json?
+  generationPrompt String?
+  dispatchedAt DateTime?
   receivedBytes Int @default(0)
   metadata Json?
   providerId String @unique
@@ -64,6 +66,7 @@ model McpMediaJob {
 
   @@unique([connectionId, key])
   @@index([userId, active])
+  @@index([userId, kind, dispatchedAt])
   @@index([state, transferDeadline])
   @@index([resultExpiresAt])
 }

@@ -4,7 +4,13 @@ import { spawnSync } from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
-const issue = '10560'
+const issue = process.env.MCP_MEDIA_TEST_ISSUE ?? '10560'
+if (!['10560', '10548'].includes(issue))
+  throw new Error('Unexpected media test issue')
+const reportDirectory =
+  issue === '10548'
+    ? 'coverage/integration/mcp-image-generation'
+    : 'coverage/integration/mcp-image-upload'
 const source = new URL(
   process.env.MCP_UPLOAD_TEST_POSTGRES_URL ??
     'postgresql://postgres:postgres@localhost:5432/postgres'
@@ -104,7 +110,9 @@ run(
     'vitest',
     'run',
     '--config',
-    'apis/api-auth/vitest.image-upload.config.mts'
+    issue === '10548'
+      ? 'apis/api-auth/vitest.image-generation.config.mts'
+      : 'apis/api-auth/vitest.image-upload.config.mts'
   ],
   {
     UPLOAD_TEST_AUTH_DATABASE_URL: runtime.href,
@@ -116,7 +124,6 @@ run(
   }
 )
 
-const reportDirectory = 'coverage/integration/mcp-image-upload'
 const tests = JSON.parse(
   readFileSync(`${reportDirectory}/test-results.json`, 'utf8')
 )
@@ -135,6 +142,9 @@ for (const module of [
   'apis/api-media/src/lib/mcpMediaExecutor.ts',
   'apis/api-media/src/lib/mcpMediaJobHttp.ts',
   'apis/api-media/src/lib/mcpImageInput.ts',
+  ...(issue === '10548'
+    ? ['apis/api-media/src/lib/mcpImageGenerationProvider.ts']
+    : []),
   'apis/api-journeys/src/lib/mcpMediaClient.ts',
   'apis/api-journeys/src/lib/mcpEdits.ts',
   'apis/api-journeys/src/lib/mcpStructureHistory.ts',

@@ -498,6 +498,68 @@ describe('permission change protocol', () => {
       ).toEqual({ status: 'complete' })
     })
 
+    it('keeps account authority closed across an interrupted retirement batch and resumes without duplicate withdrawals', async () => {
+      const first = await connection()
+      const remaining = Array.from({ length: 200 }, () => ({
+        ...first,
+        id: randomUUID(),
+        grantId: randomUUID()
+      }))
+      await db.agentConnection.createMany({ data: remaining })
+      connections.push(...remaining.map((row) => row.id))
+      gateIds.push(...remaining.map((row) => `connection:${row.id}`))
+      const accepted = await permit(first.id, [
+        `account:${first.userId}`,
+        `connection:${first.id}`
+      ])
+      const transaction = db.$transaction.bind(db)
+      const interruption = vi
+        .spyOn(db, '$transaction')
+        .mockImplementationOnce(transaction)
+        .mockImplementationOnce(transaction)
+        .mockRejectedValueOnce(new Error('Controlled retirement interruption'))
+      try {
+        await expect(
+          invoke('retire-account', { userId: first.userId }, usersSecret)
+        ).rejects.toThrow('Controlled retirement interruption')
+      } finally {
+        interruption.mockRestore()
+      }
+      await expect(
+        captureGates(db, [`account:${first.userId}`])
+      ).rejects.toThrow('Authorization unavailable')
+      expect(
+        await db.agentConnection.count({
+          where: { userId: first.userId, revokedAt: { not: null } }
+        })
+      ).toBe(100)
+      expect(
+        await invoke('retire-account', { userId: first.userId }, usersSecret)
+      ).toEqual({ status: 'pending' })
+      expect(
+        await db.agentConnection.count({
+          where: { userId: first.userId, revokedAt: null }
+        })
+      ).toBe(0)
+      expect(
+        await db.connectionChange.count({
+          where: { connectionId: { in: connections } }
+        })
+      ).toBe(201)
+      await db.readPermit.update({
+        where: { id: accepted.id },
+        data: { status: 'settled', settledAt: new Date() }
+      })
+      expect(
+        await invoke('retire-account', { userId: first.userId }, usersSecret)
+      ).toEqual({ status: 'complete' })
+      expect(
+        await db.connectionHistoryPurge.count({
+          where: { connectionId: { in: connections } }
+        })
+      ).toBe(201)
+    })
+
     it('cannot reopen a terminal account when a previous owner policy mutation completes', async () => {
       const owner = await connection()
       const input = change([`account:${owner.userId}`])

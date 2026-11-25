@@ -12,6 +12,10 @@ import { auth } from '@core/yoga/firebaseClient'
 import { readTrustSchema, serviceUrl } from '@core/yoga/mcp/readContract'
 
 import {
+  type ImageGenerationProvider,
+  cloudflareGenerationProvider
+} from './mcpImageGenerationProvider'
+import {
   type ImageUploadProvider,
   cloudflareUploadProvider
 } from './mcpImageProvider'
@@ -34,9 +38,11 @@ export function mediaRuntime(
     languages?: Parameters<typeof createMediaSourceHandler>[3]
     providers?: Parameters<typeof createMediaSourceHandler>[4]
     flags?: MediaSourcesConfig['flags']
+    scheduleBackgroundWork?: (work: () => void) => void
     uploads?: {
       storage: UploadStorage
       provider: ImageUploadProvider
+      generation?: ImageGenerationProvider
       browserIdentity: (token: string) => Promise<string>
       hooks?: Parameters<typeof createMediaJobs>[5]
       scheduleProcessing?: (work: () => Promise<void>) => void
@@ -111,13 +117,27 @@ export function mediaRuntime(
             adminOrigin: serviceUrl,
             ingressOrigin: serviceUrl,
             ticketSecret: z.string().min(32),
-            uploadLimit: z.coerce.number().int().min(1).max(2).default(2)
+            uploadLimit: z.coerce.number().int().min(1).max(2).default(2),
+            generationPollIntervalMs: z.coerce
+              .number()
+              .int()
+              .min(1000)
+              .max(300000)
+              .default(10000),
+            generationObservationMs: z.coerce
+              .number()
+              .int()
+              .min(1000)
+              .max(86400000)
+              .default(900000)
           })
           .parse({
             adminOrigin: env.JOURNEYS_ADMIN_URL,
             ingressOrigin: env.MCP_MEDIA_INGRESS_URL,
             ticketSecret: env.MCP_MEDIA_UPLOAD_TICKET_SECRET,
-            uploadLimit: env.MCP_MEDIA_UPLOAD_LIMIT
+            uploadLimit: env.MCP_MEDIA_UPLOAD_LIMIT,
+            generationPollIntervalMs: env.MCP_GENERATION_POLL_INTERVAL_MS,
+            generationObservationMs: env.MCP_GENERATION_OBSERVATION_MS
           })
       : undefined
   const jobs = uploads
@@ -134,7 +154,11 @@ export function mediaRuntime(
             z.string().min(1).parse(env.MCP_MEDIA_STAGING_BUCKET)
           ),
         dependencies.uploads?.provider ?? cloudflareUploadProvider(env),
-        dependencies.uploads?.hooks
+        dependencies.uploads?.hooks,
+        env.MCP_IMAGE_GENERATION_ENABLED === 'true'
+          ? (dependencies.uploads?.generation ??
+              cloudflareGenerationProvider(env))
+          : undefined
       )
     : undefined
   return {
@@ -171,13 +195,15 @@ export function mediaRuntime(
             return processing
           }
           dependencies.uploads?.scheduleProcessing?.(runProcessing)
-          const timer = setInterval(() => {
+          const runBackgroundWork = () => {
             void mutations.recover().catch(() => undefined)
             void jobs?.recover().catch(() => undefined)
             if (jobs && !dependencies.uploads?.scheduleProcessing)
               void runProcessing().catch(() => undefined)
-          }, 10000)
-          timer.unref()
+          }
+          if (dependencies.scheduleBackgroundWork)
+            dependencies.scheduleBackgroundWork(runBackgroundWork)
+          else setInterval(runBackgroundWork, 10000).unref()
         }
       }
     ]
