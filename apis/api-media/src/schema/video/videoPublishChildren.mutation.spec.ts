@@ -1414,10 +1414,12 @@ describe('videoPublishChildren', () => {
       const writeThroughStore = (
         prismaMock.video.update as any
       ).getMockImplementation()
-      ;(prismaMock.video.update as any).mockImplementation(async (args: any) => {
-        if (args?.where?.id === 'broken') throw new Error('write failed')
-        return await writeThroughStore(args)
-      })
+      ;(prismaMock.video.update as any).mockImplementation(
+        async (args: any) => {
+          if (args?.where?.id === 'broken') throw new Error('write failed')
+          return await writeThroughStore(args)
+        }
+      )
 
       await expect(
         executeVideoPublishChildren(
@@ -1457,10 +1459,12 @@ describe('videoPublishChildren', () => {
       const writeThroughStore = (
         prismaMock.video.update as any
       ).getMockImplementation()
-      ;(prismaMock.video.update as any).mockImplementation(async (args: any) => {
-        if (args?.where?.id === 'parent') throw new Error('write failed')
-        return await writeThroughStore(args)
-      })
+      ;(prismaMock.video.update as any).mockImplementation(
+        async (args: any) => {
+          if (args?.where?.id === 'parent') throw new Error('write failed')
+          return await writeThroughStore(args)
+        }
+      )
 
       await expect(
         executeVideoPublishChildren(

@@ -1,5 +1,6 @@
-import { prisma } from '@core/prisma/media/client'
 import { GraphQLError } from 'graphql'
+
+import { prisma } from '@core/prisma/media/client'
 
 import {
   videoCacheReset,

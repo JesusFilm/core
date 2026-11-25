@@ -380,9 +380,9 @@ async function checkAndRemoveEmptyParentVariant(
   const { changed } = await withAvailableLanguagesRecompute(
     parentVideoId,
     async (tx) => {
-    if (parentVariant != null) {
-      await tx.videoVariant.delete({ where: { id: parentVariant.id } })
-    }
+      if (parentVariant != null) {
+        await tx.videoVariant.delete({ where: { id: parentVariant.id } })
+      }
     }
   )
 
