@@ -7,6 +7,7 @@ describe('explicit requested-generation contract', () => {
     kind: 'image_generation',
     prompt: 'A quiet garden'
   }
+
   it('keeps the exact prompt for replay and requires no separate user permission or model intent flag', () => {
     expect(mediaStartInput.parse(request)).toEqual(request)
     expect(
@@ -19,6 +20,7 @@ describe('explicit requested-generation contract', () => {
       false
     )
   })
+
   it.each(['', '   ', 'x'.repeat(2049)])(
     'rejects invalid prompt bounds',
     (prompt) => {
@@ -27,6 +29,7 @@ describe('explicit requested-generation contract', () => {
       )
     }
   )
+
   it('does not reinterpret ordinary edits, source selection or unaccepted suggestions as generation', () => {
     for (const input of [
       { ...request, kind: 'text_edit' },

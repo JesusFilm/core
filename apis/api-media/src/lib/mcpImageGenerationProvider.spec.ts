@@ -38,7 +38,8 @@ describe('credential-owning generation adapter', () => {
     expect(
       await adapter.dispatch('persisted-id', 'private-prompt-sentinel')
     ).toBe('ready')
-    expect(JSON.parse(String(calls[0].init?.body))).toEqual({
+    expect(typeof calls[0].init?.body).toBe('string')
+    expect(JSON.parse(calls[0].init?.body as string)).toEqual({
       prompt: 'private-prompt-sentinel'
     })
     expect(calls[1].init?.body).toBeInstanceOf(FormData)
