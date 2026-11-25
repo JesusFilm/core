@@ -662,6 +662,64 @@ describe('LocalDetails', () => {
           screen.queryByText("Couldn't verify this language's publish status")
         ).not.toBeInTheDocument()
       })
+
+      it('should not reuse a stale lookup when re-picking an already-checked language', async () => {
+        render(
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[
+                withVariant(true, '529'),
+                withVariant(false, '496'),
+                {
+                  request: {
+                    query: GET_VIDEO,
+                    variables: { id: '2_Acts7302-0-0', languageId: '496' }
+                  },
+                  error: new Error('Network error')
+                }
+              ]}
+            >
+              <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+            </MockedProvider>
+          </SnackbarProvider>
+        )
+
+        fireEvent.click(await screen.findByRole('button', { name: 'English' }))
+        const combobox = screen.getByRole('combobox')
+        fireEvent.focus(combobox)
+        fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+        fireEvent.click(
+          await screen.findByRole('option', { name: 'French Français' })
+        )
+        await waitFor(() =>
+          expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
+        )
+
+        // switch back to the loaded language, then re-pick French: this
+        // re-triggers the lookup for a language that already has a (now
+        // stale) cached result
+        fireEvent.focus(combobox)
+        fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+        fireEvent.click(await screen.findByRole('option', { name: 'English' }))
+        fireEvent.focus(combobox)
+        fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+        fireEvent.click(
+          await screen.findByRole('option', { name: 'French Français' })
+        )
+
+        // the new lookup is in flight: Select must not resolve to the
+        // previous lookup's result while it's pending
+        expect(screen.getByRole('button', { name: 'Select' })).toBeDisabled()
+
+        // the new lookup fails: Select stays disabled alongside the error,
+        // rather than falling back to the earlier, now-stale result
+        await waitFor(() =>
+          expect(
+            screen.getByText("Couldn't verify this language's publish status")
+          ).toBeInTheDocument()
+        )
+        expect(screen.getByRole('button', { name: 'Select' })).toBeDisabled()
+      })
     })
   })
 })

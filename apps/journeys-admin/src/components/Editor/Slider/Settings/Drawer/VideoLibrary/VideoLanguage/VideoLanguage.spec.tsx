@@ -154,4 +154,41 @@ describe('VideoLanguage', () => {
     fireEvent.click(getByRole('button', { name: 'Apply' }))
     expect(handleApply).not.toHaveBeenCalled()
   })
+
+  it('should show the lookup error and call onRetry, reachable while this drawer is open', () => {
+    const handleRetry = vi.fn()
+    const { getByRole, getByText } = render(
+      <VideoLanguage
+        open
+        onClose={handleClose}
+        onChange={handleChange}
+        language={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+        lookupError
+        onRetry={handleRetry}
+      />
+    )
+    expect(
+      getByText("Couldn't verify this language's publish status")
+    ).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Retry' }))
+    expect(handleRetry).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not show the lookup error when lookupError is false', () => {
+    const { queryByText } = render(
+      <VideoLanguage
+        open
+        onClose={handleClose}
+        onChange={handleChange}
+        language={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+      />
+    )
+    expect(
+      queryByText("Couldn't verify this language's publish status")
+    ).not.toBeInTheDocument()
+  })
 })

@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -32,6 +34,14 @@ interface VideoLanguageProps {
    * silently no-op behind the full-screen drawer.
    */
   applyDisabled?: boolean
+  /**
+   * Shows an inline error with a Retry action when the picked language's
+   * publish-status lookup has failed. This drawer covers the same panel
+   * area as the screen behind it, so the equivalent affordance there isn't
+   * reachable while this is open — it needs its own copy next to Apply.
+   */
+  lookupError?: boolean
+  onRetry?: () => void
 }
 
 export function VideoLanguage({
@@ -42,7 +52,9 @@ export function VideoLanguage({
   language,
   languages,
   loading,
-  applyDisabled
+  applyDisabled,
+  lookupError,
+  onRetry
 }: VideoLanguageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -64,6 +76,20 @@ export function VideoLanguage({
           loading={loading}
         />
       </Box>
+      {lookupError === true && (
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ alignItems: 'center', justifyContent: 'space-between', px: 6 }}
+        >
+          <Typography variant="caption" color="error.main">
+            {t("Couldn't verify this language's publish status")}
+          </Typography>
+          <Button size="small" onClick={onRetry}>
+            {t('Retry')}
+          </Button>
+        </Stack>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 3 }}>
         <Button onClick={handleApplyClick} disabled={applyDisabled}>
           {t('Apply')}

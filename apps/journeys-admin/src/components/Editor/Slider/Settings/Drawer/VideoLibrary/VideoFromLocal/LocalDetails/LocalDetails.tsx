@@ -145,6 +145,7 @@ export function LocalDetails({
 
   const checkPublished = (forLanguageId: string): void => {
     const requestId = ++lookupRequestIdRef.current
+    setLookup(null)
     setLookupErrorLanguageId(null)
     client
       .query<GetVideo>({
@@ -385,7 +386,7 @@ export function LocalDetails({
           {t('Select')}
         </Button>
       </Stack>
-      {hasLookupError && (
+      {hasLookupError && !openLanguage && (
         <Stack
           direction="row"
           spacing={2}
@@ -408,6 +409,8 @@ export function LocalDetails({
         languages={data?.video?.variantLanguages}
         loading={loading}
         applyDisabled={isCheckingPublished}
+        lookupError={hasLookupError}
+        onRetry={handleRetryPublishedCheck}
       />
       <UnpublishedVideoDialog
         open={pendingLanguage != null}
