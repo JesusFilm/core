@@ -146,7 +146,7 @@ export function createProtocolServer(reads?: ReadSession): McpServer {
         [
           'journey_media_status',
           mediaJobInput,
-          'Read the same image job under fresh current rights and its originating grant. Set resume: true only to explicitly resume the same unsent job after an authority interruption; status alone does not renew dispatch authority. Waiting, transfer, processing, uncertain and ready states differ. Unknown generation outcomes may be unretrievable. Keep uncertainty and capacity, poll the same job and follow controlled recovery instructions; never repeat provider creation. A ready asset needs a separate current-revision journey_edit image_set or media_slot_set save and its own undo step. Prompts are private and are never returned.'
+          'Read the same image job under fresh current rights and its originating grant. Set resume: true only to explicitly queue the same unsent job after an authority interruption or request an immediate observation of an outstanding generation. Status alone does not renew dispatch authority. Resume acknowledges queued work; poll the same job for its outcome. Background generation observations use persistent backoff and return nextObservationAt; operationsRequired flags unresolved work after 24 hours. Waiting, transfer, processing, uncertain and ready states differ. Unknown generation outcomes may be unretrievable. Keep uncertainty and capacity and follow controlled recovery instructions; never repeat provider creation. A ready asset needs a separate current-revision journey_edit image_set or media_slot_set save and its own undo step. Prompts are private and are never returned.'
         ],
         [
           'journey_media_cancel',

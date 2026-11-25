@@ -82,6 +82,7 @@ describe('credential-owning generation adapter', () => {
     'server',
     'invalid-image',
     'invalid-json',
+    'invalid-rejection-json',
     'contradictory-rejection'
   ])('keeps %s ambiguous and redacts raw failures', async (failure) => {
     let calls = 0
@@ -93,6 +94,8 @@ describe('credential-owning generation adapter', () => {
         return new Response('private-prompt-sentinel', { status: 503 })
       if (failure === 'invalid-json')
         return new Response('private-prompt-sentinel')
+      if (failure === 'invalid-rejection-json')
+        return new Response('private-prompt-sentinel', { status: 403 })
       if (failure === 'contradictory-rejection')
         return Response.json(
           {
@@ -166,5 +169,25 @@ describe('credential-owning generation adapter', () => {
     expect(await provider().status('persisted-id')).toBe(
       outcome === 'processing' ? 'processing' : 'unknown'
     )
+  })
+
+  it('keeps an oversized recovered asset uncertain even when cancelling its response stream fails', async () => {
+    let cancelled = false
+    vi.stubGlobal('fetch', async (url: string) => {
+      if (!url.endsWith('/blob')) return details()
+      return new Response(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(new Uint8Array(10_000_001))
+          },
+          cancel() {
+            cancelled = true
+            throw new Error('images-credential-sentinel')
+          }
+        })
+      )
+    })
+    expect(await provider().status('persisted-id')).toBe('unknown')
+    expect(cancelled).toBe(true)
   })
 })

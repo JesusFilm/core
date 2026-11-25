@@ -51,6 +51,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   const providerAssets = new Map<string, 'processing' | 'ready'>()
   let dispatchCount = 0
   let generationCount = 0
+  let generationObservations = 0
   let generationEnabled = true
   const promptSentinel = 'private-generation-prompt-sentinel'
   let loseDispatch = false
@@ -116,6 +117,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       return provider.dispatch(id, Buffer.alloc(0), 'image/jpeg')
     },
     async status(id) {
+      generationObservations++
       const state = await provider.status(id)
       return state === 'ready'
         ? { state, metadata: { width: 2, height: 2, blurhash: 'controlled' } }
@@ -160,6 +162,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
           MCP_MEDIA_ENABLED: 'true',
           MCP_IMAGE_UPLOADS_ENABLED: 'true',
           MCP_IMAGE_GENERATION_ENABLED: 'true',
+          MCP_GENERATION_POLL_INTERVAL_MS: '60000',
           MCP_READ_ISSUER: config.AUTH_ISSUER,
           MCP_READ_GATEWAY_AUDIENCE: config.AUTH_READ_GATEWAY_AUDIENCE,
           MCP_READ_ENVIRONMENT: 'local',
@@ -245,6 +248,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     beforeStagingWrite = undefined
     dispatchCount = 0
     generationCount = 0
+    generationObservations = 0
     generationEnabled = true
     loseDispatch = false
     rejectDispatch = false
@@ -674,6 +678,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       ).toMatchObject({ status: 'pending' })
       expect((await browser(id)).status).toBe(403)
       providerUnknown = false
+      await media.mcpMediaJob.update({
+        where: { id },
+        data: { metadata: { attempt: 1, nextAt: 0 } }
+      })
       await jobs.recover()
       await reconcileConnectionChanges(f.auth)
       expect(
@@ -714,6 +722,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         where: { id: active }
       })
       providerAssets.set(job.providerId, 'ready')
+      await media.mcpMediaJob.update({
+        where: { id: active },
+        data: { metadata: { attempt: 1, nextAt: 0 } }
+      })
       await jobs.recover()
       expect((await status(active)).state).toBe('ready')
       expect(generationCount).toBe(1)
@@ -753,7 +765,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
             resume: true
           })
         ).state
-      ).toBe('ready')
+      ).toBe('dispatch_pending')
+      expect((await processedStatus(id)).state).toBe('ready')
       await f.auth.agentConnection.update({
         where: { id: connection.id },
         data: { mode: 'view' }
@@ -888,6 +901,71 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         active: true
       })
       expect(generationCount).toBe(1)
+    })
+
+    it('backs off generation observations across workers and permits explicit same-job recovery without another generation', async () => {
+      providerReady = false
+      const id = String((await generate()).jobId)
+      const initial = await processedStatus(id)
+      expect(initial.state).toBe('processing')
+      expect(typeof initial.nextObservationAt).toBe('string')
+      await Promise.all([jobs.recover(), createWorker().recover()])
+      expect(generationObservations).toBe(1)
+      const resumed = content(
+        await f.call('journey_media_status', {
+          journeyId: f.journeyId,
+          jobId: id,
+          resume: true
+        })
+      )
+      expect(resumed.state).toBe('processing')
+      await jobs.recover()
+      expect(generationObservations).toBe(2)
+      const observed = await status(id)
+      expect(
+        Date.parse(String(observed.nextObservationAt)) -
+          Date.parse(String(initial.nextObservationAt))
+      ).toBeGreaterThanOrEqual(60000)
+      for (const assetId of providerAssets.keys())
+        providerAssets.set(assetId, 'ready')
+      content(
+        await f.call('journey_media_status', {
+          journeyId: f.journeyId,
+          jobId: id,
+          resume: true
+        })
+      )
+      await jobs.recover()
+      expect((await status(id)).state).toBe('ready')
+      expect(generationObservations).toBe(3)
+      expect(generationCount).toBe(1)
+    })
+
+    it('escalates unresolved generation after 24 hours without freeing capacity, discarding uncertainty or repeating dispatch', async () => {
+      providerReady = false
+      const id = String((await generate()).jobId)
+      await processedStatus(id)
+      await media.mcpMediaJob.update({
+        where: { id },
+        data: {
+          dispatchedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 - 1000)
+        }
+      })
+      await createWorker().recover()
+      const delayed = await status(id)
+      expect(delayed).toMatchObject({
+        state: 'reconciling',
+        active: true,
+        operationsRequired: true
+      })
+      expect(typeof delayed.escalateAfter).toBe('string')
+      expect(String(delayed.recovery)).toContain('operations')
+      expect(
+        (await f.call('journey_media_start', generateInput())).json.result
+          ?.isError
+      ).toBe(true)
+      expect(generationCount).toBe(1)
+      expect(generationObservations).toBe(1)
     })
 
     it.each(['view', 'revoked', 'published'] as const)(

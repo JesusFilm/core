@@ -116,13 +116,27 @@ export function mediaRuntime(
             adminOrigin: serviceUrl,
             ingressOrigin: serviceUrl,
             ticketSecret: z.string().min(32),
-            uploadLimit: z.coerce.number().int().min(1).max(2).default(2)
+            uploadLimit: z.coerce.number().int().min(1).max(2).default(2),
+            generationPollIntervalMs: z.coerce
+              .number()
+              .int()
+              .min(1000)
+              .max(300000)
+              .default(10000),
+            generationObservationMs: z.coerce
+              .number()
+              .int()
+              .min(1000)
+              .max(86400000)
+              .default(900000)
           })
           .parse({
             adminOrigin: env.JOURNEYS_ADMIN_URL,
             ingressOrigin: env.MCP_MEDIA_INGRESS_URL,
             ticketSecret: env.MCP_MEDIA_UPLOAD_TICKET_SECRET,
-            uploadLimit: env.MCP_MEDIA_UPLOAD_LIMIT
+            uploadLimit: env.MCP_MEDIA_UPLOAD_LIMIT,
+            generationPollIntervalMs: env.MCP_GENERATION_POLL_INTERVAL_MS,
+            generationObservationMs: env.MCP_GENERATION_OBSERVATION_MS
           })
       : undefined
   const jobs = uploads

@@ -342,7 +342,9 @@ export function createJourneyReadHandler(
               {
                 permitId,
                 request: dataRequest,
-                ...(mediaJob ? {} : { search: dataRequest.input })
+                ...(mediaJob
+                  ? { stage: body.stage }
+                  : { search: dataRequest.input })
               }
             )
           : undefined

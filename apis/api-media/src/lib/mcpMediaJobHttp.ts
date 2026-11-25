@@ -80,7 +80,8 @@ export function mediaJobHttp(
             .object({
               credential: z.string(),
               permitId: z.string().uuid(),
-              request: readRequest
+              request: readRequest,
+              stage: z.enum(['read', 'output']).optional()
             })
             .strict()
             .parse(
@@ -121,10 +122,11 @@ export function mediaJobHttp(
             jobId = await jobs.admit(context, start)
           } else jobId = input.input.jobId
           if (
+            body.stage !== 'output' &&
             input.tool === 'journey_media_status' &&
             input.input.resume === true
           )
-            await jobs.resume(context, jobId)
+            await jobs.resume(context, jobId, { deferProcessing: true })
           const cancellation =
             input.tool === 'journey_media_cancel'
               ? await jobs.cancel(context, jobId, input.input.idempotencyKey)

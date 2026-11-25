@@ -47,6 +47,8 @@ interface JobConfig {
   adminOrigin: string
   ingressOrigin: string
   uploadLimit: number
+  generationPollIntervalMs?: number
+  generationObservationMs?: number
 }
 type Action = 'admit' | 'transfer' | 'dispatch' | 'cancel' | 'release'
 type Transaction = Prisma.TransactionClient
@@ -54,6 +56,10 @@ const resultLifetime = 30 * 86400000
 // Allow the bounded execution (up to 65s plus lock acquisition) to start.
 const backgroundFenceDelayMs = 120_000
 const terminal = ['ready', 'failed', 'cancelled', 'transfer_expired']
+const generationPoll = z.object({
+  attempt: z.number().int().min(0).max(32),
+  nextAt: z.number().int().min(0).max(8_640_000_000_000_000)
+})
 const stagingDescriptor = z.object({
   objectKey: z.string(),
   offset: z.number().int(),
@@ -552,6 +558,7 @@ export function createMediaJobs(
   }
   function describeJob(job: McpMediaJob, now: Date) {
     const jobId = job.id
+    const poll = generationPoll.safeParse(job.metadata)
     if (
       job.privatePurgedAt ||
       (job.resultExpiresAt && job.resultExpiresAt <= now)
@@ -588,13 +595,25 @@ export function createMediaJobs(
         : {}),
       ...(job.kind === 'image_generation'
         ? {
+            ...(job.active && poll.success
+              ? { nextObservationAt: new Date(poll.data.nextAt).toISOString() }
+              : {}),
             recovery:
               job.state === 'reconciling' || job.state === 'cancel_requested'
                 ? 'Poll this same job. The provider may not be able to retrieve an ambiguous generation. Keep uncertainty and capacity; ask operations to investigate the recorded job/provider identity. Never repeat generation or use a new key as recovery.'
                 : 'Poll this same job. Generation never attaches automatically.',
             observationAfter: new Date(
-              (job.dispatchedAt ?? job.admittedAt).getTime() + 15 * 60 * 1000
-            ).toISOString()
+              (job.dispatchedAt ?? job.admittedAt).getTime() +
+                (config.generationObservationMs ?? 15 * 60 * 1000)
+            ).toISOString(),
+            escalateAfter: new Date(
+              (job.dispatchedAt ?? job.admittedAt).getTime() +
+                generationWindowMs
+            ).toISOString(),
+            operationsRequired:
+              job.active &&
+              !!job.dispatchedAt &&
+              job.dispatchedAt.getTime() + generationWindowMs <= now.getTime()
           }
         : {
             adminLink: new URL(`/mcp/uploads/${job.id}`, config.adminOrigin)
@@ -997,9 +1016,48 @@ export function createMediaJobs(
         data: { state: 'reconciling' }
       })
     }
-    await reconcileJob(jobId)
+    await reconcileJob(jobId, true)
   }
-  async function reconcileJob(jobId: string) {
+  async function reserveGenerationObservation(
+    jobId: string,
+    immediate: boolean
+  ) {
+    return media.$transaction(async (tx) => {
+      const job = await lockJob(tx, jobId)
+      if (!job.active) return false
+      const now = await clock(tx)
+      if (
+        job.state === 'processing' &&
+        job.dispatchedAt &&
+        job.dispatchedAt.getTime() +
+          (config.generationObservationMs ?? 15 * 60 * 1000) <=
+          now.getTime()
+      )
+        await tx.mcpMediaJob.update({
+          where: { id: jobId },
+          data: { state: 'reconciling' }
+        })
+      const prior = generationPoll.safeParse(job.metadata)
+      if (!immediate && prior.success && prior.data.nextAt > now.getTime())
+        return false
+      const attempt = prior.success ? prior.data.attempt : 0
+      const delay = Math.min(
+        300000,
+        (config.generationPollIntervalMs ?? 10000) * 2 ** Math.min(attempt, 8)
+      )
+      await tx.mcpMediaJob.update({
+        where: { id: jobId },
+        data: {
+          metadata: {
+            attempt: Math.min(32, attempt + 1),
+            nextAt: now.getTime() + delay
+          }
+        }
+      })
+      return true
+    })
+  }
+  async function reconcileJob(jobId: string, immediate = false) {
     const known = await media.mcpMediaJob.findUniqueOrThrow({
       where: { id: jobId }
     })
@@ -1007,6 +1065,12 @@ export function createMediaJobs(
     const execution = await media.mcpMediaExecution.findUniqueOrThrow({
       where: { id: known.dispatchReceiptId }
     })
+    if (
+      known.kind === 'image_generation' &&
+      execution.status !== 'rejected' &&
+      !(await reserveGenerationObservation(jobId, immediate))
+    )
+      return
     const status =
       execution.status === 'rejected'
         ? 'rejected'
@@ -1023,7 +1087,11 @@ export function createMediaJobs(
           id: jobId,
           active: true,
           state: 'processing',
-          dispatchedAt: { lte: new Date(Date.now() - 15 * 60 * 1000) }
+          dispatchedAt: {
+            lte: new Date(
+              Date.now() - (config.generationObservationMs ?? 15 * 60 * 1000)
+            )
+          }
         },
         data: { state: 'reconciling' }
       })
@@ -1062,7 +1130,9 @@ export function createMediaJobs(
                 state:
                   job.kind === 'image_generation' &&
                   job.dispatchedAt &&
-                  job.dispatchedAt.getTime() + 15 * 60 * 1000 <= Date.now()
+                  job.dispatchedAt.getTime() +
+                    (config.generationObservationMs ?? 15 * 60 * 1000) <=
+                    Date.now()
                     ? 'reconciling'
                     : 'processing'
               }
@@ -1297,12 +1367,20 @@ export function createMediaJobs(
       }
     }
   }
-  async function resume(context: JobContext, jobId: string) {
-    await result(context, jobId)
+  async function resume(
+    context: JobContext,
+    jobId: string,
+    options: { deferProcessing?: boolean } = {}
+  ) {
+    if (!options.deferProcessing) await result(context, jobId)
     const current = await own(jobId, context)
     if (
-      ['validating', 'dispatch_pending'].includes(current.state) &&
-      !current.dispatchReceiptId
+      (['validating', 'dispatch_pending'].includes(current.state) &&
+        !current.dispatchReceiptId) ||
+      (options.deferProcessing &&
+        current.kind === 'image_generation' &&
+        current.active &&
+        current.dispatchReceiptId)
     )
       await authorized(
         context,
@@ -1310,6 +1388,24 @@ export function createMediaJobs(
         async (tx, { accept, grantVersion, permissionHash }) => {
           const job = await lockJob(tx, jobId)
           await accept()
+          if (
+            options.deferProcessing &&
+            job.kind === 'image_generation' &&
+            job.active &&
+            job.dispatchReceiptId
+          ) {
+            const poll = generationPoll.safeParse(job.metadata)
+            await tx.mcpMediaJob.update({
+              where: { id: jobId },
+              data: {
+                metadata: {
+                  attempt: poll.success ? poll.data.attempt : 0,
+                  nextAt: (await clock(tx)).getTime()
+                }
+              }
+            })
+            return
+          }
           if (
             !['validating', 'dispatch_pending'].includes(job.state) ||
             job.dispatchReceiptId
@@ -1324,7 +1420,8 @@ export function createMediaJobs(
           })
         }
       )
-    await progress(context, await own(jobId, context))
+    if (!options.deferProcessing)
+      await progress(context, await own(jobId, context))
   }
   async function progress(context: JobContext, job: McpMediaJob) {
     const jobId = job.id
@@ -1332,7 +1429,7 @@ export function createMediaJobs(
     const current = await own(jobId, context)
     if (current.state === 'dispatch_pending' && !current.dispatchReceiptId)
       await dispatch(context, jobId)
-    else if (current.dispatchReceiptId) await reconcileJob(jobId)
+    else if (current.dispatchReceiptId) await reconcileJob(jobId, true)
   }
   function fromClaims(claims: ReadCredential, journeyId: string): JobContext {
     if (

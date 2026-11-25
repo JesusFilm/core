@@ -39,7 +39,10 @@ Every dispatch uses the real shared Media executor and current owning Journey
 rights, captured grant/permission generations and Auth final acceptance after
 owning locks. Consent renewal or role changes require explicit same-job resume,
 using `journey_media_status` with `resume: true`. Status alone never resumes
-authority-interrupted work. Cancellation, private result release and attachment
+authority-interrupted work. The MCP resume response acknowledges queued work;
+the worker rechecks authority before dispatch. For an already dispatched generation,
+explicit resume makes the next status observation due without repeating creation.
+Cancellation, private result release and attachment
 each require fresh authority. Withdrawal remains Pending for unresolved sends
 or an unconfirmed private-output executor.
 
@@ -65,7 +68,9 @@ asset never proves that generation stopped. A lost synchronous Workers AI outcom
 has no qualified retrieval path. Keep `reconciling`, retain usage/capacity, and poll
 the same job rather than issue another generation POST. The 15-minute observation
 threshold marks prolonged processing as uncertain; it is not cancellation evidence.
-After 24 hours, operations investigates the recorded job/provider identity and
+Observation attempts and their next due time persist across workers, doubling
+from 10 seconds up to five minutes. Status returns `nextObservationAt`.
+After 24 hours, `operationsRequired` signals investigation of the recorded job/provider identity and
 executor receipts. Do not release its slot or settle withdrawal from age, 404 or
 lease expiry. This version provides no operator override that fabricates stop
 evidence. A later positively recovered asset can settle the original job.
@@ -91,6 +96,10 @@ Keep the image-job prerequisites configured, then set
 access. Disabling the generation rollout flag denies new generation; it does not
 delete assets or authorize repeating outstanding calls. Apply the additive Media
 migration before enabling the capability.
+`MCP_GENERATION_POLL_INTERVAL_MS` configures the initial observation interval
+between 1 second and 5 minutes. `MCP_GENERATION_OBSERVATION_MS` configures the
+processing warning threshold, default 15 minutes, between 1 second and 24 hours.
+Neither setting cancels work or changes dispatch entitlement.
 
 Run `node tools/scripts/test-mcp-image-generation.mjs` with
 `MCP_UPLOAD_TEST_POSTGRES_URL` pointing to isolated local PostgreSQL. The runner
