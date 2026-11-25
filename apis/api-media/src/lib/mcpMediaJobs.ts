@@ -946,7 +946,7 @@ export function createMediaJobs(
       await hooks.beforeSend?.()
       // Durable sending marker precedes the only POST. Every delayed executor
       // takes this receipt lock and checks its state again before touching HTTP.
-      await media.$transaction(async (tx) => {
+      const sending = await media.$transaction(async (tx) => {
         await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
         const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
           where: { id: receiptId }
@@ -954,6 +954,20 @@ export function createMediaJobs(
         if (receipt.status !== 'accepted') denied()
         await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${context.userId} FOR UPDATE`
         const job = await lockJob(tx, jobId)
+        if (job.dispatchReceiptId !== receiptId || !job.active) denied()
+        if (job.state === 'cancel_requested') {
+          await tx.mcpMediaExecution.update({
+            where: { id: receiptId },
+            data: { status: 'fenced', completedAt: await clock(tx) }
+          })
+          await tx.mcpMediaJob.update({
+            where: { id: jobId },
+            data: { dispatchReceiptId: null }
+          })
+          await terminalJob(tx, job, 'cancelled')
+          return false
+        }
+        if (job.state !== 'dispatch_pending') denied()
         if (job.kind === 'image_generation') {
           // Admission already owns the user's sole active generation slot.
           // Count only the durable send boundary, including uncertain sends.
@@ -971,7 +985,12 @@ export function createMediaJobs(
           where: { id: jobId },
           data: { state: 'processing' }
         })
+        return true
       })
+      if (!sending) {
+        await settle(receiptId)
+        return
+      }
     } catch (error) {
       await recoverExecution(receiptId)
       throw error

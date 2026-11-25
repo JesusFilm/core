@@ -786,6 +786,57 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       expect(generationCount).toBe(1)
     })
 
+    it('honors cancellation after dispatch acceptance before sending without consuming allowance', async () => {
+      const key = randomUUID()
+      const id = String((await generate(key)).jobId)
+      let receiptId!: string
+      beforeSend = async () => {
+        const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+        receiptId = job.dispatchReceiptId!
+        expect(
+          await media.mcpMediaExecution.findUniqueOrThrow({
+            where: { id: receiptId }
+          })
+        ).toMatchObject({ status: 'accepted' })
+        expect(
+          content(
+            await f.call('journey_media_cancel', {
+              journeyId: f.journeyId,
+              jobId: id,
+              idempotencyKey: randomUUID()
+            })
+          )
+        ).toMatchObject({ state: 'cancel_requested' })
+      }
+      await processCompletedTransfers()
+      expect(generationCount).toBe(0)
+      expect(dispatchCount).toBe(0)
+      expect(
+        await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      ).toMatchObject({
+        state: 'cancelled',
+        active: false,
+        dispatchedAt: null,
+        dispatchReceiptId: null,
+        generationPrompt: null
+      })
+      expect(
+        await media.mcpMediaExecution.findUniqueOrThrow({
+          where: { id: receiptId }
+        })
+      ).toMatchObject({ status: 'fenced', reportedAt: expect.any(Date) })
+      expect(
+        await f.auth.readPermit.findUniqueOrThrow({ where: { id: receiptId } })
+      ).toMatchObject({ status: 'settled' })
+      expect((await generate(key)).jobId).toBe(id)
+      beforeSend = undefined
+      const next = String((await generate()).jobId)
+      expect(next).not.toBe(id)
+      await processCompletedTransfers()
+      expect((await status(next)).state).toBe('ready')
+      expect(generationCount).toBe(1)
+    })
+
     it('cancels unsent work without usage and reconciles dispatched cancellation without deleting its asset', async () => {
       const id = String((await generate()).jobId)
       content(
