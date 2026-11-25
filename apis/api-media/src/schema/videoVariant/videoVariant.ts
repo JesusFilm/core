@@ -19,6 +19,7 @@ import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import {
+  CONTAINER_VIDEO_LABELS,
   findContainerParentIds,
   updateParentCollectionLanguages,
   withAvailableLanguagesRecompute
@@ -81,7 +82,7 @@ export async function createEmptyParentVariant(
   const [parentVideo, existingVariantWithLanguage] = await Promise.all([
     prisma.video.findUnique({
       where: { id: parentVideoId },
-      select: { slug: true }
+      select: { slug: true, label: true }
     }),
     languageSlug
       ? null
@@ -93,6 +94,15 @@ export async function createEmptyParentVariant(
 
   if (!parentVideo) {
     throw new Error(`Parent video with id ${parentVideoId} not found`)
+  }
+
+  // Only pure containers get placeholder variants (see
+  // canHavePlaceholderVariant): guard here too, so the rule does not depend
+  // on every caller filtering first.
+  if (!canHavePlaceholderVariant(parentVideo.label)) {
+    throw new Error(
+      `Parent video ${parentVideoId} (${parentVideo.label}) cannot have a placeholder variant`
+    )
   }
 
   // Use provided languageSlug or extract from existing variant with validation
@@ -122,7 +132,7 @@ export async function createEmptyParentVariant(
   // values) rather than hand-rolling the union here. Both happen in one
   // transaction: a recompute that throws must not leave the variant row
   // committed with the parent's availableLanguages stale and no retry.
-  const newVariant = await withAvailableLanguagesRecompute(
+  const { value: newVariant, changed } = await withAvailableLanguagesRecompute(
     parentVideoId,
     async (tx) =>
       await tx.videoVariant.create({
@@ -149,8 +159,10 @@ export async function createEmptyParentVariant(
   // regardless of caller. The variant and the parent's own recompute already
   // committed above, so a cascade failure here must not make this function -
   // and by extension variant creation - appear to have failed.
+  // Skipped when the parent's own value did not change: nothing above it can
+  // differ, so the cascade (and its Algolia and cache work) would be wasted.
   try {
-    await updateParentCollectionLanguages(parentVideoId)
+    if (changed) await updateParentCollectionLanguages(parentVideoId)
   } catch (error) {
     logger.error(
       { error, parentVideoId, languageId },
@@ -175,7 +187,7 @@ export async function handleParentVariantCreation(
     prisma.video.findMany({
       where: {
         children: { some: { id: videoId } },
-        label: { in: ['collection', 'series', 'featureFilm'] }
+        label: { in: CONTAINER_VIDEO_LABELS }
       },
       select: { id: true, label: true, availableLanguages: true }
     }),
@@ -365,11 +377,14 @@ async function checkAndRemoveEmptyParentVariant(
   // availableLanguages in one transaction, so the two commit or roll back
   // together. The recompute reads current source data, so it keeps the
   // language when the parent has a published Variant of its own in it.
-  await withAvailableLanguagesRecompute(parentVideoId, async (tx) => {
+  const { changed } = await withAvailableLanguagesRecompute(
+    parentVideoId,
+    async (tx) => {
     if (parentVariant != null) {
       await tx.videoVariant.delete({ where: { id: parentVariant.id } })
     }
-  })
+    }
+  )
 
   // Not every caller cascades further up the container hierarchy itself, so
   // cascade from here to keep grandparents in sync. The delete and the
@@ -377,7 +392,7 @@ async function checkAndRemoveEmptyParentVariant(
   // must not make the cleanup - which already succeeded - appear to have
   // failed.
   try {
-    await updateParentCollectionLanguages(parentVideoId)
+    if (changed) await updateParentCollectionLanguages(parentVideoId)
   } catch (error) {
     logger.error(
       { error, parentVideoId, languageId },

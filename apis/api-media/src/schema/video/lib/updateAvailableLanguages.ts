@@ -1,9 +1,10 @@
 // Shared logic for calculating and updating video availableLanguages
 // Single source of truth for managing availableLanguages on videos
 // Handles both regular videos and collections
-// Used by video.ts and videoVariant.ts
+// Used by video.ts, videoVariant.ts, videoPublishChildren.mutation.ts and the
+// variant reconciliation / upload workers
 
-import { Prisma, prisma } from '@core/prisma/media/client'
+import { Prisma, type VideoLabel, prisma } from '@core/prisma/media/client'
 
 import { videoCacheReset } from '../../../lib/videoCacheReset'
 import {
@@ -11,6 +12,14 @@ import {
   videoOnlyScope
 } from '../../../workers/videoAlgoliaSync'
 import { logger } from '../../logger'
+
+// The labels that can contain other videos. Shared by every parent lookup so
+// "parent" has one definition across the cascade.
+export const CONTAINER_VIDEO_LABELS: VideoLabel[] = [
+  'collection',
+  'series',
+  'featureFilm'
+]
 
 type PrismaClientOrTx = typeof prisma | Prisma.TransactionClient
 
@@ -174,16 +183,19 @@ export async function updateVideoAvailableLanguages(
 // has to be derived rather than known up front (parent-variant create and
 // cleanup); callers that already know the single language they are adding to
 // a video's *own* value should use `addLanguageToVideo` instead.
+//
+// `changed` reports whether the recompute altered the stored value, so a
+// caller can skip the cascade to ancestors when nothing above can differ.
 export async function withAvailableLanguagesRecompute<T>(
   videoId: string,
   write: (tx: Prisma.TransactionClient) => Promise<T>,
   options: AvailableLanguagesSyncOptions = {}
-): Promise<T> {
+): Promise<{ value: T; changed: boolean }> {
   const result = await prisma.$transaction(async (tx) => {
     await lockVideoRow(tx, videoId)
     const value = await write(tx)
-    await recomputeAvailableLanguages(tx, videoId)
-    return value
+    const { before, after } = await recomputeAvailableLanguages(tx, videoId)
+    return { value, changed: !sameLanguageSet(before, after) }
   })
 
   await syncVideoAfterLanguageChange(videoId, options)
@@ -283,7 +295,7 @@ export async function findContainerParentIds(
         some: { id: childVideoId }
       },
       label: {
-        in: ['collection', 'series', 'featureFilm']
+        in: CONTAINER_VIDEO_LABELS
       }
     },
     select: { id: true }

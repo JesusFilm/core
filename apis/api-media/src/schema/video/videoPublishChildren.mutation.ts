@@ -1,4 +1,5 @@
 import { prisma } from '@core/prisma/media/client'
+import { GraphQLError } from 'graphql'
 
 import {
   videoCacheReset,
@@ -516,27 +517,54 @@ export async function executeVideoPublishChildren(
   // `Promise.all` (as before) gave no such ordering guarantee.
   const childVideoIds = affectedVideoIds.filter((videoId) => videoId !== id)
 
-  try {
-    await Promise.all(
-      childVideoIds.map((videoId) =>
-        updateVideoAvailableLanguages(videoId, {
-          skipAlgolia: true,
-          skipCache: true
-        })
-      )
+  let languageSyncFailed = false
+  const childResults = await Promise.allSettled(
+    childVideoIds.map((videoId) =>
+      updateVideoAvailableLanguages(videoId, {
+        skipAlgolia: true,
+        skipCache: true
+      })
     )
-    await updateVideoAvailableLanguages(id, {
-      skipAlgolia: true,
-      skipCache: true
-    })
-    // Cascade past `id` to any further ancestors (grandparent and beyond),
-    // not just the immediate parent this mutation was called on.
-    await updateParentCollectionLanguages(id)
-  } catch (error) {
+  )
+  const failedChildIds = childVideoIds.filter(
+    (_videoId, index) => childResults[index].status === 'rejected'
+  )
+  if (failedChildIds.length > 0) {
+    // `id` and its ancestors would only be recomputed from a child value
+    // known to be stale, so they are left for a retry.
+    languageSyncFailed = true
     logger.error(
-      { error, videoIds: affectedVideoIds },
-      'Language sync failed during publish'
+      {
+        videoIds: failedChildIds,
+        errors: childResults
+          .filter(
+            (result): result is PromiseRejectedResult =>
+              result.status === 'rejected'
+          )
+          .map((result) =>
+            result.reason instanceof Error
+              ? result.reason.message
+              : String(result.reason)
+          )
+      },
+      'Language sync failed for published children'
     )
+  } else {
+    try {
+      await updateVideoAvailableLanguages(id, {
+        skipAlgolia: true,
+        skipCache: true
+      })
+      // Cascade past `id` to any further ancestors (grandparent and beyond),
+      // not just the immediate parent this mutation was called on.
+      await updateParentCollectionLanguages(id)
+    } catch (error) {
+      languageSyncFailed = true
+      logger.error(
+        { error, videoIds: affectedVideoIds },
+        'Language sync failed during publish'
+      )
+    }
   }
 
   if (mode !== 'variantsOnly') {
@@ -579,6 +607,15 @@ export async function executeVideoPublishChildren(
       })
     })
   )
+
+  // Everything has been published and synced by now; report an incomplete
+  // availableLanguages sync instead of returning success. Re-running the
+  // mutation recomputes it.
+  if (languageSyncFailed) {
+    throw new GraphQLError(
+      `Published, but availableLanguages could not be fully synced for ${id}; re-run to retry`
+    )
+  }
 
   return {
     parentId: id,

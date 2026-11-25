@@ -3280,6 +3280,37 @@ describe('video', () => {
         )
       })
 
+      it('reports failure when the recompute after a childIds change fails, since the stored value is then stale', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'child1' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.series,
+          childIds: ['child1'],
+          children: [{ id: 'child1' }]
+        } as unknown as Video)
+        mockedUpdateVideoAvailableLanguages.mockRejectedValueOnce(
+          new Error('recompute failed')
+        )
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: { input: { id: 'parent-id', childIds: ['child1'] } }
+        })
+
+        expect(result).toHaveProperty('errors')
+        expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
+      })
+
       it('does not cascade when childIds changes but the recomputed value is unchanged', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -4074,6 +4105,34 @@ describe('video', () => {
           mockedUpdateParentCollectionLanguages.mock.invocationCallOrder[0]
         )
         expect(result).toHaveProperty('data.fixVideoLanguages', true)
+      })
+
+      it('reports failure instead of success when the cascade to ancestors fails', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId'
+        } as any)
+        mockUpdateVideoAvailableLanguages.mockResolvedValue({
+          before: [],
+          after: []
+        })
+        mockedUpdateParentCollectionLanguages.mockRejectedValueOnce(
+          new AggregateError([new Error('write failed')], 'cascade failed')
+        )
+
+        const result = await authClient({
+          document: FIX_VIDEO_LANGUAGES_MUTATION,
+          variables: { videoId: 'videoId' }
+        })
+
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors')
       })
 
       it('should fail if video not found', async () => {

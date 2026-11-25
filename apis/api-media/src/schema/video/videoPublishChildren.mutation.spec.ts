@@ -61,6 +61,11 @@ describe('videoPublishChildren', () => {
   `) as AuthClientDocument
 
   beforeEach(() => {
+    // The language recompute runs in a transaction; run its callback against
+    // the mocked client, and fail the mutation if the sync fails.
+    prismaMock.$transaction.mockImplementation(
+      (async (callback: any) => await callback(prismaMock)) as any
+    )
     ;(prismaMock.video.findUnique as any).mockImplementation(
       async (args: any) => {
         if (args?.where?.id === 'parent') {
@@ -211,10 +216,12 @@ describe('videoPublishChildren', () => {
         label: 'collection',
         publishedAt: new Date('2024-01-01T00:00:00.000Z'),
         children: [
-          { id: 'c1', published: false },
-          { id: 'c2', published: true },
-          { id: 'c3', published: false }
-        ]
+          { id: 'c1', published: false, availableLanguages: [] },
+          { id: 'c2', published: true, availableLanguages: [] },
+          { id: 'c3', published: false, availableLanguages: [] }
+        ],
+        variants: [],
+        availableLanguages: []
       } as any)
       ;(prismaMock.video.findMany as any).mockImplementation(
         async (args: any) => {
@@ -261,7 +268,13 @@ describe('videoPublishChildren', () => {
         where: { id: { in: ['c1', 'c3'] } },
         data: { published: true, publishedAt: expect.any(Date) }
       })
-      expect(prismaMock.video.update).not.toHaveBeenCalled()
+      // The already published parent is not published again; the only
+      // video.update calls are the availableLanguages recomputes.
+      expect(prismaMock.video.update).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ published: true })
+        })
+      )
     })
   })
 
@@ -344,9 +357,11 @@ describe('videoPublishChildren', () => {
         published: true,
         publishedAt: new Date('2024-01-01T00:00:00.000Z'),
         children: [
-          { id: 'c1', published: true },
-          { id: 'c2', published: true }
-        ]
+          { id: 'c1', published: true, availableLanguages: [] },
+          { id: 'c2', published: true, availableLanguages: [] }
+        ],
+        variants: [],
+        availableLanguages: []
       } as any)
       prismaMock.video.findMany.mockResolvedValue([
         {
@@ -412,8 +427,8 @@ describe('videoPublishChildren', () => {
         published: true,
         publishedAt: new Date('2024-01-01T00:00:00.000Z'),
         children: [
-          { id: 'c1', published: true },
-          { id: 'c2', published: true }
+          { id: 'c1', published: true, availableLanguages: [] },
+          { id: 'c2', published: true, availableLanguages: [] }
         ]
       } as any)
       prismaMock.video.findMany.mockResolvedValue([
@@ -1364,6 +1379,99 @@ describe('videoPublishChildren', () => {
         recomputes.lastIndexOf('parent')
       )
       expect(writes).toEqual(['child', 'parent', 'grandparent'])
+    })
+
+    it('reports failure and leaves the parent unrecomputed when a published child fails to sync, while its healthy sibling still syncs', async () => {
+      const { store, writes } = installHierarchy({
+        parent: {
+          label: 'collection',
+          published: true,
+          availableLanguages: ['529'],
+          childIds: ['healthy', 'broken'],
+          variants: []
+        },
+        healthy: {
+          label: 'featureFilm',
+          published: true,
+          availableLanguages: ['529'],
+          childIds: [],
+          variants: [
+            { id: 'healthy-v1', languageId: '529', published: true },
+            { id: 'healthy-v2', languageId: '21028', published: false }
+          ]
+        },
+        broken: {
+          label: 'featureFilm',
+          published: true,
+          availableLanguages: ['529'],
+          childIds: [],
+          variants: [
+            { id: 'broken-v1', languageId: '529', published: true },
+            { id: 'broken-v2', languageId: '21028', published: false }
+          ]
+        }
+      })
+      const writeThroughStore = (
+        prismaMock.video.update as any
+      ).getMockImplementation()
+      ;(prismaMock.video.update as any).mockImplementation(async (args: any) => {
+        if (args?.where?.id === 'broken') throw new Error('write failed')
+        return await writeThroughStore(args)
+      })
+
+      await expect(
+        executeVideoPublishChildren(
+          'parent',
+          'childrenVideosAndVariants',
+          false
+        )
+      ).rejects.toThrow('could not be fully synced')
+
+      // The healthy sibling still synced, but the parent was not recomputed
+      // from a child value known to be stale.
+      expect(store.healthy.availableLanguages).toEqual(['529', '21028'])
+      expect(writes).toEqual(['healthy'])
+      expect(store.parent.availableLanguages).toEqual(['529'])
+    })
+
+    it('reports failure when the parent recompute fails after its children synced', async () => {
+      const { store, writes } = installHierarchy({
+        parent: {
+          label: 'collection',
+          published: true,
+          availableLanguages: ['529'],
+          childIds: ['child'],
+          variants: []
+        },
+        child: {
+          label: 'featureFilm',
+          published: true,
+          availableLanguages: ['529'],
+          childIds: [],
+          variants: [
+            { id: 'child-v1', languageId: '529', published: true },
+            { id: 'child-v2', languageId: '21028', published: false }
+          ]
+        }
+      })
+      const writeThroughStore = (
+        prismaMock.video.update as any
+      ).getMockImplementation()
+      ;(prismaMock.video.update as any).mockImplementation(async (args: any) => {
+        if (args?.where?.id === 'parent') throw new Error('write failed')
+        return await writeThroughStore(args)
+      })
+
+      await expect(
+        executeVideoPublishChildren(
+          'parent',
+          'childrenVideosAndVariants',
+          false
+        )
+      ).rejects.toThrow('could not be fully synced')
+
+      expect(writes).toEqual(['child'])
+      expect(store.parent.availableLanguages).toEqual(['529'])
     })
 
     it('stops cascading above an ancestor whose recomputed value is unchanged', async () => {

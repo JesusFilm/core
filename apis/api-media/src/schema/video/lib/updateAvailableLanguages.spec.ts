@@ -826,7 +826,9 @@ describe('withAvailableLanguagesRecompute', () => {
 
     const result = await withAvailableLanguagesRecompute('video-id', write)
 
-    expect(result).toBe('written')
+    expect(result.value).toBe('written')
+    // The stored value was [] and the recompute produces ['529'].
+    expect(result.changed).toBe(true)
     expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
     // The write is handed the transaction client, so it rolls back with the
     // recompute rather than autocommitting ahead of it.
@@ -849,6 +851,16 @@ describe('withAvailableLanguagesRecompute', () => {
       expect.anything(),
       expect.anything()
     )
+  })
+
+  it('does not fail the committed recompute when the post-commit cache reset throws', async () => {
+    mockedVideoCacheReset.mockRejectedValueOnce(new Error('cache down'))
+
+    await expect(
+      withAvailableLanguagesRecompute('video-id', vi.fn())
+    ).resolves.toEqual({ value: undefined, changed: true })
+
+    expect(mockedVideoCacheReset).toHaveBeenCalledWith('video-id')
   })
 
   it('propagates a failed recompute and skips the post-commit sync', async () => {

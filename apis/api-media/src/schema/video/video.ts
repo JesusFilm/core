@@ -932,6 +932,13 @@ builder.mutationFields((t) => ({
             { error, videoId: video.id },
             'availableLanguages recompute error'
           )
+          // The children relation is already updated, so the stored value is
+          // stale until this recompute succeeds. Surface that to the caller
+          // rather than reporting success; re-running the same update
+          // retries the recompute.
+          throw new GraphQLError(
+            `Video ${video.id} was updated but its availableLanguages could not be recomputed; retry the update`
+          )
         }
       }
 
@@ -1147,6 +1154,11 @@ builder.mutationFields((t) => ({
         await updateParentCollectionLanguages(videoId)
       } catch (error) {
         logger.error({ error, videoId }, 'availableLanguages recompute error')
+        // This mutation exists to repair availableLanguages, so a failed
+        // repair must not report success.
+        throw new GraphQLError(
+          `Could not recompute availableLanguages for video ${videoId}`
+        )
       }
 
       return true
