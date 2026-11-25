@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement } from 'react'
+import { KeyboardEventHandler, ReactElement } from 'react'
 import { boolean, object, string } from 'yup'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -26,6 +26,7 @@ interface CopyToTeamDialogProps {
   open: boolean
   loading?: boolean
   onClose: () => void
+  onKeyDown?: KeyboardEventHandler<HTMLDivElement>
   submitAction: (
     teamId: string,
     language?: JourneyLanguage,
@@ -79,6 +80,7 @@ export function CopyToTeamDialog({
   open,
   loading,
   onClose,
+  onKeyDown,
   submitAction,
   translationProgress,
   isTranslating = false,
@@ -192,6 +194,7 @@ export function CopyToTeamDialog({
           <TranslationDialogWrapper
             open={open}
             onClose={handleDialogClose}
+            onKeyDown={onKeyDown}
             onTranslate={handleFormSubmit}
             title={title}
             loading={loading || isSubmitting}

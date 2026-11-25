@@ -262,6 +262,28 @@ describe('useDragEndHandler', () => {
     )
   })
 
+  it('does not report a move when another edit already linked the target', async () => {
+    const pageA = makeCollection('page-A', [j1], { title: 'Easter' })
+    const pageB = makeCollection('page-B', [j2], { title: 'Youth' })
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1, j2]
+    })
+    const moveMock = getTemplateGalleryPageMoveJourneyMock(
+      { journeyId: 'j1', fromPageId: 'page-A', toPageId: 'page-B' },
+      [
+        pageA,
+        makeCollection('page-B', [j2, j1], { title: 'Youth', links: ['j1'] })
+      ]
+    )
+    const { handle } = renderHandler(indexes, [moveMock])
+    await act(async () => {
+      await handle(dropEvent(inCollection('page-A', 'j1'), moveInto('page-B')))
+    })
+    expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
+    expect(screen.getByText('Already here')).toBeInTheDocument()
+  })
+
   it('"Link here" from another collection fires templateGalleryPageLinkJourney and keeps the source', async () => {
     const pageA = makeCollection('page-A', [j1], { title: 'Easter' })
     const pageB = makeCollection('page-B', [j2], { title: 'Youth' })
@@ -372,6 +394,25 @@ describe('useDragEndHandler', () => {
       ).toBeInTheDocument()
     )
     expect(setDragInFlight).toHaveBeenLastCalledWith(false)
+    expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
+  })
+
+  it('does not suggest Move or Link when dropping on an existing membership', async () => {
+    const pageA = makeCollection('page-A', [j1])
+    const pageB = makeCollection('page-B', [j1], { links: ['j1'] })
+    const indexes = buildIndexes({
+      collections: [pageA, pageB],
+      journeys: [j1]
+    })
+    const { handle } = renderHandler(indexes, [])
+    await act(async () => {
+      await handle(
+        dropEvent(inCollection('page-A', 'j1'), collectionZone('page-B'))
+      )
+    })
+    expect(
+      screen.queryByText('Drop on “Move here” or “Link here”.')
+    ).not.toBeInTheDocument()
     expect(mockSendCollectionTemplateDragEvent).not.toHaveBeenCalled()
   })
 

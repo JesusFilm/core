@@ -25,6 +25,7 @@ import {
 } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { restoreStepMock } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
+import { BlockDeleteProvider } from '../../../../../BlockDeleteProvider'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { DeleteBlock } from './DeleteBlock'
@@ -68,7 +69,9 @@ describe('DeleteBlock', () => {
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <MuxVideoUploadProvider>
-                <DeleteBlock variant="button" />
+                <BlockDeleteProvider>
+                  <DeleteBlock variant="button" />
+                </BlockDeleteProvider>
               </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
@@ -119,7 +122,9 @@ describe('DeleteBlock', () => {
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <MuxVideoUploadProvider>
-                <DeleteBlock variant="list-item" />
+                <BlockDeleteProvider>
+                  <DeleteBlock variant="list-item" />
+                </BlockDeleteProvider>
               </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
@@ -175,7 +180,9 @@ describe('DeleteBlock', () => {
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <MuxVideoUploadProvider>
-                <DeleteBlock variant="button" />
+                <BlockDeleteProvider>
+                  <DeleteBlock variant="button" />
+                </BlockDeleteProvider>
               </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
@@ -232,7 +239,9 @@ describe('DeleteBlock', () => {
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <MuxVideoUploadProvider>
-                <DeleteBlock variant="list-item" />
+                <BlockDeleteProvider>
+                  <DeleteBlock variant="list-item" />
+                </BlockDeleteProvider>
               </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
@@ -254,7 +263,9 @@ describe('DeleteBlock', () => {
       <SnackbarProvider>
         <MockedProvider>
           <MuxVideoUploadProvider>
-            <DeleteBlock variant="button" />
+            <BlockDeleteProvider>
+              <DeleteBlock variant="button" />
+            </BlockDeleteProvider>
           </MuxVideoUploadProvider>
         </MockedProvider>
       </SnackbarProvider>,
@@ -268,7 +279,9 @@ describe('DeleteBlock', () => {
       <SnackbarProvider>
         <MockedProvider>
           <MuxVideoUploadProvider>
-            <DeleteBlock variant="button" disabled />
+            <BlockDeleteProvider>
+              <DeleteBlock variant="button" disabled />
+            </BlockDeleteProvider>
           </MuxVideoUploadProvider>
         </MockedProvider>
       </SnackbarProvider>,
@@ -364,8 +377,10 @@ describe('DeleteBlock', () => {
               }}
             >
               <MuxVideoUploadProvider>
-                <TestEditorState />
-                <DeleteBlock variant="list-item" block={passedInStep} />
+                <BlockDeleteProvider>
+                  <TestEditorState />
+                  <DeleteBlock variant="list-item" block={passedInStep} />
+                </BlockDeleteProvider>
               </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
@@ -430,8 +445,10 @@ describe('DeleteBlock', () => {
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <MuxVideoUploadProvider>
-                <DeleteBlock variant="list-item" />
-                <CommandUndoItem variant="button" />
+                <BlockDeleteProvider>
+                  <DeleteBlock variant="list-item" />
+                  <CommandUndoItem variant="button" />
+                </BlockDeleteProvider>
               </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>

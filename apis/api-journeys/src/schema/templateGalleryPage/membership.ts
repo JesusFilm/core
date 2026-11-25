@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { Prisma } from '@core/prisma/journeys/client'
 
-import { applyContiguousOrder } from './applyContiguousOrder'
+import { applyContiguousOrder, lockPage } from './applyContiguousOrder'
 
 /**
  * Membership rules shared by the link / move / remove mutations, the
@@ -17,10 +17,10 @@ import { applyContiguousOrder } from './applyContiguousOrder'
  *  - a membership keeps its role when moved between pages;
  *  - removing the home promotes the oldest remaining link.
  *
- * Every helper below expects the caller to already be inside a
- * `prisma.$transaction` holding `lockJourney` for the journey (and
- * `lockPage` for each page it writes to) so concurrent mutations on the
- * same journey serialize and cannot produce two homes.
+ * Membership writes run inside a `prisma.$transaction` holding
+ * `lockJourney` for the journey and `lockPage` for each page they reorder.
+ * Each helper documents which locks it acquires or expects its caller to
+ * hold, so concurrent edits cannot produce two homes.
  */
 
 /**
@@ -40,6 +40,45 @@ export async function lockJourney(
 }
 
 /**
+ * Locks every journey involved in replacing or deleting a page's memberships,
+ * then the page, preserving the shared journey-before-page lock order.
+ * Recheck the set after waiting for locks: a newly added journey was not locked,
+ * so changing that membership must retry rather than write from a stale set.
+ */
+export async function lockPageMemberships(
+  tx: Prisma.TransactionClient,
+  pageId: string,
+  additionalJourneyIds: readonly string[] = []
+): Promise<Array<{ id: string; journeyId: string; isHome: boolean }>> {
+  const beforeLock = await tx.templateGalleryPageTemplate.findMany({
+    where: { templateGalleryPageId: pageId },
+    select: { journeyId: true }
+  })
+  const journeyIds = new Set(beforeLock.map((row) => row.journeyId))
+  const lockIds = [...new Set([...journeyIds, ...additionalJourneyIds])].sort()
+  for (const journeyId of lockIds) {
+    await lockJourney(tx, journeyId)
+  }
+  await lockPage(tx, pageId)
+  const lockedRows = await tx.templateGalleryPageTemplate.findMany({
+    where: { templateGalleryPageId: pageId },
+    select: { id: true, journeyId: true, isHome: true }
+  })
+  if (
+    lockedRows.length !== journeyIds.size ||
+    lockedRows.some((row) => !journeyIds.has(row.journeyId))
+  ) {
+    throw new GraphQLError(
+      'collection membership changed concurrently; retry',
+      {
+        extensions: { code: 'CONFLICT', field: 'journeyIds' }
+      }
+    )
+  }
+  return lockedRows
+}
+
+/**
  * Re-reads `pageId`'s rows in display order and writes them back at
  * contiguous orders 0..N-1. Caller must hold `lockPage` on the page.
  */
@@ -53,6 +92,29 @@ export async function renumberPage(
     select: { id: true }
   })
   await applyContiguousOrder(tx, pageId, rows)
+}
+
+/**
+ * Removes a journey from its complete, already-read page set. Caller holds
+ * its journey lock, so no membership can be added while the pages are locked
+ * and renumbered. Clearing every membership needs no home promotion.
+ */
+export async function removeMembershipsFromPages(
+  tx: Prisma.TransactionClient,
+  journeyId: string,
+  currentPageIds: readonly string[]
+): Promise<void> {
+  const pageIds = [...new Set(currentPageIds)].sort()
+  if (pageIds.length === 0) return
+  for (const pageId of pageIds) {
+    await lockPage(tx, pageId)
+  }
+  await tx.templateGalleryPageTemplate.deleteMany({
+    where: { journeyId, templateGalleryPageId: { in: pageIds } }
+  })
+  for (const pageId of pageIds) {
+    await renumberPage(tx, pageId)
+  }
 }
 
 /**

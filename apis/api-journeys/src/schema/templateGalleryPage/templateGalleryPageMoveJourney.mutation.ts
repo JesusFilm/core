@@ -6,18 +6,13 @@ import { isInTeam } from '../authScopes'
 import { builder } from '../builder'
 
 import { lockPage } from './applyContiguousOrder'
-import {
-  assertTeamTemplate,
-  lockJourney,
-  removeMembership,
-  renumberPage
-} from './membership'
+import { assertTeamTemplate, lockJourney, renumberPage } from './membership'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageMoveJourney', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      "Move a journey's membership from one TemplateGalleryPage to another. The row keeps its role: moving the home makes the destination the home, moving a link keeps it a link. The row appends at the end of the destination's display order and both pages are renumbered to contiguous orders 0..N-1. If the journey is already on the destination, the source membership is simply removed (promoting the oldest link when the source was the home). Returns every page that changed: the source, the destination, and any page whose link was promoted to home. Allowed on both `draft` and `published` pages.\n\nAuth: caller must be a member of both pages' team.\n\nErrors:\n- NOT_FOUND: `fromPageId` or `toPageId` does not resolve.\n- BAD_USER_INPUT (field: `journeyId`): journey is not a member of `fromPageId`, or is not flagged as a template.\n- NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.\n- FORBIDDEN: caller is not in a page's team, or the pages belong to different teams.\n- FORBIDDEN (field: `journeyId`): journey belongs to a different team than the pages.",
+      "Move a journey's membership from one TemplateGalleryPage to another. The row keeps its role: moving the home makes the destination the home, moving a link keeps it a link. The row appends at the end of the destination's display order and both pages are renumbered to contiguous orders 0..N-1. If the journey is already on the destination, both memberships remain unchanged. Returns the source and destination pages, including when the move is a no-op. Allowed on both `draft` and `published` pages.\n\nAuth: caller must be a member of both pages' team.\n\nErrors:\n- NOT_FOUND: `fromPageId` or `toPageId` does not resolve.\n- BAD_USER_INPUT (field: `journeyId`): journey is not a member of `fromPageId`, or is not flagged as a template.\n- NOT_FOUND (field: `journeyId`): journey does not exist or is soft-deleted.\n- FORBIDDEN: caller is not in a page's team, or the pages belong to different teams.\n- FORBIDDEN (field: `journeyId`): journey belongs to a different team than the pages.",
     type: [TemplateGalleryPageRef],
     nullable: false,
     args: {
@@ -96,8 +91,6 @@ builder.mutationField('templateGalleryPageMoveJourney', (t) =>
           })
         }
 
-        const changedPageIds = new Set([fromPageId, toPageId])
-
         const alreadyOnTarget = await tx.templateGalleryPageTemplate.findUnique(
           {
             where: {
@@ -109,17 +102,7 @@ builder.mutationField('templateGalleryPageMoveJourney', (t) =>
             select: { id: true }
           }
         )
-        if (alreadyOnTarget != null) {
-          // Nothing to relocate — the destination already has the journey.
-          // Dropping the source row is the whole move; the home rule may
-          // hand the home to the destination (or another page).
-          const { promotedPageId } = await removeMembership(
-            tx,
-            fromPageId,
-            journeyId
-          )
-          if (promotedPageId != null) changedPageIds.add(promotedPageId)
-        } else {
+        if (alreadyOnTarget == null) {
           // Relocate the row in place so `isHome` and `createdAt` travel
           // with it. Order is a placeholder past the destination's end;
           // the renumber passes collapse both pages to 0..N-1.
@@ -140,7 +123,7 @@ builder.mutationField('templateGalleryPageMoveJourney', (t) =>
 
         return await tx.templateGalleryPage.findMany({
           ...query,
-          where: { id: { in: [...changedPageIds] } }
+          where: { id: { in: [fromPageId, toPageId] } }
         })
       })
     }

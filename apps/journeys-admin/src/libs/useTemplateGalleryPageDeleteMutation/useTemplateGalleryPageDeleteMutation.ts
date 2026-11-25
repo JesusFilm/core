@@ -27,6 +27,9 @@ export function useTemplateGalleryPageDeleteMutation(
     TemplateGalleryPageDelete,
     TemplateGalleryPageDeleteVariables
   >(TEMPLATE_GALLERY_PAGE_DELETE, {
+    // Removing a collection can promote its links elsewhere.
+    refetchQueries: ['GetTemplateGalleryPages'],
+    awaitRefetchQueries: true,
     update(cache, { data }) {
       if (data?.templateGalleryPageDelete == null) return
       const deletedId = data.templateGalleryPageDelete.id

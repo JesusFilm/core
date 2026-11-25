@@ -16,6 +16,7 @@ interface DateRangePickerProps {
   endDate: Date | null
   onStartDateChange: (date: Date | null) => void
   onEndDateChange: (date: Date | null) => void
+  format?: string
   /** Reports edits before MUI can publish a complete date value. */
   onInputStateChange?: (state: {
     hasInput: boolean
@@ -32,6 +33,7 @@ export function DateRangePicker({
   endDate,
   onStartDateChange,
   onEndDateChange,
+  format = 'dd-MM-yyyy',
   onInputStateChange,
   minDate = null,
   maxDate = null
@@ -97,7 +99,7 @@ export function DateRangePicker({
               label={t('From')}
               value={startDate}
               onChange={onStartDateChange}
-              format="dd-MM-yyyy"
+              format={format}
               minDate={minDate ?? undefined}
               maxDate={maxDate ?? undefined}
               slots={{
@@ -114,7 +116,7 @@ export function DateRangePicker({
               label={t('To')}
               value={endDate}
               onChange={onEndDateChange}
-              format="dd-MM-yyyy"
+              format={format}
               minDate={minEndDate ?? undefined}
               maxDate={maxDate ?? undefined}
               slots={{

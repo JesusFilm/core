@@ -54,18 +54,17 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
           const slug = await generateUniqueSlug(title)
           try {
             return await prisma.$transaction(async (tx) => {
+              // Lock before validating: a template can be transferred,
+              // unflagged, or deleted while creation waits for its lock.
+              for (const journeyId of [...new Set(journeyIds ?? [])].sort()) {
+                await lockJourney(tx, journeyId)
+              }
               const { validIds } = await filterToTeamTemplates(
                 tx,
                 teamId,
                 journeyIds ?? []
               )
-              // Each initial template becomes this page's home unless it
-              // already has one elsewhere, in which case it is a link. Lock
-              // the journeys (sorted) so a concurrent link cannot race the
-              // home decision — the same order every membership write uses.
-              for (const journeyId of [...validIds].sort()) {
-                await lockJourney(tx, journeyId)
-              }
+              // Initial templates with an existing home become links.
               const existingHomes =
                 validIds.length > 0
                   ? await tx.templateGalleryPageTemplate.findMany({

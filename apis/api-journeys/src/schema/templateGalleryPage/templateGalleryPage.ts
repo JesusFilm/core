@@ -29,8 +29,10 @@ import {
 // subgraph. Setting `shareable: true` (the sibling default) would falsely
 // advertise that another subgraph may also resolve this type.
 //
-// Keep the shared fields in sync with `TemplateGalleryPagePublicRef` below; only
-// the `media` field is meant to differ (full row here vs. gated there).
+// Keep shared fields in sync with `TemplateGalleryPagePublicRef` below.
+// The private projection includes draft templates, membership metadata, and
+// the full media row; the public projection exposes only published templates
+// and the active media payload.
 interface TemplateGalleryPageMembership {
   journeyId: string
   isHome: boolean
@@ -124,8 +126,8 @@ export const TemplateGalleryPageRef = builder.prismaObject(
       // Templates are ordered by `order` ascending. Read-time filter
       // (security H2): even if a journey was transferred to another team or
       // its `template` flag was flipped to false after being added to the
-      // gallery, only same-team published templates surface here.
-      // - The SQL `where` filters non-template / non-published rows out.
+      // gallery, only same-team active templates surface here.
+      // - The SQL `where` includes draft and published templates for editing.
       // - The in-memory filter enforces parent.teamId equality (Pothos does
       //   not let `select.where` reference the parent).
       //
@@ -146,7 +148,7 @@ export const TemplateGalleryPageRef = builder.prismaObject(
         type: [TemplateGalleryItemRef],
         nullable: false,
         description:
-          'Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.',
+          'Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, draft or published, template-flagged journeys only. A journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.',
         select: {
           teamId: true,
           templates: {
@@ -154,10 +156,10 @@ export const TemplateGalleryPageRef = builder.prismaObject(
             where: {
               journey: {
                 template: true,
-                status: 'published',
+                status: { in: ['draft', 'published'] },
                 // Honor the project-wide soft-delete convention so a journey
-                // soft-deleted after being added to a gallery cannot leak to
-                // anonymous viewers via the public slug query. Mirrors the
+                // soft-deleted after being added to a gallery no longer appears
+                // in the editor. Mirrors the
                 // write-time filter in filterToTeamTemplates.ts.
                 deletedAt: null
               }
@@ -197,18 +199,16 @@ export const TemplateGalleryPageRef = builder.prismaObject(
 )
 
 // PUBLIC projection — the `TemplateGalleryPagePublic` variant, returned by the
-// unauthenticated `templateGalleryPageBySlug` read path. Field-for-field
-// identical to the full `TemplateGalleryPageRef` above EXCEPT the `media` field,
-// which returns the gated `TemplateGalleryPageMediaPublicRef` and collapses to
-// `null` whenever nothing should render — so parked payloads never reach
-// anonymous viewers. Keep the shared fields in sync with `TemplateGalleryPageRef`;
-// only `media` is meant to differ.
+// unauthenticated `templateGalleryPageBySlug` read path. Templates remain
+// published-only, membership metadata is omitted, and media returns only the
+// active payload. Keep the other shared fields in sync with
+// `TemplateGalleryPageRef`.
 export const TemplateGalleryPagePublicRef = builder.prismaObject(
   'TemplateGalleryPage',
   {
     variant: 'TemplateGalleryPagePublic',
     description:
-      'Public projection of a TemplateGalleryPage, returned by the unauthenticated slug read. Identical to the full type except `media` exposes only the active payload (parked payloads and the raw `muxVideoId` are never emitted).',
+      'Public projection of a TemplateGalleryPage, returned by the unauthenticated slug read. Includes only published templates and omits membership metadata. The `media` field exposes only the active payload; parked payloads and the raw `muxVideoId` are never emitted.',
     fields: (t) => ({
       id: t.exposeID('id', {
         nullable: false,

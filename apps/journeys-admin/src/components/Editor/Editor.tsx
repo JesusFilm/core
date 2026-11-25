@@ -13,6 +13,7 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { User } from '../../libs/auth'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
+import { BlockDeleteProvider } from './BlockDeleteProvider'
 import { EditorLayoutProvider } from './EditorLayoutContext'
 import { Fab } from './Fab'
 import { FontLoader } from './FontLoader/FontLoader'
@@ -66,17 +67,19 @@ export function Editor({
         <MuxVideoUploadProvider>
           <HotkeysProvider>
             <EditorLayoutProvider value={mdUp ? 'layered' : 'slider'}>
-              <FontLoader
-                fonts={[
-                  journey?.journeyTheme?.headerFont ?? '',
-                  journey?.journeyTheme?.bodyFont ?? '',
-                  journey?.journeyTheme?.labelFont ?? ''
-                ]}
-              />
-              <Hotkeys />
-              <Toolbar user={user} />
-              {mdUp ? <LayeredView /> : <Slider />}
-              <Fab variant="mobile" />
+              <BlockDeleteProvider>
+                <FontLoader
+                  fonts={[
+                    journey?.journeyTheme?.headerFont ?? '',
+                    journey?.journeyTheme?.bodyFont ?? '',
+                    journey?.journeyTheme?.labelFont ?? ''
+                  ]}
+                />
+                <Hotkeys />
+                <Toolbar user={user} />
+                {mdUp ? <LayeredView /> : <Slider />}
+                <Fab variant="mobile" />
+              </BlockDeleteProvider>
             </EditorLayoutProvider>
           </HotkeysProvider>
         </MuxVideoUploadProvider>

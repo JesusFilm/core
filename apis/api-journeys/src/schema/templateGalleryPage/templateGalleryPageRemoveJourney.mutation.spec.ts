@@ -1,5 +1,6 @@
 import { type MockedFunction, vi } from 'vitest'
 
+import { Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -82,7 +83,31 @@ describe('templateGalleryPageRemoveJourney', () => {
     })
     expect(
       prismaMock.templateGalleryPageTemplate.findFirst
-    ).not.toHaveBeenCalled()
+    ).toHaveBeenCalledWith({
+      where: { journeyId: 'journey-1', isHome: true },
+      select: { templateGalleryPageId: true }
+    })
+    expect(prismaMock.templateGalleryPageTemplate.update).not.toHaveBeenCalled()
+  })
+
+  it('returns the unchanged home when removing a link', async () => {
+    prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
+      id: 'tpt-link',
+      isHome: false
+    } as Prisma.TemplateGalleryPageTemplateGetPayload<Record<string, never>>)
+    prismaMock.templateGalleryPageTemplate.findMany.mockResolvedValue([])
+    prismaMock.templateGalleryPageTemplate.findFirst.mockResolvedValue({
+      templateGalleryPageId: 'page-B'
+    } as Prisma.TemplateGalleryPageTemplateGetPayload<Record<string, never>>)
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+      variables: { journeyId: 'journey-1', pageId: 'page-A' }
+    })
+    expect(result).toEqual({
+      data: {
+        templateGalleryPageRemoveJourney: [{ id: 'page-A' }, { id: 'page-B' }]
+      }
+    })
     expect(prismaMock.templateGalleryPageTemplate.update).not.toHaveBeenCalled()
   })
 
@@ -172,8 +197,63 @@ describe('templateGalleryPageRemoveJourney', () => {
     })
 
     expect(result).toEqual({ data: { templateGalleryPageRemoveJourney: [] } })
-    expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    expect(prismaMock.$transaction).toHaveBeenCalledOnce()
   })
+
+  it.each([false, true])(
+    'removes all current memberships after the journey lock, including a concurrent link (initially empty: %s)',
+    async (initiallyEmpty) => {
+      const row = {
+        id: 'row-a',
+        templateGalleryPageId: 'page-A',
+        journeyId: 'journey-1',
+        order: 0,
+        isHome: true,
+        createdAt: new Date('2026-09-23'),
+        templateGalleryPage: { id: 'page-A', teamId: 'team-1' }
+      }
+      const linkedRow = {
+        ...row,
+        id: 'row-b',
+        templateGalleryPageId: 'page-B',
+        isHome: false,
+        templateGalleryPage: { id: 'page-B', teamId: 'team-1' }
+      }
+      prismaMock.templateGalleryPageTemplate.findMany.mockImplementation(
+        (args) => {
+          const journeyLocked = prismaMock.$queryRaw.mock.calls.some((call) =>
+            (call[0] as readonly string[]).join(' ').includes('FROM "Journey"')
+          )
+          const rows =
+            args?.where?.journeyId == null
+              ? []
+              : journeyLocked
+                ? [row, linkedRow]
+                : initiallyEmpty
+                  ? []
+                  : [row]
+          return Promise.resolve(rows) as Prisma.PrismaPromise<typeof rows>
+        }
+      )
+      const result = await authClient({
+        document: TEMPLATE_GALLERY_PAGE_REMOVE_JOURNEY,
+        variables: { journeyId: 'journey-1' }
+      })
+      expect(result).toEqual({
+        data: {
+          templateGalleryPageRemoveJourney: [{ id: 'page-A' }, { id: 'page-B' }]
+        }
+      })
+      expect(
+        prismaMock.templateGalleryPageTemplate.deleteMany
+      ).toHaveBeenCalledWith({
+        where: {
+          journeyId: 'journey-1',
+          templateGalleryPageId: { in: ['page-A', 'page-B'] }
+        }
+      })
+    }
+  )
 
   it('throws NOT_FOUND when the page does not exist', async () => {
     prismaMock.templateGalleryPage.findUnique.mockResolvedValue(null)

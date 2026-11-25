@@ -44,7 +44,7 @@ ComponentName/
 
 - Always use MUI components (`Box`, `Typography`, `Button`, etc.) — never bare HTML tags.
 - Use `styled()` from `@mui/material/styles` for custom styling.
-- Accessibility is mandatory: `tabIndex`, `aria-label`, `onClick`, `onKeyDown` on interactive elements.
+- Accessibility is mandatory: interactive elements must work by keyboard and screen reader. MUI and native interactive components already handle focus and key activation; add `tabIndex`, `role`, `aria-label` and `onKeyDown` yourself only on a non-interactive element made clickable.
 - Early returns to reduce nesting.
 - Dynamic imports with webpack chunk names where appropriate.
 
@@ -67,7 +67,7 @@ Editor-level additional providers:
 10. `MuxVideoUploadProvider` — video upload handling
 11. `HotkeysProvider` — keyboard shortcuts
 
-Campaign editor providers (`src/components/CampaignEditor/CampaignEditor.tsx`): `CommandProvider` > `CampaignEditorProvider` > `MuxVideoUploadProvider` > `TranslationRunProvider` > `NavigatorHoverProvider`.
+Campaign editor providers (`src/components/CampaignEditor/CampaignEditorProviders/CampaignEditorProviders.tsx`): `CommandProvider` > `CampaignEditorProvider` > `CampaignCommandProvider` > `MuxVideoUploadProvider` > `TranslationRunProvider` > `CampaignHoverProvider`.
 
 Tests must wrap components in the required providers:
 
@@ -105,7 +105,7 @@ Editor/
 
 ## Custom hooks
 
-120+ custom mutation/query hooks in `src/libs/`:
+Custom mutation/query hooks live in `src/libs/`:
 
 ```text
 src/libs/
@@ -124,7 +124,7 @@ Pattern: `use{Action}{Resource}{Suffix}` — e.g., `useJourneyCreateMutation`, `
 - Hook: `useTranslation('apps-journeys-admin')`
 - Namespace files: `libs/locales/{locale}/apps-journeys-admin.json`
 - **Convention:** Use inline English strings as keys — `t('Edit {{title}}', { title })`, not `t('admin.editTitle')`
-- Supported locales: 15 languages
+- Supported locales: the `locales` list in `next-i18next.config.js`
 - Extraction: `pnpm dlx nx run journeys-admin:extract-translations`
 - Locale detection: middleware reads `Accept-Language` header with cookie override
 

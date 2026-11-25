@@ -893,7 +893,7 @@
   "DNS Config": "DNS ဖွဲ့စည်းမှု",
   "Valid Configuration": "အတည်ပြုနိုင်သော ဖွဲ့စည်းမှု",
   "Invalid Configuration": "မမှန်ကန်သော ဖွဲ့စည်းမှု",
-  "Pending Verfication": "အတည်ပြုရန် စောင့်ဆိုင်းနေသည်",
+  "Pending Verification": "အတည်ပြုရန် စောင့်ဆိုင်းနေသည်",
   "Domain {{ customDomainName }} was added to a different team. Please complete verification to add it to this team instead.": "ဒိုမိန်း {{ customDomainName }} ကို အခြားအဖွဲ့တစ်ဖွဲ့ထဲသို့ ထည့်ပြီးသားဖြစ်သည်။ ဒီအဖွဲ့ထဲသို့ ထည့်ရန် အတည်ပြုခြင်းကို အပြီးသတ်လုပ်ဆောင်ပါ။",
   "Domain name is a required field": "ဒိုမိန်းအမည်မှာ မဖြစ်မနေဖြည့်ရမည့် အကွက်ဖြစ်သည်",
   "Must be a valid URL": "မှန်ကန်သော URL ဖြစ်ရမည်",

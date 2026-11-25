@@ -99,6 +99,35 @@ import { useCollectionCollapse } from './useCollectionCollapse'
 import { useCollectionMutations } from './useCollectionMutations'
 import { JourneyMembership, useDragEndHandler } from './useDragEndHandler'
 
+// Reorder within the current collection, but require a pointer intersection
+// before resolving any move, link, add, or remove target.
+export const collectionCollisionDetection: CollisionDetection = (args) => {
+  const pointerCollisions = pointerWithin(args)
+  if (pointerCollisions.length === 0) return []
+
+  const resolution = resolveSectionDrop(
+    pointerCollisions,
+    parseCardId(String(args.active.id))
+  )
+  if (resolution.kind === 'passthrough') return pointerCollisions
+  if (resolution.kind === 'action' || resolution.kind === 'section') {
+    return [resolution.collision]
+  }
+
+  // reorder: nearest card within the dragged card's own collection.
+  const cardCollisions = closestCenter({
+    ...args,
+    droppableContainers: args.droppableContainers.filter((container) => {
+      const card = parseCardId(String(container.id))
+      return (
+        card?.zone.kind === 'collection' &&
+        card.zone.id === resolution.collectionId
+      )
+    })
+  })
+  return cardCollisions.length > 0 ? cardCollisions : pointerCollisions
+}
+
 const Dialog = dynamic(
   async () =>
     await import(
@@ -630,21 +659,6 @@ export function TemplateGalleryPageList({
     return map
   }, [allTemplates])
 
-  // Every collection a template renders in (a template can be in many).
-  // Built from `templates` — the status-filtered list the cards come from —
-  // so the unsectioned pool below stays consistent with what is drawn.
-  const collectionsByJourneyId = useMemo(() => {
-    const map = new Map<string, TemplateGalleryPage[]>()
-    for (const collection of collections) {
-      for (const template of collection.templates) {
-        const list = map.get(template.id)
-        if (list != null) list.push(collection)
-        else map.set(template.id, [collection])
-      }
-    }
-    return map
-  }, [collections])
-
   // Where each template's home is and which collections hold it, from the
   // unfiltered `memberships` — the source of truth for home vs link.
   const membershipsByJourneyId = useMemo(() => {
@@ -733,8 +747,8 @@ export function TemplateGalleryPageList({
 
   const unsectioned = useMemo<readonly Journey[]>(
     () =>
-      allTemplates.filter((journey) => !collectionsByJourneyId.has(journey.id)),
-    [allTemplates, collectionsByJourneyId]
+      allTemplates.filter((journey) => !membershipsByJourneyId.has(journey.id)),
+    [allTemplates, membershipsByJourneyId]
   )
 
   // All Templates header (NES-1872): sort and bulk actions are scoped to
@@ -763,49 +777,6 @@ export function TemplateGalleryPageList({
       activationConstraint: { delay: 200, tolerance: 5 }
     })
   )
-
-  // Pointer-based collision detection, two-level (the dnd-kit "multiple
-  // containers" pattern). `closestCenter` alone resolved the target from the
-  // *dragged card's* centre — offset from the cursor by the grab point and
-  // competing with the wide section droppables — leaving dead bands where a
-  // drop landed nowhere. `pointerWithin` keys off the real cursor instead.
-  //
-  // From the pointer collisions, `resolveSectionDrop` decides intent: moving
-  // into a section targets the whole section (so the collection is one drop
-  // zone and its highlight lights anywhere inside it); reordering within a
-  // collection targets the nearest card *within that collection* via a scoped
-  // `closestCenter`, so the slot resolves even when the cursor is in the gap
-  // between cards (where `pointerWithin` only sees the container).
-  //
-  // When the cursor is outside every droppable we fall back to the raw
-  // `closestCenter` WITHOUT promoting to a section — a drop in dead space must
-  // not silently reassign a template's collection.
-  const collisionDetection = useCallback<CollisionDetection>((args) => {
-    const pointerCollisions = pointerWithin(args)
-    if (pointerCollisions.length === 0) return closestCenter(args)
-
-    const resolution = resolveSectionDrop(
-      pointerCollisions,
-      parseCardId(String(args.active.id))
-    )
-    if (resolution.kind === 'passthrough') return pointerCollisions
-    if (resolution.kind === 'action' || resolution.kind === 'section') {
-      return [resolution.collision]
-    }
-
-    // reorder: nearest card within the dragged card's own collection.
-    const cardCollisions = closestCenter({
-      ...args,
-      droppableContainers: args.droppableContainers.filter((container) => {
-        const card = parseCardId(String(container.id))
-        return (
-          card?.zone.kind === 'collection' &&
-          card.zone.id === resolution.collectionId
-        )
-      })
-    })
-    return cardCollisions.length > 0 ? cardCollisions : pointerCollisions
-  }, [])
 
   // Scan existing collection titles for the "Collection N" pattern and
   // return the smallest unused N (>= 1). The match is case-sensitive
@@ -1232,7 +1203,7 @@ export function TemplateGalleryPageList({
           sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
         >
           <DndContext
-            collisionDetection={collisionDetection}
+            collisionDetection={collectionCollisionDetection}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}

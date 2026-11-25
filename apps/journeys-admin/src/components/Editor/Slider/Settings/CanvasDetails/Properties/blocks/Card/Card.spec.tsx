@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ComponentType, ReactElement } from 'react'
 
@@ -135,6 +135,13 @@ const renderWithProviders = (
 }
 
 describe('Card', () => {
+  afterEach(async () => {
+    // Let the lazy accordion controls settle before Vitest tears down the worker.
+    await act(async () => {
+      await vi.dynamicImportSettled()
+    })
+  })
+
   describe('Basic Rendering', () => {
     it('renders card properties container', () => {
       const card = createCard()

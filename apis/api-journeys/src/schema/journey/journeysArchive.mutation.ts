@@ -1,9 +1,9 @@
-import { JourneyStatus, prisma } from '@core/prisma/journeys/client'
+import { JourneyStatus } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
 import { JourneyRef } from './journey'
-import { Action, journeyAcl, journeyReadAccessWhere } from './journey.acl'
+import { archiveOrTrashJourneys } from './journeyLifecycle'
 
 builder.mutationField('journeysArchive', (t) =>
   t
@@ -14,43 +14,12 @@ builder.mutationField('journeysArchive', (t) =>
       args: {
         ids: t.arg({ type: ['ID'], required: true })
       },
-      resolve: async (query, _parent, args, context) => {
-        const userId = context.user.id
-        const ids = args.ids.map(String)
-
-        const journeys = await prisma.journey.findMany({
-          where: {
-            AND: [
-              journeyReadAccessWhere(
-                userId,
-                context.user as typeof context.user & { roles?: string[] }
-              ),
-              { id: { in: ids } }
-            ]
-          },
-          include: {
-            userJourneys: true,
-            team: { include: { userTeams: true } }
-          }
+      resolve: async (query, _parent, args, context) =>
+        await archiveOrTrashJourneys({
+          ids: args.ids.map(String),
+          user: context.user,
+          status: JourneyStatus.archived,
+          query
         })
-
-        const manageableJourneys = journeys.filter((j) =>
-          journeyAcl(Action.Manage, j, context.user)
-        )
-
-        return await Promise.all(
-          manageableJourneys.map(async (journey) =>
-            prisma.journey.update({
-              ...query,
-              where: { id: journey.id, updatedAt: journey.updatedAt },
-              data: {
-                status: JourneyStatus.archived,
-                archivedAt: new Date(),
-                updatedAt: journey.updatedAt
-              }
-            })
-          )
-        )
-      }
     })
 )

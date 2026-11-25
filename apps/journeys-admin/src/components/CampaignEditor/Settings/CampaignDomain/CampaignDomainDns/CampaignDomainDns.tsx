@@ -103,7 +103,7 @@ export function CampaignDomainDns({
     check == null
       ? { label: t('Loading'), color: 'text.secondary' }
       : !check.verified
-        ? { label: t('Pending Verfication'), color: 'warning.main' }
+        ? { label: t('Pending Verification'), color: 'warning.main' }
         : check.configured
           ? { label: t('Valid Configuration'), color: 'success.main' }
           : { label: t('Invalid Configuration'), color: 'error.main' }

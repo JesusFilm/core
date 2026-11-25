@@ -1,5 +1,6 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
+import { CollisionDetection } from '@dnd-kit/core'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -36,7 +37,10 @@ import {
 import { SortOrder } from '../JourneyList/JourneySort'
 import { ThemeProvider } from '../ThemeProvider'
 
-import { TemplateGalleryPageList } from './TemplateGalleryPageList'
+import {
+  TemplateGalleryPageList,
+  collectionCollisionDetection
+} from './TemplateGalleryPageList'
 
 import '../../../test/i18n'
 
@@ -285,6 +289,66 @@ describe('TemplateGalleryPageList', () => {
     )
     expect(getByTestId('CollectionCard-page-1')).toBeInTheDocument()
     expect(getByTestId('CreateCollectionButton')).toBeInTheDocument()
+  })
+
+  it('keeps an assigned draft out of All Templates when its card projection is filtered', async () => {
+    const basePage = (
+      collectionsMock.result as { data: GetTemplateGalleryPages }
+    ).data.templateGalleryPages[0]
+    const collectionsWithDraft: MockLink.MockedResponse<GetTemplateGalleryPages> =
+      {
+        request: collectionsMock.request,
+        result: {
+          data: {
+            templateGalleryPages: [
+              {
+                ...basePage,
+                templates: [],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-1',
+                    isHome: true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    const draftJourneys: MockLink.MockedResponse<GetAdminJourneys> = {
+      request: journeysMock.request,
+      result: {
+        data: {
+          journeys: (
+            journeysMock.result as { data: GetAdminJourneys }
+          ).data.journeys.map((journey) => ({
+            ...journey,
+            status: JourneyStatus.draft
+          }))
+        }
+      }
+    }
+    const { getByText } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          collectionsWithDraft,
+          draftJourneys
+        ]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TemplateGalleryPageList />
+            </TeamProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByText('All templates are in collections.')).toBeInTheDocument()
+    )
   })
 
   it('draws a template as its home in one collection and as a greyed link in another', async () => {
@@ -548,6 +612,13 @@ describe('TemplateGalleryPageList', () => {
                     id: 'journey-1',
                     title: 'Welcome Tour',
                     primaryImageBlock: null
+                  }
+                ],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-1',
+                    isHome: true
                   }
                 ]
               }
@@ -878,6 +949,13 @@ describe('TemplateGalleryPageList', () => {
                     title: 'Welcome Tour',
                     primaryImageBlock: null
                   }
+                ],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-1',
+                    isHome: true
+                  }
                 ]
               }
             ]
@@ -982,6 +1060,13 @@ describe('TemplateGalleryPageList', () => {
                     id: 'journey-1',
                     title: 'Welcome Tour',
                     primaryImageBlock: null
+                  }
+                ],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-1',
+                    isHome: true
                   }
                 ]
               }
@@ -1233,6 +1318,13 @@ describe('TemplateGalleryPageList', () => {
                     id: 'journey-2',
                     title: 'Alpha Editor',
                     primaryImageBlock: null
+                  }
+                ],
+                memberships: [
+                  {
+                    __typename: 'TemplateGalleryPageMembership',
+                    journeyId: 'journey-2',
+                    isHome: true
                   }
                 ]
               }
@@ -1597,5 +1689,53 @@ describe('TemplateGalleryPageList', () => {
       )
       expect(getByTestId('TemplateGalleryDndScope')).toHaveAttribute('inert')
     })
+  })
+})
+
+describe('collectionCollisionDetection', () => {
+  function collisionArgs(pointer: {
+    x: number
+    y: number
+  }): Parameters<CollisionDetection>[0] {
+    const rect = {
+      top: 100,
+      bottom: 200,
+      left: 100,
+      right: 200,
+      width: 100,
+      height: 100
+    }
+    return {
+      active: {
+        id: 'collection:source|journey-1',
+        data: { current: {} },
+        rect: { current: { initial: rect, translated: rect } }
+      },
+      collisionRect: rect,
+      pointerCoordinates: pointer,
+      droppableRects: new Map([['action:link:target', rect]]),
+      droppableContainers: [
+        {
+          id: 'action:link:target',
+          key: 'target',
+          data: { current: {} },
+          disabled: false,
+          node: { current: null },
+          rect: { current: rect }
+        }
+      ]
+    }
+  }
+
+  it('ignores the nearest action box when the pointer is outside every target', () => {
+    expect(
+      collectionCollisionDetection(collisionArgs({ x: 99, y: 150 }))
+    ).toEqual([])
+  })
+
+  it('accepts a link only when the pointer lands in its action box', () => {
+    expect(
+      collectionCollisionDetection(collisionArgs({ x: 150, y: 150 }))[0]?.id
+    ).toBe('action:link:target')
   })
 })

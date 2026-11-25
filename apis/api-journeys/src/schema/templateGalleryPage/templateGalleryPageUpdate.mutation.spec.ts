@@ -25,6 +25,15 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
+const existingMembershipFixture = {
+  id: 'tpt-1',
+  templateGalleryPageId: 'p1',
+  journeyId: 'j1',
+  order: 0,
+  isHome: true,
+  createdAt: new Date('2026-09-23')
+}
+
 describe('templateGalleryPageUpdate', () => {
   const mockUser = {
     id: 'userId',
@@ -166,6 +175,7 @@ describe('templateGalleryPageUpdate', () => {
     // after the create; the final reorder read.
     prismaMock.templateGalleryPageTemplate.findMany
       .mockResolvedValueOnce([{ journeyId: 'j1' }] as any)
+      .mockResolvedValueOnce([existingMembershipFixture])
       .mockResolvedValueOnce([{ id: 'tpt-1' }, { id: 'tpt-2' }] as any)
       .mockResolvedValueOnce([
         { id: 'tpt-2', journeyId: 'j2' },
@@ -217,6 +227,7 @@ describe('templateGalleryPageUpdate', () => {
     prismaMock.journey.findMany.mockResolvedValue([])
     prismaMock.templateGalleryPageTemplate.findMany
       .mockResolvedValueOnce([{ journeyId: 'j1' }] as any)
+      .mockResolvedValueOnce([existingMembershipFixture])
       .mockResolvedValue([])
     prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue({
       id: 'tpt-1',
@@ -258,6 +269,7 @@ describe('templateGalleryPageUpdate', () => {
     prismaMock.journey.findMany.mockResolvedValue([{ id: 'j-shared' }] as any)
     prismaMock.templateGalleryPageTemplate.findMany
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([{ id: 'tpt-new' }] as any)
       .mockResolvedValueOnce([{ id: 'tpt-new', journeyId: 'j-shared' }] as any)
     prismaMock.templateGalleryPageTemplate.findUnique.mockResolvedValue(null)
@@ -290,6 +302,39 @@ describe('templateGalleryPageUpdate', () => {
     })
   })
 
+  it('rejects a stale membership replacement before staging a concurrently added row', async () => {
+    prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
+      id: 'p1',
+      teamId: 'team-1'
+    } as Awaited<ReturnType<typeof prismaMock.templateGalleryPage.findUnique>>)
+    const concurrentRow = {
+      id: 'concurrent',
+      templateGalleryPageId: 'p1',
+      journeyId: 'j1',
+      order: 0,
+      isHome: true,
+      createdAt: new Date('2026-09-23')
+    }
+    prismaMock.templateGalleryPageTemplate.findMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValue([concurrentRow])
+    const result = await authClient({
+      document: TEMPLATE_GALLERY_PAGE_UPDATE,
+      variables: { id: 'p1', input: { journeyIds: [] } }
+    })
+    expect(result).toMatchObject({
+      errors: [
+        expect.objectContaining({
+          extensions: expect.objectContaining({ code: 'CONFLICT' })
+        })
+      ]
+    })
+    expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
+    expect(prismaMock.templateGalleryPageTemplate.create).not.toHaveBeenCalled()
+    expect(prismaMock.templateGalleryPageTemplate.delete).not.toHaveBeenCalled()
+    expect(prismaMock.templateGalleryPage.update).not.toHaveBeenCalled()
+  })
+
   it('leaves join rows alone when journeyIds is undefined', async () => {
     prismaMock.templateGalleryPage.findUnique.mockResolvedValue({
       id: 'p1',
@@ -320,6 +365,7 @@ describe('templateGalleryPageUpdate', () => {
     } as any)
     prismaMock.journey.findMany.mockResolvedValue([{ id: 'j1' }] as any)
     prismaMock.templateGalleryPageTemplate.findMany
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([{ id: 'tpt-1' }] as any)
       .mockResolvedValueOnce([{ id: 'tpt-1', journeyId: 'j1' }] as any)

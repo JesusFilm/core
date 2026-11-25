@@ -121,36 +121,41 @@ describe('templateGalleryPageMoveJourney', () => {
     ).toHaveBeenCalledTimes(2)
   })
 
-  it('removes the source membership when the journey is already on the destination', async () => {
-    // Source row exists; already on target; removeMembership re-reads the
-    // source row (a home) and promotes the oldest link.
+  it('keeps both memberships unchanged when a concurrent link already placed the journey on the destination', async () => {
     prismaMock.templateGalleryPageTemplate.findUnique
-      .mockResolvedValueOnce({ id: 'tpt-source' } as any)
-      .mockResolvedValueOnce({ id: 'tpt-target' } as any)
-      .mockResolvedValueOnce({ id: 'tpt-source', isHome: true } as any)
+      .mockResolvedValueOnce({ id: 'tpt-source' } as Awaited<
+        ReturnType<typeof prismaMock.templateGalleryPageTemplate.findUnique>
+      >)
+      .mockResolvedValueOnce({ id: 'tpt-target' } as Awaited<
+        ReturnType<typeof prismaMock.templateGalleryPageTemplate.findUnique>
+      >)
+      .mockResolvedValueOnce({ id: 'tpt-source', isHome: true } as Awaited<
+        ReturnType<typeof prismaMock.templateGalleryPageTemplate.findUnique>
+      >)
     prismaMock.templateGalleryPageTemplate.findFirst.mockResolvedValue({
       id: 'tpt-link-C',
       templateGalleryPageId: 'page-C'
-    } as any)
+    } as Awaited<
+      ReturnType<typeof prismaMock.templateGalleryPageTemplate.findFirst>
+    >)
 
-    await authClient({
+    const result = await authClient({
       document: TEMPLATE_GALLERY_PAGE_MOVE_JOURNEY,
       variables
     })
 
-    expect(prismaMock.templateGalleryPageTemplate.delete).toHaveBeenCalledWith({
-      where: { id: 'tpt-source' }
+    expect(result).toEqual({
+      data: {
+        templateGalleryPageMoveJourney: [{ id: 'page-A' }, { id: 'page-B' }]
+      }
     })
-    expect(prismaMock.templateGalleryPageTemplate.update).toHaveBeenCalledWith({
-      where: { id: 'tpt-link-C' },
-      data: { isHome: true }
-    })
-    // The promoted page is returned alongside source and destination.
-    expect(prismaMock.templateGalleryPage.findMany).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        where: { id: { in: ['page-A', 'page-B', 'page-C'] } }
-      })
-    )
+    expect(prismaMock.templateGalleryPageTemplate.delete).not.toHaveBeenCalled()
+    expect(prismaMock.templateGalleryPageTemplate.update).not.toHaveBeenCalled()
+    expect(prismaMock.templateGalleryPageTemplate.create).not.toHaveBeenCalled()
+    expect(
+      prismaMock.templateGalleryPageTemplate.aggregate
+    ).not.toHaveBeenCalled()
+    expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
   })
 
   it('throws BAD_USER_INPUT when the journey is not on the source page', async () => {

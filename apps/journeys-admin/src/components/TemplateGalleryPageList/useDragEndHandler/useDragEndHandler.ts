@@ -264,6 +264,16 @@ export function useDragEndHandler(
       )
       return
     }
+    const sourceRetained = data?.templateGalleryPageMoveJourney
+      .find((page) => page.id === source.id)
+      ?.memberships.some((membership) => membership.journeyId === journeyId)
+    if (sourceRetained) {
+      enqueueSnackbar(t('Already here'), {
+        variant: 'info',
+        preventDuplicate: true
+      })
+      return
+    }
     sendCollectionTemplateDragEvent({
       collectionId: target.id,
       templateId: journeyId,
@@ -294,19 +304,18 @@ export function useDragEndHandler(
       templateId: journeyId,
       via: 'drag'
     })
-    // The server also returns the page whose link became the new home,
-    // when the removed membership was the home.
-    const promoted = data?.templateGalleryPageRemoveJourney.find(
+    // The server includes the surviving home, whether preserved or promoted.
+    const home = data?.templateGalleryPageRemoveJourney.find(
       (page) =>
         page.id !== source.id &&
         page.memberships.some((m) => m.journeyId === journeyId && m.isHome)
     )
     const title = templateTitle(journeyId)
     enqueueSnackbar(
-      promoted != null
+      home != null
         ? t(
             'Removed {{template}} from {{collection}}. Its home is now {{home}}.',
-            { template: title, collection: source.title, home: promoted.title }
+            { template: title, collection: source.title, home: home.title }
           )
         : t('Removed {{template}} from {{collection}}', {
             template: title,
@@ -409,6 +418,12 @@ export function useDragEndHandler(
           return
         }
         case 'collection': {
+          if (
+            membershipsByJourneyId
+              .get(journeyId)
+              ?.collectionIds.includes(target.collectionId)
+          )
+            return
           // Landed on another collection but between its Move / Link boxes.
           // Never guess: say what to aim for.
           enqueueSnackbar(t('Drop on “Move here” or “Link here”.'), {

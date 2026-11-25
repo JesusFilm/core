@@ -15,7 +15,11 @@ import {
   mediaUpdateData,
   resolveMediaInput
 } from './media/resolveMediaInput'
-import { addMembership, lockJourney, removeMembership } from './membership'
+import {
+  addMembership,
+  lockPageMemberships,
+  removeMembership
+} from './membership'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 builder.mutationField('templateGalleryPageUpdate', (t) =>
@@ -68,30 +72,17 @@ builder.mutationField('templateGalleryPageUpdate', (t) =>
 
       return await prisma.$transaction(async (tx) => {
         if (input.journeyIds !== undefined && input.journeyIds !== null) {
+          const existing = await lockPageMemberships(tx, id, input.journeyIds)
+          // Validate after locking the journeys so a concurrent transfer or
+          // template change cannot invalidate the placement check.
           const { validIds } = await filterToTeamTemplates(
             tx,
             page.teamId,
             input.journeyIds
           )
-          const existing = await tx.templateGalleryPageTemplate.findMany({
-            where: { templateGalleryPageId: id },
-            select: { journeyId: true }
-          })
           const existingIds = existing.map((row) => row.journeyId)
-          // Lock every journey whose membership changes (sorted, so two
-          // concurrent updates touching overlapping journeys cannot
-          // deadlock), then the page — the same journey-then-page order
-          // every membership mutation uses.
           const desired = new Set(validIds)
           const current = new Set(existingIds)
-          const touched = [
-            ...existingIds.filter((journeyId) => !desired.has(journeyId)),
-            ...validIds.filter((journeyId) => !current.has(journeyId))
-          ].sort()
-          for (const journeyId of touched) {
-            await lockJourney(tx, journeyId)
-          }
-          await lockPage(tx, id)
           for (const journeyId of existingIds) {
             if (!desired.has(journeyId)) {
               await removeMembership(tx, id, journeyId)

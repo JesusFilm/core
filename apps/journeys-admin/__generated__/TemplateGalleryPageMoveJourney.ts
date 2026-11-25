@@ -106,7 +106,7 @@ export interface TemplateGalleryPageMoveJourney_templateGalleryPageMoveJourney {
   createdAt: any;
   updatedAt: any;
   /**
-   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, published, template-flagged journeys only — a journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
+   * Templates currently assigned to this page, in display order. Read-time filtered to same-team, non-soft-deleted, draft or published, template-flagged journeys only. A journey transferred to another team or unflagged from `template` after being added is silently dropped from this list. Each item is the narrow `TemplateGalleryItem` public DTO, NOT the full `Journey` type.
    */
   templates: TemplateGalleryPageMoveJourney_templateGalleryPageMoveJourney_templates[];
   /**
@@ -117,7 +117,7 @@ export interface TemplateGalleryPageMoveJourney_templateGalleryPageMoveJourney {
 
 export interface TemplateGalleryPageMoveJourney {
   /**
-   * Move a journey's membership from one TemplateGalleryPage to another. The row keeps its role: moving the home makes the destination the home, moving a link keeps it a link. The row appends at the end of the destination's display order and both pages are renumbered to contiguous orders 0..N-1. If the journey is already on the destination, the source membership is simply removed (promoting the oldest link when the source was the home). Returns every page that changed: the source, the destination, and any page whose link was promoted to home. Allowed on both `draft` and `published` pages.
+   * Move a journey's membership from one TemplateGalleryPage to another. The row keeps its role: moving the home makes the destination the home, moving a link keeps it a link. The row appends at the end of the destination's display order and both pages are renumbered to contiguous orders 0..N-1. If the journey is already on the destination, both memberships remain unchanged. Returns the source and destination pages, including when the move is a no-op. Allowed on both `draft` and `published` pages.
    * 
    * Auth: caller must be a member of both pages' team.
    * 

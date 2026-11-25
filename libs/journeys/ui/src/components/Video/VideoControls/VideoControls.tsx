@@ -31,6 +31,7 @@ import { VideoStats } from '../VideoStats'
 import { DesktopControls } from './DesktopControls'
 import { MobileControls } from './MobileControls'
 import { PlaybackIcon } from './PlaybackIcon'
+import { useCaptionOffset } from './useCaptionOffset'
 
 interface VideoControlProps {
   player: VideoJsPlayer
@@ -344,6 +345,8 @@ export function VideoControls({
   // crucially, can be cleared on unmount — otherwise the deferred play/pause
   // fires against a torn-down player.
   const clickTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const mobileButtonRowRef = useRef<HTMLDivElement>(null)
+  useCaptionOffset(player, mobileButtonRowRef)
 
   useEffect(() => {
     return () => {
@@ -474,6 +477,7 @@ export function VideoControls({
                 source={source}
                 visible={visible}
                 setActive={setActive}
+                buttonRowRef={mobileButtonRowRef}
               />
               <DesktopControls
                 playing={state.playing}
