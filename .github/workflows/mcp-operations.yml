@@ -60,4 +60,6 @@ jobs:
           files: coverage/integration/mcp-operations/cobertura-coverage.xml
           flags: integration.mcp-operations
           disable_search: true
+          override_commit: ${{ github.event.pull_request.head.sha }}
+          override_branch: ${{ github.head_ref }}
           fail_ci_if_error: true
