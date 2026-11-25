@@ -819,7 +819,11 @@ export function createMediaJobs(
   }
   async function dispatch(context: JobContext, jobId: string) {
     await own(jobId, context)
-    const receiptId = await authorized(
+    const {
+      permitId: receiptId,
+      bytes,
+      mime
+    } = await authorized(
       context,
       'dispatch',
       async (tx, { permitId, accept, grantVersion, permissionHash }) => {
@@ -831,6 +835,10 @@ export function createMediaJobs(
           job.progressionPermissionHash !== permissionHash
         )
           denied()
+        // Input reads cannot send provider work. Finish them while recovery can
+        // still fence this receipt, then check current authority after the I/O.
+        const file = mediaFile.parse(job.file)
+        const bytes = await assembled(tx, job)
         await accept()
         await tx.mcpMediaExecution.update({
           where: { id: permitId },
@@ -840,7 +848,7 @@ export function createMediaJobs(
           where: { id: jobId },
           data: { dispatchReceiptId: permitId }
         })
-        return permitId
+        return { permitId, bytes, mime: file.mime }
       }
     )
     await hooks.beforeSend?.()
@@ -870,12 +878,7 @@ export function createMediaJobs(
           })
           if (receipt.status !== 'sending') denied()
           const job = await lockJob(tx, jobId)
-          const file = mediaFile.parse(job.file)
-          const outcome = await provider.dispatch(
-            job.providerId,
-            await assembled(tx, job),
-            file.mime
-          )
+          const outcome = await provider.dispatch(job.providerId, bytes, mime)
           await hooks.afterSend?.()
           await tx.mcpMediaJob.update({
             where: { id: jobId },

@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { fingerprint, sameSecret } from '@core/yoga/mcp/readContract'
 
 import type { AuthConfig } from './config'
-import type { Identity } from './identity'
+import { type Identity, IdentityIneligible } from './identity'
 import {
   AuthorizationChanged,
   type Database,
@@ -36,7 +36,7 @@ export function createMediaJobAuthority(
   db: Database,
   identity: Identity
 ) {
-  async function auditGrantDenial<T>(
+  async function auditMediaDenial<T>(
     action: z.infer<typeof mediaAuditAction>,
     identifiers: { userId: string; clientId: string; journeyIds: string[] },
     operation: () => Promise<T>
@@ -44,7 +44,11 @@ export function createMediaJobAuthority(
     try {
       return await operation()
     } catch (error) {
-      if (!(error instanceof AuthorizationChanged)) throw error
+      if (
+        !(error instanceof AuthorizationChanged) &&
+        !(error instanceof IdentityIneligible)
+      )
+        throw error
       // The authorization transaction has rolled back before this audit commits.
       await audit(db, action, 'denied', identifiers)
       throw new AuditedMediaDenial('Access denied')
@@ -106,7 +110,7 @@ export function createMediaJobAuthority(
         verified.environment !== config.AUTH_ENVIRONMENT
       )
         throw new Error('Access denied')
-      return auditGrantDenial(
+      return auditMediaDenial(
         mediaAuditAction.parse(`media_${input.action}`),
         {
           userId: verified.userId,
@@ -193,20 +197,20 @@ export function createMediaJobAuthority(
       // Reporting a denial does not establish that an accepted executor stopped.
       return { recorded: true }
     }
-    await identity.check({
-      userId: connection.userId,
-      authTime: connection.firebaseAuthTime,
-      createdAt: connection.firebaseCreatedAt
-    })
-    return auditGrantDenial(
+    return auditMediaDenial(
       action,
       {
         userId: connection.userId,
         clientId: connection.clientId,
         journeyIds: permit.journeyIds
       },
-      () =>
-        db.$transaction(async (tx) => {
+      async () => {
+        await identity.check({
+          userId: connection.userId,
+          authTime: connection.firebaseAuthTime,
+          createdAt: connection.firebaseCreatedAt
+        })
+        return db.$transaction(async (tx) => {
           await lockGates(tx, gatesSchema.parse(permit.gates))
           await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`
           await tx.$queryRaw`SELECT id FROM "ReadPermit" WHERE id = ${permit.id} FOR UPDATE`
@@ -234,6 +238,7 @@ export function createMediaJobAuthority(
           })
           return { accepted: true }
         })
+      }
     )
   }
 }

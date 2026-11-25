@@ -18,6 +18,7 @@ import type { ImageUploadProvider } from '../../api-media/src/lib/mcpImageProvid
 import type { MediaJobs } from '../../api-media/src/lib/mcpMediaJobs'
 import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
 import type { UploadStorage } from '../../api-media/src/lib/mcpUploadStorage'
+import { IdentityIneligible } from '../src/identity'
 import { captureGates, lockGates } from '../src/store'
 import {
   beginConnectionChange,
@@ -54,6 +55,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let stagingUnknown = false
   let stagingRejected = false
   let stagingWrites = 0
+  let identityFailure: Error | undefined
+  let beforeStagedRead: (() => Promise<void>) | undefined
   let mediaLibrary = true
   let providerReady = true
   let providerUnknown = false
@@ -75,6 +78,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       if (stagingUnknown) throw new Error('Controlled lost storage response')
     },
     async get(key) {
+      await beforeStagedRead?.()
       if (stagingUnknown)
         throw new Error('Controlled unresolved storage status')
       const bytes = objects.get(key)
@@ -117,6 +121,9 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     authUrl,
     journeysUrl,
     startupTimeoutMs: 120000,
+    async checkIdentity() {
+      if (identityFailure) throw identityFailure
+    },
     authEnv: {
       AUTH_READ_MEDIA_SECRET: mediaSecret,
       AUTH_PERMISSION_MEDIA_SECRET:
@@ -220,6 +227,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     stagingUnknown = false
     stagingRejected = false
     stagingWrites = 0
+    identityFailure = undefined
+    beforeStagedRead = undefined
     providerReady = true
     mediaLibrary = true
     providerUnknown = false
@@ -242,6 +251,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   afterAll(async () => {
     await media.$disconnect()
     await languages.$disconnect()
+  })
+
+  afterEach(() => {
+    identityFailure = undefined
   })
 
   const content = (response: Awaited<ReturnType<typeof f.call>>) => {
@@ -998,6 +1011,77 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     }
   )
 
+  it('audits an ineligible originating Firebase session through Admin status', async () => {
+    const job = await start(manifest(await fileBytes()))
+    const id = String(job.jobId)
+    const connection = await connectionFor(id)
+    const stored = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    const existingIds = (await f.auth.securityAudit.findMany()).map(
+      (event) => event.id
+    )
+    identityFailure = new IdentityIneligible(
+      'raw-identity-error-token-sentinel'
+    )
+
+    // The fresh Admin browser identity succeeds independently of the old
+    // Firebase evidence bound to the originating connection.
+    expect((await browser(id)).status).toBe(403)
+    const events = await f.auth.securityAudit.findMany({
+      where: { id: { notIn: existingIds } }
+    })
+    expect(events).toEqual([
+      {
+        id: expect.any(String),
+        action: 'media_release',
+        outcome: 'denied',
+        userId: connection.userId,
+        clientId: connection.clientId,
+        journeyIds: [f.journeyId],
+        occurredAt: expect.any(Date),
+        expiresAt: expect.any(Date)
+      }
+    ])
+    expect(events[0].expiresAt.getTime() - events[0].occurredAt.getTime()).toBe(
+      90 * 86400000
+    )
+    expect(JSON.stringify(events)).not.toContain(
+      'raw-identity-error-token-sentinel'
+    )
+    expect(JSON.stringify(events)).not.toContain(String(job.ingressTicket))
+    expect(JSON.stringify(events)).not.toContain('synthetic.png')
+    expect(
+      await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    ).toEqual(stored)
+    const permit = await f.auth.readPermit.findFirstOrThrow({
+      where: { connectionId: connection.id, stage: 'media_release' },
+      orderBy: { preparedAt: 'desc' }
+    })
+    expect(permit).toMatchObject({ status: 'settled', acceptedAt: null })
+    expect(dispatchCount).toBe(0)
+  })
+
+  it('keeps unknown identity-provider failures distinct from verified media denials', async () => {
+    const id = String((await start()).jobId)
+    const existingIds = (await f.auth.securityAudit.findMany()).map(
+      (event) => event.id
+    )
+    identityFailure = new Error('controlled identity provider unavailable')
+    expect((await browser(id)).status).toBe(403)
+    expect(
+      await f.auth.securityAudit.findMany({
+        where: { id: { notIn: existingIds } }
+      })
+    ).toMatchObject([
+      {
+        action: 'read_accept',
+        outcome: 'denied',
+        userId: null,
+        clientId: null,
+        journeyIds: []
+      }
+    ])
+  })
+
   it('rejects untrusted or caller-supplied denial audit identifiers', async () => {
     const job = await start()
     const connection = await connectionFor(String(job.jobId))
@@ -1126,6 +1210,107 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(
       await media.cloudflareImage.findUnique({ where: { id: asset.id } })
     ).toMatchObject({ uploaded: true })
+  })
+
+  it.each(['retry', 'cancel', 'withdrawal'] as const)(
+    'recovers a failed staged GET before provider dispatch through %s after restart',
+    async (recovery) => {
+      const id = String((await start()).jobId)
+      await upload(id, await fileBytes())
+      const context = {
+        userId: 'alice',
+        connectionId: (await connectionFor(id)).id,
+        journeyId: f.journeyId
+      }
+      await jobs.validate(context, id)
+      const original = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id }
+      })
+      stagingUnknown = true
+      await browser(id, 'POST', 'resume')
+      expect(dispatchCount).toBe(0)
+      const receipt = await f.auth.readPermit.findFirstOrThrow({
+        where: { connectionId: context.connectionId, stage: 'media_dispatch' },
+        orderBy: { preparedAt: 'desc' }
+      })
+      const restarted = createWorker()
+      await restarted.recover()
+      expect(
+        await f.auth.readPermit.findUniqueOrThrow({ where: { id: receipt.id } })
+      ).toMatchObject({ status: 'settled', acceptedAt: null })
+      expect(
+        await media.mcpMediaExecution.findUniqueOrThrow({
+          where: { id: receipt.id }
+        })
+      ).toMatchObject({ status: 'fenced', reportedAt: expect.any(Date) })
+      expect(
+        await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      ).toEqual(original)
+      if (recovery === 'withdrawal') {
+        const change = await withdraw(id)
+        await restarted.recover()
+        await reconcileConnectionChanges(f.auth)
+        expect(
+          await f.auth.connectionChange.findUniqueOrThrow({
+            where: { id: change.id }
+          })
+        ).toMatchObject({ status: 'complete' })
+      } else if (recovery === 'cancel') {
+        await restarted.cancel(context, id, randomUUID())
+        expect(
+          await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+        ).toMatchObject({ active: false, state: 'cancelled' })
+        expect(objects.size).toBe(0)
+      } else {
+        stagingUnknown = false
+        await restarted.resume(context, id)
+        expect(
+          await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+        ).toMatchObject({
+          active: false,
+          state: 'ready',
+          file: original.file,
+          transferDeadline: original.transferDeadline
+        })
+        expect(dispatchCount).toBe(1)
+      }
+    }
+  )
+
+  it('checks final dispatch authority after staged-input preparation', async () => {
+    const id = String((await start()).jobId)
+    await upload(id, await fileBytes())
+    const connection = await connectionFor(id)
+    const context = {
+      userId: 'alice',
+      connectionId: connection.id,
+      journeyId: f.journeyId
+    }
+    await jobs.validate(context, id)
+    let reads = 0
+    beforeStagedRead = async () => {
+      reads++
+      const permit = await f.auth.readPermit.findFirstOrThrow({
+        where: { connectionId: connection.id, stage: 'media_dispatch' },
+        orderBy: { preparedAt: 'desc' }
+      })
+      expect(permit).toMatchObject({ status: 'prepared', acceptedAt: null })
+      await f.auth.agentConnection.update({
+        where: { id: connection.id },
+        data: { expiresAt: new Date(0) }
+      })
+    }
+    await expect(jobs.dispatch(context, id)).rejects.toThrow()
+    expect(reads).toBe(1)
+    expect(dispatchCount).toBe(0)
+    expect(
+      await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    ).toMatchObject({ state: 'dispatch_pending', dispatchReceiptId: null })
+    const permit = await f.auth.readPermit.findFirstOrThrow({
+      where: { connectionId: connection.id, stage: 'media_dispatch' },
+      orderBy: { preparedAt: 'desc' }
+    })
+    expect(permit).toMatchObject({ status: 'settled', acceptedAt: null })
   })
 
   it('finishes an upload when background recovery overlaps preparation and accepted dispatch', async () => {

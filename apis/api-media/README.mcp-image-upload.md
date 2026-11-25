@@ -94,6 +94,11 @@ each chunk, dispatch, cancellation and private output are separate bounded actio
 Accepted physical output holds a permit until the actual Node response finishes or
 closes. Unknown provider sends and unconfirmed output executors keep withdrawal
 Pending. Recovery locks the same receipt before fencing a delayed executor.
+Dispatch assembles and checks staged chunks before final acceptance, while its
+receipt remains a fenceable unsent intent. A failed staged read settles that
+intent without a provider call. A replacement worker can retry the original job,
+or cancellation can safely clean up its staging and release capacity. The final
+authority check follows input preparation and owning lock waits.
 Output receipts additionally persist the Linux boot ID, PID namespace, process ID
 and process start ticks. Recovery in that same boot and PID namespace can prove
 the original process exited or its PID was reused, then fence and settle it.
@@ -143,6 +148,10 @@ admission/dispatch/attachment and purges safe private job payloads, while unreso
 provider/input work retains reconciliation state. It never deletes library
 images. The existing Auth audit records typed media actions with 90-day expiry;
 filenames, content, credentials and raw provider errors are excluded.
+Known originating Firebase identity failures, including revoked sessions and
+deleted accounts, record a typed media denial using the verified connection and
+permit identifiers. An unavailable Firebase lookup still fails closed and does
+not supply evidence of identity ineligibility.
 
 ## Configuration and local evidence
 
