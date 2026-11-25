@@ -114,7 +114,7 @@ export function LocalDetails({
 
   // `published` is per variant, and the query above only loads the variant for
   // the block's saved (or default) language. When the user picks another
-  // language, look up that language's variant (cached after the first time) so
+  // language, look up that language's variant (uncached) so
   // the banner, the dialog and the commit all reflect the language actually
   // being selected. Select/Apply stay disabled until the lookup resolves.
   const [lookup, setLookup] = useState<{
@@ -149,7 +149,11 @@ export function LocalDetails({
     client
       .query<GetVideo>({
         query: GET_VIDEO,
-        variables: { id, languageId: forLanguageId }
+        variables: { id, languageId: forLanguageId },
+        // Keep this lookup out of the cache: writing it re-emits the screen's
+        // own `data`, which resets the picked language and re-initialises the
+        // video.js player.
+        fetchPolicy: 'no-cache'
       })
       .then(({ data: pickedData }) => {
         if (lookupRequestIdRef.current !== requestId) return
