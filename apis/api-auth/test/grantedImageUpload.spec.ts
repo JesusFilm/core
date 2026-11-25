@@ -432,7 +432,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       const text = await f.save([
         {
           type: 'typography_set',
-          block: { id: f.id('heading') },
+          blockId: f.id('heading'),
           content: 'Ordinary text edit'
         }
       ])
@@ -802,6 +802,52 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       expect(
         await media.mcpMediaJob.findUnique({ where: { id } })
       ).toMatchObject({ dispatchedAt: null, dispatchReceiptId: null })
+    })
+
+    it('keeps delayed generation uncertain, rejects file ingress and never dispatches while disabled', async () => {
+      const id = String((await generate()).jobId)
+      const context = await contextFor(id)
+      expect(
+        (
+          await browser(
+            id,
+            'POST',
+            'bind',
+            JSON.stringify(manifest(await fileBytes()))
+          )
+        ).status
+      ).toBe(403)
+      generationEnabled = false
+      const disabled = createWorker()
+      await expect(
+        disabled.admit(context, {
+          kind: 'image_generation',
+          idempotencyKey: randomUUID(),
+          prompt: promptSentinel
+        })
+      ).rejects.toThrow('ACCESS_DENIED_OR_NOT_FOUND')
+      await disabled.processCompletedTransfers()
+      expect(generationCount).toBe(0)
+      generationEnabled = true
+      providerReady = false
+      await createWorker().processCompletedTransfers()
+      expect(generationCount).toBe(1)
+      await media.mcpMediaJob.update({
+        where: { id },
+        data: { dispatchedAt: new Date(Date.now() - 16 * 60 * 1000) }
+      })
+      await jobs.recover()
+      expect(await status(id)).toMatchObject({
+        state: 'reconciling',
+        active: true
+      })
+      providerUnknown = true
+      await createWorker().recover()
+      expect(await status(id)).toMatchObject({
+        state: 'reconciling',
+        active: true
+      })
+      expect(generationCount).toBe(1)
     })
 
     it.each(['view', 'revoked', 'published'] as const)(
