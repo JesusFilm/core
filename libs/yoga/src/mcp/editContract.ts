@@ -9,6 +9,7 @@ import {
   appearanceCommandRegistry,
   isAppearanceCommand
 } from './appearanceContract'
+import { formChangedFields, formCommand } from './formContract'
 import {
   type MediaCommand,
   mediaCommand,
@@ -24,6 +25,7 @@ import {
   type StructureCommand,
   affectedLink,
   changedField,
+  generatedLocalKey,
   localKey,
   structureCommand,
   structureCommandNames
@@ -60,6 +62,7 @@ export const typographyCommand = z
 const editCommand = z.union([
   typographyCommand,
   presentationCommand,
+  formCommand,
   structureCommand,
   mediaCommand,
   appearanceCommand
@@ -174,6 +177,7 @@ export const operationReceipt = z
                   ...changedField.options,
                   ...appearanceChangedFields,
                   ...presentationFields,
+                  ...formChangedFields,
                   'deleted'
                 ])
               )
@@ -185,10 +189,11 @@ export const operationReceipt = z
     idMap: z.record(
       z.union([
         localKey,
+        generatedLocalKey,
         z
           .string()
           .regex(
-            /^[a-z0-9_]{1,32}\.(?:startIcon|endIcon|card|heading|subheading|button[123])$/
+            /^(?!__proto__\.)[a-z0-9_]{1,32}\.(?:card|heading|subheading|button[123])$/
           )
       ]),
       id
