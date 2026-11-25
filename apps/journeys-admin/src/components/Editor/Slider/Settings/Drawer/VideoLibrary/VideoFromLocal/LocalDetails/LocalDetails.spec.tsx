@@ -424,7 +424,7 @@ describe('LocalDetails', () => {
 
     it('should block the select until the unpublished warning is confirmed', async () => {
       const onSelect = vi.fn()
-      const { getByRole, getByText, queryByText } = render(
+      const { findByText, getByRole, getByText, queryByText } = render(
         <MockedProvider mocks={[unpublishedMock]}>
           <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
         </MockedProvider>
@@ -433,7 +433,7 @@ describe('LocalDetails', () => {
 
       fireEvent.click(getByRole('button', { name: 'Select' }))
       expect(onSelect).not.toHaveBeenCalled()
-      expect(getByText('Unpublished Video')).toBeInTheDocument()
+      expect(await findByText('Unpublished Video')).toBeInTheDocument()
 
       fireEvent.click(getByRole('button', { name: 'Use Anyway' }))
       expect(onSelect).toHaveBeenCalledWith({
@@ -451,7 +451,7 @@ describe('LocalDetails', () => {
 
     it('should not select when the unpublished warning is cancelled', async () => {
       const onSelect = vi.fn()
-      const { getByRole, getByText, queryByText } = render(
+      const { findByText, getByRole, getByText, queryByText } = render(
         <MockedProvider mocks={[unpublishedMock]}>
           <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
         </MockedProvider>
@@ -459,13 +459,93 @@ describe('LocalDetails', () => {
       await waitFor(() => expect(getByText('Unpublished')).toBeInTheDocument())
 
       fireEvent.click(getByRole('button', { name: 'Select' }))
-      expect(getByText('Unpublished Video')).toBeInTheDocument()
+      expect(await findByText('Unpublished Video')).toBeInTheDocument()
 
       fireEvent.click(getByRole('button', { name: 'Cancel' }))
       expect(onSelect).not.toHaveBeenCalled()
       await waitFor(() =>
         expect(queryByText('Unpublished Video')).not.toBeInTheDocument()
       )
+    })
+
+    describe('language switching', () => {
+      const frenchLanguage = {
+        __typename: 'Language',
+        id: '496',
+        name: [
+          { value: 'Français', primary: true, __typename: 'LanguageName' },
+          { value: 'French', primary: false, __typename: 'LanguageName' }
+        ]
+      }
+      const withVariant = (published: boolean, languageId: string) => ({
+        request: {
+          query: GET_VIDEO,
+          variables: { id: '2_Acts7302-0-0', languageId }
+        },
+        result: {
+          data: {
+            video: {
+              ...getVideoMock.result.data.video,
+              variant: {
+                id: `variant-${languageId}`,
+                duration: 144,
+                hls: 'https://arc.gt/opsgn',
+                published
+              },
+              variantLanguages: [
+                ...getVideoMock.result.data.video.variantLanguages,
+                frenchLanguage
+              ]
+            }
+          }
+        }
+      })
+
+      async function applyFrench(): Promise<void> {
+        fireEvent.click(await screen.findByRole('button', { name: 'English' }))
+        const combobox = screen.getByRole('combobox')
+        fireEvent.focus(combobox)
+        fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+        fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+        fireEvent.click(screen.getByRole('button', { name: 'Apply' }))
+      }
+
+      it('should warn when the picked language is unpublished but the loaded one is published', async () => {
+        const onSelect = vi.fn()
+        render(
+          <MockedProvider
+            mocks={[withVariant(true, '529'), withVariant(false, '496')]}
+          >
+            <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+          </MockedProvider>
+        )
+        await applyFrench()
+        expect(await screen.findByText('Unpublished Video')).toBeInTheDocument()
+        expect(onSelect).not.toHaveBeenCalled()
+
+        fireEvent.click(screen.getByRole('button', { name: 'Use Anyway' }))
+        expect(onSelect).toHaveBeenCalledWith(
+          expect.objectContaining({ videoVariantLanguageId: '496' })
+        )
+      })
+
+      it('should not warn when the picked language is published but the loaded one is unpublished', async () => {
+        const onSelect = vi.fn()
+        render(
+          <MockedProvider
+            mocks={[withVariant(false, '529'), withVariant(true, '496')]}
+          >
+            <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+          </MockedProvider>
+        )
+        await applyFrench()
+        await waitFor(() =>
+          expect(onSelect).toHaveBeenCalledWith(
+            expect.objectContaining({ videoVariantLanguageId: '496' })
+          )
+        )
+        expect(screen.queryByText('Unpublished Video')).not.toBeInTheDocument()
+      })
     })
   })
 })

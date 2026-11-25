@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { skipToken, useQuery } from '@apollo/client/react'
+import { skipToken, useApolloClient, useQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import { useTranslation } from 'next-i18next/pages'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -75,6 +76,7 @@ export function LocalDetails({
   id,
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
@@ -108,6 +110,8 @@ export function LocalDetails({
     null
   )
   const isUnpublished = data?.video?.variant?.published === false
+  const client = useApolloClient()
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -124,12 +128,43 @@ export function LocalDetails({
     })
   }
 
-  const attemptSelection = (language: LanguageOption): void => {
-    if (isUnpublished) {
+  const confirmOrCommit = (
+    language: LanguageOption,
+    unpublished: boolean
+  ): void => {
+    if (unpublished) {
       setPendingLanguage(language)
     } else {
       commitSelection(language)
     }
+  }
+
+  // `published` is per variant, and the query above only loads the variant for
+  // the block's saved (or default) language. When the user has picked another
+  // language, look up that language's variant (cached after the first time)
+  // so the warning reflects what is actually being committed.
+  const attemptSelection = (language: LanguageOption): void => {
+    if (language?.id == null || language.id === languageId) {
+      confirmOrCommit(language, isUnpublished)
+      return
+    }
+    client
+      .query<GetVideo>({
+        query: GET_VIDEO,
+        variables: { id, languageId: language.id }
+      })
+      .then(({ data: targetData }) => {
+        confirmOrCommit(
+          language,
+          targetData?.video?.variant?.published === false
+        )
+      })
+      .catch(() => {
+        enqueueSnackbar(t('Could not check whether this video is published'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      })
   }
 
   const handleSelect = (): void => {
@@ -209,7 +244,6 @@ export function LocalDetails({
     }
   }, [open, data])
 
-  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Stack spacing={4} sx={{ p: 6 }}>
       {loading ? (
