@@ -1,5 +1,7 @@
 # Journeys MCP local runtime
 
+See [operations and rollback](OPERATIONS.md) for durable cross-replica admission/effect controls, local fault checks, release declarations, cleanup ownership and deferred AWS qualification.
+
 This workspace implements the portable runtime and granted journey reads, under [#10157](https://github.com/JesusFilm/core/issues/10157). `disabled` mode has an empty tool catalog. `granted-reads` mode registers `journeys_list`, `journey_read`, `journey_edit`, `journey_operation_get`, `journey_history`, `journey_undo` and `journey_redo`, using the separate issuer, restricted exchange, gateway and owning Journeys API. See [granted-read setup](GRANTED_READS.md) and [saved draft edits](SAVED_EDITS.md). The owning edit switch defaults off. Public URLs and guest access supply no authority. Source discovery, media acquisition and preview tools remain unavailable.
 
 ## Start locally

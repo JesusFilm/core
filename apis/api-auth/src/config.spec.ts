@@ -28,6 +28,28 @@ const permissions = {
 }
 
 describe('permission coordination configuration', () => {
+  it('keeps operator authority separate from every participant credential', () => {
+    const configured = { ...base, ...reads, ...permissions }
+    for (const secret of [
+      ...Object.values(permissions),
+      reads.AUTH_EXCHANGE_CLIENT_SECRET,
+      reads.AUTH_READ_OWNER_SECRET,
+      base.AUTH_INTROSPECTION_CLIENT_SECRET
+    ])
+      expect(() =>
+        readConfig({ ...configured, AUTH_OPERATIONS_SECRET: secret })
+      ).toThrow('Separate service credentials required')
+    expect(() =>
+      readConfig({ ...configured, AUTH_OPERATIONS_SECRET: 'short' })
+    ).toThrow()
+    expect(
+      readConfig({
+        ...configured,
+        AUTH_OPERATIONS_SECRET: 'controlled-operator-secret-at-least-32'
+      }).AUTH_OPERATIONS_SECRET
+    ).toBe('controlled-operator-secret-at-least-32')
+  })
+
   it('cannot enable granted reads without both permission owners', () => {
     expect(() => readConfig({ ...base, ...reads })).toThrow(
       'Permission participants required'

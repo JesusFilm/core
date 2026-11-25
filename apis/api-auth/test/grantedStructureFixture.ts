@@ -849,6 +849,9 @@ export function structureFixture(
     get ownerConfig() {
       return ownerConfig
     },
+    get authConfig() {
+      return config
+    },
     get journeyId() {
       return journeyId
     },

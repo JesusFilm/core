@@ -1,0 +1,63 @@
+name: MCP operational controls
+
+on:
+  pull_request:
+    paths:
+      - 'apis/api-auth/**'
+      - 'apis/api-mcp/**'
+      - 'apis/api-media/**'
+      - 'apis/api-journeys/src/lib/mcp*'
+      - 'libs/prisma/auth/**'
+      - 'libs/prisma/media/**'
+      - 'libs/prisma/journeys/**'
+      - 'tools/scripts/*mcp*'
+      - '.github/workflows/mcp-operations.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  operational-controls:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: operations-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Exercise durable stops, recovery, retention and rollback declarations
+        run: node tools/scripts/test-mcp-operations.mjs
+        env:
+          MCP_OPERATIONS_TEST_POSTGRES_URL: postgresql://postgres:operations-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Preserve owning coverage and executed test counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-operations-coverage
+          path: coverage/integration/mcp-operations
+          if-no-files-found: error
+      - name: Upload coverage for the checked-out PR head
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-operations/cobertura-coverage.xml
+          flags: integration.mcp-operations
+          disable_search: true
+          fail_ci_if_error: true
