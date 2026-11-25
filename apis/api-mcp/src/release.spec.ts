@@ -99,6 +99,9 @@ describe('stage release declarations and previous-digest rollback', () => {
       r.secrets = []
     },
     (r: Release) => {
+      r.secrets = r.secrets.slice(0, 1)
+    },
+    (r: Release) => {
       r.readableDatabaseRevisions.auth = ['3'.repeat(40)]
     }
   ])('rejects unsafe configuration case %#', (change) => {
