@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { print } from 'graphql'
+import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -401,18 +402,22 @@ describe('LocalDetails', () => {
 
     it('should show a banner explaining the video is unpublished', async () => {
       const { getByText } = render(
-        <MockedProvider mocks={[unpublishedMock]}>
-          <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
-        </MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider mocks={[unpublishedMock]}>
+            <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+          </MockedProvider>
+        </SnackbarProvider>
       )
       await waitFor(() => expect(getByText('Unpublished')).toBeInTheDocument())
     })
 
     it('should not show the banner for a published variant', async () => {
       const { getByRole, queryByText } = render(
-        <MockedProvider mocks={[getVideoMock]}>
-          <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
-        </MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider mocks={[getVideoMock]}>
+            <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+          </MockedProvider>
+        </SnackbarProvider>
       )
       await waitFor(() =>
         expect(
@@ -425,9 +430,11 @@ describe('LocalDetails', () => {
     it('should block the select until the unpublished warning is confirmed', async () => {
       const onSelect = vi.fn()
       const { findByText, getByRole, getByText, queryByText } = render(
-        <MockedProvider mocks={[unpublishedMock]}>
-          <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
-        </MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider mocks={[unpublishedMock]}>
+            <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+          </MockedProvider>
+        </SnackbarProvider>
       )
       await waitFor(() => expect(getByText('Unpublished')).toBeInTheDocument())
 
@@ -452,9 +459,11 @@ describe('LocalDetails', () => {
     it('should not select when the unpublished warning is cancelled', async () => {
       const onSelect = vi.fn()
       const { findByText, getByRole, getByText, queryByText } = render(
-        <MockedProvider mocks={[unpublishedMock]}>
-          <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
-        </MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider mocks={[unpublishedMock]}>
+            <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+          </MockedProvider>
+        </SnackbarProvider>
       )
       await waitFor(() => expect(getByText('Unpublished')).toBeInTheDocument())
 
@@ -507,17 +516,24 @@ describe('LocalDetails', () => {
         fireEvent.focus(combobox)
         fireEvent.keyDown(combobox, { key: 'ArrowDown' })
         fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+        // Select is disabled while the picked language's variant is looked up
+        expect(screen.getByRole('button', { name: 'Select' })).toBeDisabled()
+        await waitFor(() =>
+          expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
+        )
         fireEvent.click(screen.getByRole('button', { name: 'Apply' }))
       }
 
       it('should warn when the picked language is unpublished but the loaded one is published', async () => {
         const onSelect = vi.fn()
         render(
-          <MockedProvider
-            mocks={[withVariant(true, '529'), withVariant(false, '496')]}
-          >
-            <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
-          </MockedProvider>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[withVariant(true, '529'), withVariant(false, '496')]}
+            >
+              <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+            </MockedProvider>
+          </SnackbarProvider>
         )
         await applyFrench()
         expect(await screen.findByText('Unpublished Video')).toBeInTheDocument()
@@ -529,14 +545,35 @@ describe('LocalDetails', () => {
         )
       })
 
+      it('should show the banner for the picked language, not the loaded one', async () => {
+        render(
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[withVariant(true, '529'), withVariant(false, '496')]}
+            >
+              <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+            </MockedProvider>
+          </SnackbarProvider>
+        )
+        fireEvent.click(await screen.findByRole('button', { name: 'English' }))
+        expect(screen.queryByText('Unpublished')).not.toBeInTheDocument()
+        const combobox = screen.getByRole('combobox')
+        fireEvent.focus(combobox)
+        fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+        fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+        expect(await screen.findByText('Unpublished')).toBeInTheDocument()
+      })
+
       it('should not warn when the picked language is published but the loaded one is unpublished', async () => {
         const onSelect = vi.fn()
         render(
-          <MockedProvider
-            mocks={[withVariant(false, '529'), withVariant(true, '496')]}
-          >
-            <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
-          </MockedProvider>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[withVariant(false, '529'), withVariant(true, '496')]}
+            >
+              <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+            </MockedProvider>
+          </SnackbarProvider>
         )
         await applyFrench()
         await waitFor(() =>

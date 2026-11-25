@@ -1,6 +1,18 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render as rtlRender } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
+
+import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { UnpublishedVideoDialog } from './UnpublishedVideoDialog'
+
+function render(ui: ReactElement): ReturnType<typeof rtlRender> {
+  return rtlRender(
+    <SnackbarProvider>
+      <ThemeProvider>{ui}</ThemeProvider>
+    </SnackbarProvider>
+  )
+}
 
 describe('UnpublishedVideoDialog', () => {
   it('should render the unpublished warning when open', () => {

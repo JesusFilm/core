@@ -109,9 +109,55 @@ export function LocalDetails({
   const [pendingLanguage, setPendingLanguage] = useState<LanguageOption | null>(
     null
   )
-  const isUnpublished = data?.video?.variant?.published === false
   const client = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
+
+  // `published` is per variant, and the query above only loads the variant for
+  // the block's saved (or default) language. When the user picks another
+  // language, look up that language's variant (cached after the first time) so
+  // the banner, the dialog and the commit all reflect the language actually
+  // being selected. Select/Apply stay disabled until the lookup resolves.
+  const [lookup, setLookup] = useState<{
+    languageId: string
+    unpublished: boolean
+  } | null>(null)
+  const pickedLanguageId = selectedLanguage?.id
+  const isLoadedLanguagePicked =
+    pickedLanguageId == null || pickedLanguageId === languageId
+  const loadedUnpublished = data?.video?.variant?.published === false
+  const isCheckingPublished =
+    !isLoadedLanguagePicked && lookup?.languageId !== pickedLanguageId
+  const isUnpublished = isLoadedLanguagePicked
+    ? loadedUnpublished
+    : lookup?.languageId === pickedLanguageId && lookup.unpublished
+
+  useEffect(() => {
+    if (open !== true || isLoadedLanguagePicked || data == null) return
+    let isStale = false
+    client
+      .query<GetVideo>({
+        query: GET_VIDEO,
+        variables: { id, languageId: pickedLanguageId }
+      })
+      .then(({ data: pickedData }) => {
+        if (isStale) return
+        setLookup({
+          languageId: pickedLanguageId,
+          unpublished: pickedData?.video?.variant?.published === false
+        })
+      })
+      .catch(() => {
+        if (isStale) return
+        enqueueSnackbar(t('Could not check whether this video is published'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      })
+    return () => {
+      isStale = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, id, pickedLanguageId, languageId, data])
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -128,43 +174,13 @@ export function LocalDetails({
     })
   }
 
-  const confirmOrCommit = (
-    language: LanguageOption,
-    unpublished: boolean
-  ): void => {
-    if (unpublished) {
+  const attemptSelection = (language: LanguageOption): void => {
+    if (isCheckingPublished) return
+    if (isUnpublished) {
       setPendingLanguage(language)
     } else {
       commitSelection(language)
     }
-  }
-
-  // `published` is per variant, and the query above only loads the variant for
-  // the block's saved (or default) language. When the user has picked another
-  // language, look up that language's variant (cached after the first time)
-  // so the warning reflects what is actually being committed.
-  const attemptSelection = (language: LanguageOption): void => {
-    if (language?.id == null || language.id === languageId) {
-      confirmOrCommit(language, isUnpublished)
-      return
-    }
-    client
-      .query<GetVideo>({
-        query: GET_VIDEO,
-        variables: { id, languageId: language.id }
-      })
-      .then(({ data: targetData }) => {
-        confirmOrCommit(
-          language,
-          targetData?.video?.variant?.published === false
-        )
-      })
-      .catch(() => {
-        enqueueSnackbar(t('Could not check whether this video is published'), {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      })
   }
 
   const handleSelect = (): void => {
@@ -177,6 +193,7 @@ export function LocalDetails({
     // Details drawer and the outer Video Library drawer, returning the user
     // to the video properties panel — fixing the QA-221 / NES-1568 trap where
     // Apply only dismissed the picker.
+    if (isCheckingPublished) return
     attemptSelection(selectedLanguage)
     setOpenLanguage(false)
   }
@@ -339,7 +356,7 @@ export function LocalDetails({
           // lines — visible in CJK locales, where text can break between
           // characters.
           sx={{ backgroundColor: 'secondary.dark', flexShrink: 0 }}
-          disabled={loading && !isPreselected}
+          disabled={(loading && !isPreselected) || isCheckingPublished}
         >
           {t('Select')}
         </Button>

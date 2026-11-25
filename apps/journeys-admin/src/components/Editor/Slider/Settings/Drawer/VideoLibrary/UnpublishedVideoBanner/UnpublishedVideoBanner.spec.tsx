@@ -1,10 +1,19 @@
 import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { UnpublishedVideoBanner } from './UnpublishedVideoBanner'
 
 describe('UnpublishedVideoBanner', () => {
   it('should render an unpublished warning with an explanatory note', () => {
-    const { getByText } = render(<UnpublishedVideoBanner />)
+    const { getByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider>
+          <UnpublishedVideoBanner />
+        </ThemeProvider>
+      </SnackbarProvider>
+    )
 
     expect(getByText('Unpublished')).toBeInTheDocument()
     expect(

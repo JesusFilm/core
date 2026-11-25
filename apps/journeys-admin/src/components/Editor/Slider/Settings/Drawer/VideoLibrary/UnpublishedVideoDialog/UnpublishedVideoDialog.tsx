@@ -1,8 +1,9 @@
-import Alert from '@mui/material/Alert'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+
+import { UnpublishedVideoBanner } from '../UnpublishedVideoBanner'
 
 export interface UnpublishedVideoDialogProps {
   open: boolean
@@ -32,11 +33,7 @@ export function UnpublishedVideoDialog({
       }}
       testId="UnpublishedVideoDialog"
     >
-      <Alert severity="warning">
-        {t(
-          'This video has not been published yet. It can still be added to a journey, but visitors will not be able to watch it until it is published.'
-        )}
-      </Alert>
+      <UnpublishedVideoBanner />
     </Dialog>
   )
 }
