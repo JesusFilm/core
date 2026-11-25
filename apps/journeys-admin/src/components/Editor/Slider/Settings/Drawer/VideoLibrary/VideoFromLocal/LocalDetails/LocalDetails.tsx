@@ -109,6 +109,11 @@ export function LocalDetails({
     null
   )
   const isUnpublished = data?.video?.variant?.published === false
+  // variantLanguages only ever lists published languages (the resolver
+  // filters on published: true), so a selectedLanguage that differs from the
+  // fetched languageId is guaranteed published — isUnpublished above only
+  // describes the language GET_VIDEO was queried with.
+  const isSelectionUnpublished = selectedLanguage.id === languageId && isUnpublished
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -126,7 +131,7 @@ export function LocalDetails({
   }
 
   const attemptSelection = (language: LanguageOption): void => {
-    if (isUnpublished) {
+    if (isSelectionUnpublished) {
       setPendingLanguage(language)
     } else {
       commitSelection(language)

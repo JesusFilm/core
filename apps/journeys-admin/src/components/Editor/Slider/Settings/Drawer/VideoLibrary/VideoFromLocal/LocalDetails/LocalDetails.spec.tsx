@@ -476,5 +476,64 @@ describe('LocalDetails', () => {
         expect(queryByText('Unpublished Video')).not.toBeInTheDocument()
       )
     })
+
+    it('should not warn when switching to a different language before Apply', async () => {
+      // variantLanguages only ever lists published languages (the resolver
+      // filters on published: true), so French here is guaranteed published
+      // even though the originally-loaded English variant is not.
+      const frenchLanguage = {
+        __typename: 'Language',
+        id: '496',
+        name: [
+          { value: 'Français', primary: true, __typename: 'LanguageName' },
+          { value: 'French', primary: false, __typename: 'LanguageName' }
+        ]
+      }
+      const onSelect = vi.fn()
+      render(
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              {
+                ...unpublishedMock,
+                result: {
+                  data: {
+                    video: {
+                      ...unpublishedMock.result.data.video,
+                      variantLanguages: [
+                        ...unpublishedMock.result.data.video.variantLanguages,
+                        frenchLanguage
+                      ]
+                    }
+                  }
+                }
+              }
+            ]}
+          >
+            <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getByText('Unpublished')).toBeInTheDocument()
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'English' }))
+      const combobox = screen.getByRole('combobox')
+      fireEvent.focus(combobox)
+      fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+      fireEvent.click(
+        await screen.findByRole('option', { name: 'French Français' })
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Apply' }))
+
+      // picking French must commit directly, not reuse the stale
+      // "unpublished" state left over from the originally-loaded English
+      // variant that GET_VIDEO was queried with
+      expect(onSelect).toHaveBeenCalledWith(
+        expect.objectContaining({ videoVariantLanguageId: '496' })
+      )
+      expect(screen.queryByText('Unpublished Video')).not.toBeInTheDocument()
+    })
   })
 })
