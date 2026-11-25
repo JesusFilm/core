@@ -12,13 +12,13 @@ import { auth } from '@core/yoga/firebaseClient'
 import { readTrustSchema, serviceUrl } from '@core/yoga/mcp/readContract'
 
 import {
-  type ImageUploadProvider,
-  cloudflareUploadProvider
-} from './mcpImageProvider'
-import {
   type ImageGenerationProvider,
   cloudflareGenerationProvider
 } from './mcpImageGenerationProvider'
+import {
+  type ImageUploadProvider,
+  cloudflareUploadProvider
+} from './mcpImageProvider'
 import { mediaJobHttp } from './mcpMediaJobHttp'
 import { createMediaJobs } from './mcpMediaJobs'
 import { createMediaMutationGuard } from './mcpMediaMutations'

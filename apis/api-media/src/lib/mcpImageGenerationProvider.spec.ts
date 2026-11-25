@@ -4,6 +4,7 @@ import { cloudflareGenerationProvider } from './mcpImageGenerationProvider'
 
 describe('credential-owning generation adapter', () => {
   afterEach(() => vi.unstubAllGlobals())
+
   const provider = () =>
     cloudflareGenerationProvider({
       CLOUDFLARE_ACCOUNT_ID: 'controlled-account',

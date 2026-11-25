@@ -13,9 +13,9 @@ import { PrismaClient as MediaDatabase } from '@core/prisma/media/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Qualify the actual separately deployed media executor. */
+import type { ImageGenerationProvider } from '../../api-media/src/lib/mcpImageGenerationProvider'
 import { imageHash } from '../../api-media/src/lib/mcpImageInput'
 import type { ImageUploadProvider } from '../../api-media/src/lib/mcpImageProvider'
-import type { ImageGenerationProvider } from '../../api-media/src/lib/mcpImageGenerationProvider'
 import type { MediaJobs } from '../../api-media/src/lib/mcpMediaJobs'
 import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
 import type { UploadStorage } from '../../api-media/src/lib/mcpUploadStorage'

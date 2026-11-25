@@ -120,7 +120,10 @@ export function mediaJobHttp(
             const { journeyId: _journeyId, ...start } = input.input
             jobId = await jobs.admit(context, start)
           } else jobId = input.input.jobId
-          if (input.tool === 'journey_media_status' && input.input.resume === true)
+          if (
+            input.tool === 'journey_media_status' &&
+            input.input.resume === true
+          )
             await jobs.resume(context, jobId)
           const cancellation =
             input.tool === 'journey_media_cancel'
