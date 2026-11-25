@@ -1011,14 +1011,18 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         if (direction === 'redo')
           f.receipt(await f.historyAction('undo', saved.historyId!))
         const connection = await f.auth.agentConnection.findFirstOrThrow({
-          where: { userId: 'alice' }
+          where: {
+            userId: 'alice',
+            journeyIds: { has: f.journeyId },
+            mode: 'edit'
+          }
         })
         for (const reason of [
           'view',
           'revoked',
           'expired',
-          'published',
-          'lost-rights'
+          'lost-rights',
+          'published'
         ] as const) {
           let token: string | undefined
           if (reason === 'view') token = await f.consent('view')
@@ -1075,15 +1079,6 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
             await f.auth.agentConnection.update({
               where: { id: connection.id },
               data: { revokedAt: null, expiresAt: connection.expiresAt }
-            })
-          if (reason === 'published')
-            await f.journeys.journey.update({
-              where: { id: f.journeyId },
-              data: {
-                status: 'draft',
-                publishedAt: null,
-                firstPublishedAt: null
-              }
             })
           if (reason === 'lost-rights')
             await f.journeys.userTeam.create({
