@@ -407,6 +407,7 @@ export function LocalDetails({
         language={selectedLanguage}
         languages={data?.video?.variantLanguages}
         loading={loading}
+        applyDisabled={isCheckingPublished}
       />
       <UnpublishedVideoDialog
         open={pendingLanguage != null}

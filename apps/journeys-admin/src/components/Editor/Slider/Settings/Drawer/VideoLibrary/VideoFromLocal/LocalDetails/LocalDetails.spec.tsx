@@ -526,6 +526,32 @@ describe('LocalDetails', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Apply' }))
       }
 
+      it('should disable Apply while the picked language publish status is being checked', async () => {
+        render(
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[withVariant(true, '529'), withVariant(false, '496')]}
+            >
+              <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+            </MockedProvider>
+          </SnackbarProvider>
+        )
+        fireEvent.click(await screen.findByRole('button', { name: 'English' }))
+        const combobox = screen.getByRole('combobox')
+        fireEvent.focus(combobox)
+        fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+        fireEvent.click(
+          await screen.findByRole('option', { name: 'French Français' })
+        )
+
+        // Apply mirrors Select's disabled state while the picked language's
+        // variant is still being looked up, rather than silently no-opping
+        expect(screen.getByRole('button', { name: 'Apply' })).toBeDisabled()
+        await waitFor(() =>
+          expect(screen.getByRole('button', { name: 'Apply' })).toBeEnabled()
+        )
+      })
+
       it('should warn when the picked language is unpublished but the loaded one is published', async () => {
         const onSelect = vi.fn()
         render(

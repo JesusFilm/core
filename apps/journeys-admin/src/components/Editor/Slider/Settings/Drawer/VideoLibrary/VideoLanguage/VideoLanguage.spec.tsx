@@ -135,4 +135,23 @@ describe('VideoLanguage', () => {
     expect(handleApply).toHaveBeenCalledTimes(1)
     expect(localHandleClose).not.toHaveBeenCalled()
   })
+
+  it('should disable Apply when applyDisabled is true', () => {
+    const handleApply = vi.fn()
+    const { getByRole } = render(
+      <VideoLanguage
+        open
+        onClose={handleClose}
+        onChange={handleChange}
+        onApply={handleApply}
+        language={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+        applyDisabled
+      />
+    )
+    expect(getByRole('button', { name: 'Apply' })).toBeDisabled()
+    fireEvent.click(getByRole('button', { name: 'Apply' }))
+    expect(handleApply).not.toHaveBeenCalled()
+  })
 })

@@ -26,6 +26,12 @@ interface VideoLanguageProps {
   language: LanguageOption
   languages?: Language[]
   loading: boolean
+  /**
+   * Disables the Apply button while the picked language's publish status is
+   * still being looked up, mirroring Select's disabled state so Apply can't
+   * silently no-op behind the full-screen drawer.
+   */
+  applyDisabled?: boolean
 }
 
 export function VideoLanguage({
@@ -35,7 +41,8 @@ export function VideoLanguage({
   onApply,
   language,
   languages,
-  loading
+  loading,
+  applyDisabled
 }: VideoLanguageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -58,7 +65,9 @@ export function VideoLanguage({
         />
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 3 }}>
-        <Button onClick={handleApplyClick}>{t('Apply')}</Button>
+        <Button onClick={handleApplyClick} disabled={applyDisabled}>
+          {t('Apply')}
+        </Button>
       </Box>
     </Drawer>
   )
