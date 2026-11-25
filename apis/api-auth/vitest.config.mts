@@ -17,7 +17,7 @@ export default defineConfig({
   },
   root: fileURLToPath(new URL('.', import.meta.url)),
   test: {
-    // Saved edits and structure use their own prepared databases and dedicated configs.
+    // These integration suites run in CI with dedicated database fixtures.
     exclude: [
       '**/node_modules/**',
       '**/.git/**',
@@ -25,6 +25,7 @@ export default defineConfig({
       '**/test/grantedStructure.spec.ts',
       '**/test/grantedForms.spec.ts',
       '**/test/grantedMedia.spec.ts',
+      '**/test/grantedImageUpload.spec.ts',
       '**/test/grantedAppearance.spec.ts'
     ],
     globals: true,

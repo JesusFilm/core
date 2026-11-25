@@ -9,6 +9,7 @@ import { type Prisma, type PrismaClient } from '@core/prisma/journeys/client'
 import { appearanceCommandNames } from '@core/yoga/mcp/appearanceContract'
 import { formCommandNames } from '@core/yoga/mcp/formContract'
 import { mediaCommandNames } from '@core/yoga/mcp/mediaContract'
+import { mediaJobTools } from '@core/yoga/mcp/mediaJobContract'
 import {
   type ReadCredential,
   type ReadRequest,
@@ -280,7 +281,13 @@ export function createJourneyReadHandler(
           })
         )
       const dataRequest = body.request
-      if (dataRequest.tool === 'journey_media_search' && !config.media)
+      const mediaJob = (mediaJobTools as readonly string[]).includes(
+        dataRequest.tool
+      )
+      if (
+        (dataRequest.tool === 'journey_media_search' || mediaJob) &&
+        !config.media
+      )
         throw new Error('Access denied')
       if (
         !sameSecret(
@@ -331,12 +338,21 @@ export function createJourneyReadHandler(
         readPermit = permitId
       }
       const mediaSearch =
-        dataRequest.tool === 'journey_media_search'
-          ? await mediaRequest(config.media!, credential, {
-              permitId,
-              request: dataRequest,
-              search: dataRequest.input
-            })
+        dataRequest.tool === 'journey_media_search' || mediaJob
+          ? await mediaRequest(
+              mediaJob
+                ? {
+                    ...config.media!,
+                    url: new URL('/mcp/media-jobs', config.media!.url).href
+                  }
+                : config.media!,
+              credential,
+              {
+                permitId,
+                request: dataRequest,
+                ...(mediaJob ? {} : { search: dataRequest.input })
+              }
+            )
           : undefined
       const result = await db.$transaction(
         async (tx) => {
@@ -404,16 +420,16 @@ export function createJourneyReadHandler(
           } else {
             try {
               data =
-                dataRequest.tool === 'journey_media_search'
+                dataRequest.tool === 'journey_media_search' || mediaJob
                   ? {
                       contractVersion: resultContractVersion,
                       kind: 'media_sources',
-                      journeyId: dataRequest.input.journeyId,
+                      journeyId: ids[0],
                       ...z.record(z.string(), z.unknown()).parse(mediaSearch)
                     }
                   : await snapshot(
                       tx,
-                      dataRequest,
+                      dataRequest as Parameters<typeof snapshot>[1],
                       claims,
                       allowed,
                       config,

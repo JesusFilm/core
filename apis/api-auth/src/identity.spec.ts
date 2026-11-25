@@ -1,4 +1,4 @@
-import { firebaseIdentity } from './identity'
+import { IdentityIneligible, firebaseIdentity } from './identity'
 
 const controlled = vi.hoisted(() => ({
   getUser: vi.fn(),
@@ -50,15 +50,13 @@ describe('fresh external account eligibility', () => {
       })
       await identity.check(evidence)
       controlled.getUser.mockResolvedValue({ ...account, ...changed })
-      await expect(identity.check(evidence)).rejects.toThrow(
-        'Identity ineligible'
-      )
+      await expect(identity.check(evidence)).rejects.toThrow(IdentityIneligible)
       expect(controlled.getUser).toHaveBeenCalledTimes(2)
       expect(controlled.getUser).toHaveBeenLastCalledWith('alice')
     }
   )
 
-  it('fails closed on deletion or unavailable Firebase without reusing a prior allow', async () => {
+  it('fails closed on unavailable Firebase without reusing a prior allow', async () => {
     const identity = firebaseIdentity({
       AUTH_FIREBASE_PROJECT_ID: 'controlled'
     })
@@ -70,6 +68,46 @@ describe('fresh external account eligibility', () => {
       'controlled provider outage'
     )
   })
+
+  it('classifies a deleted Firebase user as known identity ineligibility', async () => {
+    const identity = firebaseIdentity({
+      AUTH_FIREBASE_PROJECT_ID: 'controlled'
+    })
+    controlled.getUser.mockRejectedValue(
+      Object.assign(new Error('raw provider error'), {
+        code: 'auth/user-not-found'
+      })
+    )
+    await expect(identity.check(evidence)).rejects.toThrow(IdentityIneligible)
+    await expect(identity.check(evidence)).rejects.toThrow(
+      'Identity ineligible'
+    )
+  })
+
+  it.each([
+    { aud: 'another-project' },
+    { firebase: { sign_in_provider: 'anonymous' } },
+    { email_verified: false }
+  ])(
+    'rejects ineligible sign-in evidence before reading the account',
+    async (changed) => {
+      const identity = firebaseIdentity({
+        AUTH_FIREBASE_PROJECT_ID: 'controlled'
+      })
+      controlled.verifyIdToken.mockResolvedValue({
+        uid: 'alice',
+        aud: 'controlled',
+        email_verified: true,
+        auth_time: 100,
+        firebase: { sign_in_provider: 'password' },
+        ...changed
+      })
+      await expect(identity.authenticate('controlled-token')).rejects.toThrow(
+        IdentityIneligible
+      )
+      expect(controlled.getUser).not.toHaveBeenCalled()
+    }
+  )
 
   it('binds authentication to verified non-anonymous sign-in and current revocation state', async () => {
     const identity = firebaseIdentity({

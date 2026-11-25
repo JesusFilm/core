@@ -16,6 +16,7 @@ import {
 } from './consent'
 import { createEligibilityReader } from './eligibility'
 import type { Identity, ReadEligibility } from './identity'
+import { AuditedMediaDenial } from './mediaJobs'
 import { createPermissionAuthority } from './permissions'
 import { createProvider } from './provider'
 import { createReadAuthority } from './reads'
@@ -217,12 +218,13 @@ export async function createRuntime(
           ctx.get('Authorization'),
           await jsonBody(ctx.req, maxTransportBytes)
         )
-      } catch {
-        await audit(
-          db,
-          ctx.path.endsWith('/exchange') ? 'read_exchange' : 'read_accept',
-          'denied'
-        ).catch(() => undefined)
+      } catch (error) {
+        if (!(error instanceof AuditedMediaDenial))
+          await audit(
+            db,
+            ctx.path.endsWith('/exchange') ? 'read_exchange' : 'read_accept',
+            'denied'
+          ).catch(() => undefined)
         ctx.status = 403
         ctx.body = { error: 'ACCESS_DENIED_OR_NOT_FOUND' }
       }

@@ -1176,6 +1176,9 @@ describe('granted journey read authorization', () => {
           result: { tools: Array<{ name: string }> }
         }
         expect(listed.result.tools.map((tool) => tool.name)).toEqual([
+          'journey_media_start',
+          'journey_media_status',
+          'journey_media_cancel',
           'journey_media_search',
           'journeys_list',
           'journey_read',
