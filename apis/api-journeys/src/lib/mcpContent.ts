@@ -49,6 +49,25 @@ export async function assertOwnedButtonIcon(
     owner.startIconId === owner.endIconId
   )
     throw new Error('HISTORY_CONFLICT')
+  await assertOwnedIcon(tx, owner, icon, projected)
+}
+
+export async function assertOwnedIcon(
+  tx: Prisma.TransactionClient,
+  owner: ContentBlock,
+  icon: ContentBlock,
+  projected: ReadonlyMap<string, ContentBlock>
+) {
+  if (
+    owner.deletedAt ||
+    icon.deletedAt ||
+    icon.typename !== 'IconBlock' ||
+    icon.parentBlockId !== owner.id ||
+    [owner.startIconId, owner.endIconId, owner.submitIconId].filter(
+      (id) => id === icon.id
+    ).length !== 1
+  )
+    throw new Error('HISTORY_CONFLICT')
   const references = new Map(
     (
       await tx.block.findMany({

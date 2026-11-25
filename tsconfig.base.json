@@ -17,6 +17,7 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
+      "@core/locales/*": ["libs/locales/*"],
       "@core/journeys/ui/test/*": ["libs/journeys/ui/src/test/*"],
       "@core/journeys/ui/*": [
         "libs/journeys/ui/src/components/*",

@@ -152,7 +152,7 @@ describe('closed structure and navigation contract', () => {
     { kind: 'button', submitEnabled: true },
     { kind: 'spacer', spacing: 25 },
     { kind: 'spacer', spacing: 410 },
-    { kind: 'poll', options: [] },
+    { kind: 'poll', options: [{ label: 'missing local key' }] },
     { kind: 'textResponse', routeId: 'foreign' },
     { kind: 'signUp' }
   ])('limits content creation to supported complete variants', (content) => {
