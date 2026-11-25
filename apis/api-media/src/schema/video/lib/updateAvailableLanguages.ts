@@ -142,7 +142,7 @@ async function syncVideoAfterLanguageChange(
     try {
       await videoCacheReset(videoId)
     } catch (error) {
-      console.error('Cache reset error:', error)
+      logger.error({ error, videoId }, 'Cache reset error')
     }
   }
 }

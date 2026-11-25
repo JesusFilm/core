@@ -261,9 +261,9 @@ export async function handleParentVariantCreation(
   const promises = containerParents.map((parent) =>
     createEmptyParentVariant(parent.id, languageId, languageSlug).catch(
       (error) => {
-        console.error(
-          `Failed to create empty variant for parent ${parent.id}:`,
-          error
+        logger.error(
+          { error, parentId: parent.id, languageId },
+          'Failed to create empty variant for parent'
         )
       }
     )
@@ -293,9 +293,9 @@ export async function handleParentVariantCleanup(
   // Check and remove empty variants for all parent videos in parallel
   const promises = parentIds.map((parentId) =>
     checkAndRemoveEmptyParentVariant(parentId, languageId).catch((error) => {
-      console.error(
-        `Failed to cleanup empty variant for parent ${parentId}:`,
-        error
+      logger.error(
+        { error, parentId, languageId },
+        'Failed to cleanup empty variant for parent'
       )
     })
   )
