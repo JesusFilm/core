@@ -15,6 +15,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 /* eslint-disable @nx/enforce-module-boundaries -- Qualify the actual separately deployed media executor. */
 import { imageHash } from '../../api-media/src/lib/mcpImageInput'
 import type { ImageUploadProvider } from '../../api-media/src/lib/mcpImageProvider'
+import type { ImageGenerationProvider } from '../../api-media/src/lib/mcpImageGenerationProvider'
 import type { MediaJobs } from '../../api-media/src/lib/mcpMediaJobs'
 import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
 import type { UploadStorage } from '../../api-media/src/lib/mcpUploadStorage'
@@ -36,8 +37,8 @@ const languagesUrl = process.env.UPLOAD_TEST_LANGUAGES_DATABASE_URL
 describe('same-job image upload through authenticated MCP and Admin HTTP', () => {
   if (![authUrl, journeysUrl, mediaUrl, languagesUrl].every(Boolean))
     throw new Error('Run node tools/scripts/test-mcp-image-upload.mjs')
-  if (!/^\/media_issue_10560(_|$)/.test(new URL(mediaUrl!).pathname))
-    throw new Error('Use isolated issue 10560 databases')
+  if (!/^\/media_issue_(10560|10548)(_|$)/.test(new URL(mediaUrl!).pathname))
+    throw new Error('Use isolated media issue databases')
   const media = new MediaDatabase({
     adapter: new PrismaPg({ connectionString: mediaUrl })
   })
@@ -49,6 +50,9 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   const objects = new Map<string, Buffer>()
   const providerAssets = new Map<string, 'processing' | 'ready'>()
   let dispatchCount = 0
+  let generationCount = 0
+  let generationEnabled = true
+  const promptSentinel = 'private-generation-prompt-sentinel'
   let loseDispatch = false
   let rejectDispatch = false
   let cleanupUnavailable = false
@@ -105,19 +109,36 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       return providerUnknown ? 'unknown' : (providerAssets.get(id) ?? 'unknown')
     }
   }
+  const generation: ImageGenerationProvider = {
+    async dispatch(id, prompt) {
+      expect(prompt).toBe(promptSentinel)
+      generationCount++
+      return provider.dispatch(id, Buffer.alloc(0), 'image/jpeg')
+    },
+    async status(id) {
+      const state = await provider.status(id)
+      return state === 'ready'
+        ? { state, metadata: { width: 2, height: 2, blurhash: 'controlled' } }
+        : state
+    }
+  }
   const internalSecret =
     'controlled-upload-internal-10560-at-least-32-characters'
   const mediaSecret = 'controlled-upload-authority-10560-at-least-32-characters'
   function configureRuntime(...settings: Parameters<typeof mediaRuntime>) {
     createWorker = (uploadLimit) =>
       mediaRuntime(
-        { ...settings[0], MCP_MEDIA_UPLOAD_LIMIT: uploadLimit },
+        {
+          ...settings[0],
+          MCP_MEDIA_UPLOAD_LIMIT: uploadLimit,
+          MCP_IMAGE_GENERATION_ENABLED: String(generationEnabled)
+        },
         settings[1]
       ).jobs!
     return mediaRuntime(...settings)
   }
   const f = structureFixture({
-    issue: '10560',
+    issue: process.env.MCP_MEDIA_TEST_ISSUE ?? '10560',
     authUrl,
     journeysUrl,
     startupTimeoutMs: 120000,
@@ -138,6 +159,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         {
           MCP_MEDIA_ENABLED: 'true',
           MCP_IMAGE_UPLOADS_ENABLED: 'true',
+          MCP_IMAGE_GENERATION_ENABLED: 'true',
           MCP_READ_ISSUER: config.AUTH_ISSUER,
           MCP_READ_GATEWAY_AUDIENCE: config.AUTH_READ_GATEWAY_AUDIENCE,
           MCP_READ_ENVIRONMENT: 'local',
@@ -185,6 +207,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
             },
             storage,
             provider,
+            generation,
             browserIdentity: async (token) => {
               if (!['alice', 'bob'].includes(token))
                 throw new Error('Controlled identity denied')
@@ -221,6 +244,8 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     beforeSend = undefined
     beforeStagingWrite = undefined
     dispatchCount = 0
+    generationCount = 0
+    generationEnabled = true
     loseDispatch = false
     rejectDispatch = false
     cleanupUnavailable = false
@@ -385,6 +410,433 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(dispatchCount).toBe(1)
     expect((await status(id)).state).toBe('ready')
     expect(dispatchCount).toBe(1)
+  })
+
+  describe('user-requested generation', () => {
+    const generateInput = (key = randomUUID()) => ({
+      journeyId: f.journeyId,
+      idempotencyKey: key,
+      kind: 'image_generation',
+      prompt: promptSentinel
+    })
+    const generate = async (key = randomUUID()) =>
+      content(await f.call('journey_media_start', generateInput(key)))
+    const contextFor = async (id: string) => ({
+      userId: 'alice',
+      connectionId: (await connectionFor(id)).id,
+      journeyId: f.journeyId
+    })
+
+    it('generates only through an explicit operation, replays once and saves attachment in a separate revision/history step', async () => {
+      const before = await f.snapshot()
+      const text = await f.save([
+        {
+          type: 'typography_set',
+          block: { id: f.id('heading') },
+          content: 'Ordinary text edit'
+        }
+      ])
+      expect(generationCount).toBe(0)
+      const key = randomUUID()
+      const job = await generate(key)
+      const id = String(job.jobId)
+      expect(job).toMatchObject({
+        state: 'dispatch_pending',
+        mediaKind: 'image_generation'
+      })
+      expect(job).not.toHaveProperty('ingressTicket')
+      expect(job).not.toHaveProperty('adminLink')
+      expect(job).not.toHaveProperty('transferDeadline')
+      expect(await generate(key)).toEqual(job)
+      expect(
+        (
+          await f.call('journey_media_start', {
+            ...generateInput(key),
+            prompt: 'A changed private prompt'
+          })
+        ).json.result?.isError
+      ).toBe(true)
+      expect(
+        await media.mcpMediaJob.count({ where: { kind: 'image_generation' } })
+      ).toBe(1)
+      expect(generationCount).toBe(0)
+      const ready = await processedStatus(id)
+      expect(ready.state).toBe('ready')
+      expect(generationCount).toBe(1)
+      expect((await generate(key)).jobId).toBe(id)
+      expect((await processedStatus(id)).state).toBe('ready')
+      expect(generationCount).toBe(1)
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({
+        generationPrompt: null,
+        dispatchedAt: expect.any(Date)
+      })
+      expect((await f.snapshot()).blocks).not.toEqual(before.blocks)
+      const stale = await f.input([
+        {
+          type: 'image_set',
+          block: { id: f.id('image') },
+          source: { source: 'upload', jobId: id }
+        }
+      ])
+      await f.journeys.block.update({
+        where: { id: f.id('heading') },
+        data: { content: 'Human revision' }
+      })
+      expect((await f.edit(stale)).json.result?.structuredContent?.code).toBe(
+        'REVISION_CONFLICT'
+      )
+      mediaLibrary = false
+      const fresh = {
+        ...stale,
+        expectedRevision: await f.revision(),
+        idempotencyKey: randomUUID()
+      }
+      const saved = f.receipt(await f.edit(fresh))
+      expect(saved.historyId).not.toBe(text.historyId)
+      expect(f.receipt(await f.edit(fresh))).toEqual(saved)
+      f.receipt(await f.historyAction('undo', saved.historyId!))
+      f.receipt(await f.historyAction('redo', saved.historyId!))
+      expect(
+        await media.cloudflareImage.findUnique({
+          where: { id: String((ready.asset as { id: string }).id) }
+        })
+      ).toMatchObject({ isAi: true, uploaded: true })
+      expect(JSON.stringify(await f.auth.securityAudit.findMany())).not.toMatch(
+        /private-generation-prompt-sentinel|credential-sentinel/
+      )
+      expect(JSON.stringify(ready)).not.toContain(promptSentinel)
+    })
+
+    it('admits one active generation across connections and replacement workers while uploads have independent capacity', async () => {
+      const second = await f.consent()
+      const requests = await Promise.all([
+        f.call('journey_media_start', generateInput()),
+        f.call('journey_media_start', generateInput(), second)
+      ])
+      expect(requests.filter((r) => !r.json.result?.isError)).toHaveLength(1)
+      expect(
+        await media.mcpMediaJob.count({
+          where: { kind: 'image_generation', active: true }
+        })
+      ).toBe(1)
+      await start()
+      await start()
+      providerReady = false
+      await Promise.all([
+        processCompletedTransfers(),
+        createWorker().processCompletedTransfers()
+      ])
+      expect(generationCount).toBe(1)
+      expect(await media.mcpMediaJob.count({ where: { active: true } })).toBe(3)
+    })
+
+    it('counts ten actual failed dispatches, rejects the eleventh and checks both sides of the rolling window', async () => {
+      rejectDispatch = true
+      const ids: string[] = []
+      for (let i = 0; i < 10; i++) {
+        const key = randomUUID()
+        const id = String((await generate(key)).jobId)
+        ids.push(id)
+        expect((await processedStatus(id)).state).toBe('failed')
+        expect((await generate(key)).jobId).toBe(id)
+      }
+      expect(generationCount).toBe(10)
+      expect(
+        (await f.call('journey_media_start', generateInput())).json.result
+          ?.isError
+      ).toBe(true)
+      const second = await f.consent()
+      expect(
+        (await f.call('journey_media_start', generateInput(), second)).json
+          .result?.isError
+      ).toBe(true)
+      await media.mcpMediaJob.update({
+        where: { id: ids[0] },
+        data: { dispatchedAt: new Date(Date.now() - 86400000 + 60000) }
+      })
+      expect(
+        (await f.call('journey_media_start', generateInput())).json.result
+          ?.isError
+      ).toBe(true)
+      await media.mcpMediaJob.update({
+        where: { id: ids[0] },
+        data: { dispatchedAt: new Date(Date.now() - 86400000 - 1000) }
+      })
+      await media.mcpMediaJob.update({
+        where: { id: ids[1] },
+        data: { dispatchedAt: new Date(Date.now() + 86400000) }
+      })
+      const next = await generate()
+      expect((await processedStatus(String(next.jobId))).state).toBe('failed')
+      expect(generationCount).toBe(11)
+    })
+
+    it('consumes no dispatch allowance for a denied or positively fenced unsent intent and recovers the same job', async () => {
+      const id = String((await generate()).jobId)
+      const context = await contextFor(id)
+      beforeAccept = async (action) => {
+        if (action === 'dispatch')
+          throw new Error('Controlled pre-accept failure')
+      }
+      await processCompletedTransfers()
+      expect(generationCount).toBe(0)
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({ dispatchedAt: null })
+      beforeAccept = undefined
+      beforeSend = async () => {
+        throw new Error('Controlled pre-send failure')
+      }
+      await processCompletedTransfers()
+      expect(generationCount).toBe(0)
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({
+        dispatchReceiptId: null,
+        dispatchedAt: null,
+        generationPrompt: promptSentinel
+      })
+      beforeSend = undefined
+      await jobs.resume(context, id)
+      expect((await status(id)).state).toBe('ready')
+      expect(generationCount).toBe(1)
+    })
+
+    it('retains an ambiguous dispatch, counts it once and keeps withdrawal Pending until positive provider evidence', async () => {
+      const key = randomUUID()
+      const id = String((await generate(key)).jobId)
+      loseDispatch = true
+      providerUnknown = true
+      await processCompletedTransfers()
+      expect((await status(id)).state).toBe('reconciling')
+      expect((await generate(key)).jobId).toBe(id)
+      await createWorker().recover()
+      await createWorker().processCompletedTransfers()
+      expect(generationCount).toBe(1)
+      expect(
+        await media.mcpMediaJob.count({
+          where: { dispatchedAt: { not: null } }
+        })
+      ).toBe(1)
+      expect(
+        (await f.call('journey_media_start', generateInput())).json.result
+          ?.isError
+      ).toBe(true)
+      const connection = await connectionFor(id)
+      await withdraw(id)
+      await reconcileConnectionChanges(f.auth)
+      expect(
+        await f.auth.connectionChange.findFirst({
+          where: { connectionId: connection.id }
+        })
+      ).toMatchObject({ status: 'pending' })
+      expect((await browser(id)).status).toBe(403)
+      providerUnknown = false
+      await jobs.recover()
+      await reconcileConnectionChanges(f.auth)
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({ state: 'ready', active: false })
+      expect(
+        await media.cloudflareImage.count({
+          where: { isAi: true, uploaded: true }
+        })
+      ).toBeGreaterThan(0)
+      expect(generationCount).toBe(1)
+    })
+
+    it('cancels unsent work without usage and reconciles dispatched cancellation without deleting its asset', async () => {
+      const id = String((await generate()).jobId)
+      content(
+        await f.call('journey_media_cancel', {
+          journeyId: f.journeyId,
+          jobId: id,
+          idempotencyKey: randomUUID()
+        })
+      )
+      await processCompletedTransfers()
+      expect((await status(id)).state).toBe('cancelled')
+      expect(generationCount).toBe(0)
+      const active = String((await generate()).jobId)
+      providerReady = false
+      await processCompletedTransfers()
+      content(
+        await f.call('journey_media_cancel', {
+          journeyId: f.journeyId,
+          jobId: active,
+          idempotencyKey: randomUUID()
+        })
+      )
+      expect((await status(active)).state).toBe('cancel_requested')
+      const job = await media.mcpMediaJob.findUniqueOrThrow({
+        where: { id: active }
+      })
+      providerAssets.set(job.providerId, 'ready')
+      await jobs.recover()
+      expect((await status(active)).state).toBe('ready')
+      expect(generationCount).toBe(1)
+    })
+
+    it('blocks dispatch at expiry, requires explicit same-job resume after permission changes and protects private output', async () => {
+      const id = String((await generate()).jobId)
+      const connection = await connectionFor(id)
+      await f.auth.agentConnection.update({
+        where: { id: connection.id },
+        data: { expiresAt: new Date(0) }
+      })
+      await processCompletedTransfers()
+      expect(generationCount).toBe(0)
+      expect((await browser(id)).status).toBe(403)
+      await f.auth.agentConnection.update({
+        where: { id: connection.id },
+        data: { expiresAt: new Date(Date.now() + 3600000) }
+      })
+      const gates = await captureGates(f.auth, [
+        `user-team:alice:structure-team-alice`
+      ])
+      await f.auth.$transaction(async (tx) => {
+        await lockGates(tx, gates)
+        await tx.authorizationGate.updateMany({
+          where: { id: { in: gates.map((g) => g.id) } },
+          data: { generation: { increment: 1 } }
+        })
+      })
+      await processCompletedTransfers()
+      expect(generationCount).toBe(0)
+      expect(
+        content(
+          await f.call('journey_media_status', {
+            journeyId: f.journeyId,
+            jobId: id,
+            resume: true
+          })
+        ).state
+      ).toBe('ready')
+      await f.auth.agentConnection.update({
+        where: { id: connection.id },
+        data: { mode: 'view' }
+      })
+      expect((await browser(id)).status).toBe(403)
+      expect(generationCount).toBe(1)
+    })
+
+    it('does not turn the upload deadline into a generation timeout and retains ready assets after account retirement', async () => {
+      const id = String((await generate()).jobId)
+      await media.mcpMediaJob.update({
+        where: { id },
+        data: { transferDeadline: new Date(0) }
+      })
+      await jobs.recover()
+      expect((await processedStatus(id)).state).toBe('ready')
+      const response = await fetch(
+        new URL(
+          '/internal/permissions/retire-account',
+          f.ownerConfig.authorityUrl
+        ),
+        {
+          method: 'POST',
+          headers: {
+            Authorization:
+              'Bearer controlled-structure-users-10557-at-least-32-characters',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: 'alice' })
+        }
+      )
+      expect(response.ok).toBe(true)
+      await jobs.recover()
+      expect((await browser(id)).status).toBe(403)
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      expect(
+        await media.cloudflareImage.findUnique({
+          where: { id: job.providerId }
+        })
+      ).toMatchObject({ isAi: true, uploaded: true })
+      expect(
+        JSON.stringify(await f.auth.securityAudit.findMany())
+      ).not.toContain(promptSentinel)
+    })
+
+    it('rechecks expiry after the generation user lock and consumes no dispatch on denial', async () => {
+      const id = String((await generate()).jobId)
+      const connection = await connectionFor(id)
+      let release!: () => void
+      let locked!: () => void
+      let prepared!: () => void
+      const canUnlock = new Promise<void>((resolve) => {
+        release = resolve
+      })
+      const hasLock = new Promise<void>((resolve) => {
+        locked = resolve
+      })
+      const hasPrepared = new Promise<void>((resolve) => {
+        prepared = resolve
+      })
+      const blocking = media.$transaction(
+        async (tx) => {
+          await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = 'alice' FOR UPDATE`
+          locked()
+          await canUnlock
+        },
+        { timeout: 10000 }
+      )
+      await hasLock
+      afterPrepare = async (action) => {
+        if (action === 'dispatch') prepared()
+      }
+      const processing = createWorker().processCompletedTransfers()
+      try {
+        await hasPrepared
+        await f.auth.agentConnection.update({
+          where: { id: connection.id },
+          data: { expiresAt: new Date(0) }
+        })
+      } finally {
+        release()
+        await blocking
+        await processing
+      }
+      expect(generationCount).toBe(0)
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({ dispatchedAt: null, dispatchReceiptId: null })
+    })
+
+    it.each(['view', 'revoked', 'published'] as const)(
+      'rejects %s attachment while retaining the generated asset',
+      async (denied) => {
+        const id = String((await generate()).jobId)
+        const ready = await processedStatus(id)
+        const input = await f.input([
+          {
+            type: 'image_set',
+            block: { id: f.id('image') },
+            source: { source: 'upload', jobId: id }
+          }
+        ])
+        const connection = await connectionFor(id)
+        if (denied === 'published')
+          await f.journeys.journey.update({
+            where: { id: f.journeyId },
+            data: { status: 'published' }
+          })
+        else
+          await f.auth.agentConnection.update({
+            where: { id: connection.id },
+            data:
+              denied === 'view' ? { mode: 'view' } : { revokedAt: new Date() }
+          })
+        expect((await f.edit(input)).json.result?.isError).toBe(true)
+        expect(
+          await media.cloudflareImage.findUnique({
+            where: { id: (ready.asset as { id: string }).id }
+          })
+        ).toMatchObject({ isAi: true, uploaded: true })
+        expect(generationCount).toBe(1)
+      }
+    )
   })
 
   it('resumes a completed transfer from storage in a replacement worker without a connected client', async () => {

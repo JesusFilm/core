@@ -15,6 +15,10 @@ import {
   type ImageUploadProvider,
   cloudflareUploadProvider
 } from './mcpImageProvider'
+import {
+  type ImageGenerationProvider,
+  cloudflareGenerationProvider
+} from './mcpImageGenerationProvider'
 import { mediaJobHttp } from './mcpMediaJobHttp'
 import { createMediaJobs } from './mcpMediaJobs'
 import { createMediaMutationGuard } from './mcpMediaMutations'
@@ -37,6 +41,7 @@ export function mediaRuntime(
     uploads?: {
       storage: UploadStorage
       provider: ImageUploadProvider
+      generation?: ImageGenerationProvider
       browserIdentity: (token: string) => Promise<string>
       hooks?: Parameters<typeof createMediaJobs>[5]
       scheduleProcessing?: (work: () => Promise<void>) => void
@@ -134,7 +139,11 @@ export function mediaRuntime(
             z.string().min(1).parse(env.MCP_MEDIA_STAGING_BUCKET)
           ),
         dependencies.uploads?.provider ?? cloudflareUploadProvider(env),
-        dependencies.uploads?.hooks
+        dependencies.uploads?.hooks,
+        env.MCP_IMAGE_GENERATION_ENABLED === 'true'
+          ? (dependencies.uploads?.generation ??
+              cloudflareGenerationProvider(env))
+          : undefined
       )
     : undefined
   return {

@@ -10,6 +10,9 @@ import {
 } from '@core/prisma/media/client'
 import {
   type MediaFile,
+  type MediaStart,
+  generationDispatchLimit,
+  generationWindowMs,
   imageByteLimit,
   mediaFile,
   transferLifetimeMs,
@@ -24,6 +27,10 @@ import {
 
 import { imageHash, validateImageInput } from './mcpImageInput'
 import type { ImageUploadProvider } from './mcpImageProvider'
+import {
+  type ImageGenerationProvider,
+  generatedImageMetadata
+} from './mcpImageGenerationProvider'
 import { mediaExecutorIdentity, mediaExecutorStopped } from './mcpMediaExecutor'
 import type { UploadStorage } from './mcpUploadStorage'
 
@@ -76,7 +83,8 @@ export function createMediaJobs(
     beforeSend?: () => Promise<void>
     afterSend?: () => Promise<void>
     beforeStagingWrite?: () => Promise<void>
-  } = {}
+  } = {},
+  generation?: ImageGenerationProvider
 ) {
   const authority = (action: string, body: unknown) =>
     postJson(
@@ -299,6 +307,23 @@ export function createMediaJobs(
     await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR NO KEY UPDATE`
     return tx.mcpMediaJob.findUniqueOrThrow({ where: { id } })
   }
+  // Caller holds the user's capacity row. Future timestamps do not belong to
+  // the current rolling window; exactly 24 hours old is no longer usage.
+  async function checkGenerationUsage(tx: Transaction, userId: string) {
+    const now = await clock(tx)
+    const count = await tx.mcpMediaJob.count({
+      where: {
+        userId,
+        kind: 'image_generation',
+        dispatchedAt: {
+          gt: new Date(now.getTime() - generationWindowMs),
+          lte: now
+        }
+      }
+    })
+    if (count >= generationDispatchLimit) throw new Error('LIMIT_EXCEEDED')
+    return now
+  }
   async function terminalJob(tx: Transaction, job: McpMediaJob, state: string) {
     if (
       await tx.mcpMediaChunk.count({ where: { jobId: job.id, stored: false } })
@@ -311,6 +336,7 @@ export function createMediaJobs(
       where: { id: job.id },
       data: {
         state,
+        generationPrompt: null,
         active: false,
         completedAt: now,
         resultExpiresAt: new Date(now.getTime() + resultLifetime)
@@ -433,8 +459,11 @@ export function createMediaJobs(
   }
   async function admit(
     context: JobContext,
-    input: { idempotencyKey: string; kind: 'image_upload'; file?: MediaFile }
+    input:
+      | Omit<Extract<MediaStart, { kind: 'image_upload' }>, 'journeyId'>
+      | Omit<Extract<MediaStart, { kind: 'image_generation' }>, 'journeyId'>
   ) {
+    if (input.kind === 'image_generation' && !generation) denied()
     return authorized(
       context,
       'admit',
@@ -471,14 +500,21 @@ export function createMediaJobs(
           await accept()
           return prior.id
         }
+        const generating = input.kind === 'image_generation'
+        if (generating) await checkGenerationUsage(tx, context.userId)
         const active = await tx.mcpMediaJob.count({
           where: {
             userId: context.userId,
             active: true,
-            kind: { in: ['image_upload', 'video_upload'] }
+            kind: {
+              in: generating
+                ? ['image_generation']
+                : ['image_upload', 'video_upload']
+            }
           }
         })
-        if (active >= config.uploadLimit) throw new Error('LIMIT_EXCEEDED')
+        if (active >= (generating ? 1 : config.uploadLimit))
+          throw new Error('LIMIT_EXCEEDED')
         await accept()
         const now = await clock(tx)
         const team = await journeys.journey.findUniqueOrThrow({
@@ -497,7 +533,14 @@ export function createMediaJobs(
             kind: input.kind,
             progressionGrantVersion: grantVersion,
             progressionPermissionHash: permissionHash,
-            file: input.file,
+            file: input.kind === 'image_upload' ? input.file : undefined,
+            ...(input.kind === 'image_generation'
+              ? {
+                  generationPrompt: input.prompt,
+                  state: 'dispatch_pending',
+                  transferCompletedAt: now
+                }
+              : {}),
             providerId: randomUUID(),
             admittedAt: now,
             transferDeadline: new Date(now.getTime() + transferLifetimeMs)
@@ -522,14 +565,19 @@ export function createMediaJobs(
     return {
       contractVersion: '1',
       kind: 'media_job',
+      mediaKind: job.kind,
       jobId,
       state: job.state,
       clientId: job.clientId,
       journeyId: job.journeyId,
       admittedAt: job.admittedAt.toISOString(),
-      transferDeadline: job.transferDeadline.toISOString(),
-      receivedBytes: job.receivedBytes,
-      file: job.file,
+      ...(job.kind !== 'image_generation'
+        ? {
+            transferDeadline: job.transferDeadline.toISOString(),
+            receivedBytes: job.receivedBytes,
+            file: job.file
+          }
+        : {}),
       active: job.active,
       ...(job.state === 'ready'
         ? {
@@ -538,9 +586,24 @@ export function createMediaJobs(
               'Separate current-revision journey_edit required. Successful library assets survive cancellation and content undo.'
           }
         : {}),
-      adminLink: new URL(`/mcp/uploads/${job.id}`, config.adminOrigin).href,
-      ingressUrl: new URL(`/mcp/uploads/${job.id}`, config.ingressOrigin).href,
+      ...(job.kind === 'image_generation'
+        ? {
+            recovery:
+              job.state === 'reconciling' || job.state === 'cancel_requested'
+                ? 'Poll this same job. The provider may not be able to retrieve an ambiguous generation. Keep uncertainty and capacity; ask operations to investigate the recorded job/provider identity. Never repeat generation or use a new key as recovery.'
+                : 'Poll this same job. Generation never attaches automatically.',
+            observationAfter: new Date(
+              (job.dispatchedAt ?? job.admittedAt).getTime() + 15 * 60 * 1000
+            ).toISOString()
+          }
+        : {
+            adminLink: new URL(`/mcp/uploads/${job.id}`, config.adminOrigin)
+              .href,
+            ingressUrl: new URL(`/mcp/uploads/${job.id}`, config.ingressOrigin)
+              .href
+          }),
       ...(!terminal.includes(job.state) &&
+      job.kind !== 'image_generation' &&
       !job.transferCompletedAt &&
       job.transferDeadline > now
         ? { ingressTicket: signTicket(job) }
@@ -577,7 +640,7 @@ export function createMediaJobs(
     return readResult(context, jobId, true)
   }
   async function bind(context: JobContext, jobId: string, input: MediaFile) {
-    await own(jobId, context)
+    if ((await own(jobId, context)).kind !== 'image_upload') denied()
     const file = mediaFile.parse(input)
     await authorized(context, 'transfer', async (tx, { accept }) => {
       const job = await lockJob(tx, jobId)
@@ -603,7 +666,7 @@ export function createMediaJobs(
     checksum: string,
     body: ReadableStream<Uint8Array>
   ) {
-    await own(jobId, context)
+    if ((await own(jobId, context)).kind !== 'image_upload') denied()
     const plan = await authorized(
       context,
       'transfer',
@@ -822,11 +885,13 @@ export function createMediaJobs(
     const {
       permitId: receiptId,
       bytes,
-      mime
+      mime,
+      prompt
     } = await authorized(
       context,
       'dispatch',
       async (tx, { permitId, accept, grantVersion, permissionHash }) => {
+        await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${context.userId} FOR UPDATE`
         const job = await lockJob(tx, jobId)
         if (job.state !== 'dispatch_pending' || job.dispatchReceiptId)
           throw new Error('VALIDATION_FAILED')
@@ -837,8 +902,10 @@ export function createMediaJobs(
           denied()
         // Input reads cannot send provider work. Finish them while recovery can
         // still fence this receipt, then check current authority after the I/O.
-        const file = mediaFile.parse(job.file)
-        const bytes = await assembled(tx, job)
+        const generating = job.kind === 'image_generation'
+        if (generating && (!generation || !job.generationPrompt)) denied()
+        const file = generating ? undefined : mediaFile.parse(job.file)
+        const bytes = generating ? Buffer.alloc(0) : await assembled(tx, job)
         await accept()
         await tx.mcpMediaExecution.update({
           where: { id: permitId },
@@ -848,27 +915,48 @@ export function createMediaJobs(
           where: { id: jobId },
           data: { dispatchReceiptId: permitId }
         })
-        return { permitId, bytes, mime: file.mime }
+        return {
+          permitId,
+          bytes,
+          mime: file?.mime ?? 'image/jpeg',
+          prompt: job.generationPrompt
+        }
       }
     )
-    await hooks.beforeSend?.()
-    // Durable sending marker precedes the only POST. Every delayed executor
-    // takes this receipt lock and checks its state again before touching HTTP.
-    await media.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
-      const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
-        where: { id: receiptId }
+    try {
+      await hooks.beforeSend?.()
+      // Durable sending marker precedes the only POST. Every delayed executor
+      // takes this receipt lock and checks its state again before touching HTTP.
+      await media.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
+        const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
+          where: { id: receiptId }
+        })
+        if (receipt.status !== 'accepted') denied()
+        await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${context.userId} FOR UPDATE`
+        const job = await lockJob(tx, jobId)
+        if (job.kind === 'image_generation') {
+          // Admission already owns the user's sole active generation slot.
+          // Count only the durable send boundary, including uncertain sends.
+          const now = await checkGenerationUsage(tx, context.userId)
+          await tx.mcpMediaJob.update({
+            where: { id: jobId },
+            data: { dispatchedAt: now, generationPrompt: null }
+          })
+        }
+        await tx.mcpMediaExecution.update({
+          where: { id: receiptId },
+          data: { status: 'sending' }
+        })
+        await tx.mcpMediaJob.update({
+          where: { id: jobId },
+          data: { state: 'processing' }
+        })
       })
-      if (receipt.status !== 'accepted') denied()
-      await tx.mcpMediaExecution.update({
-        where: { id: receiptId },
-        data: { status: 'sending' }
-      })
-      await tx.mcpMediaJob.update({
-        where: { id: jobId },
-        data: { state: 'processing' }
-      })
-    })
+    } catch (error) {
+      await recoverExecution(receiptId)
+      throw error
+    }
     try {
       await media.$transaction(
         async (tx) => {
@@ -878,7 +966,10 @@ export function createMediaJobs(
           })
           if (receipt.status !== 'sending') denied()
           const job = await lockJob(tx, jobId)
-          const outcome = await provider.dispatch(job.providerId, bytes, mime)
+          const outcome =
+            job.kind === 'image_generation'
+              ? await generation!.dispatch(job.providerId, prompt!)
+              : await provider.dispatch(job.providerId, bytes, mime)
           await hooks.afterSend?.()
           await tx.mcpMediaJob.update({
             where: { id: jobId },
@@ -919,10 +1010,25 @@ export function createMediaJobs(
     const status =
       execution.status === 'rejected'
         ? 'rejected'
-        : await provider
-            .status(known.providerId)
-            .catch(() => 'unknown' as const)
-    if (status === 'unknown') return
+        : known.kind === 'image_generation'
+          ? ((await generation
+              ?.status(known.providerId)
+              .catch(() => 'unknown' as const)) ?? 'unknown')
+          : await provider
+              .status(known.providerId)
+              .catch(() => 'unknown' as const)
+    if (status === 'unknown') {
+      await media.mcpMediaJob.updateMany({
+        where: {
+          id: jobId,
+          active: true,
+          state: 'processing',
+          dispatchedAt: { lte: new Date(Date.now() - 15 * 60 * 1000) }
+        },
+        data: { state: 'reconciling' }
+      })
+      return
+    }
     const settled = await media.$transaction(
       async (tx) => {
         await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${known.dispatchReceiptId} FOR UPDATE`
@@ -952,17 +1058,29 @@ export function createMediaJobs(
           if (job.state !== 'cancel_requested')
             await tx.mcpMediaJob.update({
               where: { id: jobId },
-              data: { state: 'processing' }
+              data: {
+                state:
+                  job.kind === 'image_generation' &&
+                  job.dispatchedAt &&
+                  job.dispatchedAt.getTime() + 15 * 60 * 1000 <= Date.now()
+                    ? 'reconciling'
+                    : 'processing'
+              }
             })
           return true
         }
-        const metadata = z
-          .object({
-            width: z.number(),
-            height: z.number(),
-            blurhash: z.string()
-          })
-          .parse(job.metadata)
+        const metadata =
+          known.kind === 'image_generation'
+            ? generatedImageMetadata.parse(
+                typeof status === 'object' ? status.metadata : undefined
+              )
+            : z
+                .object({
+                  width: z.number(),
+                  height: z.number(),
+                  blurhash: z.string()
+                })
+                .parse(job.metadata)
         await tx.cloudflareImage.upsert({
           where: { id: job.providerId },
           create: {
@@ -971,7 +1089,7 @@ export function createMediaJobs(
             teamId: job.teamId,
             uploaded: true,
             blurhash: metadata.blurhash,
-            isAi: false
+            isAi: job.kind === 'image_generation'
           },
           update: { uploaded: true, blurhash: metadata.blurhash }
         })

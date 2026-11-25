@@ -17,7 +17,7 @@ export const mediaFile = z
   })
   .strict()
 const journeyId = z.string().min(1).max(200)
-export const mediaStartInput = z
+const imageUploadInput = z
   .object({
     journeyId,
     idempotencyKey: z.string().min(1).max(200),
@@ -25,10 +25,34 @@ export const mediaStartInput = z
     file: mediaFile.optional()
   })
   .strict()
+export const imageGenerationInput = z
+  .object({
+    journeyId,
+    idempotencyKey: z.string().min(1).max(200),
+    kind: z.literal('image_generation'),
+    prompt: z
+      .string()
+      .min(1)
+      .max(2048)
+      .refine((value) => value.trim().length > 0)
+  })
+  .strict()
+export const mediaStartInput = z.discriminatedUnion('kind', [
+  imageUploadInput,
+  imageGenerationInput
+])
+export type MediaStart = z.infer<typeof mediaStartInput>
+export const generationWindowMs = 24 * 60 * 60 * 1000
+export const generationDispatchLimit = 10
 export const mediaJobInput = z
-  .object({ journeyId, jobId: z.string().uuid() })
+  .object({
+    journeyId,
+    jobId: z.string().uuid(),
+    resume: z.boolean().optional()
+  })
   .strict()
 export const mediaCancelInput = mediaJobInput
+  .omit({ resume: true })
   .extend({ idempotencyKey: z.string().min(1).max(200) })
   .strict()
 export const mediaJobState = z.enum([
