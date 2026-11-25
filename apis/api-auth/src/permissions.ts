@@ -382,31 +382,40 @@ async function retireAccount(db: Database, userId: string) {
       })
       await audit(tx, 'account_retire', 'allowed', { userId })
     }
-    const connections = await tx.agentConnection.findMany({
-      where: { userId },
-      orderBy: { id: 'asc' }
-    })
-    await lockGateRows(
-      tx,
-      connections.map((connection) => `connection:${connection.id}`).sort()
-    )
-    for (const connection of connections) {
-      await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR UPDATE`
-      const current = await tx.agentConnection.findUniqueOrThrow({
-        where: { id: connection.id }
-      })
-      if (current.revokedAt) continue
-      await tx.connectionChange.updateMany({
-        where: {
-          connectionId: connection.id,
-          status: 'pending',
-          kind: 'access'
-        },
-        data: { status: 'superseded' }
-      })
-      await beginConnectionChange(tx, current, undefined)
-    }
   })
+  // Close account authority durably before retiring bounded connection batches.
+  // An interrupted request resumes from the remaining unretired connections.
+  while (true) {
+    const connections = await db.agentConnection.findMany({
+      where: { userId, revokedAt: null },
+      orderBy: { id: 'asc' },
+      take: 100
+    })
+    if (!connections.length) break
+    await db.$transaction(async (tx) => {
+      await lockGateRows(tx, [`account:${userId}`])
+      await lockGateRows(
+        tx,
+        connections.map((connection) => `connection:${connection.id}`).sort()
+      )
+      for (const connection of connections) {
+        await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR UPDATE`
+        const current = await tx.agentConnection.findUniqueOrThrow({
+          where: { id: connection.id }
+        })
+        if (current.revokedAt) continue
+        await tx.connectionChange.updateMany({
+          where: {
+            connectionId: connection.id,
+            status: 'pending',
+            kind: 'access'
+          },
+          data: { status: 'superseded' }
+        })
+        await beginConnectionChange(tx, current, undefined)
+      }
+    })
+  }
   await reconcileConnectionChanges(db)
   const pending = await db.connectionChange.count({
     where: {

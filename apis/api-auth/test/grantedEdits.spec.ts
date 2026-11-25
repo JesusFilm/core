@@ -6339,6 +6339,16 @@ describe('saved edit integration', () => {
             where: { id: a.operationId }
           })
         ).namespaceId
+        const existingConnection = await auth.agentConnection.findFirstOrThrow({
+          where: { userId: 'alice' }
+        })
+        const historicalConnections = Array.from({ length: 1000 }, () => ({
+          ...existingConnection,
+          id: randomUUID(),
+          grantId: randomUUID(),
+          revokedAt: null
+        }))
+        await auth.agentConnection.createMany({ data: historicalConnections })
         const retired = await request('/internal/permissions/retire-account', {
           method: 'POST',
           headers: {
@@ -6348,6 +6358,11 @@ describe('saved edit integration', () => {
           body: JSON.stringify({ userId: 'alice' })
         })
         expect(retired.status).toBe(200)
+        expect(
+          await auth.agentConnection.count({
+            where: { userId: 'alice', revokedAt: null }
+          })
+        ).toBe(0)
         expect(
           (await call('journey_history', { journeyId })).text
         ).not.toContain(a.historyId!)
