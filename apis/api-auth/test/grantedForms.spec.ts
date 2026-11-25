@@ -892,14 +892,14 @@ describe('form integration', () => {
           data: { endIconId: f.id('end') }
         })
         await f.journeys.block.update({
-          where: { id: signup.submitIconId! },
+          where: { id: signup.submitIconId },
           data: { parentBlockId: f.id('button') }
         })
         await reject([
           { type: 'signup_icon_set', block: ref(f.id('legacy')), name: null }
         ])
         await f.journeys.block.update({
-          where: { id: signup.submitIconId! },
+          where: { id: signup.submitIconId },
           data: { parentBlockId: f.id('legacy'), deletedAt: new Date() }
         })
         await reject([
