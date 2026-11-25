@@ -327,6 +327,54 @@ describe('form integration', () => {
         expect(await options(f.id('poll'))).toEqual([])
       })
 
+      it('retains all three slow selected destinations on one Step after protected output checks', async () => {
+        const configuration = await f.journeys.integration.findUniqueOrThrow({
+          where: { id: integrationId }
+        })
+        const fields: Array<{
+          id: string
+          integrationId: string
+          routeId: string
+        }> = []
+        for (let index = 0; index < 3; index++) {
+          const id = f.id(`selected-slow-integration-${index}`)
+          await f.journeys.integration.create({
+            data: { ...configuration, id }
+          })
+          const saved = await f.save([
+            add('field', { kind: 'response', responseType: 'email' }),
+            {
+              type: 'form_destination_set',
+              block: local('field'),
+              integrationId: id,
+              routeId: 'route-a'
+            }
+          ])
+          fields.push({
+            id: saved.idMap.field,
+            integrationId: id,
+            routeId: 'route-a'
+          })
+        }
+        calls.length = 0
+        routeDelayMs = 800
+        const revision = await f.revision()
+        const result = await f.call('journey_read', {
+          journeyId: f.journeyId,
+          view: 'steps',
+          revision
+        })
+        expect(result.status, result.text).toBe(200)
+        expect(result.json.result?.isError, result.text).not.toBe(true)
+        expect(result.json.result?.structuredContent).toMatchObject({
+          revision,
+          blocks: expect.arrayContaining(
+            fields.map((field) => expect.objectContaining(field))
+          )
+        })
+        expect(calls).toHaveLength(6)
+      })
+
       it('bounds selected destination reads across five stalled integrations and skips outline lookups', async () => {
         const configuration = await f.journeys.integration.findUniqueOrThrow({
           where: { id: integrationId }
@@ -380,8 +428,8 @@ describe('form integration', () => {
           )
         })
         expect(performance.now() - started).toBeLessThan(10000)
-        // One shared budget per protected read/output stage, not per field.
-        expect(calls).toEqual(['GET /routes', 'GET /routes'])
+        // Each of five integrations is attempted once per read/output stage.
+        expect(calls).toHaveLength(10)
         for (const selectedIntegration of integrationIds)
           expect(result.text).not.toContain(selectedIntegration)
         expect(result.text).not.toContain('route-a')

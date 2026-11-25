@@ -60,15 +60,15 @@ export const readDestinationRoutes: DestinationRoutes = async (
   }
 }
 
-export async function eligibleDestinations(
+async function loadEligibleIntegrations(
   tx: Prisma.TransactionClient,
   journey: { teamId?: string | null },
-  access: DestinationAccess,
-  integrationId?: string
+  userId: string,
+  integrationIds?: string[]
 ) {
   if (!journey.teamId) throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
   const membership = await tx.userTeam.findUnique({
-    where: { teamId_userId: { teamId: journey.teamId, userId: access.userId } }
+    where: { teamId_userId: { teamId: journey.teamId, userId } }
   })
   if (!membership || !['member', 'manager'].includes(membership.role))
     throw new Error('ACCESS_DENIED_OR_NOT_FOUND')
@@ -79,28 +79,55 @@ export async function eligibleDestinations(
     where: {
       teamId: journey.teamId,
       type: 'growthSpaces',
-      ...(integrationId ? { id: integrationId } : {})
+      ...(integrationIds ? { id: { in: integrationIds } } : {})
     },
     take: 101,
     orderBy: { id: 'asc' }
   })
   if (integrations.length > 100) throw new Error('LIMIT_EXCEEDED')
+  return integrations.filter(
+    (integration) => integration.accessId && !integration.oauthStale
+  )
+}
+
+async function resolveDestination(
+  integration: Integration,
+  access: DestinationAccess
+) {
+  return {
+    integrationId: integration.id,
+    name: 'Growth Spaces',
+    routes: routes.parse(
+      await (access.routes ?? readDestinationRoutes)(integration, access.signal)
+    )
+  }
+}
+
+export async function eligibleDestinations(
+  tx: Prisma.TransactionClient,
+  journey: { teamId?: string | null },
+  access: DestinationAccess,
+  integrationId?: string
+) {
+  const integrations = await loadEligibleIntegrations(
+    tx,
+    journey,
+    access.userId,
+    integrationId ? [integrationId] : undefined
+  )
   // The catalog is capped above. Parallel reads share the caller's deadline,
   // and Promise.all preserves the same order during protected output checks.
   return await Promise.all(
-    integrations
-      .filter((integration) => integration.accessId && !integration.oauthStale)
-      .map(async (integration) => ({
-        integrationId: integration.id,
-        name: 'Growth Spaces',
-        routes: routes.parse(
-          await (access.routes ?? readDestinationRoutes)(
-            integration,
-            access.signal
-          )
-        )
-      }))
+    integrations.map((integration) => resolveDestination(integration, access))
   )
+}
+
+function ignoreInaccessible(error: unknown): undefined {
+  if (
+    !(error instanceof Error) ||
+    error.message !== 'ACCESS_DENIED_OR_NOT_FOUND'
+  )
+    throw error
 }
 
 /** Return only currently usable saved pairs, without hiding the rest of a draft
@@ -117,59 +144,64 @@ export async function selectedFormDestinations(
   }>,
   access: DestinationAccess
 ) {
+  const fields = blocks.filter(
+    (block) =>
+      block.typename === 'TextResponseBlock' &&
+      (block.type === 'email' || block.type === 'name')
+  )
+  const integrationIds = [
+    ...new Set(
+      fields.flatMap((block) =>
+        block.integrationId ? [block.integrationId] : []
+      )
+    )
+  ]
+  const destinations = new Map<
+    string,
+    Awaited<ReturnType<typeof resolveDestination>>
+  >()
+  if (integrationIds.length) {
+    // Leave room for rights checks and settlement in the five-second output call.
+    const deadline = AbortSignal.timeout(2000)
+    const signal = access.signal
+      ? AbortSignal.any([access.signal, deadline])
+      : deadline
+    const integrations = await loadEligibleIntegrations(
+      tx,
+      journey,
+      access.userId,
+      integrationIds
+    ).catch(ignoreInaccessible)
+    if (integrations && !signal.aborted) {
+      const resolved = await Promise.all(
+        integrations.map((integration) =>
+          resolveDestination(integration, { ...access, signal }).catch(
+            ignoreInaccessible
+          )
+        )
+      )
+      for (const destination of resolved) {
+        if (destination)
+          destinations.set(destination.integrationId, destination)
+      }
+    }
+  }
   const selections = new Map<
     string,
     { integrationId: string | null; routeId: string | null }
   >()
-  const integrations = new Map<
-    string,
-    Awaited<ReturnType<typeof eligibleDestinations>>
-  >()
-  // Leave room for rights checks and settlement in the five-second output call.
-  const signal = AbortSignal.timeout(2000)
-  for (const block of blocks) {
-    if (
-      block.typename !== 'TextResponseBlock' ||
-      !['email', 'name'].includes(block.type ?? '')
-    )
-      continue
-    if (!block.integrationId) {
-      selections.set(block.id, { integrationId: null, routeId: null })
+  for (const { id, integrationId, routeId } of fields) {
+    if (!integrationId) {
+      selections.set(id, { integrationId: null, routeId: null })
       continue
     }
-    if (!integrations.has(block.integrationId)) {
-      if (signal.aborted) continue
-      try {
-        integrations.set(
-          block.integrationId,
-          await eligibleDestinations(
-            tx,
-            journey,
-            { ...access, signal },
-            block.integrationId
-          )
-        )
-      } catch (error) {
-        if (
-          !(error instanceof Error) ||
-          error.message !== 'ACCESS_DENIED_OR_NOT_FOUND'
-        )
-          throw error
-        integrations.set(block.integrationId, [])
-      }
-    }
-    const destination = integrations
-      .get(block.integrationId)!
-      .find((option) => option.integrationId === block.integrationId)
+    const destination = destinations.get(integrationId)
     if (
       destination &&
-      (block.routeId === null ||
-        destination.routes.some((route) => route.id === block.routeId))
+      (routeId === null ||
+        destination.routes.some((route) => route.id === routeId))
     )
-      selections.set(block.id, {
-        integrationId: block.integrationId,
-        routeId: block.routeId
-      })
+      selections.set(id, { integrationId, routeId })
   }
   return selections
 }
