@@ -84,6 +84,11 @@ type StarterOperation =
   | ButtonIcon
   | z.infer<typeof cardCommand>
 
+type StarterPlan = {
+  commands: StarterOperation[]
+  secondaryText?: string
+}
+
 const sampleVideoClip = { startAt: 2048, endAt: 2058 }
 
 /** Expand the Admin CardTemplates into the owning edit planner's commands.
@@ -93,7 +98,7 @@ export function expandCardStarter({
   card,
   key,
   starter
-}: CardStarterCommand): StarterOperation[] {
+}: CardStarterCommand): StarterPlan {
   const ref = (part: string) => ({ local: `${key}_${part}` })
   const blockId = (part: string) => `$${ref(part).local}`
   const add = (part: string, content: ContentCreate): StarterOperation => ({
@@ -160,9 +165,16 @@ export function expandCardStarter({
     },
     cover({ kind: 'image', source })
   ]
+  const recipe = (
+    commands: StarterOperation[],
+    secondaryText?: string
+  ): StarterPlan => ({
+    commands,
+    ...(secondaryText ? { secondaryText: ref(secondaryText).local } : {})
+  })
   switch (starter.kind) {
     case 'video':
-      return [
+      return recipe([
         add('video', { kind: 'video' }),
         {
           type: 'video_source_set',
@@ -170,9 +182,9 @@ export function expandCardStarter({
           source: starter.source,
           settings: { ...videoClip, autoplay: true, muted: false }
         }
-      ]
+      ])
     case 'intro':
-      return [
+      return recipe([
         ...textPair(
           starter.eyebrow ?? 'Interactive Video',
           starter.title ?? "Jesus: History's Most Influential Figure?",
@@ -187,72 +199,82 @@ export function expandCardStarter({
         button('begin', starter.button ?? 'Begin the Journey'),
         icon('begin', 'end', 'ArrowForwardRounded'),
         cover({ kind: 'video', source: starter.source, settings: videoClip })
-      ]
+      ])
     case 'poll':
-      return [
-        ...styledCover(true, starter.source),
-        ...textPair(
-          starter.eyebrow ?? 'Got an Opinion?',
-          starter.title ?? "Which of Jesus' teachings challenges you the most?",
-          'h2'
-        ),
-        add('question', {
-          kind: 'poll',
-          options: (
-            starter.options ?? [
-              'Turning the other cheek',
-              'Loving your enemies',
-              'Not worrying about tomorrow',
-              'Seeking first the kingdom of God'
-            ]
-          ).map((label, index) => ({
-            key: ref(`option_${index + 1}`).local,
-            label
-          }))
-        }),
-        typography(
-          'caption',
-          starter.caption ?? '↑ Select an answer to continue',
-          'caption'
-        )
-      ]
+      return recipe(
+        [
+          ...styledCover(true, starter.source),
+          ...textPair(
+            starter.eyebrow ?? 'Got an Opinion?',
+            starter.title ??
+              "Which of Jesus' teachings challenges you the most?",
+            'h2'
+          ),
+          add('question', {
+            kind: 'poll',
+            options: (
+              starter.options ?? [
+                'Turning the other cheek',
+                'Loving your enemies',
+                'Not worrying about tomorrow',
+                'Seeking first the kingdom of God'
+              ]
+            ).map((label, index) => ({
+              key: ref(`option_${index + 1}`).local,
+              label
+            }))
+          }),
+          typography(
+            'caption',
+            starter.caption ?? '↑ Select an answer to continue',
+            'caption'
+          )
+        ],
+        'caption'
+      )
     case 'form':
-      return [
-        ...styledCover(true, starter.source),
-        ...textPair(
-          starter.eyebrow ?? 'Prayer Request',
-          starter.title ?? 'How can we pray for you?',
-          'h1'
-        ),
-        add('response', {
-          kind: 'response',
-          label: starter.responseLabel ?? 'My Prayer:'
-        }),
-        button('submit', starter.submitLabel ?? ''),
-        typography(
-          'caption',
-          starter.caption ??
-            "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
-          'caption'
-        )
-      ]
+      return recipe(
+        [
+          ...styledCover(true, starter.source),
+          ...textPair(
+            starter.eyebrow ?? 'Prayer Request',
+            starter.title ?? 'How can we pray for you?',
+            'h1'
+          ),
+          add('response', {
+            kind: 'response',
+            label: starter.responseLabel ?? 'My Prayer:'
+          }),
+          button('submit', starter.submitLabel ?? ''),
+          typography(
+            'caption',
+            starter.caption ??
+              "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
+            'caption'
+          )
+        ],
+        'caption'
+      )
     case 'quote':
-      return [
-        ...styledCover(false, starter.source),
-        ...textPair(
-          starter.eyebrow ?? 'The Bible Says:',
-          starter.quote ??
-            'Blessed are the peacemakers, for they shall be called sons of God.',
-          'h3'
-        ),
-        typography(
-          'attribution',
-          starter.attribution ?? '– Jesus Christ',
-          'body1'
-        )
-      ]
+      return recipe(
+        [
+          ...styledCover(false, starter.source),
+          ...textPair(
+            starter.eyebrow ?? 'The Bible Says:',
+            starter.quote ??
+              'Blessed are the peacemakers, for they shall be called sons of God.',
+            'h3'
+          ),
+          typography(
+            'attribution',
+            starter.attribution ?? '– Jesus Christ',
+            'body1'
+          )
+        ],
+        'attribution'
+      )
     case 'cta':
-      return [
+      return recipe([
         ...styledCover(false, starter.source),
         ...textPair(
           starter.eyebrow ?? "Let's Connect",
@@ -269,6 +291,6 @@ export function expandCardStarter({
           size: 'large'
         }),
         icon('more', 'start', 'ArrowForwardRounded')
-      ]
+      ])
   }
 }

@@ -231,6 +231,8 @@ describe('owning structure planner', () => {
             typename: starter.kind === 'intro' ? 'VideoBlock' : 'ImageBlock'
           })
         }
+        if (['poll', 'form', 'quote'].includes(starter.kind))
+          expect(content.at(-1)).toMatchObject({ color: 'secondary' })
         if (starter.kind === 'form') {
           expect(content[3]).toMatchObject({
             submitEnabled: true,

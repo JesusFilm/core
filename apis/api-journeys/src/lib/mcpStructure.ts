@@ -129,9 +129,12 @@ export async function planStructure(
   const starters = requestedCommands.filter(
     (command) => command.type === 'card_starter_apply'
   )
+  const starterPlans = new Map(
+    starters.map((command) => [command, expandCardStarter(command)])
+  )
   const commands = requestedCommands.flatMap((command) =>
     command.type === 'card_starter_apply'
-      ? expandCardStarter(command)
+      ? starterPlans.get(command)!.commands
       : [command]
   )
   const formLocales = new Map<string, Parameters<typeof formLabel>[1]>()
@@ -1049,6 +1052,11 @@ export async function planStructure(
         }
       )
     }
+  }
+  // Palette defaults belong to these new recipe blocks, never caller fields.
+  for (const { secondaryText } of starterPlans.values()) {
+    if (secondaryText)
+      resolve({ local: secondaryText }, 'TypographyBlock').color = 'secondary'
   }
   // Recheck assigned routes against final projected state. Legacy unresolved
   // references elsewhere remain untouched and do not prevent unrelated edits.
