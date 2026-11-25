@@ -1080,6 +1080,13 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
           })
         expect((await f.edit(input)).json.result?.isError).toBe(true)
         expect(
+          (await f.call('journey_media_start', generateInput())).json.result
+            ?.isError
+        ).toBe(true)
+        expect(
+          await media.mcpMediaJob.count({ where: { kind: 'image_generation' } })
+        ).toBe(1)
+        expect(
           await media.cloudflareImage.findUnique({
             where: { id: (ready.asset as { id: string }).id }
           })
