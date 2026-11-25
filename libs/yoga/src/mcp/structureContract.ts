@@ -1,14 +1,19 @@
 import { z } from 'zod'
 
+import { formContent } from './formContent'
+
 const id = z.string().min(1).max(200)
 export const localKey = z
   .string()
   .min(1)
   .max(32)
   .regex(/^(?!__proto__$)[a-z0-9_]+$/)
+export const generatedLocalKey = z
+  .string()
+  .regex(/^(?!__proto__\.)[a-z0-9_]{1,32}\.(?:startIcon|endIcon|submit)$/)
 export const blockReference = z.union([
   z.object({ id }).strict(),
-  z.object({ local: localKey }).strict()
+  z.object({ local: z.union([localKey, generatedLocalKey]) }).strict()
 ])
 export type BlockReference = z.infer<typeof blockReference>
 export type Reference = BlockReference
@@ -41,6 +46,7 @@ const typographyVariant = z.enum([
 ])
 
 export const contentCreate = z.discriminatedUnion('kind', [
+  ...formContent,
   z
     .object({
       kind: z.literal('typography'),

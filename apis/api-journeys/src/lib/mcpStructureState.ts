@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { Prisma } from '@core/prisma/journeys/client'
 import { appearanceJourneyFields } from '@core/yoga/mcp/appearanceContract'
 import type { OperationReceipt } from '@core/yoga/mcp/editContract'
+import { validSelectionBounds } from '@core/yoga/mcp/formContent'
 import {
   presentationFields,
   presentationInverse
@@ -161,6 +162,13 @@ const blockChangeSchema = z
     parentBlockId: z.string().nullable(),
     created: z.boolean(),
     removalAction: actionStateSchema.nullable().optional(),
+    formBounds: z
+      .object({
+        beforeCount: z.number().int().min(0).max(100000),
+        beforeValid: z.boolean()
+      })
+      .strict()
+      .optional(),
     presentation: presentationCheck.optional(),
     fields: z
       .array(z.enum([...blockFields, 'settings.color', 'settings.alignment']))
@@ -275,6 +283,9 @@ export interface StructurePlan {
   objectCount: number
 }
 export interface StructureState {
+  destinationChecks: Set<string>
+  boundChecks: Set<string>
+  optionAddChecks: Set<string>
   presentation: Map<string, PresentationCheck>
   journey: JourneyState
   originalJourney: JourneyState
@@ -414,6 +425,9 @@ export async function loadStructure(
     primaryImageBlockId: journey.primaryImageBlockId ?? null
   } as JourneyState
   return {
+    destinationChecks: new Set(),
+    boundChecks: new Set(),
+    optionAddChecks: new Set(),
     presentation: new Map(),
     journey: { ...journeyState },
     originalJourney: journeyState,
@@ -473,11 +487,34 @@ export function finishStructure(
       fields.splice(fields.indexOf('settings'), 1, ...settingsFields)
     }
     if (!created && !fields.length) continue
+    const beforeOptionCount =
+      before.typename === 'MultiselectBlock'
+        ? [...state.originalBlocks.values()].filter(
+            (option) =>
+              live(option) &&
+              option.parentBlockId === id &&
+              option.typename === 'MultiselectOptionBlock'
+          ).length
+        : 0
     inverse.blocks.push({
       id,
       typename: requiredString(row.typename),
       parentBlockId: parentOf(row),
       created,
+      ...(!created &&
+      before.typename === 'MultiselectBlock' &&
+      fields.some((field) => field === 'min' || field === 'max')
+        ? {
+            formBounds: {
+              beforeCount: beforeOptionCount,
+              beforeValid: validSelectionBounds(
+                before.min,
+                before.max,
+                beforeOptionCount
+              )
+            }
+          }
+        : {}),
       ...(state.presentation.has(id)
         ? { presentation: state.presentation.get(id) }
         : {}),
