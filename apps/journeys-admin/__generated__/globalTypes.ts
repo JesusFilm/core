@@ -243,6 +243,14 @@ export enum CampaignTranslationGroup {
   regions = "regions",
 }
 
+export enum CaptureEventTrigger {
+  buttonClick = "buttonClick",
+  radioQuestionSubmit = "radioQuestionSubmit",
+  stepView = "stepView",
+  videoComplete = "videoComplete",
+  videoStart = "videoStart",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
@@ -969,11 +977,13 @@ export interface CampaignRegionSwitcherBlockCreateInput {
   parentOrder?: number | null;
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
+  showCountryNames?: boolean | null;
 }
 
 export interface CampaignRegionSwitcherBlockUpdateInput {
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
+  showCountryNames?: boolean | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;
@@ -1191,9 +1201,37 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface ChristDecisionCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface CreateVerificationRequestInput {
   redirect?: string | null;
   app?: App | null;
+}
+
+export interface Custom1CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface Custom2CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface Custom3CaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
 }
 
 export interface CustomDomainCreateInput {
@@ -1230,6 +1268,20 @@ export interface GenerateSubtitlesInput {
 export interface GoogleSheetsSyncsFilter {
   journeyId?: string | null;
   integrationId?: string | null;
+}
+
+export interface GospelCompleteCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface GospelStartCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
 }
 
 export interface HostCreateInput {
@@ -1370,6 +1422,9 @@ export interface JourneyThemeUpdateInput {
 }
 
 export interface JourneyUpdateInput {
+  custom1Label?: string | null;
+  custom2Label?: string | null;
+  custom3Label?: string | null;
   title?: string | null;
   languageId?: string | null;
   themeMode?: ThemeMode | null;
@@ -1525,6 +1580,13 @@ export interface PlausibleStatsBreakdownFilter {
   filters?: string | null;
 }
 
+export interface PrayerRequestCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface QrCodeCreateInput {
   teamId: string;
   journeyId: string;
@@ -1565,6 +1627,13 @@ export interface RadioQuestionSubmissionEventCreateInput {
   value?: string | null;
 }
 
+export interface RsvpCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
 export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -1591,6 +1660,20 @@ export interface SpacerBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   spacing?: number | null;
+}
+
+export interface SpecialVideoCompleteCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
+}
+
+export interface SpecialVideoStartCaptureEventCreateInput {
+  id: string;
+  blockId: string;
+  stepId: string;
+  trigger: CaptureEventTrigger;
 }
 
 export interface StepBlockCreateInput {

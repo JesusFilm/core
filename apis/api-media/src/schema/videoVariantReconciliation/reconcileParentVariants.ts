@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma/media/client'
+import { type VideoLabel, prisma } from '@core/prisma/media/client'
 
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
@@ -7,6 +7,7 @@ import {
   findContainerParentIds,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
+import { canHavePlaceholderVariant } from '../videoVariant/canHavePlaceholderVariant'
 
 import { reconcileGeneratedParentVariant } from './reconcileReasonSpecificVariant'
 import {
@@ -19,7 +20,6 @@ import {
   syncVideoRecordStage,
   unsyncedGeneratedParentStages
 } from './reconciliationStages'
-import { videoVariantContainsMedia } from './videoVariantContainsMedia'
 
 type ChildVariant = {
   id: string
@@ -72,7 +72,7 @@ export async function reconcileParentVariants({
 
   const parentVideos = await prisma.video.findMany({
     where: { id: { in: parentIds } },
-    select: { id: true, slug: true }
+    select: { id: true, slug: true, label: true }
   })
 
   let firstFailure: ParentReconciliationResult | null = null
@@ -102,7 +102,7 @@ async function reconcileParentVariant({
   stages,
   persistStatus
 }: {
-  parentVideo: { id: string; slug: string | null }
+  parentVideo: { id: string; slug: string | null; label: VideoLabel }
   variant: ChildVariant
   stages: ProcessingStages
   persistStatus: (
@@ -120,24 +120,29 @@ async function reconcileParentVariant({
     include: { downloads: { select: { id: true } } }
   })
 
-  if (parentVariant != null && videoVariantContainsMedia(parentVariant)) {
-    const failedStageValue = recordParentSyncFailure(
-      stages,
-      `Parent Variant ${parentVariant.id} contains media and requires operator review`
-    )
-    await persistStatus('degraded', failedStageValue)
-    return {
-      publicationReady: false,
-      status: 'degraded',
-      failedStage: failedStageValue
-    }
-  }
+  // A container parent that already carries its own media-bearing Variant is
+  // normal, not an anomaly: findContainerParentIds includes `featureFilm`, and
+  // a featureFilm (1_jf-0-0) legitimately has real media in every language it
+  // is dubbed in while also owning its chapter children. Nothing below writes
+  // to an *existing* parent Variant -- the only variant write is the create on
+  // the `createPlaceholder` branch -- so there was nothing here to clobber.
+  // Blocking instead stranded the CHILD's publication: reconcile returned
+  // early, the child never got `published: true` or an Algolia entry, and the
+  // record retried five futile times before alerting #data-lang-products.
+  // Operator review for genuinely ambiguous parents belongs to the offline
+  // audit (`src/scripts/audit-parent-variants.ts`), which reports them as
+  // `ambiguous` without touching live publication.
+  //
+  // A playable parent (featureFilm) keeps only its real Variants: it never
+  // gets a placeholder, since its own media is expected, not a conflict.
+  const createPlaceholder =
+    parentVariant == null && canHavePlaceholderVariant(parentVideo.label)
 
   // Set here rather than defaulted by the database so the run below can
   // guard its own status writes on it (see persistReconciliationStatus).
   const parentCreatedAt = new Date()
   try {
-    if (parentVariant == null) {
+    if (createPlaceholder) {
       await createGeneratedParentVariant({
         parentVideo,
         variant,
@@ -160,7 +165,7 @@ async function reconcileParentVariant({
     }
   }
 
-  if (parentVariant == null) {
+  if (createPlaceholder) {
     const result = await reconcileGeneratedParentVariant({
       reconciliationId: parentReconciliationId,
       reconciliation: {
@@ -208,6 +213,9 @@ async function reconcileParentVariant({
     stages.algoliaVideo
   )
 
+  // A playable parent without a Variant in this language has nothing to index.
+  if (parentVariant == null) return null
+
   try {
     await updateVideoVariantInAlgolia(parentVariant.id)
   } catch (error) {
@@ -247,14 +255,14 @@ export async function publishParentVariants(
 
   const parentVideos = await prisma.video.findMany({
     where: { id: { in: parentIds } },
-    select: { id: true, slug: true }
+    select: { id: true, slug: true, label: true }
   })
   for (const parentVideo of parentVideos) {
     const parentVariant = await prisma.videoVariant.findFirst({
       where: { videoId: parentVideo.id, languageId: variant.languageId },
       select: { id: true }
     })
-    if (parentVariant == null) {
+    if (parentVariant == null && canHavePlaceholderVariant(parentVideo.label)) {
       await createGeneratedParentVariant({
         parentVideo,
         variant,
@@ -324,7 +332,7 @@ async function createGeneratedParentVariant({
 // cascades the change to any further-up container (nested collections);
 // videoCacheReset is what actually revalidates the watch-app language menu
 // for this parent's own page (VMT-318).
-async function syncParentLanguage(
+export async function syncParentLanguage(
   parentVideoId: string,
   languageId: string
 ): Promise<void> {

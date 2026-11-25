@@ -8,8 +8,8 @@ import { CampaignRef } from './campaign'
 import { campaignWrite } from './campaignWrite'
 import { deleteQrCodes, findRegionQrCodes } from './regionLanguage/service'
 import {
-  enqueueCampaignRevalidation,
-  listCampaignPagePaths
+  queuePageSetChange,
+  snapshotCampaignAddress
 } from './revalidateCampaign'
 
 builder.mutationField('campaignDelete', (t) =>
@@ -24,29 +24,24 @@ builder.mutationField('campaignDelete', (t) =>
     resolve: async (query, _parent, args, context) => {
       const id = String(args.id)
       const campaign = await authorizeCampaign(id, 'delete', context.user, {
-        regions: true,
         customDomains: true
       })
-
-      // The language rows cascade away with the campaign, so the pages to
-      // purge are listed before the delete.
-      const pagePaths =
-        campaign.status === 'published'
-          ? await listCampaignPagePaths(campaign)
-          : []
 
       // The body deletes the Campaign, so there is no row left to touch.
       return await campaignWrite(
         id,
         { touch: false },
         async ({ tx, afterCommit }) => {
+          // The language rows cascade away with the campaign, so its address
+          // is read before the delete; nothing is left to read after it.
+          const before = await snapshotCampaignAddress(tx, id)
           const shortLinkIds = await deleteQrCodes(
             tx,
             await findRegionQrCodes(tx, { region: { campaignId: id } })
           )
           const deleted = await tx.campaign.delete({ ...query, where: { id } })
           afterCommit(async () => await enqueueShortLinkDeletes(shortLinkIds))
-          afterCommit(async () => await enqueueCampaignRevalidation(pagePaths))
+          afterCommit(async () => await queuePageSetChange(before, null))
           // The database cascade deleted the Campaign Domain row; its Vercel
           // registration goes after the commit, as short links do.
           afterCommit(async () => {

@@ -44,7 +44,7 @@ ComponentName/
 
 - Always use MUI components (`Box`, `Typography`, `Button`, etc.) — never bare HTML tags.
 - Use `styled()` from `@mui/material/styles` for custom styling.
-- Accessibility is mandatory: `tabIndex`, `aria-label`, `onClick`, `onKeyDown` on interactive elements.
+- Accessibility is mandatory: interactive elements must work by keyboard and screen reader. MUI and native interactive components already handle focus and key activation; add `tabIndex`, `role`, `aria-label` and `onKeyDown` yourself only on a non-interactive element made clickable.
 - Early returns to reduce nesting.
 - Dynamic imports with webpack chunk names where appropriate.
 
@@ -66,6 +66,8 @@ Editor-level additional providers:
 9. `EditorProvider` — editor UI state (selected step, active content, analytics view)
 10. `MuxVideoUploadProvider` — video upload handling
 11. `HotkeysProvider` — keyboard shortcuts
+
+Campaign editor providers (`src/components/CampaignEditor/CampaignEditorProviders/CampaignEditorProviders.tsx`): `CommandProvider` > `CampaignEditorProvider` > `CampaignCommandProvider` > `MuxVideoUploadProvider` > `TranslationRunProvider` > `CampaignHoverProvider`.
 
 Tests must wrap components in the required providers:
 
@@ -103,7 +105,7 @@ Editor/
 
 ## Custom hooks
 
-60+ custom mutation/query hooks in `src/libs/`:
+Custom mutation/query hooks live in `src/libs/`:
 
 ```text
 src/libs/
@@ -122,7 +124,7 @@ Pattern: `use{Action}{Resource}{Suffix}` — e.g., `useJourneyCreateMutation`, `
 - Hook: `useTranslation('apps-journeys-admin')`
 - Namespace files: `libs/locales/{locale}/apps-journeys-admin.json`
 - **Convention:** Use inline English strings as keys — `t('Edit {{title}}', { title })`, not `t('admin.editTitle')`
-- Supported locales: 15 languages
+- Supported locales: the `locales` list in `next-i18next.config.js`
 - Extraction: `pnpm dlx nx run journeys-admin:extract-translations`
 - Locale detection: middleware reads `Accept-Language` header with cookie override
 
@@ -145,8 +147,9 @@ Pattern: `use{Action}{Resource}{Suffix}` — e.g., `useJourneyCreateMutation`, `
 
 Pages Router with server-side rendering:
 
-- `/` — dashboard
+- `/` — dashboard; `/?type=campaigns` is the Team Campaigns tab (`/campaigns` redirects there, `next.config.js`)
 - `/journeys/[journeyId]` — journey editor
+- `/campaigns/[campaignId]` — campaign editor
 - `/templates/` — template browsing
 - `/teams/` — team management
 - `/reports/` — analytics
@@ -172,7 +175,8 @@ pnpm dlx nx run journeys-admin:type-check
 pnpm dlx nx run journeys-admin:test
 pnpm dlx nx run journeys-admin:codegen               # after GraphQL changes
 pnpm dlx nx run journeys-admin:extract-translations   # after i18n changes
-pnpm dlx nx run journeys-admin-e2e:e2e                # end-to-end tests
+pnpm dlx nx run journeys-admin-e2e:e2e                # end-to-end smoke set
+pnpm dlx nx run journeys-admin-e2e:e2e-full           # full end-to-end suite
 ```
 
 ## Imports
@@ -185,3 +189,13 @@ pnpm dlx nx run journeys-admin-e2e:e2e                # end-to-end tests
   links: `@apollo/client/link/*`; test helpers: `@apollo/client/testing` and
   `@apollo/client/testing/react` (`MockedProvider`)
 - i18n: `next-i18next`
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

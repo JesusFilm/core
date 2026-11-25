@@ -1,0 +1,3 @@
+codecov:
+  # Nx restores coverage for unchanged test inputs, including its original timestamp.
+  max_report_age: off

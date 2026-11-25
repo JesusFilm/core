@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignCreateInput, CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignStringKey, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignCreateInput, CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignStringKey } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignCreate
@@ -99,27 +99,6 @@ export interface CampaignCreate_campaignCreate_theme {
    * Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
    */
   buttonRadius: CampaignRadius;
-}
-
-export interface CampaignCreate_campaignCreate_strings_valueTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignCreate_campaignCreate_strings {
-  __typename: "CampaignString";
-  id: string;
-  key: CampaignStringKey;
-  /**
-   * Default-language wording, at most 200 characters.
-   */
-  value: string;
-  valueTranslations: CampaignCreate_campaignCreate_strings_valueTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_pages {
@@ -357,6 +336,10 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBloc
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  /**
+   * Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+   */
+  showCountryNames: boolean;
   titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock_titleTranslations[];
 }
 
@@ -1578,6 +1561,27 @@ export interface CampaignCreate_campaignCreate_regions {
   countries: CampaignCreate_campaignCreate_regions_countries[];
 }
 
+export interface CampaignCreate_campaignCreate_strings_valueTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignCreate_campaignCreate_strings {
+  __typename: "CampaignString";
+  id: string;
+  key: CampaignStringKey;
+  /**
+   * Default-language wording, at most 200 characters.
+   */
+  value: string;
+  valueTranslations: CampaignCreate_campaignCreate_strings_valueTranslations[];
+}
+
 export interface CampaignCreate_campaignCreate {
   __typename: "Campaign";
   id: string;
@@ -1597,7 +1601,7 @@ export interface CampaignCreate_campaignCreate {
    */
   defaultLanguageId: string;
   /**
-   * First publish; never cleared by unpublish. Means "first went live", not "currently live".
+   * Last published; kept after unpublish. Stamped on every move from `draft` to `published`, so it means "last went live", not "currently live".
    */
   publishedAt: any | null;
   /**
@@ -1623,10 +1627,6 @@ export interface CampaignCreate_campaignCreate {
    */
   theme: CampaignCreate_campaignCreate_theme;
   /**
-   * The eighteen Campaign Strings.
-   */
-  strings: CampaignCreate_campaignCreate_strings[];
-  /**
    * Exactly the landing page and the Region Page.
    */
   pages: CampaignCreate_campaignCreate_pages[];
@@ -1638,6 +1638,10 @@ export interface CampaignCreate_campaignCreate {
    * Every Campaign Region, listed and orphan, in switcher order.
    */
   regions: CampaignCreate_campaignCreate_regions[];
+  /**
+   * The eighteen Campaign Strings.
+   */
+  strings: CampaignCreate_campaignCreate_strings[];
 }
 
 export interface CampaignCreate {

@@ -1726,4 +1726,189 @@ describe('ClientLayout', () => {
 
     expect(mockRefetch).not.toHaveBeenCalled()
   })
+
+  describe('a pending publish', () => {
+    const pendingReconciliation = {
+      id: 'status_variant2',
+      status: 'processing',
+      published: true,
+      reason: 'video-variant-publication-change',
+      retryAt: null,
+      errorMessage: null,
+      updatedAt: '2026-10-22T13:47:41.000Z'
+    }
+
+    function mockQueries(
+      variants: unknown[],
+      variantPolling: { start: () => void; stop: () => void }
+    ): void {
+      const mockedUseQuery = useQuery as MockedFunction<typeof useQuery>
+      mockedUseQuery.mockImplementation(((_query: unknown, options: any) => {
+        const isVariantsQuery = options?.variables?.id != null
+        return {
+          data: isVariantsQuery
+            ? {
+                adminVideo: {
+                  id: 'video123',
+                  slug: 'test-video',
+                  published: true,
+                  variants
+                }
+              }
+            : { videoVariantUploads: [] },
+          loading: false,
+          refetch: mockRefetch,
+          startPolling: isVariantsQuery ? variantPolling.start : vi.fn(),
+          stopPolling: isVariantsQuery ? variantPolling.stop : vi.fn()
+        }
+      }) as never)
+    }
+
+    it('shows Publishing... and polls the audio languages every 15 seconds', () => {
+      const start = vi.fn()
+      const stop = vi.fn()
+      mockQueries(
+        [
+          mockVideoVariants[0],
+          { ...mockVideoVariants[1], reconciliation: pendingReconciliation }
+        ],
+        { start, stop }
+      )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Publishing...')).toBeInTheDocument()
+      expect(
+        screen.getByText('Finishing publish processing')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Published')).toBeInTheDocument()
+      expect(start).toHaveBeenCalledWith(15000)
+    })
+
+    it('stops polling once the publish has landed', () => {
+      const start = vi.fn()
+      const stop = vi.fn()
+      mockQueries(
+        [{ ...mockVideoVariants[1], reconciliation: pendingReconciliation }],
+        { start, stop }
+      )
+      const { rerender } = render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+      expect(start).toHaveBeenCalledWith(15000)
+      // Nothing stops the poll while the publish is still waiting, so the
+      // stop below can only come from the publish landing.
+      expect(stop).not.toHaveBeenCalled()
+
+      mockQueries(
+        [
+          {
+            ...mockVideoVariants[1],
+            published: true,
+            reconciliation: { ...pendingReconciliation, status: 'complete' }
+          }
+        ],
+        { start, stop }
+      )
+      rerender(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(stop).toHaveBeenCalled()
+      expect(start).toHaveBeenCalledTimes(1)
+      expect(screen.queryByText('Publishing...')).not.toBeInTheDocument()
+      expect(screen.getByText('Published')).toBeInTheDocument()
+    })
+
+    it('polls a degraded publish that is still retrying', () => {
+      const start = vi.fn()
+      const stop = vi.fn()
+      mockQueries(
+        [
+          {
+            ...mockVideoVariants[1],
+            reconciliation: {
+              ...pendingReconciliation,
+              status: 'degraded',
+              retryAt: '2026-10-30T20:15:00.000Z'
+            }
+          }
+        ],
+        { start, stop }
+      )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Publishing...')).toBeInTheDocument()
+      expect(start).toHaveBeenCalledWith(15000)
+    })
+
+    it('shows Draft and does not poll once degraded retries are exhausted', () => {
+      const start = vi.fn()
+      const stop = vi.fn()
+      mockQueries(
+        [
+          {
+            ...mockVideoVariants[1],
+            published: false,
+            reconciliation: {
+              ...pendingReconciliation,
+              status: 'degraded',
+              retryAt: null
+            }
+          }
+        ],
+        { start, stop }
+      )
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Draft')).toBeInTheDocument()
+      expect(screen.queryByText('Publishing...')).not.toBeInTheDocument()
+      expect(start).not.toHaveBeenCalled()
+    })
+
+    it('does not poll when no publish is waiting', () => {
+      const start = vi.fn()
+      const stop = vi.fn()
+      mockQueries(mockVideoVariants, { start, stop })
+
+      render(
+        <MockedProvider>
+          <ClientLayout>
+            <div>Child content</div>
+          </ClientLayout>
+        </MockedProvider>
+      )
+
+      expect(start).not.toHaveBeenCalled()
+      expect(screen.queryByText('Publishing...')).not.toBeInTheDocument()
+    })
+  })
 })

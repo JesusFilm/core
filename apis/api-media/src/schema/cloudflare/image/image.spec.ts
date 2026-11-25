@@ -10,7 +10,6 @@ import { queue } from '../../../workers/processImageBlurhash/queue'
 
 import {
   createImageByDirectUpload,
-  createImageFromResponse,
   createImageFromText,
   createImageFromUrl,
   deleteImage
@@ -29,10 +28,6 @@ const mockCreateImageByDirectUpload =
 const mockCreateImageFromText = createImageFromText as MockedFunction<
   typeof createImageFromText
 >
-const mockCreateImageFromResponse = createImageFromResponse as MockedFunction<
-  typeof createImageFromResponse
->
-
 const mockCreateImageFromUrl = createImageFromUrl as MockedFunction<
   typeof createImageFromUrl
 >
@@ -42,7 +37,6 @@ const mockDeleteImage = deleteImage as MockedFunction<typeof deleteImage>
 vi.mock('./service', () => ({
   __esModule: true,
   createImageByDirectUpload: vi.fn(),
-  createImageFromResponse: vi.fn(),
   createImageFromText: vi.fn(),
   createImageFromUrl: vi.fn(),
   deleteImage: vi.fn()
@@ -876,9 +870,7 @@ describe('cloudflareImage', () => {
       `)
 
       it('should return cloudflare image and queue blurhash job', async () => {
-        const response = new Response()
-        mockCreateImageFromText.mockResolvedValue(response)
-        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        mockCreateImageFromText.mockResolvedValue({ id: 'id' })
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id',
           uploaded: true,
@@ -946,8 +938,7 @@ describe('cloudflareImage', () => {
       `)
 
       it('should persist teamId from the journey when journeyId is provided', async () => {
-        mockCreateImageFromText.mockResolvedValue(new Response())
-        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        mockCreateImageFromText.mockResolvedValue({ id: 'id' })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [{ id: 'userTeamId' }] }
@@ -969,8 +960,7 @@ describe('cloudflareImage', () => {
       })
 
       it('should create the asset without a teamId when caller lacks access to the journey team', async () => {
-        mockCreateImageFromText.mockResolvedValue(new Response())
-        mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
+        mockCreateImageFromText.mockResolvedValue({ id: 'id' })
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [] }

@@ -12,6 +12,8 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
+import { styleText } from '../../../test/emotionStyles'
 import { shouldRenderSection } from '../CampaignPage'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -123,12 +125,6 @@ function renderShare(
   )
 }
 
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
-}
-
 const { track } = vi.hoisted(() => ({ track: vi.fn() }))
 
 vi.mock('../../../libs/campaignPlausible', async (importOriginal) => ({
@@ -174,6 +170,13 @@ describe('CampaignRegionShare', () => {
     it('keeps the preview on the root-domain embed route with expand=false', () => {
       expect(previewEmbedUrl('https://your.nextstep.is/embed/eur-en')).toBe(
         'https://your.nextstep.is/embed/eur-en?expand=false'
+      )
+    })
+
+    it('returns an embed URL that does not parse unchanged', () => {
+      expect(previewEmbedUrl('/embed/eur-en')).toBe('/embed/eur-en')
+      expect(previewEmbedUrl('your.nextstep.is/embed/eur-en')).toBe(
+        'your.nextstep.is/embed/eur-en'
       )
     })
 
@@ -301,7 +304,30 @@ describe('CampaignRegionShare', () => {
     expect(await screen.findByText('Lien copié')).toBeInTheDocument()
   })
 
-  it('does not show the copied toast when the clipboard rejects', async () => {
+  it('paints the Copy button in the band’s button colours, darkened on hover', () => {
+    renderShare()
+    const rules = cssRulesFor(screen.getByTestId('CampaignRegionShareCopy'))
+    expect(rules).toContain('background-color:var(--campaign-band-button)')
+    expect(rules).toContain('color:var(--campaign-band-button-label)')
+    expect(rules).toContain('filter:brightness(0.92)')
+  })
+
+  it('renders the preview frame with a relative embed URL unchanged', () => {
+    renderShare({
+      ...region,
+      languages: region.languages.map((entry) =>
+        entry.embedUrl == null
+          ? entry
+          : { ...entry, embedUrl: '/embed/' + entry.id }
+      )
+    })
+
+    expect(
+      screen.getByTestId('CampaignRegionSharePhoneIframe')
+    ).toHaveAttribute('src', '/embed/eur-en')
+  })
+
+  it('shows "Could not copy the link" instead of the copied toast when the clipboard rejects', async () => {
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
       configurable: true
@@ -313,6 +339,9 @@ describe('CampaignRegionShare', () => {
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalled()
     )
+    expect(
+      await screen.findByText('Could not copy the link')
+    ).toBeInTheDocument()
     expect(screen.queryByText('Lien copié')).not.toBeInTheDocument()
   })
 
@@ -410,7 +439,8 @@ describe('CampaignRegionShare', () => {
       return shouldRenderSection(shareTree(blank), {
         pageKind: CampaignPageKind.regionTemplate,
         region: regionProp,
-        regions: [eurRegion]
+        regions: [eurRegion],
+        strings: campaignPublic.strings
       })
     }
 
@@ -435,7 +465,8 @@ describe('CampaignRegionShare', () => {
         shouldRenderSection(shareTree() as CampaignSectionTree, {
           pageKind: CampaignPageKind.regionTemplate,
           region: { ...region, languages: [] },
-          regions: [eurRegion]
+          regions: [eurRegion],
+          strings: campaignPublic.strings
         })
       ).toBe(true)
     })

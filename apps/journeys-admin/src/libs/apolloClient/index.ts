@@ -1,1 +1,5 @@
-export { useApollo, createApolloClient } from './apolloClient'
+export {
+  createApolloClient,
+  hasPendingDebouncedWrites,
+  useApollo
+} from './apolloClient'

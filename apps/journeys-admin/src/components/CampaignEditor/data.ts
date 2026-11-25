@@ -27,31 +27,23 @@ import {
   CampaignPageKind,
   CampaignStatus,
   CampaignStringKey,
+  CampaignTextSource,
   JourneyStatus,
   UserTeamRole
 } from '../../../__generated__/globalTypes'
-import { CAMPAIGN_TEXT_FIELDS } from '../../libs/useCampaignBlockTextMutation'
+import { translatedBlockFields } from '../../libs/useCampaignBlockTextMutation'
 
 export const CURRENT_USER_ID = 'userId'
-
-/** The translatable fields of the blocks that have no inline text on the canvas. */
-const MEDIA_TRANSLATED_FIELDS: Record<string, readonly string[]> = {
-  CampaignImageBlock: ['alt'],
-  CampaignVideoBlock: ['title', 'description']
-}
 
 /** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field, and a journey card's unset edited flag. */
 export function withEmptyTranslations(block: {
   __typename: string
 }): CampaignBlock {
-  const fields: readonly string[] =
-    block.__typename in CAMPAIGN_TEXT_FIELDS
-      ? CAMPAIGN_TEXT_FIELDS[
-          block.__typename as keyof typeof CAMPAIGN_TEXT_FIELDS
-        ]
-      : (MEDIA_TRANSLATED_FIELDS[block.__typename] ?? [])
   const translations = Object.fromEntries(
-    fields.map((field) => [`${field}Translations`, []])
+    translatedBlockFields(block.__typename).map((field) => [
+      `${field}Translations`,
+      []
+    ])
   )
   const snapshot =
     block.__typename === 'CampaignJourneyBlock' ? { snapshotEdited: false } : {}
@@ -285,6 +277,25 @@ export const campaignWithRegions: Campaign = {
   ...campaign,
   blocks: [...campaign.blocks, eurLine],
   regions: [eurRegion, afrRegion]
+}
+
+/** `campaignWithRegions` with Europe named "L’Europe" in French (`496`); Africa has no French name. */
+export const campaignWithFrenchRegionName: Campaign = {
+  ...campaignWithRegions,
+  regions: [
+    {
+      ...eurRegion,
+      nameTranslations: [
+        {
+          __typename: 'TranslatedValue',
+          languageId: '496',
+          value: 'L’Europe',
+          source: CampaignTextSource.human
+        }
+      ]
+    },
+    afrRegion
+  ]
 }
 
 export const publishedCampaign: Campaign = {

@@ -28,6 +28,7 @@ describe('campaignRegionSwitcherBlockCreate', () => {
         parentOrder
         title
         variant
+        showCountryNames
       }
     }
   `)
@@ -79,7 +80,8 @@ describe('campaignRegionSwitcherBlockCreate', () => {
           parentBlockId: null,
           parentOrder: 5,
           title: null,
-          variant: 'cards'
+          variant: 'cards',
+          showCountryNames: true
         }
       }
     })
@@ -113,6 +115,35 @@ describe('campaignRegionSwitcherBlockCreate', () => {
       })
     )
   })
+
+  it('leaves an omitted or null showCountryNames to the column default', async () => {
+    for (const showCountryNames of [undefined, null]) {
+      const result = await create({ showCountryNames })
+
+      expect(
+        result.data.campaignRegionSwitcherBlockCreate.showCountryNames
+      ).toBe(true)
+      expect(
+        prismaMock.campaignBlock.create.mock.lastCall?.[0].data.showCountryNames
+      ).toBeUndefined()
+    }
+  })
+
+  it.each([false, true])(
+    'stores showCountryNames %s',
+    async (showCountryNames) => {
+      const result = await create({ showCountryNames })
+
+      expect(
+        result.data.campaignRegionSwitcherBlockCreate.showCountryNames
+      ).toBe(showCountryNames)
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ showCountryNames })
+        })
+      )
+    }
+  )
 
   it('caps title at 150 characters (BAD_USER_INPUT, title)', async () => {
     const result = await create({ title: 'x'.repeat(151) })

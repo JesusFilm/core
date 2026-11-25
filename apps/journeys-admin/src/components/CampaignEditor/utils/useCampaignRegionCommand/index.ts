@@ -6,3 +6,4 @@ export {
   reorderedRegions,
   useCampaignRegionCommand
 } from './useCampaignRegionCommand'
+export type { BornRegion } from './useCampaignRegionCommand'

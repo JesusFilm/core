@@ -5,6 +5,7 @@ module "prod" {
   cidr                         = "10.10.0.0/16"
   internal_url_name            = "service.internal"
   datadog_forwarder_lambda_arn = var.datadog_forwarder_lambda_arn
+  s3_gateway_endpoint          = true
 }
 
 locals {
@@ -168,26 +169,41 @@ module "redis" {
   vpc_id            = module.prod.vpc.id
 }
 
-# Short-link scan events (ClickHouse Cloud, always on; stage idles).
-module "short_links_clickhouse" {
+# The shared ClickHouse Cloud service: short-link scan events (`redirects`)
+# and Plausible's event store (`plausible_events_db`). Always on; stage idles.
+module "clickhouse" {
   source        = "../../modules/clickhouse/service"
   env           = "prod"
   idle_scaling  = false
   doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
 }
 
+# Renamed from the short-links-only days; the service itself is renamed in
+# place (jfp-short-links-prod -> jfp-clickhouse-prod), not replaced.
+moved {
+  from = module.short_links_clickhouse
+  to   = module.clickhouse
+}
+
 # Plausible Analytics on ECS (arm64 Fargate). Serves analytics.jesusfilm.org
 # (a Cloudflare CNAME to the public ALB, by hand) and plausible.central.jesusfilm.org
 # (the module's own record, for smoke tests). Its events are in
-# short_links_clickhouse above, reached by the CLICKHOUSE_DATABASE_URL of the
+# module.clickhouse above, reached by the CLICKHOUSE_DATABASE_URL of the
 # prd_ecs Doppler branch config; that config's token must be in SSM before the
 # first apply (modules/plausible/README.md, "Prerequisites").
 module "plausible" {
   source = "../../modules/plausible"
   ecs_config = merge(local.public_ecs_config, {
     alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/api/health"
-      health_check_port = "8000"
+      # /login proves the container serves without touching ClickHouse.
+      # /api/health queries Postgres and ClickHouse on every probe, which
+      # kept waking the idle-scaled ClickHouse Cloud service every 10 s.
+      # /api/health stays the manual smoke test (modules/plausible/README.md).
+      # 302: until the first account exists, Plausible's FirstLaunchPlug
+      # redirects /login to /register. Still a serving container.
+      health_check_path    = "/login"
+      health_check_port    = "8000"
+      health_check_matcher = "200,302"
     })
   })
   env              = "prod"

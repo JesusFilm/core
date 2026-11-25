@@ -1,6 +1,6 @@
 # Update the VARIANT arg in docker-compose.yml to pick a Node version
-ARG VARIANT=22
-FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:${VARIANT} AS base
+ARG VARIANT=22-bookworm@sha256:7dd2504a6a3c37d493a05f89b0b9e3bcae0456e5aef1c489a83835b116f93b1c
+FROM mcr.microsoft.com/devcontainers/typescript-node:${VARIANT} AS base
 
 # Update args in docker-compose.yaml to set the UID/GID of the "node" user.
 ARG USER_UID=1000
@@ -9,6 +9,13 @@ RUN if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then groupmod --g
 
 
 FROM base as final
+
+# The base digest contains an older Node. Install the security release in nvm
+# and select it for both non-interactive tools and the node user's login shell.
+ARG NODE_VERSION=22.23.5
+RUN su node -c ". /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} && nvm alias default ${NODE_VERSION}"
+ENV PATH="/usr/local/share/nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
+RUN node -e "require('node:assert/strict').equal(process.versions.node, '${NODE_VERSION}')"
 
 # Enable corepack at build time so container startup only needs to prepare pnpm
 RUN corepack enable

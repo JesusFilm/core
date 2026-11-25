@@ -39,8 +39,8 @@ import {
  * the VideoLibrary `data.ts` precedent: the Light theme; both pages with the
  * seed sections, which between them cover every section typename, plus
  * Typography and Button Extras; the chrome; the eighteen strings; two
- * regions with one linked journey each and resolved URLs. Every seam-2 spec
- * renders this. Later tickets extend it, never fork it.
+ * regions with one linked journey each and resolved URLs. Specs extend it,
+ * never fork it.
  */
 
 export const CAMPAIGN_ID = 'campaignId'
@@ -331,7 +331,8 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     pageId: LANDING_PAGE_ID,
     parentOrder: 1,
     title: 'Choose your region',
-    switcherVariant: CampaignSwitcherVariant.cards
+    switcherVariant: CampaignSwitcherVariant.cards,
+    showCountryNames: true
   }),
   button({
     id: 'switcherEuropeButtonId',
@@ -443,7 +444,8 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     pageId: REGION_PAGE_ID,
     parentOrder: 4,
     title: 'Other regions',
-    switcherVariant: CampaignSwitcherVariant.cards
+    switcherVariant: CampaignSwitcherVariant.cards,
+    showCountryNames: true
   })
 ]
 
@@ -459,6 +461,15 @@ export const imageSectionBlock = section('CampaignImageBlock', {
   focalLeft: 50,
   focalTop: 50,
   scale: null
+})
+
+/** A Rich Text section: a title over two paragraphs. A spec places it in a Column Slot by overriding its parent. */
+export const richTextSectionBlock = section('CampaignRichTextBlock', {
+  id: 'richTextId',
+  pageId: LANDING_PAGE_ID,
+  parentOrder: 6,
+  title: 'Our story',
+  richTextContent: 'First paragraph.\n\nSecond paragraph.'
 })
 
 type VideoBlock = Extract<
@@ -790,8 +801,6 @@ function countryStat(
 /** What `campaignStats` returns for the seeded campaign: Europe and Africa, with microstate and non-ISO codes. */
 export const campaignStatsFixture: GetCampaignStats_campaignStats = {
   __typename: 'CampaignStats',
-  from: '2026-10-05T00:00:00.000Z',
-  to: '2026-10-06T12:00:00.000Z',
   all: {
     __typename: 'CampaignStatsScope',
     totalVisitors: 66,

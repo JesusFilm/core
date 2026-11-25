@@ -330,6 +330,10 @@ export interface CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock 
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  /**
+   * Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+   */
+  showCountryNames: boolean;
 }
 
 export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_title_language {
@@ -1420,6 +1424,10 @@ export interface CampaignPublicFields_chrome_CampaignRegionSwitcherBlock {
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  /**
+   * Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+   */
+  showCountryNames: boolean;
 }
 
 export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_title_language {
@@ -2411,6 +2419,10 @@ export interface CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock {
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  /**
+   * Whether every country on every region card of this section shows its name beside the flag. Belongs to this section alone; defaults to true.
+   */
+  showCountryNames: boolean;
 }
 
 export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_title_language {

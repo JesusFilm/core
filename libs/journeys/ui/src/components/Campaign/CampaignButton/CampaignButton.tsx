@@ -8,11 +8,14 @@ import {
   ButtonVariant
 } from '../../../../__generated__/globalTypes'
 import { useCampaign } from '../CampaignProvider'
-import { useCampaignSection } from '../CampaignSectionBand'
+import { useCampaignSection } from '../CampaignSectionBand/CampaignSectionContext'
 import { flexAlign } from '../libs/flexAlign'
-import { hasText } from '../types'
+import { contrastText } from '../libs/resolveBand'
+import { scrollBehavior } from '../libs/scrollBehavior'
+import { hasExtraContent } from '../types'
 import type { CampaignBlockOf } from '../types'
 
+import { containedButtonSx } from './bandButtonSx'
 import { resolveCampaignAction } from './resolveCampaignAction'
 
 interface CampaignButtonProps {
@@ -24,12 +27,7 @@ function variantColors(
   fill: string | undefined,
   label: string | undefined
 ): CSSObject {
-  if (variant === ButtonVariant.contained)
-    return {
-      backgroundColor: fill,
-      color: label,
-      '&:hover': { backgroundColor: fill, filter: 'brightness(0.92)' }
-    }
+  if (variant === ButtonVariant.contained) return containedButtonSx(fill, label)
   if (variant === ButtonVariant.outlined)
     return { borderColor: fill, color: fill, '&:hover': { borderColor: fill } }
   return { color: fill }
@@ -38,8 +36,9 @@ function variantColors(
 /**
  * The campaign call-to-action. `variant` null ⇒ contained, `size` null ⇒
  * medium, `align` null follows the section, `color` null ⇒ the section's
- * button colour then the theme primary, `labelColor` null ⇒ the section's
- * button text colour then on-primary. A missing action target renders the
+ * button colour then the theme primary, `labelColor` null ⇒ the contrast
+ * text of the block's own `color` when it has one, else the section's button
+ * text colour then on-primary. A missing action target renders the
  * button static: same look, no href, aria-disabled, no pointer effect.
  */
 export function CampaignButton({
@@ -47,13 +46,17 @@ export function CampaignButton({
 }: CampaignButtonProps): ReactElement | null {
   const campaign = useCampaign()
   const section = useCampaignSection()
-  if (!hasText(block.label)) return null
+  if (!hasExtraContent(block)) return null
 
   const variant = block.buttonVariant ?? ButtonVariant.contained
   const size = block.size ?? ButtonSize.medium
   const align = block.align ?? section?.align ?? null
   const fill = block.color ?? section?.band.button
-  const label = block.labelColor ?? section?.band.buttonLabel
+  const label =
+    block.labelColor ??
+    (block.color != null
+      ? contrastText(block.color)
+      : section?.band.buttonLabel)
   const resolved = resolveCampaignAction(block.action, campaign)
 
   const colorSx = variantColors(variant, fill, label)
@@ -63,7 +66,7 @@ export function CampaignButton({
     const target = document.getElementById(resolved.scrollToBlockId)
     if (target == null) return
     event.preventDefault()
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    target.scrollIntoView({ behavior: scrollBehavior(), block: 'start' })
     window.history.replaceState(null, '', resolved.href)
   }
 

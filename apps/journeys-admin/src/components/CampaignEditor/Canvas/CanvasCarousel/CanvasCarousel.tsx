@@ -1,9 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import {
   CampaignCarouselArrows,
@@ -12,19 +11,17 @@ import {
 } from '@core/journeys/ui/Campaign'
 import type { CampaignCarouselCard } from '@core/journeys/ui/Campaign'
 import { videoCountLabel } from '@core/journeys/ui/Campaign/CampaignVideo'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { CampaignStringKey } from '../../../../../__generated__/globalTypes'
-import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { campaignStringText } from '../../ShareSectionEdit/ShareSectionEdit'
-import type { CanvasBlock } from '../CanvasSection'
+import { blockLabel } from '../../utils/blockLabel'
+import { campaignStringText } from '../../utils/campaignStringText'
+import type { CanvasBlock } from '../canvasBlock'
 import { EditorNote } from '../EditorNote'
-import { HOVER_OUTLINE_SX } from '../hoverOutline'
+import { HOVER_OUTLINE_SX, SELECTED_OUTLINE } from '../hoverOutline'
+import { selectableProps } from '../selectable'
 import { SelectionBadge } from '../SelectionBadge'
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
 interface CanvasCarouselProps {
   block: Extract<CanvasBlock, { __typename: 'CampaignVideoCarouselBlock' }>
@@ -34,8 +31,9 @@ interface CanvasCarouselProps {
  * A Video Carousel's cards on the editor canvas, as the public page lays
  * them out: the Watch expansion of `videoId` (the Video's first 12 children
  * then "See all on Watch", or the Video itself), or the explicit items. An
- * explicit item's card selects it for the card bar (Edit, ← →, bin); the
- * expanded cards belong to the section. A dashed placeholder points at Edit
+ * explicit item's card selects it for the card bar (Edit, ← →, bin), by
+ * click or by Enter or Space; the
+ * expanded cards belong to the section. A dashed placeholder points at Settings
  * while there is nothing to show. From `md` up the row has the same previous /
  * next arrows as the public page; they only scroll, they never edit.
  */
@@ -79,18 +77,24 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
           color: 'var(--campaign-band-muted)'
         }}
       >
-        <EditorNote>{t('Add videos from Edit')}</EditorNote>
+        <EditorNote>{t('Add videos in Settings')}</EditorNote>
       </Box>
     )
 
-  function handleSelect(event: MouseEvent<HTMLElement>, id: string): void {
-    if (!explicit) return
-    event.stopPropagation()
-    selectBlock(id)
-  }
-
   function renderCard(card: CampaignCarouselCard): ReactElement {
     const selected = explicit && selection.block?.id === card.id
+    // Only an explicit item is its own block; an expanded card belongs to the section.
+    const selectable = explicit
+      ? {
+          role: 'button',
+          ...selectableProps(
+            () => selectBlock(card.id),
+            card.kind === 'video' && card.title != null
+              ? card.title
+              : blockLabel(t, 'CampaignVideoBlock')
+          )
+        }
+      : {}
     return (
       <Box
         key={card.id}
@@ -98,9 +102,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
         data-testid={`CanvasCarouselCard-${card.id}`}
         data-selected={selected}
         data-hoverable={explicit ? '' : undefined}
-        onClick={(event: MouseEvent<HTMLElement>) =>
-          handleSelect(event, card.id)
-        }
+        {...selectable}
         sx={{
           position: 'relative',
           flex: '0 0 auto',
@@ -111,9 +113,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
           border: '1px solid var(--campaign-band-border)',
           cursor: 'pointer',
           ...(explicit ? HOVER_OUTLINE_SX : {}),
-          ...(selected
-            ? { outline: `2px solid ${adminPrimary.main}`, outlineOffset: -2 }
-            : {})
+          ...(selected ? SELECTED_OUTLINE : {})
         }}
       >
         <SelectionBadge

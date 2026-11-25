@@ -11,12 +11,15 @@ import { usePlausible } from 'next-plausible'
 
 import {
   CampaignColumnsRatio,
-  CampaignPageKind
+  CampaignPageKind,
+  CampaignStringKey
 } from '../../../../__generated__/globalTypes'
+import { styleText } from '../../../test/emotionStyles'
 import { GET_CAMPAIGN_STATS } from '../CampaignAnalytics'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
   LANDING_PAGE_ID,
+  REGION_PAGE_ID,
   afrRegion,
   campaignPublic,
   campaignStatsFixture,
@@ -29,7 +32,12 @@ import {
   regionPageBlocks,
   section
 } from '../testData'
-import type { CampaignBlock, CampaignPublic, CampaignRegion } from '../types'
+import type {
+  CampaignBlock,
+  CampaignBlockOf,
+  CampaignPublic,
+  CampaignRegion
+} from '../types'
 
 import { CampaignPage } from './CampaignPage'
 
@@ -45,6 +53,19 @@ function withLanding(
     pages: [{ ...campaignPublic.pages[0], blocks }, campaignPublic.pages[1]]
   }
 }
+
+function withRegionPage(blocks: CampaignBlock[]): CampaignPublic {
+  return {
+    ...campaignPublic,
+    pages: [campaignPublic.pages[0], { ...campaignPublic.pages[1], blocks }]
+  }
+}
+
+const noJourneysCleared = campaignPublic.strings.map((string) =>
+  string.key === CampaignStringKey.noJourneys
+    ? { ...string, value: '' }
+    : string
+)
 
 function renderPage(
   campaign: CampaignPublic,
@@ -74,12 +95,6 @@ function pick(
   const block = landingBlocks.find((candidate) => candidate.id === id)
   if (block == null) throw new Error(`no fixture block ${id}`)
   return { ...block, ...overrides } as CampaignBlock
-}
-
-function styleText(): string {
-  return Array.from(document.querySelectorAll('style'))
-    .map((node) => node.textContent ?? '')
-    .join('')
 }
 
 vi.mock('next-plausible', () => ({ usePlausible: vi.fn() }))
@@ -227,14 +242,17 @@ describe('CampaignPage', () => {
 
     it('skips a section with no body content and no extras, band and all', () => {
       renderPage(
-        withLanding([
-          pick('heroId', { eyebrow: null, title: null, description: null }),
-          pick('landingJourneyListId', {
-            eyebrow: null,
-            title: null,
-            description: null
-          })
-        ])
+        withLanding(
+          [
+            pick('heroId', { eyebrow: null, title: null, description: null }),
+            pick('landingJourneyListId', {
+              eyebrow: null,
+              title: null,
+              description: null
+            })
+          ],
+          { strings: noJourneysCleared }
+        )
       )
       expect(bandIds()).toEqual([])
     })
@@ -252,7 +270,7 @@ describe('CampaignPage', () => {
       expect(bandIds()).toEqual(['heroId'])
     })
 
-    it('Hero renders with media alone, and its owned video never renders as a section', () => {
+    it('Hero renders with media alone, and its owned video never renders as a section', async () => {
       renderPage(
         withLanding([
           pick('heroId', {
@@ -266,9 +284,9 @@ describe('CampaignPage', () => {
       )
       expect(bandIds()).toEqual(['heroId'])
       expect(
-        within(screen.getByTestId('CampaignSectionBand-heroId')).getByTestId(
-          'JourneysVideo-heroVideoId'
-        )
+        await within(
+          screen.getByTestId('CampaignSectionBand-heroId')
+        ).findByTestId('JourneysVideo-heroVideoId')
       ).toBeInTheDocument()
     })
 
@@ -347,6 +365,20 @@ describe('CampaignPage', () => {
       expect(bandIds()).toEqual([])
     })
 
+    it('Video carousel with no card renders a description alone', () => {
+      renderPage(
+        withLanding([
+          pick('carouselId', {
+            eyebrow: null,
+            title: null,
+            description: 'Short films to share'
+          })
+        ])
+      )
+      expect(bandIds()).toEqual(['carouselId'])
+      expect(screen.getByText('Short films to share')).toBeInTheDocument()
+    })
+
     it('Journey list with no live-published journeys renders text if any, else is skipped', () => {
       const { unmount } = renderPage(
         withLanding([
@@ -357,6 +389,22 @@ describe('CampaignPage', () => {
       unmount()
 
       renderPage(
+        withLanding(
+          [
+            pick('landingJourneyListId', {
+              eyebrow: null,
+              title: null,
+              description: null
+            })
+          ],
+          { strings: noJourneysCleared }
+        )
+      )
+      expect(bandIds()).toEqual([])
+    })
+
+    it('Journey list with no live-published journeys and no text renders the noJourneys line on the landing page', () => {
+      renderPage(
         withLanding([
           pick('landingJourneyListId', {
             eyebrow: null,
@@ -364,6 +412,40 @@ describe('CampaignPage', () => {
             description: null
           })
         ])
+      )
+      expect(bandIds()).toEqual(['landingJourneyListId'])
+      expect(screen.getByTestId('CampaignJourneyListEmpty')).toHaveTextContent(
+        'Journeys for this region are coming soon'
+      )
+    })
+
+    it('Journey list with no live-published journeys and no text renders the noJourneys line on a Region Page, else is skipped', () => {
+      const regionList = regionPageBlocks.find(
+        (block) => block.id === 'regionJourneyListId'
+      )
+      if (regionList == null)
+        throw new Error('no fixture block regionJourneyListId')
+      const blankList = {
+        ...regionList,
+        eyebrow: null,
+        title: null,
+        description: null
+      } as CampaignBlock
+      const { unmount } = renderPage(
+        withRegionPage([blankList]),
+        CampaignPageKind.regionTemplate,
+        eurRegion
+      )
+      expect(bandIds()).toEqual(['regionJourneyListId'])
+      expect(screen.getByTestId('CampaignJourneyListEmpty')).toHaveTextContent(
+        'Journeys for this region are coming soon'
+      )
+      unmount()
+
+      renderPage(
+        { ...withRegionPage([blankList]), strings: noJourneysCleared },
+        CampaignPageKind.regionTemplate,
+        eurRegion
       )
       expect(bandIds()).toEqual([])
     })
@@ -523,6 +605,122 @@ describe('CampaignPage', () => {
     })
   })
 
+  describe('page heading', () => {
+    function hero(
+      id: string,
+      title: string | null,
+      overrides: Pick<
+        Partial<CampaignBlock>,
+        'pageId' | 'parentBlockId' | 'parentOrder'
+      > = {}
+    ): CampaignBlockOf<'CampaignHeroBlock'> {
+      return section('CampaignHeroBlock', {
+        id,
+        pageId: LANDING_PAGE_ID,
+        parentOrder: 0,
+        eyebrow: null,
+        title,
+        description: null,
+        align: null,
+        minHeight: null,
+        mediaBlockId: null,
+        ...overrides
+      })
+    }
+
+    it('makes the region name the one h1 of a Region Page with a Hero, and the Hero title an h2', () => {
+      renderPage(
+        withRegionPage([
+          hero('regionHeroId', 'Welcome to the region', {
+            pageId: REGION_PAGE_ID
+          }),
+          ...regionPageBlocks.map((block, index) => ({
+            ...block,
+            parentOrder: index + 1
+          }))
+        ]),
+        CampaignPageKind.regionTemplate,
+        eurRegion
+      )
+
+      expect(bandIds()[0]).toBe('regionHeroId')
+      const headings = screen.getAllByRole('heading', { level: 1 })
+      expect(headings).toHaveLength(1)
+      expect(headings[0]).toHaveTextContent('Europe')
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Welcome to the region' })
+      ).toBeInTheDocument()
+    })
+
+    it('makes the first Hero title the one h1 of a landing page with two Heroes', () => {
+      renderPage(
+        withLanding([
+          hero('firstHeroId', 'First hero'),
+          hero('secondHeroId', 'Second hero', { parentOrder: 1 })
+        ])
+      )
+
+      const headings = screen.getAllByRole('heading', { level: 1 })
+      expect(headings).toHaveLength(1)
+      expect(headings[0]).toHaveTextContent('First hero')
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Second hero' })
+      ).toBeInTheDocument()
+    })
+
+    it.each([null, '', ' \n '])(
+      'makes the first nonblank Hero title the one h1 when an earlier Hero has title %j',
+      (title) => {
+        renderPage(
+          withLanding([
+            {
+              ...hero('untitledHeroId', title),
+              description: 'Only a description'
+            },
+            hero('titledHeroId', 'First titled hero', { parentOrder: 1 }),
+            hero('laterHeroId', 'Later hero', { parentOrder: 2 })
+          ])
+        )
+
+        expect(bandIds()).toEqual([
+          'untitledHeroId',
+          'titledHeroId',
+          'laterHeroId'
+        ])
+        const headings = screen.getAllByRole('heading', { level: 1 })
+        expect(headings).toHaveLength(1)
+        expect(headings[0]).toHaveTextContent('First titled hero')
+        expect(
+          screen.getByRole('heading', { level: 2, name: 'Later hero' })
+        ).toBeInTheDocument()
+      }
+    )
+
+    it("counts a Column Slot Hero in its Columns' place", () => {
+      renderPage(
+        withLanding([
+          section('CampaignColumnsBlock', {
+            id: 'columnsId',
+            pageId: LANDING_PAGE_ID,
+            parentOrder: 0,
+            ratio: CampaignColumnsRatio.equal
+          }),
+          columnSlot({
+            id: 'slotLeftId',
+            parentBlockId: 'columnsId',
+            parentOrder: 0
+          }),
+          hero('slotHeroId', 'In a column', { parentBlockId: 'slotLeftId' }),
+          hero('laterHeroId', 'Later hero', { parentOrder: 1 })
+        ])
+      )
+
+      const headings = screen.getAllByRole('heading', { level: 1 })
+      expect(headings).toHaveLength(1)
+      expect(headings[0]).toHaveTextContent('In a column')
+    })
+  })
+
   describe('responsive', () => {
     it('is single column below md and auto-fills switcher cards at 230px minimum at md and up', () => {
       renderPage(campaignPublic)
@@ -536,9 +734,18 @@ describe('CampaignPage', () => {
       )
     })
 
-    it('enables smooth scrolling for same-page anchors', () => {
+    it('enables smooth scrolling for same-page anchors only without a reduced-motion preference', () => {
       renderPage(campaignPublic)
-      expect(styleText()).toContain('scroll-behavior:smooth')
+      const css = styleText()
+      expect(css).toMatch(
+        /@media \(prefers-reduced-motion: ?no-preference\)\s*\{\s*html\s*\{\s*scroll-behavior:\s*smooth;?\s*\}\s*\}/
+      )
+      expect(
+        css.replace(
+          /@media \(prefers-reduced-motion: ?no-preference\)\s*\{[^}]*\}\s*\}/g,
+          ''
+        )
+      ).not.toContain('scroll-behavior')
     })
   })
 })
@@ -610,6 +817,17 @@ describe('CampaignPage page language', () => {
 
   it('sets html lang to the resolved bcp47 and dir to ltr when the language is not right-to-left', () => {
     renderPage(campaignPublic)
+    expect(document.documentElement).toHaveAttribute('lang', 'en')
+    expect(document.documentElement).toHaveAttribute('dir', 'ltr')
+  })
+
+  it('keeps the server-rendered lang and dir when the page language has no bcp47', () => {
+    document.documentElement.lang = 'en'
+    document.documentElement.dir = 'ltr'
+    renderPage({
+      ...campaignPublic,
+      language: { __typename: 'Language', id: '529', bcp47: null }
+    })
     expect(document.documentElement).toHaveAttribute('lang', 'en')
     expect(document.documentElement).toHaveAttribute('dir', 'ltr')
   })

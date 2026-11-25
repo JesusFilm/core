@@ -5,11 +5,11 @@ import type { CampaignSectionTypename } from '../../types'
 
 import {
   BAND_TYPENAMES,
-  type BandTypename,
   CAMPAIGN_TYPENAMES,
   CHROME_TYPENAMES,
   type CampaignTypename,
   EXTRA_TYPENAMES,
+  type ExtraTypename,
   MEDIA_SLOT_TYPENAMES,
   PAGE_SECTION_TYPENAMES,
   SLOT_TYPENAMES,
@@ -208,6 +208,14 @@ describe('campaignBlockGrammar', () => {
     expectTypeOf<CampaignTypename>().toEqualTypeOf<
       CampaignPublicBlockFields['__typename']
     >()
-    expectTypeOf<BandTypename>().toEqualTypeOf<CampaignSectionTypename>()
+    expectTypeOf<CampaignSectionTypename>().toEqualTypeOf<
+      Exclude<
+        CampaignPublicBlockFields['__typename'],
+        | ExtraTypename
+        | 'CampaignColumnBlock'
+        | 'CampaignJourneyBlock'
+        | 'CampaignVideoBlock'
+      >
+    >()
   })
 })

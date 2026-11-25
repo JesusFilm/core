@@ -1,6 +1,6 @@
 # Journeys Admin
 
-The creator-facing authoring surface (`apps/journeys-admin`): where a signed-in creator builds, manages, shares, and measures Journeys, and where Publishers curate the template library. It owns no content or measurement entities — **Journey**, **Block**, **Step**, **Card**, **Team**, **Template**, and the role vocabularies belong to [Journeys](../../apis/api-journeys/GLOSSARY.md), and **Visitor**/**Event** data belongs to [Journey Analytics](../../apis/api-journeys/GLOSSARY-analytics.md). What this context owns is the _authoring experience_: the Editor's spatial model, the journey-list lifecycle actions, the sharing/adoption flows, and the report surfaces.
+The creator-facing authoring surface (`apps/journeys-admin`): where a signed-in creator builds, manages, shares, and measures Journeys, and where Publishers curate the template library. It owns no content or measurement entities — **Journey**, **Block**, **Step**, **Card**, **Team**, **Template**, and the role vocabularies belong to [Journeys](../../apis/api-journeys/GLOSSARY.md), and **Visitor**/**Event** data belongs to [Journey Analytics](../../apis/api-journeys/GLOSSARY-analytics.md). What this context owns is the _authoring experience_: the Editor's spatial model, the journey-list lifecycle actions, the sharing/adoption flows, and the report surfaces, plus the **Campaign Editor** for a **Campaign**, the **Team Campaigns** tab that lists them, and the **Campaign Domain** section of a Campaign's Settings.
 
 ## Language
 
@@ -47,7 +47,7 @@ The Editor's top action bar: preview, share, access, analytics, undo/redo, templ
 _Avoid_: app bar, header
 
 **Command**:
-One undoable editing act. Every edit in the Editor is dispatched as a Command onto an undo/redo history; undo/redo operate on Commands, not raw mutations.
+One undoable editing act. Every edit in the Editor is dispatched as a Command onto an undo/redo history; undo/redo operate on Commands, not raw mutations. In the Campaign Editor a Command's undo and redo return to the page, selection and Preview Language it was made in, run in order behind any step still in flight, and report a refusal inline the first time and in the error snackbar on replay.
 _Avoid_: mutation (the transport, not the concept), action (an Action is a block behaviour upstream)
 
 **Social Preview**:
@@ -65,7 +65,7 @@ _Avoid_: source, channel
 ### The Campaign Editor
 
 **Campaign Editor**:
-The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. A window narrower than 1348 px (the Left Rail, the open panel, the Inspector, the canvas padding and the Desktop frame at half scale) gets a "larger screen" message instead. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
+The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. A window narrower than 1316 px (the Left Rail, the open panel, the Inspector, the canvas padding and the Desktop frame at half scale) gets a "larger screen" message instead. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
 _Avoid_: campaign builder (the feature name, not the surface), site editor
 
 **Campaign Canvas**:
@@ -77,8 +77,8 @@ The narrow column of icon buttons beside the Campaign Canvas: back to the **Team
 _Avoid_: toolbar, sidebar, top bar
 
 **Inspector**:
-The persistent right panel for the selection: a breadcrumb and an actions row (move, duplicate, delete), then a **Style** tab and a **Settings** tab. With nothing selected it holds the Campaign's own theme (Style) and settings (Settings), which have no Left Rail panel of their own.
-_Avoid_: properties (the journey editor's Drawer), details panel, side panel, settings panel / theme panel
+The persistent right panel for the selection: a breadcrumb and an actions row (move, duplicate, delete), then a **Style** tab and a **Settings** tab. With nothing selected it holds the Campaign's own theme (Style) and settings (Settings), which have no Left Rail panel of their own. The theme panel, style panel and settings panel (`ThemePanel/`, `StylePanel/`, `Settings/`) are the Inspector's bodies, not panels of their own. A text or button Extra's header adds an "Inherits from {{host}}" link that selects the section it belongs to. A Column Slot, carousel card, journey card or region card has no Style of its own: its Style tab says "Styled by its section", with a Select link to that section.
+_Avoid_: properties (the journey editor's Drawer), details panel, side panel
 
 **Value Indicator**:
 The dot beside a Style row: orange for a value inherited from the band or theme, blue for a value set on the block. Reset clears the block's own value, so it inherits again and the dot returns to orange.
@@ -93,15 +93,14 @@ The Left Rail panel showing the open page as a tree of exactly what the Campaign
 _Avoid_: outline, layers, tree view (the component)
 
 **Add Panel**:
-The Left Rail panel listing the Sections, Extras and Region Lines that can be added; a click adds the type in place relative to the selection. An insert point preset from the canvas (between two sections, or an empty Column Slot) overrides the selection for the next add.
+The Left Rail panel listing what can be added, in the groups shown on screen: Sections, Extras and Region (`Add line`); a click adds the type in place relative to the selection. An insert point preset from the canvas (between two sections, or an empty Column Slot) overrides the selection for the next add.
 _Avoid_: element library, palette (the colour one)
 
 **Localize Panel**:
 The Left Rail panel with two tabs, **Languages** and **Translations**. Changing the default language opens it on Translations with the promotion notice.
-_Avoid_: languages panel, translations view (now its tabs)
 
 **Languages Panel**:
-The Localize Panel's first tab: the Campaign's Page Languages with Remove on each, and the shared language autocomplete to add one, which also starts the Machine Translation run for that language with progress. Add and remove go straight to the API and are never Commands.
+The Localize Panel's first tab: the Campaign's Page Languages with Remove on each, and the shared language autocomplete to add one, which also starts the Machine Translation run for that language with progress when the language is machine-translatable (`isMachineTranslatable`). Add and remove go straight to the API and are never Commands.
 _Avoid_: language settings, locale picker
 
 **Translations View**:
@@ -109,7 +108,7 @@ The Localize Panel's second tab: one non-default Campaign language at a time, ev
 _Avoid_: translation manager, review queue
 
 **Preview Language**:
-The Pages Panel select that sets which Campaign language the Campaign Canvas renders, falling back to marked default-language text where a translation is missing. Editing text in a non-default language writes a human translation as one Command; in the default language the same edit writes the field itself.
+Which Campaign language the Campaign Canvas renders, set by the Pages Panel select or by a language's Preview button in the Languages Panel, falling back to marked default-language text where a translation is missing. Editing text in a non-default language writes a human translation as one Command; in the default language the same edit writes the field itself.
 _Avoid_: canvas language, view language, locale
 
 **Publish button**:
@@ -126,9 +125,23 @@ _Avoid_: bar
 
 **First-run Hint**:
 The one dismissible hint shown in the Canvas banner the first time a Campaign opens, recorded per Campaign. It is not a tour or a wizard.
-_Avoid_: tour, onboarding (that is the dashboard flow), tooltip
+_Avoid_: tour, onboarding (that is the Homepage flow), tooltip
+
+### App Shell
+
+**App Shell**:
+The frame most admin pages sit inside: the **Global Nav**, a top bar on mobile, the page's main area and an optional secondary column. The Editor and the Campaign Editor are full-screen and sit outside it; signed-out visitors to the Template Gallery get it without the Global Nav.
+_Avoid_: PageWrapper (the code name), layout, chrome, frame
+
+**Global Nav**:
+The App Shell's navigation, the same on every page that shows it: links to the **Homepage** (Projects) and the Template Gallery (Templates), and the signed-in creator's avatar menu. A fixed left column on desktop; on mobile it slides in from the top bar.
+_Avoid_: navigation drawer, drawer (that is the Editor's), sidebar, nav rail (the Campaign Editor has the Left Rail)
 
 ### Journey management
+
+**Homepage**:
+Where a signed-in creator lands: the selected Team's work in content tabs, **Team Projects** (its journeys), **Team Templates** and, when enabled, **Team Campaigns**. With **Shared With Me** chosen in place of a Team, it shows only the journeys others have shared with the creator, and no tabs.
+_Avoid_: dashboard (that is the analytics surfaces), projects page, landing page
 
 **Status Tabs**:
 The three lifecycle views of the journey list: **Active** (working journeys, drafts and published alike — publish state is a property, not a tab), **Archived**, and **Trash**.
@@ -229,7 +242,7 @@ _Avoid_: plugin, connector, app
 ### Onboarding & account
 
 **Onboarding**:
-The first-run experience: the starter-template panel on an empty dashboard, the create-your-first-team flow, and the terms-and-conditions gate. Distinct from Quick-Start Customization (template-scoped) and Quick Settings (journey-scoped).
+The first-run experience: the starter-template panel on an empty Homepage, the create-your-first-team flow, and the terms-and-conditions gate. Distinct from Quick-Start Customization (template-scoped) and Quick Settings (journey-scoped).
 _Avoid_: welcome flow, setup
 
 **Email Preferences**:

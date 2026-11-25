@@ -6,6 +6,7 @@ import {
   CampaignStringKey,
   VideoLabel
 } from '../../../../__generated__/globalTypes'
+import { cssRulesFor } from '../../../test/cssRulesFor'
 import type {
   CampaignPublicBlockFields_CampaignVideoCarouselBlock_video_children as ExpandedChild,
   CampaignPublicBlockFields_CampaignVideoCarouselBlock_video as ExpandedVideo
@@ -158,10 +159,32 @@ function cardIds(): string[] {
 const context = {
   pageKind: CampaignPageKind.landing,
   region: null,
-  regions: []
+  regions: [],
+  strings: campaignPublic.strings
+}
+
+/** `window.matchMedia` answering `prefers-reduced-motion: reduce` as asked; jsdom has none. */
+function mockReducedMotion(reduce: boolean): void {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: (query: string) => ({
+      matches: reduce && query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn()
+    })
+  })
 }
 
 describe('CampaignVideoCarousel', () => {
+  afterEach(() => {
+    delete (window as unknown as Record<string, unknown>).matchMedia
+  })
+
   describe('Watch expansion', () => {
     it('renders the Video’s children as cards in Watch’s order, then a "See all on Watch" card', () => {
       renderCarousel(
@@ -325,6 +348,14 @@ describe('CampaignVideoCarousel', () => {
           context
         )
       ).toBe(true)
+    })
+
+    it('aligns the card text to the reading side', () => {
+      renderCarousel(carousel(expanded([watchChild(0)])))
+
+      expect(
+        cssRulesFor(screen.getByTestId('CampaignVideoCarouselCard-childId0'))
+      ).toContain('text-align:start')
     })
 
     it('ignores the explicit children while a video is set', () => {
@@ -513,6 +544,14 @@ describe('CampaignVideoCarousel', () => {
         left: -900,
         behavior: 'smooth'
       })
+    })
+
+    it('pages without smooth scrolling under prefers-reduced-motion: reduce', () => {
+      mockReducedMotion(true)
+      renderOverflowing()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Next videos' }))
+      expect(scrollBy).toHaveBeenCalledWith({ left: 900, behavior: 'auto' })
     })
 
     it('disables both arrows when every card fits', () => {

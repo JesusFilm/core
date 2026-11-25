@@ -58,9 +58,9 @@ Where a deployable actually runs — ECS (the Services), Vercel (the Next.js fro
 The one Aurora PostgreSQL cluster per Environment (`jfp-core`) that all the Services' databases live in; its connection URL is published into Doppler, not consumed as a Terraform output.
 _Avoid_: "the RDS" / per-service database (there is one cluster, many logical databases)
 
-**Short-links ClickHouse**:
-One ClickHouse Cloud service per Environment (`jfp-short-links-<env>`, module `modules/clickhouse/service`; stage first, prod once stage has proven the setup) holding the short-link scan events the redirect Worker inserts and api-media reads. Terraform manages the service only: its address and admin password are published into Doppler (`core` project, `SHORT_LINKS_CLICKHOUSE_URL`, `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD`); the database, table and the two limited users come from the runbook in `workers/short-links-redirect/README.md`. It accepts connections from anywhere because Cloudflare Workers have no fixed egress addresses. The same service also holds Plausible's event database (`plausible_events_db`, `modules/plausible/README.md`).
-_Avoid_: "the ClickHouse" (say which database: the short-links one or Plausible's)
+**Core ClickHouse**:
+One shared ClickHouse Cloud service per Environment (`jfp-clickhouse-<env>`, module `modules/clickhouse/service`; formerly `jfp-short-links-<env>`), one database per tenant: `redirects` holds the short-link scan events the redirect Worker inserts and api-media reads; `plausible_events_db` is Plausible Analytics' event store. Terraform manages the service only: its address and admin password are published into Doppler (`core` project, `SHORT_LINKS_CLICKHOUSE_URL`, `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD`; the keys kept their prefix); databases, tables and the per-tenant users (`short_links_writer`, `short_links_reader`, `plausible`, each confined to its database, Plausible's under a settings profile that caps its memory) come from the runbooks in `workers/short-links-redirect/README.md` and `modules/plausible/README.md`. It accepts connections from anywhere because Cloudflare Workers have no fixed egress addresses. One replica, so a Cloud restart or upgrade is downtime for both tenants at once.
+_Avoid_: "the short-links ClickHouse" (it is shared)
 
 **Doppler Token**:
 The per-Service, per-Environment secret handle: Terraform reads it from SSM and passes it to the task, which pulls its env vars from Doppler at runtime. Secrets never live in Terraform state or task definitions.

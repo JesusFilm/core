@@ -1,4 +1,9 @@
 import {
+  type ExtraTypename,
+  shownExtras
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
+
+import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock,
   GetCampaign_campaign_regions as CampaignRegion
@@ -7,46 +12,40 @@ import {
   CampaignChildPlacement,
   CampaignPageKind
 } from '../../../../../__generated__/globalTypes'
-import { CampaignSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
+import { AddableSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
 import type {
-  CampaignAddPreset,
-  CampaignSelection
+  CampaignSelection,
+  SectionInsert
 } from '../../CampaignEditorProvider'
 import {
   pageSections,
   sectionTypesForPage,
   sectionTypesForSlot
-} from '../../sectionTypes'
-import type { SectionInsert } from '../useAddSection'
+} from '../sectionTypes'
 
-export type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
-
-const EXTRA_TYPENAMES: readonly ExtraTypename[] = [
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock'
-]
-
-/** The Extra types a host renders: the header shows only its button children (its nav links). */
+/** The Extra types a host renders, from the grammar: the header shows only its button children (its nav links). */
 function extraTypenamesFor(host: CampaignBlock): ExtraTypename[] {
-  if (host.__typename === 'CampaignHeaderBlock') return ['CampaignButtonBlock']
-  return [...EXTRA_TYPENAMES]
+  return [...shownExtras(host.__typename)]
 }
 
 /** Where a new section goes and which types fit there. */
 export interface SectionTarget {
   insert: SectionInsert
-  typenames: CampaignSectionTypename[]
+  typenames: AddableSectionTypename[]
 }
 
 /**
  * The section an Extra is added to, and which side of the section's text it
- * sits on. A new Extra beside a selected Extra repeats its placement; added
- * to a section it takes the author's choice, `placement` being the default.
+ * sits on. A new Extra beside a selected Extra repeats its placement and goes
+ * right after it; added to a section it takes the author's choice,
+ * `placement` being the default, and goes last.
  */
 export interface ExtraTarget {
   host: CampaignBlock
   placement: CampaignChildPlacement
   inheritsPlacement: boolean
+  /** The selected Extra the new one goes right after. */
+  after?: CampaignBlock
   /** The Extra types the host renders, in Add Panel order. */
   typenames: ExtraTypename[]
 }
@@ -64,7 +63,7 @@ interface AddTargetsInput {
   /** The page the canvas shows: where nothing-selected adds go. */
   pageKind: CampaignPageKind
   /** An insert point the canvas chose; it overrides the selection's rule. */
-  preset?: CampaignAddPreset
+  preset?: SectionInsert
 }
 
 /**
@@ -75,7 +74,7 @@ interface AddTargetsInput {
  * below the section, and an Extra added to it. An empty Column Slot → a
  * section into it, filtered to what fits in a column; a section already in a
  * slot has no section sibling to add. An Extra → another Extra on the same
- * host and placement. A region card → a new Region Line. Region-page-only
+ * host and placement, right after it. A region card → a new Region Line. Region-page-only
  * section types are offered on the Region Page only. A preset insert point
  * (the canvas "+", an empty slot's placeholder) wins over all of this and
  * offers sections only, at that point.
@@ -117,6 +116,19 @@ export function addTargets({
     }
   }
 
+  /** An Extra added to the host, below its text, taking the author's choice. */
+  function extraBelow(
+    host: CampaignBlock | undefined
+  ): ExtraTarget | undefined {
+    if (host == null) return undefined
+    return {
+      host,
+      placement: CampaignChildPlacement.below,
+      inheritsPlacement: false,
+      typenames: extraTypenamesFor(host)
+    }
+  }
+
   if (preset != null) {
     const presetPageKind = kindOfPage(preset.pageId)
     return {
@@ -136,31 +148,16 @@ export function addTargets({
     case 'chrome':
       return {
         section: endOfPage(),
-        extra: selection.host && {
-          host: selection.host,
-          placement: CampaignChildPlacement.below,
-          inheritsPlacement: false,
-          typenames: extraTypenamesFor(selection.host)
-        }
+        extra: extraBelow(selection.host)
       }
     case 'section':
       return {
         section: belowSection(selection.host),
-        extra: selection.host && {
-          host: selection.host,
-          placement: CampaignChildPlacement.below,
-          inheritsPlacement: false,
-          typenames: extraTypenamesFor(selection.host)
-        }
+        extra: extraBelow(selection.host)
       }
     case 'column':
       return {
-        extra: selection.host && {
-          host: selection.host,
-          placement: CampaignChildPlacement.below,
-          inheritsPlacement: false,
-          typenames: extraTypenamesFor(selection.host)
-        }
+        extra: extraBelow(selection.host)
       }
     case 'slot': {
       const slot = selection.block
@@ -186,12 +183,17 @@ export function addTargets({
       if (host == null) return {}
       const placement =
         block != null && 'placement' in block ? block.placement : null
+      const after =
+        block?.parentBlockId === host.id && block.parentOrder != null
+          ? block
+          : undefined
       return {
         extra: {
           host,
           placement: placement ?? CampaignChildPlacement.below,
           inheritsPlacement: true,
-          typenames: extraTypenamesFor(host)
+          typenames: extraTypenamesFor(host),
+          ...(after != null ? { after } : {})
         }
       }
     }

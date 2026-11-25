@@ -1,6 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -269,6 +277,70 @@ describe('CreateJourneyButton', () => {
       }
     }))
   })
+
+  it.each(['Cancel', 'unmount'])(
+    'releases the menu dialog lock on %s',
+    async (closeAction) => {
+      const user = userEvent.setup()
+      const onOpenTeamDialog = vi.fn()
+      const setHasOpenDialog = vi.fn()
+      mockUseRouter.mockReturnValue({
+        query: {},
+        replace: vi.fn(),
+        pathname: '/'
+      } as unknown as NextRouter)
+
+      const { unmount } = render(
+        <MockedProvider
+          mocks={[
+            {
+              request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+              result: teamResult
+            },
+            getLanguagesMock
+          ]}
+        >
+          <SnackbarProvider>
+            <TeamProvider>
+              <CreateJourneyButton
+                variant="menu-item"
+                journeyData={journey}
+                onOpenTeamDialog={onOpenTeamDialog}
+                setHasOpenDialog={setHasOpenDialog}
+              />
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>,
+        { wrapper: MenuList }
+      )
+
+      expect(setHasOpenDialog).not.toHaveBeenCalled()
+      fireEvent.click(
+        screen.getByRole('menuitem', { name: 'Use This Template' })
+      )
+
+      const dialog = await screen.findByRole('dialog', {
+        name: 'Add Journey to Team'
+      })
+      expect(onOpenTeamDialog).toHaveBeenCalledTimes(1)
+      expect(setHasOpenDialog).toHaveBeenLastCalledWith(true)
+
+      const cancelButton = within(dialog).getByRole('button', {
+        name: 'Cancel'
+      })
+      act(() => cancelButton.focus())
+      await user.tab()
+      expect(within(dialog).getByRole('button', { name: 'Add' })).toHaveFocus()
+
+      if (closeAction === 'Cancel') {
+        await user.click(cancelButton)
+      } else {
+        unmount()
+      }
+
+      expect(setHasOpenDialog.mock.calls).toEqual([[true], [false]])
+    }
+  )
 
   describe.each([
     ['when journey is accessed from the context', undefined],

@@ -15,6 +15,7 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '../../components/Card/Card'
 import { StepFields } from '../../components/Step/__generated__/StepFields'
+import { createEventRequestLink } from '../../test/createEventRequestLink'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../block'
 import { JourneyProvider } from '../JourneyProvider'
 import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
@@ -348,5 +349,32 @@ describe('useStepNavigationEvents', () => {
       await waitFor(() => expect(mockedSendGTMEvent).toHaveBeenCalled())
       expect(mockPlausible).not.toHaveBeenCalled()
     })
+  })
+
+  it('sends only interaction mutations for next and previous navigation', async () => {
+    const { link, requests } = createEventRequestLink()
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <MockedProvider link={link}>
+        <JourneyProvider value={{ journey }}>{children}</JourneyProvider>
+      </MockedProvider>
+    )
+    const { result } = renderHook(() => useStepNavigationEvents({ t }), {
+      wrapper
+    })
+    await act(async () => result.current.handleNextNavigationEventCreate(step1))
+    await act(async () => {
+      blockHistoryVar([step1, step2])
+    })
+    await act(async () =>
+      result.current.handlePreviousNavigationEventCreate(step2)
+    )
+    expect(requests.map(({ name }) => name)).toEqual([
+      'StepNextEventCreate',
+      'StepPreviousEventCreate'
+    ])
+    expect(mockPlausible.mock.calls.map(([name]) => name)).toEqual([
+      'navigateNextStep',
+      'navigatePreviousStep'
+    ])
   })
 })

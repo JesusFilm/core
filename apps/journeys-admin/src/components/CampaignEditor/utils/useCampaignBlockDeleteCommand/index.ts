@@ -1,4 +1,1 @@
-export {
-  siblingsOf,
-  useCampaignBlockDeleteCommand
-} from './useCampaignBlockDeleteCommand'
+export { useCampaignBlockDeleteCommand } from './useCampaignBlockDeleteCommand'

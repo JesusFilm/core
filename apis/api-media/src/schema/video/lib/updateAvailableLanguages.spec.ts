@@ -280,6 +280,56 @@ describe('addLanguageToVideo', () => {
   })
 })
 
+describe('removeLanguageFromVideoIfUnused', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    prismaMock.$transaction.mockImplementation(
+      async (callback: (tx: typeof prismaMock) => Promise<unknown>) =>
+        await callback(prismaMock)
+    )
+    prismaMock.video.update.mockResolvedValue({} as Video)
+  })
+
+  it('removes the language when the video has no published Variant of its own in it', async () => {
+    prismaMock.video.findUnique.mockResolvedValue({
+      availableLanguages: ['529', '19372', '21028']
+    } as unknown as Video)
+    prismaMock.videoVariant.count.mockResolvedValue(0)
+
+    await removeLanguageFromVideoIfUnused('video-id', '19372')
+
+    expect(prismaMock.videoVariant.count).toHaveBeenCalledWith({
+      where: { videoId: 'video-id', languageId: '19372', published: true }
+    })
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'video-id' },
+      data: { availableLanguages: { set: ['529', '21028'] } }
+    })
+  })
+
+  it('keeps the language when the video has a published Variant of its own in it', async () => {
+    // A dubbed feature film is playable in a language without any segment in
+    // it, so it must keep listing that language.
+    prismaMock.video.findUnique.mockResolvedValue({
+      availableLanguages: ['529', '19372']
+    } as unknown as Video)
+    prismaMock.videoVariant.count.mockResolvedValue(1)
+
+    await removeLanguageFromVideoIfUnused('video-id', '19372')
+
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
+  })
+
+  it('does nothing when the video does not exist', async () => {
+    prismaMock.video.findUnique.mockResolvedValue(null)
+
+    await removeLanguageFromVideoIfUnused('video-id', '19372')
+
+    expect(prismaMock.videoVariant.count).not.toHaveBeenCalled()
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
+  })
+})
+
 describe('findContainerParentIds', () => {
   it('queries collection/series/featureFilm videos that list the child', async () => {
     mockContainerParentQuery(containerParents)

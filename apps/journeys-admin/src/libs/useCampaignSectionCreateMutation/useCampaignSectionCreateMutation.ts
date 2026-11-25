@@ -1,38 +1,40 @@
-import { ApolloLink, DocumentNode, gql } from '@apollo/client'
-import { useApolloClient } from '@apollo/client/react'
+import { ApolloCache, ApolloClient, DocumentNode, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
+import {
+  PAGE_SECTION_TYPENAMES,
+  type PageSectionTypename
+} from '@core/journeys/ui/Campaign/libs/campaignBlockGrammar'
 
+import { CampaignAnalyticsBlockCreate } from '../../../__generated__/CampaignAnalyticsBlockCreate'
+import { CampaignColumnsBlockCreate } from '../../../__generated__/CampaignColumnsBlockCreate'
+import { CampaignFeaturedMediaBlockCreate } from '../../../__generated__/CampaignFeaturedMediaBlockCreate'
+import { CampaignHeroBlockCreate } from '../../../__generated__/CampaignHeroBlockCreate'
+import { CampaignImageBlockCreate } from '../../../__generated__/CampaignImageBlockCreate'
+import { CampaignJourneyListBlockCreate } from '../../../__generated__/CampaignJourneyListBlockCreate'
+import { CampaignRegionHeaderBlockCreate } from '../../../__generated__/CampaignRegionHeaderBlockCreate'
+import { CampaignRegionShareBlockCreate } from '../../../__generated__/CampaignRegionShareBlockCreate'
+import { CampaignRegionSwitcherBlockCreate } from '../../../__generated__/CampaignRegionSwitcherBlockCreate'
+import { CampaignRichTextBlockCreate } from '../../../__generated__/CampaignRichTextBlockCreate'
+import { CampaignVideoCarouselBlockCreate } from '../../../__generated__/CampaignVideoCarouselBlockCreate'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
 import {
   campaignBlockInsertUpdate,
   campaignBlocksAdd
 } from '../campaignBlockCache'
 import { CAMPAIGN_IMAGE_BLOCK_CREATE } from '../useCampaignImageBlockCreateMutation'
-import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery'
 
-/** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
-export const CAMPAIGN_SECTION_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignRegionSwitcherBlock',
-  'CampaignVideoCarouselBlock',
-  'CampaignJourneyListBlock',
-  'CampaignAnalyticsBlock',
-  'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock',
-  'CampaignRichTextBlock',
-  'CampaignColumnsBlock',
-  'CampaignImageBlock',
-  'CampaignFeaturedMediaBlock'
-] as const
+/** The section typenames "+Add section" offers: the Campaign Block grammar's page sections, in menu order. */
+export const ADDABLE_SECTION_TYPENAMES = PAGE_SECTION_TYPENAMES
 
-export type CampaignSectionTypename =
-  (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
+export type AddableSectionTypename = PageSectionTypename
 
-export type CampaignSectionBlock = Extract<
+export type AddableSectionBlock = Extract<
   CampaignBlock,
-  { __typename: CampaignSectionTypename }
+  { __typename: AddableSectionTypename }
 >
 
 /** The fields every section create input shares; the body starts empty. */
@@ -192,7 +194,7 @@ interface SectionCreateOperation {
 
 /** One create document per section typename, all taking the same `$input` shape. */
 export const SECTION_CREATE_OPERATIONS: Record<
-  CampaignSectionTypename,
+  AddableSectionTypename,
   SectionCreateOperation
 > = {
   CampaignHeroBlock: {
@@ -243,12 +245,25 @@ export const SECTION_CREATE_OPERATIONS: Record<
 
 type SectionCreateResult = Record<string, CampaignBlock | null | undefined>
 
+interface SectionCreateVariables {
+  input: CampaignSectionCreateInput
+}
+
 export type CampaignSectionCreate = (
-  block: CampaignSectionBlock,
+  block: AddableSectionBlock,
   input: CampaignSectionCreateInput,
   /** A Columns section's two slot rows, written to the cache with it. */
   slots?: CampaignBlock[]
-) => Promise<ApolloLink.Result<SectionCreateResult>>
+) => Promise<ApolloClient.MutateResult<SectionCreateResult>>
+
+type SendCreate = (options: {
+  variables: SectionCreateVariables
+  optimisticResponse: SectionCreateResult
+  update: (
+    cache: ApolloCache,
+    result: { data?: SectionCreateResult | null }
+  ) => void
+}) => Promise<ApolloClient.MutateResult<SectionCreateResult>>
 
 /**
  * Create a section of any typename through its own create mutation, shown
@@ -261,13 +276,67 @@ export type CampaignSectionCreate = (
 export function useCampaignSectionCreateMutation(
   campaignId: string
 ): CampaignSectionCreate {
-  const client = useApolloClient()
+  const [hero] = useMutation<CampaignHeroBlockCreate, SectionCreateVariables>(
+    CAMPAIGN_HERO_BLOCK_CREATE
+  )
+  const [regionSwitcher] = useMutation<
+    CampaignRegionSwitcherBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_REGION_SWITCHER_BLOCK_CREATE)
+  const [videoCarousel] = useMutation<
+    CampaignVideoCarouselBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_VIDEO_CAROUSEL_BLOCK_CREATE)
+  const [journeyList] = useMutation<
+    CampaignJourneyListBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_JOURNEY_LIST_BLOCK_CREATE)
+  const [analytics] = useMutation<
+    CampaignAnalyticsBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_ANALYTICS_BLOCK_CREATE)
+  const [regionHeader] = useMutation<
+    CampaignRegionHeaderBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_REGION_HEADER_BLOCK_CREATE)
+  const [regionShare] = useMutation<
+    CampaignRegionShareBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_REGION_SHARE_BLOCK_CREATE)
+  const [richText] = useMutation<
+    CampaignRichTextBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_RICH_TEXT_BLOCK_CREATE)
+  const [columns] = useMutation<
+    CampaignColumnsBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_COLUMNS_BLOCK_CREATE)
+  const [image] = useMutation<CampaignImageBlockCreate, SectionCreateVariables>(
+    CAMPAIGN_IMAGE_BLOCK_CREATE
+  )
+  const [featuredMedia] = useMutation<
+    CampaignFeaturedMediaBlockCreate,
+    SectionCreateVariables
+  >(CAMPAIGN_FEATURED_MEDIA_BLOCK_CREATE)
+
   return useCallback(
     async (block, input, slots = []) => {
-      const { document, operation } =
-        SECTION_CREATE_OPERATIONS[block.__typename]
-      return await client.mutate<SectionCreateResult>({
-        mutation: document,
+      const mutations = {
+        CampaignHeroBlock: hero,
+        CampaignRegionSwitcherBlock: regionSwitcher,
+        CampaignVideoCarouselBlock: videoCarousel,
+        CampaignJourneyListBlock: journeyList,
+        CampaignAnalyticsBlock: analytics,
+        CampaignRegionHeaderBlock: regionHeader,
+        CampaignRegionShareBlock: regionShare,
+        CampaignRichTextBlock: richText,
+        CampaignColumnsBlock: columns,
+        CampaignImageBlock: image,
+        CampaignFeaturedMediaBlock: featuredMedia
+      } as const satisfies Record<AddableSectionTypename, unknown>
+      const send = mutations[block.__typename] as unknown as SendCreate
+      const { operation } = SECTION_CREATE_OPERATIONS[block.__typename]
+      return await send({
         variables: { input },
         optimisticResponse: { [operation]: block },
         update(cache, { data }) {
@@ -284,6 +353,19 @@ export function useCampaignSectionCreateMutation(
         }
       })
     },
-    [client, campaignId]
+    [
+      hero,
+      regionSwitcher,
+      videoCarousel,
+      journeyList,
+      analytics,
+      regionHeader,
+      regionShare,
+      richText,
+      columns,
+      image,
+      featuredMedia,
+      campaignId
+    ]
   )
 }

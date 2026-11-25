@@ -12,6 +12,8 @@ import {
 } from '../../../workers/videoAlgoliaSync'
 import { logger } from '../../logger'
 
+type PrismaClientOrTx = typeof prisma | Prisma.TransactionClient
+
 // Calculates what availableLanguages should be for a given video, and
 // returns it alongside the value currently stored on the row. Both come off
 // a single `findUnique` - the caller (e.g. the cascade walker) needs the
@@ -21,7 +23,7 @@ import { logger } from '../../logger'
 // Reads through `client` so it can run inside a caller's transaction.
 export async function calculateAvailableLanguages(
   videoId: string,
-  client: Prisma.TransactionClient = prisma
+  client: PrismaClientOrTx = prisma
 ): Promise<{
   languages: string[]
   previousLanguages: string[]
@@ -197,7 +199,12 @@ export async function withAvailableLanguagesRecompute<T>(
 // lost-update race: both transactions read the same array and the second
 // write clobbers the first. Instead, do the read-modify-write as a single
 // atomic UPDATE so Postgres serializes concurrent callers on the row.
-// COALESCE handles the nullable column so array_append always has a base array.
+// The column is NOT NULL DEFAULT '{}' at the database level, but COALESCE
+// stays as cheap insurance against a NULL row surviving if this code path
+// deploys before the NOT NULL migration finishes applying (or a rollback
+// briefly reintroduces it mid-migration): without it, a NULL row would make
+// the WHERE clause evaluate to NULL and silently no-op instead of adding
+// the language.
 //
 // This is kept as a hot-path primitive for a video's *own* value
 // deliberately, rather than retired in favor of `calculateAvailableLanguages`

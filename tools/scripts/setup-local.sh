@@ -38,8 +38,12 @@ warn() { echo "⚠️  $*"; }
 
 # --- prerequisites -----------------------------------------------------------
 command -v node >/dev/null || fail "node not found. Install Node $(cat .nvmrc) (see .nvmrc)."
-node_major="$(node -p 'process.versions.node.split(".")[0]')"
-[ "$node_major" -ge "$(cat .nvmrc)" ] || fail "node $(node -v) found, need >= $(cat .nvmrc) (see .nvmrc)."
+node -e 'const { engines } = require("./package.json");
+  const minimums = engines.node.split(" || ").map((range) => range.match(/^>=(\d+)\.(\d+)\.(\d+) </).slice(1).map(Number));
+  const current = process.versions.node.split(".").map(Number);
+  const minimum = minimums.find(([major]) => major === current[0]);
+  if (!minimum || current[1] < minimum[1] || (current[1] === minimum[1] && current[2] < minimum[2])) process.exit(1);
+' || fail "node $(node -v) found, need $(node -p 'require("./package.json").engines.node')."
 ok "node $(node -v)"
 
 command -v corepack >/dev/null || fail "corepack not found. It ships with Node; enable it with 'corepack enable'."
@@ -64,7 +68,7 @@ fi
 if command -v apollo >/dev/null; then
   ok "apollo CLI (GraphQL codegen)"
 else
-  warn "apollo CLI not found — 'nx codegen <project>' will not work locally; install with 'npm i -g apollo graphql' (see AGENTS.md)."
+  warn "apollo CLI not found — 'nx codegen <project>' will not work locally; install with 'npm i -g apollo@2.34.0 graphql@16.10.0', the same pins as autofix.ci (see AGENTS.md)."
 fi
 
 # --- backing services --------------------------------------------------------

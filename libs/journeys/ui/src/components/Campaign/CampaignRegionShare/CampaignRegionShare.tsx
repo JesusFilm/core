@@ -21,6 +21,8 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { useCampaignPlausible } from '../../../libs/campaignPlausible'
 import { QrCodeCanvas, downloadQrCodePng } from '../../QrCodeCanvas'
+import { bandButtonSx } from '../CampaignButton'
+import { CampaignMutedText } from '../CampaignMutedText'
 import { campaignStringOr, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
@@ -30,7 +32,7 @@ import type { CampaignPublic, CampaignRegion, CampaignTreeOf } from '../types'
 export type CampaignShareLanguage = CampaignRegion['languages'][number]
 
 /**
- * The iframe attributes every journey preview frame carries (PRD §11): no
+ * The iframe attributes every journey preview frame carries (glossary: **Campaign Public Page**): no
  * top navigation and no fullscreen, popups allowed so the journey's own
  * links can open, autoplay for the first card's video.
  */
@@ -38,9 +40,19 @@ export const PREVIEW_IFRAME_SANDBOX =
   'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'
 export const PREVIEW_IFRAME_ALLOW = 'autoplay'
 
-/** The preview frame's address: the root-domain embed route kept a preview with `expand=false`. */
+/**
+ * The preview frame's address: the root-domain embed route kept a preview
+ * with `expand=false`. An address that does not parse (a relative or
+ * scheme-less `JOURNEYS_URL`) is returned unchanged rather than throwing
+ * while the page renders.
+ */
 export function previewEmbedUrl(embedUrl: string): string {
-  const url = new URL(embedUrl)
+  let url: URL
+  try {
+    url = new URL(embedUrl)
+  } catch {
+    return embedUrl
+  }
   url.searchParams.set('expand', 'false')
   return url.toString()
 }
@@ -123,12 +135,7 @@ function ShareStep({
         </Typography>
       )}
       {hasText(help) && (
-        <Typography
-          variant="body2"
-          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
-        >
-          {help}
-        </Typography>
+        <CampaignMutedText variant="body2">{help}</CampaignMutedText>
       )}
       {children}
     </Stack>
@@ -155,7 +162,7 @@ export function CampaignRegionShare({
   const { campaign, region, string } = useCampaign()
   const track = useCampaignPlausible()
   const [selectedId, setSelectedId] = useState<string>()
-  const [copied, setCopied] = useState(false)
+  const [copyResult, setCopyResult] = useState<'copied' | 'failed' | null>(null)
   const languages = region == null ? [] : shareLanguages(region)
   const selected =
     languages.find((language) => language.id === selectedId) ??
@@ -193,18 +200,25 @@ export function CampaignRegionShare({
     setSelectedId(event.target.value)
   }
 
-  async function handleCopy(): Promise<void> {
+  async function copyShortLink(): Promise<void> {
     if (shortLink == null || selected == null) return
-    // Only the clipboard decides the toast: a tracking failure after a copy
-    // must not take the confirmation back.
+    // Tracking must not change the result of a successful clipboard write.
     try {
       await navigator.clipboard.writeText(shortLink)
     } catch {
-      setCopied(false)
+      setCopyResult('failed')
       return
     }
-    setCopied(true)
+    setCopyResult('copied')
     track('campaignShareLinkCopy', { shareLanguage: selected })
+  }
+
+  function handleCopy(): void {
+    void copyShortLink()
+  }
+
+  function handleCopyResultClose(): void {
+    setCopyResult(null)
   }
 
   function handleDownload(event: MouseEvent<HTMLButtonElement>): void {
@@ -231,13 +245,9 @@ export function CampaignRegionShare({
     <CampaignSectionBand block={block}>
       <CampaignSectionHeading title={block.title} />
       {hasText(block.intro) && (
-        <Typography
-          variant="body1"
-          data-testid="CampaignRegionShareIntro"
-          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
-        >
+        <CampaignMutedText data-testid="CampaignRegionShareIntro">
           {block.intro}
-        </Typography>
+        </CampaignMutedText>
       )}
       {selected != null && region != null && (
         <Stack
@@ -408,15 +418,9 @@ export function CampaignRegionShare({
                   variant="contained"
                   startIcon={<CopyToIcon />}
                   disabled={shortLink == null}
-                  onClick={() => {
-                    void handleCopy()
-                  }}
+                  onClick={handleCopy}
                   data-testid="CampaignRegionShareCopy"
-                  sx={{
-                    backgroundColor: 'var(--campaign-band-button)',
-                    color: 'var(--campaign-band-button-label)',
-                    whiteSpace: 'pre-line'
-                  }}
+                  sx={{ ...bandButtonSx, whiteSpace: 'pre-line' }}
                 >
                   {copyLabel}
                 </Button>
@@ -443,10 +447,12 @@ export function CampaignRegionShare({
         </Stack>
       )}
       <Snackbar
-        open={copied}
+        open={copyResult != null}
         autoHideDuration={3000}
-        onClose={() => setCopied(false)}
-        message={copiedLabel}
+        onClose={handleCopyResultClose}
+        message={
+          copyResult === 'failed' ? t('Could not copy the link') : copiedLabel
+        }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         data-testid="CampaignRegionShareCopied"
       />

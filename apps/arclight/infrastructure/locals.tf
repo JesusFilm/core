@@ -16,13 +16,15 @@ locals {
     "PG_DATABASE_URL_LANGUAGES",
     "CLOUDFLARE_IMAGE_ACCOUNT"
   ]
+  # Stage peaked at 0.6 GiB of memory and a few percent of one vCPU over
+  # 14 days, so it runs on half the task size prod gets.
   service_config = {
     name           = "arclight"
     is_public      = true
     container_port = local.port
     host_port      = local.port
-    cpu            = 1024
-    memory         = 2048
+    cpu            = var.env == "stage" ? 512 : 1024
+    memory         = var.env == "stage" ? 1024 : 2048
     desired_count  = var.env == "stage" ? 1 : 2
     zone_id        = var.ecs_config.zone_id
     alb = {

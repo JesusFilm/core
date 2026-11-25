@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { useBlockDeleteCommand } from '../../../../utils/useBlockDeleteCommand'
+import { useBlockDelete } from '../../../../BlockDeleteProvider'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 export function useDeleteOnKeyPress(): {
@@ -14,7 +14,7 @@ export function useDeleteOnKeyPress(): {
   } = useEditor()
 
   const deleteEdge = useDeleteEdge()
-  const { addBlockDelete } = useBlockDeleteCommand()
+  const { requestBlockDelete } = useBlockDelete()
   const deleteEvent = useKeyPress(['Delete', 'Backspace'])
 
   // Track only the reactflow edge selection. The card selection already lives
@@ -42,7 +42,7 @@ export function useDeleteOnKeyPress(): {
       })
       setSelectedEdge(undefined)
     } else if (selectedBlock?.__typename === 'StepBlock') {
-      addBlockDelete(selectedBlock)
+      requestBlockDelete(selectedBlock)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteEvent])

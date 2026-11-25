@@ -15,9 +15,10 @@ tools/scripts/setup-local.sh --no-services
 
 # nx and foreman so the bare `nx ...` / `nf start` commands in the docs work (on a
 # host checkout use `pnpm exec nx` / `pnpm dev:api` instead); apollo/graphql for
-# `nx codegen` (deprecated CLI, cannot be a devDependency — see AGENTS.md).
+# `nx codegen` (deprecated CLI, cannot be a devDependency — see AGENTS.md). Keep
+# the apollo/graphql pins in sync with .github/workflows/autofix.ci.yml.
 echo "Installing global CLIs..."
-npm i -g nx foreman apollo graphql
+npm i -g nx foreman apollo@2.34.0 graphql@16.10.0
 
 echo "Post-create setup completed!"
 

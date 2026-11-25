@@ -8,6 +8,7 @@ import { generateCacheKey } from '../../../../../lib/cache'
 import { getWithStaleCacheForRequest } from '../../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
+import { getComponentType } from '../../../../../lib/mediaComponentType'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
@@ -72,6 +73,7 @@ const GET_VIDEO = graphql(`
       availableLanguages
       variant {
         hls
+        dash
         lengthInMilliseconds
         language {
           bcp47
@@ -271,11 +273,16 @@ mediaComponent.openapi(route, async (c) => {
         return { data: descriptorsonlyResponse, statusCode: 200 }
       }
 
+      const componentType = getComponentType(
+        video.variant?.hls,
+        video.variant?.dash
+      )
+
       const responseData = {
         mediaComponentId,
-        componentType: video.variant?.hls != null ? 'content' : 'container',
+        componentType,
         subType: video.label,
-        contentType: 'video',
+        contentType: componentType === 'content' ? 'video' : 'none',
         imageUrls: {
           thumbnail:
             video.images.find((image) => image.thumbnail != null)?.thumbnail ??
@@ -295,7 +302,8 @@ mediaComponent.openapi(route, async (c) => {
         },
         lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
         containsCount: video.childrenCount,
-        isDownloadable: video.variant?.downloadable ?? false,
+        isDownloadable:
+          componentType === 'content' && (video.variant?.downloadable ?? false),
         downloadSizes: {
           approximateSmallDownloadSizeInBytes:
             video.variant?.downloads.find((d) => d.quality === 'low')?.size ??

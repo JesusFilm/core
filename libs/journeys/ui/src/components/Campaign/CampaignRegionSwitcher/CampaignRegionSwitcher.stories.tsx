@@ -44,4 +44,11 @@ export const Pills: Story = {
   }
 }
 
+/** The section hides country names: each country is its flag, named by its tooltip. */
+export const FlagsOnly: Story = {
+  args: {
+    block: { ...switcher, showCountryNames: false }
+  }
+}
+
 export default meta

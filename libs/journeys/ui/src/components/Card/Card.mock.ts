@@ -32,6 +32,7 @@ import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
 import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
 import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
 
+// Read documents after the dynamic block import cycle has finished.
 // Mock events
 export const leftSide = { clientX: 0 }
 export const rightSide = { clientX: 1000 }
@@ -292,7 +293,9 @@ export const journey = {
 export const mockStepPreviousEventCreate: MockLink.MockedResponse<StepPreviousEventCreate> =
   {
     request: {
-      query: STEP_PREVIOUS_EVENT_CREATE,
+      get query() {
+        return STEP_PREVIOUS_EVENT_CREATE
+      },
       variables: {
         input: {
           id: 'uuid',
@@ -318,7 +321,9 @@ export const mockStepPreviousEventCreate: MockLink.MockedResponse<StepPreviousEv
 export const mockStepNextEventCreate: MockLink.MockedResponse<StepNextEventCreate> =
   {
     request: {
-      query: STEP_NEXT_EVENT_CREATE,
+      get query() {
+        return STEP_NEXT_EVENT_CREATE
+      },
       variables: {
         input: {
           id: 'uuid',
@@ -343,7 +348,9 @@ export const mockStepNextEventCreate: MockLink.MockedResponse<StepNextEventCreat
 
 export const mockTextResponseSubmissionEventCreate = {
   request: {
-    query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+    get query() {
+      return TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
+    },
     variables: {
       input: {
         id: 'uuid',
@@ -365,7 +372,9 @@ export const mockTextResponseSubmissionEventCreate = {
 
 export const mockTextResponse1SubmissionEventCreate = {
   request: {
-    query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+    get query() {
+      return TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
+    },
     variables: {
       input: {
         id: 'uuid',
@@ -387,7 +396,9 @@ export const mockTextResponse1SubmissionEventCreate = {
 
 export const mockTextResponse2SubmissionEventCreate = {
   request: {
-    query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+    get query() {
+      return TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
+    },
     variables: {
       input: {
         id: 'uuid',
@@ -409,7 +420,9 @@ export const mockTextResponse2SubmissionEventCreate = {
 
 export const mockTextResponseEmailSubmissionEventCreate = {
   request: {
-    query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+    get query() {
+      return TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
+    },
     variables: {
       input: {
         id: 'uuid',
@@ -435,7 +448,9 @@ export const getStepViewEventMock = (
   value?: string
 ): MockLink.MockedResponse<StepViewEventCreate> => ({
   request: {
-    query: STEP_VIEW_EVENT_CREATE,
+    get query() {
+      return STEP_VIEW_EVENT_CREATE
+    },
     variables: {
       input: {
         id: 'uuid',
@@ -463,7 +478,9 @@ export const createMockButtonClickEvent = (
   actionValue: string
 ) => ({
   request: {
-    query: BUTTON_CLICK_EVENT_CREATE,
+    get query() {
+      return BUTTON_CLICK_EVENT_CREATE
+    },
     variables: {
       input: {
         id: 'uuid',
@@ -489,7 +506,9 @@ export const createMockButtonClickEvent = (
 export const mockMultiselectSubmissionEventCreate: MockLink.MockedResponse<MultiselectSubmissionEventCreate> =
   {
     request: {
-      query: MULTISELECT_SUBMISSION_EVENT_CREATE,
+      get query() {
+        return MULTISELECT_SUBMISSION_EVENT_CREATE
+      },
       variables: {
         input: {
           id: 'uuid',

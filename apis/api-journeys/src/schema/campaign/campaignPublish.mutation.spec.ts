@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../test/campaignAddressSnapshot'
 import {
   authClient,
   setupCampaignBlockSpec
@@ -12,6 +13,8 @@ import { graphql } from '../../lib/graphql/subgraphGraphql'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
 
 describe('campaignPublish', () => {
   const CAMPAIGN_PUBLISH = graphql(`
@@ -84,6 +87,7 @@ describe('campaignPublish', () => {
       .withRegion('AFR')
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue(draft)
+    mockAddressSnapshots(draft, { ...draft, status: 'published' })
     prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
       ...draft,
@@ -104,10 +108,12 @@ describe('campaignPublish', () => {
 
   it('also revalidates the domain form of its Campaign Domain', async () => {
     const draft = campaignFactory({ role: 'manager' }).withRegion('EUR').build()
-    prismaMock.campaign.findUnique.mockResolvedValue({
+    const withDomain = {
       ...draft,
       customDomains: [{ name: 'outreach.example.org' }]
-    } as any)
+    }
+    prismaMock.campaign.findUnique.mockResolvedValue(withDomain)
+    mockAddressSnapshots(withDomain, { ...withDomain, status: 'published' })
     prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
       ...draft,
@@ -130,6 +136,7 @@ describe('campaignPublish', () => {
   it('still publishes when queueing a revalidation fails', async () => {
     const draft = campaignFactory({ role: 'manager' }).build()
     prismaMock.campaign.findUnique.mockResolvedValue(draft)
+    mockAddressSnapshots(draft, { ...draft, status: 'published' })
     prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
       ...draft,
@@ -143,11 +150,14 @@ describe('campaignPublish', () => {
     })
 
     expect(result.data.campaignPublish.status).toBe('published')
+    expect(mockQueueAdd).toHaveBeenCalled()
   })
 
   it('queues nothing when the publish race is lost', async () => {
     const draft = campaignFactory({ role: 'manager' }).build()
     prismaMock.campaign.findUnique.mockResolvedValue(draft)
+    // The winner committed first, so both snapshots read it published.
+    mockAddressSnapshots({ ...draft, status: 'published' })
     prismaMock.campaign.updateMany.mockResolvedValue({ count: 0 })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
       ...draft,

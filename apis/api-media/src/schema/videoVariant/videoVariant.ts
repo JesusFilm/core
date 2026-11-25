@@ -9,7 +9,10 @@ import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
-import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
+import {
+  enqueueVideoAlgoliaSync,
+  videoOnlyScope
+} from '../../workers/videoAlgoliaSync'
 import { builder, toPrismaDateTimeFilter } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
@@ -22,9 +25,11 @@ import {
 } from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
+import { syncParentLanguage } from '../videoVariantReconciliation/reconcileParentVariants'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 import { videoVariantAwaitsMux } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
 
+import { canHavePlaceholderVariant } from './canHavePlaceholderVariant'
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
@@ -162,12 +167,18 @@ export async function handleParentVariantCreation(
   languageId: string
 ) {
   // Get the video info (label + published status) and find parent videos in parallel
-  const [video, parentIds, childVariant] = await Promise.all([
+  const [video, parentVideos, childVariant] = await Promise.all([
     prisma.video.findUnique({
       where: { id: videoId },
       select: { label: true, published: true }
     }),
-    findContainerParentIds(videoId),
+    prisma.video.findMany({
+      where: {
+        children: { some: { id: videoId } },
+        label: { in: ['collection', 'series', 'featureFilm'] }
+      },
+      select: { id: true, label: true, availableLanguages: true }
+    }),
     prisma.videoVariant.findFirst({
       where: {
         videoId: videoId,
@@ -176,6 +187,9 @@ export async function handleParentVariantCreation(
       select: { published: true }
     })
   ])
+  const containerParents = parentVideos.filter((parent) =>
+    canHavePlaceholderVariant(parent.label)
+  )
 
   // Only create parent variants if:
   // 1. Video exists and is not a feature film
@@ -187,8 +201,35 @@ export async function handleParentVariantCreation(
     video.label === 'featureFilm' ||
     !video.published ||
     !childVariant?.published ||
-    parentIds.length === 0
+    parentVideos.length === 0
   ) {
+    return
+  }
+
+  // Cascade the new language to every parent that doesn't list it yet --
+  // including featureFilm parents, which aggregate their segments' languages
+  // but (unlike collection/series) never get a placeholder Variant -- so
+  // availableLanguages stays correct even when no parent is eligible for one.
+  // A parent that already lists the language is skipped: syncParentLanguage
+  // is an UPDATE, a recompute of every container above it (queuing Algolia)
+  // and a cache revalidation, none of which change anything for it.
+  const parentsMissingLanguage = parentVideos.filter(
+    (parent) => !parent.availableLanguages.includes(languageId)
+  )
+  await Promise.allSettled(
+    parentsMissingLanguage.map(async (parent) => {
+      try {
+        await syncParentLanguage(parent.id, languageId)
+      } catch (error) {
+        logger.error(
+          { error, parentId: parent.id },
+          'Failed to cascade language to parent'
+        )
+      }
+    })
+  )
+
+  if (containerParents.length === 0) {
     return
   }
 
@@ -217,11 +258,11 @@ export async function handleParentVariantCreation(
   }
 
   // Create empty variants for all parent videos in parallel
-  const promises = parentIds.map((parentId) =>
-    createEmptyParentVariant(parentId, languageId, languageSlug).catch(
+  const promises = containerParents.map((parent) =>
+    createEmptyParentVariant(parent.id, languageId, languageSlug).catch(
       (error) => {
         console.error(
-          `Failed to create empty variant for parent ${parentId}:`,
+          `Failed to create empty variant for parent ${parent.id}:`,
           error
         )
       }
@@ -272,6 +313,7 @@ async function checkAndRemoveEmptyParentVariant(
   const parentVideo = await prisma.video.findUnique({
     where: { id: parentVideoId },
     select: {
+      availableLanguages: true,
       children: { select: { id: true } }
     }
   })
@@ -304,35 +346,43 @@ async function checkAndRemoveEmptyParentVariant(
     })
   ])
 
-  // If no published child variants exist in this language and we have an empty parent variant, remove it
-  if (publishedChildVariantsCount === 0 && parentVariant) {
-    // Delete the empty parent variant and recompute the parent's
-    // availableLanguages in one transaction, so the two commit or roll back
-    // together rather than leaving the parent permanently stale if the
-    // recompute throws. The recompute derives the value from current source
-    // data rather than hand-rolling the array filter.
-    await withAvailableLanguagesRecompute(
-      parentVideoId,
-      async (tx) =>
-        await tx.videoVariant.delete({
-          where: { id: parentVariant.id }
-        })
-    )
+  // Other published children still carry this language: the parent keeps it.
+  if (publishedChildVariantsCount > 0) return
 
-    // Not every caller of handleParentVariantCleanup cascades further up the
-    // container hierarchy itself (e.g. a video's own publish-status toggle in
-    // video.ts does not), so cascade from here to keep grandparents in sync
-    // regardless of caller. The delete and the parent's own recompute already
-    // committed above, so a cascade failure here must not make the cleanup -
-    // which already succeeded - appear to have failed.
-    try {
-      await updateParentCollectionLanguages(parentVideoId)
-    } catch (error) {
-      logger.error(
-        { error, parentVideoId, languageId },
-        'availableLanguages cascade failed after parent variant cleanup'
-      )
+  // No published child variants remain in this language. A parent with an
+  // empty placeholder loses it; a parent without one (a featureFilm never has
+  // one) still lists the language only because of its segments, so it must
+  // come off too, or Arclight and Algolia keep advertising a language with
+  // nothing behind it.
+  if (
+    parentVariant == null &&
+    !parentVideo.availableLanguages.includes(languageId)
+  ) {
+    return
+  }
+
+  // Delete the placeholder (when there is one) and recompute the parent's
+  // availableLanguages in one transaction, so the two commit or roll back
+  // together. The recompute reads current source data, so it keeps the
+  // language when the parent has a published Variant of its own in it.
+  await withAvailableLanguagesRecompute(parentVideoId, async (tx) => {
+    if (parentVariant != null) {
+      await tx.videoVariant.delete({ where: { id: parentVariant.id } })
     }
+  })
+
+  // Not every caller cascades further up the container hierarchy itself, so
+  // cascade from here to keep grandparents in sync. The delete and the
+  // parent's own recompute already committed above, so a cascade failure
+  // must not make the cleanup - which already succeeded - appear to have
+  // failed.
+  try {
+    await updateParentCollectionLanguages(parentVideoId)
+  } catch (error) {
+    logger.error(
+      { error, parentVideoId, languageId },
+      'availableLanguages cascade failed after parent variant cleanup'
+    )
   }
 }
 

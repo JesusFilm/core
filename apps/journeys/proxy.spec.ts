@@ -1,5 +1,12 @@
 import { NextRequest } from 'next/server'
 
+import {
+  campaignAbsoluteAddress,
+  campaignPagePaths,
+  pageLanguageTag,
+  withPageLanguage
+} from '@core/journeys/ui/Campaign/libs/campaignAddress'
+
 import proxy from './proxy'
 
 describe('journeys proxy', () => {
@@ -378,12 +385,104 @@ describe('journeys proxy', () => {
       )
     })
 
+    it('leaves a ?lang= link deeper than one segment on a custom domain to the catch-all', async () => {
+      const aboutChat = await proxy(
+        buildRequest('custom.example.com', '/legal/about-chat?lang=es')
+      )
+      const embed = await proxy(
+        buildRequest('custom.example.com', '/embed/my-journey?lang=es')
+      )
+
+      expect(aboutChat?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/legal/about-chat?lang=es'
+      )
+      expect(embed?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/embed/my-journey?lang=es'
+      )
+    })
+
     it('leaves the root domain outside /campaign alone', async () => {
       const result = await proxy(buildRequest('your.nextstep.is', '/?lang=es'))
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
         'http://your.nextstep.is/home/?lang=es'
       )
+    })
+  })
+
+  describe('public _lang paths', () => {
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+    })
+
+    it.each([
+      ['a custom domain', 'custom.example.com', '/_lang/fr/my-journey'],
+      [
+        'the root domain',
+        'your.nextstep.is',
+        '/campaign/christmas-2026/_lang/fr'
+      ]
+    ])('answers not found on %s', async (_name, host, path) => {
+      const result = await proxy(buildRequest(host, path))
+
+      expect(result?.status).toBe(404)
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        `http://${host}/404`
+      )
+    })
+  })
+
+  describe('campaign round trip', () => {
+    const ROOT_ORIGIN = 'https://your.nextstep.is'
+    const slug = 'outreach'
+    const domainName = 'outreach.example.org'
+    const regionSlugs = ['eur', 'afr']
+    const bcp47s = ['en', 'zh-Hans-CN']
+
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+    })
+
+    // The page path the proxy rewrites a public address to. Next.js serves
+    // `/<hostname>/` and `/<hostname>` from the same page, so a trailing
+    // slash is dropped.
+    async function pagePathOf(address: string): Promise<string> {
+      const url = new URL(address)
+      const result = await proxy(
+        buildRequest(url.host, `${url.pathname}${url.search}`)
+      )
+      const rewrite = result?.headers.get('x-middleware-rewrite') ?? ''
+      return new URL(rewrite).pathname.replace(/(.)\/$/, '$1')
+    }
+
+    it('rewrites the public address of every page campaignPagePaths lists to that page path', async () => {
+      const addresses = [
+        { slug, domainName: null },
+        { slug, domainName }
+      ].flatMap((input) =>
+        [undefined, ...regionSlugs].flatMap((regionSlug) => {
+          const address = campaignAbsoluteAddress(
+            input,
+            { rootOrigin: ROOT_ORIGIN },
+            regionSlug
+          )
+          return [
+            address,
+            ...bcp47s.map((bcp47) => withPageLanguage(address, bcp47))
+          ]
+        })
+      )
+      const pagePaths = campaignPagePaths({
+        slug,
+        regions: regionSlugs.map((regionSlug) => ({ slug: regionSlug })),
+        hostnames: [domainName],
+        languageTags: bcp47s.map((bcp47) => pageLanguageTag(bcp47) ?? '')
+      })
+
+      const rewritten = await Promise.all(addresses.map(pagePathOf))
+
+      expect(rewritten).toHaveLength(pagePaths.length)
+      expect([...rewritten].sort()).toEqual([...pagePaths].sort())
     })
   })
 })

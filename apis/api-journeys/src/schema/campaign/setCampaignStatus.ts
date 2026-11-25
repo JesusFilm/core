@@ -4,7 +4,10 @@ import { User } from '@core/yoga/firebaseClient'
 import { authorizeCampaign } from './authorizeCampaign'
 import { campaignWrite } from './campaignWrite'
 import { notFound } from './errors'
-import { enqueueCampaignPagesRevalidation } from './revalidateCampaign'
+import {
+  queuePageSetChange,
+  snapshotCampaignAddress
+} from './revalidateCampaign'
 
 /** The status each transition moves a campaign out of, and what it writes. */
 const TRANSITIONS = {
@@ -29,9 +32,10 @@ const TRANSITIONS = {
  * Atomic transition + canonical re-read, as the Template Gallery Page pair
  * does: the `from` predicate makes updateMany a no-op for a caller that lost
  * the race, so `publishedAt` is set on the winning publish only, and a
- * campaign already in the target status skips the write. Only a transition
- * queues revalidation of every page. The transition writes the Campaign row
- * itself and a no-op writes nothing, so neither touches it.
+ * campaign already in the target status skips the write. The address
+ * snapshots around the write queue every page of a transition; a lost race
+ * leaves them equal and queues nothing. The transition writes the Campaign
+ * row itself and a no-op writes nothing, so neither touches it.
  */
 export async function setCampaignStatus(
   query: { include?: Prisma.CampaignInclude; select?: Prisma.CampaignSelect },
@@ -39,10 +43,7 @@ export async function setCampaignStatus(
   operation: keyof typeof TRANSITIONS,
   user: User
 ): Promise<Campaign> {
-  const campaign = await authorizeCampaign(id, operation, user, {
-    regions: true,
-    customDomains: true
-  })
+  const campaign = await authorizeCampaign(id, operation, user)
   const transition = TRANSITIONS[operation]
 
   try {
@@ -51,14 +52,13 @@ export async function setCampaignStatus(
       { touch: false },
       async ({ tx, afterCommit }) => {
         if (campaign.status === transition.from) {
-          const { count } = await tx.campaign.updateMany({
+          const before = await snapshotCampaignAddress(tx, id)
+          await tx.campaign.updateMany({
             where: { id, status: transition.from },
             data: transition.data()
           })
-          if (count > 0)
-            afterCommit(
-              async () => await enqueueCampaignPagesRevalidation(campaign)
-            )
+          const after = await snapshotCampaignAddress(tx, id)
+          afterCommit(async () => await queuePageSetChange(before, after))
         }
         return await tx.campaign.findUniqueOrThrow({ ...query, where: { id } })
       }

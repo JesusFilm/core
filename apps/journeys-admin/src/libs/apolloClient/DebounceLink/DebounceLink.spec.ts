@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client'
 import { parse } from 'graphql'
-import { Observable } from 'rxjs'
+import { Observable, Observer } from 'rxjs'
 
 import { DebounceLink } from './DebounceLink'
 
@@ -81,6 +81,85 @@ describe('DebounceLink', () => {
     await expect(second).resolves.toEqual({ data: { save: { value: 'b' } } })
   })
 
+  it('clears pending requests when forwarding completes synchronously', async () => {
+    const downstream = createRecordingLink()
+    const debounceLink = new DebounceLink(500)
+    const link = ApolloLink.from([debounceLink, downstream.link])
+    expect(debounceLink.hasPending()).toBe(false)
+
+    const saved = execute(link, 'a', { debounceKey: 'field' })
+
+    expect(debounceLink.hasPending()).toBe(true)
+    await vi.advanceTimersByTimeAsync(500)
+    expect(downstream.forwarded()).toEqual(['a'])
+    expect(debounceLink.hasPending()).toBe(false)
+    await saved
+  })
+
+  it.each(['complete', 'error', 'unsubscribe'] as const)(
+    'keeps a forwarded write pending until %s',
+    async (settlement) => {
+      let sink: Observer<ApolloLink.Result> | undefined
+      const teardown = vi.fn()
+      const downstream = new ApolloLink(
+        () =>
+          new Observable<ApolloLink.Result>((observer) => {
+            sink = observer
+            return teardown
+          })
+      )
+      const debounceLink = new DebounceLink(500)
+      const link = ApolloLink.from([debounceLink, downstream])
+      const onError = vi.fn()
+      const subscription = ApolloLink.execute(
+        link,
+        {
+          query: MUTATION,
+          variables: { value: 'a' },
+          context: { debounceKey: 'field' }
+        },
+        { client }
+      ).subscribe({ error: onError })
+
+      expect(debounceLink.hasPending()).toBe(true)
+      await vi.advanceTimersByTimeAsync(500)
+      expect(sink).toBeDefined()
+      expect(debounceLink.hasPending()).toBe(true)
+
+      sink?.next({ data: { save: { value: 'a' } } })
+      expect(debounceLink.hasPending()).toBe(true)
+
+      if (settlement === 'unsubscribe') subscription.unsubscribe()
+      else if (settlement === 'error') sink?.error(new Error('Write failed'))
+      else sink?.complete()
+
+      expect(debounceLink.hasPending()).toBe(false)
+      expect(teardown).toHaveBeenCalledTimes(1)
+      expect(onError).toHaveBeenCalledTimes(settlement === 'error' ? 1 : 0)
+    }
+  )
+
+  it('clears pending requests when forwarding errors synchronously', async () => {
+    const debounceLink = new DebounceLink(500)
+    const link = ApolloLink.from([
+      debounceLink,
+      new ApolloLink(
+        () =>
+          new Observable((observer) =>
+            observer.error(new Error('Write failed'))
+          )
+      )
+    ])
+    const saved = execute(link, 'a', { debounceKey: 'field' }).catch(
+      (error: unknown) => error
+    )
+
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(await saved).toEqual(new Error('Write failed'))
+    expect(debounceLink.hasPending()).toBe(false)
+  })
+
   it('debounces each key independently', async () => {
     const downstream = createRecordingLink()
     const link = ApolloLink.from([new DebounceLink(500), downstream.link])
@@ -118,6 +197,33 @@ describe('DebounceLink', () => {
     await vi.advanceTimersByTimeAsync(500)
 
     expect(downstream.forwarded()).toEqual(['label', 'delete', 'other'])
+  })
+
+  it('forwards pending operations under any prefix of a list before the flushing operation', async () => {
+    const downstream = createRecordingLink()
+    const link = ApolloLink.from([new DebounceLink(500), downstream.link])
+
+    void execute(link, 'heroTitle', { debounceKey: 'Hero:1:title' })
+    void execute(link, 'extraContent', { debounceKey: 'Typography:2:content' })
+    void execute(link, 'other', { debounceKey: 'Typography:3:content' })
+    void execute(link, 'duplicate', {
+      debounceFlushPrefix: ['Hero:1:', 'Typography:2:']
+    })
+
+    expect(downstream.forwarded()).toEqual([
+      'heroTitle',
+      'extraContent',
+      'duplicate'
+    ])
+
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(downstream.forwarded()).toEqual([
+      'heroTitle',
+      'extraContent',
+      'duplicate',
+      'other'
+    ])
   })
 
   it('forwards operations without a debounce key immediately', async () => {
