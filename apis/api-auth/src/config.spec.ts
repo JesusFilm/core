@@ -43,6 +43,16 @@ describe('permission coordination configuration', () => {
       PG_DATABASE_URL_AUTH: base.PG_DATABASE_URL_AUTH + '?sslmode=verify-full'
     }
     expect(() => readConfig(stage)).toThrow('Operational controls required')
+    const mediaOnly = {
+      ...stage,
+      AUTH_EXCHANGE_CLIENT_SECRET: undefined,
+      AUTH_READ_OWNER_SECRET: undefined,
+      AUTH_READ_GATEWAY_AUDIENCE: undefined,
+      AUTH_READ_MEDIA_SECRET: 'controlled-stage-media-at-least-32',
+      AUTH_PERMISSION_MEDIA_SECRET:
+        'controlled-stage-media-permission-at-least-32'
+    }
+    expect(() => readConfig(mediaOnly)).toThrow('Operational controls required')
     expect(
       readConfig({
         ...stage,

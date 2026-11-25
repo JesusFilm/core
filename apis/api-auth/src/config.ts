@@ -90,7 +90,7 @@ export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
     throw new Error('Separate gateway audience required')
   if (
     config.AUTH_ENVIRONMENT !== 'local' &&
-    config.AUTH_EXCHANGE_CLIENT_SECRET &&
+    (config.AUTH_EXCHANGE_CLIENT_SECRET || config.AUTH_READ_MEDIA_SECRET) &&
     !config.AUTH_OPERATIONS_SECRET
   )
     throw new Error('Operational controls required')
