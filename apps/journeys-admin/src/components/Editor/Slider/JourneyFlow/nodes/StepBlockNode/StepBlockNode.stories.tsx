@@ -185,7 +185,7 @@ const videoNode = {
                 }
               ],
               image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_install.jpg',
+                'https://imagedelivery.net/testAccount/cinematics/lrg_cine_install.jpg',
               variant: {
                 __typename: 'VideoVariant',
                 id: '1_529-0-TrainV_1Install',
@@ -271,7 +271,7 @@ const videoNode = {
                     }
                   ],
                   image:
-                    'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_install.jpg',
+                    'https://imagedelivery.net/testAccount/cinematics/lrg_cine_install.jpg',
                   variant: {
                     __typename: 'VideoVariant',
                     id: '1_529-0-TrainV_1Install',

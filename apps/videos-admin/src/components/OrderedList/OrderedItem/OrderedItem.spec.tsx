@@ -93,7 +93,7 @@ describe('OrderedItem', () => {
         label="Ordered item"
         idx={0}
         img={{
-          src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+          src: 'https://imagedelivery.net/testAccount/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
           alt: 'JESUS'
         }}
       />
@@ -102,7 +102,7 @@ describe('OrderedItem', () => {
     expect(screen.getByRole('img')).toBeInTheDocument()
     expect(screen.getByRole('img')).toHaveAttribute(
       'src',
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg'
+      'https://imagedelivery.net/testAccount/cinematics/1_jf-0-0.mobileCinematicHigh.jpg'
     )
     expect(screen.getByRole('img')).toHaveAttribute('alt', 'JESUS')
   })

@@ -30,7 +30,7 @@ export const Default: Story = {
     title: 'This is a Heading',
     description: 'This is a description',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg'
+      'https://imagedelivery.net/testAccount/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg'
   }
 }
 
@@ -52,7 +52,7 @@ export const LongContent: Story = {
     description:
       'This is a really really really really really really really really really really really really really really really really really really long description',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg'
+      'https://imagedelivery.net/testAccount/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg'
   }
 }
 

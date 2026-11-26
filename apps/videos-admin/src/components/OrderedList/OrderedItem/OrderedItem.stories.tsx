@@ -86,7 +86,7 @@ export const WithImage: Story = {
     idx: 0,
     onClick: fn(),
     img: {
-      src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+      src: 'https://imagedelivery.net/testAccount/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
       alt: 'JESUS'
     }
   }

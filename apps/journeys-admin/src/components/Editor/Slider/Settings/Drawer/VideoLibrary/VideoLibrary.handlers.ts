@@ -47,7 +47,7 @@ const items = [
     slug: 'jesus/english',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'JESUS',
     childrenCount: 61,
     objectID: '1_529-jf-0-0'
@@ -64,7 +64,7 @@ const items = [
     slug: 'chosen-witness/english',
     label: 'shortFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_ChosenWitness.mobileCinematicHigh.jpg?version=2',
+      'https://imagedelivery.net/testAccount/cinematics/2_ChosenWitness.mobileCinematicHigh.jpg?version=2',
     imageAlt: 'Chosen Witness',
     childrenCount: 0,
     objectID: '2_529-ChosenWitness'
@@ -81,7 +81,7 @@ const items = [
     slug: 'life-of-jesus-gospel-of-john/english',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'Life of Jesus (Gospel of John)',
     childrenCount: 49,
     objectID: '2_529-GOJ-0-0'
@@ -130,7 +130,7 @@ const items = [
     slug: 'magdalena/english',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/high_mag_collection_640x300br.jpg',
     imageAlt: 'Magdalena',
     childrenCount: 46,
     objectID: '1_529-wl60-0-0'
@@ -147,7 +147,7 @@ const items = [
     slug: 'the-story-of-jesus-for-children/english',
     label: 'featureFilm',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
     imageAlt: 'The Story of Jesus for Children',
     childrenCount: 0,
     objectID: '1_529-cl-0-0'
@@ -164,7 +164,7 @@ const items = [
     slug: 'is-it-worth-it/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/IsItWorthIt.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/IsItWorthIt.mobileCinematicHigh.jpg',
     imageAlt: 'Is it Worth it?',
     childrenCount: 6,
     objectID: '529-IsItWorthIt'
@@ -181,7 +181,7 @@ const items = [
     slug: 'do-you-ever-wonder/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/Wonder.mobileCinematicHigh.jpg?version=2',
+      'https://imagedelivery.net/testAccount/cinematics/Wonder.mobileCinematicHigh.jpg?version=2',
     imageAlt: 'Do You Ever Wonder...?',
     childrenCount: 8,
     objectID: '529-Wonder'
@@ -198,7 +198,7 @@ const items = [
     slug: 'nua-fresh-perspective/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/nua.mobileCinematicHigh.jpg?version=2',
+      'https://imagedelivery.net/testAccount/cinematics/nua.mobileCinematicHigh.jpg?version=2',
     imageAlt: 'NUA: Fresh Perspective',
     childrenCount: 10,
     objectID: '529-Nua'
@@ -215,7 +215,7 @@ const items = [
     slug: 'new-believer-course/english',
     label: 'series',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/8_NBC.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/8_NBC.mobileCinematicHigh.jpg',
     imageAlt: 'New Believer Course',
     childrenCount: 10,
     objectID: '8_529-NBC'
@@ -232,7 +232,7 @@ const items = [
     slug: 'retelling-the-good-story/english',
     label: 'collection',
     image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GoodStory.mobileCinematicHigh.jpg',
+      'https://imagedelivery.net/testAccount/cinematics/GoodStory.mobileCinematicHigh.jpg',
     imageAlt: 'Retelling the Good Story',
     childrenCount: 3,
     objectID: '529-GoodStory'
