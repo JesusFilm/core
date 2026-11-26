@@ -55,13 +55,18 @@ export async function beginConnectionChange(
 
 /** A missing response or an old accepted permit never satisfies this drain. */
 export async function reconcileConnectionChanges(
-  db: Database
+  db: Database,
+  connectionIds?: string[]
 ): Promise<number> {
   let after: string | undefined
   let failed = 0
   while (true) {
     const changes = await db.connectionChange.findMany({
-      where: { status: 'pending', ...(after ? { id: { gt: after } } : {}) },
+      where: {
+        status: 'pending',
+        ...(connectionIds ? { connectionId: { in: connectionIds } } : {}),
+        ...(after ? { id: { gt: after } } : {})
+      },
       orderBy: { id: 'asc' },
       take: 100
     })
