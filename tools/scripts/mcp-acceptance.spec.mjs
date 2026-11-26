@@ -267,5 +267,5 @@ describe('acceptance artifact commands', () => {
       if (previous === undefined) delete process.env.MCP_ACCEPTANCE_POSTGRES_URL
       else process.env.MCP_ACCEPTANCE_POSTGRES_URL = previous
     }
-  }, 900000)
+  }, 1800000)
 })

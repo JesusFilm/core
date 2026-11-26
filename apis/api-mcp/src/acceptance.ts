@@ -186,6 +186,11 @@ const evidenceRecord = z
     operator: label,
     reviewer: label,
     controlledParticipants: z.array(label).length(0),
+    fixtures: z
+      .array(
+        z.enum(['clock', 'provider-failure', 'synthetic-files', 'pause-hooks'])
+      )
+      .default([]),
     artifacts: z.array(artifactReference).min(1),
     client: z
       .object({
@@ -271,7 +276,8 @@ export function validateAcceptance(
       (record) =>
         (record.participant === 'claude-web' ||
           record.participant === 'chatgpt-web') &&
-        record.client?.toolsOnly
+        record.client?.toolsOnly &&
+        record.checkIds.includes(`${record.participant}/A9`)
     )
   )
     throw new Error('Missing tool-only conversation')
@@ -289,7 +295,7 @@ export function validateAcceptance(
 }
 
 // Existing capability runners own their fixtures, protocol paths and coverage.
-// They execute serially because some intentionally reuse their own report paths.
+// Run serially to bound local database and coverage resource use.
 export const localSuites = [
   {
     id: 'reads',

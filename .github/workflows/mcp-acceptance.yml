@@ -15,7 +15,7 @@ permissions:
 jobs:
   acceptance-artifacts:
     runs-on: jfp-proxmox-core
-    timeout-minutes: 20
+    timeout-minutes: 45
     services:
       postgres:
         image: postgres:16
@@ -41,17 +41,21 @@ jobs:
         run: pnpm exec vitest run --config apis/api-mcp/vitest.acceptance.config.mts
         env:
           MCP_ACCEPTANCE_POSTGRES_URL: postgresql://postgres:acceptance-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Collect the complete MCP workspace population for project comparison
+        run: pnpm exec vitest run --config apis/api-mcp/vitest.config.mts --root apis/api-mcp
       - name: Preserve coverage and execution counts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mcp-acceptance-artifacts
-          path: coverage/integration/mcp-acceptance
+          path: |
+            coverage/integration/mcp-acceptance
+            coverage/apis/api-mcp
           if-no-files-found: error
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/integration/mcp-acceptance/cobertura-coverage.xml,coverage/integration/mcp-acceptance/saved-edits/coverage/cobertura-coverage.xml
+          files: coverage/integration/mcp-acceptance/cobertura-coverage.xml,coverage/integration/mcp-acceptance/saved-edits/coverage/cobertura-coverage.xml,coverage/apis/api-mcp/cobertura-coverage.xml
           flags: integration.mcp-acceptance
           disable_search: true
           override_commit: ${{ github.event.pull_request.head.sha }}

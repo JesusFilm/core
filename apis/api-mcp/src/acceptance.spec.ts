@@ -203,4 +203,23 @@ describe('release acceptance evidence', () => {
       expect(() => executedCounts({ ...valid, ...patch })).toThrow()
     expect(() => executedCounts({})).toThrow()
   })
+
+  it('requires a complete tool-only workflow while allowing declared boundary fixtures through real participants', () => {
+    const ledger = completeLedger()
+    for (const record of ledger.records)
+      if (record.client) record.client.toolsOnly = false
+    const discovery = structuredClone(
+      ledger.records.find((record) => record.client)!
+    )
+    discovery.id = 'tool-only-discovery'
+    discovery.checkIds = [`${discovery.participant}/A0`]
+    discovery.client!.toolsOnly = true
+    ledger.records.push(discovery)
+    expect(() => validateAcceptance(ledger, manifest, now)).toThrow('tool-only')
+    discovery.checkIds.push(`${discovery.participant}/A9`)
+    discovery.fixtures = ['clock', 'provider-failure']
+    expect(validateAcceptance(ledger, manifest, now).productionApproved).toBe(
+      false
+    )
+  })
 })
