@@ -201,6 +201,49 @@ describe('VideoCreateForm', () => {
       })
     })
 
+    it('starts with no label selected and no container warning', async () => {
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Origin/i)).toBeInTheDocument()
+      })
+
+      expect(screen.queryByDisplayValue('series')).not.toBeInTheDocument()
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+
+    it.each(['Series', 'Collection'])(
+      'warns that a %s will have no children',
+      async (optionName) => {
+        const user = userEvent.setup()
+        await user.click(screen.getByLabelText(/Label/i))
+        await user.click(screen.getByRole('option', { name: optionName }))
+
+        expect(await screen.findByRole('alert')).toHaveTextContent(
+          /no children/i
+        )
+      }
+    )
+
+    it('lists every non-container label as an alternative when there is no parent', async () => {
+      const user = userEvent.setup()
+      await user.click(screen.getByLabelText(/Label/i))
+      await user.click(screen.getByRole('option', { name: 'Series' }))
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'Episode, Feature Film, Clip, Short Film, Trailer/Preview or Behind The Scenes'
+      )
+    })
+
+    it('does not warn when a non-container label is chosen', async () => {
+      const user = userEvent.setup()
+      await user.click(screen.getByLabelText(/Label/i))
+      await user.click(screen.getByRole('option', { name: 'Episode' }))
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('episode')).toBeInTheDocument()
+      })
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+
     it('navigates to videos list when Cancel button is clicked', () => {
       fireEvent.click(screen.getByText('Cancel'))
       expect(mockRouterPush).toHaveBeenCalledWith('/videos')
@@ -327,6 +370,26 @@ describe('VideoCreateForm', () => {
 
     it('offers every label under a parent with no child restrictions', async () => {
       expect(await renderWithParent('segment')).toHaveLength(8)
+    })
+
+    it('warns when choosing a container label under a parent', async () => {
+      const user = userEvent.setup()
+      await renderWithParent('collection')
+
+      await user.click(screen.getByRole('option', { name: 'Series' }))
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(/no children/i)
+    })
+
+    it('only suggests labels selectable under this parent, omitting Clip under a collection', async () => {
+      const user = userEvent.setup()
+      await renderWithParent('collection')
+
+      await user.click(screen.getByRole('option', { name: 'Series' }))
+
+      const alert = await screen.findByRole('alert')
+      expect(alert).toHaveTextContent('Episode, Feature Film or Short Film')
+      expect(alert).not.toHaveTextContent('Clip')
     })
 
     it('pre-selects clip for a feature film parent', async () => {
