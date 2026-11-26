@@ -111,6 +111,8 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   let beforePut: (() => Promise<void>) | undefined
   let throttlePut = false
   let beforeStagingRead: (() => Promise<void>) | undefined
+  let beforeCleanup: (() => Promise<void>) | undefined
+  let beforeUploadStatus: (() => Promise<void>) | undefined
   let throttleStaging = false
   let stagedReadBytes = 0
   let stagingReadStarted = 0
@@ -142,6 +144,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       return value
     },
     async removeJob(id) {
+      await beforeCleanup?.()
       if (cleanupUnavailable) throw new Error('Controlled cleanup failure')
       for (const key of objects.keys())
         if (key.startsWith(id + '/')) objects.delete(key)
@@ -261,6 +264,8 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     beforePut = undefined
     throttlePut = false
     beforeStagingRead = undefined
+    beforeCleanup = undefined
+    beforeUploadStatus = undefined
     throttleStaging = false
     stagedReadBytes = 0
     beforeAccept = undefined
@@ -387,11 +392,13 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
             }
           })
         }
-        return Response.json({
+        const response = Response.json({
           data: url.search
             ? [...uploads.values()]
             : uploads.get(url.pathname.split('/').at(-1)!)
         })
+        await beforeUploadStatus?.()
+        return response
       }
     )
   })
@@ -772,6 +779,154 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     expect(JSON.stringify(await status(id))).not.toMatch(
       /mux-secret|provider-url|mux-token/
     )
+  })
+
+  it.each(['processing', 'reconciling'])(
+    'preserves newer %s evidence when an older allocation poll finishes',
+    async (state) => {
+      unknownCreate = true
+      const id = String((await start()).jobId)
+      await transfer(id)
+      await process()
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      expect(await status(id)).toMatchObject({ state: 'provider_allocated' })
+      const observation = pauseProviderRequest()
+      beforeUploadStatus = observation.pause
+      const pending = worker().reconcileJob(id)
+      try {
+        await observation.started
+        beforeUploadStatus = undefined
+        const upload = [...uploads.values()][0]
+        upload.status = 'asset_created'
+        upload.asset_id = 'asset-' + upload.id
+        expect((await callback(job.providerId)).status).toBe(204)
+        expect(await status(id)).toMatchObject({ state: 'processing' })
+        if (state === 'reconciling') {
+          await media.mcpMediaExecution.update({
+            where: { id: job.dispatchReceiptId! },
+            data: { createdAt: new Date(Date.now() - 6 * 3600000 - 1) }
+          })
+          statusUnavailable = true
+          await worker().reconcileJob(id)
+        }
+      } finally {
+        observation.release()
+        await pending
+      }
+      expect(await status(id)).toMatchObject({ state, active: true })
+      expect(creates).toBe(1)
+      expect(puts).toBe(0)
+    }
+  )
+
+  it.each(['ready', 'failed', 'cancelled', 'rejected'])(
+    'releases settlement locks during %s staging cleanup and retains capacity',
+    async (outcome) => {
+      const id = String((await start()).jobId)
+      await transfer(id)
+      if (outcome !== 'rejected') await process()
+      if (outcome === 'ready') muxState = 'ready'
+      if (outcome === 'failed') muxState = 'errored'
+      if (outcome === 'cancelled') [...uploads.values()][0].status = 'cancelled'
+      if (outcome === 'rejected') rejectCreation = true
+      const cleanup = pauseProviderRequest()
+      beforeCleanup = cleanup.pause
+      const pending =
+        outcome === 'rejected' ? process() : worker().reconcileJob(id)
+      try {
+        await cleanup.started
+        const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+        expect(job.active).toBe(true)
+        expect(objects.size).toBeGreaterThan(0)
+        await media.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${job.dispatchReceiptId} FOR UPDATE NOWAIT`
+          await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
+        })
+        if (outcome === 'ready')
+          expect(
+            await media.muxVideo.findUnique({ where: { id: job.providerId } })
+          ).toMatchObject({ readyToStream: true })
+        // A second upload still consumes the remaining slot while cleanup waits.
+        await start()
+        await expect(
+          worker().admit(
+            {
+              userId: job.userId,
+              connectionId: job.connectionId,
+              journeyId: job.journeyId
+            },
+            { kind: 'video_upload', idempotencyKey: randomUUID() }
+          )
+        ).rejects.toThrow('LIMIT_EXCEEDED')
+      } finally {
+        beforeCleanup = undefined
+        cleanup.release()
+        await pending
+      }
+      expect(await status(id)).toMatchObject({
+        state: outcome === 'rejected' ? 'failed' : outcome,
+        active: false
+      })
+      expect(objects.size).toBe(0)
+      expect(creates).toBe(1)
+    }
+  )
+
+  it('retries durable ready cleanup after restart without needing another provider observation', async () => {
+    const id = String((await start()).jobId)
+    await transfer(id)
+    await process()
+    const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    muxState = 'ready'
+    cleanupUnavailable = true
+    await worker().recover()
+    expect(await status(id)).toMatchObject({ active: true })
+    expect(
+      await media.muxVideo.findUnique({ where: { id: job.providerId } })
+    ).toMatchObject({ readyToStream: true })
+    expect(objects.size).toBeGreaterThan(0)
+    statusUnavailable = true
+    cleanupUnavailable = false
+    await worker().recover()
+    expect(await status(id)).toMatchObject({ state: 'ready', active: false })
+    expect(objects.size).toBe(0)
+    expect(creates).toBe(1)
+    expect(puts).toBe(1)
+  })
+
+  it('preserves ready settlement when cancellation and another cleanup worker overtake a paused cleanup', async () => {
+    const id = String((await start()).jobId)
+    await transfer(id)
+    await process()
+    muxState = 'ready'
+    const cleanup = pauseProviderRequest()
+    beforeCleanup = cleanup.pause
+    const pending = worker().reconcileJob(id)
+    let completedAt: Date | null
+    try {
+      await cleanup.started
+      beforeCleanup = undefined
+      expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
+      statusUnavailable = true
+      await worker().recover()
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      expect(job).toMatchObject({ state: 'ready', active: false })
+      completedAt = job.completedAt
+    } finally {
+      beforeCleanup = undefined
+      cleanup.release()
+      await pending
+    }
+    expect(await media.mcpMediaJob.findUnique({ where: { id } })).toMatchObject(
+      {
+        state: 'ready',
+        active: false,
+        completedAt
+      }
+    )
+    expect(objects.size).toBe(0)
+    expect(creates).toBe(1)
+    expect(puts).toBe(1)
   })
 
   it('reconciles ambiguous allocation without another creation and retries waiting cancellation only with positive provider evidence', async () => {

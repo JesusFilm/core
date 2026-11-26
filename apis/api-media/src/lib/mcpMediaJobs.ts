@@ -60,6 +60,11 @@ const resultLifetime = 30 * 86400000
 // Allow the bounded execution (up to 65s plus lock acquisition) to start.
 const backgroundFenceDelayMs = 120_000
 const terminal = ['ready', 'failed', 'cancelled', 'transfer_expired']
+const videoCleanupStates = new Map([
+  ['video_cleanup_ready', 'ready'],
+  ['video_cleanup_failed', 'failed'],
+  ['video_cleanup_cancelled', 'cancelled']
+])
 const generationPoll = z.object({
   attempt: z.number().int().min(0).max(32),
   nextAt: z.number().int().min(0).max(8_640_000_000_000_000)
@@ -342,6 +347,10 @@ export function createMediaJobs(
       return false
     // Only call while every transfer/dispatch is stopped under the job lock.
     await storage.removeJob(job.id)
+    await completeJob(tx, job, state)
+    return true
+  }
+  async function completeJob(tx: Transaction, job: McpMediaJob, state: string) {
     const now = await clock(tx)
     await tx.mcpMediaJob.update({
       where: { id: job.id },
@@ -353,7 +362,65 @@ export function createMediaJobs(
         resultExpiresAt: new Date(now.getTime() + resultLifetime)
       }
     })
-    return true
+  }
+  async function recordVideoCleanup(
+    tx: Transaction,
+    job: McpMediaJob,
+    state: 'ready' | 'failed' | 'cancelled'
+  ) {
+    if (
+      await tx.mcpMediaChunk.count({ where: { jobId: job.id, stored: false } })
+    )
+      return
+    // Positive provider evidence and the library asset commit before S3 I/O.
+    // Keep the job active and the receipt recoverable until cleanup succeeds.
+    await tx.mcpMediaExecution.update({
+      where: { id: job.dispatchReceiptId! },
+      data: {
+        status: `video_cleanup_${state}`,
+        completedAt: await clock(tx),
+        reportedAt: null
+      }
+    })
+  }
+  async function finishVideoCleanup(jobId: string, receiptId: string) {
+    const pending = await media.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
+      const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
+        where: { id: receiptId }
+      })
+      const state = videoCleanupStates.get(receipt.status)
+      if (!state || receipt.jobId !== jobId) return
+      const job = await lockJob(tx, jobId)
+      if (
+        job.kind !== 'video_upload' ||
+        !job.active ||
+        job.dispatchReceiptId !== receiptId
+      )
+        return
+      return { state, status: receipt.status }
+    })
+    if (!pending) return
+    // A committed cleanup receipt fences provider observations and new writes.
+    // Repeated prefix deletion is safe if another worker or a restart joins us.
+    await storage.removeJob(jobId)
+    const completed = await media.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
+      const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
+        where: { id: receiptId }
+      })
+      if (receipt.status !== pending.status || receipt.jobId !== jobId)
+        return false
+      const job = await lockJob(tx, jobId)
+      if (!job.active || job.dispatchReceiptId !== receiptId) return false
+      await completeJob(tx, job, pending.state)
+      await tx.mcpMediaExecution.update({
+        where: { id: receiptId },
+        data: { status: 'settled', completedAt: await clock(tx) }
+      })
+      return true
+    })
+    if (completed) await settle(receiptId)
   }
   async function recoverExecution(
     id: string,
@@ -409,6 +476,12 @@ export function createMediaJobs(
     })
     if (status === 'settled' || status === 'fenced') await settle(id)
     else if (['staging', 'writing'].includes(status)) await reconcileStaging(id)
+    else if (videoCleanupStates.has(status)) {
+      const receipt = await media.mcpMediaExecution.findUniqueOrThrow({
+        where: { id }
+      })
+      if (receipt.jobId) await finishVideoCleanup(receipt.jobId, id)
+    }
   }
   async function acknowledgeStaging(tx: Transaction, id: string) {
     const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
@@ -1259,6 +1332,13 @@ export function createMediaJobs(
       where: { id: known.dispatchReceiptId }
     })
     if (
+      known.kind === 'video_upload' &&
+      videoCleanupStates.has(execution.status)
+    ) {
+      await finishVideoCleanup(jobId, execution.id)
+      return
+    }
+    if (
       known.kind === 'image_generation' &&
       execution.status !== 'rejected' &&
       !(await reserveGenerationObservation(jobId, immediate))
@@ -1329,6 +1409,10 @@ export function createMediaJobs(
           if (receipt.status !== 'rejected') return false
           // The durable rejection survives failed cleanup and worker restarts.
           // Capacity and withdrawal stay pending until private input is removed.
+          if (job.kind === 'video_upload') {
+            await recordVideoCleanup(tx, job, 'failed')
+            return false
+          }
           if (!(await terminalJob(tx, job, 'failed'))) return false
           await tx.mcpMediaExecution.update({
             where: { id: receipt.id },
@@ -1337,7 +1421,11 @@ export function createMediaJobs(
           return true
         }
         if (status === 'allocated') {
-          if (job.state !== 'cancel_requested')
+          if (
+            job.state === 'provider_allocated' ||
+            (job.state === 'reconciling' &&
+              receipt.createdAt.getTime() + 6 * 3600000 > Date.now())
+          )
             await tx.mcpMediaJob.update({
               where: { id: jobId },
               data: { state: 'provider_allocated' }
@@ -1345,6 +1433,10 @@ export function createMediaJobs(
           return false
         }
         if (status === 'failed' || status === 'cancelled') {
+          if (job.kind === 'video_upload') {
+            await recordVideoCleanup(tx, job, status)
+            return false
+          }
           if (!(await terminalJob(tx, job, status))) return false
           await tx.mcpMediaExecution.update({
             where: { id: receipt.id },
@@ -1386,8 +1478,8 @@ export function createMediaJobs(
               readyToStream: true
             }
           })
-          await terminalJob(tx, job, 'ready')
-          return true
+          await recordVideoCleanup(tx, job, 'ready')
+          return false
         }
         const metadata =
           known.kind === 'image_generation'
@@ -1418,6 +1510,8 @@ export function createMediaJobs(
       },
       { timeout: 60000 }
     )
+    if (known.kind === 'video_upload')
+      await finishVideoCleanup(jobId, known.dispatchReceiptId)
     if (settled) await settle(known.dispatchReceiptId)
   }
   async function cancel(context: JobContext, jobId: string, key: string) {
