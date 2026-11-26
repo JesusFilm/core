@@ -8,6 +8,9 @@ import { boundedJson, sameSecret } from '@core/yoga/mcp/readContract'
 
 class MuxCreationRejected extends Error {}
 
+// The direct upload gets its own hour after staging completes.
+const muxUploadLifetimeSeconds = 3600
+
 const providerId = z.string().regex(/^[a-zA-Z0-9_-]{1,200}$/)
 const upload = z.object({
   id: providerId,
@@ -112,7 +115,7 @@ export function muxUploadProvider(
           id,
           z.object({ data: upload }).parse(
             await request('uploads', 'POST', {
-              timeout: 3600,
+              timeout: muxUploadLifetimeSeconds,
               new_asset_settings: {
                 passthrough: id,
                 playback_policies: ['public'],
@@ -147,7 +150,7 @@ export function muxUploadProvider(
             'Content-Type': 'application/octet-stream'
           },
           redirect: 'error',
-          signal: AbortSignal.timeout(45000),
+          signal: AbortSignal.timeout(muxUploadLifetimeSeconds * 1000),
           ...{ duplex: 'half' }
         })
         await response.body?.cancel()

@@ -1,5 +1,6 @@
 import { createHash, createHmac, randomUUID } from 'node:crypto'
 import { type RequestListener, createServer } from 'node:http'
+import { setTimeout as delay } from 'node:timers/promises'
 
 import { buildSchema } from 'graphql'
 import { createYoga } from 'graphql-yoga'
@@ -85,6 +86,8 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   let uploadOrigin = ''
   let process: () => Promise<void>
   let beforeCreate: (() => Promise<void>) | undefined
+  let beforePut: (() => Promise<void>) | undefined
+  let throttlePut = false
   let beforeAccept: ((action: string) => Promise<void>) | undefined
   let mediaLibrary = false
   const originalFetch = globalThis.fetch
@@ -216,6 +219,8 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     puts = 0
     transferred = 0
     beforeCreate = undefined
+    beforePut = undefined
+    throttlePut = false
     beforeAccept = undefined
     mediaLibrary = false
     await f.journeys.block.update({
@@ -241,11 +246,22 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
         if (url.hostname === 'storage.googleapis.com') {
           puts++
           expect(init?.headers).not.toHaveProperty('Authorization')
+          await beforePut?.()
           if (unknownPut) throw new Error('Controlled lost PUT response')
           const digest = createHash('sha256')
+          const signal = init!.signal!
+          const started = performance.now()
           for await (const part of init!
             .body as unknown as AsyncIterable<Buffer>) {
+            signal.throwIfAborted()
             transferred += part.length
+            if (throttlePut) {
+              // Deliver at most 100 Mbps, including time spent reading staging.
+              const due = started + transferred / 12500
+              await delay(Math.max(0, due - performance.now()), undefined, {
+                signal
+              })
+            }
             digest.update(part)
           }
           expect(String(transferred)).toBe(
@@ -479,6 +495,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
           })
         ).status
       ).toBe(403)
+      throttlePut = transport === 'forwarded'
       await process()
       expect(await status(id)).toMatchObject({
         state: 'processing',
@@ -891,6 +908,50 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     expect(await status(id)).toMatchObject({
       state: 'processing',
       active: true
+    })
+    expect(creates).toBe(1)
+    expect(puts).toBe(1)
+  })
+
+  it('accepts cancellation during a stalled PUT and keeps capacity until Mux confirms cancellation', async () => {
+    const id = String((await start()).jobId)
+    await transfer(id)
+    const entered = Promise.withResolvers<void>()
+    const release = Promise.withResolvers<void>()
+    beforePut = async () => {
+      entered.resolve()
+      await release.promise
+    }
+    const pending = process()
+    try {
+      await entered.promise
+      cancelUnavailable = true
+      expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
+      await worker().recover()
+      expect(await status(id)).toMatchObject({
+        state: 'cancel_requested',
+        active: true
+      })
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      expect(
+        await media.mcpMediaExecution.findUniqueOrThrow({
+          where: { id: job.dispatchReceiptId! }
+        })
+      ).toMatchObject({ status: 'sending', reportedAt: null })
+      cancelUnavailable = false
+      await worker().recover()
+      expect(await status(id)).toMatchObject({
+        state: 'cancelled',
+        active: false
+      })
+    } finally {
+      unknownPut = true
+      release.resolve()
+      await pending
+    }
+    expect(await status(id)).toMatchObject({
+      state: 'cancelled',
+      active: false
     })
     expect(creates).toBe(1)
     expect(puts).toBe(1)

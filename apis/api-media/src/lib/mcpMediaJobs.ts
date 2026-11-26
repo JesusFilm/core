@@ -969,7 +969,8 @@ export function createMediaJobs(
       mime,
       chunks,
       size,
-      video,
+      kind,
+      providerId,
       prompt
     } = await authorized(
       context,
@@ -1018,7 +1019,8 @@ export function createMediaJobs(
           mime: file?.mime ?? 'image/jpeg',
           chunks,
           size: file?.size ?? 0,
-          video,
+          kind: job.kind,
+          providerId: job.providerId,
           prompt: job.generationPrompt
         }
       }
@@ -1064,7 +1066,9 @@ export function createMediaJobs(
         })
         await tx.mcpMediaJob.update({
           where: { id: jobId },
-          data: { state: video ? 'reconciling' : 'processing' }
+          data: {
+            state: kind === 'video_upload' ? 'reconciling' : 'processing'
+          }
         })
         return true
       })
@@ -1076,54 +1080,55 @@ export function createMediaJobs(
       await recoverExecution(receiptId)
       throw error
     }
+    // Only the executor that committed accepted -> sending may contact the
+    // provider. Recovery observes this same identity while the request is open.
+    let outcome: 'rejected' | 'processing' | 'ready' | void | 'unknown'
     try {
-      await media.$transaction(
-        async (tx) => {
-          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
-          const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
-            where: { id: receiptId }
-          })
-          if (receipt.status !== 'sending') denied()
-          const job = await lockJob(tx, jobId)
-          const outcome = video
-            ? (await videoProvider!.dispatch(
-                job.providerId,
-                stagedInput(chunks),
-                size
-              )) === 'rejected'
-              ? 'rejected'
-              : 'processing'
-            : job.kind === 'image_generation'
-              ? await generation!.dispatch(job.providerId, prompt!)
-              : await provider.dispatch(job.providerId, bytes!, mime)
-          await hooks.afterSend?.()
-          await tx.mcpMediaJob.update({
-            where: { id: jobId },
-            data: {
-              state:
-                video || outcome === 'rejected' ? 'reconciling' : 'processing'
-            }
-          })
-          await tx.mcpMediaExecution.update({
-            where: { id: receiptId },
-            data: {
-              status: outcome === 'rejected' ? 'rejected' : 'settled',
-              completedAt: await clock(tx)
-            }
-          })
-        },
-        { timeout: 60000 }
-      )
-      const receipt = await media.mcpMediaExecution.findUniqueOrThrow({
+      if (kind === 'video_upload')
+        outcome = await videoProvider!.dispatch(
+          providerId,
+          stagedInput(chunks),
+          size
+        )
+      else if (kind === 'image_generation')
+        outcome = await generation!.dispatch(providerId, prompt!)
+      else outcome = await provider.dispatch(providerId, bytes!, mime)
+      await hooks.afterSend?.()
+    } catch {
+      outcome = 'unknown'
+    }
+    const acknowledged = await media.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
+      const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
         where: { id: receiptId }
       })
-      if (receipt.status === 'settled') await settle(receiptId)
-    } catch {
-      await media.mcpMediaJob.updateMany({
-        where: { id: jobId, active: true },
-        data: { state: 'reconciling' }
+      const job = await lockJob(tx, jobId)
+      if (
+        receipt.status !== 'sending' ||
+        job.dispatchReceiptId !== receiptId ||
+        !job.active
+      )
+        return false
+      // A callback or cancellation can advance the job during the send.
+      if (
+        (outcome === 'unknown' || outcome === 'rejected') &&
+        job.state === 'processing'
+      )
+        await tx.mcpMediaJob.update({
+          where: { id: jobId },
+          data: { state: 'reconciling' }
+        })
+      if (outcome === 'unknown') return false
+      await tx.mcpMediaExecution.update({
+        where: { id: receiptId },
+        data: {
+          status: outcome === 'rejected' ? 'rejected' : 'settled',
+          completedAt: await clock(tx)
+        }
       })
-    }
+      return outcome !== 'rejected'
+    })
+    if (acknowledged) await settle(receiptId)
     await reconcileJob(jobId, true)
   }
   async function reserveGenerationObservation(
