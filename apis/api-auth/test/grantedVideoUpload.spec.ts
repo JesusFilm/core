@@ -1,8 +1,8 @@
 import { createHash, createHmac, randomUUID } from 'node:crypto'
 import { type RequestListener, createServer } from 'node:http'
 import {
-  setImmediate as yieldToIO,
-  setTimeout as delay
+  setTimeout as delay,
+  setImmediate as yieldToIO
 } from 'node:timers/promises'
 
 import { buildSchema } from 'graphql'
