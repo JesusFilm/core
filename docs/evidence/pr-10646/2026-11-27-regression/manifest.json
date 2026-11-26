@@ -1,0 +1,42 @@
+{
+  "node": "24.22.3",
+  "postgresql_major": 16,
+  "operations_published_head": "91410a43d9f2df78195bdba55ad4d06c913a8891",
+  "video_parent": "5284d0c6e2c43877ddb7efa4f002337f886079f7",
+  "combined_baseline_tree": "867128c37dc556732978e925abdf8f20d3262df7",
+  "candidate_commit": "a28be176d6f4c645990b6b94f5b180c23083a103",
+  "candidate_tree": "3c643177cffc77897bc9b3c2548e0092caa348a5",
+  "files": {
+    "candidate.patch": "64a73bcf2808a804a64bf4858de03bc5cc289514450c9de9a6b03bc98dd47890",
+    "regression-red.log": "32bb07514da93e231c78a6265e0d0cb1ff93617c60cd300be3828e24d0135bdd",
+    "regression-green.log": "32e9e989a02294800d8d22d1cef8da9b6039622ac2e0e12e77eedf83f338779b",
+    "regression-red-results.json": "44906f72de3f20632a26482c91bcfb93686028bfa9663d7031b0b80b2a67919e",
+    "regression-green-results.json": "0f232e0e440a5faf729f07e5ca8c9459c5d2b53d77347dbaf2ca286b55c4d92e",
+    "red-linux.log": "6272a100172d2ac78c4fb007fa2e6561b77abd4e7409dbcf36e38beaf3997768"
+  },
+  "baseline": {
+    "operations_passed": 433,
+    "video_passed": 323,
+    "operations_seconds": 486.03,
+    "video_seconds": 1502.46
+  },
+  "regression": {
+    "red": {
+      "numTotalTests": 92,
+      "numPassedTests": 0,
+      "numFailedTests": 1,
+      "numPendingTests": 91
+    },
+    "green": {
+      "numTotalTests": 92,
+      "numPassedTests": 1,
+      "numFailedTests": 0,
+      "numPendingTests": 91
+    }
+  },
+  "limitations": [
+    "Injected latency reproduces the failure path; the original hosted latency source remains unobserved.",
+    "Focused regression has 91 deliberately unselected tests; it is not a full-suite rerun.",
+    "Full final-candidate Operations/video and updated-parent acceptance qualification remain pending."
+  ]
+}
