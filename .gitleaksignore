@@ -1,0 +1,111 @@
+# Triaged Gitleaks findings in existing history (2026-11-23).
+# Every entry was reviewed and is a false positive or a non-secret value;
+# none needed rotation. Fingerprint format: commit:file:rule:line.
+# Add new entries only after triage, never to silence an unreviewed finding.
+
+# Expired Fastly-signed video URLs in journeys fixtures and stories.
+56d6e93c32f5779fe25e1894a5f8419303e14ab5:apps/journeys/src/components/Conductor/data.ts:generic-api-key:817
+91fd832971c12e59aab4253a9feb587ba1ab41ea:apps/journeys/src/components/BlockRenderer/BlockRenderer.spec.tsx:generic-api-key:157
+91fd832971c12e59aab4253a9feb587ba1ab41ea:apps/journeys/src/components/Conductor/data.ts:generic-api-key:721
+91fd832971c12e59aab4253a9feb587ba1ab41ea:apps/journeys/src/components/Conductor/data.ts:generic-api-key:815
+91fd832971c12e59aab4253a9feb587ba1ab41ea:apps/journeys/src/components/blocks/Video/Video.spec.tsx:generic-api-key:20
+91fd832971c12e59aab4253a9feb587ba1ab41ea:apps/journeys/src/components/blocks/Video/Video.stories.tsx:generic-api-key:28
+
+# Container image references (AWS account ID + git commit SHA) in old kube manifests.
+47c3d0e171bf9eb2bbef5f2dda48efd41a4481d0:resources/kube/api/api-gateway-main-deployment.yaml:generic-api-key:18
+47c3d0e171bf9eb2bbef5f2dda48efd41a4481d0:resources/kube/api/api-gateway-stage-deployment.yaml:generic-api-key:18
+47c3d0e171bf9eb2bbef5f2dda48efd41a4481d0:resources/kube/api/api-journeys-main-deployment.yaml:generic-api-key:19
+47c3d0e171bf9eb2bbef5f2dda48efd41a4481d0:resources/kube/api/api-journeys-stage-deployment.yaml:generic-api-key:19
+47c3d0e171bf9eb2bbef5f2dda48efd41a4481d0:resources/kube/api/api-users-main-deployment.yaml:generic-api-key:19
+47c3d0e171bf9eb2bbef5f2dda48efd41a4481d0:resources/kube/api/api-users-stage-deployment.yaml:generic-api-key:19
+74158650bd79ce3c86415e33655f8c4a72f33027:resources/kube/api/api-gateway-main-deployment.yaml:generic-api-key:18
+
+# Encryption test fixtures (accessSecretIv / accessSecretTag).
+14638160ba3da1461fe7ad0665f9dd6804378e8d:apps/api-journeys/src/app/modules/integration/growthSpaces/growthSpaces.resolver.spec.ts:generic-api-key:43
+14638160ba3da1461fe7ad0665f9dd6804378e8d:apps/api-journeys/src/app/modules/integration/growthSpaces/growthSpaces.resolver.spec.ts:generic-api-key:44
+14638160ba3da1461fe7ad0665f9dd6804378e8d:apps/api-journeys/src/app/modules/integration/growthSpaces/growthSpaces.service.spec.ts:generic-api-key:53
+14638160ba3da1461fe7ad0665f9dd6804378e8d:apps/api-journeys/src/app/modules/integration/growthSpaces/growthSpaces.service.spec.ts:generic-api-key:54
+14638160ba3da1461fe7ad0665f9dd6804378e8d:apps/api-journeys/src/app/modules/integration/integration.resolver.spec.ts:generic-api-key:42
+14638160ba3da1461fe7ad0665f9dd6804378e8d:apps/api-journeys/src/app/modules/integration/integration.resolver.spec.ts:generic-api-key:43
+14638160ba3da1461fe7ad0665f9dd6804378e8d:libs/nest/common/src/lib/crypto/crypto.spec.ts:generic-api-key:23
+14638160ba3da1461fe7ad0665f9dd6804378e8d:libs/nest/common/src/lib/crypto/crypto.spec.ts:generic-api-key:24
+2a169f236d5343c2c6770835734f00e13005be5d:apis/api-journeys/src/app/modules/integration/growthSpaces/growthSpaces.resolver.spec.ts:generic-api-key:42
+2a169f236d5343c2c6770835734f00e13005be5d:apis/api-journeys/src/app/modules/integration/growthSpaces/growthSpaces.service.spec.ts:generic-api-key:57
+37fd177a02d26bec008e7a8b062ebef8541c545d:apis/api-journeys/src/app/modules/integration/growthSpaces/growthSpaces.resolver.spec.ts:generic-api-key:42
+37fd177a02d26bec008e7a8b062ebef8541c545d:apis/api-journeys/src/app/modules/integration/growthSpaces/growthSpaces.service.spec.ts:generic-api-key:57
+37fd177a02d26bec008e7a8b062ebef8541c545d:libs/nest/common/src/lib/crypto/crypto.spec.ts:generic-api-key:26
+8eb14b05976a8fc03a1eb8ac6189843acce9395c:libs/nest/common/src/lib/crypto/crypto.spec.ts:generic-api-key:26
+
+# Ordinary identifiers: GraphQL operation names, poll keys, Algolia test strings.
+088e3e5ba10efe3f731fecb20ce034a47445bcf9:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.spec.tsx:cloudflare-api-key:7
+2cb7182c65902be520f1ad8b3304cf5b6d4ea613:apis/api-journeys-modern/src/schema/journeyVisitor/export/googleSheetsHeader.spec.ts:generic-api-key:204
+2cb7182c65902be520f1ad8b3304cf5b6d4ea613:apis/api-journeys-modern/src/schema/journeyVisitor/export/googleSheetsHeader.spec.ts:generic-api-key:211
+43e817d5a0bbd51faeee2c5b17da29b8cd8b4460:apis/api-media/src/lib/languages/updateLanguageInAlgolia.spec.ts:algolia-api-key:10
+51c6971561113acf6db92445d75ac5cf33719919:apis/api-journeys-modern/src/schema/journeyVisitor/export/googleSheetsHeader.spec.ts:generic-api-key:204
+51c6971561113acf6db92445d75ac5cf33719919:apis/api-journeys-modern/src/schema/journeyVisitor/export/googleSheetsHeader.spec.ts:generic-api-key:211
+e4423ef3c28c3cbe23731e8bb89faee17fe8ee5f:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.ts:cloudflare-api-key:36
+e4423ef3c28c3cbe23731e8bb89faee17fe8ee5f:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.ts:cloudflare-api-key:40
+e4423ef3c28c3cbe23731e8bb89faee17fe8ee5f:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.ts:cloudflare-api-key:44
+e4423ef3c28c3cbe23731e8bb89faee17fe8ee5f:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.ts:cloudflare-api-key:5
+fe8d6b718e79f3a4f04380a15f83bc0fb3262a11:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.spec.tsx:cloudflare-api-key:8
+fe8d6b718e79f3a4f04380a15f83bc0fb3262a11:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.ts:cloudflare-api-key:40
+fe8d6b718e79f3a4f04380a15f83bc0fb3262a11:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.ts:cloudflare-api-key:44
+fe8d6b718e79f3a4f04380a15f83bc0fb3262a11:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.ts:cloudflare-api-key:48
+fe8d6b718e79f3a4f04380a15f83bc0fb3262a11:apps/journeys-admin/src/libs/useCloudflareTeamUploadByUrlMutation/useCloudflareTeamUploadByUrlMutation.ts:cloudflare-api-key:5
+
+# idempotencyKey UUIDs in MCP specs and the MCP authoring brainstorm doc.
+099d68f79681764ee710019d6bbd09c190a76f9b:libs/yoga/src/mcp/appearanceContract.spec.ts:generic-api-key:35
+5106900355080eeccc897d62b53a881c50cf324b:apis/api-mcp/src/protocol.spec.ts:generic-api-key:296
+5106900355080eeccc897d62b53a881c50cf324b:apis/api-mcp/src/protocol.spec.ts:generic-api-key:362
+5106900355080eeccc897d62b53a881c50cf324b:apis/api-mcp/src/protocol.spec.ts:generic-api-key:384
+5106900355080eeccc897d62b53a881c50cf324b:libs/yoga/src/mcp/structureContract.spec.ts:generic-api-key:15
+6fd3d058e16140394052d6d79e975f55bee0fad7:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:242
+6fd3d058e16140394052d6d79e975f55bee0fad7:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:281
+6fd3d058e16140394052d6d79e975f55bee0fad7:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:307
+6fd3d058e16140394052d6d79e975f55bee0fad7:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:408
+6fd3d058e16140394052d6d79e975f55bee0fad7:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:418
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:apis/api-mcp/src/protocol.spec.ts:generic-api-key:224
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:apis/api-mcp/src/protocol.spec.ts:generic-api-key:275
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:apis/api-mcp/src/protocol.spec.ts:generic-api-key:291
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:apis/api-mcp/src/protocol.spec.ts:generic-api-key:322
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:apis/api-mcp/src/protocol.spec.ts:generic-api-key:354
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:apis/api-mcp/src/reads.spec.ts:generic-api-key:112
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:apis/api-mcp/src/reads.spec.ts:generic-api-key:58
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:libs/yoga/src/mcp/editContract.spec.ts:generic-api-key:14
+95999d6646b67ef9b0a09d81315d09f0d195b2c1:libs/yoga/src/mcp/readContract.spec.ts:generic-api-key:103
+e053db463a141954a6880da642d9fbf1046a8a86:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:227
+e053db463a141954a6880da642d9fbf1046a8a86:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:266
+e053db463a141954a6880da642d9fbf1046a8a86:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:292
+e053db463a141954a6880da642d9fbf1046a8a86:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:425
+e053db463a141954a6880da642d9fbf1046a8a86:docs/brainstorms/2026-11-11-journeys-mcp-authoring-contract.md:generic-api-key:435
+
+# Self-signed test TLS key (CN=health.example.test) for the short-link health spec.
+3bfa854e5a7ca074ea511fb2cda56b293fd8a21c:apis/api-media/src/workers/shortLinkHealth/service/health-test-key.pem:private-key:1
+
+# Arclight API keys: legacy, tracking-only, grant no access.
+5604036a3eb95cb788a41436620c670082bf4f31:apps/arclight-e2e/src/utils/testData.ts:generic-api-key:2
+fa73f999d1df423f675f471bdcb0501f6f448a84:apps/arclight/src/app/v2/media-countries/route.ts:generic-api-key:104
+
+# Mux Data env_key: public client-side key by design.
+c71332c6299f34b01343d7665e4bf6e8473cbc6e:apps/arclight/src/app/videoPlayerUrl/VideoPlayer.tsx:generic-api-key:44
+
+# Polotno SDK license key: client-side, shipped in the browser bundle.
+8f9f394fbc34eb3006a522c141917df48ed680b4:apps/studio/src/hooks/usePolotnoStore.ts:generic-api-key:18
+b243b72b697d13e40dca238be1621645dc320414:apps/watch-modern/src/hooks/usePolotnoStore.ts:generic-api-key:18
+db734230488142138d14a1479e336dea333fdb1b:apps/studio/src/components/editor.tsx:generic-api-key:17
+
+# Commented-out CI Postgres password in retired Plausible Helm values (chart DB disabled; EKS destroyed).
+4f67d8c3b1e425615cbef064ceb23dbbb9e8da2e:apps/analytics/infrastructure/values-stage.yaml:generic-api-key:28
+51c6971561113acf6db92445d75ac5cf33719919:infrastructure/kube/plausible-analytics/values-stage.yaml:generic-api-key:29
+51c6971561113acf6db92445d75ac5cf33719919:infrastructure/kube/plausible-analytics/values.yaml:generic-api-key:29
+b8bc04d05cbd7040b53d4de3be3ba3d1a1f999c2:infrastructure/kube/plausible-analytics/values-stage.yaml:generic-api-key:29
+b8bc04d05cbd7040b53d4de3be3ba3d1a1f999c2:infrastructure/kube/plausible-analytics/values.yaml:generic-api-key:29
+e253a6b169192c014fca7762469df22994213d9c:apps/analytics/infrastructure/values.yaml:generic-api-key:28
+
+# Local-dev-only Plausible container secrets and seeded API key/token.
+03f7feb713346f822bfc22fd65f70a78c78cba49:.devcontainer/docker-compose.yml:generic-api-key:88
+03f7feb713346f822bfc22fd65f70a78c78cba49:.devcontainer/docker-compose.yml:generic-api-key:89
+03f7feb713346f822bfc22fd65f70a78c78cba49:.devcontainer/plausible.sql:generic-api-key:29
+14fbedde0d85fa090a1d6fcec10b71805daf1e31:apps/journeys-admin/src/components/PlausibleEmbedDashboard/PlausibleEmbedDashboard.stories.tsx:generic-api-key:26
+f5b6a32ac0410e748ee11b837b89b520616e0377:docker-compose.services.yml:generic-api-key:120
+f5b6a32ac0410e748ee11b837b89b520616e0377:docker-compose.services.yml:generic-api-key:121
