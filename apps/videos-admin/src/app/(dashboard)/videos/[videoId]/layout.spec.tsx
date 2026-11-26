@@ -1,6 +1,6 @@
 import { useSuspenseQuery as apolloClient_useSuspenseQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { type Mock } from 'vitest'
 
 import VideoViewLayout from './layout'
@@ -47,6 +47,10 @@ vi.mock('./_VideoDescription', () => ({
 
 vi.mock('./_VideoBibleCitation', () => ({
   VideoBibleCitation: () => <Box data-testid="video-bible-citation" />
+}))
+
+vi.mock('./_VideoMediaValidation', () => ({
+  VideoMediaValidation: () => <Box data-testid="video-media-validation" />
 }))
 
 vi.mock('./_VideoTabs', () => ({
@@ -103,6 +107,23 @@ describe('VideoViewLayout', () => {
     expect(screen.getByTestId('current-tab')).toHaveTextContent('restrictions')
     expect(screen.getByTestId('restrictions-page')).toBeInTheDocument()
     expect(mockVideoInformation).not.toHaveBeenCalled()
+    expect(
+      screen.queryByTestId('video-media-validation')
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders media validation on the metadata tab', () => {
+    render(
+      <VideoViewLayout studyQuestions={<Box>Study questions</Box>}>
+        <Box />
+      </VideoViewLayout>
+    )
+
+    expect(
+      within(screen.getByTestId('VideoMetadata')).getByTestId(
+        'video-media-validation'
+      )
+    ).toBeInTheDocument()
   })
 
   it('does not render restriction sections on the metadata tab', () => {

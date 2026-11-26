@@ -23,6 +23,7 @@ import { VideoViewFallback } from './_VideoFallback'
 import { VideoImageAlt } from './_VideoImageAlt'
 import { VideoImages } from './_VideoImages'
 import { VideoInformation } from './_VideoInformation'
+import { VideoMediaValidation } from './_VideoMediaValidation'
 import { VideoSnippet } from './_VideoSnippet'
 import { VideoTabView } from './_VideoTabs'
 
@@ -203,6 +204,7 @@ export default function VideoViewLayout({
                   <VideoDescription videoId={videoId} />
                 </Section>
                 <VideoBibleCitation videoId={videoId} />
+                <VideoMediaValidation videoId={videoId} />
                 {studyQuestions}
               </Stack>
             </>
