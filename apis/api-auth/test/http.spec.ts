@@ -980,6 +980,21 @@ describe('durable issuer integration', () => {
 
       it('rejects access approval when its review expires across the final review-row lock wait', async () => {
         const context = await renewableConnection()
+        const grantArtifacts = () =>
+          db.oAuthArtifact.findMany({
+            where: {
+              OR: [
+                { grantId: context.connection.grantId },
+                { model: 'Grant', id: context.connection.grantId }
+              ]
+            },
+            orderBy: [{ model: 'asc' }, { id: 'asc' }]
+          })
+        const originalGrantArtifacts = await grantArtifacts()
+        expect(originalGrantArtifacts.length).toBeGreaterThan(0)
+        const gate = await db.authorizationGate.findUniqueOrThrow({
+          where: { id: `connection:${context.connection.id}` }
+        })
         const review = await accessReview(context)
         const id = digest(review.reviewToken)
         const expiresAt = new Date((await databaseTime(db)).getTime() + 1200)
@@ -1013,11 +1028,14 @@ describe('durable issuer integration', () => {
             expect(row.waiting).toBe(true)
             waited = true
           })
-          await new Promise((resolve) =>
-            setTimeout(
-              resolve,
-              Math.max(0, expiresAt.getTime() - Date.now()) + 30
-            )
+          // The issuer decides against database time after acquiring this lock.
+          await vi.waitFor(
+            async () => {
+              expect((await databaseTime(db)).getTime()).toBeGreaterThanOrEqual(
+                expiresAt.getTime()
+              )
+            },
+            { timeout: 3000 }
           )
         } finally {
           unlock()
@@ -1030,6 +1048,12 @@ describe('durable issuer integration', () => {
             where: { id: context.connection.id }
           })
         ).toEqual(context.connection)
+        expect(await grantArtifacts()).toEqual(originalGrantArtifacts)
+        expect(
+          await db.authorizationGate.findUniqueOrThrow({
+            where: { id: gate.id }
+          })
+        ).toEqual(gate)
       })
 
       it('drains later connections beyond 100 unresolved withdrawals and isolates one failed change', async () => {
