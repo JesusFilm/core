@@ -920,8 +920,78 @@ export function createMediaJobs(
       throw new Error('VALIDATION_FAILED')
     return chunks
   }
+  async function videoSnapshot(tx: Transaction, job: McpMediaJob) {
+    const chunks = await videoChunks(tx, job)
+    return {
+      file: mediaFile.parse(job.file),
+      chunks,
+      signature: fingerprint([
+        job.kind,
+        job.file,
+        job.providerId,
+        job.state,
+        job.active,
+        job.receivedBytes,
+        job.transferCompletedAt,
+        job.dispatchReceiptId,
+        job.progressionGrantVersion,
+        job.progressionPermissionHash,
+        chunks
+      ])
+    }
+  }
+  async function verifiedVideo(
+    context: JobContext,
+    jobId: string,
+    state: 'validating' | 'dispatch_pending'
+  ) {
+    const snapshot = await authorized(
+      context,
+      'transfer',
+      async (tx, { accept, grantVersion, permissionHash }) => {
+        const job = await lockJob(tx, jobId)
+        if (
+          job.kind !== 'video_upload' ||
+          job.state !== state ||
+          !job.active ||
+          job.dispatchReceiptId
+        )
+          throw new Error('VALIDATION_FAILED')
+        if (
+          job.progressionGrantVersion !== grantVersion ||
+          job.progressionPermissionHash !== permissionHash
+        )
+          denied()
+        const snapshot = await videoSnapshot(tx, job)
+        await accept()
+        return snapshot
+      }
+    )
+    // Storage reads and hashing hold no database transaction or accepted permit.
+    // The caller must reauthorize and compare this manifest under the job lock.
+    let valid = true
+    try {
+      await validateVideoInput(stagedInput(snapshot.chunks), snapshot.file)
+    } catch (error) {
+      if (!(error instanceof InvalidVideoInput)) throw error
+      valid = false
+    }
+    return { ...snapshot, valid }
+  }
+  async function recheckVideo(
+    tx: Transaction,
+    job: McpMediaJob,
+    verified: Awaited<ReturnType<typeof verifiedVideo>>
+  ) {
+    if ((await videoSnapshot(tx, job)).signature !== verified.signature)
+      throw new Error('VALIDATION_FAILED')
+  }
   async function validate(context: JobContext, jobId: string) {
-    await own(jobId, context)
+    const known = await own(jobId, context)
+    const verified =
+      known.kind === 'video_upload' && known.state === 'validating'
+        ? await verifiedVideo(context, jobId, 'validating')
+        : undefined
     await authorized(
       context,
       'transfer',
@@ -932,19 +1002,21 @@ export function createMediaJobs(
           job.progressionPermissionHash !== permissionHash
         )
           denied()
+        if (job.kind === 'video_upload' && job.state === 'validating') {
+          if (!verified) throw new Error('VALIDATION_FAILED')
+          await recheckVideo(tx, job, verified)
+        }
         await accept()
         if (job.state !== 'validating') return
         const file = mediaFile.parse(job.file)
         const bytes =
           job.kind === 'video_upload' ? undefined : await assembled(tx, job)
         try {
+          if (job.kind === 'video_upload' && !verified?.valid)
+            throw new InvalidVideoInput('VALIDATION_FAILED')
           const metadata =
             job.kind === 'video_upload'
-              ? (await validateVideoInput(
-                  stagedInput(await videoChunks(tx, job)),
-                  file
-                ),
-                { kind: 'video' })
+              ? { kind: 'video' }
               : await validateImageInput(bytes!, file)
           await tx.mcpMediaJob.update({
             where: { id: job.id },
@@ -962,7 +1034,13 @@ export function createMediaJobs(
     )
   }
   async function dispatch(context: JobContext, jobId: string) {
-    await own(jobId, context)
+    const known = await own(jobId, context)
+    const verified =
+      known.kind === 'video_upload'
+        ? await verifiedVideo(context, jobId, 'dispatch_pending')
+        : undefined
+    if (verified && !verified.valid)
+      throw new InvalidVideoInput('VALIDATION_FAILED')
     const {
       permitId: receiptId,
       bytes,
@@ -985,15 +1063,13 @@ export function createMediaJobs(
           job.progressionPermissionHash !== permissionHash
         )
           denied()
-        // Input reads cannot send provider work. Finish them while recovery can
-        // still fence this receipt, then check current authority after the I/O.
         const generating = job.kind === 'image_generation'
         if (generating && (!generation || !job.generationPrompt)) denied()
         const file = generating ? undefined : mediaFile.parse(job.file)
         const video = job.kind === 'video_upload'
-        const chunks = video ? await videoChunks(tx, job) : []
+        if (verified) await recheckVideo(tx, job, verified)
+        const chunks = verified?.chunks ?? []
         const bytes = generating || video ? undefined : await assembled(tx, job)
-        if (video) await validateVideoInput(stagedInput(chunks), file!)
         await accept()
         if (video)
           await tx.muxVideo.upsert({

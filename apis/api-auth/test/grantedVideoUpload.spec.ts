@@ -110,6 +110,10 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   let beforeCreate: (() => Promise<void>) | undefined
   let beforePut: (() => Promise<void>) | undefined
   let throttlePut = false
+  let beforeStagingRead: (() => Promise<void>) | undefined
+  let throttleStaging = false
+  let stagedReadBytes = 0
+  let stagingReadStarted = 0
   let beforeAccept: ((action: string) => Promise<void>) | undefined
   let mediaLibrary = false
   const originalFetch = globalThis.fetch
@@ -124,6 +128,17 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       await yieldToIO()
       const value = objects.get(key)
       if (!value) throw new Error('Missing controlled staging')
+      await beforeStagingRead?.()
+      if (throttleStaging && stagedReadBytes < 2_000_000_000) {
+        if (!stagedReadBytes) stagingReadStarted = performance.now()
+        stagedReadBytes += value.length
+        await delay(
+          Math.max(
+            0,
+            stagingReadStarted + stagedReadBytes / 12500 - performance.now()
+          )
+        )
+      }
       return value
     },
     async removeJob(id) {
@@ -245,6 +260,9 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     beforeCreate = undefined
     beforePut = undefined
     throttlePut = false
+    beforeStagingRead = undefined
+    throttleStaging = false
+    stagedReadBytes = 0
     beforeAccept = undefined
     mediaLibrary = false
     await f.journeys.block.update({
@@ -520,7 +538,9 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
         ).status
       ).toBe(403)
       throttlePut = transport === 'forwarded'
+      throttleStaging = transport === 'alice'
       await process()
+      if (throttleStaging) expect(stagedReadBytes).toBe(2_000_000_000)
       expect(await status(id)).toMatchObject({
         state: 'processing',
         active: true
@@ -534,6 +554,122 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       expect(objects.size).toBe(0)
     },
     3600000
+  )
+
+  it.each(['validating', 'dispatch_pending'])(
+    'releases job, user, execution and journey locks during %s staging reads',
+    async (state) => {
+      const id = String((await start()).jobId)
+      await transfer(id)
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      const context = {
+        userId: job.userId,
+        connectionId: job.connectionId,
+        journeyId: job.journeyId
+      }
+      if (state === 'dispatch_pending') await jobs.validate(context, id)
+      const read = pauseProviderRequest()
+      beforeStagingRead = read.pause
+      const pending = process()
+      try {
+        await read.started
+        await media.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" FOR UPDATE NOWAIT`
+          await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE NOWAIT`
+          await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
+        })
+        await f.journeys.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE NOWAIT`
+        })
+      } finally {
+        beforeStagingRead = undefined
+        read.release()
+        await pending
+      }
+      expect(await status(id)).toMatchObject({
+        state: 'processing',
+        active: true
+      })
+      expect(creates).toBe(1)
+      expect(puts).toBe(1)
+    }
+  )
+
+  it.each(
+    ['validating', 'dispatch_pending'].flatMap((state) =>
+      [
+        'expiry',
+        'permission',
+        'publication',
+        'withdrawal',
+        'manifest',
+        'file',
+        'cancellation'
+      ].map((change) => [state, change])
+    )
+  )(
+    'rechecks %s after %s changes during staging reads',
+    async (state, change) => {
+      const id = String((await start()).jobId)
+      await transfer(id)
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      const context = {
+        userId: job.userId,
+        connectionId: job.connectionId,
+        journeyId: job.journeyId
+      }
+      if (state === 'dispatch_pending') await jobs.validate(context, id)
+      const read = pauseProviderRequest()
+      beforeStagingRead = read.pause
+      const pending = process()
+      try {
+        await read.started
+        if (change === 'expiry')
+          await f.auth.agentConnection.update({
+            where: { id: job.connectionId },
+            data: { expiresAt: new Date(Date.now() - 1) }
+          })
+        else if (change === 'permission')
+          await f.auth.authorizationGate.update({
+            where: { id: 'user-team:alice:structure-team-alice' },
+            data: { generation: { increment: 1 } }
+          })
+        else if (change === 'publication')
+          await f.journeys.journey.update({
+            where: { id: job.journeyId },
+            data: {
+              status: 'published',
+              publishedAt: new Date(),
+              firstPublishedAt: new Date()
+            }
+          })
+        else if (change === 'withdrawal') await withdraw(id)
+        else if (change === 'manifest')
+          await media.mcpMediaChunk.updateMany({
+            where: { jobId: id },
+            data: { sha256: '0'.repeat(64) }
+          })
+        else if (change === 'file')
+          await media.mcpMediaJob.update({
+            where: { id },
+            data: { file: { ...manifest(), name: 'changed.mp4' } }
+          })
+        else expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
+      } finally {
+        beforeStagingRead = undefined
+        read.release()
+        await pending
+      }
+      expect(
+        await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      ).toMatchObject({
+        state: change === 'cancellation' ? 'cancelled' : state,
+        active: change !== 'cancellation',
+        dispatchReceiptId: null
+      })
+      expect(creates).toBe(0)
+      expect(puts).toBe(0)
+    }
   )
 
   it.each(['iso4', 'iso5', 'iso6'])(
