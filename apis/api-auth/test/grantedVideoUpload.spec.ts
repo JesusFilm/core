@@ -534,6 +534,25 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     })
   }
 
+  async function assertJobLocksAvailable(job: {
+    id: string
+    userId: string
+    journeyId: string
+  }) {
+    // Permit short recovery transactions, while a paused external wait must
+    // not retain any of this job's execution, capacity or owning locks.
+    await media.$transaction(async (tx) => {
+      await tx.$executeRaw`SET LOCAL lock_timeout = '1s'`
+      await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE "jobId" = ${job.id} FOR UPDATE`
+      await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE`
+      await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${job.id} FOR UPDATE`
+    })
+    await f.journeys.$transaction(async (tx) => {
+      await tx.$executeRaw`SET LOCAL lock_timeout = '1s'`
+      await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE`
+    })
+  }
+
   it.each(['alice', 'forwarded'])(
     'streams exactly 1,000,000,000 bytes via %s and rejects one byte over on the original job',
     async (transport) => {
@@ -645,14 +664,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       }
       try {
         await paused.started
-        await media.$transaction(async (tx) => {
-          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" FOR UPDATE NOWAIT`
-          await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE NOWAIT`
-          await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
-        })
-        await f.journeys.$transaction(async (tx) => {
-          await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE NOWAIT`
-        })
+        await assertJobLocksAvailable(job)
         if (ending === 'cancellation')
           expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
         else {
@@ -887,14 +899,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       const pending = process()
       try {
         await read.started
-        await media.$transaction(async (tx) => {
-          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" FOR UPDATE NOWAIT`
-          await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE NOWAIT`
-          await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
-        })
-        await f.journeys.$transaction(async (tx) => {
-          await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE NOWAIT`
-        })
+        await assertJobLocksAvailable(job)
       } finally {
         beforeStagingRead = undefined
         read.release()
@@ -1234,14 +1239,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       const state = cause === 'expiry' ? 'transfer_expired' : 'cancelled'
       try {
         await cleanup.started
-        await media.$transaction(async (tx) => {
-          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" FOR UPDATE NOWAIT`
-          await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE NOWAIT`
-          await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
-        })
-        await f.journeys.$transaction(async (tx) => {
-          await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE NOWAIT`
-        })
+        await assertJobLocksAvailable(job)
         expect(
           await media.mcpMediaJob.findUnique({ where: { id } })
         ).toMatchObject({
@@ -1391,14 +1389,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     const pending = process()
     try {
       await cleanup.started
-      await media.$transaction(async (tx) => {
-        await tx.$queryRaw`SELECT id FROM "McpMediaExecution" FOR UPDATE NOWAIT`
-        await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE NOWAIT`
-        await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
-      })
-      await f.journeys.$transaction(async (tx) => {
-        await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE NOWAIT`
-      })
+      await assertJobLocksAvailable(job)
       expect(await status(id)).toMatchObject({ state: 'failed', active: true })
       expect(objects.size).toBeGreaterThan(0)
       expect((await browser(id, 'POST', 'resume')).status).toBe(200)
