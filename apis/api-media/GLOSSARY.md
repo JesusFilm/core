@@ -10,6 +10,10 @@ The catalog of films and their translations. `api-media` owns the video catalog 
 A single catalogued work — a film, a series, an episode, or a clip. It is language-agnostic: it holds no playable footage and no display text itself, only structure (its label, its parent/child relationships, its primary language). What you watch and read comes from its Variants and localized text.
 _Avoid_: Film, title, asset (a Video is none of these on its own)
 
+**Media Validation**:
+A publisher's internal, per-Video assessment of gospel content and portrayal, made up of eight nullable data points (gospel presentation and its start/end seconds, opportunity to respond and its end seconds, biblically accurate portrayal, person of Jesus displayed, comments). Stored on the Video, not per Variant; null means not assessed. The term comes from the "Global Media Validation and Data Entry" sheet. Readable and writable by publishers only.
+_Avoid_: Publishing Validation (a different thing — Media Validation never blocks publishing)
+
 **Label**:
 The kind of Video: `collection`, `series`, `episode`, `segment`, `featureFilm`, `shortFilm`, `trailer`, or `behindTheScenes`. Determines how a Video sits in the hierarchy and how it is presented.
 _Avoid_: Type, category, kind

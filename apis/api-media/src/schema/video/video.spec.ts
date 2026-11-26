@@ -109,6 +109,14 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      biblicallyAccuratePortrayal: null,
+      gospelEndSeconds: null,
+      gospelPresentation: null,
+      gospelStartSeconds: null,
+      opportunityToRespond: null,
+      opportunityToRespondEndSeconds: null,
+      personOfJesusDisplayed: null,
+      validationComments: null,
       restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
@@ -127,6 +135,14 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      biblicallyAccuratePortrayal: null,
+      gospelEndSeconds: null,
+      gospelPresentation: null,
+      gospelStartSeconds: null,
+      opportunityToRespond: null,
+      opportunityToRespondEndSeconds: null,
+      personOfJesusDisplayed: null,
+      validationComments: null,
       restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
@@ -148,6 +164,14 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      biblicallyAccuratePortrayal: null,
+      gospelEndSeconds: null,
+      gospelPresentation: null,
+      gospelStartSeconds: null,
+      opportunityToRespond: null,
+      opportunityToRespondEndSeconds: null,
+      personOfJesusDisplayed: null,
+      validationComments: null,
       restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
@@ -166,6 +190,14 @@ describe('video', () => {
       originId: null,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      biblicallyAccuratePortrayal: null,
+      gospelEndSeconds: null,
+      gospelPresentation: null,
+      gospelStartSeconds: null,
+      opportunityToRespond: null,
+      opportunityToRespondEndSeconds: null,
+      personOfJesusDisplayed: null,
+      validationComments: null,
       restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
@@ -187,6 +219,14 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      biblicallyAccuratePortrayal: null,
+      gospelEndSeconds: null,
+      gospelPresentation: null,
+      gospelStartSeconds: null,
+      opportunityToRespond: null,
+      opportunityToRespondEndSeconds: null,
+      personOfJesusDisplayed: null,
+      validationComments: null,
       restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
@@ -433,6 +473,14 @@ describe('video', () => {
     locked: false,
     restrictDownloadPlatforms: [],
     restrictViewPlatforms: [],
+    biblicallyAccuratePortrayal: null,
+    gospelEndSeconds: null,
+    gospelPresentation: null,
+    gospelStartSeconds: null,
+    opportunityToRespond: null,
+    opportunityToRespondEndSeconds: null,
+    personOfJesusDisplayed: null,
+    validationComments: null,
     restrictTranslations: false,
     publishedAt: null
   }
@@ -2462,6 +2510,14 @@ describe('video', () => {
       locked: false,
       restrictDownloadPlatforms: [],
       restrictViewPlatforms: [],
+      biblicallyAccuratePortrayal: null,
+      gospelEndSeconds: null,
+      gospelPresentation: null,
+      gospelStartSeconds: null,
+      opportunityToRespond: null,
+      opportunityToRespondEndSeconds: null,
+      personOfJesusDisplayed: null,
+      validationComments: null,
       restrictTranslations: false,
       publishedAt: null,
       createdAt: new Date(),
@@ -2992,6 +3048,8 @@ describe('video', () => {
             publishedAt: true,
             slug: true,
             restrictTranslations: true,
+            gospelStartSeconds: true,
+            gospelEndSeconds: true,
             variants: {
               where: { published: true },
               select: { languageId: true }
@@ -3988,6 +4046,264 @@ describe('video', () => {
     })
   })
 
+  describe('media validation', () => {
+    const publisherRole = {
+      id: 'userId',
+      userId: 'userId',
+      roles: ['publisher'] as ['publisher'],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+
+    const ADMIN_VIDEO_VALIDATION_QUERY = graphql(`
+      query AdminVideoMediaValidation($id: ID!) {
+        adminVideo(id: $id) {
+          gospelPresentation
+          gospelStartSeconds
+          gospelEndSeconds
+          opportunityToRespond
+          opportunityToRespondEndSeconds
+          biblicallyAccuratePortrayal
+          personOfJesusDisplayed
+          validationComments
+        }
+      }
+    `)
+
+    const VIDEO_VALIDATION_QUERY = graphql(`
+      query VideoMediaValidation($id: ID!) {
+        video(id: $id) {
+          gospelPresentation
+          gospelStartSeconds
+          gospelEndSeconds
+          opportunityToRespond
+          opportunityToRespondEndSeconds
+          biblicallyAccuratePortrayal
+          personOfJesusDisplayed
+          validationComments
+        }
+      }
+    `)
+
+    const VIDEO_VALIDATION_UPDATE_MUTATION = graphql(`
+      mutation VideoMediaValidationUpdate($input: VideoUpdateInput!) {
+        videoUpdate(input: $input) {
+          id
+          gospelPresentation
+          gospelStartSeconds
+          gospelEndSeconds
+          opportunityToRespond
+          opportunityToRespondEndSeconds
+          biblicallyAccuratePortrayal
+          personOfJesusDisplayed
+          validationComments
+        }
+      }
+    `)
+
+    const validationValues = {
+      gospelPresentation: true,
+      gospelStartSeconds: 10,
+      gospelEndSeconds: 90,
+      opportunityToRespond: false,
+      opportunityToRespondEndSeconds: 120,
+      biblicallyAccuratePortrayal: true,
+      personOfJesusDisplayed: false,
+      validationComments: 'Reviewed'
+    }
+
+    const nullValidationFields = [
+      'gospelPresentation',
+      'gospelStartSeconds',
+      'gospelEndSeconds',
+      'opportunityToRespond',
+      'opportunityToRespondEndSeconds',
+      'biblicallyAccuratePortrayal',
+      'personOfJesusDisplayed',
+      'validationComments'
+    ] as const
+
+    function errorMessage(result: unknown): string | undefined {
+      return (result as { errors?: { message?: string }[] }).errors?.[0].message
+    }
+
+    it('should return stored values to a publisher', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue(publisherRole)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValueOnce({
+        ...video,
+        ...validationValues
+      })
+
+      const result = await authClient({
+        document: ADMIN_VIDEO_VALIDATION_QUERY,
+        variables: { id: 'videoId' }
+      })
+
+      expect(result).toHaveProperty('data.adminVideo', validationValues)
+    })
+
+    it('should write all fields', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue(publisherRole)
+      prismaMock.video.update.mockResolvedValue({
+        id: 'id',
+        ...validationValues
+      } as unknown as Video)
+
+      const result = await authClient({
+        document: VIDEO_VALIDATION_UPDATE_MUTATION,
+        variables: { input: { id: 'id', ...validationValues } }
+      })
+
+      expect(prismaMock.video.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining(validationValues)
+        })
+      )
+      expect(result).toHaveProperty('data.videoUpdate', {
+        id: 'id',
+        ...validationValues
+      })
+    })
+
+    it('should clear fields when null is sent', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue(publisherRole)
+      prismaMock.video.update.mockResolvedValue({
+        id: 'id'
+      } as unknown as Video)
+
+      await authClient({
+        document: VIDEO_VALIDATION_UPDATE_MUTATION,
+        variables: {
+          input: {
+            id: 'id',
+            gospelPresentation: null,
+            validationComments: null
+          }
+        }
+      })
+
+      const data = prismaMock.video.update.mock.calls[0][0].data
+      expect(data.gospelPresentation).toBeNull()
+      expect(data.validationComments).toBeNull()
+      expect(data.gospelStartSeconds).toBeUndefined()
+    })
+
+    it('should leave fields unchanged when omitted', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue(publisherRole)
+      prismaMock.video.update.mockResolvedValue({
+        id: 'id'
+      } as unknown as Video)
+
+      await authClient({
+        document: VIDEO_VALIDATION_UPDATE_MUTATION,
+        variables: { input: { id: 'id', label: VideoLabel.episode } }
+      })
+
+      const data = prismaMock.video.update.mock.calls[0][0].data as Record<
+        string,
+        unknown
+      >
+      for (const field of nullValidationFields) {
+        expect(data[field]).toBeUndefined()
+      }
+    })
+
+    it('should deny reading to a non-publisher', async () => {
+      prismaMock.video.findUniqueOrThrow.mockResolvedValueOnce({
+        ...video,
+        ...validationValues
+      })
+
+      const result = await client({
+        document: VIDEO_VALIDATION_QUERY,
+        variables: { id: 'videoId' }
+      })
+
+      expect(errorMessage(result)).toContain('Not authorized')
+    })
+
+    it('should deny writing to a non-publisher', async () => {
+      const result = await client({
+        document: VIDEO_VALIDATION_UPDATE_MUTATION,
+        variables: { input: { id: 'id', gospelPresentation: true } }
+      })
+
+      expect(errorMessage(result)).toContain('Not authorized')
+      expect(prismaMock.video.update).not.toHaveBeenCalled()
+    })
+
+    it.each([['gospelStartSeconds'], ['opportunityToRespondEndSeconds']])(
+      'should reject negative %s',
+      async (field) => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue(publisherRole)
+
+        const result = await authClient({
+          document: VIDEO_VALIDATION_UPDATE_MUTATION,
+          variables: { input: { id: 'id', [field]: -1 } }
+        })
+
+        expect(errorMessage(result)).toBe(
+          'Media Validation timestamps must be zero or greater'
+        )
+        expect(prismaMock.video.update).not.toHaveBeenCalled()
+      }
+    )
+
+    it('should reject an inverted gospel span sent together', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue(publisherRole)
+
+      const result = await authClient({
+        document: VIDEO_VALIDATION_UPDATE_MUTATION,
+        variables: {
+          input: { id: 'id', gospelStartSeconds: 120, gospelEndSeconds: 60 }
+        }
+      })
+
+      expect(errorMessage(result)).toBe(
+        'Gospel end time must not be before gospel start time'
+      )
+      expect(prismaMock.video.update).not.toHaveBeenCalled()
+    })
+
+    it('should reject an end before the stored start', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue(publisherRole)
+      prismaMock.video.findUnique.mockResolvedValue({
+        gospelStartSeconds: 120,
+        gospelEndSeconds: null,
+        variants: []
+      } as unknown as Video)
+
+      const result = await authClient({
+        document: VIDEO_VALIDATION_UPDATE_MUTATION,
+        variables: { input: { id: 'id', gospelEndSeconds: 60 } }
+      })
+
+      expect(errorMessage(result)).toBe(
+        'Gospel end time must not be before gospel start time'
+      )
+      expect(prismaMock.video.update).not.toHaveBeenCalled()
+    })
+
+    it('should allow equal start and end', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue(publisherRole)
+      prismaMock.video.update.mockResolvedValue({
+        id: 'id',
+        gospelStartSeconds: 60,
+        gospelEndSeconds: 60
+      } as unknown as Video)
+
+      const result = await authClient({
+        document: VIDEO_VALIDATION_UPDATE_MUTATION,
+        variables: {
+          input: { id: 'id', gospelStartSeconds: 60, gospelEndSeconds: 60 }
+        }
+      })
+
+      expect(result).toHaveProperty('data.videoUpdate.gospelEndSeconds', 60)
+      expect(prismaMock.video.update).toHaveBeenCalled()
+    })
+  })
+
   describe('entity', () => {
     const VIDEO = graphql(`
       query CoreVideo {
@@ -4017,6 +4333,14 @@ describe('video', () => {
         originId: null,
         restrictDownloadPlatforms: [],
         restrictViewPlatforms: [],
+        biblicallyAccuratePortrayal: null,
+        gospelEndSeconds: null,
+        gospelPresentation: null,
+        gospelStartSeconds: null,
+        opportunityToRespond: null,
+        opportunityToRespondEndSeconds: null,
+        personOfJesusDisplayed: null,
+        validationComments: null,
         restrictTranslations: false,
         publishedAt: null,
         createdAt: new Date(),
@@ -4068,6 +4392,14 @@ describe('video', () => {
         originId: null,
         restrictDownloadPlatforms: [],
         restrictViewPlatforms: [],
+        biblicallyAccuratePortrayal: null,
+        gospelEndSeconds: null,
+        gospelPresentation: null,
+        gospelStartSeconds: null,
+        opportunityToRespond: null,
+        opportunityToRespondEndSeconds: null,
+        personOfJesusDisplayed: null,
+        validationComments: null,
         restrictTranslations: false,
         publishedAt: null,
         createdAt: new Date(),

@@ -157,6 +157,14 @@ describe('videoAlgolia', () => {
           id: 'videoId',
           label: 'segment',
           restrictViewPlatforms: [],
+          biblicallyAccuratePortrayal: null,
+          gospelEndSeconds: null,
+          gospelPresentation: null,
+          gospelStartSeconds: null,
+          opportunityToRespond: null,
+          opportunityToRespondEndSeconds: null,
+          personOfJesusDisplayed: null,
+          validationComments: null,
           keywords: [{ value: 'keyword1' }, { value: 'keyword2' }],
           variants: [
             {
@@ -205,6 +213,14 @@ describe('videoAlgolia', () => {
           id: 'videoId',
           label: 'segment',
           restrictViewPlatforms: [],
+          biblicallyAccuratePortrayal: null,
+          gospelEndSeconds: null,
+          gospelPresentation: null,
+          gospelStartSeconds: null,
+          opportunityToRespond: null,
+          opportunityToRespondEndSeconds: null,
+          personOfJesusDisplayed: null,
+          validationComments: null,
           keywords: [{ value: 'keyword1' }],
           variants: [
             {
@@ -260,6 +276,14 @@ describe('videoAlgolia', () => {
           id: 'collectionId',
           label: 'collection',
           restrictViewPlatforms: [],
+          biblicallyAccuratePortrayal: null,
+          gospelEndSeconds: null,
+          gospelPresentation: null,
+          gospelStartSeconds: null,
+          opportunityToRespond: null,
+          opportunityToRespondEndSeconds: null,
+          personOfJesusDisplayed: null,
+          validationComments: null,
           keywords: [],
           variants: [
             {
@@ -373,6 +397,14 @@ describe('videoAlgolia', () => {
           id: 'videoId',
           label: 'segment',
           restrictViewPlatforms: [],
+          biblicallyAccuratePortrayal: null,
+          gospelEndSeconds: null,
+          gospelPresentation: null,
+          gospelStartSeconds: null,
+          opportunityToRespond: null,
+          opportunityToRespondEndSeconds: null,
+          personOfJesusDisplayed: null,
+          validationComments: null,
           keywords: [],
           variants: [
             {

@@ -410,6 +410,38 @@ export const Video = builder.prismaObject('Video', {
       nullable: false,
       resolve: ({ restrictViewPlatforms }) => restrictViewPlatforms
     }),
+    gospelPresentation: t.withAuth({ isPublisher: true }).boolean({
+      nullable: true,
+      resolve: (video) => video.gospelPresentation
+    }),
+    gospelStartSeconds: t.withAuth({ isPublisher: true }).int({
+      nullable: true,
+      resolve: (video) => video.gospelStartSeconds
+    }),
+    gospelEndSeconds: t.withAuth({ isPublisher: true }).int({
+      nullable: true,
+      resolve: (video) => video.gospelEndSeconds
+    }),
+    opportunityToRespond: t.withAuth({ isPublisher: true }).boolean({
+      nullable: true,
+      resolve: (video) => video.opportunityToRespond
+    }),
+    opportunityToRespondEndSeconds: t.withAuth({ isPublisher: true }).int({
+      nullable: true,
+      resolve: (video) => video.opportunityToRespondEndSeconds
+    }),
+    biblicallyAccuratePortrayal: t.withAuth({ isPublisher: true }).boolean({
+      nullable: true,
+      resolve: (video) => video.biblicallyAccuratePortrayal
+    }),
+    personOfJesusDisplayed: t.withAuth({ isPublisher: true }).boolean({
+      nullable: true,
+      resolve: (video) => video.personOfJesusDisplayed
+    }),
+    validationComments: t.withAuth({ isPublisher: true }).string({
+      nullable: true,
+      resolve: (video) => video.validationComments
+    }),
     publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false })
   })
@@ -741,7 +773,9 @@ builder.mutationFields((t) => ({
       const currentVideo =
         input.published !== undefined ||
         input.slug !== undefined ||
-        input.restrictTranslations === false
+        input.restrictTranslations === false ||
+        input.gospelStartSeconds !== undefined ||
+        input.gospelEndSeconds !== undefined
           ? await prisma.video.findUnique({
               where: { id: input.id },
               select: {
@@ -749,6 +783,8 @@ builder.mutationFields((t) => ({
                 publishedAt: true,
                 slug: true,
                 restrictTranslations: true,
+                gospelStartSeconds: true,
+                gospelEndSeconds: true,
                 variants: {
                   where: { published: true },
                   select: { languageId: true }
@@ -756,6 +792,41 @@ builder.mutationFields((t) => ({
               }
             })
           : null
+
+      const mediaValidationSeconds = [
+        input.gospelStartSeconds,
+        input.gospelEndSeconds,
+        input.opportunityToRespondEndSeconds
+      ]
+      if (
+        mediaValidationSeconds.some(
+          (seconds) => typeof seconds === 'number' && seconds < 0
+        )
+      ) {
+        throw new GraphQLError(
+          'Media Validation timestamps must be zero or greater',
+          { extensions: { code: 'BAD_USER_INPUT' } }
+        )
+      }
+
+      const effectiveGospelStart =
+        input.gospelStartSeconds !== undefined
+          ? input.gospelStartSeconds
+          : currentVideo?.gospelStartSeconds
+      const effectiveGospelEnd =
+        input.gospelEndSeconds !== undefined
+          ? input.gospelEndSeconds
+          : currentVideo?.gospelEndSeconds
+      if (
+        effectiveGospelStart != null &&
+        effectiveGospelEnd != null &&
+        effectiveGospelStart > effectiveGospelEnd
+      ) {
+        throw new GraphQLError(
+          'Gospel end time must not be before gospel start time',
+          { extensions: { code: 'BAD_USER_INPUT' } }
+        )
+      }
 
       // Prevent changing slug after video has been published
       if (
@@ -845,6 +916,15 @@ builder.mutationFields((t) => ({
             restrictDownloadPlatforms:
               input.restrictDownloadPlatforms ?? undefined,
             restrictViewPlatforms: input.restrictViewPlatforms ?? undefined,
+            gospelPresentation: input.gospelPresentation,
+            gospelStartSeconds: input.gospelStartSeconds,
+            gospelEndSeconds: input.gospelEndSeconds,
+            opportunityToRespond: input.opportunityToRespond,
+            opportunityToRespondEndSeconds:
+              input.opportunityToRespondEndSeconds,
+            biblicallyAccuratePortrayal: input.biblicallyAccuratePortrayal,
+            personOfJesusDisplayed: input.personOfJesusDisplayed,
+            validationComments: input.validationComments,
             ...childRelationUpdate,
             ...(input.keywordIds
               ? { keywords: { set: input.keywordIds.map((id) => ({ id })) } }
