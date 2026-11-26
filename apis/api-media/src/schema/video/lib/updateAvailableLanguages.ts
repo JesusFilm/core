@@ -14,31 +14,28 @@ import { logger } from '../../logger'
 
 type PrismaClientOrTx = typeof prisma | Prisma.TransactionClient
 
-// Calculates what availableLanguages should be for a given video
-// Does NOT update the database - only calculates the correct value
-export async function calculateAvailableLanguages(
-  videoId: string,
-  client: PrismaClientOrTx = prisma
-): Promise<string[]> {
-  const video = await client.video.findUnique({
-    where: { id: videoId },
-    select: {
-      label: true,
-      variants: {
-        where: { published: true },
-        select: { languageId: true }
-      },
-      children: {
-        where: { published: true },
-        select: { availableLanguages: true }
-      }
-    }
-  })
-
-  if (video == null) {
-    return []
+// The rows every availableLanguages calculation reads, single or batched.
+const availableLanguagesSelect = {
+  label: true,
+  variants: {
+    where: { published: true },
+    select: { languageId: true }
+  },
+  children: {
+    where: { published: true },
+    select: { availableLanguages: true }
   }
+} as const
 
+interface AvailableLanguagesSource {
+  variants: Array<{ languageId: string }>
+  children: Array<{ availableLanguages: string[] }>
+}
+
+// The calculation itself, over rows already loaded. Both the single-video and
+// batched entry points below reduce through here, so there is exactly one
+// definition of what a video's availableLanguages means.
+function reduceAvailableLanguages(video: AvailableLanguagesSource): string[] {
   const languageSet = new Set<string>()
   // Always include published variants on the video itself
   for (const variant of video.variants) {
@@ -57,18 +54,62 @@ export async function calculateAvailableLanguages(
   return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
 }
 
-// Updates a video's availableLanguages field based on current state
-// Handles both regular videos and collections
-export async function updateVideoAvailableLanguages(
+// Calculates what availableLanguages should be for a given video
+// Does NOT update the database - only calculates the correct value
+export async function calculateAvailableLanguages(
   videoId: string,
-  options: {
-    skipCache?: boolean
-    skipAlgolia?: boolean
-    client?: PrismaClientOrTx
-  } = {}
+  client: PrismaClientOrTx = prisma
+): Promise<string[]> {
+  const video = await client.video.findUnique({
+    where: { id: videoId },
+    select: availableLanguagesSelect
+  })
+
+  if (video == null) {
+    return []
+  }
+
+  return reduceAvailableLanguages(video)
+}
+
+// Batched form of calculateAvailableLanguages: one findMany for the whole set
+// rather than a lookup per id. Callers that recompute many videos at once (the
+// seed job walks the entire Video table) must use this - a per-id loop makes
+// their read cost grow with the catalog. Ids with no matching video are absent
+// from the returned map, mirroring calculateAvailableLanguages' empty result.
+export async function calculateAvailableLanguagesForVideos(
+  videoIds: string[]
+): Promise<Map<string, string[]>> {
+  if (videoIds.length === 0) {
+    return new Map()
+  }
+
+  const videos = await prisma.video.findMany({
+    where: { id: { in: videoIds } },
+    select: { id: true, ...availableLanguagesSelect }
+  })
+
+  return new Map(
+    videos.map((video) => [video.id, reduceAvailableLanguages(video)])
+  )
+}
+
+interface AvailableLanguagesWriteOptions {
+  skipCache?: boolean
+  skipAlgolia?: boolean
+  client?: PrismaClientOrTx
+}
+
+// Writes one video's already-computed availableLanguages and runs the cache
+// and search side effects. Split out of updateVideoAvailableLanguages so
+// batched callers can reuse the write half against languages they resolved in
+// a single lookup, rather than re-reading each video to get them.
+async function applyAvailableLanguages(
+  videoId: string,
+  availableLanguages: string[],
+  options: AvailableLanguagesWriteOptions
 ): Promise<string[]> {
   const client = options.client ?? prisma
-  const availableLanguages = await calculateAvailableLanguages(videoId, client)
 
   // Update the video
   await client.video.update({
@@ -94,6 +135,20 @@ export async function updateVideoAvailableLanguages(
   }
 
   return availableLanguages
+}
+
+// Updates a video's availableLanguages field based on current state
+// Handles both regular videos and collections
+export async function updateVideoAvailableLanguages(
+  videoId: string,
+  options: AvailableLanguagesWriteOptions = {}
+): Promise<string[]> {
+  const availableLanguages = await calculateAvailableLanguages(
+    videoId,
+    options.client ?? prisma
+  )
+
+  return applyAvailableLanguages(videoId, availableLanguages, options)
 }
 
 // Adds a language to a video's availableLanguages if not already present.
@@ -178,16 +233,139 @@ export async function findContainerParentIds(
   return parents.map((parent) => parent.id)
 }
 
+interface ParentDependencyOrder {
+  orderedParentIds: string[]
+  parentsWithSiblingDependency: Set<string>
+}
+
+// findContainerParentIds' results are independent of each other whenever
+// none of them is itself a child of another one of them. That assumption
+// breaks for a diamond shape: a clip sitting directly inside both a series
+// and the collection that contains that series. The collection then needs
+// the series' freshly recomputed languages, not the pre-update value a
+// single batched snapshot would otherwise freeze in. Orders the batch by
+// that containment - restricted to this batch, via each parent's actual
+// `children` relation (not the persisted `childIds` scalar, which is "for
+// child sort order" only per schema.prisma and can list ids a create/update
+// never actually connected, e.g. a child that didn't exist yet - describing
+// a cycle between two parents that aren't really one) - so dependents are
+// written after what they depend on, and reports which parents have such a
+// dependency so the caller knows to re-derive them instead of trusting the
+// batched value.
+function orderParentsByDependency(
+  parentIds: string[],
+  childIdsByParentId: Map<string, string[]>
+): ParentDependencyOrder {
+  const parentIdSet = new Set(parentIds)
+  const dependencies = new Map(
+    parentIds.map((id) => [
+      id,
+      (childIdsByParentId.get(id) ?? []).filter((childId) =>
+        parentIdSet.has(childId)
+      )
+    ])
+  )
+
+  const dependents = new Map<string, string[]>()
+  const remainingDependencyCount = new Map<string, number>()
+  for (const [parentId, deps] of dependencies) {
+    remainingDependencyCount.set(parentId, deps.length)
+    for (const dep of deps) {
+      dependents.set(dep, [...(dependents.get(dep) ?? []), parentId])
+    }
+  }
+
+  const queue = parentIds.filter((id) => remainingDependencyCount.get(id) === 0)
+  const orderedParentIds: string[] = []
+  while (queue.length > 0) {
+    const id = queue.shift() as string
+    orderedParentIds.push(id)
+    for (const dependent of dependents.get(id) ?? []) {
+      const remaining = (remainingDependencyCount.get(dependent) ?? 0) - 1
+      remainingDependencyCount.set(dependent, remaining)
+      if (remaining === 0) {
+        queue.push(dependent)
+      }
+    }
+  }
+
+  // Two of these parents directly containing each other is already
+  // inconsistent data this function cannot resolve - fall back to the
+  // original order rather than dropping a parent from the update.
+  if (orderedParentIds.length < parentIds.length) {
+    return {
+      orderedParentIds: parentIds,
+      parentsWithSiblingDependency: new Set()
+    }
+  }
+
+  const parentsWithSiblingDependency = new Set(
+    [...dependencies.entries()]
+      .filter(([, deps]) => deps.length > 0)
+      .map(([id]) => id)
+  )
+
+  return { orderedParentIds, parentsWithSiblingDependency }
+}
+
 // Updates all parent videos (collections) when a child video's languages change
 // Ensures collections always reflect the union of their children's languages
+//
+// The parents are recomputed from one batched lookup rather than a lookup
+// each. Dependency detection needs a second batched lookup of its own - the
+// actual `children` relation, unfiltered by published, since that's what a
+// create/update call actually connected and what determines write order -
+// rather than reusing availableLanguagesSelect's published-only children,
+// which would miss an unpublished sibling dependency. A parent with no
+// sibling dependency in this batch uses the snapshot value directly; a
+// parent that depends on a sibling (see orderParentsByDependency above) is
+// written after that sibling and re-derived with a fresh read at that
+// point, so it picks up the sibling's just-written value rather than the
+// snapshot's stale one.
+//
+// The writes stay per-parent: the Algolia enqueue and cache reset are
+// per-video side effects, and keeping the updates separate preserves the
+// existing behaviour where a failure on one parent leaves earlier parents
+// committed.
 export async function updateParentCollectionLanguages(
   childVideoId: string
 ): Promise<void> {
   const parentIds = await findContainerParentIds(childVideoId)
 
+  if (parentIds.length === 0) {
+    return
+  }
+
+  const [parents, parentChildren] = await Promise.all([
+    prisma.video.findMany({
+      where: { id: { in: parentIds } },
+      select: { id: true, ...availableLanguagesSelect }
+    }),
+    prisma.video.findMany({
+      where: { id: { in: parentIds } },
+      select: { id: true, children: { select: { id: true } } }
+    })
+  ])
+
+  const availableLanguagesByVideoId = new Map(
+    parents.map((video) => [video.id, reduceAvailableLanguages(video)])
+  )
+  const childIdsByParentId = new Map(
+    parentChildren.map((video) => [
+      video.id,
+      video.children.map((child) => child.id)
+    ])
+  )
+  const { orderedParentIds, parentsWithSiblingDependency } =
+    orderParentsByDependency(parentIds, childIdsByParentId)
+
   // Update each parent collection
-  for (const parentId of parentIds) {
-    await updateVideoAvailableLanguages(parentId, {
+  for (const parentId of orderedParentIds) {
+    const availableLanguages = parentsWithSiblingDependency.has(parentId)
+      ? await calculateAvailableLanguages(parentId)
+      : (availableLanguagesByVideoId.get(parentId) ?? [])
+
+    await applyAvailableLanguages(parentId, availableLanguages, {
       skipCache: false,
       skipAlgolia: false
     })
