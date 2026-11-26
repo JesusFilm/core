@@ -2,8 +2,10 @@ import { createHash } from 'node:crypto'
 
 import { z } from 'zod'
 
+import { cardStarterCommand } from '@core/yoga/mcp/cardStarterContract'
 import { editInput } from '@core/yoga/mcp/editContract'
 import { readRequest } from '@core/yoga/mcp/readContract'
+import { actionValue } from '@core/yoga/mcp/structureContract'
 
 import { protocolVersions } from './protocol'
 import { validateRelease } from './release'
@@ -66,6 +68,10 @@ const readSchema = z.toJSONSchema(readRequest, { io: 'input' })
 export const registryRows = [
   ...new Set([
     ...readRequest.options.map((option) => `tool/${option.shape.tool.value}`),
+    ...cardStarterCommand.shape.starter.options.map(
+      (option) => `starter/${option.shape.kind.value}`
+    ),
+    ...actionValue.options.map((option) => `action/${option.shape.kind.value}`),
     ...literals(editSchema, 'type').map((name) => `edit/${name}`),
     ...literals(editSchema, 'kind').map((name) => `variant/${name}`),
     ...literals(readSchema, 'kind').map((name) => `input-kind/${name}`),
@@ -287,6 +293,7 @@ export function validateAcceptance(
 export const localSuites = [
   {
     id: 'reads',
+    root: 'apis/api-auth',
     config: 'apis/api-auth/vitest.config.mts',
     modules: [
       'apis/api-auth/src/reads.ts',
@@ -296,6 +303,7 @@ export const localSuites = [
   },
   {
     id: 'edits',
+    root: '.',
     config: 'apis/api-auth/vitest.edits.config.mts',
     modules: [
       'apis/api-journeys/src/lib/mcpEdits.ts',
@@ -305,6 +313,7 @@ export const localSuites = [
   },
   {
     id: 'structure',
+    root: '.',
     config: 'apis/api-auth/vitest.structure.config.mts',
     modules: [
       'apis/api-journeys/src/lib/mcpStructure.ts',
@@ -313,6 +322,7 @@ export const localSuites = [
   },
   {
     id: 'forms',
+    root: '.',
     config: 'apis/api-auth/vitest.forms.config.mts',
     modules: [
       'apis/api-journeys/src/lib/mcpForms.ts',
@@ -321,6 +331,7 @@ export const localSuites = [
   },
   {
     id: 'appearance',
+    root: '.',
     config: 'apis/api-auth/vitest.appearance.config.mts',
     modules: [
       'apis/api-journeys/src/lib/mcpAppearance.ts',
@@ -329,6 +340,7 @@ export const localSuites = [
   },
   {
     id: 'media',
+    root: '.',
     config: 'apis/api-auth/vitest.media.config.mts',
     modules: [
       'apis/api-journeys/src/lib/mcpMedia.ts',
@@ -338,6 +350,7 @@ export const localSuites = [
   },
   {
     id: 'image-upload',
+    root: '.',
     config: 'apis/api-auth/vitest.image-upload.config.mts',
     modules: [
       'apis/api-auth/src/mediaJobs.ts',
@@ -346,6 +359,7 @@ export const localSuites = [
   },
   {
     id: 'video-upload',
+    root: '.',
     config: 'apis/api-auth/vitest.video-upload.config.mts',
     modules: [
       'apis/api-media/src/lib/mcpVideoInput.ts',
@@ -354,21 +368,25 @@ export const localSuites = [
   },
   {
     id: 'image-generation',
+    root: '.',
     config: 'apis/api-auth/vitest.image-generation.config.mts',
     modules: ['apis/api-media/src/lib/mcpImageGenerationProvider.ts']
   },
   {
     id: 'operations',
+    root: '.',
     config: 'apis/api-auth/vitest.operations.config.mts',
     modules: ['apis/api-auth/src/operations.ts', 'apis/api-mcp/src/release.ts']
   },
   {
     id: 'protocol',
+    root: 'apis/api-mcp',
     config: 'apis/api-mcp/vitest.config.mts',
     modules: ['apis/api-mcp/src/protocol.ts', 'apis/api-mcp/src/runtime.ts']
   },
   {
     id: 'admin-components',
+    root: 'apps/journeys-admin',
     config: 'apps/journeys-admin/vitest.config.mts',
     filters: [
       'apps/journeys-admin/test/privatePreview',

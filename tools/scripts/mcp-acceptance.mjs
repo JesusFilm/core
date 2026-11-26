@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, realpath, writeFile } from 'node:fs/promises'
 import { dirname, resolve, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -22,8 +22,8 @@ const {
 const { validateRelease } = releaseModule.default ?? releaseModule
 
 const json = async (path) => JSON.parse(await readFile(path, 'utf8'))
-const save = (path, value) =>
-  writeFile(path, JSON.stringify(value, null, 2) + '\n')
+const save = (path, value, flag = 'w') =>
+  writeFile(path, JSON.stringify(value, null, 2) + '\n', { flag })
 
 export async function verifyArtifacts(ledger, directory) {
   const root = await realpath(directory)
@@ -55,16 +55,23 @@ export async function createAcceptancePlan(
     notBefore: now.toISOString(),
     records: []
   }
-  await save(resolve(directory, 'ledger.json'), ledger)
-  await save(resolve(directory, 'plan.json'), {
-    qualification: 'unexecuted',
-    productionApproved: false,
-    ...ledger,
-    acceptanceCases,
-    registryRows,
-    controlledLocalSuites: localSuites,
-    checks: releaseChecks().map((check) => ({ ...check, status: 'unexecuted' }))
-  })
+  await save(resolve(directory, 'ledger.json'), ledger, 'wx')
+  await save(
+    resolve(directory, 'plan.json'),
+    {
+      qualification: 'unexecuted',
+      productionApproved: false,
+      ...ledger,
+      acceptanceCases,
+      registryRows,
+      controlledLocalSuites: localSuites,
+      checks: releaseChecks().map((check) => ({
+        ...check,
+        status: 'unexecuted'
+      }))
+    },
+    'wx'
+  )
 }
 
 export async function runLocalAcceptance(
@@ -79,6 +86,11 @@ export async function runLocalAcceptance(
     throw new Error('Unknown or duplicate suite')
   const root = resolve(directory)
   await mkdir(root, { recursive: true })
+  await save(
+    resolve(root, 'invocation.json'),
+    { startedAt: new Date().toISOString(), selected },
+    'wx'
+  )
   const command = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' })
   if (command.status !== 0) throw new Error('Missing source revision')
   const sourceCommit = command.stdout.trim()
@@ -88,12 +100,11 @@ export async function runLocalAcceptance(
   if (status.status !== 0) throw new Error('Cannot verify worktree')
   const worktreeDirty = status.stdout.length > 0
   const results = []
+  let runningSuite
   try {
     for (const id of selected) {
       const suite = localSuites.find((item) => item.id === id)
-      // A previous successful report cannot survive a failed or skipped run.
-      await rm(resolve(root, `${id}-tests.json`), { force: true })
-      await rm(resolve(root, id), { recursive: true, force: true })
+      runningSuite = id
       const startedAt = new Date().toISOString()
       const reportBytes = await executeLocalSuite(suite, root)
       const counts = executedCounts(JSON.parse(reportBytes))
@@ -130,6 +141,7 @@ export async function runLocalAcceptance(
       qualification: 'failed',
       complete: false,
       productionApproved: false,
+      failedSuite: runningSuite,
       results
     })
     throw new Error('Local acceptance failed; inspect the owning suite output')

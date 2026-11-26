@@ -77,6 +77,12 @@ describe('release acceptance evidence', () => {
   it('derives every tool and nested command variant and keeps the canonical case numbering', () => {
     expect(acceptanceCases).toHaveLength(21)
     expect(acceptanceCases).not.toContain('A3')
+    expect(
+      registryRows.filter((row) => row.startsWith('starter/'))
+    ).toHaveLength(6)
+    expect(
+      registryRows.filter((row) => row.startsWith('action/'))
+    ).toHaveLength(7)
     for (const tool of readRequest.options)
       expect(registryRows).toContain(`tool/${tool.shape.tool.value}`)
     expect(registryRows).toEqual(

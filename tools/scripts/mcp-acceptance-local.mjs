@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
-import { mkdir, readFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 
@@ -18,6 +18,22 @@ function run(args, env = {}) {
   })
   if (result.error || result.status !== 0)
     throw new Error('Owning suite failed')
+}
+
+export function suiteConfiguration(suite, directory) {
+  return `import base from ${JSON.stringify(resolve(suite.config))}
+export default {
+  ...base, root: ${JSON.stringify(resolve(suite.root))},
+  test: { ...base.test, fileParallelism: false, maxWorkers: 1,
+    reporters: ['default', 'json'],
+    outputFile: { json: ${JSON.stringify(resolve(directory, 'tests.json'))} },
+    coverage: { ...base.test.coverage,
+      reportsDirectory: ${JSON.stringify(resolve(directory, 'coverage'))},
+      reporter: ['json', ['cobertura', { projectRoot: ${JSON.stringify(resolve('.'))} }]]
+    }
+  }
+}
+`
 }
 
 export function localDatabaseSource(value) {
@@ -131,33 +147,10 @@ export async function executeLocalSuite(suite, directory) {
       for (const domain of ['auth', 'journeys', 'media', 'languages'])
         env[`${prefix}_TEST_${domain.toUpperCase()}_DATABASE_URL`] =
           urls[domain]
-    const root =
-      suite.id === 'reads'
-        ? 'apis/api-auth'
-        : suite.id === 'protocol'
-          ? 'apis/api-mcp'
-          : suite.id === 'admin-components'
-            ? 'apps/journeys-admin'
-            : '.'
+    const config = `${output}/vitest.config.mts`
+    await writeFile(config, suiteConfiguration(suite, output))
     run(
-      [
-        'exec',
-        'vitest',
-        'run',
-        '--root',
-        resolve(root),
-        '--config',
-        resolve(suite.config),
-        '--fileParallelism=false',
-        '--maxWorkers=1',
-        '--reporter=default',
-        '--reporter=json',
-        `--outputFile=${output}/tests.json`,
-        `--coverage.reportsDirectory=${output}/coverage`,
-        '--coverage.reporter=json',
-        '--coverage.reporter=cobertura',
-        ...(suite.filters ?? [])
-      ],
+      ['exec', 'vitest', 'run', '--config', config, ...(suite.filters ?? [])],
       env
     )
     const tests = await readFile(`${output}/tests.json`)
