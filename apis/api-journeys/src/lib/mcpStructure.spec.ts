@@ -1,8 +1,9 @@
 import { mockDeep } from 'vitest-mock-extended'
 
 import { Prisma } from '@core/prisma/journeys/client'
+import type { CardStarterCommand } from '@core/yoga/mcp/cardStarterContract'
 import { editInput } from '@core/yoga/mcp/editContract'
-import { mediaSourceKey } from '@core/yoga/mcp/mediaContract'
+import { type ReadyMedia, mediaSourceKey } from '@core/yoga/mcp/mediaContract'
 
 import { planStructure } from './mcpStructure'
 import { planStructureHistory } from './mcpStructureHistory'
@@ -90,6 +91,222 @@ describe('owning structure planner', () => {
     vi.clearAllMocks()
     tx.block.findFirst.mockResolvedValue(null)
     readRows(base(), [action('yes', 'b'), action('no', 'c')])
+  })
+
+  describe('Card starters', () => {
+    const imageSource = { source: 'unsplash', id: 'starter-image' } as const
+    const videoSource = {
+      source: 'internal',
+      videoId: '1_jf-0-0',
+      languageId: '529'
+    } as const
+    const media = {
+      website: false,
+      websiteMode: false,
+      sources: new Map<string, ReadyMedia>([
+        [
+          mediaSourceKey(imageSource),
+          {
+            kind: 'image',
+            src: 'https://images.unsplash.com/starter-image',
+            width: 1200,
+            height: 800,
+            blurhash: 'trusted-blurhash'
+          }
+        ],
+        [
+          mediaSourceKey(videoSource),
+          {
+            kind: 'video',
+            source: 'internal',
+            videoId: videoSource.videoId,
+            videoVariantLanguageId: videoSource.languageId,
+            title: null,
+            description: null,
+            image: null,
+            duration: 3600,
+            subtitleLanguageIds: [],
+            subtitleStatus: 'unavailable'
+          }
+        ]
+      ])
+    }
+    const card = { local: 'new_card' }
+    const examples = [
+      [{ kind: 'video', source: videoSource }, ['VideoBlock']],
+      [
+        { kind: 'intro', source: videoSource },
+        ['TypographyBlock', 'TypographyBlock', 'TypographyBlock', 'ButtonBlock']
+      ],
+      [
+        { kind: 'poll', source: imageSource, options: ['A', 'B', 'C', 'D'] },
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'RadioQuestionBlock',
+          'TypographyBlock'
+        ]
+      ],
+      [
+        { kind: 'form', source: imageSource, submitLabel: 'Send prayer' },
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'TextResponseBlock',
+          'ButtonBlock',
+          'TypographyBlock'
+        ]
+      ],
+      [
+        { kind: 'quote', source: imageSource, quote: 'A substituted quote' },
+        ['TypographyBlock', 'TypographyBlock', 'TypographyBlock']
+      ],
+      [
+        { kind: 'cta', source: imageSource },
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'ButtonBlock',
+          'ButtonBlock',
+          'ButtonBlock'
+        ]
+      ]
+    ] satisfies Array<[CardStarterCommand['starter'], string[]]>
+
+    it.each(
+      examples.map(([starter, types]) => ({
+        kind: starter.kind,
+        starter,
+        types
+      }))
+    )(
+      'plans the $kind recipe on a Card created in the same batch',
+      async ({ starter, types }) => {
+        const commands = editInput.parse({
+          journeyId: journey.id,
+          expectedRevision: '0',
+          idempotencyKey: 'apply-card-starter-recipe',
+          commands: [
+            {
+              type: 'step_add',
+              key: 'new_step',
+              cardKey: card.local,
+              placement: end
+            },
+            { type: 'card_starter_apply', card, key: 'starter', starter }
+          ]
+        }).commands
+        const plan = await planStructure(tx, journey, commands, media)
+        const created = plan.blockWrites.flatMap((write) =>
+          write.create ? [write.create] : []
+        )
+        const target = created.find((block) => block.id === plan.idMap.new_card)
+        const content = created
+          .filter(
+            (block) =>
+              block.parentBlockId === target?.id && block.parentOrder !== null
+          )
+          .sort(
+            (first, second) =>
+              Number(first.parentOrder) - Number(second.parentOrder)
+          )
+        expect(content.map((block) => block.typename)).toEqual(types)
+        expect(plan.changes).toHaveLength(1)
+        expect(plan.changes[0].media).toBe(true)
+        expect(plan.actionWrites).toEqual([])
+
+        if (starter.kind === 'video') {
+          expect(content[0]).toMatchObject({
+            startAt: 2048,
+            endAt: 2058,
+            autoplay: true,
+            muted: false
+          })
+        } else {
+          expect(
+            created.find((block) => block.id === target?.coverBlockId)
+          ).toMatchObject({
+            parentBlockId: target?.id,
+            parentOrder: null,
+            typename: starter.kind === 'intro' ? 'VideoBlock' : 'ImageBlock'
+          })
+        }
+        if (['poll', 'form', 'quote'].includes(starter.kind))
+          expect(content.at(-1)).toMatchObject({ color: 'secondary' })
+        if (starter.kind === 'form') {
+          expect(content[3]).toMatchObject({
+            submitEnabled: true,
+            label: 'Send prayer'
+          })
+          expect(
+            created.filter((block) => block.parentBlockId === content[3].id)
+          ).toHaveLength(2)
+        }
+        if (starter.kind === 'poll') {
+          expect(
+            created
+              .filter((block) => block.parentBlockId === content[2].id)
+              .sort(
+                (first, second) =>
+                  Number(first.parentOrder) - Number(second.parentOrder)
+              )
+              .map((block) => block.label)
+          ).toEqual(['A', 'B', 'C', 'D'])
+        }
+        if (starter.kind === 'quote') {
+          expect(target).toMatchObject({
+            fullscreen: false,
+            themeMode: 'dark',
+            themeName: 'base'
+          })
+          expect(content[1].content).toBe('A substituted quote')
+        }
+        if (starter.kind === 'intro' || starter.kind === 'cta') {
+          const iconNames = created
+            .filter((block) => block.typename === 'IconBlock')
+            .map((block) => block.name)
+          expect(iconNames).toContain('ArrowForwardRounded')
+          if (starter.kind === 'cta') {
+            expect(iconNames).toContain('ChatBubbleOutlineRounded')
+            expect(iconNames).toContain('SendRounded')
+          }
+        }
+      }
+    )
+
+    it('rejects a populated target even if the batch also removes its content', async () => {
+      const commands: StructureCommands = [
+        { type: 'block_remove', block: { id: 'text' } },
+        {
+          type: 'card_starter_apply',
+          card: { id: 'ac' },
+          key: 'starter',
+          starter: { kind: 'quote', source: imageSource }
+        }
+      ]
+      await expect(planStructure(tx, journey, commands, media)).rejects.toThrow(
+        'VALIDATION_FAILED'
+      )
+    })
+
+    it('accepts an existing empty Card and rejects a source missing from the authorized projection', async () => {
+      readRows([row('a', 'StepBlock', null, 0), row('ac', 'CardBlock', 'a', 0)])
+      const command: CardStarterCommand = {
+        type: 'card_starter_apply',
+        card: { id: 'ac' },
+        key: 'starter',
+        starter: { kind: 'quote', source: imageSource }
+      }
+      await expect(
+        planStructure(tx, journey, [command], media)
+      ).resolves.toMatchObject({
+        idMap: { starter_title: expect.any(String) }
+      })
+      await expect(
+        planStructure(tx, journey, [command], { ...media, sources: new Map() })
+      ).rejects.toThrow('ACCESS_DENIED_OR_NOT_FOUND')
+      expect(tx.block.create).not.toHaveBeenCalled()
+    })
   })
 
   it('attaches media to a poll option created in the same form batch', async () => {

@@ -11,7 +11,8 @@ export default defineConfig({
       'apis/api-auth/test/grantedMedia.spec.ts',
       'libs/yoga/src/mcp/*.spec.ts',
       'apis/api-media/src/lib/mcpMediaProviders.spec.ts',
-      'apis/api-journeys/src/lib/mcpMedia.spec.ts'
+      'apis/api-journeys/src/lib/mcpMedia.spec.ts',
+      'apis/api-journeys/src/lib/mcpStructure.spec.ts'
     ],
     coverage: {
       ...editsConfig.test?.coverage,

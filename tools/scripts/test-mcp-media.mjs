@@ -133,6 +133,8 @@ const cobertura = readFileSync(
   'utf8'
 )
 for (const module of [
+  'libs/yoga/src/mcp/cardStarterContract.ts',
+  'apis/api-journeys/src/lib/mcpStructure.ts',
   'apis/api-journeys/src/lib/mcpMedia.ts',
   'apis/api-journeys/src/lib/mcpMediaClient.ts',
   'apis/api-journeys/src/lib/mcpEdits.ts',

@@ -70,7 +70,8 @@ jobs:
           fail_ci_if_error: true
   media:
     runs-on: jfp-proxmox-core
-    timeout-minutes: 20
+    # Includes all six starter recipes, source faults and both history directions.
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16

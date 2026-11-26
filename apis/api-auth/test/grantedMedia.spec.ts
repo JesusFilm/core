@@ -9,6 +9,8 @@ import {
   sourceTransaction,
   transactionScopedMediaClient
 } from '@core/prisma/media/client'
+import type { CardStarterCommand } from '@core/yoga/mcp/cardStarterContract'
+import type { ImageSource, VideoSource } from '@core/yoga/mcp/mediaContract'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 /* eslint-disable @nx/enforce-module-boundaries -- Exercise the real separately deployed media participant. */
@@ -514,6 +516,581 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     f.receipt(await f.historyAction('redo', saved.historyId!))
     expect((await image()).src).not.toBeNull()
     expect(await image('button')).toMatchObject({ label: 'Updated button' })
+  })
+
+  describe('atomic Card starters', () => {
+    const placement = { position: 'end' }
+    const card = { local: 'starter_card' }
+    const setup = {
+      type: 'step_add',
+      key: 'starter_step',
+      cardKey: card.local,
+      placement
+    }
+    type StarterKind = CardStarterCommand['starter']['kind']
+    const kinds = ['video', 'intro', 'poll', 'form', 'quote', 'cta'] as const
+    const sourceFor = (kind: StarterKind): ImageSource | VideoSource =>
+      kind === 'video' || kind === 'intro'
+        ? { source: 'mux', videoId: f.id('mux') }
+        : { source: 'library', id: f.id('asset') }
+    const apply = (kind: StarterKind, source = sourceFor(kind)) => ({
+      type: 'card_starter_apply',
+      key: 'starter',
+      card,
+      starter: { kind, source }
+    })
+    const substitutions = {
+      video: {},
+      intro: {
+        eyebrow: 'Intro eyebrow',
+        title: 'Intro title',
+        body: 'Intro body',
+        button: 'Explore'
+      },
+      poll: {
+        eyebrow: 'Poll eyebrow',
+        title: 'Poll title',
+        options: ['First', 'Second', 'Third', 'Fourth'],
+        caption: 'Poll caption'
+      },
+      form: {
+        eyebrow: 'Form eyebrow',
+        title: 'Form title',
+        responseLabel: 'Your request',
+        submitLabel: 'Send',
+        caption: 'Form caption'
+      },
+      quote: {
+        eyebrow: 'Quote eyebrow',
+        quote: 'A supplied quotation',
+        attribution: 'A supplied attribution'
+      },
+      cta: {
+        eyebrow: 'CTA eyebrow',
+        title: 'CTA title',
+        chat: 'Chat now',
+        email: 'Write to us',
+        more: 'Read more'
+      }
+    } satisfies Record<StarterKind, object>
+    const readChildren = (parentBlockId: string) =>
+      f.journeys.block.findMany({
+        where: { parentBlockId, deletedAt: null },
+        orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }]
+      })
+    const readCard = (id: string) =>
+      f.journeys.block.findUniqueOrThrow({ where: { id } })
+
+    const recipes = [
+      ['video', ['VideoBlock']],
+      [
+        'intro',
+        ['TypographyBlock', 'TypographyBlock', 'TypographyBlock', 'ButtonBlock']
+      ],
+      [
+        'poll',
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'RadioQuestionBlock',
+          'TypographyBlock'
+        ]
+      ],
+      [
+        'form',
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'TextResponseBlock',
+          'ButtonBlock',
+          'TypographyBlock'
+        ]
+      ],
+      ['quote', ['TypographyBlock', 'TypographyBlock', 'TypographyBlock']],
+      [
+        'cta',
+        [
+          'TypographyBlock',
+          'TypographyBlock',
+          'ButtonBlock',
+          'ButtonBlock',
+          'ButtonBlock'
+        ]
+      ]
+    ] as const
+
+    it.each(
+      recipes.flatMap(([kind, types]) =>
+        [false, true].map((existing) => ({ kind, types, existing }))
+      )
+    )(
+      'saves, replays, undoes, and restores $kind with stable references, existing=$existing',
+      async ({ kind, types, existing }) => {
+        const empty = existing ? await f.save([setup]) : undefined
+        const command = {
+          ...apply(kind),
+          card: empty ? { id: empty.idMap.starter_card } : card,
+          starter: {
+            ...apply(kind).starter,
+            ...(existing ? substitutions[kind] : {})
+          }
+        }
+        const countsBefore = await f.counts()
+        const input = await f.input([...(existing ? [] : [setup]), command])
+        const originalHeading = await image('heading')
+        f.loseNextResponse()
+        expect((await f.edit(input)).json.result?.isError).toBe(true)
+        const receipt = f.receipt(await f.edit(input))
+        expect(await f.counts()).toEqual({
+          operations: countsBefore.operations + 1,
+          history: countsBefore.history + 1,
+          effects: countsBefore.effects + 1
+        })
+        expect(f.receipt(await f.edit(input))).toEqual(receipt)
+        const target = await readCard(
+          empty?.idMap.starter_card ?? receipt.idMap.starter_card
+        )
+        const content = await readChildren(target.id)
+        expect(
+          content
+            .filter((block) => block.parentOrder !== null)
+            .map((block) => block.typename)
+        ).toEqual(types)
+        if (kind !== 'video') {
+          expect(
+            content.find((block) => block.id === target.coverBlockId)
+          ).toMatchObject({
+            typename: kind === 'intro' ? 'VideoBlock' : 'ImageBlock',
+            parentOrder: null
+          })
+        }
+        const ordered = content.filter((block) => block.parentOrder !== null)
+        for (const button of content.filter(
+          (block) => block.typename === 'ButtonBlock'
+        )) {
+          expect(button).toMatchObject({
+            variant:
+              kind === 'cta' && button === ordered[4] ? 'text' : 'contained',
+            size: kind === 'cta' ? 'large' : 'medium',
+            submitEnabled: kind === 'form'
+          })
+          expect(await readChildren(button.id)).toHaveLength(2)
+          expect(await readCard(button.startIconId!)).toMatchObject({
+            typename: 'IconBlock',
+            parentBlockId: button.id,
+            parentOrder: null
+          })
+          expect(await readCard(button.endIconId!)).toMatchObject({
+            typename: 'IconBlock',
+            parentBlockId: button.id,
+            parentOrder: null
+          })
+          expect(
+            await f.journeys.action.findUnique({
+              where: { parentBlockId: button.id }
+            })
+          ).toBeNull()
+        }
+        if (kind === 'intro')
+          expect(await readCard(ordered[3].endIconId!)).toMatchObject({
+            name: 'ArrowForwardRounded'
+          })
+        if (kind === 'cta') {
+          for (const [index, name] of [
+            'ChatBubbleOutlineRounded',
+            'SendRounded',
+            'ArrowForwardRounded'
+          ].entries())
+            expect(
+              await readCard(ordered[index + 2].startIconId!)
+            ).toMatchObject({ name })
+        }
+        if (kind === 'poll') {
+          const options = await readChildren(receipt.idMap.starter_question)
+          expect(options.map((option) => option.id)).toEqual(
+            [1, 2, 3, 4].map(
+              (index) => receipt.idMap['starter_option_' + index]
+            )
+          )
+          expect(options.map((option) => option.parentOrder)).toEqual([
+            0, 1, 2, 3
+          ])
+          for (const option of options)
+            expect(
+              await f.journeys.action.findUnique({
+                where: { parentBlockId: option.id }
+              })
+            ).toBeNull()
+        }
+        if (kind === 'form')
+          expect(ordered[3]).toMatchObject({
+            label: existing ? 'Send' : '',
+            submitEnabled: true
+          })
+        if (existing) {
+          const expected = {
+            intro: [
+              ['starter_eyebrow', 'content', 'Intro eyebrow'],
+              ['starter_title', 'content', 'Intro title'],
+              ['starter_body', 'content', 'Intro body'],
+              ['starter_begin', 'label', 'Explore']
+            ],
+            poll: [
+              ['starter_eyebrow', 'content', 'Poll eyebrow'],
+              ['starter_title', 'content', 'Poll title'],
+              ['starter_option_1', 'label', 'First'],
+              ['starter_option_4', 'label', 'Fourth'],
+              ['starter_caption', 'content', 'Poll caption']
+            ],
+            form: [
+              ['starter_eyebrow', 'content', 'Form eyebrow'],
+              ['starter_title', 'content', 'Form title'],
+              ['starter_response', 'label', 'Your request'],
+              ['starter_caption', 'content', 'Form caption']
+            ],
+            quote: [
+              ['starter_eyebrow', 'content', 'Quote eyebrow'],
+              ['starter_title', 'content', 'A supplied quotation'],
+              ['starter_attribution', 'content', 'A supplied attribution']
+            ],
+            cta: [
+              ['starter_eyebrow', 'content', 'CTA eyebrow'],
+              ['starter_title', 'content', 'CTA title'],
+              ['starter_chat', 'label', 'Chat now'],
+              ['starter_email', 'label', 'Write to us'],
+              ['starter_more', 'label', 'Read more']
+            ],
+            video: []
+          } as const
+          for (const [key, field, value] of expected[kind])
+            expect(await readCard(receipt.idMap[key])).toMatchObject({
+              [field]: value
+            })
+        }
+        if (kind === 'poll' || kind === 'form' || kind === 'quote')
+          expect(ordered.at(-1)).toMatchObject({ color: 'secondary' })
+        if (kind === 'video' || kind === 'intro') {
+          const video =
+            kind === 'video' ? ordered[0] : await readCard(target.coverBlockId!)
+          expect(video).toMatchObject({
+            videoId: f.id('mux'),
+            autoplay: true,
+            muted: kind === 'intro',
+            startAt: 0,
+            endAt: 120
+          })
+        } else
+          expect(await readCard(target.coverBlockId!)).toMatchObject({
+            width: 1200,
+            height: 800,
+            blurhash: readyImage.blurhash
+          })
+        const admin = await f.adminRead(
+          'blocks { id parentBlockId parentOrder }'
+        )
+        expect(admin.errors).toBeUndefined()
+        expect(JSON.stringify(admin.data)).toContain(ordered[0].id)
+        expect(await image('heading')).toMatchObject({
+          content: originalHeading.content
+        })
+        await f.journeys.block.update({
+          where: { id: f.id('heading') },
+          data: { content: 'Newer unrelated Admin text' }
+        })
+        const host = await f.journeys.host.create({
+          data: { teamId: 'structure-team-alice', title: 'Newer human Host' }
+        })
+        await f.journeys.journey.update({
+          where: { id: f.journeyId },
+          data: { hostId: host.id }
+        })
+        f.receipt(await f.historyAction('undo', receipt.historyId!))
+        if (existing) expect((await readCard(target.id)).deletedAt).toBeNull()
+        else expect((await readCard(target.id)).deletedAt).toBeInstanceOf(Date)
+        expect(await readChildren(target.id)).toEqual([])
+        f.receipt(await f.historyAction('redo', receipt.historyId!))
+        expect((await readCard(target.id)).coverBlockId).toBe(
+          target.coverBlockId
+        )
+        expect(
+          (await readChildren(target.id)).map((block) => block.id)
+        ).toEqual(content.map((block) => block.id))
+        expect(await image('heading')).toMatchObject({
+          content: 'Newer unrelated Admin text'
+        })
+        expect((await f.snapshot()).journey.hostId).toBe(host.id)
+      }
+    )
+
+    it.each(
+      kinds.flatMap((kind) =>
+        ['source', 'provider', 'before_commit'].map((failure) => ({
+          kind,
+          failure
+        }))
+      )
+    )(
+      'rolls back the complete $kind recipe on $failure failure and retries exactly once',
+      async ({ kind, failure }) => {
+        const command = apply(kind)
+        if (failure === 'source')
+          command.starter.source =
+            kind === 'video' || kind === 'intro'
+              ? { source: 'mux', videoId: f.id('foreign-mux') }
+              : { source: 'library', id: f.id('foreign-asset') }
+        let reachedCommit = false
+        f.checkpoint = async (point) => {
+          if (failure === 'before_commit' && point === 'before_commit') {
+            reachedCommit = true
+            throw new Error('controlled composite rollback')
+          }
+        }
+        providerFailure = failure === 'provider'
+        const input = await f.input([setup, command])
+        const before = await f.snapshot()
+        const result = await f.edit(input)
+        expect(
+          result.json.result?.isError ?? Boolean(result.json.error),
+          result.text
+        ).toBe(true)
+        expect(await f.snapshot()).toEqual(before)
+        expect(await f.counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+        expect(reachedCommit).toBe(failure === 'before_commit')
+        f.checkpoint = undefined
+        providerFailure = false
+        if (failure === 'source') return
+        const receipt = f.receipt(await f.edit(input))
+        expect(f.receipt(await f.edit(input))).toEqual(receipt)
+        expect(await f.counts()).toEqual({
+          operations: 1,
+          history: 1,
+          effects: 1
+        })
+      }
+    )
+
+    it.each([
+      ['video', 'video'],
+      ['intro', 'begin'],
+      ['poll', 'option_1'],
+      ['form', 'submit'],
+      ['cta', 'chat']
+    ] as const)(
+      'routes the %s starter through stable local references in the same saved batch',
+      async (kind, part) => {
+        const input = await f.input([
+          setup,
+          apply(kind),
+          {
+            type: 'action_set',
+            block: { local: 'starter_' + part },
+            action: { kind: 'step', destination: ref('b') }
+          }
+        ])
+        const saved = f.receipt(await f.edit(input))
+        expect(
+          await f.journeys.action.findUniqueOrThrow({
+            where: { parentBlockId: saved.idMap['starter_' + part] }
+          })
+        ).toMatchObject({ blockId: f.id('b') })
+        expect(f.receipt(await f.edit(input))).toEqual(saved)
+        expect(await f.counts()).toEqual({
+          operations: 1,
+          history: 1,
+          effects: 1
+        })
+        f.receipt(await f.historyAction('undo', saved.historyId!))
+        f.receipt(await f.historyAction('redo', saved.historyId!))
+        expect(
+          await f.journeys.action.findUniqueOrThrow({
+            where: { parentBlockId: saved.idMap['starter_' + part] }
+          })
+        ).toMatchObject({ blockId: f.id('b') })
+      }
+    )
+
+    it('advertises starters only with a real media participant and fails closed when it is disabled', async () => {
+      const read = () =>
+        f.call('journey_read', { journeyId: f.journeyId, view: 'outline' })
+      const enabled = await read()
+      expect(enabled.json.result?.isError, enabled.text).not.toBe(true)
+      expect(enabled.text).toContain('card_starter_apply')
+      const mediaConfig = f.ownerConfig.media
+      try {
+        f.ownerConfig.media = undefined
+        const disabled = await read()
+        expect(disabled.json.result?.isError, disabled.text).not.toBe(true)
+        expect(disabled.text).not.toContain('card_starter_apply')
+        for (const kind of kinds) await reject([setup, apply(kind)])
+      } finally {
+        f.ownerConfig.media = mediaConfig
+      }
+    })
+
+    it.each(kinds)(
+      'rejects populated, duplicate and foreign targets for %s without replacing content',
+      async (kind) => {
+        await reject([{ ...apply(kind), card: ref('ac') }])
+        await reject([
+          { type: 'block_remove', block: ref('heading') },
+          { ...apply(kind), card: ref('ac') }
+        ])
+        await reject([setup, apply(kind), { ...apply(kind), key: 'second' }])
+        await reject([{ ...apply(kind), card: { id: 'foreign-card' } }])
+        await reject([
+          setup,
+          {
+            ...apply(kind),
+            starter: {
+              ...apply(kind).starter,
+              templateId: 'forbidden-template'
+            }
+          }
+        ])
+        expect(await f.counts()).toEqual({
+          operations: 0,
+          history: 0,
+          effects: 0
+        })
+      }
+    )
+
+    it.each(kinds)(
+      'rejects conflicting %s history and unavailable redo sources',
+      async (kind) => {
+        const saved = await f.save([setup, apply(kind)])
+        const targetId = saved.idMap.starter_card
+        const extra = await f.journeys.block.create({
+          data: {
+            id: f.id('newer-child'),
+            journeyId: f.journeyId,
+            typename: 'TypographyBlock',
+            parentBlockId: targetId,
+            parentOrder: 10,
+            content: 'Newer Admin content'
+          }
+        })
+        const beforeUndo = await f.snapshot()
+        expect(
+          (await f.historyAction('undo', saved.historyId!)).text
+        ).toContain('HISTORY_CONFLICT')
+        expect(await f.snapshot()).toEqual(beforeUndo)
+        await f.journeys.block.delete({ where: { id: extra.id } })
+        f.receipt(await f.historyAction('undo', saved.historyId!))
+        await settleMedia()
+        if (kind === 'video' || kind === 'intro')
+          await protectedMedia.muxVideo.update({
+            where: { id: f.id('mux') },
+            data: { readyToStream: false }
+          })
+        else
+          await protectedMedia.cloudflareImage.update({
+            where: { id: f.id('asset') },
+            data: { uploaded: false }
+          })
+        const beforeRedo = await f.snapshot()
+        expect(
+          (await f.historyAction('redo', saved.historyId!)).json.result?.isError
+        ).toBe(true)
+        expect(await f.snapshot()).toEqual(beforeRedo)
+      }
+    )
+
+    it.each(
+      kinds.flatMap((kind) =>
+        (['undo', 'redo'] as const).map((direction) => ({ kind, direction }))
+      )
+    )(
+      'checks current rights, grant, expiry and draft state for $kind edit and $direction',
+      async ({ kind, direction }) => {
+        const saved = await f.save([setup, apply(kind)])
+        if (direction === 'redo')
+          f.receipt(await f.historyAction('undo', saved.historyId!))
+        const connection = await f.auth.agentConnection.findFirstOrThrow({
+          where: {
+            userId: 'alice',
+            journeyIds: { has: f.journeyId },
+            mode: 'edit'
+          }
+        })
+        for (const reason of [
+          'view',
+          'revoked',
+          'expired',
+          'lost-rights',
+          'published'
+        ] as const) {
+          let token: string | undefined
+          if (reason === 'view') token = await f.consent('view')
+          if (reason === 'revoked')
+            await f.auth.agentConnection.update({
+              where: { id: connection.id },
+              data: { revokedAt: new Date() }
+            })
+          if (reason === 'expired')
+            await f.auth.agentConnection.update({
+              where: { id: connection.id },
+              data: { expiresAt: new Date(0) }
+            })
+          if (reason === 'published')
+            await f.journeys.journey.update({
+              where: { id: f.journeyId },
+              data: {
+                status: 'published',
+                publishedAt: new Date(),
+                firstPublishedAt: new Date()
+              }
+            })
+          if (reason === 'lost-rights')
+            await f.journeys.userTeam.deleteMany({ where: { userId: 'alice' } })
+          const denied = async (direction?: 'undo' | 'redo') => {
+            const before = await f.snapshot()
+            const result = direction
+              ? await f.call(
+                  'journey_' + direction,
+                  {
+                    journeyId: f.journeyId,
+                    expectedRevision: await f.revision(),
+                    entryId: saved.historyId,
+                    idempotencyKey: globalThis.crypto.randomUUID()
+                  },
+                  token
+                )
+              : await f.edit(
+                  await f.input([
+                    { ...setup, key: 'denied_step', cardKey: 'denied_card' },
+                    { ...apply(kind), card: { local: 'denied_card' } }
+                  ]),
+                  token
+                )
+            expect(
+              result.json.result?.isError ?? Boolean(result.json.error),
+              reason + ' ' + result.text
+            ).toBe(true)
+            expect(await f.snapshot()).toEqual(before)
+          }
+          await denied()
+          await denied(direction)
+          if (reason === 'revoked' || reason === 'expired')
+            await f.auth.agentConnection.update({
+              where: { id: connection.id },
+              data: { revokedAt: null, expiresAt: connection.expiresAt }
+            })
+          if (reason === 'lost-rights')
+            await f.journeys.userTeam.create({
+              data: {
+                teamId: 'structure-team-alice',
+                userId: 'alice',
+                role: 'manager'
+              }
+            })
+        }
+      }
+    )
   })
 
   it('adds a poll option and its selected image in one reversible save', async () => {
@@ -2001,9 +2578,13 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
     expect((await search('library')).json.result?.isError).not.toBe(true)
   })
 
-  it.each(['videoDelete', 'videoVariantDelete'] as const)(
-    'drains accepted attachments before dispatching %s provider effects',
-    async (name) => {
+  it.each(
+    (['videoDelete', 'videoVariantDelete'] as const).flatMap((name) =>
+      [false, true].map((expireReport) => ({ name, expireReport }))
+    )
+  )(
+    'drains accepted attachments before dispatching $name, expired report=$expireReport',
+    async ({ name, expireReport }) => {
       const schema = buildSchema(
         `type Query { ping: Boolean } type Mutation { ${name}(id: ID!): Boolean! }`
       )
@@ -2038,27 +2619,118 @@ describe('media through the real authorized HTTP and owning-store boundary', () 
         }
       }
       const input = await f.input([selectVideo()])
+      let changeId: string | undefined
+      let reportReached = false
+      let reportExpired = false
+      let recoveryError: unknown
+      const expectedReportTimeouts = new Set<unknown>()
+      let releaseReport!: () => void
+      const reportBarrier = new Promise<void>((resolve) => {
+        releaseReport = resolve
+      })
+      const originalFetch = globalThis.fetch
+      vi.stubGlobal(
+        'fetch',
+        async (input: string | URL | Request, options?: RequestInit) => {
+          const url = input instanceof Request ? input.url : String(input)
+          if (
+            changeId &&
+            url.endsWith('/internal/permissions/complete') &&
+            typeof options?.body === 'string'
+          ) {
+            const body = JSON.parse(options.body) as {
+              changeId?: string
+              outcome?: string
+            }
+            if (body.changeId === changeId && body.outcome === 'cancelled') {
+              reportReached = true
+              await reportBarrier
+              const signal = options.signal
+              const expiredWhileHeld =
+                signal?.aborted === true &&
+                signal.reason instanceof Error &&
+                signal.reason.name === 'TimeoutError'
+              try {
+                return await originalFetch(input, options)
+              } catch (error: unknown) {
+                if (expiredWhileHeld && error === signal?.reason) {
+                  expectedReportTimeouts.add(error)
+                  reportExpired = true
+                }
+                throw error
+              }
+            }
+          }
+          return originalFetch(input, options)
+        }
+      )
       const attaching = f.edit(input)
-      await paused
+      let recovering: Promise<void> | undefined
       try {
+        await Promise.race([
+          paused,
+          attaching.then(() => {
+            throw new Error('Attachment ended before its acceptance checkpoint')
+          })
+        ])
         const blocked = await remove()
         expect(blocked.errors?.[0].message).toContain('pending accepted work')
         expect(dispatches).toBe(0)
-        await guard.recover()
+        changeId = String(blocked.errors![0].extensions.changeId)
+        // Hold the request before the authority can reopen the fenced source gate.
+        recovering = guard.recover().catch((error: unknown) => {
+          recoveryError = error
+        })
+        await vi.waitFor(() => expect(reportReached).toBe(true), {
+          timeout: 5000
+        })
         expect(
           await media.mcpMediaMutation.findUniqueOrThrow({
-            where: { id: String(blocked.errors![0].extensions.changeId) }
+            where: { id: changeId }
           })
         ).toMatchObject({ status: 'fenced', reportedAt: null })
         expect(dispatches).toBe(0)
+        expect(
+          await f.auth.authorizationGate.findUniqueOrThrow({
+            where: { id: 'media:sources' }
+          })
+        ).toMatchObject({ open: false })
+        if (expireReport)
+          await new Promise((resolve) => setTimeout(resolve, 5100))
+        resume()
+        const attached = await attaching
+        expect(attached.json.error, attached.text).toBeDefined()
+        expect(await image('video')).toMatchObject({ videoId: f.id('mux') })
       } finally {
         resume()
+        releaseReport()
+        vi.unstubAllGlobals()
+        await Promise.allSettled([attaching, recovering])
       }
-      const attached = await attaching
-      expect(attached.json.error, attached.text).toBeDefined()
-      expect(await image('video')).toMatchObject({ videoId: f.id('mux') })
       f.checkpoint = undefined
       await settleMedia()
+      await vi.waitFor(
+        async () => {
+          await guard.recover()
+          expect(
+            await media.mcpMediaMutation.findUniqueOrThrow({
+              where: { id: changeId }
+            })
+          ).toMatchObject({ status: 'fenced', reportedAt: expect.any(Date) })
+          expect(
+            await f.auth.authorizationGate.findUniqueOrThrow({
+              where: { id: 'media:sources' }
+            })
+          ).toMatchObject({ open: true })
+        },
+        { timeout: 5000 }
+      )
+      if (expireReport) expect(reportExpired).toBe(true)
+      if (
+        recoveryError !== undefined &&
+        !expectedReportTimeouts.has(recoveryError)
+      )
+        throw recoveryError
       expect((await remove()).errors).toBeUndefined()
       expect(dispatches).toBe(1)
       f.receipt(await f.edit(input))

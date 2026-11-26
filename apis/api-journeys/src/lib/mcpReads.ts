@@ -675,7 +675,9 @@ async function snapshot(
             ...structureCommandNames,
             ...formCommandNames,
             ...appearanceCommandNames,
-            ...(config.media ? mediaCommandNames : [])
+            ...(config.media
+              ? [...mediaCommandNames, 'card_starter_apply']
+              : [])
           ]
         : [],
     adminLink: link(journey.id),

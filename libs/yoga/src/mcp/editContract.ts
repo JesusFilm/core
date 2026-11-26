@@ -9,6 +9,10 @@ import {
   appearanceCommandRegistry,
   isAppearanceCommand
 } from './appearanceContract'
+import {
+  type CardStarterCommand,
+  cardStarterCommand
+} from './cardStarterContract'
 import { formChangedFields, formCommand } from './formContract'
 import {
   type MediaCommand,
@@ -65,12 +69,18 @@ const editCommand = z.union([
   formCommand,
   structureCommand,
   mediaCommand,
-  appearanceCommand
+  appearanceCommand,
+  cardStarterCommand
 ])
 
 export function isStructureCommand(
   command: z.infer<typeof editCommand>
-): command is StructureCommand | MediaCommand | AppearanceCommand {
+): command is
+  | StructureCommand
+  | MediaCommand
+  | AppearanceCommand
+  | CardStarterCommand {
+  if (command.type === 'card_starter_apply') return true
   if (isAppearanceCommand(command)) return true
   if (command.type === 'block_add') return 'card' in command
   return [...structureCommandNames, ...mediaCommandNames].some(
