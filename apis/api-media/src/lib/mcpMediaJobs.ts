@@ -345,6 +345,15 @@ export function createMediaJobs(
       await tx.mcpMediaChunk.count({ where: { jobId: job.id, stored: false } })
     )
       return false
+    if (job.kind === 'video_upload') {
+      // Unsent work is stopped under the job lock. Commit its cleanup
+      // obligation before touching storage, retaining the capacity slot.
+      await tx.mcpMediaJob.update({
+        where: { id: job.id },
+        data: { state }
+      })
+      return true
+    }
     // Only call while every transfer/dispatch is stopped under the job lock.
     await storage.removeJob(job.id)
     await completeJob(tx, job, state)
@@ -383,11 +392,11 @@ export function createMediaJobs(
       }
     })
   }
-  function needsRejectedVideoCleanup(job: McpMediaJob) {
+  function needsUnsentVideoCleanup(job: McpMediaJob) {
     return (
       job.kind === 'video_upload' &&
       job.active &&
-      job.state === 'failed' &&
+      ['failed', 'cancelled', 'transfer_expired'].includes(job.state) &&
       !job.dispatchReceiptId
     )
   }
@@ -395,8 +404,8 @@ export function createMediaJobs(
     const pending = await media.$transaction(async (tx) => {
       if (!receiptId) {
         const job = await lockJob(tx, jobId)
-        if (needsRejectedVideoCleanup(job))
-          return { state: 'failed', status: undefined }
+        if (needsUnsentVideoCleanup(job))
+          return { state: job.state, status: undefined }
         return
       }
       await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
@@ -415,13 +424,14 @@ export function createMediaJobs(
       return { state, status: receipt.status }
     })
     if (!pending) return
-    // A committed rejection or cleanup receipt fences new writes.
+    // A committed terminal state or cleanup receipt fences new writes.
     // Repeated prefix deletion is safe if another worker or a restart joins us.
     await storage.removeJob(jobId)
     const completed = await media.$transaction(async (tx) => {
       if (!receiptId) {
         const job = await lockJob(tx, jobId)
-        if (!needsRejectedVideoCleanup(job)) return false
+        if (!needsUnsentVideoCleanup(job) || job.state !== pending.state)
+          return false
         await completeJob(tx, job, pending.state)
         return true
       }
@@ -1250,6 +1260,7 @@ export function createMediaJobs(
         return true
       })
       if (!sending) {
+        if (kind === 'video_upload') await finishVideoCleanup(jobId)
         await settle(receiptId)
         return
       }
@@ -1544,64 +1555,75 @@ export function createMediaJobs(
   }
   async function cancel(context: JobContext, jobId: string, key: string) {
     await own(jobId, context)
-    return authorized(context, 'cancel', async (tx, { accept }) => {
-      await tx.mcpMediaUser.upsert({
-        where: { userId: context.userId },
-        create: { userId: context.userId },
-        update: {}
-      })
-      await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${context.userId} FOR UPDATE`
-      const prior = await tx.mcpMediaCancellation.findUnique({
-        where: {
-          connectionId_key: { connectionId: context.connectionId, key }
-        }
-      })
-      if (prior) {
-        if (prior.jobId !== jobId) throw new Error('IDEMPOTENCY_KEY_REUSED')
-        await lockJob(tx, jobId)
-        await accept()
-        if (!prior.outcome || prior.resultExpiresAt <= (await clock(tx)))
-          return { code: 'RESULT_EXPIRED' }
-        return prior.outcome
-      }
-      if (
-        await tx.mcpMediaJob.findUnique({
+    let cleanupVideo = false
+    const outcome = await authorized(
+      context,
+      'cancel',
+      async (tx, { accept }) => {
+        await tx.mcpMediaUser.upsert({
+          where: { userId: context.userId },
+          create: { userId: context.userId },
+          update: {}
+        })
+        await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${context.userId} FOR UPDATE`
+        const prior = await tx.mcpMediaCancellation.findUnique({
           where: {
             connectionId_key: { connectionId: context.connectionId, key }
           }
         })
-      )
-        throw new Error('IDEMPOTENCY_KEY_REUSED')
-      const job = await lockJob(tx, jobId)
-      await accept()
-      if (
-        !terminal.includes(job.state) &&
-        (job.dispatchReceiptId ||
-          (await tx.mcpMediaChunk.count({ where: { jobId, stored: false } })))
-      ) {
-        await tx.mcpMediaJob.update({
-          where: { id: jobId },
-          data: { state: 'cancel_requested' }
-        })
-      } else if (!terminal.includes(job.state))
-        await terminalJob(tx, job, 'cancelled')
-      const current = await tx.mcpMediaJob.findUniqueOrThrow({
-        where: { id: jobId }
-      })
-      const now = await clock(tx)
-      const outcome = { state: current.state, completedAt: now.toISOString() }
-      await tx.mcpMediaCancellation.create({
-        data: {
-          connectionId: context.connectionId,
-          key,
-          jobId,
-          outcome,
-          completedAt: now,
-          resultExpiresAt: new Date(now.getTime() + resultLifetime)
+        if (prior) {
+          if (prior.jobId !== jobId) throw new Error('IDEMPOTENCY_KEY_REUSED')
+          const job = await lockJob(tx, jobId)
+          await accept()
+          cleanupVideo =
+            needsUnsentVideoCleanup(job) && job.state === 'cancelled'
+          if (!prior.outcome || prior.resultExpiresAt <= (await clock(tx)))
+            return { code: 'RESULT_EXPIRED' }
+          return prior.outcome
         }
-      })
-      return outcome
-    })
+        if (
+          await tx.mcpMediaJob.findUnique({
+            where: {
+              connectionId_key: { connectionId: context.connectionId, key }
+            }
+          })
+        )
+          throw new Error('IDEMPOTENCY_KEY_REUSED')
+        const job = await lockJob(tx, jobId)
+        await accept()
+        if (
+          !terminal.includes(job.state) &&
+          (job.dispatchReceiptId ||
+            (await tx.mcpMediaChunk.count({ where: { jobId, stored: false } })))
+        ) {
+          await tx.mcpMediaJob.update({
+            where: { id: jobId },
+            data: { state: 'cancel_requested' }
+          })
+        } else if (!terminal.includes(job.state))
+          await terminalJob(tx, job, 'cancelled')
+        const current = await tx.mcpMediaJob.findUniqueOrThrow({
+          where: { id: jobId }
+        })
+        cleanupVideo =
+          needsUnsentVideoCleanup(current) && current.state === 'cancelled'
+        const now = await clock(tx)
+        const outcome = { state: current.state, completedAt: now.toISOString() }
+        await tx.mcpMediaCancellation.create({
+          data: {
+            connectionId: context.connectionId,
+            key,
+            jobId,
+            outcome,
+            completedAt: now,
+            resultExpiresAt: new Date(now.getTime() + resultLifetime)
+          }
+        })
+        return outcome
+      }
+    )
+    if (cleanupVideo) await finishVideoCleanup(jobId)
+    return outcome
   }
   async function recover() {
     let after: string | undefined
@@ -1651,7 +1673,7 @@ export function createMediaJobs(
         const revoked = connection?.revoked === true
         // Revocation cancels only unsent work. Uncertain writes and dispatch
         // receipts still prevent cleanup until positively reconciled or fenced.
-        if (needsRejectedVideoCleanup(job))
+        if (needsUnsentVideoCleanup(job))
           await finishVideoCleanup(job.id).catch(() => undefined)
         else if (job.dispatchReceiptId)
           await reconcileJob(job.id, false, retired || revoked).catch(
@@ -1663,14 +1685,14 @@ export function createMediaJobs(
             revoked ||
             job.state === 'cancel_requested' ||
             (!job.transferCompletedAt && job.transferDeadline <= new Date()))
-        )
-          await media
+        ) {
+          const stopped = await media
             .$transaction(async (tx) => {
               const current = await lockJob(tx, job.id)
               if (
                 !current.active ||
                 current.dispatchReceiptId ||
-                needsRejectedVideoCleanup(current)
+                needsUnsentVideoCleanup(current)
               )
                 return
               const transferExpired =
@@ -1681,13 +1703,16 @@ export function createMediaJobs(
                 current.state === 'cancel_requested' ||
                 (revoked && !transferExpired)
               if (!cancelUnsent && !transferExpired) return
-              await terminalJob(
+              return terminalJob(
                 tx,
                 current,
                 cancelUnsent ? 'cancelled' : 'transfer_expired'
               )
             })
             .catch(() => undefined)
+          if (stopped && job.kind === 'video_upload')
+            await finishVideoCleanup(job.id).catch(() => undefined)
+        }
         if (retired)
           await media.mcpMediaCancellation.updateMany({
             where: { connectionId: job.connectionId },

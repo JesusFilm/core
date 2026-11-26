@@ -112,6 +112,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   let throttlePut = false
   let beforeStagingRead: (() => Promise<void>) | undefined
   let beforeCleanup: (() => Promise<void>) | undefined
+  let beforeSend: (() => Promise<void>) | undefined
   let beforeUploadStatus: (() => Promise<void>) | undefined
   let beforeLifecycle: (() => Promise<void>) | undefined
   let throttleStaging = false
@@ -228,7 +229,10 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
           scheduleProcessing: (work) => {
             process = work
           },
-          hooks: { beforeAccept: async (action) => beforeAccept?.(action) }
+          hooks: {
+            beforeAccept: async (action) => beforeAccept?.(action),
+            beforeSend: async () => beforeSend?.()
+          }
         }
       }
       worker = () => mediaRuntime(env, dependencies).jobs!
@@ -266,6 +270,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     throttlePut = false
     beforeStagingRead = undefined
     beforeCleanup = undefined
+    beforeSend = undefined
     beforeUploadStatus = undefined
     beforeLifecycle = undefined
     throttleStaging = false
@@ -415,6 +420,8 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   })
 
   function content(response: Awaited<ReturnType<typeof f.call>>) {
+    expect(response.status, response.text).toBe(200)
+    expect(response.json.result, response.text).toBeDefined()
     expect(response.json.result?.isError, response.text).not.toBe(true)
     return response.json.result!.structuredContent!
   }
@@ -875,6 +882,187 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       expect(creates).toBe(1)
     }
   )
+
+  it.each(['direct cancellation', 'accepted dispatch', 'withdrawal', 'expiry'])(
+    'fences unsent video during %s and releases locks before staging cleanup',
+    async (cause) => {
+      const id = String((await start()).jobId)
+      const size = chunkSize + 128
+      expect(
+        (await browser(id, 'POST', 'bind', JSON.stringify(manifest(size))))
+          .status
+      ).toBe(200)
+      const part = partAt(0, size)
+      expect(
+        (
+          await browser(id, 'PUT', undefined, part, 'alice', {
+            'X-Upload-Offset': '0',
+            'X-Upload-Sha256': hash(part)
+          })
+        ).status
+      ).toBe(200)
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      const send = pauseProviderRequest()
+      let dispatching: Promise<void> | undefined
+      if (cause === 'accepted dispatch') {
+        const last = partAt(chunkSize, size)
+        expect(
+          (
+            await browser(id, 'PUT', undefined, last, 'alice', {
+              'X-Upload-Offset': String(chunkSize),
+              'X-Upload-Sha256': hash(last)
+            })
+          ).status
+        ).toBe(200)
+        beforeSend = send.pause
+        dispatching = process()
+        await send.started
+        expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
+      } else if (cause === 'withdrawal') await withdraw(id)
+      else if (cause === 'expiry')
+        await media.mcpMediaJob.update({
+          where: { id },
+          data: { transferDeadline: new Date(Date.now() - 1) }
+        })
+      const cleanup = pauseProviderRequest()
+      beforeCleanup = cleanup.pause
+      let pending: Promise<unknown>
+      if (dispatching) {
+        pending = dispatching
+        send.release()
+      } else
+        pending =
+          cause === 'direct cancellation'
+            ? browser(id, 'POST', 'cancel')
+            : worker().recover()
+      const state = cause === 'expiry' ? 'transfer_expired' : 'cancelled'
+      try {
+        await cleanup.started
+        await media.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" FOR UPDATE NOWAIT`
+          await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE NOWAIT`
+          await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
+        })
+        await f.journeys.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE NOWAIT`
+        })
+        expect(
+          await media.mcpMediaJob.findUnique({ where: { id } })
+        ).toMatchObject({
+          state,
+          active: true,
+          dispatchReceiptId: null,
+          completedAt: null
+        })
+        expect(objects.size).toBeGreaterThan(0)
+        expect(
+          (
+            await browser(id, 'PUT', undefined, part, 'alice', {
+              'X-Upload-Offset': '0',
+              'X-Upload-Sha256': hash(part)
+            })
+          ).status
+        ).toBe(403)
+        await worker().processCompletedTransfers()
+        if (cause !== 'withdrawal') {
+          await start()
+          await expect(
+            worker().admit(
+              {
+                userId: job.userId,
+                connectionId: job.connectionId,
+                journeyId: job.journeyId
+              },
+              { kind: 'video_upload', idempotencyKey: randomUUID() }
+            )
+          ).rejects.toThrow('LIMIT_EXCEEDED')
+        }
+      } finally {
+        beforeCleanup = undefined
+        cleanup.release()
+        send.release()
+        await pending
+      }
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({ state, active: false, dispatchReceiptId: null })
+      expect(objects.size).toBe(0)
+      expect(creates).toBe(0)
+      expect(puts).toBe(0)
+    }
+  )
+
+  it.each(['cancellation', 'expiry'])(
+    'recovers unsent video %s after staging cleanup fails and the worker restarts',
+    async (cause) => {
+      const id = String((await start()).jobId)
+      await transfer(id)
+      if (cause === 'expiry')
+        await media.mcpMediaJob.update({
+          where: { id },
+          data: {
+            transferCompletedAt: null,
+            transferDeadline: new Date(Date.now() - 1)
+          }
+        })
+      cleanupUnavailable = true
+      if (cause === 'cancellation') await browser(id, 'POST', 'cancel')
+      else await worker().recover()
+      const state = cause === 'expiry' ? 'transfer_expired' : 'cancelled'
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({ state, active: true, completedAt: null })
+      expect(objects.size).toBeGreaterThan(0)
+      await withdraw(id)
+      await worker().recover()
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({ state, active: true, completedAt: null })
+      cleanupUnavailable = false
+      await worker().recover()
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      expect(job).toMatchObject({
+        state,
+        active: false,
+        dispatchReceiptId: null
+      })
+      expect(job.completedAt).toBeInstanceOf(Date)
+      expect(objects.size).toBe(0)
+      expect(creates).toBe(0)
+      expect(puts).toBe(0)
+    }
+  )
+
+  it('preserves unsent cancellation when a recovery worker overtakes paused cleanup', async () => {
+    const id = String((await start()).jobId)
+    await transfer(id)
+    const cleanup = pauseProviderRequest()
+    beforeCleanup = cleanup.pause
+    const pending = browser(id, 'POST', 'cancel')
+    let completedAt: Date | null
+    try {
+      await cleanup.started
+      beforeCleanup = undefined
+      await worker().recover()
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      expect(job).toMatchObject({ state: 'cancelled', active: false })
+      completedAt = job.completedAt
+    } finally {
+      beforeCleanup = undefined
+      cleanup.release()
+      expect((await pending).status).toBe(200)
+    }
+    expect(await media.mcpMediaJob.findUnique({ where: { id } })).toMatchObject(
+      {
+        state: 'cancelled',
+        active: false,
+        completedAt
+      }
+    )
+    expect(objects.size).toBe(0)
+    expect(creates).toBe(0)
+    expect(puts).toBe(0)
+  })
 
   async function transferInvalidVideo(id: string) {
     const data = Buffer.alloc(128)
