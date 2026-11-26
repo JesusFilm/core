@@ -30,6 +30,8 @@ pnpm exec tsx tools/scripts/mcp-acceptance.mjs plan "$MCP_CANDIDATE_MANIFEST" /t
 
 The output `plan.json` contains every executable tool/command and nested starter/action variant, four outcomes per registry row, all canonical cases, both named client workflows, browser checks and operational checks. `ledger.json` starts with no records. Freeze `notBefore` at the start of complete-candidate acceptance. Do not move it backward to reuse subset evidence. A client fix, new participant or redeployment changes the manifest fingerprint and requires a new plan. Preserve the failed run and link its retest in redacted evidence. Repeat affected checks and obtain complete current-candidate evidence before final review.
 
+Before qualifying the candidate, reconcile this generated inventory with the [complete command contract](https://github.com/JesusFilm/core/blob/61e9f84821c4e4a08f2c29fc495b07fda17aa78c/docs/brainstorms/2026-11-12-journeys-mcp-update-contract.md), [mounted editor inventory](https://github.com/JesusFilm/core/blob/61e9f84821c4e4a08f2c29fc495b07fda17aa78c/docs/brainstorms/2026-11-12-journeys-mcp-editor-inventory.md) and current formal specification. Record semantic mappings where proposed names changed, such as source discovery through `journey_media_search` and `journey_read` with `form_destinations`. Missing agreed controls block qualification even if every currently executable row passes. The generator cannot infer an operation missing from its source schemas.
+
 Registry outcomes are accepted, denied, interrupted and replayed. For read-only rows, interruption/replay mean cancel/lose the response and repeat the same authorized read without leaking data or changing content; they do not invent write receipts. For aggregate saves, record each exercised typed command and nested variant. A schema inventory is not proof that an owning handler ran. Review the actual suite/test IDs and artifacts associated with each claim.
 
 ## Synthetic stage setup
@@ -115,7 +117,19 @@ Use the full wording on #10157 and #10565 as the assertions. This index identifi
 
 Run all combinations of issuer/gateway/MCP/owning participants paused after admission, after final authorization, before commit and after provider handoff against disconnect, access reduction, role removal and fixed expiry. Retain owner receipts and positive fences. A missing response, expired lease, dead socket or timeout never proves an executor stopped.
 
-The nine resolved-connection race groups require separate observations: stale ACL generation after close/reopen; permission-change crash recovery; accepted-save drain; provider enqueue versus actual handoff; buffered output release; exact expiry after lock waits; retained-history cleanup versus renewal/disconnect; current external identity invalidation; owner-only current management/expansion checks. Cover coordinator/owner outage, positive executor fencing and cooperative versus out-of-band permission changes. Pending remains until accepted participants settle or are positively fenced; no claim can recall released bytes or public-media files.
+Retain separate results for all nine [resolved connection cases](https://github.com/JesusFilm/core/issues/10566#issuecomment-6808338906):
+
+1. Old ACL snapshots cannot accept after a completed reduction and gate close/reopen.
+2. Withdrawal before final acceptance denies admitted edits and queued media without effects.
+3. Withdrawal after acceptance stays Pending until the accepted save settles or is positively fenced, then disconnect purges every late inverse.
+4. Cross-store crashes after gate close, owning commit or before coordinator completion recover from durable IDs without repeating work or reopening stale authority.
+5. Queued provider work is denied after withdrawal; earlier dispatch and uncertain handoff retain honest reconciliation, with fresh attachment/result checks.
+6. Buffered private output needs its own final permit; accepted bounded release settles before Complete, and released bytes cannot be recalled.
+7. Exact expiry is checked after lock waits on both sides of final acceptance. Earlier accepted work may finish; later protected release and attachment need current authority.
+8. Journey removal/re-addition, mode and role changes, expiry/renewal and disconnect have distinct history outcomes without resetting capacity, timers or quotas.
+9. Identity and management cover wrong owner, team-manager-only access, forged/stale expansion, renewal during withdrawal, deleted/recreated accounts, identity outage and external Firebase revocation.
+
+Cover coordinator/owner outage, positive executor fencing and cooperative versus out-of-band permission changes. Pending remains until accepted participants settle or are positively fenced; no claim can recall released bytes or public-media files.
 
 Follow [OPERATIONS.md](./OPERATIONS.md) for two replicas, replacement, independent write/effect disable, key/grant rotation, actual alert delivery and previous-digest rollback. Include assembled Admin/identity/gateway/owners/media versions, live provider recovery, limits, all retention sinks and accountable service owners. Earlier subset evidence cannot certify a new participant. Name the release owner and independent reviewer, restricted initial cohort, measured rollback triggers and incident contacts in the redacted operations artifact before any production-cohort approval. This tool does not deploy, reopen gates or promote environments.
 
