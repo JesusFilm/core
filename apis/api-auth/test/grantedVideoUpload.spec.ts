@@ -46,6 +46,25 @@ function manifest(size = 128) {
   }
 }
 
+function pauseProviderRequest() {
+  let release!: () => void
+  let entered!: () => void
+  const paused = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  const started = new Promise<void>((resolve) => {
+    entered = resolve
+  })
+  return {
+    started,
+    release,
+    pause() {
+      entered()
+      return paused
+    }
+  }
+}
+
 describe('video upload through OAuth, MCP, gateway, Media and separate draft attachment', () => {
   if (![authUrl, journeysUrl, mediaUrl, languagesUrl].every(Boolean))
     throw new Error('Run node tools/scripts/test-mcp-video-upload.mjs')
@@ -881,28 +900,18 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   it('keeps an unacknowledged provider creation uncertain instead of claiming asset processing', async () => {
     const id = String((await start()).jobId)
     await transfer(id)
-    let release!: () => void
-    let entered!: () => void
-    const paused = new Promise<void>((resolve) => {
-      release = resolve
-    })
-    const started = new Promise<void>((resolve) => {
-      entered = resolve
-    })
-    beforeCreate = async () => {
-      entered()
-      await paused
-    }
+    const creation = pauseProviderRequest()
+    beforeCreate = creation.pause
     const pending = process()
     try {
-      await started
+      await creation.started
       expect(await status(id)).toMatchObject({
         state: 'reconciling',
         active: true
       })
       expect(puts).toBe(0)
     } finally {
-      release()
+      creation.release()
       await pending
     }
     expect(await status(id)).toMatchObject({
@@ -916,15 +925,11 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   it('accepts cancellation during a stalled PUT and keeps capacity until Mux confirms cancellation', async () => {
     const id = String((await start()).jobId)
     await transfer(id)
-    const entered = Promise.withResolvers<void>()
-    const release = Promise.withResolvers<void>()
-    beforePut = async () => {
-      entered.resolve()
-      await release.promise
-    }
+    const put = pauseProviderRequest()
+    beforePut = put.pause
     const pending = process()
     try {
-      await entered.promise
+      await put.started
       cancelUnavailable = true
       expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
       await worker().recover()
@@ -946,7 +951,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       })
     } finally {
       unknownPut = true
-      release.resolve()
+      put.release()
       await pending
     }
     expect(await status(id)).toMatchObject({
