@@ -1,17 +1,35 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | यीशु फिल्म परियोजना"
   },
   "RootIndexPage": {
     "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
-    "description": "Watch, learn and share the gospel in over 2000 languages"
+    "title": "निःशुल्क सुसमाचार वीडियो <underline>स्ट्रीमिंग</underline> लाइब्रेरी।",
+    "description": "2000 гаруй хэлээр сайн мэдээг үзэж, суралцаж, хуваалцаарай"
+  },
+  "ModernTestPage": {
+    "pageTitle": "आधुनिक परीक्षण",
+    "title": "आधुनिक परीक्षण पृष्ठ",
+    "description": "यह आधुनिक वॉच एप्लिकेशन के लिए एक परीक्षण पृष्ठ है। यह नई राउटिंग और प्रॉक्सी कार्यक्षमता को प्रदर्शित करता है।",
+    "feature1": {
+      "title": "आधुनिक वास्तुकला",
+      "description": "अनुकूल प्रदर्शन और डेवलपर अनुभव के लिए Next.js App Router और आधुनिक React पैटर्न के साथ निर्मित।"
+    },
+    "feature2": {
+      "title": "बुद्धिमानीपूर्ण मार्गनिर्देशन",
+      "description": "उन्नत प्रॉक्सी राउटिंग जो बुद्धिमानी से ट्रैफ़िक को उपयुक्त बैकएंड सेवाओं तक निर्देशित करती है।"
+    },
+    "feature3": {
+      "title": "अनुकूलनीय डिज़ाइन",
+      "description": "पूर्ण रूप से उत्तरदायी डिज़ाइन जो सभी उपकरणों और स्क्रीन आकारों पर निर्बाध रूप से काम करता है।"
+    },
+    "footer": "यह पृष्ठ आधुनिक वॉच एप्लिकेशन द्वारा बुद्धिमानीपूर्ण प्रॉक्सी राउटिंग के माध्यम से प्रदान किया जाता है।"
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Something went wrong",
-    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
-    "errorDetails": "Error details",
-    "tryAgain": "Try again",
-    "unknownError": "Unknown error"
+    "somethingWentWrong": "कुछ गलत हो गया",
+    "anErrorOccurred": "इस पृष्ठ को लोड करते समय एक त्रुटि हुई। कृपया पुनः लोड करने का प्रयास करें।",
+    "errorDetails": "त्रुटि विवरण",
+    "tryAgain": "फिर से कोशिश करें",
+    "unknownError": "अज्ञात त्रुटि"
   }
 }

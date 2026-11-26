@@ -1,35 +1,35 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} | Projek Filem Yesus"
   },
   "RootIndexPage": {
-    "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
-    "description": "Watch, learn and share the gospel in over 2000 languages"
+    "pageTitle": "Tonton",
+    "title": "Perpustakaan <underline>penstriman</underline> video Injil percuma.",
+    "description": "Tonton, pelajari dan kongsikan Injil dalam lebih 2000 bahasa"
   },
   "ModernTestPage": {
-    "pageTitle": "Modern Test",
-    "title": "Modern Test Page",
-    "description": "This is a test page for the modern watch application. It demonstrates the new routing and proxy functionality.",
+    "pageTitle": "Ujian Moden",
+    "title": "Halaman Ujian Moden",
+    "description": "Ini ialah halaman ujian untuk aplikasi tontonan moden. Ia menunjukkan fungsi penghalaan dan proksi baharu.",
     "feature1": {
-      "title": "Modern Architecture",
-      "description": "Built with Next.js App Router and modern React patterns for optimal performance and developer experience."
+      "title": "Seni Bina Moden",
+      "description": "Dibina dengan Next.js App Router dan corak React moden untuk prestasi optimum serta pengalaman pembangun."
     },
     "feature2": {
-      "title": "Intelligent Routing",
-      "description": "Advanced proxy routing that intelligently directs traffic to the appropriate backend services."
+      "title": "Penghalaan Pintar",
+      "description": "Penghalaan proksi lanjutan yang mengarahkan trafik secara pintar ke perkhidmatan bahagian belakang yang berkenaan."
     },
     "feature3": {
-      "title": "Responsive Design",
-      "description": "Fully responsive design that works seamlessly across all devices and screen sizes."
+      "title": "Reka Bentuk Responsif",
+      "description": "Reka bentuk responsif sepenuhnya yang berfungsi lancar merentas semua peranti dan saiz skrin."
     },
-    "footer": "This page is served by the modern watch application through intelligent proxy routing."
+    "footer": "Halaman ini disampaikan oleh aplikasi tontonan moden melalui penghalaan proksi yang pintar."
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Something went wrong",
-    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
-    "errorDetails": "Error details",
-    "tryAgain": "Try again",
-    "unknownError": "Unknown error"
+    "somethingWentWrong": "Ada sesuatu yang tidak kena",
+    "anErrorOccurred": "Ralat berlaku semasa memuatkan halaman ini. Sila cuba segar semula.",
+    "errorDetails": "Butiran ralat",
+    "tryAgain": "Cuba lagi",
+    "unknownError": "Ralat tidak diketahui"
   }
 }
