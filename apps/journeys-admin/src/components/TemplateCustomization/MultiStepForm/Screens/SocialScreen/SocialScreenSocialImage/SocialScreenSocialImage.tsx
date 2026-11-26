@@ -17,12 +17,17 @@ import { useTranslation } from 'next-i18next/pages'
 import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+import { ErrorCode } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
+import {
+  ImageUploadFileError,
+  prepareImageUpload
+} from '../../../../../../libs/prepareImageUpload'
 import { useCloudflareUploadByFileMutation } from '../../../../../../libs/useCloudflareUploadByFileMutation'
 import { useJourneyImageBlockAssociationUpdateMutation } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
 import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
@@ -64,18 +69,45 @@ export function SocialScreenSocialImage({
   const [journeyImageBlockUpdate] = useJourneyImageBlockUpdateMutation()
   const [journeyImageBlockCreate] = useJourneyImageBlockCreateMutation()
 
+  // Only a file the upload rules reject gets a file-type or size message; a
+  // valid SVG that fails to rasterize (canvas, PNG encoding) is a processing
+  // failure the user can retry
+  function getPrepareErrorMessage(error: unknown): string {
+    if (!(error instanceof ImageUploadFileError))
+      return t('Failed to update social image, please try again later')
+    if (error.code === ErrorCode.FileTooLarge)
+      return t(
+        'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+      )
+    return t(
+      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
+    )
+  }
+
   async function handleImageChange(
     file: File | null | undefined
   ): Promise<void> {
     if (journey == null || file == null) return
     setLoading(true)
 
+    let uploadFile: File
+    try {
+      uploadFile = await prepareImageUpload(file)
+    } catch (error) {
+      setLoading(false)
+      enqueueSnackbar(getPrepareErrorMessage(error), {
+        variant: 'error',
+        preventDuplicate: true
+      })
+      return
+    }
+
     const { data } = await createCloudflareUploadByFile({
       variables: { journeyId: journey?.id }
     })
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', uploadFile)
       try {
         const response = await (
           await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
@@ -110,7 +142,11 @@ export function SocialScreenSocialImage({
             })
           }
         }
-      } catch (error) {
+        enqueueSnackbar(t('Social image updated'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      } catch {
         enqueueSnackbar(
           t('Failed to update social image, please try again later'),
           {
@@ -120,10 +156,6 @@ export function SocialScreenSocialImage({
         )
       } finally {
         setLoading(false)
-        enqueueSnackbar(t('Social image updated'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
       }
     }
   }
@@ -226,7 +258,7 @@ export function SocialScreenSocialImage({
                 onChange={(event) => handleImageChange(event.target.files?.[0])}
                 data-testid="SocialScreenSocialImageInput"
                 type="file"
-                accept="image/*"
+                accept="image/png,image/jpeg,image/gif,image/svg+xml,image/heic,.heic,image/heif,.heif,image/webp"
               />
             </IconButton>
           </>
