@@ -391,7 +391,9 @@
     }
   },
   "pnpm": {
-    "overrides": {},
+    "overrides": {
+      "shell-quote": "^1.9.0"
+    },
     "packageExtensions": {
       "i18next-cli": {
         "dependencies": {
