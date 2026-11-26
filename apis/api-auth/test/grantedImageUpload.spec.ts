@@ -1555,6 +1555,22 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(objects.size).toBe(0)
   })
 
+  it('releases the same admitted job when fresh output authorization takes longer than five seconds', async () => {
+    let releases = 0
+    beforeAccept = async (action) => {
+      if (action === 'release' && ++releases === 2)
+        await new Promise((resolve) => setTimeout(resolve, 5500))
+    }
+    const job = await start()
+    expect(releases).toBe(2)
+    expect(job.state).toBe('waiting_for_file')
+    expect(await media.mcpMediaJob.count()).toBe(1)
+    expect(
+      await media.mcpMediaJob.findUnique({ where: { id: String(job.jobId) } })
+    ).toMatchObject({ active: true, state: 'waiting_for_file' })
+    expect(dispatchCount).toBe(0)
+  })
+
   it('rejects one byte over, forged size/MIME/extension and replacing the admitted file', async () => {
     const over = await f.call('journey_media_start', {
       journeyId: f.journeyId,
@@ -1622,6 +1638,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         f.call('journey_media_start', input, i % 2 ? token2 : undefined)
       )
     )
+    for (const result of results) {
+      expect(result.status, result.text).toBe(200)
+      expect(result.json.result, result.text).toBeDefined()
+    }
     expect(results.filter((r) => !r.json.result?.isError)).toHaveLength(2)
     expect(await media.mcpMediaJob.count({ where: { active: true } })).toBe(2)
     const first = results.find((r) => !r.json.result?.isError)!.json.result!
