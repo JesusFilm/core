@@ -1,10 +1,11 @@
-import type { AddressInfo } from 'node:net'
 import { request as httpRequest } from 'node:http'
+import type { AddressInfo } from 'node:net'
 
 import pino from 'pino'
 
 import { createRuntime } from '../src/runtime'
 import { audit, cleanup } from '../src/store'
+
 import { structureFixture } from './grantedStructureFixture'
 
 const secret = 'controlled-operations-10564-at-least-32-characters'
