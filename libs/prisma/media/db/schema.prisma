@@ -191,6 +191,7 @@ model Video {
   updatedAt                 DateTime                     @default(now()) @updatedAt
   userMediaProfiles         UserMediaProfile[]
   shortLinks                ShortLink[]
+  previousSlugs             VideoSlug[]
 
   @@index(label)
   @@index(childIds)
@@ -198,6 +199,16 @@ model Video {
   @@index(originId(type: Hash))
   @@index([updatedAt, id])
   @@index([availableLanguages], type: Gin)
+}
+
+model VideoSlug {
+  id        String   @id @default(uuid())
+  value     String   @unique
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([videoId])
 }
 
 model VideoTitle {
