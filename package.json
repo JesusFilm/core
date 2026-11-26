@@ -391,7 +391,9 @@
     }
   },
   "pnpm": {
-    "overrides": {},
+    "overrides": {
+      "fast-xml-parser": "^5.5.6"
+    },
     "packageExtensions": {
       "i18next-cli": {
         "dependencies": {
