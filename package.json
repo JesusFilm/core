@@ -391,7 +391,9 @@
     }
   },
   "pnpm": {
-    "overrides": {},
+    "overrides": {
+      "tar": "7.5.21"
+    },
     "packageExtensions": {
       "i18next-cli": {
         "dependencies": {
