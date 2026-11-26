@@ -391,7 +391,9 @@
     }
   },
   "pnpm": {
-    "overrides": {},
+    "overrides": {
+      "tinypool": "2.1.2"
+    },
     "packageExtensions": {
       "i18next-cli": {
         "dependencies": {
