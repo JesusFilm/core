@@ -4924,6 +4924,14 @@ type Video @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
+  gospelPresentation: Boolean @join__field(graph: API_MEDIA) 
+  gospelStartSeconds: Int @join__field(graph: API_MEDIA) 
+  gospelEndSeconds: Int @join__field(graph: API_MEDIA) 
+  opportunityToRespond: Boolean @join__field(graph: API_MEDIA) 
+  opportunityToRespondEndSeconds: Int @join__field(graph: API_MEDIA) 
+  biblicallyAccuratePortrayal: Boolean @join__field(graph: API_MEDIA) 
+  personOfJesusDisplayed: Boolean @join__field(graph: API_MEDIA) 
+  validationComments: String @join__field(graph: API_MEDIA) 
   publishedAt: Date @join__field(graph: API_MEDIA) 
   updatedAt: DateTime! @join__field(graph: API_MEDIA) 
   children: [Video!]! @join__field(graph: API_MEDIA) 
@@ -10537,6 +10545,14 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
   restrictDownloadPlatforms: [Platform!]
   restrictViewPlatforms: [Platform!]
   restrictTranslations: Boolean
+  gospelPresentation: Boolean
+  gospelStartSeconds: Int
+  gospelEndSeconds: Int
+  opportunityToRespond: Boolean
+  opportunityToRespondEndSeconds: Int
+  biblicallyAccuratePortrayal: Boolean
+  personOfJesusDisplayed: Boolean
+  validationComments: String
 }
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {

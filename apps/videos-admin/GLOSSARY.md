@@ -21,6 +21,7 @@ _Avoid_: Unpublished (as a UI label — the enum value is `unpublished`, the lab
 
 **Publishing Validation**:
 The gate on publishing a Video: it must have a Title, Short Description, Description, Image Alt Text, and Banner Image — and, unless it is a container (collection/series), at least one playable Variant.
+_Avoid_: Media Validation (the internal per-Video gospel-content assessment in api-media — it never blocks publishing)
 
 **Publish All**:
 The bulk operation that publishes a container Video's children (optionally their Variants too), with a dry-run mode and a per-video validation-failure report. Video `published`, Variant `published`, and the Algolia record's `published` are three distinct publish states — say which one you mean.
