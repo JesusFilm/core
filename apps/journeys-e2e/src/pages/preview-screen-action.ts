@@ -193,9 +193,12 @@ export class PreviewScreenPage extends BasePage {
         this.context.waitForEvent('page', { timeout: 30000 }),
         this.page.locator(this.chatIcon).nth(btnIndex).click()
       ])
-      // The popup's url() is '' until its first navigation commits. Wait for
-      // commit only: the external chat sites may never finish loading in CI.
-      await newPage.waitForURL(/^https?:\/\//, { waitUntil: 'commit' })
+      // A popup can be announced before its first HTTP navigation commits.
+      // Commit is enough: external chat sites may never finish loading in CI.
+      await newPage.waitForURL(/^https?:\/\//, {
+        waitUntil: 'commit',
+        timeout: 30000
+      })
       const chatUrl = newPage.url()
       const chatDomain = chatLinks.find((widgetUrl) =>
         chatUrl.includes(widgetUrl)
