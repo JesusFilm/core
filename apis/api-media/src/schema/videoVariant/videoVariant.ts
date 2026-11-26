@@ -22,6 +22,7 @@ import {
   updateParentCollectionLanguages,
   updateVideoAvailableLanguages
 } from '../video/lib/updateAvailableLanguages'
+import { assertVariantWriteAllowedForContainer } from '../video/lib/videoLabelRules/videoLabelRules'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
 import { syncParentLanguage } from '../videoVariantReconciliation/reconcileParentVariants'
@@ -569,6 +570,13 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      await assertVariantWriteAllowedForContainer({
+        videoId: input.videoId,
+        hls: input.hls,
+        dash: input.dash,
+        muxVideoId: input.muxVideoId
+      })
+
       const publicationIntent = input.published ?? true
       const hadAnyVariantsForLanguage =
         (await prisma.videoVariant.findFirst({
@@ -678,6 +686,8 @@ builder.mutationFields((t) => ({
           languageId: true,
           edition: true,
           hls: true,
+          dash: true,
+          muxVideoId: true,
           share: true,
           muxVideo: { select: { readyToStream: true } }
         }
@@ -685,6 +695,24 @@ builder.mutationFields((t) => ({
 
       if (!currentVariant) {
         throw new Error(`VideoVariant with id ${input.id} not found`)
+      }
+
+      // Only re-check the childless-container guard when this write actually
+      // touches a field the guard cares about. Otherwise a legacy variant
+      // that already sits on a childless container (predating the guard)
+      // can never be unpublished, or have unrelated fields edited, again.
+      const touchesContainerOrMedia =
+        input.videoId != null ||
+        input.hls != null ||
+        input.dash != null ||
+        input.muxVideoId != null
+      if (touchesContainerOrMedia) {
+        await assertVariantWriteAllowedForContainer({
+          videoId: input.videoId ?? currentVariant.videoId,
+          hls: input.hls ?? currentVariant.hls,
+          dash: input.dash ?? currentVariant.dash,
+          muxVideoId: input.muxVideoId ?? currentVariant.muxVideoId
+        })
       }
 
       const nextLanguageId = input.languageId ?? currentVariant.languageId
