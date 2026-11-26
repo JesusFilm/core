@@ -17,7 +17,10 @@ import type { MediaJobs } from '../../api-media/src/lib/mcpMediaJobs'
 import { mediaRuntime } from '../../api-media/src/lib/mcpMediaRuntime'
 import type { UploadStorage } from '../../api-media/src/lib/mcpUploadStorage'
 import { captureGates, lockGates } from '../src/store'
-import { beginConnectionChange } from '../src/withdrawal'
+import {
+  beginConnectionChange,
+  reconcileConnectionChanges
+} from '../src/withdrawal'
 
 /* eslint-enable @nx/enforce-module-boundaries */
 import { structureFixture } from './grantedStructureFixture'
@@ -111,6 +114,10 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   let beforePut: (() => Promise<void>) | undefined
   let throttlePut = false
   let beforeStagingRead: (() => Promise<void>) | undefined
+  let beforeStagingPut: (() => Promise<void>) | undefined
+  let stagingPutUnknown = false
+  let stagingPutRejected = false
+  let stagingReadUnavailable = false
   let beforeCleanup: (() => Promise<void>) | undefined
   let beforeSend: (() => Promise<void>) | undefined
   let beforeUploadStatus: (() => Promise<void>) | undefined
@@ -123,13 +130,17 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   const originalFetch = globalThis.fetch
   const storage: UploadStorage = {
     async put(key, bytes) {
+      await beforeStagingPut?.()
+      if (stagingPutRejected) return 'rejected'
       const digest = hash(bytes)
       if (!deduplicated.has(digest)) deduplicated.set(digest, bytes)
       objects.set(key, deduplicated.get(digest)!)
+      if (stagingPutUnknown) throw new Error('Controlled lost staging response')
     },
     async get(key) {
       // A staging read yields to the HTTP server and its socket timers.
       await yieldToIO()
+      if (stagingReadUnavailable) throw new Error('Controlled staging outage')
       const value = objects.get(key)
       if (!value) throw new Error('Missing controlled staging')
       await beforeStagingRead?.()
@@ -269,6 +280,10 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     beforePut = undefined
     throttlePut = false
     beforeStagingRead = undefined
+    beforeStagingPut = undefined
+    stagingPutUnknown = false
+    stagingPutRejected = false
+    stagingReadUnavailable = false
     beforeCleanup = undefined
     beforeSend = undefined
     beforeUploadStatus = undefined
@@ -573,6 +588,287 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     },
     3600000
   )
+
+  it.each(
+    ['body', 'PUT', 'recovery GET'].flatMap((wait) =>
+      ['cancellation', 'withdrawal'].map((ending) => [wait, ending])
+    )
+  )(
+    'releases ingress locks during a paused %s and settles %s',
+    async (wait, ending) => {
+      const id = String((await start()).jobId)
+      expect(
+        (await browser(id, 'POST', 'bind', JSON.stringify(manifest()))).status
+      ).toBe(200)
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      const context = {
+        userId: job.userId,
+        connectionId: job.connectionId,
+        journeyId: job.journeyId
+      }
+      const part = partAt(0, 128)
+      const paused = pauseProviderRequest()
+      const upload = () =>
+        browser(id, 'PUT', undefined, part, 'alice', {
+          'X-Upload-Offset': '0',
+          'X-Upload-Sha256': hash(part)
+        })
+      let pending: Promise<unknown>
+      let changeId: string | undefined
+      if (wait === 'body') {
+        const body = new ReadableStream<Uint8Array>(
+          {
+            async pull(controller) {
+              await paused.pause()
+              controller.enqueue(part)
+              controller.close()
+            }
+          },
+          { highWaterMark: 0 }
+        )
+        pending = jobs
+          .chunk(context, id, 0, hash(part), body)
+          .catch((error) => error)
+      } else if (wait === 'PUT') {
+        beforeStagingPut = paused.pause
+        pending = upload()
+      } else {
+        stagingPutUnknown = true
+        stagingReadUnavailable = true
+        expect((await upload()).status).toBe(200)
+        const receipt = await media.mcpMediaExecution.findFirstOrThrow({
+          where: { jobId: id, status: 'writing' }
+        })
+        stagingReadUnavailable = false
+        beforeStagingRead = paused.pause
+        pending = worker().recoverExecution(receipt.id)
+      }
+      try {
+        await paused.started
+        await media.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" FOR UPDATE NOWAIT`
+          await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE NOWAIT`
+          await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
+        })
+        await f.journeys.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE NOWAIT`
+        })
+        if (ending === 'cancellation')
+          expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
+        else {
+          changeId = (await withdraw(id)).id
+          // Leave the original request in flight while a replacement worker
+          // cannot obtain storage evidence. Withdrawal must stay pending.
+          beforeStagingRead = undefined
+          stagingReadUnavailable = true
+          await worker().recover()
+          stagingReadUnavailable = false
+          await reconcileConnectionChanges(f.auth)
+          expect(
+            await f.auth.connectionChange.findUnique({
+              where: { id: changeId }
+            })
+          ).toMatchObject({ status: wait === 'body' ? 'complete' : 'pending' })
+        }
+        expect(
+          await media.mcpMediaJob.findUnique({ where: { id } })
+        ).toMatchObject({
+          state:
+            wait === 'body'
+              ? 'cancelled'
+              : ending === 'cancellation'
+                ? 'cancel_requested'
+                : 'transferring',
+          active: wait !== 'body'
+        })
+        if (wait !== 'body') {
+          expect(
+            await media.mcpMediaChunk.count({
+              where: { jobId: id, stored: false }
+            })
+          ).toBe(1)
+          if (ending === 'cancellation') {
+            await start()
+            await expect(
+              worker().admit(context, {
+                kind: 'video_upload',
+                idempotencyKey: randomUUID()
+              })
+            ).rejects.toThrow('LIMIT_EXCEEDED')
+          }
+        }
+      } finally {
+        beforeStagingPut = undefined
+        beforeStagingRead = undefined
+        paused.release()
+        await pending
+      }
+      await worker().recover()
+      if (changeId) {
+        await reconcileConnectionChanges(f.auth)
+        expect(
+          await f.auth.connectionChange.findUnique({ where: { id: changeId } })
+        ).toMatchObject({ status: 'complete' })
+      }
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({
+        state: 'cancelled',
+        active: false
+      })
+      expect(
+        await media.mcpMediaExecution.count({
+          where: { jobId: id, status: { in: ['writing', 'staging'] } }
+        })
+      ).toBe(0)
+      expect(objects.size).toBe(0)
+      expect(creates).toBe(0)
+    }
+  )
+
+  it.each(['transfer deadline', 'consent expiry', 'withdrawal', 'file'])(
+    'rechecks %s after collecting a paused ingress body',
+    async (change) => {
+      const id = String((await start()).jobId)
+      await browser(id, 'POST', 'bind', JSON.stringify(manifest()))
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      const paused = pauseProviderRequest()
+      const part = partAt(0, 128)
+      const pending = jobs
+        .chunk(
+          {
+            userId: job.userId,
+            connectionId: job.connectionId,
+            journeyId: job.journeyId
+          },
+          id,
+          0,
+          hash(part),
+          new ReadableStream(
+            {
+              async pull(controller) {
+                await paused.pause()
+                controller.enqueue(part)
+                controller.close()
+              }
+            },
+            { highWaterMark: 0 }
+          )
+        )
+        .catch((error: unknown) => error)
+      try {
+        await paused.started
+        if (change === 'transfer deadline')
+          await media.mcpMediaJob.update({
+            where: { id },
+            data: { transferDeadline: new Date(0) }
+          })
+        else if (change === 'consent expiry')
+          await f.auth.agentConnection.update({
+            where: { id: job.connectionId },
+            data: { expiresAt: new Date(0) }
+          })
+        else if (change === 'withdrawal') await withdraw(id)
+        else
+          await media.mcpMediaJob.update({
+            where: { id },
+            data: { file: { ...manifest(), name: 'changed.mp4' } }
+          })
+      } finally {
+        paused.release()
+      }
+      expect(await pending).toBeInstanceOf(Error)
+      expect(await media.mcpMediaChunk.count({ where: { jobId: id } })).toBe(0)
+      expect(objects.size).toBe(0)
+      expect(creates).toBe(0)
+    }
+  )
+
+  it.each(['success', 'rejection', 'lost response'])(
+    'preserves recovered ingress settlement after a late PUT %s',
+    async (outcome) => {
+      const id = String((await start()).jobId)
+      await browser(id, 'POST', 'bind', JSON.stringify(manifest()))
+      const part = partAt(0, 128)
+      const paused = pauseProviderRequest()
+      beforeStagingPut = paused.pause
+      const pending = browser(id, 'PUT', undefined, part, 'alice', {
+        'X-Upload-Offset': '0',
+        'X-Upload-Sha256': hash(part)
+      })
+      try {
+        await paused.started
+        const receipt = await media.mcpMediaExecution.findFirstOrThrow({
+          where: { jobId: id, status: 'writing' }
+        })
+        // The object has committed, but the sender has not received its reply.
+        const input = receipt.staging as { objectKey: string }
+        objects.set(input.objectKey, part)
+        await worker().recoverExecution(receipt.id)
+        expect(
+          await media.mcpMediaJob.findUnique({ where: { id } })
+        ).toMatchObject({ receivedBytes: part.length, state: 'validating' })
+        stagingPutRejected = outcome === 'rejection'
+        stagingPutUnknown = outcome === 'lost response'
+      } finally {
+        beforeStagingPut = undefined
+        paused.release()
+        await pending
+      }
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({ receivedBytes: part.length, state: 'validating' })
+      expect(
+        await media.mcpMediaExecution.count({
+          where: { jobId: id, status: { in: ['writing', 'staging_rejected'] } }
+        })
+      ).toBe(0)
+      await process()
+      expect(await status(id)).toMatchObject({ state: 'processing' })
+      expect(creates).toBe(1)
+    }
+  )
+
+  it('keeps cancellation settled when a second worker overtakes a paused recovery GET', async () => {
+    const id = String((await start()).jobId)
+    await browser(id, 'POST', 'bind', JSON.stringify(manifest()))
+    const part = partAt(0, 128)
+    stagingPutUnknown = true
+    stagingReadUnavailable = true
+    await browser(id, 'PUT', undefined, part, 'alice', {
+      'X-Upload-Offset': '0',
+      'X-Upload-Sha256': hash(part)
+    })
+    const receipt = await media.mcpMediaExecution.findFirstOrThrow({
+      where: { jobId: id, status: 'writing' }
+    })
+    stagingReadUnavailable = false
+    const paused = pauseProviderRequest()
+    beforeStagingRead = paused.pause
+    const pending = worker().recoverExecution(receipt.id)
+    try {
+      await paused.started
+      beforeStagingRead = undefined
+      expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
+      await worker().recover()
+      expect(await status(id)).toMatchObject({
+        state: 'cancelled',
+        active: false
+      })
+      expect(objects.size).toBe(0)
+    } finally {
+      paused.release()
+      await pending
+    }
+    expect(await status(id)).toMatchObject({
+      state: 'cancelled',
+      active: false
+    })
+    expect(
+      await media.mcpMediaExecution.findUnique({ where: { id: receipt.id } })
+    ).toMatchObject({ status: 'settled', reportedAt: expect.any(Date) })
+    expect(creates).toBe(0)
+  })
 
   it.each(['validating', 'dispatch_pending'])(
     'releases job, user, execution and journey locks during %s staging reads',

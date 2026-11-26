@@ -549,26 +549,32 @@ export function createMediaJobs(
     })
   }
   async function reconcileStaging(id: string) {
-    const resolved = await media.$transaction(
-      async (tx) => {
-        await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${id} FOR UPDATE`
-        const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
-          where: { id }
-        })
-        if (!['staging', 'writing'].includes(receipt.status)) return false
-        const input = stagingDescriptor.parse(receipt.staging)
-        const bytes = await storage.get(input.objectKey).catch(() => undefined)
-        if (
-          !bytes ||
-          bytes.length !== input.bytes ||
-          imageHash(bytes) !== input.sha256
-        )
-          return false
-        await acknowledgeStaging(tx, id)
-        return true
-      },
-      { timeout: 60000 }
+    const observed = await media.mcpMediaExecution.findUniqueOrThrow({
+      where: { id }
+    })
+    if (!['staging', 'writing'].includes(observed.status)) return
+    const input = stagingDescriptor.parse(observed.staging)
+    const bytes = await storage.get(input.objectKey).catch(() => undefined)
+    if (
+      !bytes ||
+      bytes.length !== input.bytes ||
+      imageHash(bytes) !== input.sha256
     )
+      return
+    const resolved = await media.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${id} FOR UPDATE`
+      const current = await tx.mcpMediaExecution.findUniqueOrThrow({
+        where: { id }
+      })
+      if (
+        !['staging', 'writing'].includes(current.status) ||
+        current.jobId !== observed.jobId ||
+        fingerprint(current.staging) !== fingerprint(observed.staging)
+      )
+        return false
+      await acknowledgeStaging(tx, id)
+      return true
+    })
     if (resolved) await settle(id)
   }
   async function admit(
@@ -809,62 +815,70 @@ export function createMediaJobs(
     checksum: string,
     body: ReadableStream<Uint8Array>
   ) {
-    if ((await own(jobId, context)).kind === 'image_generation') denied()
+    const initial = await own(jobId, context)
+    if (initial.kind === 'image_generation') denied()
+    const initialFile = mediaFile.parse(initial.file)
+    if (
+      !['waiting_for_file', 'transferring'].includes(initial.state) ||
+      initial.transferDeadline.getTime() <= Date.now() ||
+      !Number.isInteger(offset) ||
+      offset < 0 ||
+      !/^[a-f0-9]{64}$/.test(checksum)
+    )
+      throw new Error('VALIDATION_FAILED')
+    const expectedBytes = Math.min(uploadChunkBytes, initialFile.size - offset)
+    if (expectedBytes <= 0 || offset % uploadChunkBytes !== 0)
+      throw new Error('VALIDATION_FAILED')
+    // Collect and hash the bounded body before opening any admission locks.
+    const reader = body.getReader()
+    const parts: Uint8Array[] = []
+    let bytes = 0
+    const deadline = Math.min(
+      initial.transferDeadline.getTime(),
+      Date.now() + 30000
+    )
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const expired = new Promise<never>((_resolve, reject) => {
+      timer = setTimeout(
+        () => reject(new Error('VALIDATION_FAILED')),
+        Math.max(0, deadline - Date.now())
+      )
+    })
+    try {
+      while (true) {
+        const next = await Promise.race([reader.read(), expired])
+        if (Date.now() >= deadline) throw new Error('VALIDATION_FAILED')
+        if (next.done) break
+        bytes += next.value.length
+        if (
+          bytes > expectedBytes ||
+          offset + bytes >
+            (initial.kind === 'video_upload' ? videoByteLimit : imageByteLimit)
+        )
+          throw new Error('LIMIT_EXCEEDED')
+        parts.push(next.value)
+      }
+    } finally {
+      clearTimeout(timer)
+      await reader.cancel().catch(() => undefined)
+    }
+    const data = Buffer.concat(parts)
+    if (
+      bytes !== expectedBytes ||
+      imageHash(data) !== checksum ||
+      initial.transferDeadline.getTime() <= Date.now()
+    )
+      throw new Error('VALIDATION_FAILED')
     const plan = await authorized(
       context,
       'transfer',
       async (tx, { permitId, accept }) => {
         const job = await lockJob(tx, jobId)
-        const file = mediaFile.parse(job.file)
-        const now = await clock(tx)
         if (
+          !job.active ||
           !['waiting_for_file', 'transferring'].includes(job.state) ||
-          job.transferDeadline <= now ||
-          !Number.isInteger(offset) ||
-          offset < 0 ||
-          !/^[a-f0-9]{64}$/.test(checksum)
-        )
-          throw new Error('VALIDATION_FAILED')
-        const expectedBytes = Math.min(uploadChunkBytes, file.size - offset)
-        if (expectedBytes <= 0 || offset % uploadChunkBytes !== 0)
-          throw new Error('VALIDATION_FAILED')
-        const reader = body.getReader()
-        const parts: Uint8Array[] = []
-        let bytes = 0
-        const deadline = Math.min(
-          job.transferDeadline.getTime(),
-          Date.now() + 30000
-        )
-        let timer: ReturnType<typeof setTimeout> | undefined
-        const expired = new Promise<never>((_resolve, reject) => {
-          timer = setTimeout(
-            () => reject(new Error('VALIDATION_FAILED')),
-            Math.max(0, deadline - Date.now())
-          )
-        })
-        try {
-          while (true) {
-            const next = await Promise.race([reader.read(), expired])
-            if (Date.now() >= deadline) throw new Error('VALIDATION_FAILED')
-            if (next.done) break
-            bytes += next.value.length
-            if (
-              bytes > expectedBytes ||
-              offset + bytes >
-                (job.kind === 'video_upload' ? videoByteLimit : imageByteLimit)
-            )
-              throw new Error('LIMIT_EXCEEDED')
-            parts.push(next.value)
-          }
-        } finally {
-          clearTimeout(timer)
-          await reader.cancel().catch(() => undefined)
-        }
-        const data = Buffer.concat(parts)
-        if (
-          bytes !== expectedBytes ||
-          imageHash(data) !== checksum ||
-          job.transferDeadline <= (await clock(tx))
+          job.transferDeadline <= (await clock(tx)) ||
+          fingerprint(job.file) !== fingerprint(initial.file)
         )
           throw new Error('VALIDATION_FAILED')
         const prior = await tx.mcpMediaChunk.findUnique({
@@ -897,6 +911,8 @@ export function createMediaJobs(
         if (offset !== job.receivedBytes) throw new Error('VALIDATION_FAILED')
         await accept()
         const transferReceivedAt = await clock(tx)
+        if (job.transferDeadline <= transferReceivedAt)
+          throw new Error('VALIDATION_FAILED')
         const objectKey = `${job.id}/${offset}-${checksum}`
         await tx.mcpMediaChunk.create({
           data: {
@@ -960,24 +976,23 @@ export function createMediaJobs(
       })
     })
     try {
-      await media.$transaction(
-        async (tx) => {
-          await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${plan.permitId} FOR UPDATE`
-          const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
-            where: { id: plan.permitId }
+      const outcome = await storage.put(plan.objectKey, plan.data)
+      await media.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${plan.permitId} FOR UPDATE`
+        const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
+          where: { id: plan.permitId }
+        })
+        // Recovery may already have acknowledged the same immutable object.
+        if (receipt.status !== 'writing') return
+        if (outcome === 'rejected') {
+          await tx.mcpMediaExecution.update({
+            where: { id: plan.permitId },
+            data: { status: 'staging_rejected', completedAt: await clock(tx) }
           })
-          if (receipt.status !== 'writing') denied()
-          if ((await storage.put(plan.objectKey, plan.data)) === 'rejected') {
-            await tx.mcpMediaExecution.update({
-              where: { id: plan.permitId },
-              data: { status: 'staging_rejected', completedAt: await clock(tx) }
-            })
-            return
-          }
-          await acknowledgeStaging(tx, plan.permitId)
-        },
-        { timeout: 60000 }
-      )
+          return
+        }
+        await acknowledgeStaging(tx, plan.permitId)
+      })
       await recoverExecution(plan.permitId)
     } catch {
       // A lost PUT response can leave an input write running. Confirm the exact
