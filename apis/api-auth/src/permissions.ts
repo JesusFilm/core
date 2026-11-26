@@ -416,17 +416,17 @@ async function retireAccount(db: Database, userId: string) {
       }
     })
   }
-  await reconcileConnectionChanges(db)
+  const connectionIds = (
+    await db.agentConnection.findMany({
+      where: { userId },
+      select: { id: true }
+    })
+  ).map((connection) => connection.id)
+  // Another account's locked withdrawal must not delay this terminal receipt.
+  await reconcileConnectionChanges(db, connectionIds)
   const pending = await db.connectionChange.count({
     where: {
-      connectionId: {
-        in: (
-          await db.agentConnection.findMany({
-            where: { userId },
-            select: { id: true }
-          })
-        ).map((connection) => connection.id)
-      },
+      connectionId: { in: connectionIds },
       status: 'pending'
     }
   })

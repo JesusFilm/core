@@ -498,6 +498,57 @@ describe('permission change protocol', () => {
       ).toEqual({ status: 'complete' })
     })
 
+    it('retires an account without waiting for another account withdrawal lock', async () => {
+      const target = await connection()
+      const unrelated = await connection()
+      await captureGates(db, [`connection:${unrelated.id}`])
+      const change = await db.$transaction((tx) =>
+        beginConnectionChange(tx, unrelated, undefined)
+      )
+      let release!: () => void
+      let locked!: () => void
+      const ready = new Promise<void>((resolve) => {
+        locked = resolve
+      })
+      const released = new Promise<void>((resolve) => {
+        release = resolve
+      })
+      const blocker = db.$transaction(async (tx) => {
+        const gateId = `connection:${unrelated.id}`
+        await tx.$queryRaw`SELECT id FROM "AuthorizationGate" WHERE id = ${gateId} FOR UPDATE`
+        locked()
+        await released
+      })
+      await ready
+      const retirement = invoke(
+        'retire-account',
+        { userId: target.userId },
+        usersSecret
+      )
+      let deadline: ReturnType<typeof setTimeout> | undefined
+      try {
+        await expect(
+          Promise.race([
+            retirement,
+            new Promise((_, reject) => {
+              deadline = setTimeout(
+                () => reject(new Error('Retirement waited for unrelated work')),
+                2000
+              )
+            })
+          ])
+        ).resolves.toEqual({ status: 'complete' })
+        expect(
+          await db.connectionChange.findUnique({ where: { id: change.id } })
+        ).toMatchObject({ status: 'pending' })
+      } finally {
+        clearTimeout(deadline)
+        release()
+        await blocker
+        await retirement
+      }
+    })
+
     it('keeps account authority closed across an interrupted retirement batch and resumes without duplicate withdrawals', async () => {
       const first = await connection()
       const remaining = Array.from({ length: 200 }, () => ({

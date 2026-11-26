@@ -110,6 +110,35 @@ describe('granted journey read authorization', () => {
       let afterOutput: (() => void) | undefined
       let accessToken: string
       const cookies = new Map<string, string>()
+      const tokenConnections = new Map<string, string>()
+      const activeCalls = new Set<Promise<{ status: number; body: string }>>()
+      const releaseBarriers = new Set<() => void>()
+
+      function currentConnection(token = accessToken) {
+        const id = tokenConnections.get(token)
+        if (!id) throw new Error('Missing fixture connection for token')
+        return auth.agentConnection.findUniqueOrThrow({ where: { id } })
+      }
+
+      async function clearAuthority() {
+        for (const table of [
+          auth.permissionChange,
+          auth.retiredAccount,
+          auth.readPermit,
+          auth.agentAccessReview,
+          auth.connectionChange,
+          auth.connectionHistoryPurge,
+          auth.readExecutor,
+          auth.oAuthArtifact,
+          auth.agentConnection,
+          auth.consentReview,
+          auth.agentRenewalReview,
+          auth.authorizationGate,
+          auth.securityAudit
+        ])
+          await (table.deleteMany as () => Promise<unknown>)()
+        tokenConnections.clear()
+      }
 
       async function listen(server: Server): Promise<string> {
         await new Promise<void>((resolve) =>
@@ -216,7 +245,15 @@ describe('granted journey read authorization', () => {
           })
         })
         expect(token.status, await token.clone().text()).toBe(200)
-        return ((await token.json()) as { access_token: string }).access_token
+        const issuedToken = ((await token.json()) as { access_token: string })
+          .access_token
+        const artifact = await issuer.provider.AccessToken.find(issuedToken)
+        if (!artifact?.grantId) throw new Error('Missing fixture OAuth grant')
+        const connection = await auth.agentConnection.findUniqueOrThrow({
+          where: { grantId: artifact.grantId }
+        })
+        tokenConnections.set(issuedToken, connection.id)
+        return issuedToken
       }
       async function call(
         tool: string,
@@ -224,21 +261,29 @@ describe('granted journey read authorization', () => {
         token = accessToken,
         version = '2026-07-28'
       ) {
-        const response = await fetch(mcpUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json, text/event-stream',
-            Authorization: `Bearer ${token}`,
-            'mcp-protocol-version': version,
-            'mcp-method': 'tools/call',
-            'mcp-name': tool
-          },
-          body: JSON.stringify(
-            message(version, 'tools/call', { name: tool, arguments: input })
-          )
-        })
-        return { status: response.status, body: await response.text() }
+        const pending = (async () => {
+          const response = await fetch(mcpUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json, text/event-stream',
+              Authorization: `Bearer ${token}`,
+              'mcp-protocol-version': version,
+              'mcp-method': 'tools/call',
+              'mcp-name': tool
+            },
+            body: JSON.stringify(
+              message(version, 'tools/call', { name: tool, arguments: input })
+            )
+          })
+          return { status: response.status, body: await response.text() }
+        })()
+        activeCalls.add(pending)
+        try {
+          return await pending
+        } finally {
+          activeCalls.delete(pending)
+        }
       }
       const readA = () =>
         call('journey_read', { journeyId: 'read-a', view: 'steps' })
@@ -267,31 +312,16 @@ describe('granted journey read authorization', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_105(50|53|61|63|73|74|75)(_|$)/.test(
+          !/^\/auth_issue_(105(50|53|61|63|73|74|75)|10629)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_105(50|53|61|63|73|74|75)(_|$)/.test(
+          !/^\/journeys_issue_(105(50|53|61|63|73|74|75)|10629)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
           throw new Error('Use isolated issue databases')
-        for (const table of [
-          auth.permissionChange,
-          auth.retiredAccount,
-          auth.readPermit,
-          auth.agentAccessReview,
-          auth.connectionChange,
-          auth.connectionHistoryPurge,
-          auth.readExecutor,
-          auth.oAuthArtifact,
-          auth.agentConnection,
-          auth.consentReview,
-          auth.agentRenewalReview,
-          auth.authorizationGate,
-          auth.securityAudit,
-          auth.authEnvironment
-        ])
-          await (table.deleteMany as () => Promise<unknown>)()
+        await clearAuthority()
+        await auth.authEnvironment.deleteMany()
         const triggers = await journeys.$queryRaw<
           Array<{ exists: boolean }>
         >`SELECT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'journey_revision_root') AS exists`
@@ -492,7 +522,7 @@ describe('granted journey read authorization', () => {
         process.env.SKIP_ENV_VALIDATION = '1'
         if (users) {
           if (
-            !/^\/users_issue_105(50|53|61)(_|$)/.test(
+            !/^\/users_issue_(105(50|53|61)|10629)(_|$)/.test(
               new URL(usersUrl!).pathname
             )
           )
@@ -764,12 +794,9 @@ describe('granted journey read authorization', () => {
         failedFenceReports.clear()
         anonymousProfileActors.clear()
         invalidUsers.clear()
-        await auth.permissionChange.deleteMany()
-        await auth.retiredAccount.deleteMany()
+        await clearAuthority()
+        await journeys.mcpReadExecution.deleteMany()
         await journeys.mcpPermissionExecution.deleteMany()
-        await auth.authorizationGate.updateMany({
-          data: { open: true, generation: { increment: 1 } }
-        })
         await journeys.userTeam.upsert({
           where: { teamId_userId: { teamId: 'read-team', userId: 'alice' } },
           create: { teamId: 'read-team', userId: 'alice', role: 'manager' },
@@ -781,6 +808,29 @@ describe('granted journey read authorization', () => {
           update: {}
         })
         accessToken = await consent('alice', ['read-a'])
+      })
+
+      afterEach(async () => {
+        for (const release of releaseBarriers) release()
+        releaseBarriers.clear()
+        await Promise.allSettled(activeCalls)
+        beforeAcceptance = undefined
+        afterAcceptance = undefined
+        beforeOutput = undefined
+        afterOutput = undefined
+        settlementOutage = false
+        failedFenceReports.clear()
+        await ownerHandler.reconcile()
+        // A received HTTP body can precede its sender's durable fence report.
+        // Observe positive settlement before deleting this test's fixture rows.
+        await vi.waitFor(
+          async () =>
+            expect(
+              await auth.readPermit.count({ where: { status: 'accepted' } })
+            ).toBe(0),
+          { timeout: 10000 }
+        )
+        vi.unstubAllEnvs()
       })
 
       afterAll(async () => {
@@ -801,9 +851,7 @@ describe('granted journey read authorization', () => {
       it('renews an expired connection and resumes granted MCP reads under the same identity with fresh credentials', async () => {
         expect((await readA()).body).toContain('read-a-text-sentinel')
         const previousToken = accessToken
-        const connection = await auth.agentConnection.findFirstOrThrow({
-          orderBy: { approvedAt: 'desc' }
-        })
+        const connection = await currentConnection()
         const accepted = await auth.readPermit.findMany({
           where: { connectionId: connection.id }
         })
@@ -889,6 +937,13 @@ describe('granted journey read authorization', () => {
           where: { teamId_userId: { teamId: 'read-team', userId: 'alice' } }
         })
         expect((await readA()).body).not.toContain('read-a-text-sentinel')
+      })
+
+      it('starts with only the current test consent and no earlier execution receipts', async () => {
+        expect(await auth.agentConnection.count()).toBe(1)
+        expect(await auth.readPermit.count()).toBe(0)
+        expect(await auth.connectionChange.count()).toBe(0)
+        expect(await journeys.mcpReadExecution.count()).toBe(0)
       })
 
       it('lists and reads only A despite current user rights to A and B; no nested foreign references or counts escape', async () => {
@@ -1626,9 +1681,7 @@ describe('granted journey read authorization', () => {
       it('rejects list cursors reused across filters, users, connections and grant versions', async () => {
         accessToken = await consent('alice', ['read-a', 'read-b'])
         const originalToken = accessToken
-        const connection = await auth.agentConnection.findFirstOrThrow({
-          orderBy: { approvedAt: 'desc' }
-        })
+        const connection = await currentConnection()
         const first = JSON.parse(
           (await call('journeys_list', { limit: 1 })).body
         ) as { result: { structuredContent: { nextCursor: string } } }
@@ -1800,13 +1853,7 @@ describe('granted journey read authorization', () => {
         expect((await readA()).body).toContain('read-a-text-sentinel')
         await auth.authorizationGate.updateMany({
           where: {
-            id:
-              'connection:' +
-              (
-                await auth.agentConnection.findFirstOrThrow({
-                  orderBy: { approvedAt: 'desc' }
-                })
-              ).id
+            id: 'connection:' + (await currentConnection()).id
           },
           data: { open: false }
         })
@@ -1912,9 +1959,7 @@ describe('granted journey read authorization', () => {
         outgoing.destroy()
         await closed
         releaseOutput()
-        const connection = await auth.agentConnection.findFirstOrThrow({
-          orderBy: { approvedAt: 'desc' }
-        })
+        const connection = await currentConnection()
         await outputDone
         await vi.waitFor(async () =>
           expect(
@@ -1942,9 +1987,7 @@ describe('granted journey read authorization', () => {
         })
         expect(page.status, await page.clone().text()).toBe(200)
         const { csrf } = (await page.json()) as { csrf: string }
-        const connection = await auth.agentConnection.findFirstOrThrow({
-          orderBy: { approvedAt: 'desc' }
-        })
+        const connection = await currentConnection()
         const post = (action: string, extra: Record<string, unknown> = {}) =>
           request(`/connections/${connection.id}/${action}`, {
             method: 'POST',
@@ -1971,6 +2014,7 @@ describe('granted journey read authorization', () => {
         const released = new Promise<void>((resolve) => {
           resume = resolve
         })
+        releaseBarriers.add(resume)
         return {
           ready,
           resume,
@@ -3222,9 +3266,7 @@ describe('granted journey read authorization', () => {
 
       it('applies actual team roles/removal and collaboration removal/restoration without widening the grant', async () => {
         const membership = await permissionActors()
-        const connection = await auth.agentConnection.findFirstOrThrow({
-          orderBy: { approvedAt: 'desc' }
-        })
+        const connection = await currentConnection()
         const direct = await journeys.userJourney.create({
           data: { journeyId: 'read-a', userId: 'alice', role: 'editor' }
         })
@@ -3403,10 +3445,7 @@ describe('granted journey read authorization', () => {
       it('retires account authority through the real users retirement participant, including accepted work and other users', async () => {
         const bobToken = await consent('bob', ['read-foreign'])
         // Restore the current Alice credential, whose logical connection is independent.
-        const alice = await auth.agentConnection.findFirstOrThrow({
-          where: { userId: 'alice' },
-          orderBy: { approvedAt: 'desc' }
-        })
+        const alice = await currentConnection()
         const pause = barrier()
         afterAcceptance = async (stage) => {
           if (stage === 'read') await pause.pause()
