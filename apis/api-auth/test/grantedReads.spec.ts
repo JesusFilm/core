@@ -2,7 +2,7 @@ import { fork } from 'node:child_process'
 import { generateKeyPairSync, randomBytes, randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { type Server, createServer, request as httpRequest } from 'node:http'
-import type { AddressInfo } from 'node:net'
+import type { AddressInfo, Socket } from 'node:net'
 
 import {
   createGatewayRuntime,
@@ -112,7 +112,18 @@ describe('granted journey read authorization', () => {
       const cookies = new Map<string, string>()
       const tokenConnections = new Map<string, string>()
       const activeCalls = new Set<Promise<{ status: number; body: string }>>()
+      const activeGatewayRequests = new Set<Promise<unknown>>()
+      const closeRawRequests = new Set<() => Promise<void>>()
       const releaseBarriers = new Set<() => void>()
+
+      async function finishActiveRequests() {
+        await Promise.all([...closeRawRequests].map((close) => close()))
+        closeRawRequests.clear()
+        for (const release of releaseBarriers) release()
+        releaseBarriers.clear()
+        await Promise.allSettled(activeCalls)
+        await Promise.allSettled(activeGatewayRequests)
+      }
 
       function currentConnection(token = accessToken) {
         const id = tokenConnections.get(token)
@@ -760,7 +771,9 @@ describe('granted journey read authorization', () => {
         })
         gatewayUrl = await listen(
           createServer((req, res) => {
-            void gateway(req, res)
+            const pending = Promise.resolve(gateway(req, res))
+            activeGatewayRequests.add(pending)
+            void pending.finally(() => activeGatewayRequests.delete(pending))
           })
         )
         mcp = createMcpRuntime(
@@ -811,9 +824,7 @@ describe('granted journey read authorization', () => {
       })
 
       afterEach(async () => {
-        for (const release of releaseBarriers) release()
-        releaseBarriers.clear()
-        await Promise.allSettled(activeCalls)
+        await finishActiveRequests()
         beforeAcceptance = undefined
         afterAcceptance = undefined
         beforeOutput = undefined
@@ -1912,68 +1923,93 @@ describe('granted journey read authorization', () => {
         }
       )
 
-      it('settles output acceptance that returns after the MCP socket has positively closed', async () => {
-        let outputReady: () => void = () => undefined
-        let releaseOutput: () => void = () => undefined
-        const preparing = new Promise<void>((resolve) => {
-          outputReady = resolve
-        })
-        let outputExecutorId = ''
-        const outputDone = new Promise<void>((resolve) => {
-          afterOutput = resolve
-        })
-        beforeOutput = async (executorId) => {
-          outputExecutorId = executorId
-          outputReady()
-          await new Promise<void>((resolve) => {
-            releaseOutput = resolve
+      it.each(['explicit close', 'failure cleanup'])(
+        'settles output acceptance that returns after the MCP socket has positively closed through %s',
+        async (mode) => {
+          const pause = barrier()
+          let outputExecutorId = ''
+          let outputFinished = false
+          const outputDone = new Promise<void>((resolve) => {
+            afterOutput = () => {
+              outputFinished = true
+              resolve()
+            }
           })
-        }
-        const closed = new Promise<void>((resolve) => {
-          mcp.server.once('connection', (socket) =>
-            socket.once('close', () => resolve())
-          )
-        })
-        const outgoing = httpRequest(mcpUrl, {
-          method: 'POST',
-          agent: false,
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-            'mcp-protocol-version': '2026-07-28',
-            'mcp-method': 'tools/call',
-            'mcp-name': 'journey_read'
+          beforeOutput = async (executorId) => {
+            outputExecutorId = executorId
+            await pause.pause()
           }
-        })
-        outgoing.on('error', () => undefined)
-        outgoing.end(
-          JSON.stringify(
-            message('2026-07-28', 'tools/call', {
-              name: 'journey_read',
-              arguments: { journeyId: 'read-a', view: 'outline' }
-            })
-          )
-        )
-        await preparing
-        outgoing.destroy()
-        await closed
-        releaseOutput()
-        const connection = await currentConnection()
-        await outputDone
-        await vi.waitFor(async () =>
-          expect(
-            await auth.readExecutor.findUnique({
-              where: { id: outputExecutorId }
-            })
-          ).toMatchObject({ executor: 'mcp', fencedAt: expect.any(Date) })
-        )
-        expect(
-          await auth.readPermit.count({
-            where: { connectionId: connection.id, status: 'accepted' }
+          let incomingSocket: Socket | undefined
+          let socketClosed!: () => void
+          const closed = new Promise<void>((resolve) => {
+            socketClosed = resolve
           })
-        ).toBe(0)
-      })
+          const onConnection = (socket: Socket) => {
+            incomingSocket = socket
+            socket.once('close', socketClosed)
+          }
+          mcp.server.once('connection', onConnection)
+          const outgoing = httpRequest(mcpUrl, {
+            method: 'POST',
+            agent: false,
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+              'mcp-protocol-version': '2026-07-28',
+              'mcp-method': 'tools/call',
+              'mcp-name': 'journey_read'
+            }
+          })
+          outgoing.on('error', () => undefined)
+          const outgoingClosed = new Promise<void>((resolve) => {
+            outgoing.once('close', resolve)
+          })
+          closeRawRequests.add(async () => {
+            mcp.server.removeListener('connection', onConnection)
+            outgoing.destroy()
+            incomingSocket?.destroy()
+            await outgoingClosed
+            if (incomingSocket) await closed
+          })
+          outgoing.end(
+            JSON.stringify(
+              message('2026-07-28', 'tools/call', {
+                name: 'journey_read',
+                arguments: { journeyId: 'read-a', view: 'outline' }
+              })
+            )
+          )
+          await pause.ready
+          if (mode === 'failure cleanup') {
+            expect(outgoing.destroyed).toBe(false)
+            expect(outputFinished).toBe(false)
+            expect(activeGatewayRequests.size).toBeGreaterThan(0)
+            await finishActiveRequests()
+            expect(outgoing.destroyed).toBe(true)
+            expect(outputFinished).toBe(true)
+            expect(activeGatewayRequests.size).toBe(0)
+          } else {
+            outgoing.destroy()
+            await closed
+            pause.resume()
+          }
+          const connection = await currentConnection()
+          await outputDone
+          await vi.waitFor(async () =>
+            expect(
+              await auth.readExecutor.findUnique({
+                where: { id: outputExecutorId }
+              })
+            ).toMatchObject({ executor: 'mcp', fencedAt: expect.any(Date) })
+          )
+          expect(
+            await auth.readPermit.count({
+              where: { connectionId: connection.id, status: 'accepted' }
+            })
+          ).toBe(0)
+        }
+      )
 
       async function manageConnection() {
         const page = await request('/connections', {
