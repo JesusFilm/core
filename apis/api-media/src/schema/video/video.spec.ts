@@ -4050,7 +4050,7 @@ describe('video', () => {
     const publisherRole = {
       id: 'userId',
       userId: 'userId',
-      roles: ['publisher'],
+      roles: ['publisher'] as ['publisher'],
       createdAt: new Date(),
       updatedAt: new Date()
     }
