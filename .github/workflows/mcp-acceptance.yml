@@ -1,0 +1,90 @@
+name: MCP acceptance artifacts
+
+on:
+  pull_request:
+    paths:
+      - 'apis/api-mcp/**'
+      - 'tools/scripts/mcp-acceptance*'
+      - 'apis/api-auth/test/grantedEdits.spec.ts'
+      - 'apis/api-auth/test/grantedReads.spec.ts'
+      - '.github/workflows/mcp-acceptance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance-artifacts:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: acceptance-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Validate evidence and execute isolated saved-edit acceptance
+        run: pnpm exec vitest run --config apis/api-mcp/vitest.acceptance.config.mts
+        env:
+          MCP_ACCEPTANCE_POSTGRES_URL: postgresql://postgres:acceptance-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Preserve coverage and execution counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-acceptance-artifacts
+          path: coverage/integration/mcp-acceptance
+          if-no-files-found: error
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-acceptance/cobertura-coverage.xml,coverage/integration/mcp-acceptance/saved-edits/coverage/cobertura-coverage.xml
+          flags: integration.mcp-acceptance
+          disable_search: true
+          override_commit: ${{ github.event.pull_request.head.sha }}
+          override_branch: ${{ github.head_ref }}
+          fail_ci_if_error: true
+  mcp-base:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Collect the actual base MCP workspace baseline
+        run: pnpm exec vitest run --config apis/api-mcp/vitest.config.mts --root apis/api-mcp
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mcp-acceptance-base
+          path: coverage/apis/api-mcp
+          if-no-files-found: error
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/apis/api-mcp/cobertura-coverage.xml
+          flags: apps.api-mcp
+          disable_search: true
+          override_commit: ${{ github.event.pull_request.base.sha }}
+          override_branch: ${{ github.base_ref }}
+          fail_ci_if_error: true
