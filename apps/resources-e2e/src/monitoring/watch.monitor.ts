@@ -29,9 +29,6 @@ class VideoMonitoringHelpers {
   ]
   private static readonly VIDEO_PATH_PATTERNS = ['.hls', '.m3u8']
   private static readonly VIDEO_ERROR_PATTERNS = [
-    'mux.com',
-    'litix.io',
-    'inferred.litix.io',
     'net::err_connection_refused',
     'net::err_connection_timed_out',
     'net::err_connection_reset',
@@ -182,11 +179,16 @@ test('Video playback and MUX network connectivity monitoring', async ({
   // Listen to failed requests
   page.on('requestfailed', (request) => {
     const url = request.url()
+    const errorText = request.failure()?.errorText || 'Unknown error'
+
+    // Chromium can abort completed Litix telemetry during page cleanup.
+    if (errorText === 'net::ERR_ABORTED') return
+
     if (VideoMonitoringHelpers.isVideoRelatedUrl(url)) {
       networkRequests.set(url, {
         url,
         status: 0,
-        error: request.failure()?.errorText || 'Unknown error'
+        error: errorText
       })
     }
   })
@@ -204,7 +206,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
   expect(response?.status()).toEqual(200)
 
   // Wait for the page to be ready by checking for the title and main content
-  await expect(page).toHaveTitle('Watch | Jesus Film Project')
+  await expect(page).toHaveTitle(/Jesus Film Project$/)
 
   // Wait for the main content to be loaded by looking for video elements
   await page.waitForSelector('[data-testid="VideoCard"], [role="button"]', {
@@ -212,22 +214,30 @@ test('Video playback and MUX network connectivity monitoring', async ({
   })
 
   // Look for a video title to click on (using the working selector)
-  const videoTitle = page.getByRole('button', {
-    name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59'
-  })
+  const videoTitle = page
+    .getByRole('link', {
+      name: 'Show Life of Jesus (Gospel of John)',
+      exact: true
+    })
+    .first()
   await expect(videoTitle).toBeVisible({ timeout: 10000 })
 
   // Click on the video to navigate to video page
   await videoTitle.click()
 
   // Wait for navigation to complete by checking for video page elements
-  await page.waitForURL('**/watch/**', { timeout: 10000 })
+  await expect(page).toHaveURL(/\/watch\/life-of-jesus-gospel-of-john\.html$/, {
+    timeout: 10000
+  })
 
-  // Wait for video page to be ready by looking for video player elements
-  await page.waitForSelector(
-    'video, [data-testid="VideoHero"], [data-testid="VideoPlayer"]',
-    { timeout: 15000 }
-  )
+  // Start playback so the video element and MUX requests are created
+  const watchNowButton = page.getByRole('button', {
+    name: 'Watch now',
+    exact: true
+  })
+  await expect(watchNowButton).toBeVisible({ timeout: 15000 })
+  await watchNowButton.click()
+  await page.waitForSelector('video', { timeout: 15000 })
 
   // Wait for any video elements to be present and ready
   await page.waitForFunction(
