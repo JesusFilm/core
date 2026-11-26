@@ -356,7 +356,7 @@
     "prettier-plugin-tailwindcss": "^0.6.14",
     "react-refresh": "^0.18.0",
     "source-map-loader": "^5.0.0",
-    "storybook": "^10.3.5",
+    "storybook": "^10.6.2",
     "storybook-addon-apollo-client": "^10.0.0",
     "tailwindcss": "^4.0.15",
     "terser-webpack-plugin": "^5.1.1",
