@@ -19,6 +19,7 @@ PROJECT_ID = "PVT_kwDOBNwqhs4BeMYJ"
 MANUAL_LABEL = "status:manual"
 REPOSITORY = "JesusFilm/core"
 TRIAGE_BATCH_SIZE = 25
+NATIVE_OPEN_STATUSES = {"In progress", "In review"}
 PR_TRUST_FIELDS = (
     "repository { nameWithOwner } authorAssociation headRepository { nameWithOwner }"
 )
@@ -241,16 +242,18 @@ class GitHubGraphQLError(RuntimeError):
 class GitHub:
     """Small gh GraphQL adapter; every connection is paginated."""
 
-    def __init__(self, dry_run=False):
+    def __init__(self, dry_run=False, issue_status_token: str | None = None):
         self.dry_run = dry_run
+        self.issue_status_token = issue_status_token
 
-    def graphql(self, query: str, **variables) -> dict:
+    def graphql(self, query: str, *, token: str | None = None, **variables) -> dict:
         result = subprocess.run(
             ["gh", "api", "graphql", "--input", "-"],
             input=json.dumps({"query": query, "variables": variables}),
             text=True,
             capture_output=True,
             check=False,
+            env={**os.environ, "GH_TOKEN": token} if token else None,
         )
         try:
             response = json.loads(result.stdout)
@@ -299,6 +302,48 @@ class GitHub:
         if not data["node"]:
             raise RuntimeError(f"Cannot read {node_type} {node_id}")
         return data["node"]
+
+    def set_open_issue_status(self, node_id: str, status: str) -> bool:
+        """Set the native status before updating its synced project card."""
+        if status not in NATIVE_OPEN_STATUSES:
+            raise ValueError(f"Unsupported native issue status: {status}")
+        issue = self.node(
+            node_id, "Issue", "state status { name } repository { id nameWithOwner }"
+        )
+        if issue["state"] != "OPEN" or issue["repository"]["nameWithOwner"] != REPOSITORY:
+            return False
+        if (issue.get("status") or {}).get("name") == status:
+            return True
+        if not self.issue_status_token:
+            raise RuntimeError("ISSUE_STATUS_GH_TOKEN is required to update native status")
+        statuses = self.connection(
+            issue["repository"]["id"],
+            "Repository",
+            "planningStatuses",
+            "id name category { name }",
+        )
+        matches = [
+            option["id"]
+            for option in statuses
+            if option["name"] == status and option["category"]["name"] == "Started"
+        ]
+        if len(matches) != 1:
+            raise RuntimeError(f"Cannot resolve the native issue status {status!r}")
+        result = self.graphql(
+            "mutation($issue: ID!, $status: ID!) { "
+            "updateIssue(input: {id: $issue, statusId: $status}) { "
+            "issue { id state status { name } } } }",
+            token=self.issue_status_token,
+            issue=node_id,
+            status=matches[0],
+        )["updateIssue"]["issue"]
+        if (
+            result["id"] != node_id
+            or result["state"] != "OPEN"
+            or (result.get("status") or {}).get("name") != status
+        ):
+            raise RuntimeError(f"GitHub did not confirm native status {status!r} for {node_id}")
+        return True
 
     def connection(
         self,
@@ -395,7 +440,8 @@ class ProjectStatuses:
             return
         value = item.get("fieldValueByName") or {}
         previous = value.get("name")
-        if previous == status or (only_if_unset and previous):
+        native_status = status in NATIVE_OPEN_STATUSES
+        if (previous == status and not native_status) or (only_if_unset and previous):
             return
         if review_at and not newer_activity(review_at, value.get("updatedAt")):
             # Recovery must not undo a later pickup, manual move or PR event.
@@ -403,6 +449,11 @@ class ProjectStatuses:
             return
         if self.github.dry_run:
             print(f"Would set Issue {node_id}: {previous or '(unset)'} -> {status}")
+            return
+        if native_status and not self.github.set_open_issue_status(node_id, status):
+            print(f"Skipping {node_id}: native issue is closed or outside {REPOSITORY}")
+            return
+        if previous == status:
             return
         self.github.graphql(
             "mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) { "
@@ -750,7 +801,10 @@ if __name__ == "__main__":
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     run(
-        GitHub(dry_run=args.dry_run),
+        GitHub(
+            dry_run=args.dry_run,
+            issue_status_token=os.environ.pop("ISSUE_STATUS_GH_TOKEN", None),
+        ),
         args.event_name,
         json.loads(Path(args.event_path).read_text()),
     )
