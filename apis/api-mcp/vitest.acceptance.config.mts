@@ -22,6 +22,7 @@ export default defineConfig({
       include: [
         'apis/api-mcp/src/acceptance.ts',
         'tools/scripts/mcp-acceptance.mjs',
+        'tools/scripts/mcp-acceptance-config.mjs',
         'tools/scripts/mcp-acceptance-local.mjs'
       ],
       exclude: ['**/*.spec.ts', '**/*.spec.mjs'],

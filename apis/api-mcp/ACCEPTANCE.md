@@ -50,6 +50,20 @@ Prepare these through normal Admin or an approved isolated test fixture, never a
 
 For normal-browser preview reuse `apps/journeys-admin-e2e/src/e2e/agents/private-preview.spec.ts`. Supply its `PRIVATE_PREVIEW_JOURNEY_ID`, `PRIVATE_PREVIEW_WEBSITE_ID`, `PRIVATE_PREVIEW_PUBLIC_URL` and normal test-user configuration from the implementing preview runbook. Inspect that spec and its actual required settings before execution. Use the normal Playwright configuration and approved synthetic accounts. Its `@manual` cases require deliberate execution; an excluded tag or skipped test cannot qualify A8. Keep traces, videos and screenshots disabled where they could capture credentials or private content. Final AWS preview/publication belongs to this ticket, even if local preview tests passed earlier.
 
+The existing [preview fixture instructions](./GRANTED_READS.md#private-preview-and-human-publication) define the manager, journey-only Editor and stranger accounts. Its seed accepts local PostgreSQL only. Prepare matching AWS stage records through approved setup or normal Admin, then set the IDs and the public viewer URL. With the actual candidate Admin origin and normal test-user secrets loaded, run deliberately:
+
+```sh
+mkdir -p /tmp/phoebe-issue-10565/stage-evidence/browser
+cd apps/journeys-admin-e2e
+JOURNEYS_ADMIN_DAILY_E2E="${MCP_STAGE_ADMIN_ORIGIN:?set the recorded candidate Admin origin}" \
+PLAYWRIGHT_JSON_OUTPUT_FILE=/tmp/phoebe-issue-10565/stage-evidence/browser/results.json \
+  pnpm exec playwright test src/e2e/agents/private-preview.spec.ts \
+  --grep @manual --workers=1 --retries=0 --reporter=line,json \
+  --output=/tmp/phoebe-issue-10565/stage-evidence/browser/artifacts
+```
+
+This executes a real publication on the synthetic draft. Use fresh fixture records for another run. Preserve failures before retesting, review the JSON pass/skip counts and record the browser version and deployed manifest. Do not substitute the smoke target or `e2e-full`, which excludes `@manual` cases.
+
 Record the baseline graph/IDs and Admin revision before edits. Do not publish A or revoke its connection until prior scenarios have finished; use fresh synthetic drafts/connections where a case permanently retires authority. Never recreate retired namespaces to reset limits, history or accepted keys.
 
 ## Real Claude and ChatGPT conversations

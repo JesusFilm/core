@@ -8,6 +8,8 @@ import * as acceptanceModule from '../../apis/api-mcp/src/acceptance.ts'
 
 const { executedCounts } = acceptanceModule.default ?? acceptanceModule
 
+import { suiteConfiguration } from './mcp-acceptance-config.mjs'
+
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
 
@@ -18,22 +20,6 @@ function run(args, env = {}) {
   })
   if (result.error || result.status !== 0)
     throw new Error('Owning suite failed')
-}
-
-export function suiteConfiguration(suite, directory) {
-  return `import base from ${JSON.stringify(resolve(suite.config))}
-export default {
-  ...base, root: ${JSON.stringify(resolve(suite.root))},
-  test: { ...base.test, fileParallelism: false, maxWorkers: 1,
-    reporters: ['default', 'json'],
-    outputFile: { json: ${JSON.stringify(resolve(directory, 'tests.json'))} },
-    coverage: { ...base.test.coverage,
-      reportsDirectory: ${JSON.stringify(resolve(directory, 'coverage'))},
-      reporter: ['json', ['cobertura', { projectRoot: ${JSON.stringify(resolve('.'))} }]]
-    }
-  }
-}
-`
 }
 
 export function localDatabaseSource(value) {

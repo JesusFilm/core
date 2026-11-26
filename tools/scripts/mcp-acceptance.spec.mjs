@@ -17,10 +17,8 @@ import {
   createAcceptancePlan,
   verifyArtifacts
 } from './mcp-acceptance.mjs'
-import {
-  localDatabaseSource,
-  suiteConfiguration
-} from './mcp-acceptance-local.mjs'
+import { localDatabaseSource } from './mcp-acceptance-local.mjs'
+import { suiteConfiguration } from './mcp-acceptance-config.mjs'
 
 const { releaseChecks } = acceptanceModule.default ?? acceptanceModule
 
