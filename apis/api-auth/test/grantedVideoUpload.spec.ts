@@ -1,6 +1,9 @@
 import { createHash, createHmac, randomUUID } from 'node:crypto'
 import { type RequestListener, createServer } from 'node:http'
-import { setTimeout as delay } from 'node:timers/promises'
+import {
+  setImmediate as yieldToIO,
+  setTimeout as delay
+} from 'node:timers/promises'
 
 import { buildSchema } from 'graphql'
 import { createYoga } from 'graphql-yoga'
@@ -117,6 +120,8 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       objects.set(key, deduplicated.get(digest)!)
     },
     async get(key) {
+      // A staging read yields to the HTTP server and its socket timers.
+      await yieldToIO()
       const value = objects.get(key)
       if (!value) throw new Error('Missing controlled staging')
       return value
