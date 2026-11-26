@@ -1848,6 +1848,14 @@ type Video
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
+  gospelPresentation: Boolean
+  gospelStartSeconds: Int
+  gospelEndSeconds: Int
+  opportunityToRespond: Boolean
+  opportunityToRespondEndSeconds: Int
+  biblicallyAccuratePortrayal: Boolean
+  personOfJesusDisplayed: Boolean
+  validationComments: String
   publishedAt: Date
   updatedAt: DateTime!
   children: [Video!]!
@@ -2112,6 +2120,14 @@ input VideoUpdateInput {
   restrictDownloadPlatforms: [Platform!]
   restrictViewPlatforms: [Platform!]
   restrictTranslations: Boolean
+  gospelPresentation: Boolean
+  gospelStartSeconds: Int
+  gospelEndSeconds: Int
+  opportunityToRespond: Boolean
+  opportunityToRespondEndSeconds: Int
+  biblicallyAccuratePortrayal: Boolean
+  personOfJesusDisplayed: Boolean
+  validationComments: String
 }
 
 type VideoVariant {

@@ -17,6 +17,14 @@ export const VideoUpdateInput = builder.inputType('VideoUpdateInput', {
     keywordIds: t.stringList({ required: false }),
     restrictDownloadPlatforms: t.field({ type: [Platform], required: false }),
     restrictViewPlatforms: t.field({ type: [Platform], required: false }),
-    restrictTranslations: t.boolean({ required: false })
+    restrictTranslations: t.boolean({ required: false }),
+    gospelPresentation: t.boolean({ required: false }),
+    gospelStartSeconds: t.int({ required: false }),
+    gospelEndSeconds: t.int({ required: false }),
+    opportunityToRespond: t.boolean({ required: false }),
+    opportunityToRespondEndSeconds: t.int({ required: false }),
+    biblicallyAccuratePortrayal: t.boolean({ required: false }),
+    personOfJesusDisplayed: t.boolean({ required: false }),
+    validationComments: t.string({ required: false })
   })
 })

@@ -186,6 +186,14 @@ model Video {
   originId                  String?
   restrictDownloadPlatforms Platform[]                   @default([])
   restrictViewPlatforms     Platform[]                   @default([])
+  gospelPresentation             Boolean?
+  gospelStartSeconds             Int?
+  gospelEndSeconds               Int?
+  opportunityToRespond           Boolean?
+  opportunityToRespondEndSeconds Int?
+  biblicallyAccuratePortrayal    Boolean?
+  personOfJesusDisplayed         Boolean?
+  validationComments             String?
   publishedAt               DateTime?
   createdAt                 DateTime                     @default(now())
   updatedAt                 DateTime                     @default(now()) @updatedAt
