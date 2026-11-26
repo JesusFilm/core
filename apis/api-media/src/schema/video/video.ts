@@ -920,7 +920,8 @@ builder.mutationFields((t) => ({
             gospelStartSeconds: input.gospelStartSeconds,
             gospelEndSeconds: input.gospelEndSeconds,
             opportunityToRespond: input.opportunityToRespond,
-            opportunityToRespondEndSeconds: input.opportunityToRespondEndSeconds,
+            opportunityToRespondEndSeconds:
+              input.opportunityToRespondEndSeconds,
             biblicallyAccuratePortrayal: input.biblicallyAccuratePortrayal,
             personOfJesusDisplayed: input.personOfJesusDisplayed,
             validationComments: input.validationComments,
