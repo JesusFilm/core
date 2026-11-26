@@ -8,11 +8,14 @@ From the repository root, with Node 24, pnpm and an isolated local PostgreSQL se
 
 ```sh
 node tools/scripts/test-mcp-operations.mjs
+VITEST_MAX_WORKERS=1 node tools/scripts/test-mcp-video-upload.mjs
 pnpm exec vitest run --config apis/api-mcp/vitest.config.mts
 node tools/scripts/mcp-release.mjs tools/scripts/mcp-operations.stage.example.json
 ```
 
 `MCP_OPERATIONS_TEST_POSTGRES_URL` defaults to the local postgres/postgres server. The runner creates randomly suffixed `*_issue_10564_*` databases and a restricted auth role, replays committed migrations, applies `libs/prisma/auth/grants.sql`, runs the owning HTTP/database suite with coverage and removes only its own databases/role. It rejects remote database hosts, failed tests, required skips, missing owning execution hits and non-relative Cobertura paths. Reports go to `coverage/integration/mcp-operations`, independently of other projects/shards. The workflow uploads that report for the checked-out PR head. Firebase, storage and provider adapters in the integration fixture are controlled; OAuth, gates, MCP HTTP, gateway, owning service code and PostgreSQL are real.
+
+Run video qualification separately on the same checkout with its current parent integrated. The operations suite covers image uploads and operational controls; it does not execute the video suite. The video runner exercises both exact 1,000,000,000-byte ingress paths, staged reads, Mux transfer, cancellation and recovery. It requires local PostgreSQL through `MCP_UPLOAD_TEST_POSTGRES_URL`, uses isolated `*_issue_10554*` databases and writes its own report to `coverage/integration/mcp-video-upload`. Record each suite's tested head, parent, pass/fail/skip counts and coverage separately. A passing operations report does not clear a failing video run.
 
 The existing runtime suite checks two child processes, round-robin protocol requests, abrupt replacement, graceful drain, hard transport deadlines, dependency failures and redacted logs. Owning integration tests exercise exact upload bounds, provider uncertainty, lost responses, recovery and successful-asset retention. Passing these checks establishes local behavior only. An elapsed deadline or dead transport does not establish that an owning executor stopped.
 
