@@ -113,6 +113,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   let beforeStagingRead: (() => Promise<void>) | undefined
   let beforeCleanup: (() => Promise<void>) | undefined
   let beforeUploadStatus: (() => Promise<void>) | undefined
+  let beforeLifecycle: (() => Promise<void>) | undefined
   let throttleStaging = false
   let stagedReadBytes = 0
   let stagingReadStarted = 0
@@ -266,6 +267,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     beforeStagingRead = undefined
     beforeCleanup = undefined
     beforeUploadStatus = undefined
+    beforeLifecycle = undefined
     throttleStaging = false
     stagedReadBytes = 0
     beforeAccept = undefined
@@ -321,6 +323,8 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
           value.asset_id = 'asset-' + value.id
           return new Response(null, { status: 200 })
         }
+        if (url.pathname === '/internal/reads/media-jobs/lifecycle')
+          await beforeLifecycle?.()
         if (url.hostname !== 'api.mux.com') return originalFetch(input, init)
         expect((init?.headers as Record<string, string>).Authorization).toBe(
           'Basic ' +
@@ -871,6 +875,187 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
       expect(creates).toBe(1)
     }
   )
+
+  async function transferInvalidVideo(id: string) {
+    const data = Buffer.alloc(128)
+    expect(
+      (
+        await browser(
+          id,
+          'POST',
+          'bind',
+          JSON.stringify({ ...manifest(), sha256: hash(data) })
+        )
+      ).status
+    ).toBe(200)
+    expect(
+      (
+        await browser(id, 'PUT', undefined, data, 'alice', {
+          'X-Upload-Offset': '0',
+          'X-Upload-Sha256': hash(data)
+        })
+      ).status
+    ).toBe(200)
+  }
+
+  it('rejects invalid video without holding cleanup locks or releasing capacity early', async () => {
+    const id = String((await start()).jobId)
+    await transferInvalidVideo(id)
+    const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    const cleanup = pauseProviderRequest()
+    beforeCleanup = cleanup.pause
+    const pending = process()
+    try {
+      await cleanup.started
+      await media.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "McpMediaExecution" FOR UPDATE NOWAIT`
+        await tx.$queryRaw`SELECT "userId" FROM "McpMediaUser" WHERE "userId" = ${job.userId} FOR UPDATE NOWAIT`
+        await tx.$queryRaw`SELECT id FROM "McpMediaJob" WHERE id = ${id} FOR UPDATE NOWAIT`
+      })
+      await f.journeys.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "Journey" WHERE id = ${job.journeyId} FOR UPDATE NOWAIT`
+      })
+      expect(await status(id)).toMatchObject({ state: 'failed', active: true })
+      expect(objects.size).toBeGreaterThan(0)
+      expect((await browser(id, 'POST', 'resume')).status).toBe(200)
+      expect((await browser(id, 'POST', 'cancel')).status).toBe(200)
+      expect(
+        (
+          await browser(id, 'PUT', undefined, Buffer.alloc(128), 'alice', {
+            'X-Upload-Offset': '0',
+            'X-Upload-Sha256': hash(Buffer.alloc(128))
+          })
+        ).status
+      ).toBe(403)
+      await start()
+      await expect(
+        worker().admit(
+          {
+            userId: job.userId,
+            connectionId: job.connectionId,
+            journeyId: job.journeyId
+          },
+          { kind: 'video_upload', idempotencyKey: randomUUID() }
+        )
+      ).rejects.toThrow('LIMIT_EXCEEDED')
+    } finally {
+      beforeCleanup = undefined
+      cleanup.release()
+      await pending
+    }
+    expect(await status(id)).toMatchObject({ state: 'failed', active: false })
+    expect(objects.size).toBe(0)
+    expect(creates).toBe(0)
+    expect(puts).toBe(0)
+  })
+
+  it('recovers invalid video cleanup after failure, restart and withdrawal', async () => {
+    const id = String((await start()).jobId)
+    await transferInvalidVideo(id)
+    cleanupUnavailable = true
+    await process()
+    expect(await status(id)).toMatchObject({ state: 'failed', active: true })
+    expect(objects.size).toBeGreaterThan(0)
+    await withdraw(id)
+    await worker().recover()
+    expect(await media.mcpMediaJob.findUnique({ where: { id } })).toMatchObject(
+      {
+        state: 'failed',
+        active: true,
+        dispatchReceiptId: null,
+        completedAt: null
+      }
+    )
+    cleanupUnavailable = false
+    await worker().recover()
+    const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+    expect(job).toMatchObject({
+      state: 'failed',
+      active: false,
+      dispatchReceiptId: null
+    })
+    expect(job.completedAt).toBeInstanceOf(Date)
+    expect(objects.size).toBe(0)
+    expect(
+      await media.muxVideo.findUnique({ where: { id: job.providerId } })
+    ).toBeNull()
+    expect(creates).toBe(0)
+    expect(puts).toBe(0)
+  })
+
+  it('preserves invalid video settlement when a recovery worker overtakes paused cleanup', async () => {
+    const id = String((await start()).jobId)
+    await transferInvalidVideo(id)
+    const cleanup = pauseProviderRequest()
+    beforeCleanup = cleanup.pause
+    const pending = process()
+    let completedAt: Date | null
+    try {
+      await cleanup.started
+      beforeCleanup = undefined
+      await worker().recover()
+      const job = await media.mcpMediaJob.findUniqueOrThrow({ where: { id } })
+      expect(job).toMatchObject({ state: 'failed', active: false })
+      completedAt = job.completedAt
+    } finally {
+      beforeCleanup = undefined
+      cleanup.release()
+      await pending
+    }
+    expect(await media.mcpMediaJob.findUnique({ where: { id } })).toMatchObject(
+      {
+        state: 'failed',
+        active: false,
+        completedAt
+      }
+    )
+    expect(objects.size).toBe(0)
+    expect(creates).toBe(0)
+  })
+
+  it('preserves invalid video rejection when withdrawal recovery uses an older job snapshot', async () => {
+    const id = String((await start()).jobId)
+    await transferInvalidVideo(id)
+    const listed = pauseProviderRequest()
+    beforeLifecycle = listed.pause
+    const recovery = worker().recover()
+    await listed.started
+    const cleanup = pauseProviderRequest()
+    let cleanupCalls = 0
+    beforeCleanup = async () => {
+      if (++cleanupCalls === 1) await cleanup.pause()
+    }
+    const validation = process()
+    try {
+      await cleanup.started
+      await withdraw(id)
+      listed.release()
+      await recovery
+      expect(
+        await media.mcpMediaJob.findUnique({ where: { id } })
+      ).toMatchObject({
+        state: 'failed',
+        active: true,
+        dispatchReceiptId: null
+      })
+      expect(cleanupCalls).toBe(1)
+      expect(objects.size).toBeGreaterThan(0)
+    } finally {
+      beforeLifecycle = undefined
+      listed.release()
+      beforeCleanup = undefined
+      cleanup.release()
+      await Promise.all([recovery, validation])
+    }
+    expect(await media.mcpMediaJob.findUnique({ where: { id } })).toMatchObject(
+      {
+        state: 'failed',
+        active: false
+      }
+    )
+    expect(objects.size).toBe(0)
+    expect(creates).toBe(0)
+  })
 
   it('retries durable ready cleanup after restart without needing another provider observation', async () => {
     const id = String((await start()).jobId)

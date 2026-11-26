@@ -383,8 +383,22 @@ export function createMediaJobs(
       }
     })
   }
-  async function finishVideoCleanup(jobId: string, receiptId: string) {
+  function needsRejectedVideoCleanup(job: McpMediaJob) {
+    return (
+      job.kind === 'video_upload' &&
+      job.active &&
+      job.state === 'failed' &&
+      !job.dispatchReceiptId
+    )
+  }
+  async function finishVideoCleanup(jobId: string, receiptId?: string) {
     const pending = await media.$transaction(async (tx) => {
+      if (!receiptId) {
+        const job = await lockJob(tx, jobId)
+        if (needsRejectedVideoCleanup(job))
+          return { state: 'failed', status: undefined }
+        return
+      }
       await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
       const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
         where: { id: receiptId }
@@ -401,10 +415,16 @@ export function createMediaJobs(
       return { state, status: receipt.status }
     })
     if (!pending) return
-    // A committed cleanup receipt fences provider observations and new writes.
+    // A committed rejection or cleanup receipt fences new writes.
     // Repeated prefix deletion is safe if another worker or a restart joins us.
     await storage.removeJob(jobId)
     const completed = await media.$transaction(async (tx) => {
+      if (!receiptId) {
+        const job = await lockJob(tx, jobId)
+        if (!needsRejectedVideoCleanup(job)) return false
+        await completeJob(tx, job, pending.state)
+        return true
+      }
       await tx.$queryRaw`SELECT id FROM "McpMediaExecution" WHERE id = ${receiptId} FOR UPDATE`
       const receipt = await tx.mcpMediaExecution.findUniqueOrThrow({
         where: { id: receiptId }
@@ -420,7 +440,7 @@ export function createMediaJobs(
       })
       return true
     })
-    if (completed) await settle(receiptId)
+    if (completed && receiptId) await settle(receiptId)
   }
   async function recoverExecution(
     id: string,
@@ -1101,10 +1121,18 @@ export function createMediaJobs(
             !(error instanceof InvalidVideoInput)
           )
             throw error
-          await terminalJob(tx, job, 'failed')
+          if (job.kind === 'video_upload') {
+            // Reject under lock to fence writes and progression. Keep capacity
+            // until staging is removed outside the transaction.
+            await tx.mcpMediaJob.update({
+              where: { id: job.id },
+              data: { state: 'failed' }
+            })
+          } else await terminalJob(tx, job, 'failed')
         }
       }
     )
+    if (known.kind === 'video_upload') await finishVideoCleanup(jobId)
   }
   async function dispatch(context: JobContext, jobId: string) {
     const known = await own(jobId, context)
@@ -1623,7 +1651,9 @@ export function createMediaJobs(
         const revoked = connection?.revoked === true
         // Revocation cancels only unsent work. Uncertain writes and dispatch
         // receipts still prevent cleanup until positively reconciled or fenced.
-        if (job.dispatchReceiptId)
+        if (needsRejectedVideoCleanup(job))
+          await finishVideoCleanup(job.id).catch(() => undefined)
+        else if (job.dispatchReceiptId)
           await reconcileJob(job.id, false, retired || revoked).catch(
             () => undefined
           )
@@ -1637,7 +1667,12 @@ export function createMediaJobs(
           await media
             .$transaction(async (tx) => {
               const current = await lockJob(tx, job.id)
-              if (!current.active || current.dispatchReceiptId) return
+              if (
+                !current.active ||
+                current.dispatchReceiptId ||
+                needsRejectedVideoCleanup(current)
+              )
+                return
               const transferExpired =
                 !current.transferCompletedAt &&
                 current.transferDeadline <= (await clock(tx))
