@@ -65,6 +65,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let stagingRejected = false
   let stagingWrites = 0
   let identityFailure: Error | undefined
+  let beforeIdentityCheck: (() => Promise<void>) | undefined
   let beforeStagedRead: (() => Promise<void>) | undefined
   let mediaLibrary = true
   let providerReady = true
@@ -170,6 +171,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     journeysUrl,
     startupTimeoutMs: 120000,
     async checkIdentity() {
+      await beforeIdentityCheck?.()
       if (identityFailure) throw identityFailure
     },
     authEnv: {
@@ -285,6 +287,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     stagingRejected = false
     stagingWrites = 0
     identityFailure = undefined
+    beforeIdentityCheck = undefined
     beforeStagedRead = undefined
     providerReady = true
     mediaLibrary = true
@@ -557,7 +560,22 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         })
       ).toBe(1)
       await start()
+      let releases = 0
+      let slowIdentityChecks = 0
+      beforeAccept = async (action) => {
+        if (action !== 'release' || ++releases !== 2) return
+        // Delay the authority response itself on the second upload's output
+        // check, after the first read release has already succeeded.
+        beforeIdentityCheck = async () => {
+          beforeIdentityCheck = undefined
+          slowIdentityChecks++
+          await new Promise((resolve) => setTimeout(resolve, 5500))
+        }
+      }
       await start()
+      beforeAccept = undefined
+      expect(releases).toBe(2)
+      expect(slowIdentityChecks).toBe(1)
       providerReady = false
       await Promise.all([
         processCompletedTransfers(),

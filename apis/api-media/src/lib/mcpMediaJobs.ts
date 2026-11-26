@@ -102,11 +102,12 @@ export function createMediaJobs(
   videoProvider?: VideoUploadProvider,
   generation?: ImageGenerationProvider
 ) {
-  const authority = (action: string, body: unknown) =>
+  const authority = (action: string, body: unknown, timeoutMs?: number) =>
     postJson(
       new URL(`/internal/reads/media-jobs/${action}`, config.authorityUrl).href,
       body,
-      `Bearer ${config.authoritySecret}`
+      `Bearer ${config.authoritySecret}`,
+      timeoutMs
     )
   const signTicket = (job: McpMediaJob) => {
     const payload = Buffer.from(
@@ -281,7 +282,12 @@ export function createMediaJobs(
               const accept = async () => {
                 if (accepted) throw new Error('Permit already accepted')
                 await hooks.beforeAccept?.(action)
-                await authority('accept', { permitId: prepared.permitId })
+                await authority(
+                  'accept',
+                  { permitId: prepared.permitId },
+                  // Fresh output checks share the gateway's 15-second budget.
+                  deferred === 'output' ? 15000 : undefined
+                )
                 accepted = true
               }
               const value = await operation(tx, {
