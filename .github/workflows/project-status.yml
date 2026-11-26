@@ -22,6 +22,7 @@ on:
 permissions:
   contents: read
   actions: read
+  issues: write
   pull-requests: read
 
 # Serialize project writes and retain pending events during review/push bursts.
@@ -86,6 +87,7 @@ jobs:
         if: github.event_name != 'workflow_run' || steps.review.outputs.apply == 'true'
         env:
           GH_TOKEN: ${{ steps.token.outputs.token }}
+          ISSUE_STATUS_GH_TOKEN: ${{ github.token }}
           REVIEW_EVENT_PATH: ${{ runner.temp }}/project-status-review/event.json
         run: |
           if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then

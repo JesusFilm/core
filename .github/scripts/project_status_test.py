@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from project_status import (
     MANUAL_LABEL,
+    NATIVE_OPEN_STATUSES,
     PROJECT_ID,
     GitHub,
     PullRequest,
@@ -21,7 +22,7 @@ class MemoryGitHub(GitHub):
     """Project API fixture: exercise the handler through its GitHub boundary."""
 
     def __init__(self):
-        super().__init__()
+        super().__init__(issue_status_token="native-token")
         self.pr = {
             "id": "pr",
             "updatedAt": "2026-11-10T02:00:00Z",
@@ -37,7 +38,8 @@ class MemoryGitHub(GitHub):
             "id": "issue",
             "number": 1,
             "state": "OPEN",
-            "repository": {"nameWithOwner": "JesusFilm/core"},
+            "status": {"name": "In progress"},
+            "repository": {"id": "repository", "nameWithOwner": "JesusFilm/core"},
         }
         self.issues = [self.issue]
         self.linked_prs = [{"id": "pr", "state": "OPEN"}]
@@ -51,6 +53,7 @@ class MemoryGitHub(GitHub):
         self.status_updated_at = {"issue": "2026-11-10T00:00:00Z"}
         self.archived = set()
         self.writes = []
+        self.native_writes = []
         self.declared_pull_requests = set()
         self.lookup_errors = {}
         self.timeline_snapshots = []
@@ -88,6 +91,11 @@ class MemoryGitHub(GitHub):
             ]
         if name == "labels":
             return [{"name": label} for label in self.labels[node_id]]
+        if name == "planningStatuses" and node_type == "Repository":
+            return [
+                {"id": f"native:{status}", "name": status, "category": {"name": "Started"}}
+                for status in NATIVE_OPEN_STATUSES
+            ]
         if name == "projectItems":
             return [
                 {
@@ -135,7 +143,7 @@ class MemoryGitHub(GitHub):
             "closedByPullRequestsReferences": self.linked_prs,
         }[name]
 
-    def graphql(self, query, **variables):
+    def graphql(self, query, *, token=None, **variables):
         if "repository(owner:" in query and "{ id }" in query:
             return {"repository": {"id": "repository"}}
         if "issue(number:" in query or "issueOrPullRequest(number:" in query:
@@ -170,10 +178,22 @@ class MemoryGitHub(GitHub):
                 return GitHub.graphql(self, query, **variables)
         if "addProjectV2ItemById" in query:
             raise AssertionError("The status workflow must never create project cards")
+        if "updateIssue(" in query:
+            assert token == self.issue_status_token
+            assert variables["issue"] == self.issue["id"] and self.issue["state"] == "OPEN"
+            status = variables["status"].removeprefix("native:")
+            assert status in NATIVE_OPEN_STATUSES
+            self.issue["status"] = {"name": status}
+            self.native_writes.append(status)
+            return {"updateIssue": {"issue": self.issue}}
         if "updateProjectV2ItemFieldValue" in query:
             if variables["item"] != self.issue["id"]:
                 raise AssertionError("Only issue cards may be updated")
-            self.statuses[variables["item"]] = variables["option"]
+            status = variables["option"]
+            assert token is None
+            if status in NATIVE_OPEN_STATUSES:
+                assert self.issue["status"]["name"] == status
+            self.statuses[variables["item"]] = status
             self.writes.append((variables["item"], variables["option"]))
             return {}
         raise AssertionError(f"Unexpected API call: {query}")
@@ -723,6 +743,21 @@ class HandlerTests(unittest.TestCase):
         payload["sender"] = {"login": "siyang-bot"}
         self.handle(payload=payload)
         self.assertEqual(self.github.statuses, {"issue": "In review"})
+        self.assertEqual(self.github.native_writes, ["In review"])
+
+    def test_next_push_returns_issue_and_card_to_progress(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.issue["status"] = {"name": "In review"}
+        self.handle("synchronize")
+        self.assertEqual(self.github.statuses["issue"], "In progress")
+        self.assertEqual(self.github.native_writes, ["In progress"])
+
+    def test_review_request_repairs_native_status_when_card_is_already_in_review(self):
+        self.github.statuses["issue"] = "In review"
+        self.github.requests = [{"requestedReviewer": {"id": "alice"}}]
+        self.handle("review_requested")
+        self.assertEqual(self.github.native_writes, ["In review"])
+        self.assertEqual(self.github.writes, [])
 
     def test_open_with_pending_reviewer_enters_review(self):
         self.github.requests = [{"requestedReviewer": {"id": "alice"}}]
@@ -1058,6 +1093,7 @@ class HandlerTests(unittest.TestCase):
         self.github.dry_run = True
         self.handle()
         self.assertEqual(self.github.statuses, {})
+        self.assertEqual(self.github.native_writes, [])
 
     def test_archived_items_are_not_restored(self):
         self.github.statuses["issue"] = "Done"
