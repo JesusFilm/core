@@ -4,6 +4,7 @@ import slugify from 'slugify'
 
 import { Prisma } from '@core/prisma/journeys/client'
 import { isAppearanceCommand } from '@core/yoga/mcp/appearanceContract'
+import { expandCardStarter } from '@core/yoga/mcp/cardStarterContract'
 import {
   type EditInput,
   commandRegistry,
@@ -115,7 +116,7 @@ function missing(): never {
 export async function planStructure(
   tx: Prisma.TransactionClient,
   journey: Journey,
-  commands: EditInput['commands'],
+  requestedCommands: EditInput['commands'],
   media?: MediaProjection,
   canEditChat: () => Promise<boolean> = async () => false,
   destinationRoutes?: Parameters<typeof validateFormDestinations>[3],
@@ -125,6 +126,17 @@ export async function planStructure(
   }
 ) {
   const state = await loadStructure(tx, journey)
+  const starters = requestedCommands.filter(
+    (command) => command.type === 'card_starter_apply'
+  )
+  const starterPlans = new Map(
+    starters.map((command) => [command, expandCardStarter(command)])
+  )
+  const commands = requestedCommands.flatMap((command) =>
+    command.type === 'card_starter_apply'
+      ? starterPlans.get(command)!.commands
+      : [command]
+  )
   const formLocales = new Map<string, Parameters<typeof formLabel>[1]>()
   const locals = new Map<string, string>()
   const duplicateIdMap: Record<string, string> = Object.create(null)
@@ -504,6 +516,19 @@ export async function planStructure(
         child.content
       ).parentOrder = index
     }
+  }
+  const starterCardIds = new Set<string>()
+  for (const { card } of starters) {
+    const target = resolve(card, 'CardBlock')
+    const targetId = idOf(target)
+    stepFor(target)
+    if (
+      starterCardIds.has(targetId) ||
+      target.coverBlockId !== null ||
+      children(state, targetId).length !== 0
+    )
+      fail()
+    starterCardIds.add(targetId)
   }
   for (const command of commands) {
     if (command.type !== 'block_add') continue
@@ -1027,6 +1052,11 @@ export async function planStructure(
         }
       )
     }
+  }
+  // Palette defaults belong to these new recipe blocks, never caller fields.
+  for (const { secondaryText } of starterPlans.values()) {
+    if (secondaryText)
+      resolve({ local: secondaryText }, 'TypographyBlock').color = 'secondary'
   }
   // Recheck assigned routes against final projected state. Legacy unresolved
   // references elsewhere remain untouched and do not prevent unrelated edits.
