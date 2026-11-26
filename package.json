@@ -391,7 +391,9 @@
     }
   },
   "pnpm": {
-    "overrides": {},
+    "overrides": {
+      "protobufjs@>=7.0.0 <7.6.1": "7.6.1"
+    },
     "packageExtensions": {
       "i18next-cli": {
         "dependencies": {
