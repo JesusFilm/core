@@ -247,7 +247,7 @@ describe('videoAlgolia', () => {
         })
       })
 
-      it('should handle container videos (collection/series) correctly', async () => {
+      it('should expect an empty container (flag set, no media) to be not downloadable', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -263,9 +263,10 @@ describe('videoAlgolia', () => {
           keywords: [],
           variants: [
             {
-              hls: null, // No HLS for container
+              hls: null, // No media: a generated parent variant
+              dash: null,
               lengthInMilliseconds: 0,
-              downloadable: true // Should be forced to false for collection
+              downloadable: true // The column defaults to true, so the flag alone is not trusted
             }
           ]
         } as any)
@@ -293,6 +294,111 @@ describe('videoAlgolia', () => {
           recordUrl:
             'https://www.algolia.com/apps/test-app-id/explorer/browse/test-videos-index?query=collectionId'
         })
+      })
+
+      it.each(['collection', 'series'])(
+        'should expect a %s with its own media and the flag to be downloadable, and flag a stale false record',
+        async (label) => {
+          prismaMock.userMediaRole.findUnique.mockResolvedValue({
+            id: 'userId',
+            userId: 'userId',
+            roles: ['publisher'],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+
+          prismaMock.video.findUnique.mockResolvedValue({
+            id: 'containerId',
+            label,
+            restrictViewPlatforms: [],
+            keywords: [],
+            variants: [
+              {
+                hls: 'https://example.com/container.m3u8',
+                dash: null,
+                lengthInMilliseconds: 1000,
+                downloadable: true
+              }
+            ]
+          } as any)
+
+          // Records written before the override was dropped are still false.
+          getObjectSpy.mockResolvedValue({
+            objectID: 'containerId',
+            mediaComponentId: 'containerId',
+            subType: label,
+            componentType: 'content',
+            contentType: 'video',
+            lengthInMilliseconds: 1000,
+            isDownloadable: false,
+            restrictViewArclight: false,
+            keywords: []
+          })
+
+          const result = await authClient({
+            document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
+            variables: { videoId: 'containerId' }
+          })
+
+          expect(result).toHaveProperty('data.checkVideoInAlgolia.ok', false)
+          expect(
+            (result as any).data.checkVideoInAlgolia.mismatches
+          ).toContainEqual({
+            field: 'isDownloadable',
+            expected: 'true',
+            actual: 'false'
+          })
+        }
+      )
+
+      it('should expect a DASH-only video with the flag to be downloadable', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId',
+          label: 'featureFilm',
+          restrictViewPlatforms: [],
+          keywords: [],
+          variants: [
+            {
+              hls: null,
+              dash: 'https://example.com/video.mpd',
+              lengthInMilliseconds: 1000,
+              downloadable: true
+            }
+          ]
+        } as any)
+
+        getObjectSpy.mockResolvedValue({
+          objectID: 'videoId',
+          mediaComponentId: 'videoId',
+          subType: 'featureFilm',
+          componentType: 'container',
+          contentType: 'none',
+          lengthInMilliseconds: 1000,
+          isDownloadable: true,
+          restrictViewArclight: false,
+          keywords: []
+        })
+
+        const result = await authClient({
+          document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
+          variables: { videoId: 'videoId' }
+        })
+
+        // componentType is out of scope here; isDownloadable must match.
+        const mismatches = (result as any).data.checkVideoInAlgolia.mismatches
+        expect(
+          mismatches.filter(
+            (mismatch: { field: string }) => mismatch.field === 'isDownloadable'
+          )
+        ).toEqual([])
       })
 
       it('should handle arclight restriction correctly', async () => {

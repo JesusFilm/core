@@ -205,6 +205,108 @@ describe('algoliaVideoUpdate', () => {
     )
   })
 
+  function containerWith(
+    label: string,
+    variant: Record<string, unknown>
+  ): Record<string, unknown> {
+    return {
+      id: 'container-id',
+      label,
+      primaryLanguageId: '529',
+      childIds: ['child1'],
+      restrictDownloadPlatforms: [],
+      published: true,
+      restrictViewPlatforms: [],
+      title: [{ value: 'Container', languageId: '529' }],
+      description: [],
+      studyQuestions: [],
+      bibleCitation: [],
+      keywords: [],
+      images: [],
+      availableLanguages: [],
+      variants: [{ published: true, lengthInMilliseconds: 1000, ...variant }]
+    }
+  }
+
+  it.each(['collection', 'series'])(
+    'reports a %s with its own media and the flag as downloadable, with sizes',
+    async (label) => {
+      prismaMock.video.findUnique.mockResolvedValueOnce(
+        containerWith(label, {
+          hls: 'https://example.com/container.m3u8',
+          dash: null,
+          downloadable: true,
+          downloads: [
+            { quality: 'low', size: 1000 },
+            { quality: 'high', size: 5000 }
+          ]
+        }) as any
+      )
+
+      await updateVideoInAlgolia('container-id', mockLogger)
+
+      expect(saveObjectsSpy).toHaveBeenCalledWith({
+        indexName: 'test-videos',
+        objects: [
+          expect.objectContaining({
+            subType: label,
+            isDownloadable: true,
+            downloadSizes: {
+              approximateSmallDownloadSizeInBytes: 1000,
+              approximateLargeDownloadSizeInBytes: 5000
+            }
+          })
+        ],
+        waitForTasks: true
+      })
+    }
+  )
+
+  it.each([
+    ['null hls and dash', { hls: null, dash: null }],
+    ['empty hls and dash', { hls: '', dash: '' }]
+  ])(
+    'never reports an empty collection/series parent (%s) as downloadable, even with the flag set',
+    async (_name, media) => {
+      prismaMock.video.findUnique.mockResolvedValueOnce(
+        containerWith('series', {
+          ...media,
+          downloadable: true,
+          downloads: []
+        }) as any
+      )
+
+      await updateVideoInAlgolia('container-id', mockLogger)
+
+      expect(saveObjectsSpy).toHaveBeenCalledWith({
+        indexName: 'test-videos',
+        objects: [
+          expect.objectContaining({ isDownloadable: false, downloadSizes: {} })
+        ],
+        waitForTasks: true
+      })
+    }
+  )
+
+  it('reports a non-container video with a DASH-only stream and the flag as downloadable', async () => {
+    prismaMock.video.findUnique.mockResolvedValueOnce(
+      containerWith('featureFilm', {
+        hls: null,
+        dash: 'https://example.com/film.mpd',
+        downloadable: true,
+        downloads: [{ quality: 'low', size: 1 }]
+      }) as any
+    )
+
+    await updateVideoInAlgolia('container-id', mockLogger)
+
+    expect(saveObjectsSpy).toHaveBeenCalledWith({
+      indexName: 'test-videos',
+      objects: [expect.objectContaining({ isDownloadable: true })],
+      waitForTasks: true
+    })
+  })
+
   it('should handle collection/series videos correctly', async () => {
     // Mock video query for collection
     prismaMock.video.findUnique.mockResolvedValueOnce({
