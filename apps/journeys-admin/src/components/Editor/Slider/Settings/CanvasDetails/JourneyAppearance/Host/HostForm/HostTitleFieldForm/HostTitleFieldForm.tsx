@@ -22,13 +22,13 @@ export function HostTitleFieldForm({
   const { t } = useTranslation('apps-journeys-admin')
 
   const titleSchema = object({
-    hostTitle: string().required(
-      hostTitleRequiredErrorMessage ?? t('Please enter a host name')
-    )
+    hostTitle: string()
+      .trim()
+      .required(hostTitleRequiredErrorMessage ?? t('Please enter a host name'))
   })
 
   const handleSubmit = async (value: string): Promise<void> => {
-    onChange(value)
+    onChange(value.trim())
   }
 
   return (

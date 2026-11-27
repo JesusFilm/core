@@ -28,4 +28,17 @@ describe('HostLocationFieldForm', () => {
 
     await waitFor(() => expect(onChange).toHaveBeenCalledTimes(1))
   })
+
+  it('should allow an empty location', async () => {
+    const onChange = vi.fn()
+    render(<HostLocationFieldForm value="Belfast" onChange={onChange} />)
+    const input = screen.getByRole('textbox', { name: 'Location' })
+    fireEvent.change(input, { target: { value: '' } })
+    fireEvent.submit(input)
+
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith(''))
+    expect(
+      screen.getByRole('textbox', { name: 'Location' })
+    ).not.toHaveAttribute('aria-invalid', 'true')
+  })
 })

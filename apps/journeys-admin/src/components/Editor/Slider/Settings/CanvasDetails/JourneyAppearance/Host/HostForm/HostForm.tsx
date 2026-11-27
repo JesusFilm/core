@@ -107,12 +107,16 @@ export function HostForm({
     if (journey?.host != null) {
       const { id, teamId } = journey.host
       await updateHost({ id, teamId, input: { location: value } })
-    } else {
-      await createHost({
-        title: name,
-        location: value
-      })
+      return
     }
+    // A host needs a name. Keep the location until one is entered; it is
+    // sent with the hostCreate in handleTitleChange.
+    if (name.trim() === '') return
+
+    await createHost({
+      title: name,
+      location: value
+    })
   }
 
   return (
