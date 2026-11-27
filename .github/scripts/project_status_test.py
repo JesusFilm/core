@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from project_status import (
     MANUAL_LABEL,
-    NATIVE_OPEN_STATUSES,
+    NATIVE_ISSUE_STATUSES,
     PROJECT_ID,
     GitHub,
     PullRequest,
@@ -93,8 +93,8 @@ class MemoryGitHub(GitHub):
             return [{"name": label} for label in self.labels[node_id]]
         if name == "planningStatuses" and node_type == "Repository":
             return [
-                {"id": f"native:{status}", "name": status, "category": {"name": "Started"}}
-                for status in NATIVE_OPEN_STATUSES
+                {"id": f"native:{status}", "name": status, "category": {"name": category}}
+                for status, (_, category) in NATIVE_ISSUE_STATUSES.items()
             ]
         if name == "projectItems":
             return [
@@ -182,7 +182,9 @@ class MemoryGitHub(GitHub):
             assert token == self.issue_status_token
             assert variables["issue"] == self.issue["id"] and self.issue["state"] == "OPEN"
             status = variables["status"].removeprefix("native:")
-            assert status in NATIVE_OPEN_STATUSES
+            state, _ = NATIVE_ISSUE_STATUSES[status]
+            self.issue["state"] = state
+            self.issue["stateReason"] = "COMPLETED" if state == "CLOSED" else None
             self.issue["status"] = {"name": status}
             self.native_writes.append(status)
             return {"updateIssue": {"issue": self.issue}}
@@ -191,7 +193,10 @@ class MemoryGitHub(GitHub):
                 raise AssertionError("Only issue cards may be updated")
             status = variables["option"]
             assert token is None
-            if status in NATIVE_OPEN_STATUSES:
+            if status == "Done":
+                assert self.issue["state"] == "CLOSED"
+                assert self.issue["stateReason"] == "COMPLETED"
+            elif status in NATIVE_ISSUE_STATUSES:
                 assert self.issue["status"]["name"] == status
             self.statuses[variables["item"]] = status
             self.writes.append((variables["item"], variables["option"]))
@@ -788,17 +793,38 @@ class HandlerTests(unittest.TestCase):
                 self.github.pr["state"] = state
                 self.handle("closed")
                 self.assertEqual(self.github.writes, [])
+                self.assertEqual(self.github.native_writes, [])
                 self.assertEqual(self.github.statuses, {"issue": "Changes requested"})
 
     def test_merge_moves_open_issue_to_done(self):
         self.merge()
         self.assertEqual(self.github.statuses, {"issue": "Done"})
+        self.assertEqual(self.github.issue["state"], "CLOSED")
+        self.assertEqual(self.github.native_writes, ["Done"])
 
     def test_merge_completes_issue_already_closed_by_github_without_reopening(self):
-        self.github.issue["state"] = "CLOSED"
+        self.github.issue.update(
+            state="CLOSED", stateReason="COMPLETED", status={"name": "Done"}
+        )
         self.merge()
         self.assertEqual(self.github.statuses, {"issue": "Done"})
         self.assertEqual(self.github.issue["state"], "CLOSED")
+        self.assertEqual(self.github.native_writes, [])
+
+    def test_merge_preserves_an_issue_already_closed_as_not_planned(self):
+        self.github.issue.update(
+            state="CLOSED", stateReason="NOT_PLANNED", status={"name": "Not planned"}
+        )
+        self.merge()
+        self.assertEqual(self.github.issue["stateReason"], "NOT_PLANNED")
+        self.assertEqual(self.github.native_writes, [])
+        self.assertEqual(self.github.writes, [])
+
+    def test_merge_completes_native_issue_when_card_is_already_done(self):
+        self.github.statuses["issue"] = "Done"
+        self.merge()
+        self.assertEqual(self.github.native_writes, ["Done"])
+        self.assertEqual(self.github.writes, [])
 
     def test_child_merge_into_stack_branch_completes_child_issue(self):
         self.github.pr.update(
@@ -964,7 +990,9 @@ class HandlerTests(unittest.TestCase):
     def test_archived_closed_issue_can_complete_without_being_restored(self):
         self.github.statuses["issue"] = "In review"
         self.github.archived.add("issue")
-        self.github.issue["state"] = "CLOSED"
+        self.github.issue.update(
+            state="CLOSED", stateReason="COMPLETED", status={"name": "Done"}
+        )
         self.merge()
         self.assertEqual(self.github.statuses, {"issue": "Done"})
         self.assertIn("issue", self.github.archived)
