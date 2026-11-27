@@ -490,15 +490,29 @@ describe('cascading availableLanguages upward to the root', () => {
 
     expect(store.A.availableLanguages).toEqual(['529'])
     expect(store.B.availableLanguages).toEqual(['529'])
-    // A and B were each written exactly once - the cycle back to A was
-    // detected and abandoned rather than recomputing forever.
-    expect(prismaMock.video.update).toHaveBeenCalledTimes(2)
-    expect(mockedLoggerWarn).toHaveBeenCalledWith(
-      expect.objectContaining({ videoId: 'A' }),
-      expect.stringContaining(
-        'already recomputed in this availableLanguages cascade'
-      )
-    )
+    // A, B, then A once more (it sees B's new value, finds nothing changed
+    // and the walk stops at that fixpoint) - bounded, not recomputing forever.
+    expect(prismaMock.video.update).toHaveBeenCalledTimes(3)
+  })
+
+  it('settles a skewed ancestor reachable at two depths instead of leaving it stale', async () => {
+    // root lists leaf directly AND via mid (root > {leaf, mid}, mid > {leaf}).
+    // leaf just lost its only language. root is reached at depth 1 (via leaf)
+    // before mid has settled, so it must be recomputed again once mid changes.
+    const store = buildFixtureGraph({
+      leaf: { variants: [], childIds: [], availableLanguages: [] },
+      mid: { variants: [], childIds: ['leaf'], availableLanguages: ['529'] },
+      root: {
+        variants: [],
+        childIds: ['leaf', 'mid'],
+        availableLanguages: ['529']
+      }
+    })
+
+    await updateParentCollectionLanguages('leaf')
+
+    expect(store.mid.availableLanguages).toEqual([])
+    expect(store.root.availableLanguages).toEqual([])
   })
 
   it('stops walking upward once a level recomputes to the same value it already had', async () => {

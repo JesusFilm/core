@@ -345,19 +345,15 @@ export function sameLanguageSet(a: string[], b: string[]): boolean {
 // doesn't change contributes nothing to the next level, so unaffected
 // ancestors are never even queried, let alone written.
 //
-// Termination: `visited` holds every video already recomputed by this
-// cascade. An ancestor already in it is not walked again, so a cycle in the
-// children/parents relation (A contains B, B contains A) terminates instead
-// of recursing forever.
-//
-// Known limitation of that guard: it also skips a "skewed" ancestor that is
-// genuinely reachable at two different depths (a container that is both a
-// direct parent of the changed video and, via another branch, its own
-// grandparent). Such an ancestor settles at the shallower depth and is not
-// revisited once the deeper branch lands, so it can be left stale. This is
-// the trade the level-batched shape makes for a bounded walk; a full
-// topological ordering would be needed to close it, and no caller today
-// builds that shape. Tracked as a follow-up rather than fixed here.
+// Termination: an ancestor is recomputed again whenever one of its children
+// changed after it was last recomputed. That is what lets a "skewed" ancestor
+// (a container reachable from the changed video at two different depths, e.g.
+// a collection that lists a video directly and also via a series inside it)
+// settle on the deeper branch's result instead of being left stale. The walk
+// stops when a level changes nothing (recomputes are idempotent, so a fixpoint
+// is reached), and `MAX_CASCADE_LEVELS` bounds it so a cycle in the
+// children/parents relation (A contains B, B contains A) can never run
+// forever. The video that started the cascade is never recomputed by it.
 //
 // Failures do not stop the walk, but they are never swallowed. A failed
 // recompute is recorded, that ancestor's own parents are not walked (they
@@ -365,17 +361,25 @@ export function sameLanguageSet(a: string[], b: string[]): boolean {
 // level and any independent branches still complete, and the collected
 // errors are rethrown as an `AggregateError` once the walk finishes - so the
 // caller can retry or roll back instead of silently inheriting a stale tree.
+// Upper bound on the walk's depth. Real hierarchies are 3-4 levels; this only
+// ever bites on a cyclic children/parents relation.
+const MAX_CASCADE_LEVELS = 25
+
 export async function updateParentCollectionLanguages(
   childVideoId: string
 ): Promise<void> {
-  const visited = new Set<string>([childVideoId])
   const failures: Array<{ videoId: string; error: unknown }> = []
 
-  let currentLevel = await collectNextLevel([childVideoId], visited)
+  let currentLevel = await collectNextLevel([childVideoId], childVideoId)
+  let levelsWalked = 0
 
   while (currentLevel.length > 0) {
-    for (const videoId of currentLevel) {
-      visited.add(videoId)
+    if (++levelsWalked > MAX_CASCADE_LEVELS) {
+      logger.warn(
+        { childVideoId, levelsWalked },
+        'availableLanguages cascade hit the level cap - a cycle in the video children/parents relation; stopping the walk'
+      )
+      break
     }
 
     // Ancestors at this depth whose recomputed value actually changed -
@@ -398,7 +402,7 @@ export async function updateParentCollectionLanguages(
       }
     }
 
-    currentLevel = await collectNextLevel(changed, visited)
+    currentLevel = await collectNextLevel(changed, childVideoId)
   }
 
   if (failures.length > 0) {
@@ -412,30 +416,17 @@ export async function updateParentCollectionLanguages(
 }
 
 // Collects the next level of the walk: the container parents of every video
-// whose value changed at the level just recomputed, deduplicated, with any
-// video this cascade already recomputed dropped.
+// whose value changed at the level just recomputed, deduplicated. The video
+// that started the cascade is excluded - the caller has already written it.
 async function collectNextLevel(
   videoIds: readonly string[],
-  visited: ReadonlySet<string>
+  originVideoId: string
 ): Promise<string[]> {
   const nextLevel = new Set<string>()
 
   for (const videoId of videoIds) {
     for (const parentId of await findContainerParentIds(videoId)) {
-      if (visited.has(parentId)) {
-        // This guard fires for two different, indistinguishable-from-here
-        // situations: a genuine cycle in the children/parents relation (a
-        // data-integrity bug), or the documented "skewed" case above - an
-        // ancestor legitimately reachable at two different depths, which is
-        // not a bug. Logged at warn rather than error so the accepted,
-        // tolerated shape doesn't read as an incident on every occurrence.
-        logger.warn(
-          { videoId: parentId, childVideoId: videoId },
-          'Skipping an ancestor already recomputed in this availableLanguages cascade - a cycle or a re-converging path in the video children/parents relation'
-        )
-        continue
-      }
-
+      if (parentId === originVideoId) continue
       nextLevel.add(parentId)
     }
   }
