@@ -323,10 +323,10 @@ describe('granted journey read authorization', () => {
 
       beforeAll(async () => {
         if (
-          !/^\/auth_issue_(105(50|53|54|61|63|73|74|75)|10629)(_|$)/.test(
+          !/^\/auth_issue_(105(50|53|54|61|65|63|73|74|75)|10629)(_|$)/.test(
             new URL(authUrl!).pathname
           ) ||
-          !/^\/journeys_issue_(105(50|53|54|61|63|73|74|75)|10629)(_|$)/.test(
+          !/^\/journeys_issue_(105(50|53|54|61|65|63|73|74|75)|10629)(_|$)/.test(
             new URL(journeysUrl!).pathname
           )
         )
@@ -533,7 +533,7 @@ describe('granted journey read authorization', () => {
         process.env.SKIP_ENV_VALIDATION = '1'
         if (users) {
           if (
-            !/^\/users_issue_(105(50|53|54|61)|10629)(_|$)/.test(
+            !/^\/users_issue_(105(50|53|54|61|65)|10629)(_|$)/.test(
               new URL(usersUrl!).pathname
             )
           )

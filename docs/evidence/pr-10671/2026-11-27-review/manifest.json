@@ -1,0 +1,658 @@
+{
+  "sourceCommit": "db82f8b35699482d5435b4488264329a5159eb2f",
+  "baseCommit": "a07efa60b27c56a4861efb77fcce4bad0bee69cd",
+  "qualification": "local-only",
+  "incomingRemoteHead": "8913934a2136095257d6494d0fa2261d72df5126",
+  "incomingCodecovFetchedAt": "2026-11-27T01:33:05.730Z",
+  "productionApproved": false,
+  "finalRouteCommand": "pnpm exec tsx tools/scripts/mcp-acceptance.mjs local /tmp/pr10671-review/final-route",
+  "node": "24.22.3",
+  "pnpm": "10.33.4",
+  "platform": "linux-x64",
+  "postgres": "13.23 (Debian 13.23-1.pgdg13+1)",
+  "acceptanceContractNode": "24.22.3",
+  "acceptanceContractSourceCommit": "db82f8b35699482d5435b4488264329a5159eb2f",
+  "focusedSourceCommit": "de94fb2c9647000b276d6fd6df32c3094b688cd1",
+  "focusedSourceNote": "The successor only formats one video-fixture line. Acceptance tooling and MCP workspace sources are unchanged.",
+  "mcpHeadTree": "9d133ad0dcb69d931d2ce86fd9f3342724f8758c",
+  "mcpBaseTree": "0b30bb82774326e0ec3f6e2cb121fc504787dec9",
+  "reports": [
+    {
+      "label": "reads",
+      "passed": 171,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "edits",
+      "passed": 500,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "structure",
+      "passed": 129,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "forms",
+      "passed": 200,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "appearance",
+      "passed": 83,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "media",
+      "passed": 421,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "image-upload",
+      "passed": 388,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "video-upload",
+      "passed": 323,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "image-generation",
+      "passed": 407,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "operations",
+      "passed": 433,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "protocol",
+      "passed": 203,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "admin-components",
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "workspace-head",
+      "passed": 203,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "workspace-base",
+      "passed": 179,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "acceptance-contract",
+      "passed": 31,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "video-10554",
+      "passed": 323,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  ],
+  "owningCoverage": [
+    {
+      "suite": "reads",
+      "modules": [
+        {
+          "path": "apis/api-auth/src/reads.ts",
+          "statementsCovered": 139,
+          "statementsTotal": 202
+        },
+        {
+          "path": "apis/api-auth/src/store.ts",
+          "statementsCovered": 111,
+          "statementsTotal": 122
+        },
+        {
+          "path": "apis/api-journeys/src/lib/mcpReads.ts",
+          "statementsCovered": 205,
+          "statementsTotal": 259
+        }
+      ]
+    },
+    {
+      "suite": "edits",
+      "modules": [
+        {
+          "path": "apis/api-journeys/src/lib/mcpEdits.ts",
+          "statementsCovered": 239,
+          "statementsTotal": 278
+        },
+        {
+          "path": "apis/api-journeys/src/lib/mcpEditsStore.ts",
+          "statementsCovered": 61,
+          "statementsTotal": 66
+        },
+        {
+          "path": "libs/yoga/src/mcp/editContract.ts",
+          "statementsCovered": 68,
+          "statementsTotal": 69
+        }
+      ]
+    },
+    {
+      "suite": "structure",
+      "modules": [
+        {
+          "path": "apis/api-journeys/src/lib/mcpStructure.ts",
+          "statementsCovered": 557,
+          "statementsTotal": 682
+        },
+        {
+          "path": "apis/api-journeys/src/lib/mcpStructureHistory.ts",
+          "statementsCovered": 181,
+          "statementsTotal": 235
+        }
+      ]
+    },
+    {
+      "suite": "forms",
+      "modules": [
+        {
+          "path": "apis/api-journeys/src/lib/mcpForms.ts",
+          "statementsCovered": 132,
+          "statementsTotal": 133
+        },
+        {
+          "path": "apis/api-journeys/src/lib/mcpFormDestinations.ts",
+          "statementsCovered": 61,
+          "statementsTotal": 65
+        }
+      ]
+    },
+    {
+      "suite": "appearance",
+      "modules": [
+        {
+          "path": "apis/api-journeys/src/lib/mcpAppearance.ts",
+          "statementsCovered": 104,
+          "statementsTotal": 113
+        },
+        {
+          "path": "libs/yoga/src/mcp/appearanceContract.ts",
+          "statementsCovered": 35,
+          "statementsTotal": 35
+        }
+      ]
+    },
+    {
+      "suite": "media",
+      "modules": [
+        {
+          "path": "apis/api-journeys/src/lib/mcpMedia.ts",
+          "statementsCovered": 237,
+          "statementsTotal": 267
+        },
+        {
+          "path": "apis/api-media/src/lib/mcpMediaSources.ts",
+          "statementsCovered": 151,
+          "statementsTotal": 177
+        },
+        {
+          "path": "libs/yoga/src/mcp/cardStarterContract.ts",
+          "statementsCovered": 33,
+          "statementsTotal": 33
+        }
+      ]
+    },
+    {
+      "suite": "image-upload",
+      "modules": [
+        {
+          "path": "apis/api-auth/src/mediaJobs.ts",
+          "statementsCovered": 70,
+          "statementsTotal": 72
+        },
+        {
+          "path": "apis/api-media/src/lib/mcpMediaJobs.ts",
+          "statementsCovered": 509,
+          "statementsTotal": 676
+        }
+      ]
+    },
+    {
+      "suite": "video-upload",
+      "modules": [
+        {
+          "path": "apis/api-media/src/lib/mcpVideoInput.ts",
+          "statementsCovered": 13,
+          "statementsTotal": 13
+        },
+        {
+          "path": "apis/api-media/src/lib/mcpVideoProvider.ts",
+          "statementsCovered": 83,
+          "statementsTotal": 97
+        }
+      ]
+    },
+    {
+      "suite": "image-generation",
+      "modules": [
+        {
+          "path": "apis/api-media/src/lib/mcpImageGenerationProvider.ts",
+          "statementsCovered": 45,
+          "statementsTotal": 45
+        }
+      ]
+    },
+    {
+      "suite": "operations",
+      "modules": [
+        {
+          "path": "apis/api-auth/src/operations.ts",
+          "statementsCovered": 24,
+          "statementsTotal": 24
+        },
+        {
+          "path": "apis/api-mcp/src/release.ts",
+          "statementsCovered": 50,
+          "statementsTotal": 50
+        }
+      ]
+    },
+    {
+      "suite": "protocol",
+      "modules": [
+        {
+          "path": "apis/api-mcp/src/protocol.ts",
+          "statementsCovered": 45,
+          "statementsTotal": 48
+        },
+        {
+          "path": "apis/api-mcp/src/runtime.ts",
+          "statementsCovered": 121,
+          "statementsTotal": 153
+        }
+      ]
+    },
+    {
+      "suite": "admin-components",
+      "modules": []
+    }
+  ],
+  "video10554Issue": "10554_02d88fd10af4e4e9",
+  "archiveSha256": "3ba1ca25f98c861fe17761a01dc256c89f328fed302889de32e4331da0c64dde",
+  "files": [
+    {
+      "path": "final-route/reads-tests.json",
+      "bytes": 4402710,
+      "sha256": "c7ed779c96848bf7a7b6551b218daee8d49cdee16fe138b5eaf77dd860d6d7ac"
+    },
+    {
+      "path": "final-route/reads/tests.json",
+      "bytes": 4402710,
+      "sha256": "c7ed779c96848bf7a7b6551b218daee8d49cdee16fe138b5eaf77dd860d6d7ac"
+    },
+    {
+      "path": "final-route/reads/coverage/coverage-final.json",
+      "bytes": 4321010,
+      "sha256": "8d66c72e5e23a40e93805328dfc55e606de1b4c0fb62ecb6b7b6bc49685c06cd"
+    },
+    {
+      "path": "final-route/reads/coverage/cobertura-coverage.xml",
+      "bytes": 1846351,
+      "sha256": "f6883a2f6798f9dd29bb5f2669262c10c485924de4efe3733cc9ab9fcd484a18"
+    },
+    {
+      "path": "final-route/edits-tests.json",
+      "bytes": 1730710,
+      "sha256": "3f6e8370b0290e1af2cdf25186880c19a3a50a3daea70841f0a4dd7332fafdd7"
+    },
+    {
+      "path": "final-route/edits/tests.json",
+      "bytes": 1730710,
+      "sha256": "3f6e8370b0290e1af2cdf25186880c19a3a50a3daea70841f0a4dd7332fafdd7"
+    },
+    {
+      "path": "final-route/edits/coverage/coverage-final.json",
+      "bytes": 1514113,
+      "sha256": "c3ca97452bbda7f5a20c23acd18c209907e978aa1eb8cf20d5ccacc74e6908a7"
+    },
+    {
+      "path": "final-route/edits/coverage/cobertura-coverage.xml",
+      "bytes": 505403,
+      "sha256": "d5a0b23341c33ab31d47b6f3c1ae95e11328e85af5dc048d01bb2f9c90dc09b9"
+    },
+    {
+      "path": "final-route/structure-tests.json",
+      "bytes": 1608069,
+      "sha256": "da86383b16c50b012196af1d817c7c3db8bd6ee6f29f157675db451f1cd7433b"
+    },
+    {
+      "path": "final-route/structure/tests.json",
+      "bytes": 1608069,
+      "sha256": "da86383b16c50b012196af1d817c7c3db8bd6ee6f29f157675db451f1cd7433b"
+    },
+    {
+      "path": "final-route/structure/coverage/coverage-final.json",
+      "bytes": 1545743,
+      "sha256": "05295ea44b57e80ffb55eb34ecb1eb6cee50e05f1d9e26547dbb5c624be98a2e"
+    },
+    {
+      "path": "final-route/structure/coverage/cobertura-coverage.xml",
+      "bytes": 518080,
+      "sha256": "4e15200c85c7f9c0b83de3f35d082f4cab0d7490fca5e63ff0cb169a2524cd09"
+    },
+    {
+      "path": "final-route/forms-tests.json",
+      "bytes": 1641968,
+      "sha256": "c67235e71a178b92a8d8ccf1754d52d05904c26bf2a19e5f784e2edbe97f7dda"
+    },
+    {
+      "path": "final-route/forms/tests.json",
+      "bytes": 1641968,
+      "sha256": "c67235e71a178b92a8d8ccf1754d52d05904c26bf2a19e5f784e2edbe97f7dda"
+    },
+    {
+      "path": "final-route/forms/coverage/coverage-final.json",
+      "bytes": 1547487,
+      "sha256": "86027d3d8ee2c9fea51514430e868b219c83517e0ee0ec80ffffde632f97e485"
+    },
+    {
+      "path": "final-route/forms/coverage/cobertura-coverage.xml",
+      "bytes": 519253,
+      "sha256": "e652eff2786c7dcbd1d6be9853301c3c25854636763cdea4afa02dc63b9dd085"
+    },
+    {
+      "path": "final-route/appearance-tests.json",
+      "bytes": 1562795,
+      "sha256": "ee15f36d5892cc09e7db9320a5158cc62e8df6ec18ba148a933f649f159b20dc"
+    },
+    {
+      "path": "final-route/appearance/tests.json",
+      "bytes": 1562795,
+      "sha256": "ee15f36d5892cc09e7db9320a5158cc62e8df6ec18ba148a933f649f159b20dc"
+    },
+    {
+      "path": "final-route/appearance/coverage/coverage-final.json",
+      "bytes": 1526362,
+      "sha256": "379550a01f64149aa6c5e6e2594205f9362d5d32d7c76adbf788671683854b24"
+    },
+    {
+      "path": "final-route/appearance/coverage/cobertura-coverage.xml",
+      "bytes": 509891,
+      "sha256": "eec37befac0ad036a269db8c66f667876cdd9c1550bedf59f92efdfcce8f9969"
+    },
+    {
+      "path": "final-route/media-tests.json",
+      "bytes": 2028339,
+      "sha256": "96cce763152ba06fd5447d4192bb051eaba611589f00296602e626ee51c23340"
+    },
+    {
+      "path": "final-route/media/tests.json",
+      "bytes": 2028339,
+      "sha256": "96cce763152ba06fd5447d4192bb051eaba611589f00296602e626ee51c23340"
+    },
+    {
+      "path": "final-route/media/coverage/coverage-final.json",
+      "bytes": 1870486,
+      "sha256": "7d4d231abb5b908a37d7042b0d207db51b61b1adc81ad728c1d5be7b3ed3691e"
+    },
+    {
+      "path": "final-route/media/coverage/cobertura-coverage.xml",
+      "bytes": 616333,
+      "sha256": "4a64022b5cf44e168973a8578ec413b0143d62ac02ae7824da3d017a024e8d0d"
+    },
+    {
+      "path": "final-route/image-upload-tests.json",
+      "bytes": 2039913,
+      "sha256": "564841180632fd70db101d6216413dd864fe796cd7ff746b4828a123322ba2ff"
+    },
+    {
+      "path": "final-route/image-upload/tests.json",
+      "bytes": 2039913,
+      "sha256": "564841180632fd70db101d6216413dd864fe796cd7ff746b4828a123322ba2ff"
+    },
+    {
+      "path": "final-route/image-upload/coverage/coverage-final.json",
+      "bytes": 1894648,
+      "sha256": "31ffe7c05d1b74b40b624cc25864a1f493c2dd7ce9702ddc20542d4def260874"
+    },
+    {
+      "path": "final-route/image-upload/coverage/cobertura-coverage.xml",
+      "bytes": 624967,
+      "sha256": "789cf9a83704724e124d9d77f07b5c94dffe0d3d8f832d17be25c637bf428ed9"
+    },
+    {
+      "path": "final-route/video-upload-tests.json",
+      "bytes": 2022653,
+      "sha256": "f86ecab833e0aa7bcf2c8a0ffc65890e2e71beaefd6aba10cd65184ecc6e0f47"
+    },
+    {
+      "path": "final-route/video-upload/tests.json",
+      "bytes": 2022653,
+      "sha256": "f86ecab833e0aa7bcf2c8a0ffc65890e2e71beaefd6aba10cd65184ecc6e0f47"
+    },
+    {
+      "path": "final-route/video-upload/coverage/coverage-final.json",
+      "bytes": 1903601,
+      "sha256": "34422110cb734fea5bb7ad673a72e575fb7b09401e03dc655b10f03fa2a5e123"
+    },
+    {
+      "path": "final-route/video-upload/coverage/cobertura-coverage.xml",
+      "bytes": 626108,
+      "sha256": "f6c6de7155ae46dd5b447a5e4df316a1319579c8934ac688cbdf287f1b6238df"
+    },
+    {
+      "path": "final-route/image-generation-tests.json",
+      "bytes": 2046382,
+      "sha256": "04116921da41c5b1bedf5e36f1a1735761f339f6284401df68818ecdbffd6fba"
+    },
+    {
+      "path": "final-route/image-generation/tests.json",
+      "bytes": 2046382,
+      "sha256": "04116921da41c5b1bedf5e36f1a1735761f339f6284401df68818ecdbffd6fba"
+    },
+    {
+      "path": "final-route/image-generation/coverage/coverage-final.json",
+      "bytes": 1894679,
+      "sha256": "c13fc8d25adf52c223f156e8275056de30bb34dd7133961b22fae84661d30ed3"
+    },
+    {
+      "path": "final-route/image-generation/coverage/cobertura-coverage.xml",
+      "bytes": 625000,
+      "sha256": "517ef1a82696921e3dac84ef984bd95f76f808c3a11797f946884b9a18519385"
+    },
+    {
+      "path": "final-route/operations-tests.json",
+      "bytes": 2067993,
+      "sha256": "ca12648fc5ef5501737677f38f0c147586e5eacfaca74b5376109e335ba7470f"
+    },
+    {
+      "path": "final-route/operations/tests.json",
+      "bytes": 2067993,
+      "sha256": "ca12648fc5ef5501737677f38f0c147586e5eacfaca74b5376109e335ba7470f"
+    },
+    {
+      "path": "final-route/operations/coverage/coverage-final.json",
+      "bytes": 1905442,
+      "sha256": "20a7b53e2bdd0f9816e3bdb7058afc22189d69a2361de04357954398b1da7127"
+    },
+    {
+      "path": "final-route/operations/coverage/cobertura-coverage.xml",
+      "bytes": 628276,
+      "sha256": "ca4371232f0c6fe39442acc9e9b29b67f443a2c6e135768784d982a8d1ce4097"
+    },
+    {
+      "path": "final-route/protocol-tests.json",
+      "bytes": 171981,
+      "sha256": "b3f922f240bd30a55deaa992b77984519e584bb254a8a357fdb6b89cd1947c7d"
+    },
+    {
+      "path": "final-route/protocol/tests.json",
+      "bytes": 171981,
+      "sha256": "b3f922f240bd30a55deaa992b77984519e584bb254a8a357fdb6b89cd1947c7d"
+    },
+    {
+      "path": "final-route/protocol/coverage/coverage-final.json",
+      "bytes": 105913,
+      "sha256": "950ba11109ea093d957731992a1b53fcd7278a0ed934a2fb74b169fffaa637bb"
+    },
+    {
+      "path": "final-route/protocol/coverage/cobertura-coverage.xml",
+      "bytes": 41982,
+      "sha256": "28dc88f751d1cc286deb832e35de9bdb2ac80100e4407f0eb9f2e223c17e1b8a"
+    },
+    {
+      "path": "final-route/admin-components-tests.json",
+      "bytes": 111687,
+      "sha256": "4bad976fe9622c1d19c41716fe684c0e35d4555f71fbc3268f6eee0a1eac224b"
+    },
+    {
+      "path": "final-route/admin-components/tests.json",
+      "bytes": 111687,
+      "sha256": "4bad976fe9622c1d19c41716fe684c0e35d4555f71fbc3268f6eee0a1eac224b"
+    },
+    {
+      "path": "final-route/admin-components/coverage/coverage-final.json",
+      "bytes": 98218,
+      "sha256": "b6546c7a035c63b5b0c3f75313b2996ce314090556020a96f0cd9d9964acec44"
+    },
+    {
+      "path": "final-route/admin-components/coverage/cobertura-coverage.xml",
+      "bytes": 40433,
+      "sha256": "9cddff577064a495a9a37cc89d587ec2df41354c6e49500d9e2ca979de735526"
+    },
+    {
+      "path": "final-route/invocation.json",
+      "bytes": 275,
+      "sha256": "899b03879356d7e66d90ebdab3d183081308895bb1a0afd97aee772dc3ec779c"
+    },
+    {
+      "path": "final-route/local-results.json",
+      "bytes": 8500,
+      "sha256": "f5a4cab7fc8cc7cff33ae8a56c400b698e312d076be051f2b1ca67c5f5c4242c"
+    },
+    {
+      "path": "workspace-head/tests.json",
+      "bytes": 172000,
+      "sha256": "f620e9ac84093bccd78c36f343ad2ffb3e6a4ce50a4c7dc47c8d2289ff43352a"
+    },
+    {
+      "path": "workspace-head/coverage/coverage-final.json",
+      "bytes": 105913,
+      "sha256": "950ba11109ea093d957731992a1b53fcd7278a0ed934a2fb74b169fffaa637bb"
+    },
+    {
+      "path": "workspace-head/coverage/cobertura-coverage.xml",
+      "bytes": 41982,
+      "sha256": "8e9ca16760bb976e765e67b0c587fc6323dff515b4afb163f390a16fce6cd546"
+    },
+    {
+      "path": "workspace-base/tests.json",
+      "bytes": 140522,
+      "sha256": "6720c77d8d560204420fa983a3925f118e241f7c1a352d8c9623382b4cdfda11"
+    },
+    {
+      "path": "workspace-base/coverage/coverage-final.json",
+      "bytes": 81538,
+      "sha256": "28d6d51340caa7ae0b18443319e8be9b6031185ad89be4ee64f26271e4859983"
+    },
+    {
+      "path": "workspace-base/coverage/cobertura-coverage.xml",
+      "bytes": 31064,
+      "sha256": "f66b9a86c913b6f310e1f2df89372100cb32f63a52210ffc02ed7ec7988e5bb9"
+    },
+    {
+      "path": "incoming-codecov.jsonl",
+      "bytes": 992,
+      "sha256": "ae885f0e30faf252f109fd8d6eff9a193d1a9ffc3bab505c610c8377251d4d32"
+    },
+    {
+      "path": "namespace/namespace-repro.cjs",
+      "bytes": 2264,
+      "sha256": "f4927ecd9adbcbe370346fd0a3d762cad8e446d09f1d9b4d9e85ce499388464c"
+    },
+    {
+      "path": "namespace/namespace-green.txt",
+      "bytes": 182,
+      "sha256": "d442ddb60250a024ea934fab1c992db72c2203ee0c3d0fe9ddb85a9c32d6a3b6"
+    },
+    {
+      "path": "acceptance-contract/test-results.json",
+      "bytes": 62859,
+      "sha256": "4fc5df3397899fc8f84c14f5f898d7a7932b853cdadaa94fa18888faec1ca508"
+    },
+    {
+      "path": "acceptance-contract/coverage-final.json",
+      "bytes": 52834,
+      "sha256": "a49abcb0188e813a142327fc0dc11f322b0c7f58056ea2e72597997293246e54"
+    },
+    {
+      "path": "acceptance-contract/cobertura-coverage.xml",
+      "bytes": 23424,
+      "sha256": "f86d60bb342319557ea277321b9fb7c500d1c6e44b446c508fad8f85ec083d6f"
+    },
+    {
+      "path": "acceptance-contract/saved-edits/tests.json",
+      "bytes": 1730743,
+      "sha256": "7cc97b9913ea72d75fe8b884f8eeb32688da0c73519a3e2c09184afa76248f6e"
+    },
+    {
+      "path": "acceptance-contract/saved-edits/coverage/coverage-final.json",
+      "bytes": 1514111,
+      "sha256": "41d3b211723845ee872f7e3cd11731176c9fddab3f132d87fc308b52965d1804"
+    },
+    {
+      "path": "acceptance-contract/saved-edits/coverage/cobertura-coverage.xml",
+      "bytes": 505406,
+      "sha256": "30ad931c27c97e59d08128647a5137c6f37e7c9b2ff1aca0e833b833c3f0ee28"
+    },
+    {
+      "path": "video-10554/test-results.json",
+      "bytes": 2022624,
+      "sha256": "e9054606e468b04caafe59784e960ccade372476b40761c20a98efa6c550b3af"
+    },
+    {
+      "path": "video-10554/coverage-final.json",
+      "bytes": 1903603,
+      "sha256": "7840a15d590e8b28c3c530daf1a5176c8555efede3f41c7ad122e275913c9656"
+    },
+    {
+      "path": "video-10554/cobertura-coverage.xml",
+      "bytes": 626098,
+      "sha256": "c71cb1e31bd704b2aacfcd4cd1c3c6406eced59334d8f3a091b7bccb9402958f"
+    }
+  ]
+}
