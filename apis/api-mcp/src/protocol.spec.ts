@@ -44,7 +44,7 @@ describe.each(protocolVersions)('versioned tool results on %s', (version) => {
             expect.objectContaining({
               additionalProperties: false,
               properties: expect.objectContaining({
-                kind: { type: 'string', const: 'image_upload' }
+                kind: { type: 'string', enum: ['image_upload', 'video_upload'] }
               })
             }),
             expect.objectContaining({

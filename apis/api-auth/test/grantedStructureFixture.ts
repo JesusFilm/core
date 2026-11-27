@@ -90,6 +90,7 @@ export function structureFixture(
   let config: AuthConfig
   let ownerHandler: ReturnType<typeof createJourneyEditHandler>
   let mcpUrl: string
+  const refreshTokens = new Map<string, string>()
   let token: string
   let journeyId: string
   let checkpoint: Checkpoint
@@ -210,8 +211,15 @@ export function structureFixture(
       })
     })
     expect(exchanged.status, await exchanged.clone().text()).toBe(200)
-    return z.object({ access_token: z.string() }).parse(await exchanged.json())
-      .access_token
+    const tokens = z
+      .object({
+        access_token: z.string(),
+        refresh_token: z.string().optional()
+      })
+      .parse(await exchanged.json())
+    if (tokens.refresh_token)
+      refreshTokens.set(tokens.access_token, tokens.refresh_token)
+    return tokens.access_token
   }
   async function call(
     tool: string,
@@ -543,6 +551,7 @@ export function structureFixture(
   beforeEach(async () => {
     checkpoint = undefined
     discardResponse = false
+    refreshTokens.clear()
     await auth.retiredAccount.deleteMany()
     await auth.authorizationGate.updateMany({
       data: { open: true, generation: { increment: 1 } }
@@ -800,6 +809,26 @@ export function structureFixture(
     counts,
     snapshot,
     consent,
+    async refreshAccessToken() {
+      const refresh = refreshTokens.get(token)
+      if (!refresh) throw new Error('Missing refresh credential')
+      const response = await request('/token', {
+        method: 'POST',
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          client_id: 'structure-client',
+          resource: config.AUTH_AUDIENCE,
+          refresh_token: refresh
+        })
+      })
+      expect(response.status).toBe(200)
+      const tokens = z
+        .object({ access_token: z.string(), refresh_token: z.string() })
+        .parse(await response.json())
+      refreshTokens.delete(token)
+      token = tokens.access_token
+      refreshTokens.set(token, tokens.refresh_token)
+    },
     adminBlockMutation,
     async adminRead(fields: string) {
       return graphql({

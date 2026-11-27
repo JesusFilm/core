@@ -16,6 +16,7 @@ on:
       - 'tools/scripts/test-mcp-structure.mjs'
       - 'tools/scripts/test-mcp-media.mjs'
       - 'tools/scripts/test-mcp-image-upload.mjs'
+      - 'tools/scripts/test-mcp-video-upload.mjs'
       - 'tools/scripts/test-mcp-image-generation.mjs'
       - 'tools/scripts/test-mcp-appearance.mjs'
       - '.github/workflows/mcp-edits.yml'
@@ -155,6 +156,50 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/integration/mcp-image-upload/cobertura-coverage.xml
           flags: integration.mcp-image-upload
+          disable_search: true
+          fail_ci_if_error: true
+  video-upload:
+    runs-on: jfp-proxmox-core
+    timeout-minutes: 90
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: video-upload-test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Exercise same-job video ingress, recovery, cancellation and separate attachment
+        run: node tools/scripts/test-mcp-video-upload.mjs
+        env:
+          MCP_UPLOAD_TEST_POSTGRES_URL: postgresql://postgres:video-upload-test@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Preserve media coverage and executed test counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-video-upload-coverage
+          path: coverage/integration/mcp-video-upload
+          if-no-files-found: error
+      - name: Upload owning video job coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/integration/mcp-video-upload/cobertura-coverage.xml
+          flags: integration.mcp-video-upload
           disable_search: true
           fail_ci_if_error: true
   image-generation:

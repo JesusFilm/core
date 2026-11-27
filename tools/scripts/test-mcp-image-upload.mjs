@@ -4,13 +4,14 @@ import { spawnSync } from 'node:child_process'
 
 const require = createRequire(import.meta.url)
 const { Client } = createRequire(require.resolve('@prisma/adapter-pg'))('pg')
-const issue = process.env.MCP_MEDIA_TEST_ISSUE ?? '10560'
-if (!['10560', '10548'].includes(issue))
-  throw new Error('Unexpected media test issue')
-const reportDirectory =
-  issue === '10548'
-    ? 'coverage/integration/mcp-image-generation'
-    : 'coverage/integration/mcp-image-upload'
+const video = process.env.MCP_UPLOAD_TEST_KIND === 'video'
+const issue =
+  process.env.MCP_UPLOAD_TEST_ISSUE ??
+  process.env.MCP_MEDIA_TEST_ISSUE ??
+  (video ? '10554' : '10560')
+if (!/^[0-9]+(?:_[a-z0-9]+)?$/.test(issue))
+  throw new Error('Invalid isolated test issue')
+const generating = process.env.MCP_MEDIA_TEST_ISSUE === '10548'
 const source = new URL(
   process.env.MCP_UPLOAD_TEST_POSTGRES_URL ??
     'postgresql://postgres:postgres@localhost:5432/postgres'
@@ -110,11 +111,14 @@ run(
     'vitest',
     'run',
     '--config',
-    issue === '10548'
-      ? 'apis/api-auth/vitest.image-generation.config.mts'
-      : 'apis/api-auth/vitest.image-upload.config.mts'
+    video
+      ? 'apis/api-auth/vitest.video-upload.config.mts'
+      : generating
+        ? 'apis/api-auth/vitest.image-generation.config.mts'
+        : 'apis/api-auth/vitest.image-upload.config.mts'
   ],
   {
+    UPLOAD_TEST_ISSUE: issue,
     UPLOAD_TEST_AUTH_DATABASE_URL: runtime.href,
     UPLOAD_TEST_JOURNEYS_DATABASE_URL: connection(`journeys_issue_${issue}`),
     UPLOAD_TEST_MEDIA_DATABASE_URL: connection(`media_issue_${issue}`),
@@ -124,6 +128,9 @@ run(
   }
 )
 
+const reportDirectory = generating
+  ? 'coverage/integration/mcp-image-generation'
+  : `coverage/integration/mcp-${video ? 'video' : 'image'}-upload`
 const tests = JSON.parse(
   readFileSync(`${reportDirectory}/test-results.json`, 'utf8')
 )
@@ -141,8 +148,13 @@ for (const module of [
   'apis/api-media/src/lib/mcpMediaJobs.ts',
   'apis/api-media/src/lib/mcpMediaExecutor.ts',
   'apis/api-media/src/lib/mcpMediaJobHttp.ts',
-  'apis/api-media/src/lib/mcpImageInput.ts',
-  ...(issue === '10548'
+  ...(video
+    ? [
+        'apis/api-media/src/lib/mcpVideoInput.ts',
+        'apis/api-media/src/lib/mcpVideoProvider.ts'
+      ]
+    : ['apis/api-media/src/lib/mcpImageInput.ts']),
+  ...(generating
     ? ['apis/api-media/src/lib/mcpImageGenerationProvider.ts']
     : []),
   'apis/api-journeys/src/lib/mcpMediaClient.ts',

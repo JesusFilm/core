@@ -331,7 +331,21 @@ export function createMediaSourceHandler(
           })
         }
         if (source.source === 'mux') {
-          if (!flags.mediaLibrary) denied()
+          if (
+            !flags.mediaLibrary &&
+            !(await media.mcpMediaJob.findFirst({
+              where: {
+                providerId: source.videoId,
+                userId: claims.subject,
+                connectionId: claims.connectionId,
+                journeyId,
+                kind: 'video_upload',
+                state: 'ready',
+                active: false
+              }
+            }))
+          )
+            denied()
           const video = await media.muxVideo.findFirst({
             where: {
               id: source.videoId,

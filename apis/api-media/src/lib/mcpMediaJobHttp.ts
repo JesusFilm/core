@@ -17,9 +17,13 @@ import {
 
 import type { MediaJobs } from './mcpMediaJobs'
 import type { MediaSourcesConfig } from './mcpMediaSources'
+import { muxCallbackJob } from './mcpVideoProvider'
 
 export function mediaJobHttp(
-  config: MediaSourcesConfig & { adminOrigin: string },
+  config: MediaSourcesConfig & {
+    adminOrigin: string
+    muxWebhookSecret?: string
+  },
   db: PrismaClient,
   jobs: MediaJobs,
   browserIdentity: (token: string) => Promise<string>
@@ -28,6 +32,48 @@ export function mediaJobHttp(
     async onRequest(payload) {
       const { request, serverContext } = payload
       const url = new URL(request.url, 'http://localhost')
+      if (url.pathname === '/mcp/mux-callback') {
+        try {
+          if (
+            request.method !== 'POST' ||
+            !config.muxWebhookSecret ||
+            url.search
+          )
+            throw new Error('Denied')
+          // Preserve signed raw bytes, with the shared bounded transport reader.
+          const reader = request.body?.getReader()
+          if (!reader) throw new Error('Denied')
+          const chunks: Uint8Array[] = []
+          let size = 0
+          let timer: ReturnType<typeof setTimeout> | undefined
+          const expired = new Promise<never>((_, reject) => {
+            timer = setTimeout(() => reject(new Error('Denied')), 5000)
+          })
+          try {
+            while (true) {
+              const value = await Promise.race([reader.read(), expired])
+              if (value.done) break
+              size += value.value.length
+              if (size > 65536) throw new Error('Denied')
+              chunks.push(value.value)
+            }
+          } finally {
+            clearTimeout(timer)
+            await reader.cancel()
+          }
+          const raw = Buffer.concat(chunks).toString('utf8')
+          const id = muxCallbackJob(
+            String(raw),
+            request.headers.get('mux-signature') ?? '',
+            config.muxWebhookSecret
+          )
+          if (id) await jobs.callback(id)
+          payload.endResponse(new Response(null, { status: 204 }))
+        } catch {
+          payload.endResponse(new Response(null, { status: 403 }))
+        }
+        return
+      }
       if (
         url.pathname !== '/mcp/media-jobs' &&
         !url.pathname.startsWith('/mcp/uploads/')
