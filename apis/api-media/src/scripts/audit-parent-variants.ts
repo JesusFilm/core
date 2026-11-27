@@ -7,7 +7,10 @@ export type ParentVariantAuditEntry = {
   parentVideoId: string
   childVideoId: string
   languageId: string
-  variantId: string
+  // Absent when the proposed action targets a parent with no Variant in this
+  // language and none to create (a featureFilm parent that only needs the
+  // language added to availableLanguages).
+  variantId?: string
   action: 'createGeneratedParentVariant' | 'addParentLanguage'
   result: 'proposed'
 }
@@ -136,7 +139,6 @@ export async function auditParentVariants(): Promise<ParentVariantAuditResult> {
             parentVideoId: parentVideo.id,
             childVideoId: qualifyingVariant.childVideoId,
             languageId,
-            variantId: `${languageId}_${parentVideo.id}`,
             action: 'addParentLanguage',
             result: 'proposed'
           })

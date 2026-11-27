@@ -259,7 +259,6 @@ describe('auditParentVariants', () => {
           parentVideoId: 'film-1',
           childVideoId: 'segment-1',
           languageId: '20770',
-          variantId: '20770_film-1',
           action: 'addParentLanguage',
           result: 'proposed'
         }
