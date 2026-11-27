@@ -40,6 +40,7 @@ const configuration = z.object({
     ),
   AUTH_INTROSPECTION_CLIENT_ID: z.string().min(1),
   AUTH_INTROSPECTION_CLIENT_SECRET: z.string().min(32),
+  AUTH_OPERATIONS_SECRET: z.string().min(32).optional(),
   AUTH_EXCHANGE_CLIENT_SECRET: z.string().min(32).optional(),
   AUTH_READ_OWNER_SECRET: z.string().min(32).optional(),
   AUTH_READ_MEDIA_SECRET: z.string().min(32).optional(),
@@ -87,6 +88,12 @@ export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
     throw new Error('Incomplete granted-read configuration')
   if (config.AUTH_READ_GATEWAY_AUDIENCE === config.AUTH_AUDIENCE)
     throw new Error('Separate gateway audience required')
+  if (
+    config.AUTH_ENVIRONMENT !== 'local' &&
+    (config.AUTH_EXCHANGE_CLIENT_SECRET || config.AUTH_READ_MEDIA_SECRET) &&
+    !config.AUTH_OPERATIONS_SECRET
+  )
+    throw new Error('Operational controls required')
   const permissionSecrets = [
     config.AUTH_PERMISSION_JOURNEYS_SECRET,
     config.AUTH_PERMISSION_USERS_SECRET
@@ -97,6 +104,7 @@ export function readConfig(env: NodeJS.ProcessEnv): AuthConfig {
   )
     throw new Error('Permission participants required')
   const serviceSecrets = [
+    config.AUTH_OPERATIONS_SECRET,
     config.AUTH_INTROSPECTION_CLIENT_SECRET,
     config.AUTH_EXCHANGE_CLIENT_SECRET,
     config.AUTH_READ_OWNER_SECRET,

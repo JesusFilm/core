@@ -4,11 +4,11 @@ import { fingerprint, sameSecret } from '@core/yoga/mcp/readContract'
 
 import type { AuthConfig } from './config'
 import { type Identity, IdentityIneligible } from './identity'
+import { assertOperationGates, captureOperationGates } from './operations'
 import {
   AuthorizationChanged,
   type Database,
   audit,
-  captureGates,
   databaseTime,
   lockGates
 } from './store'
@@ -119,14 +119,18 @@ export function createMediaJobAuthority(
           journeyIds: verified.journeyIds.filter((id) => id === input.journeyId)
         },
         async () => {
-          const gates = await captureGates(db, [
-            `account:${input.userId}`,
-            `connection:${input.connectionId}`,
-            `journey:${input.journeyId}`,
-            `team:${input.teamId}`,
-            `user-journey:${input.userId}:${input.journeyId}`,
-            `user-team:${input.userId}:${input.teamId}`
-          ])
+          const gates = await captureOperationGates(
+            db,
+            [
+              `account:${input.userId}`,
+              `connection:${input.connectionId}`,
+              `journey:${input.journeyId}`,
+              `team:${input.teamId}`,
+              `user-journey:${input.userId}:${input.journeyId}`,
+              `user-team:${input.userId}:${input.teamId}`
+            ],
+            input.action === 'dispatch'
+          )
           return db.$transaction(async (tx) => {
             await lockGates(tx, gates)
             await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${input.connectionId} FOR SHARE`
@@ -164,7 +168,11 @@ export function createMediaJobAuthority(
               permitId: permit.id,
               clientId: connection.clientId,
               grantVersion: connection.version,
-              permissionHash: fingerprint(gates)
+              // Operational stops invalidate in-flight acceptance, but are not
+              // permission changes requiring a user to resume every queued job.
+              permissionHash: fingerprint(
+                gates.filter((gate) => !gate.id.startsWith('operations:'))
+              )
             }
           })
         }
@@ -212,7 +220,9 @@ export function createMediaJobAuthority(
           createdAt: connection.firebaseCreatedAt
         })
         return db.$transaction(async (tx) => {
-          await lockGates(tx, gatesSchema.parse(permit.gates))
+          const gates = gatesSchema.parse(permit.gates)
+          assertOperationGates(gates, permit.stage === 'media_dispatch')
+          await lockGates(tx, gates)
           await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`
           await tx.$queryRaw`SELECT id FROM "ReadPermit" WHERE id = ${permit.id} FOR UPDATE`
           const current = await tx.agentConnection.findUniqueOrThrow({

@@ -28,6 +28,61 @@ const permissions = {
 }
 
 describe('permission coordination configuration', () => {
+  it('requires operator controls before enabling data access outside local development', () => {
+    const stage = {
+      ...base,
+      ...reads,
+      ...permissions,
+      AUTH_ENVIRONMENT: 'stage',
+      AUTH_ISSUER: 'https://auth.stage.example.invalid',
+      AUTH_ADMIN_ORIGIN: 'https://admin.stage.example.invalid',
+      AUTH_AUDIENCE: 'https://mcp.stage.example.invalid/mcp',
+      AUTH_GATEWAY_URL: 'https://gateway.stage.example.invalid/graphql',
+      AUTH_READ_GATEWAY_AUDIENCE:
+        'https://gateway.stage.example.invalid/mcp/reads',
+      PG_DATABASE_URL_AUTH: base.PG_DATABASE_URL_AUTH + '?sslmode=verify-full'
+    }
+    expect(() => readConfig(stage)).toThrow('Operational controls required')
+    const mediaOnly = {
+      ...stage,
+      AUTH_EXCHANGE_CLIENT_SECRET: undefined,
+      AUTH_READ_OWNER_SECRET: undefined,
+      AUTH_READ_GATEWAY_AUDIENCE: undefined,
+      AUTH_READ_MEDIA_SECRET: 'controlled-stage-media-at-least-32',
+      AUTH_PERMISSION_MEDIA_SECRET:
+        'controlled-stage-media-permission-at-least-32'
+    }
+    expect(() => readConfig(mediaOnly)).toThrow('Operational controls required')
+    expect(
+      readConfig({
+        ...stage,
+        AUTH_OPERATIONS_SECRET: 'controlled-stage-operator-at-least-32'
+      }).AUTH_ENVIRONMENT
+    ).toBe('stage')
+  })
+
+  it('keeps operator authority separate from every participant credential', () => {
+    const configured = { ...base, ...reads, ...permissions }
+    for (const secret of [
+      ...Object.values(permissions),
+      reads.AUTH_EXCHANGE_CLIENT_SECRET,
+      reads.AUTH_READ_OWNER_SECRET,
+      base.AUTH_INTROSPECTION_CLIENT_SECRET
+    ])
+      expect(() =>
+        readConfig({ ...configured, AUTH_OPERATIONS_SECRET: secret })
+      ).toThrow('Separate service credentials required')
+    expect(() =>
+      readConfig({ ...configured, AUTH_OPERATIONS_SECRET: 'short' })
+    ).toThrow()
+    expect(
+      readConfig({
+        ...configured,
+        AUTH_OPERATIONS_SECRET: 'controlled-operator-secret-at-least-32'
+      }).AUTH_OPERATIONS_SECRET
+    ).toBe('controlled-operator-secret-at-least-32')
+  })
+
   it('cannot enable granted reads without both permission owners', () => {
     expect(() => readConfig({ ...base, ...reads })).toThrow(
       'Permission participants required'

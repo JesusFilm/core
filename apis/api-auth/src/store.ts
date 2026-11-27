@@ -341,6 +341,7 @@ export async function lockGates(
 }
 
 export type AuditAction =
+  | 'operations_change'
   | 'media_accept'
   | 'media_admit'
   | 'media_transfer'

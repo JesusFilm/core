@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "environment": "stage",
+  "integrationBranch": "feature/11-12-SC-journeys-mcp",
+  "sourceCommit": "1111111111111111111111111111111111111111",
+  "accountId": "000000000000",
+  "region": "us-east-2",
+  "issuer": "https://auth.stage.example.invalid",
+  "mcpOrigin": "https://mcp.stage.example.invalid",
+  "adminOrigin": "https://admin.stage.example.invalid",
+  "gatewayOrigin": "https://gateway.stage.example.invalid",
+  "firebaseProject": "synthetic-stage",
+  "production": {
+    "origins": ["https://example.invalid"],
+    "firebaseProject": "synthetic-production"
+  },
+  "components": {
+    "mcp": {
+      "revision": "1111111111111111111111111111111111111111",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "auth": {
+      "revision": "1111111111111111111111111111111111111111",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "gateway": {
+      "revision": "1111111111111111111111111111111111111111",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "journeys": {
+      "revision": "1111111111111111111111111111111111111111",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "media": {
+      "revision": "1111111111111111111111111111111111111111",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "users": {
+      "revision": "1111111111111111111111111111111111111111",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  },
+  "adminRevision": "1111111111111111111111111111111111111111",
+  "viewerRevision": "1111111111111111111111111111111111111111",
+  "databaseRevisions": {
+    "auth": "1111111111111111111111111111111111111111",
+    "journeys": "1111111111111111111111111111111111111111",
+    "media": "1111111111111111111111111111111111111111",
+    "users": "1111111111111111111111111111111111111111"
+  },
+  "readableDatabaseRevisions": {
+    "auth": ["1111111111111111111111111111111111111111"],
+    "journeys": ["1111111111111111111111111111111111111111"],
+    "media": ["1111111111111111111111111111111111111111"],
+    "users": ["1111111111111111111111111111111111111111"]
+  },
+  "protections": {
+    "privateReaders": 1,
+    "revisionWriters": 1,
+    "operationalGates": 1
+  },
+  "bounds": {
+    "replicas": 2,
+    "requestMs": 20000,
+    "drainMs": 10000,
+    "deregistrationSeconds": 30,
+    "stopSeconds": 30
+  },
+  "storage": {
+    "bucket": "synthetic-mcp-stage",
+    "prefix": "stage/mcp/",
+    "blockPublicAccess": true,
+    "encryption": "aws:kms",
+    "cleanupOwner": "api-media",
+    "automaticObjectExpiry": false
+  },
+  "retention": {
+    "securityAuditDays": 90,
+    "telemetryDays": 90,
+    "resultDays": 30,
+    "auditOwner": "api-auth",
+    "journeyResultOwner": "api-journeys",
+    "mediaResultOwner": "api-media",
+    "copies": [
+      {
+        "name": "cloudwatch/mcp-stage",
+        "days": 90
+      },
+      {
+        "name": "datadog/mcp-stage",
+        "days": 90
+      }
+    ]
+  },
+  "roles": {
+    "deployment": "arn:aws:iam::000000000000:role/mcp-deployment-stage",
+    "execution": "arn:aws:iam::000000000000:role/mcp-execution-stage",
+    "mcp": "arn:aws:iam::000000000000:role/mcp-mcp-stage",
+    "auth": "arn:aws:iam::000000000000:role/mcp-auth-stage",
+    "media": "arn:aws:iam::000000000000:role/mcp-media-stage"
+  },
+  "secrets": [
+    {
+      "participant": "mcp",
+      "variable": "MCP_EXCHANGE_CLIENT_SECRET",
+      "parameterArn": "arn:aws:ssm:us-east-2:000000000000:parameter/stage/mcp/exchange"
+    },
+    {
+      "participant": "auth",
+      "variable": "AUTH_OPERATIONS_SECRET",
+      "parameterArn": "arn:aws:ssm:us-east-2:000000000000:parameter/stage/auth/operations"
+    }
+  ]
+}

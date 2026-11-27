@@ -65,6 +65,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   let stagingRejected = false
   let stagingWrites = 0
   let identityFailure: Error | undefined
+  let beforeIdentityCheck: (() => Promise<void>) | undefined
   let beforeStagedRead: (() => Promise<void>) | undefined
   let mediaLibrary = true
   let providerReady = true
@@ -137,6 +138,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
   const internalSecret =
     'controlled-upload-internal-10560-at-least-32-characters'
   const mediaSecret = 'controlled-upload-authority-10560-at-least-32-characters'
+  const operationsSecret = 'controlled-upload-operations-secret-at-least-32'
   function configureRuntime(
     env: Parameters<typeof mediaRuntime>[0],
     dependencies: Parameters<typeof mediaRuntime>[1]
@@ -169,9 +171,11 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     journeysUrl,
     startupTimeoutMs: 120000,
     async checkIdentity() {
+      await beforeIdentityCheck?.()
       if (identityFailure) throw identityFailure
     },
     authEnv: {
+      AUTH_OPERATIONS_SECRET: operationsSecret,
       AUTH_READ_MEDIA_SECRET: mediaSecret,
       AUTH_PERMISSION_MEDIA_SECRET:
         'controlled-upload-permission-10560-at-least-32-characters'
@@ -283,6 +287,7 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     stagingRejected = false
     stagingWrites = 0
     identityFailure = undefined
+    beforeIdentityCheck = undefined
     beforeStagedRead = undefined
     providerReady = true
     mediaLibrary = true
@@ -555,7 +560,22 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         })
       ).toBe(1)
       await start()
+      let releases = 0
+      let slowIdentityChecks = 0
+      beforeAccept = async (action) => {
+        if (action !== 'release' || ++releases !== 2) return
+        // Delay the authority response itself on the second upload's output
+        // check, after the first read release has already succeeded.
+        beforeIdentityCheck = async () => {
+          beforeIdentityCheck = undefined
+          slowIdentityChecks++
+          await new Promise((resolve) => setTimeout(resolve, 5500))
+        }
+      }
       await start()
+      beforeAccept = undefined
+      expect(releases).toBe(2)
+      expect(slowIdentityChecks).toBe(1)
       providerReady = false
       await Promise.all([
         processCompletedTransfers(),
@@ -1553,6 +1573,22 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
     expect(objects.size).toBe(0)
   })
 
+  it('releases the same admitted job when fresh output authorization takes longer than five seconds', async () => {
+    let releases = 0
+    beforeAccept = async (action) => {
+      if (action === 'release' && ++releases === 2)
+        await new Promise((resolve) => setTimeout(resolve, 5500))
+    }
+    const job = await start()
+    expect(releases).toBe(2)
+    expect(job.state).toBe('waiting_for_file')
+    expect(await media.mcpMediaJob.count()).toBe(1)
+    expect(
+      await media.mcpMediaJob.findUnique({ where: { id: String(job.jobId) } })
+    ).toMatchObject({ active: true, state: 'waiting_for_file' })
+    expect(dispatchCount).toBe(0)
+  })
+
   it('rejects one byte over, forged size/MIME/extension and replacing the admitted file', async () => {
     const over = await f.call('journey_media_start', {
       journeyId: f.journeyId,
@@ -1620,6 +1656,10 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
         f.call('journey_media_start', input, i % 2 ? token2 : undefined)
       )
     )
+    for (const result of results) {
+      expect(result.status, result.text).toBe(200)
+      expect(result.json.result, result.text).toBeDefined()
+    }
     expect(results.filter((r) => !r.json.result?.isError)).toHaveLength(2)
     expect(await media.mcpMediaJob.count({ where: { active: true } })).toBe(2)
     const first = results.find((r) => !r.json.result?.isError)!.json.result!
@@ -2086,6 +2126,88 @@ describe('same-job image upload through authenticated MCP and Admin HTTP', () =>
       }
     }
   )
+
+  async function setEffects(enabled: boolean) {
+    const request = (body: unknown) =>
+      fetch(`${authorityUrl}/internal/operations`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${operationsSecret}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+    const state = (await (await request({ action: 'status' })).json()) as {
+      controls: Array<{ control: string; generation: number }>
+    }
+    const response = await request({
+      action: 'set',
+      control: 'effects',
+      enabled,
+      expectedGeneration: state.controls.find(
+        (entry) => entry.control === 'effects'
+      )!.generation
+    })
+    expect(response.status).toBe(200)
+  }
+
+  it('independently stops new provider effects across replacement workers while retaining uploaded input and reads', async () => {
+    await setEffects(false)
+    const id = String((await start()).jobId)
+    await upload(id, await fileBytes())
+    await processCompletedTransfers()
+    expect(dispatchCount).toBe(0)
+    expect((await status(id)).jobId).toBe(id)
+    await createWorker().processCompletedTransfers()
+    expect(dispatchCount).toBe(0)
+    expect(objects.size).toBeGreaterThan(0)
+    await setEffects(true)
+    await createWorker().processCompletedTransfers()
+    expect(dispatchCount).toBe(1)
+    expect((await status(id)).state).toBe('ready')
+  })
+
+  it('rejects prepared dispatch after an effects close/reopen and dispatches the same job only on fresh acceptance', async () => {
+    const id = String((await start()).jobId)
+    await upload(id, await fileBytes())
+    let stopped = false
+    beforeAccept = async (action) => {
+      if (action !== 'dispatch' || stopped) return
+      stopped = true
+      await setEffects(false)
+      await setEffects(true)
+    }
+    await processCompletedTransfers()
+    expect(stopped).toBe(true)
+    expect(dispatchCount).toBe(0)
+    beforeAccept = undefined
+    await createWorker().processCompletedTransfers()
+    expect(dispatchCount).toBe(1)
+    expect((await status(id)).state).toBe('ready')
+  })
+
+  it('keeps an accepted ambiguous provider effect pending during a stop and reconciles without redispatch', async () => {
+    const id = String((await start()).jobId)
+    await upload(id, await fileBytes())
+    providerUnknown = true
+    loseDispatch = true
+    duringProviderDispatch = () => setEffects(false)
+    await processCompletedTransfers()
+    expect(dispatchCount).toBe(1)
+    await createWorker().recover()
+    const uncertain = await media.mcpMediaJob.findUniqueOrThrow({
+      where: { id }
+    })
+    expect(uncertain.active).toBe(true)
+    expect(uncertain.state).not.toBe('cancelled')
+    providerUnknown = false
+    await createWorker().recover()
+    expect(dispatchCount).toBe(1)
+    expect((await status(id)).state).toBe('ready')
+    expect(
+      await media.cloudflareImage.count({ where: { id: uncertain.providerId } })
+    ).toBe(1)
+  })
 
   it('checks final dispatch authority after staged-input preparation', async () => {
     const id = String((await start()).jobId)

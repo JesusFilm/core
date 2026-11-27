@@ -16,13 +16,8 @@ import {
 import type { AuthConfig } from './config'
 import type { Identity } from './identity'
 import { createMediaJobAuthority } from './mediaJobs'
-import {
-  type Database,
-  audit,
-  captureGates,
-  databaseTime,
-  lockGates
-} from './store'
+import { assertOperationGates, captureOperationGates } from './operations'
+import { type Database, audit, databaseTime, lockGates } from './store'
 import { reconcileConnectionChanges } from './withdrawal'
 
 const prepareInput = z
@@ -284,7 +279,7 @@ export function createReadAuthority(
         create: { id: input.executorId, executor: 'mcp' },
         update: {}
       })
-      const gates = await captureGates(db, [
+      const gates = await captureOperationGates(db, [
         `account:${connection.userId}`,
         `connection:${connection.id}`
       ])
@@ -404,7 +399,7 @@ export function createReadAuthority(
         (input.stage === 'output' && !input.outputHash)
       )
         throw new Error('Access denied')
-      const gates = await captureGates(db, [
+      const gates = await captureOperationGates(db, [
         ...(input.media ? ['media:sources'] : []),
         `account:${connection.userId}`,
         `connection:${connection.id}`,
@@ -497,6 +492,7 @@ export function createReadAuthority(
       const gates = z
         .array(z.object({ id: z.string(), generation: z.number().int() }))
         .parse(permit.gates)
+      assertOperationGates(gates)
       await db.$transaction(async (tx) => {
         await lockGates(tx, gates)
         await tx.$queryRaw`SELECT id FROM "AgentConnection" WHERE id = ${connection.id} FOR SHARE`

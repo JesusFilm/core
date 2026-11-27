@@ -17,6 +17,7 @@ import {
 import { createEligibilityReader } from './eligibility'
 import type { Identity, ReadEligibility } from './identity'
 import { AuditedMediaDenial } from './mediaJobs'
+import { createOperations } from './operations'
 import { createPermissionAuthority } from './permissions'
 import { createProvider } from './provider'
 import { createReadAuthority } from './reads'
@@ -117,6 +118,7 @@ export async function createRuntime(
   provider.proxy = config.AUTH_ENVIRONMENT !== 'local'
   const readAuthority = createReadAuthority(config, db, identity, provider)
   const permissionAuthority = createPermissionAuthority(config, db)
+  const operations = createOperations(config, db)
   const currentRights = createEligibilityReader(db, identity, eligibility)
   const manageConnections = createConnectionManagement(
     config,
@@ -171,6 +173,21 @@ export async function createRuntime(
     }
     if (draining) {
       await reject(503, 'unavailable')
+      return
+    }
+    if (ctx.path === '/internal/operations') {
+      try {
+        if (ctx.method !== 'POST' || ctx.get('Origin'))
+          throw new HttpFailure(403)
+        ctx.body = await operations(
+          ctx.get('Authorization'),
+          await jsonBody(ctx.req, 1024)
+        )
+      } catch (error) {
+        await audit(db, 'operations_change', 'denied').catch(() => undefined)
+        ctx.status = error instanceof AuthorizationChanged ? 409 : 403
+        ctx.body = { error: 'OPERATION_DENIED' }
+      }
       return
     }
     const origin = ctx.get('Origin')

@@ -81,7 +81,9 @@ export function createReadSession(
               stage: 'output',
               outputHash: fingerprint(body.toString('utf8'))
             },
-            `MCP ${release.credential}`
+            `MCP ${release.credential}`,
+            // Output repeats the owning ACL, media and grant checks.
+            15000
           )
         )
       }
