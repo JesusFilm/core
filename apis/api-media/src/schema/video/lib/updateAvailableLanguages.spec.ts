@@ -495,6 +495,42 @@ describe('cascading availableLanguages upward to the root', () => {
     expect(prismaMock.video.update).toHaveBeenCalledTimes(3)
   })
 
+  it('stops at the level cap when a cycle never converges', async () => {
+    // A and B contain each other and every recompute sees a brand-new
+    // language, so no level is ever "unchanged" and only the cap can stop it.
+    let nextLanguage = 0
+    ;(prismaMock.video.findUnique as any).mockImplementation(() =>
+      Promise.resolve({
+        label: 'series',
+        availableLanguages: [],
+        variants: [{ languageId: String(nextLanguage++) }],
+        children: []
+      } as unknown as Video)
+    )
+    const parentsOf: Record<string, string[]> = {
+      leaf: ['A'],
+      A: ['B'],
+      B: ['A']
+    }
+    ;(prismaMock.video.findMany as any).mockImplementation((args: any) =>
+      Promise.resolve(
+        (parentsOf[args.where.children.some.id] ?? []).map((id) => ({ id }))
+      )
+    )
+    ;(prismaMock.video.update as any).mockResolvedValue({})
+
+    await expect(
+      updateParentCollectionLanguages('leaf')
+    ).resolves.toBeUndefined()
+
+    // One ancestor per level, 25 levels, then the walk gives up.
+    expect(prismaMock.video.update).toHaveBeenCalledTimes(25)
+    expect(mockedLoggerWarn).toHaveBeenCalledWith(
+      expect.objectContaining({ childVideoId: 'leaf' }),
+      expect.stringContaining('hit the level cap')
+    )
+  })
+
   it('settles a skewed ancestor reachable at two depths instead of leaving it stale', async () => {
     // root lists leaf directly AND via mid (root > {leaf, mid}, mid > {leaf}).
     // leaf just lost its only language. root is reached at depth 1 (via leaf)
