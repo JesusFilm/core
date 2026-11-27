@@ -36,7 +36,8 @@ const journeyViewEvent: JourneyViewEvent = {
     name: [
       {
         __typename: 'LanguageName',
-        value: 'English'
+        value: 'English',
+        primary: true
       }
     ]
   },
