@@ -74,7 +74,10 @@ function pauseProviderRequest() {
 describe('video upload through OAuth, MCP, gateway, Media and separate draft attachment', () => {
   if (![authUrl, journeysUrl, mediaUrl, languagesUrl].every(Boolean))
     throw new Error('Run node tools/scripts/test-mcp-video-upload.mjs')
-  if (!/^\/media_issue_(10554|10565)(_|$)/.test(new URL(mediaUrl!).pathname))
+  const issue = /^\/media_issue_(10554|10565)(_|$)/.exec(
+    new URL(mediaUrl!).pathname
+  )?.[1]
+  if (!issue)
     throw new Error('Use isolated issue 10554 or 10565 databases')
   const media = new MediaDatabase({
     adapter: new PrismaPg({ connectionString: mediaUrl })
@@ -164,7 +167,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
     }
   }
   const f = structureFixture({
-    issue: '10554',
+    issue,
     authUrl,
     journeysUrl,
     startupTimeoutMs: 120000,
