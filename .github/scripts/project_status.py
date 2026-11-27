@@ -19,7 +19,11 @@ PROJECT_ID = "PVT_kwDOBNwqhs4BeMYJ"
 MANUAL_LABEL = "status:manual"
 REPOSITORY = "JesusFilm/core"
 TRIAGE_BATCH_SIZE = 25
-NATIVE_OPEN_STATUSES = {"In progress", "In review"}
+NATIVE_ISSUE_STATUSES = {
+    "In progress": ("OPEN", "Started"),
+    "In review": ("OPEN", "Started"),
+    "Done": ("CLOSED", "Completed"),
+}
 PR_TRUST_FIELDS = (
     "repository { nameWithOwner } authorAssociation headRepository { nameWithOwner }"
 )
@@ -303,16 +307,21 @@ class GitHub:
             raise RuntimeError(f"Cannot read {node_type} {node_id}")
         return data["node"]
 
-    def set_open_issue_status(self, node_id: str, status: str) -> bool:
+    def set_native_issue_status(self, node_id: str, status: str) -> bool:
         """Set the native status before updating its synced project card."""
-        if status not in NATIVE_OPEN_STATUSES:
-            raise ValueError(f"Unsupported native issue status: {status}")
+        expected_state, category = NATIVE_ISSUE_STATUSES[status]
         issue = self.node(
-            node_id, "Issue", "state status { name } repository { id nameWithOwner }"
+            node_id, "Issue", "state stateReason status { name } repository { id nameWithOwner }"
         )
-        if issue["state"] != "OPEN" or issue["repository"]["nameWithOwner"] != REPOSITORY:
+        if issue["repository"]["nameWithOwner"] != REPOSITORY:
             return False
-        if (issue.get("status") or {}).get("name") == status:
+        if issue["state"] == "CLOSED":
+            # Default-branch merges often close the issue automatically. Keep
+            # its existing resolution, including manual Not planned or Duplicate.
+            return expected_state == "CLOSED" and issue.get("stateReason") == "COMPLETED"
+        if issue["state"] != "OPEN":
+            return False
+        if expected_state == "OPEN" and (issue.get("status") or {}).get("name") == status:
             return True
         if not self.issue_status_token:
             raise RuntimeError("ISSUE_STATUS_GH_TOKEN is required to update native status")
@@ -325,21 +334,22 @@ class GitHub:
         matches = [
             option["id"]
             for option in statuses
-            if option["name"] == status and option["category"]["name"] == "Started"
+            if option["name"] == status and option["category"]["name"] == category
         ]
         if len(matches) != 1:
             raise RuntimeError(f"Cannot resolve the native issue status {status!r}")
         result = self.graphql(
             "mutation($issue: ID!, $status: ID!) { "
             "updateIssue(input: {id: $issue, statusId: $status}) { "
-            "issue { id state status { name } } } }",
+            "issue { id state stateReason status { name } } } }",
             token=self.issue_status_token,
             issue=node_id,
             status=matches[0],
         )["updateIssue"]["issue"]
         if (
             result["id"] != node_id
-            or result["state"] != "OPEN"
+            or result["state"] != expected_state
+            or (expected_state == "CLOSED" and result.get("stateReason") != "COMPLETED")
             or (result.get("status") or {}).get("name") != status
         ):
             raise RuntimeError(f"GitHub did not confirm native status {status!r} for {node_id}")
@@ -440,7 +450,7 @@ class ProjectStatuses:
             return
         value = item.get("fieldValueByName") or {}
         previous = value.get("name")
-        native_status = status in NATIVE_OPEN_STATUSES
+        native_status = status in NATIVE_ISSUE_STATUSES
         if (previous == status and not native_status) or (only_if_unset and previous):
             return
         if review_at and not newer_activity(review_at, value.get("updatedAt")):
@@ -450,8 +460,8 @@ class ProjectStatuses:
         if self.github.dry_run:
             print(f"Would set Issue {node_id}: {previous or '(unset)'} -> {status}")
             return
-        if native_status and not self.github.set_open_issue_status(node_id, status):
-            print(f"Skipping {node_id}: native issue is closed or outside {REPOSITORY}")
+        if native_status and not self.github.set_native_issue_status(node_id, status):
+            print(f"Skipping {node_id}: native issue state or repository does not allow {status}")
             return
         if previous == status:
             return
