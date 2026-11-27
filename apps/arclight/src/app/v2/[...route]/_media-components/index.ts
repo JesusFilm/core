@@ -1,7 +1,11 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { timeout } from 'hono/timeout'
 
-import { VideoLabel, prisma as mediaPrisma } from '@core/prisma/media/client'
+import {
+  Platform,
+  VideoLabel,
+  prisma as mediaPrisma
+} from '@core/prisma/media/client'
 
 import { generateCacheKey } from '../../../../lib/cache'
 import { getWithStaleCacheForRequest } from '../../../../lib/cacheBypass'
@@ -119,6 +123,14 @@ const route = createRoute({
 
 export const mediaComponents = new OpenAPIHono()
 mediaComponents.route('/:mediaComponentId', mediaComponent)
+
+// The detail route goes through api-media, which hides a video from any client
+// named in its restrictViewPlatforms. This route reads Prisma directly, so it
+// has to apply the same rule or it lists videos whose detail returns 404.
+// Mirrors the filter api-media's own videos query applies.
+const visibleToArclight = {
+  NOT: { restrictViewPlatforms: { has: Platform.arclight } }
+}
 
 mediaComponents.openapi(route, async (c) => {
   const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
@@ -242,6 +254,7 @@ mediaComponents.openapi(route, async (c) => {
           skip: offset,
           take: limit,
           where: {
+            ...visibleToArclight,
             ...(ids ? { id: { in: ids } } : {}),
             ...(languageIds
               ? { availableLanguages: { hasSome: languageIds } }
@@ -279,6 +292,7 @@ mediaComponents.openapi(route, async (c) => {
 
         const totalCountResult = await tx.video.count({
           where: {
+            ...visibleToArclight,
             ...(ids ? { id: { in: ids } } : {}),
             ...(languageIds
               ? { availableLanguages: { hasSome: languageIds } }
