@@ -38,6 +38,8 @@ import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
 import {
   findContainerParentIds,
+  sameLanguageSet,
+  updateParentCollectionLanguages,
   updateVideoAvailableLanguages
 } from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
@@ -870,12 +872,12 @@ builder.mutationFields((t) => ({
         throw e
       }
 
-      // Known gap (not fixed here, needs a product/design decision): this
-      // fires reconciliation for every child added to OR removed from
-      // childIds, but reconcileParentVariants only ever ADDS a language to
-      // the parent's availableLanguages — it never removes one. So removing
-      // the last child providing a given language leaves that language
-      // stale on the parent indefinitely. See PR #9386 discussion.
+      // This fires reconciliation for every child added to OR removed from
+      // childIds. reconcileParentVariants only ever ADDS a language to the
+      // parent's availableLanguages (never removes one) — but availableLanguages
+      // correctness after removal doesn't depend on that: the explicit
+      // recompute + cascade below fully recalculates this container from its
+      // current source data regardless of what reconciliation does.
       if (input.childIds !== undefined && affectedChildIds.length > 0) {
         const affectedVariants =
           (await prisma.videoVariant.findMany({
@@ -903,6 +905,41 @@ builder.mutationFields((t) => ({
           } catch (error) {
             console.error('Video variant reconciliation request error:', error)
           }
+        }
+      }
+
+      // The children relation was just severed/extended above. Recompute
+      // this container's own availableLanguages from its current source
+      // data (own published variants ∪ live children's current values)
+      // rather than incrementally patching the old value — this is what
+      // makes removal symmetric with addition: a language uniquely provided
+      // by a just-removed child is dropped here, not left stale because the
+      // old parent is no longer reachable through the severed relation. If
+      // that recompute actually changed this container's value, cascade the
+      // change upward through its own parents to the root of the container
+      // hierarchy.
+      let languageSyncFailed = false
+      if (input.childIds !== undefined) {
+        try {
+          const { before, after } = await updateVideoAvailableLanguages(
+            video.id,
+            { skipCache: true, skipAlgolia: true }
+          )
+          if (!sameLanguageSet(before, after)) {
+            await updateParentCollectionLanguages(video.id)
+          }
+        } catch (error) {
+          logger.error(
+            { error, videoId: video.id },
+            'availableLanguages recompute error'
+          )
+          // The children relation is already updated, so the stored value is
+          // stale until this recompute succeeds. Remember the failure and
+          // report it once the rest of the mutation has run: throwing here
+          // would skip the parent-variant, Algolia and cache work below for
+          // an update that has already committed, and a retry would not
+          // redo it (the published flag no longer differs).
+          languageSyncFailed = true
         }
       }
 
@@ -968,6 +1005,12 @@ builder.mutationFields((t) => ({
       try {
         await videoCacheReset(video.id)
       } catch {}
+
+      if (languageSyncFailed) {
+        throw new GraphQLError(
+          `Video ${video.id} was updated but its availableLanguages could not be recomputed; retry the update`
+        )
+      }
 
       return video
     }
@@ -1109,11 +1152,20 @@ builder.mutationFields((t) => ({
         throw new GraphQLError(`Video with id ${videoId} not found`)
       }
 
-      // Use shared helper to recalculate and update availableLanguages
+      // Use shared helper to recalculate and update availableLanguages, then
+      // cascade the recomputed value all the way to the root of the
+      // container hierarchy - a single-hop update here would leave a
+      // grandparent (or higher) stuck on a stale value.
       try {
         await updateVideoAvailableLanguages(videoId)
+        await updateParentCollectionLanguages(videoId)
       } catch (error) {
-        console.error('Language management update error:', error)
+        logger.error({ error, videoId }, 'availableLanguages recompute error')
+        // This mutation exists to repair availableLanguages, so a failed
+        // repair must not report success.
+        throw new GraphQLError(
+          `Could not recompute availableLanguages for video ${videoId}`
+        )
       }
 
       return true
