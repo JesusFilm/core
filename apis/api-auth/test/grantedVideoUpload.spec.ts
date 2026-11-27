@@ -77,8 +77,7 @@ describe('video upload through OAuth, MCP, gateway, Media and separate draft att
   const issue = /^\/media_issue_(10554|10565)(_|$)/.exec(
     new URL(mediaUrl!).pathname
   )?.[1]
-  if (!issue)
-    throw new Error('Use isolated issue 10554 or 10565 databases')
+  if (!issue) throw new Error('Use isolated issue 10554 or 10565 databases')
   const media = new MediaDatabase({
     adapter: new PrismaPg({ connectionString: mediaUrl })
   })
