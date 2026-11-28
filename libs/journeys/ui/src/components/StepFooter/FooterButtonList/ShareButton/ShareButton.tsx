@@ -62,7 +62,14 @@ export function ShareButton(): ReactElement {
       text: journey?.seoDescription ?? ''
     }
 
-    await navigator.share(shareDetails)
+    try {
+      await navigator.share(shareDetails)
+    } catch (error) {
+      // user dismissed the native share sheet
+      if (error instanceof DOMException && error.name === 'AbortError') return
+      // e.g. NotAllowedError in a cross-origin iframe without allow="web-share"
+      setShareDialogOpen(true)
+    }
   }
 
   return (

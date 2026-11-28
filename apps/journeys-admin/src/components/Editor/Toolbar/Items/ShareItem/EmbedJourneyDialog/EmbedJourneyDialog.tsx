@@ -49,7 +49,7 @@ export function EmbedJourneyDialog({
   const embedUrl = `${providerUrl}/embed/${journey?.slug}`
 
   // Self-closing iframe tag breaks embed on WordPress
-  const iframeLink = `<iframe src="${embedUrl}" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay" allowfullscreen></iframe>`
+  const iframeLink = `<iframe src="${embedUrl}" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay; web-share" allowfullscreen></iframe>`
 
   const handleSubmit = async (): Promise<void> => {
     await navigator.clipboard.writeText(iframeLink ?? '')

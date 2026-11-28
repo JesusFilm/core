@@ -60,7 +60,7 @@ describe('embedJourneyDialog', () => {
     })
 
     it('should copy the embed code from the modal', async () => {
-      const embedCode = `<iframe src="${process.env.NEXT_PUBLIC_JOURNEYS_URL}/embed/undefined" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay" allowfullscreen></iframe>`
+      const embedCode = `<iframe src="${process.env.NEXT_PUBLIC_JOURNEYS_URL}/embed/undefined" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay; web-share" allowfullscreen></iframe>`
       const { getByText, getByRole } = render(
         <MockedProvider>
           <SnackbarProvider>

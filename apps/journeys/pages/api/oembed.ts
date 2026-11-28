@@ -43,7 +43,7 @@ export default async function Handler(
       version: '1.0',
       // oembed rich type required fields
       // Self-closing iframe tag breaks embed on WordPress
-      html: `<iframe src="${embedUrl}" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay" allowfullscreen></iframe>`,
+      html: `<iframe src="${embedUrl}" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay; web-share" allowfullscreen></iframe>`,
       width: 360,
       height: 640,
       // oembed optional fields
