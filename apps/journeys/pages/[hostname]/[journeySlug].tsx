@@ -140,8 +140,7 @@ const hostSlugStaticProps: GetStaticProps<HostedJourneyProps> = async (
     return {
       props: {
         flags: await getFlags(),
-        hostname: context.params?.hostname?.toString() ?? '',
-        host: context.params?.host?.toString() ?? '',
+        host: context.params?.hostname?.toString() ?? '',
         ...(await serverSideTranslations(
           locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],

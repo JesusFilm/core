@@ -117,7 +117,7 @@ export const getStaticProps: GetStaticProps<HostJourneyEmbedPageProps> = async (
     return {
       props: {
         flags: await getFlags(),
-        host: context.params?.host?.toString() ?? '',
+        host: context.params?.hostname?.toString() ?? '',
         ...(await serverSideTranslations(
           locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
